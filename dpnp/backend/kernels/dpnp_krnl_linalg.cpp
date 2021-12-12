@@ -98,9 +98,9 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
 }
 
 template <typename _DataType>
-void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
+void dpnp_det_c(void* array1_in, void* result1, shape_elem_type* shape, size_t ndim)
 {
-    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!input_size)
     {
         return;
@@ -202,11 +202,11 @@ void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 }
 
 template <typename _DataType, typename _ResultType>
-void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
+void dpnp_inv_c(void* array1_in, void* result1, shape_elem_type* shape, size_t ndim)
 {
     (void)ndim; // avoid warning unused variable
 
-    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!input_size)
     {
         return;
@@ -313,14 +313,14 @@ template <typename _DataType1, typename _DataType2, typename _ResultType>
 void dpnp_kron_c(void* array1_in,
                  void* array2_in,
                  void* result1,
-                 size_t* in1_shape,
-                 size_t* in2_shape,
-                 size_t* res_shape,
+                 shape_elem_type* in1_shape,
+                 shape_elem_type* in2_shape,
+                 shape_elem_type* res_shape,
                  size_t ndim)
 {
-    const size_t input1_size = std::accumulate(in1_shape, in1_shape + ndim, 1, std::multiplies<size_t>());
-    const size_t input2_size = std::accumulate(in2_shape, in2_shape + ndim, 1, std::multiplies<size_t>());
-    const size_t result_size = std::accumulate(res_shape, res_shape + ndim, 1, std::multiplies<size_t>());
+    const size_t input1_size = std::accumulate(in1_shape, in1_shape + ndim, 1, std::multiplies<shape_elem_type>());
+    const size_t input2_size = std::accumulate(in2_shape, in2_shape + ndim, 1, std::multiplies<shape_elem_type>());
+    const size_t result_size = std::accumulate(res_shape, res_shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!(result_size && input1_size && input2_size))
     {
         return;
@@ -333,19 +333,19 @@ void dpnp_kron_c(void* array1_in,
     _DataType2* array2 = input2_ptr.get_ptr();
     _ResultType* result = result_ptr.get_ptr();
 
-    size_t* _in1_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
-    size_t* _in2_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    shape_elem_type* _in1_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type* _in2_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
 
-    dpnp_memory_memcpy_c(_in1_shape, in1_shape, ndim * sizeof(size_t));
-    dpnp_memory_memcpy_c(_in2_shape, in2_shape, ndim * sizeof(size_t));
+    dpnp_memory_memcpy_c(_in1_shape, in1_shape, ndim * sizeof(shape_elem_type));
+    dpnp_memory_memcpy_c(_in2_shape, in2_shape, ndim * sizeof(shape_elem_type));
 
-    size_t* in1_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
-    size_t* in2_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
-    size_t* res_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    shape_elem_type* in1_offsets = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type* in2_offsets = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type* res_offsets = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
 
-    get_shape_offsets_inkernel<size_t>(in1_shape, ndim, in1_offsets);
-    get_shape_offsets_inkernel<size_t>(in2_shape, ndim, in2_offsets);
-    get_shape_offsets_inkernel<size_t>(res_shape, ndim, res_offsets);
+    get_shape_offsets_inkernel(in1_shape, ndim, in1_offsets);
+    get_shape_offsets_inkernel(in2_shape, ndim, in2_offsets);
+    get_shape_offsets_inkernel(res_shape, ndim, res_offsets);
 
     cl::sycl::range<1> gws(result_size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
@@ -379,9 +379,9 @@ void dpnp_kron_c(void* array1_in,
 }
 
 template <typename _DataType>
-void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
+void dpnp_matrix_rank_c(void* array1_in, void* result1, shape_elem_type* shape, size_t ndim)
 {
-    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!input_size)
     {
         return;
