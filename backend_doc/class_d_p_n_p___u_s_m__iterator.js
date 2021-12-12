@@ -4,7 +4,7 @@ var class_d_p_n_p___u_s_m__iterator =
     [ "iterator_category", "class_d_p_n_p___u_s_m__iterator.html#aa8b5647048f6f0147886be73f01e94c4", null ],
     [ "pointer", "class_d_p_n_p___u_s_m__iterator.html#aca780fdef24c0bd690c72dcc71e33af6", null ],
     [ "reference", "class_d_p_n_p___u_s_m__iterator.html#abfafba55af4f4de1bfa9553fca8340a3", null ],
-    [ "size_type", "class_d_p_n_p___u_s_m__iterator.html#a86e02efbeb6e45506c16bf15eb0debea", null ],
+    [ "size_type", "class_d_p_n_p___u_s_m__iterator.html#afc13c3ff41cb4e7be8274de5357726e8", null ],
     [ "value_type", "class_d_p_n_p___u_s_m__iterator.html#a820052ee7cdb89cebb6ea390e76ef4bd", null ],
     [ "DPNP_USM_iterator", "class_d_p_n_p___u_s_m__iterator.html#a8c3aaadf0a32b284639b290a115594c4", null ],
     [ "DPNP_USM_iterator", "class_d_p_n_p___u_s_m__iterator.html#a75b5f77d2572ee3c20ef12d92257e400", null ],
