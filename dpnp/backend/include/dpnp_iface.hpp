@@ -42,9 +42,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "dpnp_iface_fft.hpp"
-#include "dpnp_iface_random.hpp"
-
 #ifdef _WIN32
 #define INP_DLLEXPORT __declspec(dllexport)
 #else
@@ -52,6 +49,9 @@
 #endif
 
 typedef long shape_elem_type;
+
+#include "dpnp_iface_fft.hpp"
+#include "dpnp_iface_random.hpp"
 
 /**
  * @defgroup BACKEND_API Backend C++ library interface API
