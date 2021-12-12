@@ -73,10 +73,10 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
     // kernel specific temporal data
-    long* output_shape_offsets = reinterpret_cast<long*>(dpnp_memory_alloc_c(shape_size * sizeof(long)));
-    long* input_shape_offsets = reinterpret_cast<long*>(dpnp_memory_alloc_c(shape_size * sizeof(long)));
+    shape_elem_type* output_shape_offsets = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(shape_size * sizeof(shape_elem_type)));
+    shape_elem_type* input_shape_offsets = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(shape_size * sizeof(shape_elem_type)));
     // must be a thread local storage.
-    long* axis_iterator = reinterpret_cast<long*>(dpnp_memory_alloc_c(result_size * shape_size * sizeof(long)));
+    shape_elem_type* axis_iterator = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result_size * shape_size * sizeof(shape_elem_type)));
 
     get_shape_offsets_inkernel(output_shape, shape_size, output_shape_offsets);
     get_shape_offsets_inkernel(input_shape, shape_size, input_shape_offsets);
@@ -88,7 +88,7 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
         double sum_real = 0.0;
         double sum_imag = 0.0;
         // need to replace this array by thread local storage
-        long* axis_iterator_thread = axis_iterator + (output_id * shape_size);
+        shape_elem_type* axis_iterator_thread = axis_iterator + (output_id * shape_size);
 
         size_t xyz_id;
         for (size_t i = 0; i < shape_size; ++i)
@@ -195,7 +195,7 @@ void dpnp_fft_fft_mathlib_compute_c(const void* array1_in,
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_fft_fft_mathlib_c(const void* array1_in,
                             void* result1,
-                            const long* input_shape,
+                            const shape_elem_type* input_shape,
                             const size_t shape_size,
                             const size_t result_size,
                             const size_t norm)
