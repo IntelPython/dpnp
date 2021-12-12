@@ -186,12 +186,12 @@ template <typename _DataType>
 void dpnp_max_c(void* array1_in,
                 void* result1,
                 const size_t result_size,
-                const size_t* shape,
+                const shape_elem_type* shape,
                 size_t ndim,
                 const size_t* axis,
                 size_t naxis)
 {
-    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size_input)
     {
         return;
@@ -417,11 +417,11 @@ void dpnp_mean_c(void* array1_in, void* result1, const shape_elem_type* shape, s
 }
 
 template <typename _DataType, typename _ResultType>
-void dpnp_median_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_median_c(void* array1_in, void* result1, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
-    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size)
     {
         return;
@@ -455,14 +455,14 @@ template <typename _DataType>
 void dpnp_min_c(void* array1_in,
                 void* result1,
                 const size_t result_size,
-                const size_t* shape,
+                const shape_elem_type* shape,
                 size_t ndim,
                 const size_t* axis,
                 size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
-    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size_input)
     {
         return;
