@@ -66,13 +66,13 @@ void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
 
 template <typename _DataType>
 void dpnp_diag_c(
-    void* v_in, void* result1, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim)
+    void* v_in, void* result1, const int k, shape_elem_type* shape, shape_elem_type* res_shape, const size_t ndim, const size_t res_ndim)
 {
     // avoid warning unused variable
     (void)res_ndim;
 
-    const size_t input1_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
-    const size_t result_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<size_t>());
+    const size_t input1_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
+    const size_t result_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<shape_elem_type>());
     DPNPC_ptr_adapter<_DataType> input1_ptr(v_in, input1_size, true);
     DPNPC_ptr_adapter<_DataType> result_ptr(result1, result_size, true, true);
     _DataType* v = input1_ptr.get_ptr();
@@ -222,7 +222,7 @@ template <typename _DataType, typename _ResultType>
 class dpnp_trace_c_kernel;
 
 template <typename _DataType, typename _ResultType>
-void dpnp_trace_c(const void* array1_in, void* result_in, const size_t* shape_, const size_t ndim)
+void dpnp_trace_c(const void* array1_in, void* result_in, const shape_elem_type* shape_, const size_t ndim)
 {
     if (!array1_in || !result_in || !shape_ || !ndim)
     {
@@ -230,7 +230,7 @@ void dpnp_trace_c(const void* array1_in, void* result_in, const size_t* shape_, 
     }
 
     const size_t last_dim = shape_[ndim - 1];
-    const size_t size = std::accumulate(shape_, shape_ + (ndim - 1), 1, std::multiplies<size_t>());
+    const size_t size = std::accumulate(shape_, shape_ + (ndim - 1), 1, std::multiplies<shape_elem_type>());
     if (!size)
     {
         return;
@@ -310,8 +310,8 @@ template <typename _DataType>
 void dpnp_tril_c(void* array_in,
                  void* result1,
                  const int k,
-                 size_t* shape,
-                 size_t* res_shape,
+                 shape_elem_type* shape,
+                 shape_elem_type* res_shape,
                  const size_t ndim,
                  const size_t res_ndim)
 {
@@ -330,13 +330,13 @@ void dpnp_tril_c(void* array_in,
         return;
     }
 
-    const size_t res_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<size_t>());
+    const size_t res_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<shape_elem_type>());
     if (res_size == 0)
     {
         return;
     }
 
-    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (input_size == 0)
     {
         return;
@@ -418,8 +418,8 @@ template <typename _DataType>
 void dpnp_triu_c(void* array_in,
                  void* result1,
                  const int k,
-                 size_t* shape,
-                 size_t* res_shape,
+                 shape_elem_type* shape,
+                 shape_elem_type* res_shape,
                  const size_t ndim,
                  const size_t res_ndim)
 {
@@ -438,13 +438,13 @@ void dpnp_triu_c(void* array_in,
         return;
     }
 
-    const size_t res_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<size_t>());
+    const size_t res_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<shape_elem_type>());
     if (res_size == 0)
     {
         return;
     }
 
-    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (input_size == 0)
     {
         return;

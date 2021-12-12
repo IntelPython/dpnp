@@ -91,7 +91,7 @@ class dpnp_partition_c_kernel;
 
 template <typename _DataType>
 void dpnp_partition_c(
-    void* array1_in, void* array2_in, void* result1, const size_t kth, const size_t* shape_, const size_t ndim)
+    void* array1_in, void* array2_in, void* result1, const size_t kth, const shape_elem_type* shape_, const size_t ndim)
 {
     if ((array1_in == nullptr) || (array2_in == nullptr) || (result1 == nullptr))
     {
@@ -103,7 +103,7 @@ void dpnp_partition_c(
         return;
     }
 
-    const size_t size = std::accumulate(shape_, shape_ + ndim, 1, std::multiplies<size_t>());
+    const size_t size = std::accumulate(shape_, shape_ + ndim, 1, std::multiplies<shape_elem_type>());
     size_t size_ = size / shape_[ndim - 1];
 
     if (size_ == 0)
@@ -140,8 +140,8 @@ void dpnp_partition_c(
         }
     }
 
-    size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
-    auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
+    shape_elem_type* shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(shape_elem_type));
 
     memcpy_event.wait();
 

@@ -45,13 +45,13 @@
     void __name__(void* result_out,                                                                                    \
                   const size_t result_size,                                                                            \
                   const size_t result_ndim,                                                                            \
-                  const size_t* result_shape,                                                                          \
-                  const size_t* result_strides,                                                                        \
+                  const shape_elem_type* result_shape,                                                                 \
+                  const shape_elem_type* result_strides,                                                               \
                   const void* input1_in,                                                                               \
                   const size_t input1_size,                                                                            \
                   const size_t input1_ndim,                                                                            \
-                  const size_t* input1_shape,                                                                          \
-                  const size_t* input1_strides,                                                                        \
+                  const shape_elem_type* input1_shape,                                                                 \
+                  const shape_elem_type* input1_strides,                                                               \
                   const size_t* where)                                                                                 \
     {                                                                                                                  \
         /* avoid warning unused variable*/                                                                             \
@@ -64,21 +64,22 @@
         }                                                                                                              \
                                                                                                                        \
         DPNPC_ptr_adapter<_DataType_input> input1_ptr(input1_in, input1_size);                                         \
-        DPNPC_ptr_adapter<size_t> input1_shape_ptr(input1_shape, input1_ndim, true);                                   \
-        DPNPC_ptr_adapter<size_t> input1_strides_ptr(input1_strides, input1_ndim, true);                               \
+        DPNPC_ptr_adapter<shape_elem_type> input1_shape_ptr(input1_shape, input1_ndim, true);                          \
+        DPNPC_ptr_adapter<shape_elem_type> input1_strides_ptr(input1_strides, input1_ndim, true);                      \
                                                                                                                        \
         DPNPC_ptr_adapter<_DataType_output> result_ptr(result_out, result_size, false, true);                          \
-        DPNPC_ptr_adapter<size_t> result_strides_ptr(result_strides, result_ndim);                                     \
+        DPNPC_ptr_adapter<shape_elem_type> result_strides_ptr(result_strides, result_ndim);                            \
                                                                                                                        \
         _DataType_input* input1_data = input1_ptr.get_ptr();                                                           \
-        size_t* input1_shape_data = input1_shape_ptr.get_ptr();                                                        \
-        size_t* input1_strides_data = input1_strides_ptr.get_ptr();                                                    \
+        shape_elem_type* input1_shape_data = input1_shape_ptr.get_ptr();                                               \
+        shape_elem_type* input1_strides_data = input1_strides_ptr.get_ptr();                                           \
                                                                                                                        \
         _DataType_output* result = result_ptr.get_ptr();                                                               \
-        size_t* result_strides_data = result_strides_ptr.get_ptr();                                                    \
+        shape_elem_type* result_strides_data = result_strides_ptr.get_ptr();                                           \
                                                                                                                        \
-        const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(size_t);                                        \
-        size_t* input1_shape_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));     \
+        const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(shape_elem_type);                               \
+        shape_elem_type* input1_shape_offsets =                                                                        \
+            reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));                       \
         get_shape_offsets_inkernel(input1_shape_data, input1_ndim, input1_shape_offsets);                              \
         bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
         dpnp_memory_free_c(input1_shape_offsets);                                                                      \
@@ -326,13 +327,13 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
     void __name__(void* result_out,                                                                                    \
                   const size_t result_size,                                                                            \
                   const size_t result_ndim,                                                                            \
-                  const size_t* result_shape,                                                                          \
-                  const size_t* result_strides,                                                                        \
+                  const shape_elem_type* result_shape,                                                                 \
+                  const shape_elem_type* result_strides,                                                               \
                   const void* input1_in,                                                                               \
                   const size_t input1_size,                                                                            \
                   const size_t input1_ndim,                                                                            \
-                  const size_t* input1_shape,                                                                          \
-                  const size_t* input1_strides,                                                                        \
+                  const shape_elem_type* input1_shape,                                                                 \
+                  const shape_elem_type* input1_strides,                                                               \
                   const size_t* where)                                                                                 \
     {                                                                                                                  \
         /* avoid warning unused variable*/                                                                             \
@@ -345,21 +346,22 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
         }                                                                                                              \
                                                                                                                        \
         DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, input1_size);                                               \
-        DPNPC_ptr_adapter<size_t> input1_shape_ptr(input1_shape, input1_ndim, true);                                   \
-        DPNPC_ptr_adapter<size_t> input1_strides_ptr(input1_strides, input1_ndim, true);                               \
+        DPNPC_ptr_adapter<shape_elem_type> input1_shape_ptr(input1_shape, input1_ndim, true);                          \
+        DPNPC_ptr_adapter<shape_elem_type> input1_strides_ptr(input1_strides, input1_ndim, true);                      \
                                                                                                                        \
         DPNPC_ptr_adapter<_DataType> result_ptr(result_out, result_size, false, true);                                 \
-        DPNPC_ptr_adapter<size_t> result_strides_ptr(result_strides, result_ndim);                                     \
+        DPNPC_ptr_adapter<shape_elem_type> result_strides_ptr(result_strides, result_ndim);                            \
                                                                                                                        \
         _DataType* input1_data = input1_ptr.get_ptr();                                                                 \
-        size_t* input1_shape_data = input1_shape_ptr.get_ptr();                                                        \
-        size_t* input1_strides_data = input1_strides_ptr.get_ptr();                                                    \
+        shape_elem_type* input1_shape_data = input1_shape_ptr.get_ptr();                                               \
+        shape_elem_type* input1_strides_data = input1_strides_ptr.get_ptr();                                           \
                                                                                                                        \
         _DataType* result = result_ptr.get_ptr();                                                                      \
-        size_t* result_strides_data = result_strides_ptr.get_ptr();                                                    \
+        shape_elem_type* result_strides_data = result_strides_ptr.get_ptr();                                           \
                                                                                                                        \
-        const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(size_t);                                        \
-        size_t* input1_shape_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));     \
+        const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(shape_elem_type);                               \
+        shape_elem_type* input1_shape_offsets =                                                                        \
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));                           \
         get_shape_offsets_inkernel(input1_shape_data, input1_ndim, input1_shape_offsets);                              \
         bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
         dpnp_memory_free_c(input1_shape_offsets);                                                                      \
@@ -490,18 +492,18 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
     void __name__(void* result_out,                                                                                    \
                   const size_t result_size,                                                                            \
                   const size_t result_ndim,                                                                            \
-                  const size_t* result_shape,                                                                          \
-                  const size_t* result_strides,                                                                        \
+                  const shape_elem_type* result_shape,                                                                 \
+                  const shape_elem_type* result_strides,                                                               \
                   const void* input1_in,                                                                               \
                   const size_t input1_size,                                                                            \
                   const size_t input1_ndim,                                                                            \
-                  const size_t* input1_shape,                                                                          \
-                  const size_t* input1_strides,                                                                        \
+                  const shape_elem_type* input1_shape,                                                                 \
+                  const shape_elem_type* input1_strides,                                                               \
                   const void* input2_in,                                                                               \
                   const size_t input2_size,                                                                            \
                   const size_t input2_ndim,                                                                            \
-                  const size_t* input2_shape,                                                                          \
-                  const size_t* input2_strides,                                                                        \
+                  const shape_elem_type* input2_shape,                                                                 \
+                  const shape_elem_type* input2_strides,                                                               \
                   const size_t* where)                                                                                 \
     {                                                                                                                  \
         /* avoid warning unused variable*/                                                                             \
@@ -513,39 +515,41 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
         }                                                                                                              \
                                                                                                                        \
         DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);                                        \
-        DPNPC_ptr_adapter<size_t> input1_shape_ptr(input1_shape, input1_ndim, true);                                   \
-        DPNPC_ptr_adapter<size_t> input1_strides_ptr(input1_strides, input1_ndim, true);                               \
+        DPNPC_ptr_adapter<shape_elem_type> input1_shape_ptr(input1_shape, input1_ndim, true);                          \
+        DPNPC_ptr_adapter<shape_elem_type> input1_strides_ptr(input1_strides, input1_ndim, true);                      \
                                                                                                                        \
         DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);                                        \
-        DPNPC_ptr_adapter<size_t> input2_shape_ptr(input2_shape, input2_ndim, true);                                   \
-        DPNPC_ptr_adapter<size_t> input2_strides_ptr(input2_strides, input2_ndim, true);                               \
+        DPNPC_ptr_adapter<shape_elem_type> input2_shape_ptr(input2_shape, input2_ndim, true);                          \
+        DPNPC_ptr_adapter<shape_elem_type> input2_strides_ptr(input2_strides, input2_ndim, true);                      \
                                                                                                                        \
         DPNPC_ptr_adapter<_DataType_output> result_ptr(result_out, result_size, false, true);                          \
-        DPNPC_ptr_adapter<size_t> result_shape_ptr(result_shape, result_ndim);                                         \
-        DPNPC_ptr_adapter<size_t> result_strides_ptr(result_strides, result_ndim);                                     \
+        DPNPC_ptr_adapter<shape_elem_type> result_shape_ptr(result_shape, result_ndim);                                \
+        DPNPC_ptr_adapter<shape_elem_type> result_strides_ptr(result_strides, result_ndim);                            \
                                                                                                                        \
         _DataType_input1* input1_data = input1_ptr.get_ptr();                                                          \
-        size_t* input1_shape_data = input1_shape_ptr.get_ptr();                                                        \
-        size_t* input1_strides_data = input1_strides_ptr.get_ptr();                                                    \
+        shape_elem_type* input1_shape_data = input1_shape_ptr.get_ptr();                                               \
+        shape_elem_type* input1_strides_data = input1_strides_ptr.get_ptr();                                           \
                                                                                                                        \
         _DataType_input2* input2_data = input2_ptr.get_ptr();                                                          \
-        size_t* input2_shape_data = input2_shape_ptr.get_ptr();                                                        \
-        size_t* input2_strides_data = input2_strides_ptr.get_ptr();                                                    \
+        shape_elem_type* input2_shape_data = input2_shape_ptr.get_ptr();                                               \
+        shape_elem_type* input2_strides_data = input2_strides_ptr.get_ptr();                                           \
                                                                                                                        \
         _DataType_output* result = result_ptr.get_ptr();                                                               \
-        size_t* result_shape_data = result_shape_ptr.get_ptr();                                                        \
-        size_t* result_strides_data = result_strides_ptr.get_ptr();                                                    \
+        shape_elem_type* result_shape_data = result_shape_ptr.get_ptr();                                               \
+        shape_elem_type* result_strides_data = result_strides_ptr.get_ptr();                                           \
                                                                                                                        \
         bool use_broadcasting = !array_equal(input1_shape_data, input1_ndim, input2_shape_data, input2_ndim);          \
                                                                                                                        \
-        const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(size_t);                                        \
-        size_t* input1_shape_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));     \
+        const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(shape_elem_type);                               \
+        shape_elem_type* input1_shape_offsets =                                                                        \
+            reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));                       \
         get_shape_offsets_inkernel(input1_shape_data, input1_ndim, input1_shape_offsets);                              \
         bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
         dpnp_memory_free_c(input1_shape_offsets);                                                                      \
                                                                                                                        \
-        const size_t input2_shape_size_in_bytes = input2_ndim * sizeof(size_t);                                        \
-        size_t* input2_shape_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(input2_shape_size_in_bytes));     \
+        const size_t input2_shape_size_in_bytes = input2_ndim * sizeof(shape_elem_type);                               \
+        shape_elem_type* input2_shape_offsets =                                                                        \
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input2_shape_size_in_bytes));                           \
         get_shape_offsets_inkernel(input2_shape_data, input2_ndim, input2_shape_offsets);                              \
         use_strides = use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);\
         dpnp_memory_free_c(input2_shape_offsets);                                                                      \

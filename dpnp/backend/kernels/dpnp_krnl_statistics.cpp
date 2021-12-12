@@ -41,17 +41,17 @@ template <typename _DataType_output, typename _DataType_input1, typename _DataTy
 void dpnp_correlate_c(void* result_out,
                       const void* input1_in,
                       const size_t input1_size,
-                      const size_t* input1_shape,
+                      const shape_elem_type* input1_shape,
                       const size_t input1_shape_ndim,
                       const void* input2_in,
                       const size_t input2_size,
-                      const size_t* input2_shape,
+                      const shape_elem_type* input2_shape,
                       const size_t input2_shape_ndim,
                       const size_t* where)
 {
     (void)where;
 
-    size_t dummy[] = {1};
+    shape_elem_type dummy[] = {1};
     dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out,
                                                                      42,   // dummy result_size
                                                                      42,   // dummy result_ndim
@@ -186,12 +186,12 @@ template <typename _DataType>
 void dpnp_max_c(void* array1_in,
                 void* result1,
                 const size_t result_size,
-                const size_t* shape,
+                const shape_elem_type* shape,
                 size_t ndim,
                 const size_t* axis,
                 size_t naxis)
 {
-    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size_input)
     {
         return;
@@ -378,11 +378,11 @@ void dpnp_max_c(void* array1_in,
 }
 
 template <typename _DataType, typename _ResultType>
-void dpnp_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_mean_c(void* array1_in, void* result1, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
-    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size)
     {
         return;
@@ -417,11 +417,11 @@ void dpnp_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndi
 }
 
 template <typename _DataType, typename _ResultType>
-void dpnp_median_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_median_c(void* array1_in, void* result1, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
-    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size)
     {
         return;
@@ -455,14 +455,14 @@ template <typename _DataType>
 void dpnp_min_c(void* array1_in,
                 void* result1,
                 const size_t result_size,
-                const size_t* shape,
+                const shape_elem_type* shape,
                 size_t ndim,
                 const size_t* axis,
                 size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
-    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size_input)
     {
         return;
@@ -675,7 +675,7 @@ void dpnp_nanvar_c(void* array1_in, void* mask_arr1, void* result1, const size_t
 
 template <typename _DataType, typename _ResultType>
 void dpnp_std_c(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
+    void* array1_in, void* result1, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
 {
     _ResultType* var = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
 
@@ -683,20 +683,20 @@ void dpnp_std_c(
 
     const size_t result1_size = 1;
     const size_t result1_ndim = 1;
-    const size_t result1_shape_size_in_bytes = result1_ndim * sizeof(size_t);
-    const size_t result1_strides_size_in_bytes = result1_ndim * sizeof(size_t);
-    size_t* result1_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(result1_shape_size_in_bytes));
+    const size_t result1_shape_size_in_bytes = result1_ndim * sizeof(shape_elem_type);
+    const size_t result1_strides_size_in_bytes = result1_ndim * sizeof(shape_elem_type);
+    shape_elem_type* result1_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result1_shape_size_in_bytes));
     *result1_shape = 1;
-    size_t* result1_strides = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(result1_strides_size_in_bytes));
+    shape_elem_type* result1_strides = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result1_strides_size_in_bytes));
     *result1_strides = 1;
 
     const size_t var_size = 1;
     const size_t var_ndim = 1;
-    const size_t var_shape_size_in_bytes = var_ndim * sizeof(size_t);
-    const size_t var_strides_size_in_bytes = var_ndim * sizeof(size_t);
-    size_t* var_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(var_shape_size_in_bytes));
+    const size_t var_shape_size_in_bytes = var_ndim * sizeof(shape_elem_type);
+    const size_t var_strides_size_in_bytes = var_ndim * sizeof(shape_elem_type);
+    shape_elem_type* var_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(var_shape_size_in_bytes));
     *var_shape = 1;
-    size_t* var_strides = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(var_strides_size_in_bytes));
+    shape_elem_type* var_strides = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(var_strides_size_in_bytes));
     *var_strides = 1;
 
     dpnp_sqrt_c<_ResultType, _ResultType>(result1,
@@ -725,9 +725,9 @@ class dpnp_var_c_kernel;
 
 template <typename _DataType, typename _ResultType>
 void dpnp_var_c(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
+    void* array1_in, void* result1, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
 {
-    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size)
     {
         return;

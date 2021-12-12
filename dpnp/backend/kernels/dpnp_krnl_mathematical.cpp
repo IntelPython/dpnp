@@ -134,11 +134,11 @@ template <typename _DataType_output, typename _DataType_input1, typename _DataTy
 void dpnp_cross_c(void* result_out,
                   const void* input1_in,
                   const size_t input1_size,
-                  const size_t* input1_shape,
+                  const shape_elem_type* input1_shape,
                   const size_t input1_shape_ndim,
                   const void* input2_in,
                   const size_t input2_size,
-                  const size_t* input2_shape,
+                  const shape_elem_type* input2_shape,
                   const size_t input2_shape_ndim,
                   const size_t* where)
 {
@@ -227,11 +227,11 @@ template <typename _DataType_output, typename _DataType_input1, typename _DataTy
 void dpnp_floor_divide_c(void* result_out,
                          const void* input1_in,
                          const size_t input1_size,
-                         const size_t* input1_shape,
+                         const shape_elem_type* input1_shape,
                          const size_t input1_shape_ndim,
                          const void* input2_in,
                          const size_t input2_size,
-                         const size_t* input2_shape,
+                         const shape_elem_type* input2_shape,
                          const size_t input2_shape_ndim,
                          const size_t* where)
 {
@@ -248,7 +248,7 @@ void dpnp_floor_divide_c(void* result_out,
     _DataType_input2* input2_data = input2_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
-    std::vector<size_t> result_shape =
+    std::vector<shape_elem_type> result_shape =
         get_result_shape(input1_shape, input1_shape_ndim, input2_shape, input2_shape_ndim);
 
     DPNPC_id<_DataType_input1>* input1_it;
@@ -356,11 +356,11 @@ template <typename _DataType_output, typename _DataType_input1, typename _DataTy
 void dpnp_remainder_c(void* result_out,
                       const void* input1_in,
                       const size_t input1_size,
-                      const size_t* input1_shape,
+                      const shape_elem_type* input1_shape,
                       const size_t input1_shape_ndim,
                       const void* input2_in,
                       const size_t input2_size,
-                      const size_t* input2_shape,
+                      const shape_elem_type* input2_shape,
                       const size_t input2_shape_ndim,
                       const size_t* where)
 {
@@ -377,7 +377,7 @@ void dpnp_remainder_c(void* result_out,
     _DataType_input2* input2_data = input2_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
-    std::vector<size_t> result_shape =
+    std::vector<shape_elem_type> result_shape =
         get_result_shape(input1_shape, input1_shape_ndim, input2_shape, input2_shape_ndim);
 
     DPNPC_id<_DataType_input1>* input1_it;
@@ -489,7 +489,8 @@ void dpnp_trapz_c(
 
         event.wait();
 
-        dpnp_sum_c<_DataType_output, _DataType_output>(result, cur_res, &cur_res_size, 1, NULL, 0, NULL, NULL);
+        shape_elem_type _shape = cur_res_size;
+        dpnp_sum_c<_DataType_output, _DataType_output>(result, cur_res, &_shape, 1, NULL, 0, NULL, NULL);
 
         dpnp_memory_free_c(cur_res);
 
@@ -500,7 +501,8 @@ void dpnp_trapz_c(
     }
     else
     {
-        dpnp_sum_c<_DataType_output, _DataType_input1>(result, array1, &array1_size, 1, NULL, 0, NULL, NULL);
+        shape_elem_type _shape = array1_size;
+        dpnp_sum_c<_DataType_output, _DataType_input1>(result, array1, &_shape, 1, NULL, 0, NULL, NULL);
 
         result[0] -= (array1[0] + array1[array1_size - 1]) * 0.5;
         result[0] *= dx;

@@ -50,8 +50,8 @@ class dpnp_fft_fft_c_kernel;
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_fft_fft_sycl_c(const void* array1_in,
                          void* result1,
-                         const long* input_shape,
-                         const long* output_shape,
+                         const shape_elem_type* input_shape,
+                         const shape_elem_type* output_shape,
                          size_t shape_size,
                          const size_t result_size,
                          const size_t input_size,
@@ -78,8 +78,8 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
     // must be a thread local storage.
     long* axis_iterator = reinterpret_cast<long*>(dpnp_memory_alloc_c(result_size * shape_size * sizeof(long)));
 
-    get_shape_offsets_inkernel<long>(output_shape, shape_size, output_shape_offsets);
-    get_shape_offsets_inkernel<long>(input_shape, shape_size, input_shape_offsets);
+    get_shape_offsets_inkernel(output_shape, shape_size, output_shape_offsets);
+    get_shape_offsets_inkernel(input_shape, shape_size, input_shape_offsets);
 
     cl::sycl::range<1> gws(result_size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
@@ -244,8 +244,8 @@ void dpnp_fft_fft_mathlib_c(const void* array1_in,
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_fft_fft_c(const void* array1_in,
                     void* result1,
-                    const long* input_shape,
-                    const long* output_shape,
+                    const shape_elem_type* input_shape,
+                    const shape_elem_type* output_shape,
                     size_t shape_size,
                     long axis,
                     long input_boundarie,
@@ -257,8 +257,8 @@ void dpnp_fft_fft_c(const void* array1_in,
         return;
     }
 
-    const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
-    const size_t input_size = std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<size_t>());
+    const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<shape_elem_type>());
+    const size_t input_size = std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<shape_elem_type>());
 
     if (!input_size || !result_size || !array1_in || !result1)
     {

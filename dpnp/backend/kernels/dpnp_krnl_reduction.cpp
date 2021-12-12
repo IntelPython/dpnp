@@ -59,7 +59,7 @@ class dpnp_sum_c_kernel;
 template <typename _DataType_output, typename _DataType_input>
 void dpnp_sum_c(void* result_out,
                 const void* input_in,
-                const size_t* input_shape,
+                const shape_elem_type* input_shape,
                 const size_t input_shape_ndim,
                 const long* axes,
                 const size_t axes_ndim,
@@ -76,7 +76,7 @@ void dpnp_sum_c(void* result_out,
     const _DataType_output init = get_initial_value<_DataType_output>(initial, 0);
 
     const size_t input_size =
-        std::accumulate(input_shape, input_shape + input_shape_ndim, size_t(1), std::multiplies<size_t>());
+        std::accumulate(input_shape, input_shape + input_shape_ndim, 1, std::multiplies<shape_elem_type>());
 
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(input_in, input_size, true);
     _DataType_input* input = input1_ptr.get_ptr();
@@ -137,7 +137,7 @@ class dpnp_prod_c_kernel;
 template <typename _DataType_output, typename _DataType_input>
 void dpnp_prod_c(void* result_out,
                  const void* input_in,
-                 const size_t* input_shape,
+                 const shape_elem_type* input_shape,
                  const size_t input_shape_ndim,
                  const long* axes,
                  const size_t axes_ndim,
@@ -154,7 +154,7 @@ void dpnp_prod_c(void* result_out,
     const _DataType_output init = get_initial_value<_DataType_output>(initial, 1);
 
     const size_t input_size =
-        std::accumulate(input_shape, input_shape + input_shape_ndim, size_t(1), std::multiplies<size_t>());
+        std::accumulate(input_shape, input_shape + input_shape_ndim, 1, std::multiplies<shape_elem_type>());
 
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(input_in, input_size, true);
     _DataType_input* input = input1_ptr.get_ptr();
