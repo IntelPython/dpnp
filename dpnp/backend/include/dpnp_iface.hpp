@@ -736,7 +736,7 @@ template <typename _DataType>
 INP_DLLEXPORT void dpnp_max_c(void* array1_in,
                               void* result1,
                               const size_t result_size,
-                              const size_t* shape,
+                              const shape_elem_type* shape,
                               size_t ndim,
                               const size_t* axis,
                               size_t naxis);
@@ -769,7 +769,7 @@ INP_DLLEXPORT void
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void
-    dpnp_median_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+    dpnp_median_c(void* array, void* result, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -787,7 +787,7 @@ template <typename _DataType>
 INP_DLLEXPORT void dpnp_min_c(void* array,
                               void* result,
                               const size_t result_size,
-                              const size_t* shape,
+                              const shape_elem_type* shape,
                               size_t ndim,
                               const size_t* axis,
                               size_t naxis);
