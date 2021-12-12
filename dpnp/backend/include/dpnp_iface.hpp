@@ -612,7 +612,7 @@ INP_DLLEXPORT void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size
  * @param [in]  ndim    Number of elements in shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, shape_elem_type* shape, size_t ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -706,7 +706,7 @@ INP_DLLEXPORT void dpnp_initval_c(void* result1, void* value, size_t size);
  * @param [in]  ndim    Number of elements in shape.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+INP_DLLEXPORT void dpnp_inv_c(void* array1_in, void* result1, shape_elem_type* shape, size_t ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -718,7 +718,7 @@ INP_DLLEXPORT void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, siz
  * @param [in]  ndim    Number of elements in shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+INP_DLLEXPORT void dpnp_matrix_rank_c(void* array1_in, void* result1, shape_elem_type* shape, size_t ndim);
 
 /**
  * @ingroup BACKEND_API
