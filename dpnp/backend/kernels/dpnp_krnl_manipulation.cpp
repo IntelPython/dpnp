@@ -76,8 +76,8 @@ class dpnp_elemwise_transpose_c_kernel;
 
 template <typename _DataType>
 void dpnp_elemwise_transpose_c(void* array1_in,
-                               const size_t* input_shape,
-                               const size_t* result_shape,
+                               const shape_elem_type* input_shape,
+                               const shape_elem_type* result_shape,
                                const size_t* permute_axes,
                                size_t ndim,
                                void* result1,
@@ -93,13 +93,13 @@ void dpnp_elemwise_transpose_c(void* array1_in,
     _DataType* array1 = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    size_t* input_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    shape_elem_type* input_offset_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
     get_shape_offsets_inkernel(input_shape, ndim, input_offset_shape);
 
-    size_t* temp_result_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    shape_elem_type* temp_result_offset_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
     get_shape_offsets_inkernel(result_shape, ndim, temp_result_offset_shape);
 
-    size_t* result_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    shape_elem_type* result_offset_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
     for (size_t axis = 0; axis < ndim; ++axis)
     {
         result_offset_shape[permute_axes[axis]] = temp_result_offset_shape[axis];

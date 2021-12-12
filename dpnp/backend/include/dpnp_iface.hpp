@@ -1140,8 +1140,8 @@ INP_DLLEXPORT void dpnp_repeat_c(const void* array_in, void* result, const size_
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
-                                             const size_t* input_shape,
-                                             const size_t* result_shape,
+                                             const shape_elem_type* input_shape,
+                                             const shape_elem_type* result_shape,
                                              const size_t* permute_axes,
                                              size_t ndim,
                                              void* result1,
