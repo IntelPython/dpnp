@@ -297,18 +297,18 @@ template <typename _DataType_output, typename _DataType_input1, typename _DataTy
 INP_DLLEXPORT void dpnp_dot_c(void* result_out,
                               const size_t result_size,
                               const size_t result_ndim,
-                              const size_t* result_shape,
-                              const size_t* result_strides,
+                              const shape_elem_type* result_shape,
+                              const shape_elem_type* result_strides,
                               const void* input1_in,
                               const size_t input1_size,
                               const size_t input1_ndim,
-                              const size_t* input1_shape,
-                              const size_t* input1_strides,
+                              const shape_elem_type* input1_shape,
+                              const shape_elem_type* input1_strides,
                               const void* input2_in,
                               const size_t input2_size,
                               const size_t input2_ndim,
-                              const size_t* input2_shape,
-                              const size_t* input2_strides);
+                              const shape_elem_type* input2_shape,
+                              const shape_elem_type* input2_strides);
 
 /**
  * @ingroup BACKEND_API
@@ -384,7 +384,7 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
 template <typename _DataType_output, typename _DataType_input>
 INP_DLLEXPORT void dpnp_sum_c(void* result_out,
                               const void* input_in,
-                              const size_t* input_shape,
+                              const shape_elem_type* input_shape,
                               const size_t input_shape_ndim,
                               const long* axes,
                               const size_t axes_ndim,
@@ -452,7 +452,7 @@ INP_DLLEXPORT void dpnp_place_c(void* arr, long* mask, void* vals, const size_t 
 template <typename _DataType_output, typename _DataType_input>
 INP_DLLEXPORT void dpnp_prod_c(void* result_out,
                                const void* input_in,
-                               const size_t* input_shape,
+                               const shape_elem_type* input_shape,
                                const size_t input_shape_ndim,
                                const long* axes,
                                const size_t axes_ndim,
@@ -582,11 +582,11 @@ template <typename _DataType_output, typename _DataType_input1, typename _DataTy
 INP_DLLEXPORT void dpnp_correlate_c(void* result_out,
                                     const void* input1_in,
                                     const size_t input1_size,
-                                    const size_t* input1_shape,
+                                    const shape_elem_type* input1_shape,
                                     const size_t input1_shape_ndim,
                                     const void* input2_in,
                                     const size_t input2_size,
-                                    const size_t* input2_shape,
+                                    const shape_elem_type* input2_shape,
                                     const size_t input2_shape_ndim,
                                     const size_t* where);
 
@@ -754,7 +754,7 @@ INP_DLLEXPORT void dpnp_max_c(void* array1_in,
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void
-    dpnp_mean_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+    dpnp_mean_c(void* array, void* result, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -840,7 +840,7 @@ INP_DLLEXPORT void dpnp_around_c(const void* input_in, void* result_out, const s
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void dpnp_std_c(
-    void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+    void* array, void* result, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
 
 /**
  * @ingroup BACKEND_API
@@ -925,7 +925,7 @@ INP_DLLEXPORT void dpnp_triu_c(
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void dpnp_var_c(
-    void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+    void* array, void* result, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
 
 /**
  * @ingroup BACKEND_API
@@ -964,13 +964,13 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
     INP_DLLEXPORT void __name__(void* result_out,                                                                      \
                                 const size_t result_size,                                                              \
                                 const size_t result_ndim,                                                              \
-                                const size_t* result_shape,                                                            \
-                                const size_t* result_strides,                                                          \
+                                const shape_elem_type* result_shape,                                                   \
+                                const shape_elem_type* result_strides,                                                 \
                                 const void* input1_in,                                                                 \
                                 const size_t input1_size,                                                              \
                                 const size_t input1_ndim,                                                              \
-                                const size_t* input1_shape,                                                            \
-                                const size_t* input1_strides,                                                          \
+                                const shape_elem_type* input1_shape,                                                   \
+                                const shape_elem_type* input1_strides,                                                 \
                                 const size_t* where);
 
 #include <dpnp_gen_1arg_1type_tbl.hpp>
@@ -980,13 +980,13 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
     INP_DLLEXPORT void __name__(void* result_out,                                                                      \
                                 const size_t result_size,                                                              \
                                 const size_t result_ndim,                                                              \
-                                const size_t* result_shape,                                                            \
-                                const size_t* result_strides,                                                          \
+                                const shape_elem_type* result_shape,                                                   \
+                                const shape_elem_type* result_strides,                                                 \
                                 const void* input1_in,                                                                 \
                                 const size_t input1_size,                                                              \
                                 const size_t input1_ndim,                                                              \
-                                const size_t* input1_shape,                                                            \
-                                const size_t* input1_strides,                                                          \
+                                const shape_elem_type* input1_shape,                                                   \
+                                const shape_elem_type* input1_strides,                                                 \
                                 const size_t* where);
 
 #include <dpnp_gen_1arg_2type_tbl.hpp>
@@ -996,18 +996,18 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
     INP_DLLEXPORT void __name__(void* result_out,                                                                      \
                                 const size_t result_size,                                                              \
                                 const size_t result_ndim,                                                              \
-                                const size_t* result_shape,                                                            \
-                                const size_t* result_strides,                                                          \
+                                const shape_elem_type* result_shape,                                                   \
+                                const shape_elem_type* result_strides,                                                 \
                                 const void* input1_in,                                                                 \
                                 const size_t input1_size,                                                              \
                                 const size_t input1_ndim,                                                              \
-                                const size_t* input1_shape,                                                            \
-                                const size_t* input1_strides,                                                          \
+                                const shape_elem_type* input1_shape,                                                   \
+                                const shape_elem_type* input1_strides,                                                 \
                                 const void* input2_in,                                                                 \
                                 const size_t input2_size,                                                              \
                                 const size_t input2_ndim,                                                              \
-                                const size_t* input2_shape,                                                            \
-                                const size_t* input2_strides,                                                          \
+                                const shape_elem_type* input2_shape,                                                   \
+                                const shape_elem_type* input2_strides,                                                 \
                                 const size_t* where);
 
 #include <dpnp_gen_2arg_3type_tbl.hpp>
@@ -1045,11 +1045,11 @@ template <typename _DataType_input1, typename _DataType_input2, typename _DataTy
 INP_DLLEXPORT void dpnp_floor_divide_c(void* result_out,
                                        const void* input1_in,
                                        const size_t input1_size,
-                                       const size_t* input1_shape,
+                                       const shape_elem_type* input1_shape,
                                        const size_t input1_shape_ndim,
                                        const void* input2_in,
                                        const size_t input2_size,
-                                       const size_t* input2_shape,
+                                       const shape_elem_type* input2_shape,
                                        const size_t input2_shape_ndim,
                                        const size_t* where);
 
@@ -1106,11 +1106,11 @@ template <typename _DataType_output, typename _DataType_input1, typename _DataTy
 INP_DLLEXPORT void dpnp_remainder_c(void* result_out,
                                     const void* input1_in,
                                     const size_t input1_size,
-                                    const size_t* input1_shape,
+                                    const shape_elem_type* input1_shape,
                                     const size_t input1_shape_ndim,
                                     const void* input2_in,
                                     const size_t input2_size,
-                                    const size_t* input2_shape,
+                                    const shape_elem_type* input2_shape,
                                     const size_t input2_shape_ndim,
                                     const size_t* where);
 
