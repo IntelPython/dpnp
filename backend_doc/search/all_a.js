@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['set_5faxes_365',['set_axes',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572',1,'DPNPC_id']]],
-  ['set_5faxis_366',['set_axis',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga743bcd47e85667e5f238b99478c54d0f',1,'DPNPC_id']]]
+  ['set_5faxes_365',['set_axes',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga87a0b53a5ae1b69762f201cd6521e210',1,'DPNPC_id']]],
+  ['set_5faxis_366',['set_axis',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae4294907d97ba7d7a630d5097b435d0a',1,'DPNPC_id']]]
 ];
