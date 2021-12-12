@@ -331,11 +331,11 @@ template <typename _DataType_output, typename _DataType_input1, typename _DataTy
 INP_DLLEXPORT void dpnp_cross_c(void* result_out,
                                 const void* input1_in,
                                 const size_t input1_size,
-                                const size_t* input1_shape,
+                                const shape_elem_type* input1_shape,
                                 const size_t input1_shape_ndim,
                                 const void* input2_in,
                                 const size_t input2_size,
-                                const size_t* input2_shape,
+                                const shape_elem_type* input2_shape,
                                 const size_t input2_shape_ndim,
                                 const size_t* where);
 
