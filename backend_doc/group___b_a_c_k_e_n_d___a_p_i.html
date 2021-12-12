@@ -425,10 +425,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ga4319057b673e3d4d6d3840c28b95da51"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4319057b673e3d4d6d3840c28b95da51">dpnp_count_nonzero_c</a> (void *array1_in, void *result1_out, size_t size)</td></tr>
 <tr class="memdesc:ga4319057b673e3d4d6d3840c28b95da51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom implementation of count_nonzero function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga4319057b673e3d4d6d3840c28b95da51">More...</a><br /></td></tr>
 <tr class="separator:ga4319057b673e3d4d6d3840c28b95da51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3987131bde824eff1c752fff3e340138"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga3987131bde824eff1c752fff3e340138"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga3987131bde824eff1c752fff3e340138">dpnp_partition_c</a> (void *array, void *array2, void *result, const size_t kth, const size_t *shape, const size_t ndim)</td></tr>
-<tr class="memdesc:ga3987131bde824eff1c752fff3e340138"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga3987131bde824eff1c752fff3e340138">More...</a><br /></td></tr>
-<tr class="separator:ga3987131bde824eff1c752fff3e340138"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6c4d9f9cf9c44e8d0b11b4ef2e843d5c"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga6c4d9f9cf9c44e8d0b11b4ef2e843d5c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga6c4d9f9cf9c44e8d0b11b4ef2e843d5c">dpnp_partition_c</a> (void *array, void *array2, void *result, const size_t kth, const shape_elem_type *shape, const size_t ndim)</td></tr>
+<tr class="memdesc:ga6c4d9f9cf9c44e8d0b11b4ef2e843d5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga6c4d9f9cf9c44e8d0b11b4ef2e843d5c">More...</a><br /></td></tr>
+<tr class="separator:ga6c4d9f9cf9c44e8d0b11b4ef2e843d5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga689c9f491f7645d86953db3968146d12"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga689c9f491f7645d86953db3968146d12"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12">dpnp_place_c</a> (void *arr, long *mask, void *vals, const size_t arr_size, const size_t vals_size)</td></tr>
 <tr class="memdesc:ga689c9f491f7645d86953db3968146d12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12">More...</a><br /></td></tr>
@@ -8420,8 +8420,8 @@ template&lt;typename _DataType &gt; </div>
 
 </div>
 </div>
-<a id="ga3987131bde824eff1c752fff3e340138"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga3987131bde824eff1c752fff3e340138">&#9670;&nbsp;</a></span>dpnp_partition_c()</h2>
+<a id="ga6c4d9f9cf9c44e8d0b11b4ef2e843d5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6c4d9f9cf9c44e8d0b11b4ef2e843d5c">&#9670;&nbsp;</a></span>dpnp_partition_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -8455,7 +8455,7 @@ template&lt;typename _DataType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
           <td class="paramname"><em>shape</em>, </td>
         </tr>
         <tr>

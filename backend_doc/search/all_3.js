@@ -254,7 +254,7 @@ var searchData=
   ['dpnp_5fnonzero_5fc_264',['dpnp_nonzero_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gacfefd38d61684072ee26c18209b04520',1,'dpnp_iface.hpp']]],
   ['dpnp_5fones_5fc_265',['dpnp_ones_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gaa4b0f8fc56a6778a53df6e68e1acbe4b',1,'dpnp_iface.hpp']]],
   ['dpnp_5fones_5flike_5fc_266',['dpnp_ones_like_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga5e720c1b06f6adfc11d373394d5b5f10',1,'dpnp_iface.hpp']]],
-  ['dpnp_5fpartition_5fc_267',['dpnp_partition_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga3987131bde824eff1c752fff3e340138',1,'dpnp_iface.hpp']]],
+  ['dpnp_5fpartition_5fc_267',['dpnp_partition_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga6c4d9f9cf9c44e8d0b11b4ef2e843d5c',1,'dpnp_iface.hpp']]],
   ['dpnp_5fplace_5fc_268',['dpnp_place_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12',1,'dpnp_iface.hpp']]],
   ['dpnp_5fpower_5fc_269',['dpnp_power_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gad246f1f86828ffd48526a0a1d68c5f0c',1,'dpnp_gen_2arg_3type_tbl.hpp']]],
   ['dpnp_5fprod_5fc_270',['dpnp_prod_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga566cf340212ba54ae39dc5c6101bd58e',1,'dpnp_iface.hpp']]],
