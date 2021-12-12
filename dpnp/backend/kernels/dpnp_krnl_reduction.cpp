@@ -61,7 +61,7 @@ void dpnp_sum_c(void* result_out,
                 const void* input_in,
                 const shape_elem_type* input_shape,
                 const size_t input_shape_ndim,
-                const long* axes,
+                const shape_elem_type* axes,
                 const size_t axes_ndim,
                 const void* initial, // type must be _DataType_output
                 const long* where)
@@ -139,7 +139,7 @@ void dpnp_prod_c(void* result_out,
                  const void* input_in,
                  const shape_elem_type* input_shape,
                  const size_t input_shape_ndim,
-                 const long* axes,
+                 const shape_elem_type* axes,
                  const size_t axes_ndim,
                  const void* initial, // type must be _DataType_output
                  const long* where)
