@@ -230,10 +230,10 @@ elseif(WIN32)
 # -DMKL_ILP64 -I"%MKLROOT%\include"
 # mkl_sycl_dll.lib mkl_intel_ilp64_dll.lib mkl_sequential_dll.lib mkl_core_dll.lib sycl.lib OpenCL.lib
   set(DPNP_MATHLIB_DEP_LIBS
-      mkl_sycl        # _dll
-      mkl_intel_ilp64 # _dll
-      mkl_sequential  # _dll
-      mkl_core        # _dll
+      mkl_sycl_dll
+      mkl_intel_ilp64_dll
+      mkl_tbb_thread_dll # mkl_sequential_dll
+      mkl_core_dll
       sycl
       OpenCL
       CACHE STRING "Set of libraries to link")

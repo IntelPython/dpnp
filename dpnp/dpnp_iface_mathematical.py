@@ -181,8 +181,8 @@ def add(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -277,7 +277,7 @@ def ceil(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
         return dpnp_ceil(x1_desc, out_desc).get_pyobj()
@@ -307,9 +307,9 @@ def conjugate(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
-        return dpnp_conjugate(x1_desc)
+        return dpnp_conjugate(x1_desc).get_pyobj()
 
     return call_origin(numpy.conjugate, x1, **kwargs)
 
@@ -359,8 +359,8 @@ def copysign(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -501,7 +501,7 @@ def cumsum(x1, **kwargs):
     return call_origin(numpy.cumsum, x1, **kwargs)
 
 
-def diff(x1, n=1, axis=-1, prepend=None, append=None):
+def diff(x1, n=1, axis=-1, prepend=numpy._NoValue, append=numpy._NoValue):
     """
     Calculate the n-th discrete difference along the given axis.
 
@@ -520,6 +520,8 @@ def diff(x1, n=1, axis=-1, prepend=None, append=None):
             pass
         elif n < 1:
             pass
+        elif x1_desc.ndim != 1:
+            pass
         elif axis != -1:
             pass
         elif prepend is not None:
@@ -527,9 +529,9 @@ def diff(x1, n=1, axis=-1, prepend=None, append=None):
         elif append is not None:
             pass
         else:
-            return dpnp_diff(x1_desc, n)
+            return dpnp_diff(x1_desc, n).get_pyobj()
 
-    return call_origin(numpy.diff, x1, n, axis, prepend, append)
+    return call_origin(numpy.diff, x1, n=n, axis=axis, prepend=prepend, append=append)
 
 
 def divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -557,8 +559,8 @@ def divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -648,7 +650,7 @@ def fabs(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
         return dpnp_fabs(x1_desc).get_pyobj()
 
@@ -688,7 +690,7 @@ def floor(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
         return dpnp_floor(x1_desc, out_desc).get_pyobj()
@@ -837,8 +839,8 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -937,8 +939,8 @@ def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -994,8 +996,8 @@ def minimum(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -1098,8 +1100,8 @@ def multiply(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
 
     if x1_desc and x2_desc and not kwargs:
         if not x2_desc and not x2_is_scalar:
@@ -1281,7 +1283,7 @@ def negative(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         return dpnp_negative(x1_desc).get_pyobj()
 
@@ -1322,8 +1324,8 @@ def power(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -1486,7 +1488,7 @@ def sign(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         return dpnp_sign(x1_desc).get_pyobj()
 
@@ -1518,8 +1520,9 @@ def subtract(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
+
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
             pass
@@ -1677,7 +1680,7 @@ def trunc(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
         return dpnp_trunc(x1_desc, out_desc).get_pyobj()
