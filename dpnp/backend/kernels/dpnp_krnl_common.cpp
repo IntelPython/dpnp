@@ -664,23 +664,39 @@ void dpnp_matmul_c(void* result_out,
                              &DPNP_QUEUE);
 }
 
-template void dpnp_matmul_c<int>(void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
-                                 const void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
-                                 const void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*);
-template void dpnp_matmul_c<long>(void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
-                                  const void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
-                                  const void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*);
-template void dpnp_matmul_c<float>(void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
-                                   const void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
-                                   const void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*);
-template void dpnp_matmul_c<double>(void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
-                                    const void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
-                                    const void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*);
+template <typename _DataType>
+void (*dpnp_matmul_default_c)(void*,
+                              const size_t,
+                              const size_t,
+                              const shape_elem_type*,
+                              const shape_elem_type*,
+                              const void*,
+                              const size_t,
+                              const size_t,
+                              const shape_elem_type*,
+                              const shape_elem_type*,
+                              const void*,
+                              const size_t,
+                              const size_t,
+                              const shape_elem_type*,
+                              const shape_elem_type*) = dpnp_matmul_c<_DataType>;
 
 template <typename _DataType>
-void (*dpnp_matmul_ext_c)(void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
-                          const void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
-                          const void*, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
+void (*dpnp_matmul_ext_c)(void*,
+                          const size_t,
+                          const size_t,
+                          const shape_elem_type*,
+                          const shape_elem_type*,
+                          const void*,
+                          const size_t,
+                          const size_t,
+                          const shape_elem_type*,
+                          const shape_elem_type*,
+                          const void*,
+                          const size_t,
+                          const size_t,
+                          const shape_elem_type*,
+                          const shape_elem_type*,
                           void*) = dpnp_matmul_c<_DataType>;
 
 void func_map_init_linalg(func_map_t& fmap)
@@ -748,10 +764,15 @@ void func_map_init_linalg(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_initval_c<double>};
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_initval_c<std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matmul_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matmul_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_default_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matmul_default_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matmul_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_MATMUL_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_ext_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_ext_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matmul_ext_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matmul_ext_c<double>};
 
     return;
 }

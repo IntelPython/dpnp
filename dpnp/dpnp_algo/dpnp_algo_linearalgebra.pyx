@@ -272,7 +272,7 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL, param1_type, param2_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL_EXT, param1_type, param2_type)
 
     # ceate result array with type given by FPTR data
     result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(in_array1, in_array2)
