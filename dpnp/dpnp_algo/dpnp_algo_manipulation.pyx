@@ -47,8 +47,8 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , size_t * , size_t * ,
-                                                          size_t * , size_t, void * , size_t)
+ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , shape_elem_type * , shape_elem_type * ,
+                                                          shape_elem_type * , size_t, void * , size_t)
 ctypedef void(*fptr_dpnp_repeat_t)(const void *, void * , const size_t , const size_t)
 
 
@@ -206,8 +206,8 @@ cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=No
 
     cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
     # call FPTR function
-    func(array1.get_data(), < size_t * > input_shape.data(), < size_t * > result_shape.data(),
-         < size_t * > permute_axes.data(), input_shape_size, result.get_data(), array1.size)
+    func(array1.get_data(), input_shape.data(), result_shape.data(),
+         permute_axes.data(), input_shape_size, result.get_data(), array1.size)
 
     return result
 
