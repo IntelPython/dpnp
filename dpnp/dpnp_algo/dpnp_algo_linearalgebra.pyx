@@ -44,13 +44,20 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , size_t * , size_t * , size_t * , size_t)
-ctypedef void(*fptr_2in_1out_dot_t)(void *, const size_t, const size_t, const long * , const long * ,
-                                    void *, const size_t, const size_t, const long * , const long * ,
-                                    void *, const size_t, const size_t, const long * , const long * )
-ctypedef void(*fptr_2in_1out_matmul_t)(void *, const size_t, const size_t, const long * , const long * ,
-                                       void *, const size_t, const size_t, const long * , const long * ,
-                                       void *, const size_t, const size_t, const long * , const long * ,
+ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , shape_elem_type * ,
+                                       shape_elem_type * , shape_elem_type * , size_t)
+ctypedef void(*fptr_2in_1out_dot_t)(void *, const size_t, const size_t,
+                                    const shape_elem_type * , const shape_elem_type * ,
+                                    void *, const size_t, const size_t,
+                                    const shape_elem_type * , const shape_elem_type * ,
+                                    void *, const size_t, const size_t,
+                                    const shape_elem_type * , const shape_elem_type * )
+ctypedef void(*fptr_2in_1out_matmul_t)(void *, const size_t, const size_t,
+                                       const shape_elem_type * , const shape_elem_type * ,
+                                       void *, const size_t, const size_t,
+                                       const shape_elem_type * , const shape_elem_type * ,
+                                       void *, const size_t, const size_t,
+                                       const shape_elem_type * , const shape_elem_type * ,
                                        void *)
 
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
@@ -212,7 +219,7 @@ cpdef utils.dpnp_descriptor dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor
 
     cdef fptr_2in_1out_shapes_t func = <fptr_2in_1out_shapes_t > kernel_data.ptr
     # call FPTR function
-    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), < size_t * > in_array1_shape.data(), < size_t * > in_array2_shape.data(), < size_t * > result_shape.data(), ndim)
+    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), in_array1_shape.data(), in_array2_shape.data(), result_shape.data(), ndim)
 
     return result
 

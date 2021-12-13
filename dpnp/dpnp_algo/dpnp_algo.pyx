@@ -76,8 +76,10 @@ include "dpnp_algo_trigonometric.pyx"
 
 ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void *, size_t)
 ctypedef void(*fptr_dpnp_astype_t)(const void *, void * , const size_t)
-ctypedef void(*fptr_dpnp_flatten_t)(void *, const size_t, const size_t, const long * , const long * ,
-                                    void *, const size_t, const size_t, const long * , const long * ,
+ctypedef void(*fptr_dpnp_flatten_t)(void *, const size_t, const size_t,
+                                    const shape_elem_type * , const shape_elem_type * ,
+                                    void *, const size_t, const size_t,
+                                    const shape_elem_type * , const shape_elem_type * ,
                                     const long * )
 ctypedef void(*fptr_dpnp_initval_t)(void *, void * , size_t)
 
