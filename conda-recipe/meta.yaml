@@ -17,6 +17,7 @@ requirements:
       - wheel
     build:
       - {{ compiler('dpcpp') }}
+      - dpl-include
     run:
       - python
       - dpctl >=0.10
