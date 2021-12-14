@@ -21,7 +21,6 @@ requirements:
       - python
       - dpctl >=0.10
       - dpcpp_cpp_rt >=2021.1.1
-      - mkl >=2021.1.1
       - mkl-dpcpp >=2021.1.1
       - numpy >=1.15
 
