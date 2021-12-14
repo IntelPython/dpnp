@@ -56,7 +56,7 @@ __all__ = [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , size_t * , size_t)
+ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , shape_elem_type * , size_t)
 ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void * , void * , size_t * )
 ctypedef void(*custom_linalg_1in_1out_with_size_func_ptr_t_)(void *, void * , size_t)
 ctypedef void(*custom_linalg_1in_1out_with_2size_func_ptr_t_)(void *, void * , size_t, size_t)
@@ -126,7 +126,7 @@ cpdef utils.dpnp_descriptor dpnp_det(utils.dpnp_descriptor input):
 
     cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
 
-    func(input.get_data(), result.get_data(), < size_t * > input_shape.data(), input.ndim)
+    func(input.get_data(), result.get_data(), input_shape.data(), input.ndim)
 
     return result
 
@@ -181,7 +181,7 @@ cpdef utils.dpnp_descriptor dpnp_inv(utils.dpnp_descriptor input):
 
     cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
 
-    func(input.get_data(), result.get_data(), < size_t * > input_shape.data(), input.ndim)
+    func(input.get_data(), result.get_data(), input_shape.data(), input.ndim)
 
     return result
 
@@ -197,7 +197,7 @@ cpdef utils.dpnp_descriptor dpnp_matrix_rank(utils.dpnp_descriptor input):
 
     cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
 
-    func(input.get_data(), result.get_data(), < size_t * > input_shape.data(), input.ndim)
+    func(input.get_data(), result.get_data(), input_shape.data(), input.ndim)
 
     return result
 

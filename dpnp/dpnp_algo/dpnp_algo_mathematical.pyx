@@ -437,7 +437,7 @@ cpdef utils.dpnp_descriptor dpnp_prod(utils.dpnp_descriptor input,
     cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
 
     """ Call FPTR interface function """
-    func(result.get_data(), input.get_data(), < size_t * >input_shape.data(), input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
+    func(result.get_data(), input.get_data(), input_shape.data(), input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
 
     return result
 
@@ -486,7 +486,7 @@ cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor input,
 
     """ Call FPTR interface function """
     cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
-    func(result.get_data(), input.get_data(), < size_t * >input_shape.data(), input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
+    func(result.get_data(), input.get_data(), input_shape.data(), input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
 
     return result
 

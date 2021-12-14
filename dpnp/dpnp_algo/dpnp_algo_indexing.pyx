@@ -57,13 +57,15 @@ __all__ += [
 ctypedef void(*fptr_dpnp_choose_t)(void * , void * , void ** , size_t, size_t, size_t)
 ctypedef void(*fptr_dpnp_diag_indices)(void *, size_t)
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void * , const size_t, void * , void * , size_t)
-ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void *, const size_t, void * , const size_t, size_t * , size_t * , const size_t)
-ctypedef void(*custom_indexing_2in_func_ptr_t)(void * , void * , size_t * , const size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void *, const size_t, void * , const size_t, shape_elem_type * ,
+                                                     shape_elem_type * , const size_t)
+ctypedef void(*custom_indexing_2in_func_ptr_t)(void * , void * , shape_elem_type * , const size_t)
 ctypedef void(*custom_indexing_3in_func_ptr_t)(void *, void * , void * , const size_t, const size_t)
-ctypedef void(*custom_indexing_3in_with_axis_func_ptr_t)(void *, void * , void * , const size_t, size_t * , const size_t,
-                                                         const size_t, const size_t,)
+ctypedef void(*custom_indexing_3in_with_axis_func_ptr_t)(void *, void * , void * , const size_t, shape_elem_type * ,
+                                                         const size_t, const size_t, const size_t,)
 ctypedef void(*custom_indexing_6in_func_ptr_t)(void * , void * , void * , const size_t, const size_t, const size_t)
-ctypedef void(*fptr_dpnp_nonzero_t)(const void *, void * , const size_t, const size_t * , const size_t , const size_t)
+ctypedef void(*fptr_dpnp_nonzero_t)(const void *, void * , const size_t, const shape_elem_type * , const size_t ,
+                                    const size_t)
 
 
 cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor input, list choices1):
@@ -149,8 +151,8 @@ cpdef utils.dpnp_descriptor dpnp_diagonal(dpnp_descriptor input, offset=0):
          input.size,
          result.get_data(),
          offset,
-         < size_t * > input_shape.data(),
-         < size_t * > result_shape.data(),
+         input_shape.data(),
+         result_shape.data(),
          res_ndim)
 
     return result
@@ -167,7 +169,7 @@ cpdef dpnp_fill_diagonal(dpnp_descriptor input, val):
 
     cdef custom_indexing_2in_func_ptr_t func = <custom_indexing_2in_func_ptr_t > kernel_data.ptr
 
-    func(input.get_data(), val_arr.get_data(), < size_t * > input_shape.data(), input.ndim)
+    func(input.get_data(), val_arr.get_data(), input_shape.data(), input.ndim)
 
 
 cpdef object dpnp_indices(dimensions):
@@ -232,7 +234,7 @@ cpdef tuple dpnp_nonzero(utils.dpnp_descriptor in_array1):
                                                        usm_type=array1_obj.usm_type,
                                                        sycl_queue=array1_obj.sycl_queue)
 
-        func(in_array1.get_data(), res_arr.get_data(), res_arr.size, < size_t * > shape_arr.data(), in_array1.ndim, j)
+        func(in_array1.get_data(), res_arr.get_data(), res_arr.size, shape_arr.data(), in_array1.ndim, j)
 
         res_list.append(res_arr.get_pyobj())
 
@@ -299,7 +301,7 @@ cpdef dpnp_put_along_axis(dpnp_descriptor arr, dpnp_descriptor indices, dpnp_des
 
     cdef custom_indexing_3in_with_axis_func_ptr_t func = <custom_indexing_3in_with_axis_func_ptr_t > kernel_data.ptr
 
-    func(arr.get_data(), indices.get_data(), values.get_data(), axis, < size_t * > arr_shape.data(), arr.ndim, indices.size, values.size)
+    func(arr.get_data(), indices.get_data(), values.get_data(), axis, arr_shape.data(), arr.ndim, indices.size, values.size)
 
 
 cpdef dpnp_putmask(utils.dpnp_descriptor arr, utils.dpnp_descriptor mask, utils.dpnp_descriptor values):
