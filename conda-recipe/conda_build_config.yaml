@@ -4,3 +4,9 @@ mkl_dpcpp:
 pin_run_as_build:
     mkl-dpcpp:
       max_pin: x.x
+
+dpcpp_linux_64:
+  - 2021.4
+
+dpl_include:
+  - 2021.4
