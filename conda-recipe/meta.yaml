@@ -12,7 +12,7 @@ requirements:
       - cython
       - cmake 3.19
       - dpctl >=0.10
-      - mkl-devel-dpcpp
+      - mkl-devel-dpcpp {{ mkl_dpcpp }}
       - tbb-devel
       - wheel
     build:
