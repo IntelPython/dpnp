@@ -44,10 +44,14 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , size_t * , size_t * , size_t * , size_t)
-ctypedef void(*fptr_2in_1out_dot_t)(void *, const size_t, const size_t, const long * , const long * ,
-                                    void *, const size_t, const size_t, const long * , const long * ,
-                                    void *, const size_t, const size_t, const long * , const long * )
+ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , shape_elem_type * ,
+                                       shape_elem_type * , shape_elem_type * , size_t)
+ctypedef void(*fptr_2in_1out_dot_t)(void *, const size_t, const size_t,
+                                    const shape_elem_type * , const shape_elem_type * ,
+                                    void *, const size_t, const size_t,
+                                    const shape_elem_type * , const shape_elem_type * ,
+                                    void *, const size_t, const size_t,
+                                    const shape_elem_type * , const shape_elem_type * )
 
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
 
@@ -208,7 +212,7 @@ cpdef utils.dpnp_descriptor dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor
 
     cdef fptr_2in_1out_shapes_t func = <fptr_2in_1out_shapes_t > kernel_data.ptr
     # call FPTR function
-    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), < size_t * > in_array1_shape.data(), < size_t * > in_array2_shape.data(), < size_t * > result_shape.data(), ndim)
+    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), in_array1_shape.data(), in_array2_shape.data(), result_shape.data(), ndim)
 
     return result
 
@@ -264,7 +268,13 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL, param1_type, param2_type)
 
     # ceate result array with type given by FPTR data
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_result, kernel_data.return_type, out)
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(in_array1, in_array2)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_result,
+                                                                       kernel_data.return_type,
+                                                                       out,
+                                                                       device=result_sycl_device,
+                                                                       usm_type=result_usm_type,
+                                                                       sycl_queue=result_sycl_queue)
     if result.size == 0:
         return result
 
