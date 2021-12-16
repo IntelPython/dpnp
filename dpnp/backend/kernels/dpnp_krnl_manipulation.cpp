@@ -78,7 +78,7 @@ template <typename _DataType>
 void dpnp_elemwise_transpose_c(void* array1_in,
                                const shape_elem_type* input_shape,
                                const shape_elem_type* result_shape,
-                               const size_t* permute_axes,
+                               const shape_elem_type* permute_axes,
                                size_t ndim,
                                void* result1,
                                size_t size)
