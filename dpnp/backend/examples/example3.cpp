@@ -57,7 +57,13 @@ int main(int, char**)
     }
     std::cout << std::endl;
 
-    dpnp_cos_c<int, double>(array1, result, size);
+    const long ndim = 1;
+    long* shape = reinterpret_cast<long*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    shape[0] = size;
+    long* strides = reinterpret_cast<long*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    strides[0] = 1;
+
+    dpnp_cos_c<int, double>(result, size, ndim, shape, strides, array1, size, ndim, shape, strides, NULL);
 
     for (size_t i = 0; i < 10; ++i)
     {
