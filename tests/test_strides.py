@@ -35,7 +35,10 @@ def test_strides(func_name, type):
 
 
 @pytest.mark.parametrize("func_name",
-                         ["copy", "conjugate", "negative", "sign", "square"])
+                         ["arccos", "arccosh", "arcsin", "arcsinh", "arctan", "arctanh", "cbrt", "ceil", "copy", "cos",
+                          "cosh", "conjugate", "degrees", "ediff1d", "exp", "exp2", "expm1", "fabs", "floor", "log",
+                          "log10", "log1p", "log2", "negative", "radians", "sign", "sin", "sinh", "sqrt", "square",
+                          "tanh", "trunc"])
 @pytest.mark.parametrize("dtype",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=["float64", "float32", "int64", "int32"])
@@ -101,6 +104,25 @@ def test_strides_reciprocal(dtype, shape):
     numpy.testing.assert_allclose(result, expected, rtol=1e-06)
 
 
+@pytest.mark.parametrize("dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("shape",
+                         [(10,)],
+                         ids=["(10,)"])
+def test_strides_tan(dtype, shape):
+    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+    b = a[::2]
+
+    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
+    dpb = dpa[::2]
+
+    result = dpnp.tan(dpb)
+    expected = numpy.tan(b)
+
+    numpy.testing.assert_allclose(result, expected, rtol=1e-06)
+
+
 @pytest.mark.parametrize("func_name",
                          ["add", "arctan2", "hypot", "maximum", "minimum", "multiply", "power", "subtract"])
 @pytest.mark.parametrize("dtype",
@@ -160,7 +182,7 @@ def test_strides_copysign(dtype, shape):
     b = -a.T
 
     dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
-    dpb = -dpa.T
+    dpb = dpnp.negative(dpa.T)
 
     result = dpnp.copysign(dpa, dpb)
     expected = numpy.copysign(a, b)

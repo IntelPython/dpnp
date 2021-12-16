@@ -101,7 +101,7 @@ def abs(*args, **kwargs):
 
     Notes
     -----
-    "obj:`dpnp.abs` is a shorthand for :obj:`dpnp.absolute`.
+    :obj:`dpnp.abs` is a shorthand for :obj:`dpnp.absolute`.
 
     Examples
     --------
@@ -277,7 +277,7 @@ def ceil(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
         return dpnp_ceil(x1_desc, out_desc).get_pyobj()
@@ -501,7 +501,7 @@ def cumsum(x1, **kwargs):
     return call_origin(numpy.cumsum, x1, **kwargs)
 
 
-def diff(x1, n=1, axis=-1, prepend=None, append=None):
+def diff(x1, n=1, axis=-1, prepend=numpy._NoValue, append=numpy._NoValue):
     """
     Calculate the n-th discrete difference along the given axis.
 
@@ -520,6 +520,8 @@ def diff(x1, n=1, axis=-1, prepend=None, append=None):
             pass
         elif n < 1:
             pass
+        elif x1_desc.ndim != 1:
+            pass
         elif axis != -1:
             pass
         elif prepend is not None:
@@ -527,9 +529,9 @@ def diff(x1, n=1, axis=-1, prepend=None, append=None):
         elif append is not None:
             pass
         else:
-            return dpnp_diff(x1_desc, n)
+            return dpnp_diff(x1_desc, n).get_pyobj()
 
-    return call_origin(numpy.diff, x1, n, axis, prepend, append)
+    return call_origin(numpy.diff, x1, n=n, axis=axis, prepend=prepend, append=append)
 
 
 def divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -648,7 +650,7 @@ def fabs(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
         return dpnp_fabs(x1_desc).get_pyobj()
 
@@ -688,7 +690,7 @@ def floor(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
         return dpnp_floor(x1_desc, out_desc).get_pyobj()
@@ -1678,7 +1680,7 @@ def trunc(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
         return dpnp_trunc(x1_desc, out_desc).get_pyobj()

@@ -232,7 +232,7 @@ elseif(WIN32)
   set(DPNP_MATHLIB_DEP_LIBS
       mkl_sycl_dll
       mkl_intel_ilp64_dll
-      mkl_sequential_dll
+      mkl_tbb_thread_dll # mkl_sequential_dll
       mkl_core_dll
       sycl
       OpenCL

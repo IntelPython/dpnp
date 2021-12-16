@@ -41,7 +41,8 @@ __all__ = [
     "dpnp_fft"
 ]
 
-ctypedef void(*fptr_dpnp_fft_fft_t)(void *, void * , long * , long * , size_t, long, long, size_t, size_t)
+ctypedef void(*fptr_dpnp_fft_fft_t)(void *, void * , shape_elem_type * , shape_elem_type * ,
+                                    size_t, long, long, size_t, size_t)
 
 
 cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
