@@ -56,7 +56,7 @@ __all__ = [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , size_t * , size_t)
+ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , shape_elem_type * , size_t)
 ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void * , void * , size_t * )
 ctypedef void(*custom_linalg_1in_1out_with_size_func_ptr_t_)(void *, void * , size_t)
 ctypedef void(*custom_linalg_1in_1out_with_2size_func_ptr_t_)(void *, void * , size_t, size_t)
@@ -88,16 +88,16 @@ cpdef object dpnp_cond(object input, object p):
         res = dpnp.sqrt(sqnorm)
         ret = dpnp.array([res])
     elif p == numpy.inf:
-        dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=1)])
+        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=1)
         ret = dpnp.max(dpnp_sum_val)
     elif p == -numpy.inf:
-        dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=1)])
+        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=1)
         ret = dpnp.min(dpnp_sum_val)
     elif p == 1:
-        dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=0)])
+        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=0)
         ret = dpnp.max(dpnp_sum_val)
     elif p == -1:
-        dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=0)])
+        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=0)
         ret = dpnp.min(dpnp_sum_val)
     else:
         ret = dpnp.array([input.item(0)])
@@ -126,7 +126,7 @@ cpdef utils.dpnp_descriptor dpnp_det(utils.dpnp_descriptor input):
 
     cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
 
-    func(input.get_data(), result.get_data(), < size_t * > input_shape.data(), input.ndim)
+    func(input.get_data(), result.get_data(), input_shape.data(), input.ndim)
 
     return result
 
@@ -181,7 +181,7 @@ cpdef utils.dpnp_descriptor dpnp_inv(utils.dpnp_descriptor input):
 
     cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
 
-    func(input.get_data(), result.get_data(), < size_t * > input_shape.data(), input.ndim)
+    func(input.get_data(), result.get_data(), input_shape.data(), input.ndim)
 
     return result
 
@@ -197,7 +197,7 @@ cpdef utils.dpnp_descriptor dpnp_matrix_rank(utils.dpnp_descriptor input):
 
     cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
 
-    func(input.get_data(), result.get_data(), < size_t * > input_shape.data(), input.ndim)
+    func(input.get_data(), result.get_data(), input_shape.data(), input.ndim)
 
     return result
 
@@ -228,7 +228,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
             input = dpnp.ravel(input, order='K')
             sqnorm = dpnp.dot(input, input)
             ret = dpnp.sqrt([sqnorm])
-            return dpnp.array([ret], dtype=res_type)
+            return dpnp.array(ret.reshape(1, *ret.shape), dtype=res_type)
 
     len_axis = 1 if axis is None else len(axis_)
     if len_axis == 1:
