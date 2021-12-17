@@ -46,7 +46,6 @@ test:
         - setup.cfg
     commands:
       - python -c "import dpnp"
-      - conda list
       - pytest -s
 
 about:
