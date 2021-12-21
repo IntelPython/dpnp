@@ -52,7 +52,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_eig_c", "group___b_a_c_k_e_n_d___a_p_i.html#gac34d83d772ef9b059ff7f09151709304", null ],
     [ "dpnp_eigvals_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga846b56f4a4c89c24d1b6f9ee5a6ca1a4", null ],
     [ "dpnp_elemwise_absolute_c", "group___b_a_c_k_e_n_d___a_p_i.html#gad6caac7c43dd14fcd326fa5d0240aeef", null ],
-    [ "dpnp_elemwise_transpose_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaa40021140065319aef832c1ebbb17b55", null ],
+    [ "dpnp_elemwise_transpose_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga475ec6b94a789930feb6c49a8bec5fbc", null ],
     [ "dpnp_erf_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga316311b144ba184aea7c7d1de32d746f", null ],
     [ "dpnp_exp2_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga04bdd2ed84cd24bc1be27119d9f7a9b8", null ],
     [ "dpnp_exp_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga86fb17f80d67667f4c33415b8a6d7c28", null ],
