@@ -191,6 +191,102 @@ dpnp_backend_c_description = [
      ]
 ]
 
+def _compiler_compile(self, sources,
+            output_dir=None, macros=None, include_dirs=None, debug=0,
+            extra_preargs=None, extra_postargs=None, depends=None):
+
+    if not self.initialized:
+        self.initialize()
+    compile_info = self._setup_compile(output_dir, macros, include_dirs,
+                                       sources, depends, extra_postargs)
+    macros, objects, extra_postargs, pp_opts, build = compile_info
+
+    compile_opts = extra_preargs or []
+    compile_opts.append('/c')
+    if debug:
+        compile_opts.extend(self.compile_options_debug)
+    else:
+        compile_opts.extend(self.compile_options)
+
+
+    add_cpp_opts = False
+
+    for obj in objects:
+        try:
+            src, ext = build[obj]
+        except KeyError:
+            continue
+        if debug:
+            # pass the full pathname to MSVC in debug mode,
+            # this allows the debugger to find the source file
+            # without asking the user to browse for it
+            src = os.path.abspath(src)
+
+        # Anaconda/conda-forge customisation, we want our pdbs to be
+        # relocatable:
+        # https://developercommunity.visualstudio.com/comments/623156/view.html
+        d1trimfile_opts = []
+        # if 'SRC_DIR' in os.environ:
+            # d1trimfile_opts.append("/d1trimfile:" + os.environ['SRC_DIR'])
+
+        if ext in self._c_extensions:
+            input_opt = "/Tc" + src
+        elif ext in self._cpp_extensions:
+            input_opt = "/Tp" + src
+            add_cpp_opts = True
+        elif ext in self._rc_extensions:
+            # compile .RC to .RES file
+            input_opt = src
+            output_opt = "/fo" + obj
+            try:
+                self.spawn([self.rc] + pp_opts + [output_opt, input_opt])
+            except DistutilsExecError as msg:
+                raise CompileError(msg)
+            continue
+        elif ext in self._mc_extensions:
+            # Compile .MC to .RC file to .RES file.
+            #   * '-h dir' specifies the directory for the
+            #     generated include file
+            #   * '-r dir' specifies the target directory of the
+            #     generated RC file and the binary message resource
+            #     it includes
+            #
+            # For now (since there are no options to change this),
+            # we use the source-directory for the include file and
+            # the build directory for the RC file and message
+            # resources. This works at least for win32all.
+            h_dir = os.path.dirname(src)
+            rc_dir = os.path.dirname(obj)
+            try:
+                # first compile .MC to .RC and .H file
+                self.spawn([self.mc, '-h', h_dir, '-r', rc_dir, src])
+                base, _ = os.path.splitext(os.path.basename (src))
+                rc_file = os.path.join(rc_dir, base + '.rc')
+                # then compile .RC to .RES file
+                self.spawn([self.rc, "/fo" + obj, rc_file])
+
+            except DistutilsExecError as msg:
+                raise CompileError(msg)
+            continue
+        else:
+            # how to handle this file?
+            raise CompileError("Don't know how to compile {} to {}"
+                               .format(src, obj))
+
+        args = [self.cc] + compile_opts + pp_opts + d1trimfile_opts
+        if add_cpp_opts:
+            args.append('/EHsc')
+        args.append(input_opt)
+        args.append("/Fo" + obj)
+        args.extend(extra_postargs)
+
+        try:
+            self.spawn(args)
+        except DistutilsExecError as msg:
+            raise CompileError(msg)
+
+    return objects
+
 
 class custom_build_clib(build_clib.build_clib):
 
@@ -250,18 +346,30 @@ class custom_build_clib(build_clib.build_clib):
             """
             Build object files from sources
             """
+            if IS_WIN:
+                self.compiler.compile = _compiler_compile
+
             for source_it in sources:
                 obj_file_list = self.compiler.object_filenames([source_it], strip_dir=0, output_dir=self.build_temp)
                 obj_file = "".join(obj_file_list)  # convert from list to file name
 
                 newer_than_obj = newer_group([source_it], obj_file, missing="newer")
                 if force_build or newer_than_obj:
-                    obj_file_list = self.compiler.compile([source_it],
-                                                          output_dir=self.build_temp,
-                                                          macros=macros,
-                                                          include_dirs=include_dirs,
-                                                          extra_preargs=extra_preargs,
-                                                          debug=self.debug)
+                    if IS_WIN:
+                        obj_file_list = self.compiler.compile(self.compiler,
+                                                              [source_it],
+                                                              output_dir=self.build_temp,
+                                                              macros=macros,
+                                                              include_dirs=include_dirs,
+                                                              extra_preargs=extra_preargs,
+                                                              debug=self.debug)
+                    else:
+                        obj_file_list = self.compiler.compile([source_it],
+                                                              output_dir=self.build_temp,
+                                                              macros=macros,
+                                                              include_dirs=include_dirs,
+                                                              extra_preargs=extra_preargs,
+                                                              debug=self.debug)
                     objects.extend(obj_file_list)
                 else:
                     objects.append(obj_file)
@@ -272,7 +380,7 @@ class custom_build_clib(build_clib.build_clib):
             newer_than_lib = newer_group(objects, c_library_filename, missing="newer")
             if force_build or newer_than_lib:
                 # TODO very brute way, need to refactor
-                if sys.platform in ['win32', 'cygwin']:  # if IS_WIN:
+                if IS_WIN:
                     link_command = " ".join(compiler)
                     link_command += " " + " ".join(default_flags)
                     link_command += " " + " ".join(objects)  # specify *.obj files
