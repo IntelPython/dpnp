@@ -246,7 +246,7 @@ cpdef tuple dpnp_nonzero(utils.dpnp_descriptor in_array1):
 cpdef dpnp_place(dpnp_descriptor arr, object mask, dpnp_descriptor vals):
     cdef utils.dpnp_descriptor mask_ = utils_py.create_output_descriptor_py((mask.size,), dpnp.int64, None)
     for i in range(mask.size):
-        if mask[i]:
+        if mask.item(i):
             mask_.get_pyobj()[i] = 1
         else:
             mask_.get_pyobj()[i] = 0
