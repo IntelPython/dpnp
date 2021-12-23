@@ -4,10 +4,6 @@ tests/test_arraymanipulation.py::TestConcatenate::test_concatenate
 tests/test_histograms.py::TestHistogram::test_density
 tests/test_indexing.py::test_take_along_axis
 tests/test_indexing.py::test_take_along_axis1
-tests/test_mathematical.py::test_nancumprod[array1]
-tests/test_mathematical.py::test_nancumprod[array2]
-tests/test_mathematical.py::test_nancumsum[array1]
-tests/test_mathematical.py::test_nancumsum[array2]
 tests/test_mathematical.py::TestGradient::test_gradient_y1[array0]
 tests/test_mathematical.py::TestGradient::test_gradient_y1[array1]
 tests/test_mathematical.py::TestGradient::test_gradient_y1[array2]

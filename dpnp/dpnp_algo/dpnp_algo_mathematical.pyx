@@ -346,8 +346,8 @@ cpdef utils.dpnp_descriptor dpnp_nancumprod(utils.dpnp_descriptor x1):
     cur_x1 = dpnp_copy(x1).get_pyobj()
 
     for i in range(cur_x1.size):
-        if dpnp.isnan(cur_x1[i]):
-            cur_x1._setitem_scalar(i, 1)
+        if dpnp.isnan(cur_x1[numpy.unravel_index(i, cur_x1.shape)]):
+            cur_x1[numpy.unravel_index(i, cur_x1.shape)] = 1
 
     x1_desc = dpnp.get_dpnp_descriptor(cur_x1)
     return dpnp_cumprod(x1_desc)
@@ -357,8 +357,8 @@ cpdef utils.dpnp_descriptor dpnp_nancumsum(utils.dpnp_descriptor x1):
     cur_x1 = dpnp_copy(x1).get_pyobj()
 
     for i in range(cur_x1.size):
-        if dpnp.isnan(cur_x1[i]):
-            cur_x1._setitem_scalar(i, 0)
+        if dpnp.isnan(cur_x1[numpy.unravel_index(i, cur_x1.shape)]):
+            cur_x1[numpy.unravel_index(i, cur_x1.shape)] = 0
 
     x1_desc = dpnp.get_dpnp_descriptor(cur_x1)
     return dpnp_cumsum(x1_desc)

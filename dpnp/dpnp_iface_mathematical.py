@@ -101,7 +101,7 @@ def abs(*args, **kwargs):
 
     Notes
     -----
-    "obj:`dpnp.abs` is a shorthand for :obj:`dpnp.absolute`.
+    :obj:`dpnp.abs` is a shorthand for :obj:`dpnp.absolute`.
 
     Examples
     --------
