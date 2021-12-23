@@ -41,17 +41,17 @@ template <typename _DataType_output, typename _DataType_input1, typename _DataTy
 void dpnp_correlate_c(void* result_out,
                       const void* input1_in,
                       const size_t input1_size,
-                      const size_t* input1_shape,
+                      const shape_elem_type* input1_shape,
                       const size_t input1_shape_ndim,
                       const void* input2_in,
                       const size_t input2_size,
-                      const size_t* input2_shape,
+                      const shape_elem_type* input2_shape,
                       const size_t input2_shape_ndim,
                       const size_t* where)
 {
     (void)where;
 
-    size_t dummy[] = {1};
+    shape_elem_type dummy[] = {1};
     dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out,
                                                                      42,   // dummy result_size
                                                                      42,   // dummy result_ndim
@@ -186,12 +186,12 @@ template <typename _DataType>
 void dpnp_max_c(void* array1_in,
                 void* result1,
                 const size_t result_size,
-                const size_t* shape,
+                const shape_elem_type* shape,
                 size_t ndim,
-                const size_t* axis,
+                const shape_elem_type* axis,
                 size_t naxis)
 {
-    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size_input)
     {
         return;
@@ -378,11 +378,11 @@ void dpnp_max_c(void* array1_in,
 }
 
 template <typename _DataType, typename _ResultType>
-void dpnp_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_mean_c(void* array1_in, void* result1, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
-    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size)
     {
         return;
@@ -406,7 +406,7 @@ void dpnp_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndi
         _ResultType* sum = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
 
         dpnp_sum_c<_ResultType, _DataType>(
-            sum, array, shape, ndim, reinterpret_cast<const long*>(axis), naxis, nullptr, nullptr);
+            sum, array, shape, ndim, axis, naxis, nullptr, nullptr);
 
         result[0] = sum[0] / static_cast<_ResultType>(size);
 
@@ -417,11 +417,11 @@ void dpnp_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndi
 }
 
 template <typename _DataType, typename _ResultType>
-void dpnp_median_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_median_c(void* array1_in, void* result1, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
-    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size)
     {
         return;
@@ -455,14 +455,14 @@ template <typename _DataType>
 void dpnp_min_c(void* array1_in,
                 void* result1,
                 const size_t result_size,
-                const size_t* shape,
+                const shape_elem_type* shape,
                 size_t ndim,
-                const size_t* axis,
+                const shape_elem_type* axis,
                 size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
-    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size_input)
     {
         return;
@@ -675,7 +675,7 @@ void dpnp_nanvar_c(void* array1_in, void* mask_arr1, void* result1, const size_t
 
 template <typename _DataType, typename _ResultType>
 void dpnp_std_c(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
+    void* array1_in, void* result1, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis, size_t ddof)
 {
     _ResultType* var = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
 
@@ -683,20 +683,20 @@ void dpnp_std_c(
 
     const size_t result1_size = 1;
     const size_t result1_ndim = 1;
-    const size_t result1_shape_size_in_bytes = result1_ndim * sizeof(size_t);
-    const size_t result1_strides_size_in_bytes = result1_ndim * sizeof(size_t);
-    size_t* result1_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(result1_shape_size_in_bytes));
+    const size_t result1_shape_size_in_bytes = result1_ndim * sizeof(shape_elem_type);
+    const size_t result1_strides_size_in_bytes = result1_ndim * sizeof(shape_elem_type);
+    shape_elem_type* result1_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result1_shape_size_in_bytes));
     *result1_shape = 1;
-    size_t* result1_strides = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(result1_strides_size_in_bytes));
+    shape_elem_type* result1_strides = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result1_strides_size_in_bytes));
     *result1_strides = 1;
 
     const size_t var_size = 1;
     const size_t var_ndim = 1;
-    const size_t var_shape_size_in_bytes = var_ndim * sizeof(size_t);
-    const size_t var_strides_size_in_bytes = var_ndim * sizeof(size_t);
-    size_t* var_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(var_shape_size_in_bytes));
+    const size_t var_shape_size_in_bytes = var_ndim * sizeof(shape_elem_type);
+    const size_t var_strides_size_in_bytes = var_ndim * sizeof(shape_elem_type);
+    shape_elem_type* var_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(var_shape_size_in_bytes));
     *var_shape = 1;
-    size_t* var_strides = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(var_strides_size_in_bytes));
+    shape_elem_type* var_strides = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(var_strides_size_in_bytes));
     *var_strides = 1;
 
     dpnp_sqrt_c<_ResultType, _ResultType>(result1,
@@ -725,9 +725,9 @@ class dpnp_var_c_kernel;
 
 template <typename _DataType, typename _ResultType>
 void dpnp_var_c(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
+    void* array1_in, void* result1, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis, size_t ddof)
 {
-    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!size)
     {
         return;
@@ -775,67 +775,67 @@ void dpnp_var_c(
 
 void func_map_init_statistics(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_correlate_c<int, int, int>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_correlate_c<long, int, long>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<double, int, float>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<double, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_correlate_c<long, long, int>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_correlate_c<long, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<double, long, float>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<double, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_correlate_c<double, float, int>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_correlate_c<double, float, long>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_correlate_c<int32_t, int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_correlate_c<int64_t, int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<double, int32_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<double, int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_correlate_c<int64_t, int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_correlate_c<int64_t, int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<double, int64_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<double, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_correlate_c<double, float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_correlate_c<double, float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_correlate_c<float, float, float>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_correlate_c<double, double, int>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_correlate_c<double, double, long>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_correlate_c<double, double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_correlate_c<double, double, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_DBL] = {eft_DBL,
                                                                (void*)dpnp_correlate_c<double, double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_BLN][eft_BLN] = {eft_LNG, (void*)dpnp_count_nonzero_c<bool, long>};
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_count_nonzero_c<int, long>};
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_count_nonzero_c<long, long>};
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_FLT][eft_FLT] = {eft_LNG, (void*)dpnp_count_nonzero_c<float, long>};
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_DBL][eft_DBL] = {eft_LNG, (void*)dpnp_count_nonzero_c<double, long>};
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_BLN][eft_BLN] = {eft_LNG, (void*)dpnp_count_nonzero_c<bool, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_count_nonzero_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_count_nonzero_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_FLT][eft_FLT] = {eft_LNG, (void*)dpnp_count_nonzero_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_DBL][eft_DBL] = {eft_LNG, (void*)dpnp_count_nonzero_c<double, int64_t>};
 
     fmap[DPNPFuncName::DPNP_FN_COV][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_cov_c<double>};
     fmap[DPNPFuncName::DPNP_FN_COV][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_cov_c<double>};
     fmap[DPNPFuncName::DPNP_FN_COV][eft_FLT][eft_FLT] = {eft_DBL, (void*)dpnp_cov_c<double>};
     fmap[DPNPFuncName::DPNP_FN_COV][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cov_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_MAX][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_max_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_MAX][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_max_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_MAX][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_max_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_MAX][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_max_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_MAX][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_max_c<float>};
     fmap[DPNPFuncName::DPNP_FN_MAX][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_max_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_mean_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_mean_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_mean_c<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_mean_c<int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_MEAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_mean_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_MEAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_mean_c<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_median_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_median_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_median_c<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_median_c<int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_median_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_median_c<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_MIN][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_min_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_MIN][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_min_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_MIN][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_min_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_MIN][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_min_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_MIN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_min_c<float>};
     fmap[DPNPFuncName::DPNP_FN_MIN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_min_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_nanvar_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_nanvar_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_nanvar_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_nanvar_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_nanvar_c<float>};
     fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_nanvar_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_STD][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_std_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_STD][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_std_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_STD][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_std_c<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_STD][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_std_c<int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_STD][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_std_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_STD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_std_c<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_VAR][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_var_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_VAR][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_var_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_VAR][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_var_c<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_VAR][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_var_c<int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_VAR][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_var_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_VAR][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_var_c<double, double>};
 
