@@ -17,10 +17,11 @@ requirements:
       - wheel
     build:
       - {{ compiler('dpcpp') }}
+      - dpcpp-cpp-rt {{ environ.get('DPCPP_VER', '>=2021.1.1') }}
     run:
       - python
       - dpctl >=0.10
-      - dpcpp_cpp_rt >=2021.1.1
+      - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x.x') }}
       - {{ pin_compatible('mkl-dpcpp', min_pin='x.x', max_pin='x.x') }}
       - numpy >=1.15
 
