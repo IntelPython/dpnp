@@ -366,7 +366,7 @@ cpdef object dpnp_take_along_axis(object arr, object indices, int axis):
             if output_shape[i] != 0:
                 prod *= output_shape[i]
 
-        result_array = [None] * prod
+        result_array = dpnp.empty((prod, ), dtype=res_type)
         ind_array = [None] * prod
         arr_shape_offsets = [None] * len(shape_arr)
         acc = 1
@@ -415,8 +415,7 @@ cpdef object dpnp_take_along_axis(object arr, object indices, int axis):
             if ind_array[result_offset] % size_indices == indices.item(result_offset % size_indices):
                 result_array[result_offset] = arr_elem
 
-        dpnp_array = dpnp.array(result_array, dtype=res_type)
-        dpnp_result_array = dpnp.reshape(dpnp_array, res_shape)
+        dpnp_result_array = dpnp.reshape(result_array, res_shape)
         return dpnp_result_array
 
     else:
