@@ -243,11 +243,9 @@ endif()
 
 target_link_libraries(dpnp_backend_c PUBLIC ${DPNP_MATHLIB_DEP_LIBS})
 
-# Parallel STL from DPC++
-if(NOT WIN32)
-  find_package(DPL REQUIRED)
-  target_include_directories(dpnp_backend_c PUBLIC ${DPL_INCLUDE_DIR})
-endif()
+# Parallel STL
+find_package(DPL REQUIRED)
+target_include_directories(dpnp_backend_c PUBLIC ${DPL_INCLUDE_DIR})
 
 # SYCL queue manager
 if(DPNP_SYCL_QUEUE_MGR_ENABLE)
