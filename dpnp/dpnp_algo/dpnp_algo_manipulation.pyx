@@ -47,8 +47,8 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , size_t * , size_t * ,
-                                                          size_t * , size_t, void * , size_t)
+ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , shape_elem_type * , shape_elem_type * ,
+                                                          shape_elem_type * , size_t, void * , size_t)
 ctypedef void(*fptr_dpnp_repeat_t)(const void *, void * , const size_t , const size_t)
 
 
@@ -92,12 +92,28 @@ cpdef dpnp_copyto(utils.dpnp_descriptor dst, utils.dpnp_descriptor src, where=Tr
     cdef DPNPFuncType dst_type = dpnp_dtype_to_DPNPFuncType(dst.dtype)
     cdef DPNPFuncType src_type = dpnp_dtype_to_DPNPFuncType(src.dtype)
 
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, dst_type, src_type)
+    cdef shape_type_c dst_shape = dst.shape
+    cdef shape_type_c dst_strides = utils.strides_to_vector(dst.strides, dst_shape)
 
-    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
+    cdef shape_type_c src_shape = src.shape
+    cdef shape_type_c src_strides = utils.strides_to_vector(src.strides, src_shape)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, src_type, dst_type)
+
     # Call FPTR function
-    func(dst.get_data(), src.get_data(), dst.size)
+    cdef fptr_1in_1out_strides_t func = <fptr_1in_1out_strides_t > kernel_data.ptr
+    func(dst.get_data(),
+         dst.size,
+         dst.ndim,
+         dst_shape.data(),
+         dst_strides.data(),
+         src.get_data(),
+         src.size,
+         src.ndim,
+         src_shape.data(),
+         src_strides.data(),
+         NULL)
 
 
 cpdef utils.dpnp_descriptor dpnp_expand_dims(utils.dpnp_descriptor in_array, axis):
@@ -146,10 +162,11 @@ cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, a
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_reshape(utils.dpnp_descriptor array1, newshape, order=None):
+cpdef utils.dpnp_descriptor dpnp_reshape(utils.dpnp_descriptor array1, newshape, order="C"):
     # return dpnp.get_dpnp_descriptor(dpctl.tensor.usm_ndarray(newshape, dtype=numpy.dtype(array1.dtype).name, buffer=array1.get_pyobj()))
     # return dpnp.get_dpnp_descriptor(dpctl.tensor.reshape(array1.get_pyobj(), newshape))
-    return dpnp.get_dpnp_descriptor(dpctl.tensor.reshape(array1.get_pyobj()._array_obj, newshape))
+    array_obj = dpctl.tensor.reshape(array1.get_array(), newshape, order=order)
+    return dpnp.get_dpnp_descriptor(dpnp_array(array_obj.shape, buffer=array_obj, order=order))
 
 
 cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
@@ -189,8 +206,8 @@ cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=No
 
     cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
     # call FPTR function
-    func(array1.get_data(), < size_t * > input_shape.data(), < size_t * > result_shape.data(),
-         < size_t * > permute_axes.data(), input_shape_size, result.get_data(), array1.size)
+    func(array1.get_data(), input_shape.data(), result_shape.data(),
+         permute_axes.data(), input_shape_size, result.get_data(), array1.size)
 
     return result
 

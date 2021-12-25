@@ -24,7 +24,8 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpctl
+import dpctl.tensor as dpt
+from dpctl.tensor._device import normalize_queue_device
 import dpnp
 import numpy
 
@@ -37,12 +38,51 @@ class dpnp_array:
 
     """
 
-    def __init__(self, shape, dtype=numpy.float64):
-        self._array_obj = dpctl.tensor.usm_ndarray(shape, dtype=dtype)
+    def __init__(self,
+                 shape,
+                 dtype="f8",
+                 buffer=None,
+                 offset=0,
+                 strides=None,
+                 order="C",
+                 device=None,
+                 usm_type="device",
+                 sycl_queue=None):
+        if buffer is not None:
+            if not isinstance(buffer, dpt.usm_ndarray):
+                raise TypeError(
+                    "Expected dpctl.tensor.usm_ndarray, got {}"
+                    "".format(type(buffer))
+                )
+            if buffer.shape != shape:
+                raise ValueError(
+                    "Expected buffer.shape={}, got {}"
+                    "".format(shape, buffer.shape)
+                )
+            self._array_obj = dpt.asarray(buffer,
+                                          dtype=buffer.dtype,
+                                          copy=False,
+                                          order=order,
+                                          device=buffer.sycl_device,
+                                          usm_type=buffer.usm_type,
+                                          sycl_queue=buffer.sycl_queue)
+        else:
+            sycl_queue_normalized = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+            self._array_obj = dpt.usm_ndarray(shape,
+                                              dtype=dtype,
+                                              strides=strides,
+                                              buffer=usm_type,
+                                              offset=offset,
+                                              order=order,
+                                              buffer_ctor_kwargs={"queue": sycl_queue_normalized})
 
     @property
     def __sycl_usm_array_interface__(self):
         return self._array_obj.__sycl_usm_array_interface__
+
+    def get_array(self):
+        """Get usm_ndarray object."""
+        return self._array_obj
 
     @property
     def T(self):
@@ -102,7 +142,16 @@ class dpnp_array:
  # '__getattribute__',
 
     def __getitem__(self, key):
-        return self._array_obj.__getitem__(key)
+        item = self._array_obj.__getitem__(key)
+        if not isinstance(item, dpt.usm_ndarray):
+            raise RuntimeError(
+                "Expected dpctl.tensor.usm_ndarray, got {}"
+                "".format(type(item)))
+
+        res = self.__new__(dpnp_array)
+        res._array_obj = item
+
+        return res
 
     def __gt__(self, other):
         return dpnp.greater(self, other)
@@ -162,7 +211,9 @@ class dpnp_array:
  # '__new__',
  # '__or__',
  # '__pos__',
- # '__pow__',
+
+    def __pow__(self, other):
+        return dpnp.power(self, other)
 
     def __radd__(self, other):
         return dpnp.add(other, self)
@@ -214,7 +265,9 @@ class dpnp_array:
 
         return str(dpnp.asnumpy(self._array_obj))
 
- # '__sub__',
+    def __sub__(self, other):
+        return dpnp.subtract(self, other)
+
  # '__subclasshook__',
 
     def __truediv__(self, other):
@@ -414,7 +467,19 @@ class dpnp_array:
  # 'copy',
  # 'ctypes',
  # 'cumprod',
- # 'cumsum',
+
+    def cumsum(self, axis=None, dtype=None, out=None):
+        """
+        Return the cumulative sum of the elements along the given axis.
+
+        See Also
+        --------
+        :obj:`dpnp.cumsum`
+
+        """
+
+        return dpnp.cumsum(self, axis=axis, dtype=dtype, out=out)
+
  # 'data',
 
     def diagonal(input, offset=0, axis1=0, axis2=1):
@@ -499,12 +564,17 @@ class dpnp_array:
         :obj:`dpnp.ravel`, :obj:`dpnp.flat`
 
         """
-
-        new_arr = dpnp.ndarray(self.shape, self.dtype)
+        new_arr = self.__new__(dpnp_array)
+        new_arr._array_obj = dpt.empty(self.shape,
+                                       dtype=self.dtype,
+                                       order=order,
+                                       device=self._array_obj.sycl_device,
+                                       usm_type=self._array_obj.usm_type,
+                                       sycl_queue=self._array_obj.sycl_queue)
 
         if self.size > 0:
-            dpctl.tensor._copy_utils.copy_from_usm_ndarray_to_usm_ndarray(new_arr._array_obj, self._array_obj)
-            new_arr._array_obj = dpctl.tensor.reshape(new_arr._array_obj, (self.size, ))
+            dpt._copy_utils._copy_from_usm_ndarray_to_usm_ndarray(new_arr._array_obj, self._array_obj)
+            new_arr._array_obj = dpt.reshape(new_arr._array_obj, (self.size, ))
 
         return new_arr
 
@@ -586,7 +656,19 @@ class dpnp_array:
  # 'newbyteorder',
  # 'nonzero',
  # 'partition',
- # 'prod',
+
+    def prod(self, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
+        """
+        Returns the prod along a given axis.
+
+        .. seealso::
+           :obj:`dpnp.prod` for full documentation,
+           :meth:`dpnp.dparray.sum`
+
+        """
+
+        return dpnp.prod(self, axis, dtype, out, keepdims, initial, where)
+
  # 'ptp',
  # 'put',
  # 'ravel',
@@ -722,7 +804,17 @@ class dpnp_array:
         return dpnp.sum(self, axis, dtype, out, keepdims, initial, where)
 
  # 'swapaxes',
- # 'take',
+
+    def take(self, indices, axis=None, out=None, mode='raise'):
+        """
+        Take elements from an array.
+
+        For full documentation refer to :obj:`numpy.take`.
+
+        """
+
+        return dpnp.take(self, indices, axis, out, mode)
+
  # 'tobytes',
  # 'tofile',
  # 'tolist',

@@ -75,8 +75,8 @@
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_fft_fft_c(const void* array_in,
                                   void* result,
-                                  const long* input_shape,
-                                  const long* output_shape,
+                                  const shape_elem_type* input_shape,
+                                  const shape_elem_type* output_shape,
                                   size_t shape_size,
                                   long axis,
                                   long input_boundarie,
