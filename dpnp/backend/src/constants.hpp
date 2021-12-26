@@ -27,11 +27,7 @@
 #ifndef CONSTANTS_H // Cython compatibility
 #define CONSTANTS_H
 
-#ifdef _WIN32
-#define INP_DLLEXPORT __declspec(dllexport)
-#else
-#define INP_DLLEXPORT
-#endif
+#include "dpnp_iface.hpp"
 
 /**
  * This is container for the constants from Python interpreter and other modules. These constants are subject to use
