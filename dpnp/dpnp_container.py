@@ -35,9 +35,12 @@ This module contains code and dependency on diffrent containers used in DPNP
 
 
 import dpnp.config as config
-from dpnp.dparray import dparray
+# from dpnp.dparray import dparray
+from dpnp.dpnp_array import dpnp_array
 
 import numpy
+
+import dpctl.tensor as dpt
 
 
 if config.__DPNP_OUTPUT_DPCTL__:
@@ -55,51 +58,47 @@ if config.__DPNP_OUTPUT_DPCTL__:
 
 
 __all__ = [
-    "create_output_container"
+    "asarray",
+    "empty",
 ]
 
 
-def create_output_container(shape, type):
-    if config.__DPNP_OUTPUT_NUMPY__:
-        """ Create NumPy ndarray """
-        # TODO need to use "buffer=" parameter to use SYCL aware memory
-        result = numpy.ndarray(shape, dtype=type)
-    elif config.__DPNP_OUTPUT_DPCTL__:
-        """ Create DPCTL array """
-        if config.__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__:
-            """
-            From DPCtrl documentation:
-            'buffer can be strings ('device'|'shared'|'host' to allocate new memory)'
-            """
-            result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name, buffer='shared')
-        else:
-            """
-            Can't pass 'None' as buffer= parameter to allow DPCtrl uses it's default
-            """
-            result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name)
+def asarray(x1,
+            dtype=None,
+            copy=False,
+            order="C",
+            device=None,
+            usm_type=None,
+            sycl_queue=None):
+    """Converts `x1` to `dpnp_array`."""
+    if isinstance(x1, dpnp_array):
+        x1_obj = x1.get_array()
     else:
-        """ Create DPNP array """
-        result = dparray(shape, dtype=type)
+        x1_obj = x1
 
-    return result
+    array_obj = dpt.asarray(x1_obj,
+                            dtype=dtype,
+                            copy=copy,
+                            order=order,
+                            device=device,
+                            usm_type=usm_type,
+                            sycl_queue=sycl_queue)
+
+    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
 
-def container_copy(dst_obj, src_obj, dst_idx=0):
-    """
-    Copy values to `dst` by iterating element by element in `input_obj`
-    """
+def empty(shape,
+          dtype="f8",
+          order="C",
+          device=None,
+          usm_type="device",
+          sycl_queue=None):
+    """Creates `dpnp_array` from uninitialized USM allocation."""
+    array_obj = dpt.empty(shape,
+                          dtype=dtype,
+                          order=order,
+                          device=device,
+                          usm_type=usm_type,
+                          sycl_queue=sycl_queue)
 
-    # zero dimensional arrays are not iterable
-    if issubclass(type(src_obj), (numpy.ndarray, dparray)) and (src_obj.ndim == 0):
-        dst_idx = container_copy(dst_obj, (src_obj.item(0),), dst_idx)
-    else:
-        for elem_value in src_obj:
-            if isinstance(elem_value, (list, tuple)):
-                dst_idx = container_copy(dst_obj, elem_value, dst_idx)
-            elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
-                dst_idx = container_copy(dst_obj, elem_value, dst_idx)
-            else:
-                dst_obj.flat[dst_idx] = elem_value
-                dst_idx += 1
-
-    return dst_idx
+    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)

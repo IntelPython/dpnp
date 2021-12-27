@@ -46,20 +46,46 @@
     /**                                                                                                              */ \
     /** Function "__name__" executes operator "__operation__" over corresponding elements of input arrays            */ \
     /**                                                                                                              */ \
-    /** @param[out] result1  Output array.                                                                           */ \
-    /** @param[in]  array1   Input array 1.                                                                          */ \
-    /** @param[in]  size1    Number of elements in @ref array1                                                       */ \
-    /** @param[in]  array2   Input array 2.                                                                          */ \
-    /** @param[in]  size2    Number of elements in @ref array2                                                       */ \
+    /** @param[out] result_out      Output array.                                                                    */ \
+    /** @param[in]  result_size     Output array size.                                                               */ \
+    /** @param[in]  result_ndim     Number of output array dimensions.                                               */ \
+    /** @param[in]  result_shape    Output array shape.                                                              */ \
+    /** @param[in]  result_strides  Output array strides.                                                            */ \
+    /** @param[in]  input1_in       Input array 1.                                                                   */ \
+    /** @param[in]  input1_size     Input array 1 size.                                                              */ \
+    /** @param[in]  input1_ndim     Number of input array 1 dimensions.                                              */ \
+    /** @param[in]  input1_shape    Input array 1 shape.                                                             */ \
+    /** @param[in]  input1_strides  Input array 1 strides.                                                           */ \
+    /** @param[in]  input2_in       Input array 2.                                                                   */ \
+    /** @param[in]  input2_size     Input array 2 size.                                                              */ \
+    /** @param[in]  input2_ndim     Number of input array 2 dimensions.                                              */ \
+    /** @param[in]  input2_shape    Input array 2 shape.                                                             */ \
+    /** @param[in]  input2_strides  Input array 2 strides.                                                           */ \
+    /** @param[in]  where           Where condition.                                                                 */ \
     template <typename _DataType>                                                                                       \
-    void __name__(void* result1, const void* array1, const size_t size1, const void* array2, const size_t size2);
+    void __name__(void* result_out,                                                                                     \
+                  const size_t result_size,                                                                             \
+                  const size_t result_ndim,                                                                             \
+                  const size_t* result_shape,                                                                           \
+                  const size_t* result_strides,                                                                         \
+                  const void* input1_in,                                                                                \
+                  const size_t input1_size,                                                                             \
+                  const size_t input1_ndim,                                                                             \
+                  const size_t* input1_shape,                                                                           \
+                  const size_t* input1_strides,                                                                         \
+                  const void* input2_in,                                                                                \
+                  const size_t input2_size,                                                                             \
+                  const size_t input2_ndim,                                                                             \
+                  const size_t* input2_shape,                                                                           \
+                  const size_t* input2_strides,                                                                         \
+                  const size_t* where);
 
 #endif
 
-MACRO_2ARG_1TYPE_OP(dpnp_bitwise_and_c, input_elem1& input_elem2)
-MACRO_2ARG_1TYPE_OP(dpnp_bitwise_or_c, input_elem1 | input_elem2)
-MACRO_2ARG_1TYPE_OP(dpnp_bitwise_xor_c, input_elem1 ^ input_elem2)
-MACRO_2ARG_1TYPE_OP(dpnp_left_shift_c, input_elem1 << input_elem2)
-MACRO_2ARG_1TYPE_OP(dpnp_right_shift_c, input_elem1 >> input_elem2)
+MACRO_2ARG_1TYPE_OP(dpnp_bitwise_and_c, input1_elem & input2_elem)
+MACRO_2ARG_1TYPE_OP(dpnp_bitwise_or_c, input1_elem | input2_elem)
+MACRO_2ARG_1TYPE_OP(dpnp_bitwise_xor_c, input1_elem ^ input2_elem)
+MACRO_2ARG_1TYPE_OP(dpnp_left_shift_c, input1_elem << input2_elem)
+MACRO_2ARG_1TYPE_OP(dpnp_right_shift_c, input1_elem >> input2_elem)
 
 #undef MACRO_2ARG_1TYPE_OP

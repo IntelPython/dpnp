@@ -135,8 +135,12 @@ def asnumpy(input, order='C'):
     This function works exactly the same as :obj:`numpy.asarray`.
 
     """
-    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
+
+    if isinstance(input, dpctl.tensor.usm_ndarray):
         return dpctl.tensor.to_numpy(input)
+
+    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
+        return dpctl.tensor.to_numpy(input.get_array())
 
     return numpy.asarray(input, order=order)
 
@@ -147,7 +151,8 @@ def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
         import dpctl.tensor as dpt
         # TODO: remove check dpctl.tensor has attribute "astype"
         if hasattr(dpt, "astype"):
-            return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
+            # return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
+            return dpt.astype(x1.get_array(), dtype, order=order, casting=casting, copy=copy)
 
     x1_desc = get_dpnp_descriptor(x1)
     if not x1_desc:
@@ -206,7 +211,15 @@ def get_dpnp_descriptor(ext_obj, copy_when_strides=True):
     # then this behavior can be disabled with setting "copy_when_strides"
     if copy_when_strides and getattr(ext_obj, "strides", None) is not None:
         # TODO: replace this workaround when usm_ndarray will provide such functionality
-        ext_obj = array(ext_obj)
+        shape_offsets = tuple(numpy.prod(ext_obj.shape[i+1:], dtype=numpy.int64) for i in range(ext_obj.ndim))
+
+        if hasattr(ext_obj, "__sycl_usm_array_interface__"):
+            ext_obj_offset = ext_obj.__sycl_usm_array_interface__.get("offset", 0)
+        else:
+            ext_obj_offset = 0
+
+        if ext_obj.strides != shape_offsets or ext_obj_offset != 0:
+            ext_obj = array(ext_obj)
 
     dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:

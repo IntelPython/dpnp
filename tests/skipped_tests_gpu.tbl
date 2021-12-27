@@ -1,11 +1,7 @@
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([[i, i] for i in x])]
+
 tests/test_arraymanipulation.py::TestConcatenate::test_concatenate
 tests/test_histograms.py::TestHistogram::test_density
-tests/test_indexing.py::test_take_along_axis
-tests/test_indexing.py::test_take_along_axis1
-tests/test_mathematical.py::test_nancumprod[array1]
-tests/test_mathematical.py::test_nancumprod[array2]
-tests/test_mathematical.py::test_nancumsum[array1]
-tests/test_mathematical.py::test_nancumsum[array2]
 tests/test_mathematical.py::TestGradient::test_gradient_y1[array0]
 tests/test_mathematical.py::TestGradient::test_gradient_y1[array1]
 tests/test_mathematical.py::TestGradient::test_gradient_y1[array2]
@@ -17,12 +13,11 @@ tests/test_random.py::test_check_otput[random_sample]
 tests/test_random.py::test_check_otput[ranf]
 tests/test_random.py::test_check_otput[sample]
 tests/test_random.py::TestDistributionsMultinomial::test_check_sum
+tests/test_random.py::TestDistributionsMultinomial::test_moments
+tests/test_random.py::TestDistributionsMultinomial::test_seed
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), object)]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.vstack([x, x]).T]
-tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItem_param_0_{shape=()}::test_item
-tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItem_param_1_{shape=(1,)}::test_item
-tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItem_param_2_{shape=(1, 1, 1)}::test_item
 tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItemRaise_param_0_{shape=(0,)}::test_item
 tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItemRaise_param_1_{shape=(2, 3)}::test_item
 tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItemRaise_param_2_{shape=(1, 0, 1)}::test_item
@@ -47,17 +42,6 @@ tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_cons
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_list
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_tuple
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_logspace_zero_num
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_1_{n_vals=0, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_2_{n_vals=0, shape=(4, 3, 2)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_3_{n_vals=1, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_4_{n_vals=1, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_5_{n_vals=1, shape=(4, 3, 2)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_6_{n_vals=3, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_7_{n_vals=3, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_8_{n_vals=3, shape=(4, 3, 2)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_9_{n_vals=15, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_10_{n_vals=15, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_11_{n_vals=15, shape=(4, 3, 2)}::test_place
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_1darray
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_fill_diagonal
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_5_{shape=(3, 3), val=(2,), wrap=False}::test_1darray
@@ -130,11 +114,7 @@ tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_pa
 tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_32_{dst_shape=(2, 2), src=True}::test_copyto_where
 tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_33_{dst_shape=(2, 2), src=False}::test_copyto_where
 tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_34_{dst_shape=(2, 2), src=(1+1j)}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_invalid_order
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_with_changed_arraysize
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_with_multiple_unknown_dimensions
 tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_zerosize
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_zerosize_invalid
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_out_noncontiguous
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_axis_out_noncontiguous
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_out_noncontiguous
@@ -167,7 +147,6 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{extern
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_axis
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov_empty
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_mean_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis_ddof
 
 tests/test_linalg.py::test_eig_arange[16-float64]
 tests/test_linalg.py::test_eig_arange[16-float32]
@@ -178,20 +157,6 @@ tests/test_linalg.py::test_qr[(16,16)-float32]
 tests/test_linalg.py::test_qr[(16,16)-int64]
 tests/test_linalg.py::test_qr[(16,16)-int32]
 tests/test_random.py::test_randn_normal_distribution
-tests/test_random.py::TestDistributionsBeta::test_moments
-tests/test_random.py::TestDistributionsBinomial::test_moments
-tests/test_random.py::TestDistributionsF::test_moments
-tests/test_random.py::TestDistributionsGamma::test_moments
-tests/test_random.py::TestDistributionsGeometric::test_moments
-tests/test_random.py::TestDistributionsGumbel::test_moments
-tests/test_random.py::TestDistributionsHypergeometric::test_moments
-tests/test_random.py::TestDistributionsLaplace::test_moments
-tests/test_random.py::TestDistributionsLogistic::test_moments
-tests/test_random.py::TestDistributionsLognormal::test_moments
-tests/test_random.py::TestDistributionsMultinomial::test_moments
-tests/test_random.py::TestDistributionsMultivariateNormal::test_moments
-tests/test_random.py::TestDistributionsNormal::test_moments
-tests/test_random.py::TestDistributionsNoncentralChisquare::test_moments[df_grt_1]
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_outer
 tests/third_party/cupy/random_tests/test_sample.py::TestRandintDtype::test_dtype
 tests/third_party/cupy/random_tests/test_sample.py::TestRandintDtype::test_dtype2
@@ -201,134 +166,8 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{extern
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_sequence_kth
 
 tests/third_party/intel/test_zero_copy_test1.py::test_dpnp_interaction_with_dpctl_memory
-tests/test_amin_amax.py::test_amax_int[int64]
-tests/test_amin_amax.py::test_amin_int[int64]
-tests/test_amin_amax.py::test_amax[(4,)-float64]
-tests/test_amin_amax.py::test_amax[(4,)-float32]
-tests/test_amin_amax.py::test_amax[(4,)-int64]
-tests/test_amin_amax.py::test_amax[(4,)-int32]
-tests/test_amin_amax.py::test_amax[(2,3)-float64]
-tests/test_amin_amax.py::test_amax[(2,3)-float32]
-tests/test_amin_amax.py::test_amax[(2,3)-int64]
-tests/test_amin_amax.py::test_amax[(2,3)-int32]
-tests/test_amin_amax.py::test_amax[(4,5,6)-float64]
-tests/test_amin_amax.py::test_amax[(4,5,6)-float32]
-tests/test_amin_amax.py::test_amax[(4,5,6)-int64]
-tests/test_amin_amax.py::test_amax[(4,5,6)-int32]
-tests/test_amin_amax.py::test_amin[(4,)-float64]
-tests/test_amin_amax.py::test_amin[(4,)-float32]
-tests/test_amin_amax.py::test_amin[(4,)-int64]
-tests/test_amin_amax.py::test_amin[(4,)-int32]
-tests/test_amin_amax.py::test_amin[(2,3)-float64]
-tests/test_amin_amax.py::test_amin[(2,3)-float32]
-tests/test_amin_amax.py::test_amin[(2,3)-int64]
-tests/test_amin_amax.py::test_amin[(2,3)-int32]
-tests/test_amin_amax.py::test_amin[(4,5,6)-float64]
-tests/test_amin_amax.py::test_amin[(4,5,6)-float32]
-tests/test_amin_amax.py::test_amin[(4,5,6)-int64]
-tests/test_amin_amax.py::test_amin[(4,5,6)-int32]
-tests/test_arithmetic.py::TestArithmetic::test_nanprod
-tests/test_arithmetic.py::TestArithmetic::test_nansum
 tests/test_arraymanipulation.py::TestHstack::test_generator
 tests/test_arraymanipulation.py::TestVstack::test_generator
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float64-float64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float64-float32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float64-int64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float64-int32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float64-bool]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float64-bool_]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float64-complex]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float32-float64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float32-float32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float32-int64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float32-int32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float32-bool]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float32-bool_]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-float32-complex]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int64-float64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int64-float32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int64-int64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int64-int32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int64-bool]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int64-bool_]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int64-complex]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int32-float64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int32-float32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int32-int64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int32-int32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int32-bool]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int32-bool_]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-int32-complex]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool-float64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool-float32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool-int64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool-int32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool-bool]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool-bool_]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool-complex]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool_-float64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool_-float32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool_-int64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool_-int32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool_-bool]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool_-bool_]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-bool_-complex]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-float64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-float32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-int64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-int32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-bool]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-bool_]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-complex]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float64-float64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float64-float32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float64-int64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float64-int32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float64-bool]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float64-bool_]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float64-complex]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float32-float64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float32-float32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float32-int64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float32-int32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float32-bool]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float32-bool_]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-float32-complex]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int64-float64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int64-float32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int64-int64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int64-int32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int64-bool]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int64-bool_]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int64-complex]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int32-float64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int32-float32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int32-int64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int32-int32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int32-bool]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int32-bool_]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-int32-complex]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool-float64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool-float32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool-int64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool-int32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool-bool]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool-bool_]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool-complex]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool_-float64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool_-float32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool_-int64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool_-int32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool_-bool]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool_-bool_]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-bool_-complex]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-float64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-float32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-int64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-int32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-bool]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-bool_]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-complex]
 tests/test_dparray.py::test_astype[[]-float64-float64]
 tests/test_dparray.py::test_astype[[]-float64-float32]
 tests/test_dparray.py::test_astype[[]-float64-int64]
@@ -378,34 +217,10 @@ tests/test_dparray.py::test_astype[[]-complex-int32]
 tests/test_dparray.py::test_astype[[]-complex-bool]
 tests/test_dparray.py::test_astype[[]-complex-bool_]
 tests/test_dparray.py::test_astype[[]-complex-complex]
-tests/test_dparray.py::test_flatten[[-2, -1, 0, 1, 2]-float64]
-tests/test_dparray.py::test_flatten[[-2, -1, 0, 1, 2]-float32]
-tests/test_dparray.py::test_flatten[[-2, -1, 0, 1, 2]-int64]
-tests/test_dparray.py::test_flatten[[-2, -1, 0, 1, 2]-int32]
-tests/test_dparray.py::test_flatten[[-2, -1, 0, 1, 2]-bool]
-tests/test_dparray.py::test_flatten[[-2, -1, 0, 1, 2]-bool_]
-tests/test_dparray.py::test_flatten[[-2, -1, 0, 1, 2]-complex]
-tests/test_dparray.py::test_flatten[[[-2, -1], [1, 2]]-float64]
-tests/test_dparray.py::test_flatten[[[-2, -1], [1, 2]]-float32]
-tests/test_dparray.py::test_flatten[[[-2, -1], [1, 2]]-int64]
-tests/test_dparray.py::test_flatten[[[-2, -1], [1, 2]]-int32]
-tests/test_dparray.py::test_flatten[[[-2, -1], [1, 2]]-bool]
-tests/test_dparray.py::test_flatten[[[-2, -1], [1, 2]]-bool_]
-tests/test_dparray.py::test_flatten[[[-2, -1], [1, 2]]-complex]
-tests/test_dparray.py::test_flatten[[]-float64]
-tests/test_dparray.py::test_flatten[[]-float32]
-tests/test_dparray.py::test_flatten[[]-int64]
-tests/test_dparray.py::test_flatten[[]-int32]
-tests/test_dparray.py::test_flatten[[]-bool]
-tests/test_dparray.py::test_flatten[[]-bool_]
-tests/test_dparray.py::test_flatten[[]-complex]
 tests/test_fft.py::test_fft[float32]
 tests/test_fft.py::test_fft[float64]
 tests/test_fft.py::test_fft[int32]
 tests/test_fft.py::test_fft[int64]
-tests/test_flat.py::test_flat[int64]
-tests/test_flat.py::test_flat2[int64]
-tests/test_flat.py::test_flat3[int64]
 tests/test_linalg.py::test_cond[-1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
 tests/test_linalg.py::test_cond[1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
 tests/test_linalg.py::test_cond[-2-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
@@ -422,58 +237,6 @@ tests/test_linalg.py::test_eig_arange[300-float32]
 tests/test_linalg.py::test_eig_arange[300-float64]
 tests/test_linalg.py::test_eig_arange[300-int32]
 tests/test_linalg.py::test_eig_arange[300-int64]
-tests/test_logic.py::test_all[(0,)-float64]
-tests/test_logic.py::test_all[(0,)-float32]
-tests/test_logic.py::test_all[(0,)-int64]
-tests/test_logic.py::test_all[(0,)-int32]
-tests/test_logic.py::test_all[(0,)-bool]
-tests/test_logic.py::test_all[(0,)-bool_]
-tests/test_logic.py::test_all[(4,)-float64]
-tests/test_logic.py::test_all[(4,)-float32]
-tests/test_logic.py::test_all[(4,)-int64]
-tests/test_logic.py::test_all[(4,)-int32]
-tests/test_logic.py::test_all[(4,)-bool]
-tests/test_logic.py::test_all[(4,)-bool_]
-tests/test_logic.py::test_all[(2,3)-float64]
-tests/test_logic.py::test_all[(2,3)-float32]
-tests/test_logic.py::test_all[(2,3)-int64]
-tests/test_logic.py::test_all[(2,3)-int32]
-tests/test_logic.py::test_all[(2,3)-bool]
-tests/test_logic.py::test_all[(2,3)-bool_]
-tests/test_logic.py::test_all[(2,2,2)-float64]
-tests/test_logic.py::test_all[(2,2,2)-float32]
-tests/test_logic.py::test_all[(2,2,2)-int64]
-tests/test_logic.py::test_all[(2,2,2)-int32]
-tests/test_logic.py::test_all[(2,2,2)-bool]
-tests/test_logic.py::test_all[(2,2,2)-bool_]
-tests/test_logic.py::test_allclose[float64]
-tests/test_logic.py::test_allclose[float32]
-tests/test_logic.py::test_allclose[int64]
-tests/test_logic.py::test_allclose[int32]
-tests/test_logic.py::test_any[(0,)-float64]
-tests/test_logic.py::test_any[(0,)-float32]
-tests/test_logic.py::test_any[(0,)-int64]
-tests/test_logic.py::test_any[(0,)-int32]
-tests/test_logic.py::test_any[(0,)-bool]
-tests/test_logic.py::test_any[(0,)-bool_]
-tests/test_logic.py::test_any[(4,)-float64]
-tests/test_logic.py::test_any[(4,)-float32]
-tests/test_logic.py::test_any[(4,)-int64]
-tests/test_logic.py::test_any[(4,)-int32]
-tests/test_logic.py::test_any[(4,)-bool]
-tests/test_logic.py::test_any[(4,)-bool_]
-tests/test_logic.py::test_any[(2,3)-float64]
-tests/test_logic.py::test_any[(2,3)-float32]
-tests/test_logic.py::test_any[(2,3)-int64]
-tests/test_logic.py::test_any[(2,3)-int32]
-tests/test_logic.py::test_any[(2,3)-bool]
-tests/test_logic.py::test_any[(2,3)-bool_]
-tests/test_logic.py::test_any[(2,2,2)-float64]
-tests/test_logic.py::test_any[(2,2,2)-float32]
-tests/test_logic.py::test_any[(2,2,2)-int64]
-tests/test_logic.py::test_any[(2,2,2)-int32]
-tests/test_logic.py::test_any[(2,2,2)-bool]
-tests/test_logic.py::test_any[(2,2,2)-bool_]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: (dpnp.asarray([(i, i) for i in x], [("a", int), ("b", int)]).view(dpnp.recarray))]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray(x).astype(dpnp.int8)]
@@ -501,10 +264,6 @@ tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::tes
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_setter_zero_dim
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_zero_dim
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestScalarConversion::test_scalar_conversion
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestConj::test_conj
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestConj::test_conj_pass
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestConj::test_conjugate
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestConj::test_conjugate_pass
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides
@@ -513,13 +272,8 @@ tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAn
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides_swapped
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type_c_contiguous_no_copy
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type_f_contiguous_no_copy
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_diagonal1
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_diagonal2
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_transposed_fill
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_transposed_flatten
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_fill_with_numpy_nonscalar_ndarray
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_fill
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_fill_with_numpy_scalar_ndarray 
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_flatten_copied
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_flatten
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_isinstance_numpy_copy
@@ -537,16 +291,6 @@ tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_0
 tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_1_{decimals=-2}::test_round_halfway_uint
 tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_2_{decimals=-1}::test_round_halfway_uint
 tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_3_{decimals=0}::test_round_halfway_uint
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_0_{decimals=-2}::test_round
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_0_{decimals=-2}::test_round_out
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_1_{decimals=-1}::test_round
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_1_{decimals=-1}::test_round_out
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_2_{decimals=0}::test_round
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_2_{decimals=0}::test_round_out
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_3_{decimals=1}::test_round
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_3_{decimals=1}::test_round_out
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_4_{decimals=2}::test_round
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_4_{decimals=2}::test_round_out
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_all
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_all_keepdims
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_axis0
@@ -950,17 +694,6 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diago
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative3
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative4
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative5
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_by_array
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_by_scalar
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_no_axis
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_broadcast
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_broadcast2
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_broadcast_fail
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_clip
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_wrap
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_raise
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_unknown_clip
 tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndicesFromRaises_param_4_{shape=(-1,)}::test_non_equal_dims
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_0_{shape=(3, 3), val=1, wrap=True}::test_columnar_slice
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_11_{shape=(2, 2, 2), val=0, wrap=False}::test_1darray
@@ -1154,17 +887,6 @@ tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_s
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis_failure1
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis_failure2
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis_failure3
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze1
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze2
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_failure
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_int_axis1
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_int_axis2
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_scalar1
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_scalar2
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis1
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis2
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis3
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis4
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_0_{shapes=[(3,), (2,)]}::test_invalid_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_0_{shapes=[(3,), (2,)]}::test_invalid_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_1_{shapes=[(3, 2), (2, 3)]}::test_invalid_broadcast
@@ -1238,9 +960,6 @@ tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_4_{reps
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_5_{reps=(2, 3, 4, 5)}::test_array_tile
 tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_2
 tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_3
-tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_transpose
-tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_transpose_empty
-tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_transpose_none
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_279_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0., 1., 2.],       [3., 4., 5.]], dtype=float32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_287_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_295_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
@@ -1331,12 +1050,6 @@ tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_6_{de
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint_negative
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_dtype
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all2
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_keepdims
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes
@@ -1357,9 +1070,6 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_ndarray_cum
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim_with_n
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_without_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_ndarray_cumsum_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_ndarray_cumsum_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_ndarray_cumsum_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_arraylike
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_huge_array
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_numpy_array
@@ -1585,28 +1295,8 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargm
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis1
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_0_{array=array(0)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_all
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_tie
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_all
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_tie
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis2
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis_large
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis2
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis_large
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_external_argmax_axis_large
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_external_argmin_axis_large
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_0_{cond_shape=(2, 3, 4)}::test_where_cond
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_1_{cond_shape=(4,)}::test_where_cond
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_2_{cond_shape=(2, 3, 4)}::test_where_cond
@@ -1835,16 +1525,6 @@ tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_h
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_same_value
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_basic
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_mismatch
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_axis_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis_ddo
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_all_nan
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_float16
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_huge

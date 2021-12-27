@@ -1,8 +1,8 @@
 
-CALL "1.env.bat"
+:: CALL "1.env.bat"
 
 python setup.py clean
-python setup.py build_clib
+python setup.py build_clib_setuptools
 
 :: inplace build
 python setup.py build_ext --inplace

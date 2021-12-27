@@ -44,18 +44,14 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , size_t * , size_t * , size_t * , size_t)
-ctypedef void(*fptr_2in_1out_dot_t)(void *, const size_t, const size_t, const long * , const long * ,
-                                    void *, const size_t, const size_t, const long * , const long * ,
-                                    void *, const size_t, const size_t, const long * , const long * )
-
-cdef shape_type_c strides_to_vector(strides, shape) except *:
-    cdef shape_type_c res
-    if strides is None:
-        res = utils.get_axis_offsets(shape)
-    else:
-        res = strides
-    return res
+ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , shape_elem_type * ,
+                                       shape_elem_type * , shape_elem_type * , size_t)
+ctypedef void(*fptr_2in_1out_dot_t)(void *, const size_t, const size_t,
+                                    const shape_elem_type * , const shape_elem_type * ,
+                                    void *, const size_t, const size_t,
+                                    const shape_elem_type * , const shape_elem_type * ,
+                                    void *, const size_t, const size_t,
+                                    const shape_elem_type * , const shape_elem_type * )
 
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
 
@@ -94,11 +90,11 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
     # create result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
-    cdef shape_type_c result_strides = strides_to_vector(result.strides, result.shape)
+    cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result.shape)
     cdef shape_type_c in_array1_shape = in_array1.shape
-    cdef shape_type_c in_array1_strides = strides_to_vector(in_array1.strides, in_array1.shape)
+    cdef shape_type_c in_array1_strides = utils.strides_to_vector(in_array1.strides, in_array1.shape)
     cdef shape_type_c in_array2_shape = in_array2.shape
-    cdef shape_type_c in_array2_strides = strides_to_vector(in_array2.strides, in_array2.shape)
+    cdef shape_type_c in_array2_strides = utils.strides_to_vector(in_array2.strides, in_array2.shape)
 
     cdef fptr_2in_1out_dot_t func = <fptr_2in_1out_dot_t > kernel_data.ptr
     # call FPTR function
@@ -216,7 +212,7 @@ cpdef utils.dpnp_descriptor dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor
 
     cdef fptr_2in_1out_shapes_t func = <fptr_2in_1out_shapes_t > kernel_data.ptr
     # call FPTR function
-    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), < size_t * > in_array1_shape.data(), < size_t * > in_array2_shape.data(), < size_t * > result_shape.data(), ndim)
+    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), in_array1_shape.data(), in_array2_shape.data(), result_shape.data(), ndim)
 
     return result
 
@@ -272,7 +268,13 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL, param1_type, param2_type)
 
     # ceate result array with type given by FPTR data
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_result, kernel_data.return_type, out)
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(in_array1, in_array2)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_result,
+                                                                       kernel_data.return_type,
+                                                                       out,
+                                                                       device=result_sycl_device,
+                                                                       usm_type=result_usm_type,
+                                                                       sycl_queue=result_sycl_queue)
     if result.size == 0:
         return result
 
@@ -305,6 +307,6 @@ cpdef utils.dpnp_descriptor dpnp_outer(utils.dpnp_descriptor array1, utils.dpnp_
 
     for idx1 in range(array1.size):
         for idx2 in range(array2.size):
-            result.get_pyobj()[idx1 * array2.size + idx2] = array1.get_pyobj()[idx1] * array2.get_pyobj()[idx2]
+            result.get_pyobj()[numpy.unravel_index(idx1 * array2.size + idx2, result.shape)] = array1.get_pyobj()[numpy.unravel_index(idx1, array1.shape)] * array2.get_pyobj()[numpy.unravel_index(idx2, array2.shape)]
 
     return result
