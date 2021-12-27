@@ -42,7 +42,7 @@ __all__ += [
 ]
 
 
-ctypedef void(*fptr_dpnp_partition_t)(void * , void * , void * , const size_t , const size_t * , const size_t)
+ctypedef void(*fptr_dpnp_partition_t)(void * , void * , void * , const size_t , const shape_elem_type * , const size_t)
 ctypedef void(*fptr_dpnp_searchsorted_t)(void * , const void * , const void * , bool , const size_t , const size_t )
 
 
@@ -67,7 +67,7 @@ cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, a
 
     cdef fptr_dpnp_partition_t func = <fptr_dpnp_partition_t > kernel_data.ptr
 
-    func(arr.get_data(), arr2.get_data(), result.get_data(), kth_, < size_t * > shape1.data(), arr.ndim)
+    func(arr.get_data(), arr2.get_data(), result.get_data(), kth_, shape1.data(), arr.ndim)
 
     return result
 

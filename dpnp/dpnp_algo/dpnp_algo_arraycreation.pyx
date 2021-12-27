@@ -56,14 +56,14 @@ __all__ += [
 ]
 
 
-ctypedef void(*custom_1in_1out_func_ptr_t)(void * , void * , const int , size_t * , size_t * , const size_t, const size_t)
+ctypedef void(*custom_1in_1out_func_ptr_t)(void * , void * , const int , shape_elem_type * , shape_elem_type * , const size_t, const size_t)
 ctypedef void(*ftpr_custom_vander_1in_1out_t)(void *, void * , size_t, size_t, int)
 ctypedef void(*custom_indexing_1out_func_ptr_t)(void *, const size_t , const size_t , const int)
-ctypedef void(*fptr_dpnp_trace_t)(const void * , void * , const size_t * , const size_t)
+ctypedef void(*fptr_dpnp_trace_t)(const void * , void * , const shape_elem_type * , const size_t)
 
 
 cpdef utils.dpnp_descriptor dpnp_copy(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_COPY, x1, x1.shape)
+    return call_fptr_1in_1out_strides(DPNP_FN_COPY, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_diag(utils.dpnp_descriptor v, int k):
@@ -92,7 +92,7 @@ cpdef utils.dpnp_descriptor dpnp_diag(utils.dpnp_descriptor v, int k):
     cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
     cdef shape_type_c result_shape = result.shape
 
-    func(v.get_data(), result.get_data(), k, < size_t * > input_shape.data(), < size_t * > result_shape.data(), v.ndim, result.ndim)
+    func(v.get_data(), result.get_data(), k, input_shape.data(), result_shape.data(), v.ndim, result.ndim)
 
     return result
 
@@ -293,7 +293,7 @@ cpdef utils.dpnp_descriptor dpnp_trace(utils.dpnp_descriptor arr, offset=0, axis
 
     cdef fptr_dpnp_trace_t func = <fptr_dpnp_trace_t > kernel_data.ptr
 
-    func(diagonal_arr.get_data(), result.get_data(), < size_t * > diagonal_shape.data(), diagonal_ndim)
+    func(diagonal_arr.get_data(), result.get_data(), diagonal_shape.data(), diagonal_ndim)
 
     return result
 
@@ -335,7 +335,7 @@ cpdef utils.dpnp_descriptor dpnp_tril(utils.dpnp_descriptor m, int k):
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
-    func(m.get_data(), result.get_data(), k, < size_t * > input_shape.data(), < size_t * > result_shape.data(), m.ndim, result.ndim)
+    func(m.get_data(), result.get_data(), k, input_shape.data(), result_shape.data(), m.ndim, result.ndim)
 
     return result
 
@@ -356,7 +356,7 @@ cpdef utils.dpnp_descriptor dpnp_triu(utils.dpnp_descriptor m, int k):
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
-    func(m.get_data(), result.get_data(), k, < size_t * > input_shape.data(), < size_t * > result_shape.data(), m.ndim, result.ndim)
+    func(m.get_data(), result.get_data(), k, input_shape.data(), result_shape.data(), m.ndim, result.ndim)
 
     return result
 

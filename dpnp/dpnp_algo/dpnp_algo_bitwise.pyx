@@ -49,7 +49,7 @@ cpdef utils.dpnp_descriptor dpnp_bitwise_and(utils.dpnp_descriptor x1_obj,
                                              object dtype=None,
                                              utils.dpnp_descriptor out=None,
                                              object where=True):
-    return call_fptr_2in_1out(DPNP_FN_BITWISE_AND, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
+    return call_fptr_2in_1out_strides(DPNP_FN_BITWISE_AND, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
 cpdef utils.dpnp_descriptor dpnp_bitwise_or(utils.dpnp_descriptor x1_obj,
@@ -57,7 +57,7 @@ cpdef utils.dpnp_descriptor dpnp_bitwise_or(utils.dpnp_descriptor x1_obj,
                                             object dtype=None,
                                             utils.dpnp_descriptor out=None,
                                             object where=True):
-    return call_fptr_2in_1out(DPNP_FN_BITWISE_OR, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
+    return call_fptr_2in_1out_strides(DPNP_FN_BITWISE_OR, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
 cpdef utils.dpnp_descriptor dpnp_bitwise_xor(utils.dpnp_descriptor x1_obj,
@@ -65,7 +65,7 @@ cpdef utils.dpnp_descriptor dpnp_bitwise_xor(utils.dpnp_descriptor x1_obj,
                                              object dtype=None,
                                              utils.dpnp_descriptor out=None,
                                              object where=True):
-    return call_fptr_2in_1out(DPNP_FN_BITWISE_XOR, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
+    return call_fptr_2in_1out_strides(DPNP_FN_BITWISE_XOR, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
 cpdef utils.dpnp_descriptor dpnp_invert(utils.dpnp_descriptor arr):
@@ -77,11 +77,11 @@ cpdef utils.dpnp_descriptor dpnp_left_shift(utils.dpnp_descriptor x1_obj,
                                             object dtype=None,
                                             utils.dpnp_descriptor out=None,
                                             object where=True):
-    return call_fptr_2in_1out(DPNP_FN_LEFT_SHIFT, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
+    return call_fptr_2in_1out_strides(DPNP_FN_LEFT_SHIFT, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 cpdef utils.dpnp_descriptor dpnp_right_shift(utils.dpnp_descriptor x1_obj,
                                              utils.dpnp_descriptor x2_obj,
                                              object dtype=None,
                                              utils.dpnp_descriptor out=None,
                                              object where=True):
-    return call_fptr_2in_1out(DPNP_FN_RIGHT_SHIFT, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
+    return call_fptr_2in_1out_strides(DPNP_FN_RIGHT_SHIFT, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
