@@ -31,7 +31,7 @@ from libcpp cimport bool as cpp_bool
 from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 
 
-ctypedef long shape_elem_type
+ctypedef ssize_t shape_elem_type
 ctypedef vector.vector[shape_elem_type] shape_type_c
 
 

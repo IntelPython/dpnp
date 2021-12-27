@@ -48,7 +48,7 @@
 #define INP_DLLEXPORT
 #endif
 
-typedef long shape_elem_type;
+typedef ssize_t shape_elem_type;
 
 #include "dpnp_iface_fft.hpp"
 #include "dpnp_iface_random.hpp"
