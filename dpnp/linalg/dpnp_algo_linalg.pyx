@@ -247,15 +247,21 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
             absx = dpnp.abs(input)
             absx_size = absx.size
             absx_power = utils_py.create_output_descriptor_py((absx_size,), absx.dtype, None).get_pyobj()
+
+            absx_flatiter = absx.flat
+
             for i in range(absx_size):
-                absx_elem = absx[numpy.unravel_index(i, absx.shape)]
+                absx_elem = absx_flatiter[i]
                 absx_power[i] = absx_elem ** ord
             absx_ = dpnp.reshape(absx_power, absx.shape)
             ret = dpnp.sum(absx_, axis=axis)
             ret_size = ret.size
             ret_power = utils_py.create_output_descriptor_py((ret_size,), None, None).get_pyobj()
+
+            ret_flatiter = ret.flat
+
             for i in range(ret_size):
-                ret_elem = ret[numpy.unravel_index(i, ret.shape)]
+                ret_elem = ret_flatiter[i]
                 ret_power[i] = ret_elem ** (1 / ord)
             ret_ = dpnp.reshape(ret_power, ret.shape)
             return ret_
