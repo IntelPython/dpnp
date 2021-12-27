@@ -167,14 +167,14 @@ template <typename _DataType>
 void dpnp_ptp_c(void* result1_out,
                 const size_t result_size,
                 const size_t result_ndim,
-                const size_t* result_shape,
-                const size_t* result_strides,
+                const shape_elem_type* result_shape,
+                const shape_elem_type* result_strides,
                 const void* input1_in,
                 const size_t input_size,
                 const size_t input_ndim,
-                const size_t* input_shape,
-                const size_t* input_strides,
-                const size_t* axis,
+                const shape_elem_type* input_shape,
+                const shape_elem_type* input_strides,
+                const shape_elem_type* axis,
                 const size_t naxis)
 {
     (void) result_strides;
