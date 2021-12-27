@@ -521,7 +521,7 @@ INP_DLLEXPORT void dpnp_eigvals_c(const void* array_in, void* result1, size_t si
  * @param [in]  shape          Shape of result
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_eye_c(void* result, int k, const size_t* res_shape);
+INP_DLLEXPORT void dpnp_eye_c(void* result, int k, const shape_elem_type* res_shape);
 
 /**
  * @ingroup BACKEND_API
