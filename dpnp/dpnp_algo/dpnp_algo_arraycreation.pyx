@@ -324,8 +324,8 @@ cpdef dpnp_ptp(utils.dpnp_descriptor arr, axis=None):
             axis2.push_back(shape_it)
         axis_size = len(axis1)
     
-    func(result.get_data(), result.size, result.ndim, < size_t * > output_shape.data(), NULL,
-         arr.get_data(), arr.size, arr.ndim, < size_t * > shape_arr.data(), NULL, < size_t * > axis2.data(), axis_size)
+    func(result.get_data(), result.size, result.ndim, output_shape.data(), NULL,
+         arr.get_data(), arr.size, arr.ndim, shape_arr.data(), NULL, axis2.data(), axis_size)
 
     return result
 
