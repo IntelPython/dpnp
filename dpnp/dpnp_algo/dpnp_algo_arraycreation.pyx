@@ -117,7 +117,7 @@ cpdef utils.dpnp_descriptor dpnp_eye(N, M=None, k=0, dtype=None):
 
     cdef shape_type_c result_shape = result.shape
 
-    func(result.get_data(), k, < size_t * > result_shape.data())
+    func(result.get_data(), k, result_shape.data())
 
     return result
 
