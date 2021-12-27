@@ -101,7 +101,7 @@ void dpnp_diag_c(
 }
 
 template <typename _DataType>
-void dpnp_eye_c(void* result1, int k, const size_t* res_shape)
+void dpnp_eye_c(void* result1, int k, const shape_elem_type* res_shape)
 {
     if (result1 == nullptr)
     {
