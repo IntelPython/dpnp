@@ -31,7 +31,8 @@ from libcpp cimport bool as cpp_bool
 from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 
 
-ctypedef vector.vector[long] shape_type_c
+ctypedef long shape_elem_type
+ctypedef vector.vector[shape_elem_type] shape_type_c
 
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
@@ -237,13 +238,25 @@ cdef extern from "dpnp_iface.hpp":
 # C function pointer to the C library template functions
 ctypedef void(*fptr_1out_t)(void * , size_t)
 ctypedef void(*fptr_1in_1out_t)(void *, void * , size_t)
-ctypedef void(*fptr_2in_1out_t)(void * , const void * , const size_t, const long * , const size_t,
-                                const void *, const size_t, const long * , const size_t, const long * )
+ctypedef void(*fptr_1in_1out_strides_t)(void *, const size_t, const size_t,
+                                        const shape_elem_type * , const shape_elem_type * ,
+                                        void *, const size_t, const size_t,
+                                        const shape_elem_type * , const shape_elem_type * ,
+                                        const long * )
+ctypedef void(*fptr_2in_1out_t)(void * , const void * , const size_t, const shape_elem_type * , const size_t,
+                                const void *, const size_t, const shape_elem_type * , const size_t, const long * )
+ctypedef void(*fptr_2in_1out_strides_t)(void *, const size_t, const size_t,
+                                        const shape_elem_type * , const shape_elem_type * ,
+                                        void *, const size_t, const size_t,
+                                        const shape_elem_type * , const shape_elem_type * ,
+                                        void *, const size_t, const size_t,
+                                        const shape_elem_type * , const shape_elem_type * ,
+                                        const long * )
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void *, void * , void * , size_t, size_t, size_t)
-ctypedef void(*dpnp_reduction_c_t)(void *, const void * , const size_t*, const size_t, const long*, const size_t, const void * , const long*)
+ctypedef void(*dpnp_reduction_c_t)(void *, const void * , const shape_elem_type*, const size_t, const shape_elem_type*, const size_t, const void * , const long*)
 
-cpdef dpnp_descriptor dpnp_astype(dpnp_descriptor array1, dtype)
-cpdef dpnp_descriptor dpnp_flatten(dpnp_descriptor array1)
+cpdef dpnp_descriptor dpnp_astype(dpnp_descriptor x1, dtype)
+cpdef dpnp_descriptor dpnp_flatten(dpnp_descriptor x1)
 
 
 """
@@ -312,7 +325,6 @@ cpdef dpnp_descriptor dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_
 Array creation routines
 """
 cpdef dpnp_descriptor dpnp_arange(start, stop, step, dtype)
-cpdef dpnp_descriptor dpnp_array(object obj, object dtype=*)
 cpdef dpnp_descriptor dpnp_init_val(shape, dtype, value)
 cpdef dpnp_descriptor dpnp_full(result_shape, value_in, result_dtype)  # same as dpnp_init_val
 cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)

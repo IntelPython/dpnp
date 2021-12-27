@@ -42,12 +42,15 @@ __all__ += [
 ]
 
 
-ctypedef void(*fptr_dpnp_partition_t)(void * , void * , void * , const size_t , const size_t * , const size_t)
+ctypedef void(*fptr_dpnp_partition_t)(void * , void * , void * , const size_t , const shape_elem_type * , const size_t)
 ctypedef void(*fptr_dpnp_searchsorted_t)(void * , const void * , const void * , bool , const size_t , const size_t )
 
 
 cpdef utils.dpnp_descriptor dpnp_argsort(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_ARGSORT, x1, x1.shape)
+    cdef shape_type_c result_shape = x1.shape
+    if result_shape == ():
+        result_shape = (1,)
+    return call_fptr_1in_1out(DPNP_FN_ARGSORT, x1, result_shape)
 
 
 cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, axis=-1, kind='introselect', order=None):
@@ -64,7 +67,7 @@ cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, a
 
     cdef fptr_dpnp_partition_t func = <fptr_dpnp_partition_t > kernel_data.ptr
 
-    func(arr.get_data(), arr2.get_data(), result.get_data(), kth_, < size_t * > shape1.data(), arr.ndim)
+    func(arr.get_data(), arr2.get_data(), result.get_data(), kth_, shape1.data(), arr.ndim)
 
     return result
 

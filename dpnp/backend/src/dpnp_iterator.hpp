@@ -53,7 +53,7 @@ public:
     using iterator_category = std::random_access_iterator_tag;
     using pointer = value_type*;
     using reference = value_type&;
-    using size_type = size_t;
+    using size_type = shape_elem_type;
 
     DPNP_USM_iterator(pointer __base_ptr,
                       size_type __id,
@@ -199,12 +199,19 @@ public:
     using iterator = DPNP_USM_iterator<value_type>;
     using pointer = value_type*;
     using reference = value_type&;
-    using size_type = size_t;
+    using size_type = shape_elem_type;
 
     DPNPC_id(pointer __ptr, const size_type* __shape, const size_type __shape_size)
     {
         std::vector<size_type> shape(__shape, __shape + __shape_size);
         init_container(__ptr, shape);
+    }
+
+    DPNPC_id(pointer __ptr, const size_type* __shape, const size_type* __strides, const size_type __ndim)
+    {
+        std::vector<size_type> shape(__shape, __shape + __ndim);
+        std::vector<size_type> strides(__strides, __strides + __ndim);
+        init_container(__ptr, shape, strides);
     }
 
     /**
@@ -225,6 +232,24 @@ public:
         init_container(__ptr, __shape);
     }
 
+    /**
+     * @ingroup BACKEND_UTILS
+     * @brief Main container for reduction/broadcasting iterator
+     *
+     * Construct object to hold @ref __ptr data with shape @ref __shape and strides @ref __strides.
+     *
+     * @note this function is designed for non-SYCL environment execution
+     *
+     * @param [in]  __ptr      Pointer to input data. Used to get values only.
+     * @param [in]  __shape    Shape of data provided by @ref __ptr.
+     *                         Empty container means scalar value pointed by @ref __ptr.
+     * @param [in]  __strides  Strides of data provided by @ref __ptr.
+     */
+    DPNPC_id(pointer __ptr, const std::vector<size_type>& __shape, const std::vector<size_type>& __strides)
+    {
+        init_container(__ptr, __shape, __strides);
+    }
+
     DPNPC_id() = delete;
 
     ~DPNPC_id()
@@ -236,6 +261,12 @@ public:
     inline size_type get_output_size() const
     {
         return output_size;
+    }
+
+    inline void broadcast_to_shape(const size_type* __shape, const size_type __shape_size)
+    {
+        std::vector<size_type> shape(__shape, __shape + __shape_size);
+        broadcast_to_shape(shape);
     }
 
     /**
@@ -310,14 +341,14 @@ public:
      *
      * @param [in]  __axis    Axis in a shape of input array.
      */
-    inline void set_axis(long __axis)
+    inline void set_axis(shape_elem_type __axis)
     {
         set_axes({__axis});
     }
 
-    inline void set_axes(const long* __axes, const size_t axes_ndim)
+    inline void set_axes(const shape_elem_type* __axes, const size_t axes_ndim)
     {
-        const std::vector<long> axes_vec(__axes, __axes + axes_ndim);
+        const std::vector<shape_elem_type> axes_vec(__axes, __axes + axes_ndim);
         set_axes(axes_vec);
     }
 
@@ -338,7 +369,7 @@ public:
      *
      * @param [in]  __axes       Vector of axes of a shape of input array.
      */
-    inline void set_axes(const std::vector<long>& __axes)
+    inline void set_axes(const std::vector<shape_elem_type>& __axes)
     {
         if (broadcast_use)
         {
@@ -465,6 +496,41 @@ private:
             input_shape_strides =
                 reinterpret_cast<size_type*>(dpnp_memory_alloc_c(input_shape_size * sizeof(size_type)));
             get_shape_offsets_inkernel<size_type>(input_shape, input_shape_size, input_shape_strides);
+        }
+        iteration_size = input_size;
+    }
+
+    void init_container(pointer __ptr, const std::vector<size_type>& __shape, const std::vector<size_type>& __strides)
+    {
+        // TODO needs to address negative values in __shape with exception
+        if ((__ptr == nullptr) && __shape.empty())
+        {
+            return;
+        }
+
+        if (__ptr != nullptr)
+        {
+            data = __ptr;
+            input_size = 1;  // means scalar at this stage
+            output_size = 1; // if input size is not zero it means we have scalar as output
+            iteration_size = 1;
+        }
+
+        if (!__shape.empty())
+        {
+            input_size = std::accumulate(__shape.begin(), __shape.end(), size_type(1), std::multiplies<size_type>());
+            if (input_size == 0)
+            {                    // shape might be shape[3, 4, 0, 6]. This means no input memory and no output expected
+                output_size = 0; // depends on axes. zero at this stage only
+            }
+
+            input_shape_size = __shape.size();
+            input_shape = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(input_shape_size * sizeof(size_type)));
+            std::copy(__shape.begin(), __shape.end(), input_shape);
+
+            input_shape_strides =
+                reinterpret_cast<size_type*>(dpnp_memory_alloc_c(input_shape_size * sizeof(size_type)));
+            std::copy(__strides.begin(), __strides.end(), input_shape_strides);
         }
         iteration_size = input_size;
     }
