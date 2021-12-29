@@ -12,17 +12,17 @@ requirements:
       - cython
       - cmake 3.19
       - dpctl >=0.10
-      - mkl-devel-dpcpp
+      - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2021.1.1') }}
       - tbb-devel
       - wheel
     build:
       - {{ compiler('dpcpp') }}
+      - dpcpp-cpp-rt {{ environ.get('DPCPP_VER', '>=2021.1.1') }}
     run:
       - python
       - dpctl >=0.10
-      - dpcpp_cpp_rt >=2021.1.1
-      - mkl >=2021.1.1
-      - mkl-dpcpp >=2021.1.1
+      - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x.x') }}
+      - {{ pin_compatible('mkl-dpcpp', min_pin='x.x', max_pin='x.x') }}
       - numpy >=1.15
 
 build:
@@ -46,7 +46,6 @@ test:
         - setup.cfg
     commands:
       - python -c "import dpnp"
-      - conda list
       - pytest -s
 
 about:
