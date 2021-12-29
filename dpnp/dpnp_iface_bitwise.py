@@ -65,6 +65,8 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
     x2_is_scalar = dpnp.isscalar(x2)
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
