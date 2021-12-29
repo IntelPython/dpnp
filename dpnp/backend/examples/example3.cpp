@@ -58,9 +58,9 @@ int main(int, char**)
     std::cout << std::endl;
 
     const long ndim = 1;
-    long* shape = reinterpret_cast<long*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    shape_elem_type* shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
     shape[0] = size;
-    long* strides = reinterpret_cast<long*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    shape_elem_type* strides = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
     strides[0] = 1;
 
     dpnp_cos_c<int, double>(result, size, ndim, shape, strides, array1, size, ndim, shape, strides, NULL);
