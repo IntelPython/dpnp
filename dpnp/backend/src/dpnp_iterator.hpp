@@ -53,7 +53,7 @@ public:
     using iterator_category = std::random_access_iterator_tag;
     using pointer = value_type*;
     using reference = value_type&;
-    using size_type = size_t;
+    using size_type = shape_elem_type;
 
     DPNP_USM_iterator(pointer __base_ptr,
                       size_type __id,
@@ -199,7 +199,7 @@ public:
     using iterator = DPNP_USM_iterator<value_type>;
     using pointer = value_type*;
     using reference = value_type&;
-    using size_type = size_t;
+    using size_type = shape_elem_type;
 
     DPNPC_id(pointer __ptr, const size_type* __shape, const size_type __shape_size)
     {
@@ -341,14 +341,14 @@ public:
      *
      * @param [in]  __axis    Axis in a shape of input array.
      */
-    inline void set_axis(long __axis)
+    inline void set_axis(shape_elem_type __axis)
     {
         set_axes({__axis});
     }
 
-    inline void set_axes(const long* __axes, const size_t axes_ndim)
+    inline void set_axes(const shape_elem_type* __axes, const size_t axes_ndim)
     {
-        const std::vector<long> axes_vec(__axes, __axes + axes_ndim);
+        const std::vector<shape_elem_type> axes_vec(__axes, __axes + axes_ndim);
         set_axes(axes_vec);
     }
 
@@ -369,7 +369,7 @@ public:
      *
      * @param [in]  __axes       Vector of axes of a shape of input array.
      */
-    inline void set_axes(const std::vector<long>& __axes)
+    inline void set_axes(const std::vector<shape_elem_type>& __axes)
     {
         if (broadcast_use)
         {

@@ -47,6 +47,9 @@ import dpnp.config as config
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
+import dpnp.dpnp_container as dpnp_container
+
+
 __all__ = [
     "arange",
     "array",
@@ -58,6 +61,7 @@ __all__ = [
     "diagflat",
     "empty",
     "empty_like",
+    "eye",
     "frombuffer",
     "fromfile",
     "fromfunction",
@@ -75,6 +79,7 @@ __all__ = [
     "ogrid",
     "ones",
     "ones_like",
+    "ptp",
     "trace",
     "tri",
     "tril",
@@ -150,7 +155,16 @@ def arange(start, stop=None, step=1, dtype=None):
     return call_origin(numpy.arange, start, stop=stop, step=step, dtype=dtype)
 
 
-def array(x1, dtype=None, copy=True, order='C', subok=False, ndmin=0, like=None):
+def array(x1,
+          dtype=None,
+          copy=True,
+          order="C",
+          subok=False,
+          ndmin=0,
+          like=None,
+          device=None,
+          usm_type=None,
+          sycl_queue=None):
     """
     Creates an array.
 
@@ -158,10 +172,9 @@ def array(x1, dtype=None, copy=True, order='C', subok=False, ndmin=0, like=None)
 
     Limitations
     -----------
-    Parameter ``copy`` is supported only with default value ``True``.
-    Parameter ``order`` is supported only with default value ``"C"``.
     Parameter ``subok`` is supported only with default value ``False``.
     Parameter ``ndmin`` is supported only with default value ``0``.
+    Parameter ``like`` is supported only with default value ``None``.
 
     See Also
     --------
@@ -180,35 +193,43 @@ def array(x1, dtype=None, copy=True, order='C', subok=False, ndmin=0, like=None)
     >>> x = np.array([1, 2, 3])
     >>> x.ndim, x.size, x.shape
     (1, 3, (3,))
-    >>> [i for i in x]
-    [1, 2, 3]
+    >>> print(x)
+    [1 2 3]
 
     More than one dimension:
 
     >>> x2 = np.array([[1, 2], [3, 4]])
     >>> x2.ndim, x2.size, x2.shape
     (2, 4, (2, 2))
-    >>> [i for i in x2]
-    [1, 2, 3, 4]
+    >>> print(x2)
+    [[1 2]
+     [3 4]]
 
     """
 
-    if not dpnp.is_type_supported(dtype) and dtype is not None:
-        pass
-    elif config.__DPNP_OUTPUT_DPCTL__:
-        return call_origin(numpy.array, x1, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
-    elif subok is not False:
-        pass
-    elif copy is not True:
-        pass
-    elif order != 'C':
+    if subok is not False:
         pass
     elif ndmin != 0:
         pass
+    elif like is not None:
+        pass
     else:
-        return dpnp_array(x1, dtype).get_pyobj()
+        return dpnp_container.asarray(x1,
+                                      dtype=dtype,
+                                      copy=copy,
+                                      order=order,
+                                      device=device,
+                                      usm_type=usm_type,
+                                      sycl_queue=sycl_queue)
 
-    return call_origin(numpy.array, x1, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
+    return call_origin(numpy.array,
+                       x1,
+                       dtype=dtype,
+                       copy=copy,
+                       order=order,
+                       subok=subok,
+                       ndmin=ndmin,
+                       like=like)
 
 
 def asanyarray(a, dtype=None, order='C'):
@@ -256,7 +277,13 @@ def asanyarray(a, dtype=None, order='C'):
     return call_origin(numpy.asanyarray, a, dtype, order)
 
 
-def asarray(input, dtype=None, order='C'):
+def asarray(x1,
+            dtype=None,
+            order="C",
+            like=None,
+            device=None,
+            usm_type=None,
+            sycl_queue=None):
     """
     Converts an input object into array.
 
@@ -264,7 +291,7 @@ def asarray(input, dtype=None, order='C'):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``like`` is supported only with default value ``None``.
 
     See Also
     --------
@@ -283,15 +310,23 @@ def asarray(input, dtype=None, order='C'):
     --------
     >>> import dpnp as np
     >>> x = np.asarray([1, 2, 3])
-    >>> [i for i in x]
-    [1, 2, 3]
+    >>> print(x)
+    [1 2 3]
 
     """
 
-    if (use_origin_backend(input)):
-        return numpy.asarray(input, dtype=dtype, order=order)
+    if like is not None:
+        pass
+    else:
+        return dpnp_container.asarray(x1,
+                                      dtype=dtype,
+                                      copy=True,  # Converting Python sequence to usm_ndarray requires a copy
+                                      order=order,
+                                      device=device,
+                                      usm_type=usm_type,
+                                      sycl_queue=sycl_queue)
 
-    return array(input, dtype=dtype, order=order)
+    return call_origin(numpy.asarray, x1, dtype=dtype, order=order, like=like)
 
 
 def ascontiguousarray(a, dtype=None):
@@ -440,7 +475,13 @@ def diagflat(x1, k=0):
     return call_origin(numpy.diagflat, x1, k)
 
 
-def empty(shape, dtype=numpy.float64, order='C'):
+def empty(shape,
+          dtype="f8",
+          order="C",
+          like=None,
+          device=None,
+          usm_type="device",
+          sycl_queue=None):
     """
     Return a new array of given shape and type, without initializing entries.
 
@@ -448,7 +489,7 @@ def empty(shape, dtype=numpy.float64, order='C'):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``like`` is supported only with default value ``None``.
 
     See Also
     --------
@@ -461,19 +502,22 @@ def empty(shape, dtype=numpy.float64, order='C'):
     --------
     >>> import dpnp as np
     >>> x = np.empty(4)
-    >>> [i for i in x]
-    [0.0, 0.0, 1e-323, -3.5935729608842025e+22]
+    >>> print(x)
+    [0. 0. 0. 0.]
 
     """
 
-    if (not use_origin_backend()):
-        if order not in ('C', 'c', None):
-            pass
-        else:
-            result = create_output_descriptor_py(_object_to_tuple(shape), dtype, None).get_pyobj()
-            return result
+    if like is not None:
+        pass
+    else:
+        return dpnp_container.empty(shape,
+                                    dtype=dtype,
+                                    order=order,
+                                    device=device,
+                                    usm_type=usm_type,
+                                    sycl_queue=sycl_queue)
 
-    return call_origin(numpy.empty, shape, dtype, order)
+    return call_origin(numpy.empty, shape, dtype=dtype, order=order, like=like)
 
 
 def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
@@ -517,6 +561,34 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
             return result
 
     return call_origin(numpy.empty_like, prototype, dtype, order, subok, shape)
+
+
+def eye(N, M=None, k=0, dtype=None, order='C', **kwargs):
+    """
+    Return a 2-D array with ones on the diagonal and zeros elsewhere.
+    For full documentation refer to :obj:`numpy.eye`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters ``order`` is supported only with default value.
+    """
+    if (not use_origin_backend()):
+        if not isinstance(N, (int, dpnp.int, dpnp.int32, dpnp.int64)):
+            pass
+        elif M is not None and not isinstance(M, (int, dpnp.int, dpnp.int32, dpnp.int64)):
+            pass
+        elif not isinstance(k, (int, dpnp.int, dpnp.int32, dpnp.int64)):
+            pass
+        elif order != 'C':
+            pass
+        elif len(kwargs) != 0:
+            pass
+        else:
+            return dpnp_eye(N, M=M, k=k, dtype=dtype).get_pyobj()
+
+    return call_origin(numpy.eye, N, M=M, k=k, dtype=dtype, order=order, **kwargs)
+
 
 
 def frombuffer(buffer, **kwargs):
@@ -1080,6 +1152,35 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
             return dpnp_ones_like(_shape, _dtype).get_pyobj()
 
     return call_origin(numpy.ones_like, x1, dtype, order, subok, shape)
+
+
+def ptp(arr, axis=None, out=None, keepdims=numpy._NoValue):
+    """
+    Range of values (maximum - minimum) along an axis.
+
+    For full documentation refer to :obj:`numpy.ptp`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters ``out`` and ``keepdims`` are supported only with default values.
+    """
+    arr_desc = dpnp.get_dpnp_descriptor(arr)
+    if not arr_desc:
+        pass
+    elif axis is not None and not isinstance(axis, int):
+        pass
+    elif out is not None:
+        pass
+    elif keepdims is not numpy._NoValue:
+        pass
+    else:
+        result_obj = dpnp_ptp(arr_desc, axis=axis).get_pyobj()
+        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+
+        return result
+
+    return call_origin(numpy.ptp, arr, axis, out, keepdims)
 
 
 def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):

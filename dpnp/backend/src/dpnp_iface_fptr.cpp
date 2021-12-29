@@ -94,11 +94,11 @@ void* get_backend_function_name(const char* func_name, const char* type_name)
         }
         else if (!strncmp(type_name, supported_type3_name, strlen(supported_type3_name)))
         {
-            return reinterpret_cast<void*>(dpnp_dot_c<long, long, long>);
+            return reinterpret_cast<void*>(dpnp_dot_c<int64_t, int64_t, int64_t>);
         }
         else if (!strncmp(type_name, supported_type4_name, strlen(supported_type4_name)))
         {
-            return reinterpret_cast<void*>(dpnp_dot_c<int, int, int>);
+            return reinterpret_cast<void*>(dpnp_dot_c<int32_t, int32_t, int32_t>);
         }
     }
 
