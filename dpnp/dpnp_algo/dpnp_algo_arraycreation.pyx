@@ -47,6 +47,7 @@ __all__ += [
     "dpnp_meshgrid",
     "dpnp_ones",
     "dpnp_ones_like",
+    "dpnp_ptp",
     "dpnp_trace",
     "dpnp_tri",
     "dpnp_tril",
@@ -59,6 +60,9 @@ __all__ += [
 
 ctypedef void(*custom_1in_1out_func_ptr_t)(void * , void * , const int , shape_elem_type * , shape_elem_type * , const size_t, const size_t)
 ctypedef void(*ftpr_custom_vander_1in_1out_t)(void *, void * , size_t, size_t, int)
+ctypedef void(*custom_arraycreation_1in_1out_func_ptr_t)(void * , const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
+                                                         void * , const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
+                                                         const shape_elem_type*, const size_t)
 ctypedef void(*custom_indexing_1out_func_ptr_t)(void *, const size_t , const size_t , const int)
 ctypedef void(*fptr_dpnp_eye_t)(void * , int , const shape_elem_type * )
 ctypedef void(*fptr_dpnp_trace_t)(const void * , void * , const shape_elem_type * , const size_t)
@@ -295,6 +299,63 @@ cpdef utils.dpnp_descriptor dpnp_ones(result_shape, result_dtype):
 
 cpdef utils.dpnp_descriptor dpnp_ones_like(result_shape, result_dtype):
     return call_fptr_1out(DPNP_FN_ONES_LIKE, utils._object_to_tuple(result_shape), result_dtype)
+
+
+cpdef dpnp_ptp(utils.dpnp_descriptor arr, axis=None):
+    cdef shape_type_c shape_arr = arr.shape
+    cdef shape_type_c output_shape
+    if axis is None:
+        axis_ = axis
+        output_shape = (1,)
+    else:
+        if isinstance(axis, int):
+            if axis < 0:
+                axis_ = tuple([arr.ndim - axis])
+            else:
+                axis_ = tuple([axis])
+        else:
+            _axis_ = []
+            for i in range(len(axis)):
+                if axis[i] < 0:
+                    _axis_.append(arr.ndim - axis[i])
+                else:
+                    _axis_.append(axis[i])
+            axis_ = tuple(_axis_)
+
+        out_shape = []
+        ind = 0
+        for id, shape_axis in enumerate(shape_arr):
+            if id not in axis_:
+                out_shape.append(shape_axis)
+        output_shape = tuple(out_shape)
+ 
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PTP, param1_type, param1_type)
+
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(output_shape, kernel_data.return_type, None)
+
+    cdef custom_arraycreation_1in_1out_func_ptr_t func = <custom_arraycreation_1in_1out_func_ptr_t > kernel_data.ptr
+    
+    cdef shape_type_c axis1
+    cdef Py_ssize_t axis_size = 0
+    cdef shape_type_c axis2 = axis1
+    if axis_ is not None:
+        axis1 = axis_
+        axis2.reserve(len(axis1))
+        for shape_it in axis1:
+            if shape_it < 0:
+                raise ValueError("DPNP dparray::__init__(): Negative values in 'shape' are not allowed")
+            axis2.push_back(shape_it)
+        axis_size = len(axis1)
+
+    cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result.shape)
+    cdef shape_type_c arr_strides = utils.strides_to_vector(arr.strides, arr.shape)
+
+    func(result.get_data(), result.size, result.ndim, output_shape.data(), result_strides.data(),
+         arr.get_data(), arr.size, arr.ndim, shape_arr.data(), arr_strides.data(), axis2.data(), axis_size)
+
+    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_trace(utils.dpnp_descriptor arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
