@@ -39,16 +39,6 @@
 #ifndef BACKEND_IFACE_FFT_H // Cython compatibility
 #define BACKEND_IFACE_FFT_H
 
-// #include <cstdint>
-
-// TODO needs to move into common place like backend_defs.hpp
-#ifdef _WIN32
-#define INP_DLLEXPORT __declspec(dllexport)
-#else
-#define INP_DLLEXPORT
-#endif
-
-// TODO needs to move into common place like backend_defs.hpp
 /**
  * @defgroup BACKEND_FFT_API Backend C++ library interface FFT API
  * @{
