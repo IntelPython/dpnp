@@ -39,16 +39,6 @@
 #ifndef BACKEND_IFACE_FFT_H // Cython compatibility
 #define BACKEND_IFACE_FFT_H
 
-// #include <cstdint>
-
-// TODO needs to move into common place like backend_defs.hpp
-#ifdef _WIN32
-#define INP_DLLEXPORT __declspec(dllexport)
-#else
-#define INP_DLLEXPORT
-#endif
-
-// TODO needs to move into common place like backend_defs.hpp
 /**
  * @defgroup BACKEND_FFT_API Backend C++ library interface FFT API
  * @{
@@ -75,8 +65,8 @@
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_fft_fft_c(const void* array_in,
                                   void* result,
-                                  const long* input_shape,
-                                  const long* output_shape,
+                                  const shape_elem_type* input_shape,
+                                  const shape_elem_type* output_shape,
                                   size_t shape_size,
                                   long axis,
                                   long input_boundarie,

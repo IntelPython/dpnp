@@ -106,6 +106,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_EIG,                      /**< Used in numpy.linalg.eig() implementation  */
     DPNP_FN_EIGVALS,                  /**< Used in numpy.linalg.eigvals() implementation  */
     DPNP_FN_ERF,                      /**< Used in scipy.special.erf implementation  */
+    DPNP_FN_EYE,                      /**< Used in numpy.eye() implementation  */
     DPNP_FN_EXP,                      /**< Used in numpy.exp() implementation  */
     DPNP_FN_EXP2,                     /**< Used in numpy.exp2() implementation  */
     DPNP_FN_EXPM1,                    /**< Used in numpy.expm1() implementation  */
@@ -148,6 +149,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_PLACE,                    /**< Used in numpy.place() implementation  */
     DPNP_FN_POWER,                    /**< Used in numpy.power() implementation  */
     DPNP_FN_PROD,                     /**< Used in numpy.prod() implementation  */
+    DPNP_FN_PTP,                      /**< Used in numpy.ptp() implementation  */
     DPNP_FN_PUT,                      /**< Used in numpy.put() implementation  */
     DPNP_FN_PUT_ALONG_AXIS,           /**< Used in numpy.put_along_axis() implementation  */
     DPNP_FN_QR,                       /**< Used in numpy.linalg.qr() implementation  */

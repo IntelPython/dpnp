@@ -1,14 +1,7 @@
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([[i, i] for i in x])]
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose
 
 tests/test_arraymanipulation.py::TestConcatenate::test_concatenate
 tests/test_histograms.py::TestHistogram::test_density
-tests/test_indexing.py::test_take_along_axis
-tests/test_indexing.py::test_take_along_axis1
-tests/test_mathematical.py::test_nancumprod[array1]
-tests/test_mathematical.py::test_nancumprod[array2]
-tests/test_mathematical.py::test_nancumsum[array1]
-tests/test_mathematical.py::test_nancumsum[array2]
 tests/test_mathematical.py::TestGradient::test_gradient_y1[array0]
 tests/test_mathematical.py::TestGradient::test_gradient_y1[array1]
 tests/test_mathematical.py::TestGradient::test_gradient_y1[array2]
@@ -49,17 +42,6 @@ tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_cons
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_list
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_tuple
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_logspace_zero_num
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_1_{n_vals=0, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_2_{n_vals=0, shape=(4, 3, 2)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_3_{n_vals=1, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_4_{n_vals=1, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_5_{n_vals=1, shape=(4, 3, 2)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_6_{n_vals=3, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_7_{n_vals=3, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_8_{n_vals=3, shape=(4, 3, 2)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_9_{n_vals=15, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_10_{n_vals=15, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_11_{n_vals=15, shape=(4, 3, 2)}::test_place
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_1darray
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_fill_diagonal
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_5_{shape=(3, 3), val=(2,), wrap=False}::test_1darray
@@ -431,7 +413,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_K_strides
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_zero_sized_array_strides
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_eye
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_default_dtype
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like_subok
@@ -1649,10 +1630,3 @@ tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentil
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_scalar_q
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_tuple_axis
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_uxpected_interpolation
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_all
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_all_nan
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis0
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis1
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis2
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis_large
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_nan
