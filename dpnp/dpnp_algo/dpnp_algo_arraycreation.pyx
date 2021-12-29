@@ -348,9 +348,12 @@ cpdef dpnp_ptp(utils.dpnp_descriptor arr, axis=None):
                 raise ValueError("DPNP dparray::__init__(): Negative values in 'shape' are not allowed")
             axis2.push_back(shape_it)
         axis_size = len(axis1)
-    
-    func(result.get_data(), result.size, result.ndim, output_shape.data(), NULL,
-         arr.get_data(), arr.size, arr.ndim, shape_arr.data(), NULL, axis2.data(), axis_size)
+
+    cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result.shape)
+    cdef shape_type_c arr_strides = utils.strides_to_vector(arr.strides, arr.shape)
+
+    func(result.get_data(), result.size, result.ndim, output_shape.data(), result_strides.data(),
+         arr.get_data(), arr.size, arr.ndim, shape_arr.data(), arr_strides.data(), axis2.data(), axis_size)
 
     return result
 
