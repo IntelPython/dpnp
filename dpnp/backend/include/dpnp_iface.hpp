@@ -545,6 +545,17 @@ INP_DLLEXPORT void dpnp_eigvals_c(const void* array_in, void* result1, size_t si
 
 /**
  * @ingroup BACKEND_API
+ * @brief Return a 2-D array with ones on the diagonal and zeros elsewhere.
+ *
+ * @param [out] result         The eigenvalues, each repeated according to its multiplicity
+ * @param [in]  k              Index of the diagonal
+ * @param [in]  shape          Shape of result
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_eye_c(void* result, int k, const shape_elem_type* res_shape);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of argsort function
  *
  * @param [in]  array   Input array with data.
