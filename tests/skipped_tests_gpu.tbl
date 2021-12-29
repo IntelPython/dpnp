@@ -1628,10 +1628,3 @@ tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentil
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_scalar_q
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_tuple_axis
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_uxpected_interpolation
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_all
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_all_nan
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis0
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis1
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis2
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis_large
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_nan
