@@ -242,8 +242,14 @@ void dpnp_ptp_c(void* result1_out,
 
     dpnp_min_c<_DataType>(arr, min_arr, result_size, input_shape, input_ndim, axis, naxis);
     dpnp_max_c<_DataType>(arr, max_arr, result_size, input_shape, input_ndim, axis, naxis);
-    dpnp_subtract_c<_DataType, _DataType, _DataType>(result, max_arr, result_size, result_shape, result_ndim, min_arr,
-                                                     result_size, result_shape, result_ndim, NULL);
+
+    shape_elem_type* _strides = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result_ndim * sizeof(shape_elem_type)));
+    get_shape_offsets_inkernel(result_shape, result_ndim, _strides);
+
+    dpnp_subtract_c<_DataType, _DataType, _DataType>(result, result_size, result_ndim, result_shape, result_strides,
+                                                     max_arr, result_size, result_ndim, result_shape, _strides,
+                                                     min_arr, result_size, result_ndim, result_shape, _strides,
+                                                     NULL);
 
     dpnp_memory_free_c(min_arr);
     dpnp_memory_free_c(max_arr);
