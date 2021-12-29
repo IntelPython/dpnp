@@ -61,6 +61,7 @@ __all__ = [
     "diagflat",
     "empty",
     "empty_like",
+    "eye",
     "frombuffer",
     "fromfile",
     "fromfunction",
@@ -559,6 +560,34 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
             return result
 
     return call_origin(numpy.empty_like, prototype, dtype, order, subok, shape)
+
+
+def eye(N, M=None, k=0, dtype=None, order='C', **kwargs):
+    """
+    Return a 2-D array with ones on the diagonal and zeros elsewhere.
+    For full documentation refer to :obj:`numpy.eye`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters ``order`` is supported only with default value.
+    """
+    if (not use_origin_backend()):
+        if not isinstance(N, (int, dpnp.int, dpnp.int32, dpnp.int64)):
+            pass
+        elif M is not None and not isinstance(M, (int, dpnp.int, dpnp.int32, dpnp.int64)):
+            pass
+        elif not isinstance(k, (int, dpnp.int, dpnp.int32, dpnp.int64)):
+            pass
+        elif order != 'C':
+            pass
+        elif len(kwargs) != 0:
+            pass
+        else:
+            return dpnp_eye(N, M=M, k=k, dtype=dtype).get_pyobj()
+
+    return call_origin(numpy.eye, N, M=M, k=k, dtype=dtype, order=order, **kwargs)
+
 
 
 def frombuffer(buffer, **kwargs):
