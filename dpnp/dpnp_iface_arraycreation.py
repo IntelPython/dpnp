@@ -79,6 +79,7 @@ __all__ = [
     "ogrid",
     "ones",
     "ones_like",
+    "ptp",
     "trace",
     "tri",
     "tril",
@@ -1151,6 +1152,35 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
             return dpnp_ones_like(_shape, _dtype).get_pyobj()
 
     return call_origin(numpy.ones_like, x1, dtype, order, subok, shape)
+
+
+def ptp(arr, axis=None, out=None, keepdims=numpy._NoValue):
+    """
+    Range of values (maximum - minimum) along an axis.
+
+    For full documentation refer to :obj:`numpy.ptp`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters ``out`` and ``keepdims`` are supported only with default values.
+    """
+    arr_desc = dpnp.get_dpnp_descriptor(arr)
+    if not arr_desc:
+        pass
+    elif axis is not None and not isinstance(axis, int):
+        pass
+    elif out is not None:
+        pass
+    elif keepdims is not numpy._NoValue:
+        pass
+    else:
+        result_obj = dpnp_ptp(arr_desc, axis=axis).get_pyobj()
+        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+
+        return result
+
+    return call_origin(numpy.ptp, arr, axis, out, keepdims)
 
 
 def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
