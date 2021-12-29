@@ -27,8 +27,8 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.8.0)
-# set(DPNP_API_VERSION 0.8)
+# set(DPNP_VERSION 0.9.0)
+# set(DPNP_API_VERSION 0.9)
 
 # set directory where the custom finders live
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
@@ -230,10 +230,10 @@ elseif(WIN32)
 # -DMKL_ILP64 -I"%MKLROOT%\include"
 # mkl_sycl_dll.lib mkl_intel_ilp64_dll.lib mkl_sequential_dll.lib mkl_core_dll.lib sycl.lib OpenCL.lib
   set(DPNP_MATHLIB_DEP_LIBS
-      mkl_sycl        # _dll
-      mkl_intel_ilp64 # _dll
-      mkl_sequential  # _dll
-      mkl_core        # _dll
+      mkl_sycl_dll
+      mkl_intel_ilp64_dll
+      mkl_tbb_thread_dll # mkl_sequential_dll
+      mkl_core_dll
       sycl
       OpenCL
       CACHE STRING "Set of libraries to link")
@@ -243,11 +243,9 @@ endif()
 
 target_link_libraries(dpnp_backend_c PUBLIC ${DPNP_MATHLIB_DEP_LIBS})
 
-# Parallel STL from DPC++
-if(NOT WIN32)
-  find_package(DPL REQUIRED)
-  target_include_directories(dpnp_backend_c PUBLIC ${DPL_INCLUDE_DIR})
-endif()
+# Parallel STL
+find_package(DPL REQUIRED)
+target_include_directories(dpnp_backend_c PUBLIC ${DPL_INCLUDE_DIR})
 
 # SYCL queue manager
 if(DPNP_SYCL_QUEUE_MGR_ENABLE)

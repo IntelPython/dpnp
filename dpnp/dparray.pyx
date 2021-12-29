@@ -1189,6 +1189,9 @@ cdef class dparray:
         """Return a copy of the array."""
         return copy(self, order=order)
 
+    def ptp(self, axis=None, out=None, keepdims=numpy._NoValue):
+        return ptp(self, axis=axis, out=out, keepdims=keepdims)
+
     def tobytes(self, order='C'):
         """ Construct Python bytes containing the raw data bytes in the array.
 

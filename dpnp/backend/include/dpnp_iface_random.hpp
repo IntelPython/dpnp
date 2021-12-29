@@ -39,12 +39,6 @@
 #ifndef BACKEND_IFACE_RANDOM_H // Cython compatibility
 #define BACKEND_IFACE_RANDOM_H
 
-#ifdef _WIN32
-#define INP_DLLEXPORT __declspec(dllexport)
-#else
-#define INP_DLLEXPORT
-#endif
-
 /**
  * @defgroup BACKEND_RANDOM_API Backend C++ library interface RANDOM API
  * @{
