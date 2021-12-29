@@ -306,9 +306,14 @@ cpdef dpnp_put_along_axis(dpnp_descriptor arr, dpnp_descriptor indices, dpnp_des
 
 cpdef dpnp_putmask(utils.dpnp_descriptor arr, utils.dpnp_descriptor mask, utils.dpnp_descriptor values):
     cdef int values_size = values.size
+
+    mask_flatiter = mask.get_pyobj().flat
+    arr_flatiter = arr.get_pyobj().flat
+    values_flatiter = values.get_pyobj().flat
+
     for i in range(arr.size):
-        if mask.get_pyobj()[numpy.unravel_index(i, mask.shape)]:
-            arr.get_pyobj()[numpy.unravel_index(i, arr.shape)] = values.get_pyobj()[numpy.unravel_index(i % values_size, values.shape)]
+        if mask_flatiter[i]:
+            arr_flatiter[i] = values_flatiter[i % values_size]
 
 
 cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default):
@@ -420,9 +425,12 @@ cpdef object dpnp_take_along_axis(object arr, object indices, int axis):
 
     else:
         result_array = utils_py.create_output_descriptor_py(shape_arr, res_type, None).get_pyobj()
+
+        result_array_flatiter = result_array.flat
+
         for i in range(size_arr):
             ind = size_indices * (i // size_indices) + indices.item(i % size_indices)
-            result_array[numpy.unravel_index(i, result_array.shape)] = arr.item(ind)
+            result_array_flatiter[i] = arr.item(ind)
 
         return result_array
 

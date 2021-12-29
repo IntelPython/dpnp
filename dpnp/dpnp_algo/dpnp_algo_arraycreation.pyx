@@ -37,6 +37,7 @@ and the rest of the library
 __all__ += [
     "dpnp_copy",
     "dpnp_diag",
+    "dpnp_eye",
     "dpnp_full",
     "dpnp_full_like",
     "dpnp_geomspace",
@@ -59,6 +60,7 @@ __all__ += [
 ctypedef void(*custom_1in_1out_func_ptr_t)(void * , void * , const int , shape_elem_type * , shape_elem_type * , const size_t, const size_t)
 ctypedef void(*ftpr_custom_vander_1in_1out_t)(void *, void * , size_t, size_t, int)
 ctypedef void(*custom_indexing_1out_func_ptr_t)(void *, const size_t , const size_t , const int)
+ctypedef void(*fptr_dpnp_eye_t)(void * , int , const shape_elem_type * )
 ctypedef void(*fptr_dpnp_trace_t)(const void * , void * , const shape_elem_type * , const size_t)
 
 
@@ -93,6 +95,29 @@ cpdef utils.dpnp_descriptor dpnp_diag(utils.dpnp_descriptor v, int k):
     cdef shape_type_c result_shape = result.shape
 
     func(v.get_data(), result.get_data(), k, input_shape.data(), result_shape.data(), v.ndim, result.ndim)
+
+    return result
+
+
+
+cpdef utils.dpnp_descriptor dpnp_eye(N, M=None, k=0, dtype=None):
+    if dtype is None:
+        dtype = dpnp.float64
+
+    if M is None:
+        M = N
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_EYE, param1_type, param1_type)
+
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor((N, M), kernel_data.return_type, None)
+
+    cdef fptr_dpnp_eye_t func = <fptr_dpnp_eye_t > kernel_data.ptr
+
+    cdef shape_type_c result_shape = result.shape
+
+    func(result.get_data(), k, result_shape.data())
 
     return result
 

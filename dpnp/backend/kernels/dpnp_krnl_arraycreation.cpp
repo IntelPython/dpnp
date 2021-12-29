@@ -100,6 +100,48 @@ void dpnp_diag_c(
     return;
 }
 
+template <typename _DataType>
+void dpnp_eye_c(void* result1, int k, const shape_elem_type* res_shape)
+{
+    if (result1 == nullptr)
+    {
+        return;
+    }
+
+    if (res_shape == nullptr)
+    {
+        return;
+    }
+
+    size_t result_size = res_shape[0] * res_shape[1];
+
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, result_size, true, true);
+    _DataType* result = result_ptr.get_ptr();
+
+    int diag_val_;
+    diag_val_ = std::min((int)res_shape[0], (int)res_shape[1]);
+    diag_val_ = std::min(diag_val_, ((int)res_shape[0] + k));
+    diag_val_ = std::min(diag_val_, ((int)res_shape[1] - k));
+
+    size_t diag_val = (diag_val_ < 0) ? 0 : (size_t)diag_val_;
+
+    for (size_t i = 0; i < result_size; ++i)
+    {
+        result[i] = 0;
+        for (size_t j = 0; j < diag_val; ++j)
+        {
+            size_t ind = (k >= 0) ? (j * res_shape[1] + j + k) : (j - k) * res_shape[1] + j;
+            if (i == ind)
+            {
+                result[i] = 1;
+                break;
+            }
+        }
+    }
+
+    return;
+}
+
 template <typename _KernelNameSpecialization>
 class dpnp_full_c_kernel;
 
@@ -550,6 +592,11 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_DIAG][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diag_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_DIAG][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diag_c<float>};
     fmap[DPNPFuncName::DPNP_FN_DIAG][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_diag_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_EYE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_eye_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_EYE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_eye_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_EYE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eye_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_EYE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eye_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_full_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_c<int64_t>};
