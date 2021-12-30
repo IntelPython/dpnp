@@ -27,8 +27,7 @@
 
 from libcpp.vector cimport vector
 
-cdef extern:
-    ctypedef long shape_elem_type
-    ctypedef vector.vector[shape_elem_type] shape_type_c
+ctypedef long shape_elem_type
+ctypedef vector.vector[shape_elem_type] shape_type_c
 
 from dpnp.dpnp_algo.dpnp_algo cimport *
