@@ -715,22 +715,15 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
     const _DataType a = 0.0;
     const _DataType beta = 2.0;
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size);
     _DataType* result1 = result1_ptr.get_ptr();
 
     mkl_rng::exponential<_DataType> distribution(a, beta);
 
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
-    event_out = mkl_vm::sqrt(DPNP_QUEUE, size, result1, result1, no_deps, mkl_vm::mode::ha);
-    event_out.wait();
-    // with MKL
-    // event_out = mkl_blas::axpy(DPNP_QUEUE, size, scale, result1, 1, result1, 1);
-    // event_out.wait();
-    for (size_t i = 0; i < size; i++)
-    {
-        result1[i] *= scale;
-    }
+    auto exponential_rng_event = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    auto sqrt_event = mkl_vm::sqrt(DPNP_QUEUE, size, result1, result1, {exponential_rng_event}, mkl_vm::mode::ha);
+    auto scal_event = mkl_blas::scal(DPNP_QUEUE, size, scale, result1, 1, {sqrt_event});
+    scal_event.wait();
 }
 
 template <typename _DataType>

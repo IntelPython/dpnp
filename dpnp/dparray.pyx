@@ -577,7 +577,7 @@ cdef class dparray:
         cdef size_previous = self.size
 
         cdef long size_new = 1
-        cdef dparray_shape_type shape_new
+        cdef shape_type_c shape_new
         shape_new.reserve(len(shape_tup))
 
         for shape_it in shape_tup:
