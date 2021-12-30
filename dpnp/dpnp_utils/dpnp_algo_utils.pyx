@@ -31,6 +31,7 @@ This module contains differnt helpers and utilities
 
 """
 
+import dpctl
 import numpy
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
@@ -43,7 +44,6 @@ cimport cpython
 cimport cython
 cimport numpy
 
-import dpctl
 
 """
 Python import functions
@@ -514,7 +514,7 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
         if not isinstance(usm_types, (list, tuple)):
             raise TypeError(
                 "Expected a list or a tuple, got {}".format(type(usm_types))
-        )
+            )
         if len(usm_types) == 0:
             return None
         elif len(usm_types) == 1:

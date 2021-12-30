@@ -29,6 +29,7 @@ from dpctl.tensor._device import normalize_queue_device
 import dpnp
 import numpy
 
+
 class dpnp_array:
     """
     Multi-dimensional array object.

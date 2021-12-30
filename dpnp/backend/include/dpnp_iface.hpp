@@ -420,8 +420,8 @@ INP_DLLEXPORT void dpnp_count_nonzero_c(void* array1_in, void* result1_out, size
  * @param [in]  ndim        Number of elements in shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_partition_c(void* array, void* array2, void* result, const size_t kth, const shape_elem_type* shape, const size_t ndim);
+INP_DLLEXPORT void dpnp_partition_c(
+    void* array, void* array2, void* result, const size_t kth, const shape_elem_type* shape, const size_t ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -480,7 +480,7 @@ INP_DLLEXPORT void dpnp_prod_c(void* result_out,
  * @param [in]  input_strides       Strides of first input array.
  * @param [in]  axis                Axis.
  * @param [in]  naxis               Number of elements in axis.
- */ 
+ */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_ptp_c(void* result_out,
                               const size_t result_size,
@@ -494,7 +494,7 @@ INP_DLLEXPORT void dpnp_ptp_c(void* result_out,
                               const shape_elem_type* input_strides,
                               const shape_elem_type* axis,
                               const size_t naxis);
-                              
+
 /**
  * @ingroup BACKEND_API
  * @brief Product of array elements
@@ -688,8 +688,13 @@ INP_DLLEXPORT void
  * @param [in]  ndim           Number of elements in shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_diag_c(
-    void* array, void* result, const int k, shape_elem_type* shape, shape_elem_type* res_shape, const size_t ndim, const size_t res_ndim);
+INP_DLLEXPORT void dpnp_diag_c(void* array,
+                               void* result,
+                               const int k,
+                               shape_elem_type* shape,
+                               shape_elem_type* res_shape,
+                               const size_t ndim,
+                               const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -800,8 +805,8 @@ INP_DLLEXPORT void dpnp_max_c(void* array1_in,
  * @param [in]  naxis   Number of elements in axis.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void
-    dpnp_mean_c(void* array, void* result, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis);
+INP_DLLEXPORT void dpnp_mean_c(
+    void* array, void* result, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -815,8 +820,8 @@ INP_DLLEXPORT void
  * @param [in]  naxis   Number of elements in axis.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void
-    dpnp_median_c(void* array, void* result, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis);
+INP_DLLEXPORT void dpnp_median_c(
+    void* array, void* result, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -886,8 +891,13 @@ INP_DLLEXPORT void dpnp_around_c(const void* input_in, void* result_out, const s
  * @param [in]  ddof    Delta degrees of freedom.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_std_c(
-    void* array, void* result, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis, size_t ddof);
+INP_DLLEXPORT void dpnp_std_c(void* array,
+                              void* result,
+                              const shape_elem_type* shape,
+                              size_t ndim,
+                              const shape_elem_type* axis,
+                              size_t naxis,
+                              size_t ddof);
 
 /**
  * @ingroup BACKEND_API
@@ -939,8 +949,13 @@ INP_DLLEXPORT void dpnp_tri_c(void* result, const size_t N, const size_t M, cons
  * @param [in]  res_ndim   Number of elements in res_shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_tril_c(
-    void* array, void* result, const int k, shape_elem_type* shape, shape_elem_type* res_shape, const size_t ndim, const size_t res_ndim);
+INP_DLLEXPORT void dpnp_tril_c(void* array,
+                               void* result,
+                               const int k,
+                               shape_elem_type* shape,
+                               shape_elem_type* res_shape,
+                               const size_t ndim,
+                               const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -955,8 +970,13 @@ INP_DLLEXPORT void dpnp_tril_c(
  * @param [in]  res_ndim   Number of elements in res_shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_triu_c(
-    void* array, void* result, const int k, shape_elem_type* shape, shape_elem_type* res_shape, const size_t ndim, const size_t res_ndim);
+INP_DLLEXPORT void dpnp_triu_c(void* array,
+                               void* result,
+                               const int k,
+                               shape_elem_type* shape,
+                               shape_elem_type* res_shape,
+                               const size_t ndim,
+                               const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -971,8 +991,13 @@ INP_DLLEXPORT void dpnp_triu_c(
  * @param [in]  ddof    Delta degrees of freedom.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_var_c(
-    void* array, void* result, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis, size_t ddof);
+INP_DLLEXPORT void dpnp_var_c(void* array,
+                              void* result,
+                              const shape_elem_type* shape,
+                              size_t ndim,
+                              const shape_elem_type* axis,
+                              size_t naxis,
+                              size_t ddof);
 
 /**
  * @ingroup BACKEND_API

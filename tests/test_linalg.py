@@ -5,7 +5,7 @@ import dpnp as inp
 import numpy
 
 
-def vvsort(val, vec, size, xp): 
+def vvsort(val, vec, size, xp):
     for i in range(size):
         imax = i
         for j in range(i + 1, size):
@@ -21,7 +21,7 @@ def vvsort(val, vec, size, xp):
         temp[()] = val[unravel_i]  # make a copy
         val[unravel_i] = val[unravel_imax]
         val[unravel_imax] = temp
-        
+
         for k in range(size):
             temp = xp.empty(tuple(), dtype=val.dtype)
             temp[()] = vec[k, i]  # make a copy

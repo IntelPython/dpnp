@@ -191,9 +191,10 @@ dpnp_backend_c_description = [
      ]
 ]
 
+
 def _compiler_compile(self, sources,
-            output_dir=None, macros=None, include_dirs=None, debug=0,
-            extra_preargs=None, extra_postargs=None, depends=None):
+                      output_dir=None, macros=None, include_dirs=None, debug=0,
+                      extra_preargs=None, extra_postargs=None, depends=None):
 
     if not self.initialized:
         self.initialize()
@@ -207,7 +208,6 @@ def _compiler_compile(self, sources,
         compile_opts.extend(self.compile_options_debug)
     else:
         compile_opts.extend(self.compile_options)
-
 
     add_cpp_opts = False
 
@@ -227,7 +227,7 @@ def _compiler_compile(self, sources,
         # https://developercommunity.visualstudio.com/comments/623156/view.html
         d1trimfile_opts = []
         # if 'SRC_DIR' in os.environ:
-            # d1trimfile_opts.append("/d1trimfile:" + os.environ['SRC_DIR'])
+        # d1trimfile_opts.append("/d1trimfile:" + os.environ['SRC_DIR'])
 
         if ext in self._c_extensions:
             input_opt = "/Tc" + src
@@ -260,7 +260,7 @@ def _compiler_compile(self, sources,
             try:
                 # first compile .MC to .RC and .H file
                 self.spawn([self.mc, '-h', h_dir, '-r', rc_dir, src])
-                base, _ = os.path.splitext(os.path.basename (src))
+                base, _ = os.path.splitext(os.path.basename(src))
                 rc_file = os.path.join(rc_dir, base + '.rc')
                 # then compile .RC to .RES file
                 self.spawn([self.rc, "/fo" + obj, rc_file])
@@ -322,7 +322,7 @@ class custom_build_clib(build_clib.build_clib):
             macros = _project_cmplr_macro
             include_dirs = _cmplr_include + _dpl_include + _mathlib_include + _project_backend_dir + _dpctrl_include + _py_env_include
             libraries = _mathlibs + _dpctrl_lib
-            library_dirs = _mathlib_path + _dpctrl_libpath + _py_env_lib # + _omp_libpath
+            library_dirs = _mathlib_path + _dpctrl_libpath + _py_env_lib  # + _omp_libpath
             runtime_library_dirs = _project_rpath + _dpctrl_libpath
             extra_preargs = _project_cmplr_flag_sycl + _sdl_cflags
             extra_link_postargs = _project_cmplr_flag_lib

@@ -44,14 +44,14 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , shape_elem_type * ,
-                                       shape_elem_type * , shape_elem_type * , size_t)
-ctypedef void(*fptr_2in_1out_dot_t)(void *, const size_t, const size_t,
-                                    const shape_elem_type * , const shape_elem_type * ,
-                                    void *, const size_t, const size_t,
-                                    const shape_elem_type * , const shape_elem_type * ,
-                                    void *, const size_t, const size_t,
-                                    const shape_elem_type * , const shape_elem_type * )
+ctypedef void(*fptr_2in_1out_shapes_t)(void *, void * , void * , shape_elem_type * ,
+                                       shape_elem_type *, shape_elem_type * , size_t)
+ctypedef void(*fptr_2in_1out_dot_t)(void * , const size_t, const size_t,
+                                    const shape_elem_type *, const shape_elem_type * ,
+                                    void * , const size_t, const size_t,
+                                    const shape_elem_type *, const shape_elem_type * ,
+                                    void * , const size_t, const size_t,
+                                    const shape_elem_type *, const shape_elem_type * )
 
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
 
@@ -178,7 +178,8 @@ cpdef utils.dpnp_descriptor dpnp_inner(dpnp_descriptor array1, dpnp_descriptor a
         # do inner product
         result_flatiter[idx1] = 0
         for idx2 in range(array1.shape[-1]):
-            result_flatiter[idx1] += array1_flatiter[array1_lin_index_base + idx2] * array2_flatiter[array2_lin_index_base + idx2]
+            result_flatiter[idx1] += array1_flatiter[array1_lin_index_base + idx2] * \
+                array2_flatiter[array2_lin_index_base + idx2]
 
     return result
 
@@ -216,7 +217,8 @@ cpdef utils.dpnp_descriptor dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor
 
     cdef fptr_2in_1out_shapes_t func = <fptr_2in_1out_shapes_t > kernel_data.ptr
     # call FPTR function
-    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), in_array1_shape.data(), in_array2_shape.data(), result_shape.data(), ndim)
+    func(in_array1.get_data(), in_array2.get_data(), result.get_data(),
+         in_array1_shape.data(), in_array2_shape.data(), result_shape.data(), ndim)
 
     return result
 
