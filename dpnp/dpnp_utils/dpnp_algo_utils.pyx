@@ -35,7 +35,7 @@ import numpy
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
 import dpnp
-from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
+from dpnp.dpnp_algo.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
