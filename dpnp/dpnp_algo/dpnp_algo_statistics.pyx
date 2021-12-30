@@ -423,7 +423,7 @@ cpdef utils.dpnp_descriptor dpnp_nanvar(utils.dpnp_descriptor arr, ddof):
     # dpnp_isnan does not support USM array as input in comparison to dpnp.isnan
     cdef utils.dpnp_descriptor mask_arr = dpnp.get_dpnp_descriptor(dpnp.isnan(arr.get_pyobj()))
     n = dpnp.count_nonzero(mask_arr.get_pyobj())
-    res_size = arr.size - n
+    res_size = int(arr.size - n)
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_NANVAR, param1_type, param1_type)
