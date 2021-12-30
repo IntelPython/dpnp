@@ -48,6 +48,11 @@
 #define INP_DLLEXPORT
 #endif
 
+#if defined(_MSC_VER)
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#endif
+
 typedef ssize_t shape_elem_type;
 
 #include "dpnp_iface_fft.hpp"
