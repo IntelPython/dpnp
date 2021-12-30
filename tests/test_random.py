@@ -84,19 +84,15 @@ def test_input_shape(func):
                          ids=['random', 'random_sample',
                               'ranf', 'sample',
                               'rand'])
-def test_check_otput(func):
+def test_check_output(func):
     shape = (10, 5)
     size = 10 * 5
     if func == dpnp.random.rand:
         res = func(size)
     else:
         res = func(shape)
-#    assert numpy.all(res >= 0)
-#    assert numpy.all(res < 1)
-    res_as_numpy = dpnp.asnumpy(res)
-    for i in range(res_as_numpy.size):
-        assert res_as_numpy[i] >= 0.0
-        assert res_as_numpy[i] < 1.0
+    assert dpnp.all(res >= 0)
+    assert dpnp.all(res < 1)
 
 
 @pytest.mark.parametrize("func",
