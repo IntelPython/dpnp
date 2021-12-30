@@ -31,10 +31,8 @@ Represents multi-dimensional array using USM interface for an Intel GPU device.
 """
 
 
-from libcpp.vector cimport vector
+from dpnp.dpnp_algo cimport shape_type_c
 
-
-ctypedef vector.vector[long] dparray_shape_type
 
 cdef class dparray:
     """Multi-dimensional array using USM interface for an Intel GPU device.
@@ -43,8 +41,8 @@ cdef class dparray:
 
     cdef:
         readonly Py_ssize_t _dparray_size
-        public dparray_shape_type _dparray_shape
-        public dparray_shape_type _dparray_strides
+        public shape_type_c _dparray_shape
+        public shape_type_c _dparray_strides
         readonly object _dparray_dtype
         readonly char * _dparray_data
         size_t iter_idx

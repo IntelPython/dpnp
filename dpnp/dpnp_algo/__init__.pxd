@@ -25,4 +25,9 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+from libcpp.vector cimport vector
+
+ctypedef long shape_elem_type
+ctypedef vector.vector[shape_elem_type] shape_type_c
+
 from dpnp.dpnp_algo.dpnp_algo cimport *
