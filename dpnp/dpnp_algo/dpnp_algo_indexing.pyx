@@ -54,22 +54,22 @@ __all__ += [
     "dpnp_triu_indices_from"
 ]
 
-ctypedef void(*fptr_dpnp_choose_t)(void * , void * , void ** , size_t, size_t, size_t)
-ctypedef void(*fptr_dpnp_diag_indices)(void *, size_t)
-ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void * , const size_t, void * , void * , size_t)
-ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void *, const size_t, void * , const size_t, shape_elem_type * ,
-                                                     shape_elem_type * , const size_t)
-ctypedef void(*custom_indexing_2in_func_ptr_t)(void * , void * , shape_elem_type * , const size_t)
-ctypedef void(*custom_indexing_3in_func_ptr_t)(void *, void * , void * , const size_t, const size_t)
-ctypedef void(*custom_indexing_3in_with_axis_func_ptr_t)(void *, void * , void * , const size_t, shape_elem_type * ,
+ctypedef void(*fptr_dpnp_choose_t)(void *, void * , void ** , size_t, size_t, size_t)
+ctypedef void(*fptr_dpnp_diag_indices)(void * , size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, const size_t, void * , void * , size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , const size_t, void * , const size_t, shape_elem_type * ,
+                                                     shape_elem_type *, const size_t)
+ctypedef void(*custom_indexing_2in_func_ptr_t)(void *, void * , shape_elem_type * , const size_t)
+ctypedef void(*custom_indexing_3in_func_ptr_t)(void * , void * , void * , const size_t, const size_t)
+ctypedef void(*custom_indexing_3in_with_axis_func_ptr_t)(void * , void * , void * , const size_t, shape_elem_type * ,
                                                          const size_t, const size_t, const size_t,)
-ctypedef void(*custom_indexing_6in_func_ptr_t)(void * , void * , void * , const size_t, const size_t, const size_t)
-ctypedef void(*fptr_dpnp_nonzero_t)(const void *, void * , const size_t, const shape_elem_type * , const size_t ,
+ctypedef void(*custom_indexing_6in_func_ptr_t)(void *, void * , void * , const size_t, const size_t, const size_t)
+ctypedef void(*fptr_dpnp_nonzero_t)(const void * , void * , const size_t, const shape_elem_type * , const size_t ,
                                     const size_t)
 
 
 cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor input, list choices1):
-    cdef vector[void *] choices
+    cdef vector[void * ] choices
     cdef utils.dpnp_descriptor choice
     for desc in choices1:
         choice = desc
@@ -301,7 +301,8 @@ cpdef dpnp_put_along_axis(dpnp_descriptor arr, dpnp_descriptor indices, dpnp_des
 
     cdef custom_indexing_3in_with_axis_func_ptr_t func = <custom_indexing_3in_with_axis_func_ptr_t > kernel_data.ptr
 
-    func(arr.get_data(), indices.get_data(), values.get_data(), axis, arr_shape.data(), arr.ndim, indices.size, values.size)
+    func(arr.get_data(), indices.get_data(), values.get_data(),
+         axis, arr_shape.data(), arr.ndim, indices.size, values.size)
 
 
 cpdef dpnp_putmask(utils.dpnp_descriptor arr, utils.dpnp_descriptor mask, utils.dpnp_descriptor values):

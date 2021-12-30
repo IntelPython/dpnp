@@ -26,8 +26,8 @@
 #include <iostream>
 
 #include "dpnp_fptr.hpp"
-#include "dpnp_utils.hpp"
 #include "dpnp_iface.hpp"
+#include "dpnp_utils.hpp"
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
@@ -66,8 +66,13 @@ void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_diag_c(
-    void* v_in, void* result1, const int k, shape_elem_type* shape, shape_elem_type* res_shape, const size_t ndim, const size_t res_ndim)
+void dpnp_diag_c(void* v_in,
+                 void* result1,
+                 const int k,
+                 shape_elem_type* shape,
+                 shape_elem_type* res_shape,
+                 const size_t ndim,
+                 const size_t res_ndim)
 {
     // avoid warning unused variable
     (void)res_ndim;
@@ -220,8 +225,8 @@ void dpnp_ptp_c(void* result1_out,
                 const shape_elem_type* axis,
                 const size_t naxis)
 {
-    (void) result_strides;
-    (void) input_strides;
+    (void)result_strides;
+    (void)input_strides;
 
     if ((input1_in == nullptr) || (result1_out == nullptr))
     {
@@ -244,17 +249,29 @@ void dpnp_ptp_c(void* result1_out,
     dpnp_min_c<_DataType>(arr, min_arr, result_size, input_shape, input_ndim, axis, naxis);
     dpnp_max_c<_DataType>(arr, max_arr, result_size, input_shape, input_ndim, axis, naxis);
 
-    shape_elem_type* _strides = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result_ndim * sizeof(shape_elem_type)));
+    shape_elem_type* _strides =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result_ndim * sizeof(shape_elem_type)));
     get_shape_offsets_inkernel(result_shape, result_ndim, _strides);
 
-    dpnp_subtract_c<_DataType, _DataType, _DataType>(result, result_size, result_ndim, result_shape, result_strides,
-                                                     max_arr, result_size, result_ndim, result_shape, _strides,
-                                                     min_arr, result_size, result_ndim, result_shape, _strides,
+    dpnp_subtract_c<_DataType, _DataType, _DataType>(result,
+                                                     result_size,
+                                                     result_ndim,
+                                                     result_shape,
+                                                     result_strides,
+                                                     max_arr,
+                                                     result_size,
+                                                     result_ndim,
+                                                     result_shape,
+                                                     _strides,
+                                                     min_arr,
+                                                     result_size,
+                                                     result_ndim,
+                                                     result_shape,
+                                                     _strides,
                                                      NULL);
 
     dpnp_memory_free_c(min_arr);
     dpnp_memory_free_c(max_arr);
-
 }
 
 template <typename _DataType_input, typename _DataType_output>

@@ -26,8 +26,8 @@
 #include <iostream>
 
 #include "dpnp_fptr.hpp"
-#include "dpnp_utils.hpp"
 #include "dpnp_iface.hpp"
+#include "dpnp_utils.hpp"
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
@@ -135,7 +135,8 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
         shape_elem_type* input2_shape_offsets =                                                                        \
             reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input2_shape_size_in_bytes));                       \
         get_shape_offsets_inkernel(input2_shape_data, input2_ndim, input2_shape_offsets);                              \
-        use_strides = use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);\
+        use_strides =                                                                                                  \
+            use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);          \
         dpnp_memory_free_c(input2_shape_offsets);                                                                      \
                                                                                                                        \
         cl::sycl::event event;                                                                                         \
@@ -150,10 +151,8 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
                     size_t input2_id = 0;                                                                              \
                     for (size_t i = 0; i < result_ndim; ++i)                                                           \
                     {                                                                                                  \
-                        const size_t output_xyz_id = get_xyz_id_by_id_inkernel(output_id,                              \
-                                                                               result_strides_data,                    \
-                                                                               result_ndim,                            \
-                                                                               i);                                     \
+                        const size_t output_xyz_id =                                                                   \
+                            get_xyz_id_by_id_inkernel(output_id, result_strides_data, result_ndim, i);                 \
                         input1_id += output_xyz_id * input1_strides_data[i];                                           \
                         input2_id += output_xyz_id * input2_strides_data[i];                                           \
                     }                                                                                                  \
