@@ -715,7 +715,7 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
     const _DataType a = 0.0;
     const _DataType beta = 2.0;
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size);
     _DataType* result1 = result1_ptr.get_ptr();
 
     mkl_rng::exponential<_DataType> distribution(a, beta);
