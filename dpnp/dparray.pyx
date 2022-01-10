@@ -577,7 +577,7 @@ cdef class dparray:
         cdef size_previous = self.size
 
         cdef long size_new = 1
-        cdef dparray_shape_type shape_new
+        cdef shape_type_c shape_new
         shape_new.reserve(len(shape_tup))
 
         for shape_it in shape_tup:
@@ -1188,6 +1188,9 @@ cdef class dparray:
     def copy(self, order="C"):
         """Return a copy of the array."""
         return copy(self, order=order)
+
+    def ptp(self, axis=None, out=None, keepdims=numpy._NoValue):
+        return ptp(self, axis=axis, out=out, keepdims=keepdims)
 
     def tobytes(self, order='C'):
         """ Construct Python bytes containing the raw data bytes in the array.

@@ -31,11 +31,12 @@ This module contains differnt helpers and utilities
 
 """
 
+import dpctl
 import numpy
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
 import dpnp
-from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
+from dpnp.dpnp_algo.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
@@ -43,7 +44,6 @@ cimport cpython
 cimport cython
 cimport numpy
 
-import dpctl
 
 """
 Python import functions
@@ -514,7 +514,7 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
         if not isinstance(usm_types, (list, tuple)):
             raise TypeError(
                 "Expected a list or a tuple, got {}".format(type(usm_types))
-        )
+            )
         if len(usm_types) == 0:
             return None
         elif len(usm_types) == 1:

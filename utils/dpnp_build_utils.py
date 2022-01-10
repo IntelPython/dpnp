@@ -139,9 +139,9 @@ def find_cmplr(verbose=False):
         conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
 
         cmplr_include, cmplr_libpath = find_library(conda_root_var, rel_header_paths, rel_lib_paths,
-                                                     rel_include_path=rel_include_path,
-                                                     rel_libdir_path=rel_libdir_path,
-                                                     verbose=verbose)
+                                                    rel_include_path=rel_include_path,
+                                                    rel_libdir_path=rel_libdir_path,
+                                                    verbose=verbose)
 
     if not cmplr_include or not cmplr_libpath:
         raise EnvironmentError("DPNP: Unable to find compiler")

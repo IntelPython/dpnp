@@ -44,20 +44,20 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , shape_elem_type * ,
-                                       shape_elem_type * , shape_elem_type * , size_t)
-ctypedef void(*fptr_2in_1out_dot_t)(void *, const size_t, const size_t,
-                                    const shape_elem_type * , const shape_elem_type * ,
-                                    void *, const size_t, const size_t,
-                                    const shape_elem_type * , const shape_elem_type * ,
-                                    void *, const size_t, const size_t,
-                                    const shape_elem_type * , const shape_elem_type * )
-ctypedef void(*fptr_2in_1out_matmul_t)(void *, const size_t, const size_t,
-                                       const shape_elem_type * , const shape_elem_type * ,
-                                       void *, const size_t, const size_t,
-                                       const shape_elem_type * , const shape_elem_type * ,
-                                       void *, const size_t, const size_t,
-                                       const shape_elem_type * , const shape_elem_type * ,
+ctypedef void(*fptr_2in_1out_shapes_t)(void *, void * , void * , shape_elem_type * ,
+                                       shape_elem_type *, shape_elem_type * , size_t)
+ctypedef void(*fptr_2in_1out_dot_t)(void * , const size_t, const size_t,
+                                    const shape_elem_type *, const shape_elem_type * ,
+                                    void * , const size_t, const size_t,
+                                    const shape_elem_type *, const shape_elem_type * ,
+                                    void * , const size_t, const size_t,
+                                    const shape_elem_type *, const shape_elem_type * )
+ctypedef void(*fptr_2in_1out_matmul_t)(void * , const size_t, const size_t,
+                                       const shape_elem_type *, const shape_elem_type * ,
+                                       void * , const size_t, const size_t,
+                                       const shape_elem_type *, const shape_elem_type * ,
+                                       void * , const size_t, const size_t,
+                                       const shape_elem_type *, const shape_elem_type * ,
                                        void *)
 
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
@@ -161,6 +161,11 @@ cpdef utils.dpnp_descriptor dpnp_inner(dpnp_descriptor array1, dpnp_descriptor a
     cdef size_t axis2
     cdef long remainder
     cdef long quotient
+
+    result_flatiter = result.get_pyobj().flat
+    array1_flatiter = array1.get_pyobj().flat
+    array2_flatiter = array2.get_pyobj().flat
+
     for idx1 in range(result.size):
         # reconstruct x,y,z from linear index
         xyz.clear()
@@ -178,10 +183,10 @@ cpdef utils.dpnp_descriptor dpnp_inner(dpnp_descriptor array1, dpnp_descriptor a
             array2_lin_index_base += array2_offsets[axis] * xyz[axis2]
 
         # do inner product
-        result.get_pyobj()[numpy.unravel_index(idx1, result.shape)] = 0
+        result_flatiter[idx1] = 0
         for idx2 in range(array1.shape[-1]):
-            result.get_pyobj()[numpy.unravel_index(idx1, result.shape)] += array1.get_pyobj()[numpy.unravel_index(
-                array1_lin_index_base + idx2, array1.shape)] * array2.get_pyobj()[numpy.unravel_index(array2_lin_index_base + idx2, array2.shape)]
+            result_flatiter[idx1] += array1_flatiter[array1_lin_index_base + idx2] * \
+                array2_flatiter[array2_lin_index_base + idx2]
 
     return result
 
@@ -219,7 +224,8 @@ cpdef utils.dpnp_descriptor dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor
 
     cdef fptr_2in_1out_shapes_t func = <fptr_2in_1out_shapes_t > kernel_data.ptr
     # call FPTR function
-    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), in_array1_shape.data(), in_array2_shape.data(), result_shape.data(), ndim)
+    func(in_array1.get_data(), in_array2.get_data(), result.get_data(),
+         in_array1_shape.data(), in_array2_shape.data(), result_shape.data(), ndim)
 
     return result
 
@@ -316,8 +322,12 @@ cpdef utils.dpnp_descriptor dpnp_outer(utils.dpnp_descriptor array1, utils.dpnp_
 
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape, result_type, None)
 
+    result_flatiter = result.get_pyobj().flat
+    array1_flatiter = array1.get_pyobj().flat
+    array2_flatiter = array2.get_pyobj().flat
+
     for idx1 in range(array1.size):
         for idx2 in range(array2.size):
-            result.get_pyobj()[numpy.unravel_index(idx1 * array2.size + idx2, result.shape)] = array1.get_pyobj()[numpy.unravel_index(idx1, array1.shape)] * array2.get_pyobj()[numpy.unravel_index(idx2, array2.shape)]
+            result_flatiter[idx1 * array2.size + idx2] = array1_flatiter[idx1] * array2_flatiter[idx2]
 
     return result

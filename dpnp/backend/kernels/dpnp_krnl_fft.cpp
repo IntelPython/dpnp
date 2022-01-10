@@ -73,10 +73,13 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
     // kernel specific temporal data
-    shape_elem_type* output_shape_offsets = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(shape_size * sizeof(shape_elem_type)));
-    shape_elem_type* input_shape_offsets = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(shape_size * sizeof(shape_elem_type)));
+    shape_elem_type* output_shape_offsets =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(shape_size * sizeof(shape_elem_type)));
+    shape_elem_type* input_shape_offsets =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(shape_size * sizeof(shape_elem_type)));
     // must be a thread local storage.
-    shape_elem_type* axis_iterator = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result_size * shape_size * sizeof(shape_elem_type)));
+    shape_elem_type* axis_iterator =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result_size * shape_size * sizeof(shape_elem_type)));
 
     get_shape_offsets_inkernel(output_shape, shape_size, output_shape_offsets);
     get_shape_offsets_inkernel(input_shape, shape_size, input_shape_offsets);
@@ -257,8 +260,10 @@ void dpnp_fft_fft_c(const void* array1_in,
         return;
     }
 
-    const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<shape_elem_type>());
-    const size_t input_size = std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<shape_elem_type>());
+    const size_t result_size =
+        std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<shape_elem_type>());
+    const size_t input_size =
+        std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<shape_elem_type>());
 
     if (!input_size || !result_size || !array1_in || !result1)
     {

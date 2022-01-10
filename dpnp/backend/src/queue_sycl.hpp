@@ -41,13 +41,13 @@
 #include <ctime>
 
 #if !defined(DPNP_LOCAL_QUEUE)
-#  if defined __has_include
-#    if __has_include(<dpctl_sycl_interface.h>)
-#       include <dpctl_sycl_interface.h>
-#    else
-#       include <dpctl_sycl_queue_manager.h>
-#    endif
-#  endif
+#if defined __has_include
+#if __has_include(<dpctl_sycl_interface.h>)
+#include <dpctl_sycl_interface.h>
+#else
+#include <dpctl_sycl_queue_manager.h>
+#endif
+#endif
 #endif
 
 #include "dpnp_pstl.hpp" // this header must be included after <mkl.hpp>

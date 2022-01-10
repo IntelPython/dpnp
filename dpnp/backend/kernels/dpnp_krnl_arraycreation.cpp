@@ -27,6 +27,7 @@
 
 #include "dpnp_fptr.hpp"
 #include "dpnp_iface.hpp"
+#include "dpnp_utils.hpp"
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
@@ -65,8 +66,13 @@ void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_diag_c(
-    void* v_in, void* result1, const int k, shape_elem_type* shape, shape_elem_type* res_shape, const size_t ndim, const size_t res_ndim)
+void dpnp_diag_c(void* v_in,
+                 void* result1,
+                 const int k,
+                 shape_elem_type* shape,
+                 shape_elem_type* res_shape,
+                 const size_t ndim,
+                 const size_t res_ndim)
 {
     // avoid warning unused variable
     (void)res_ndim;
@@ -97,6 +103,48 @@ void dpnp_diag_c(
             result[i] = v[ind];
         }
     }
+    return;
+}
+
+template <typename _DataType>
+void dpnp_eye_c(void* result1, int k, const shape_elem_type* res_shape)
+{
+    if (result1 == nullptr)
+    {
+        return;
+    }
+
+    if (res_shape == nullptr)
+    {
+        return;
+    }
+
+    size_t result_size = res_shape[0] * res_shape[1];
+
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, result_size, true, true);
+    _DataType* result = result_ptr.get_ptr();
+
+    int diag_val_;
+    diag_val_ = std::min((int)res_shape[0], (int)res_shape[1]);
+    diag_val_ = std::min(diag_val_, ((int)res_shape[0] + k));
+    diag_val_ = std::min(diag_val_, ((int)res_shape[1] - k));
+
+    size_t diag_val = (diag_val_ < 0) ? 0 : (size_t)diag_val_;
+
+    for (size_t i = 0; i < result_size; ++i)
+    {
+        result[i] = 0;
+        for (size_t j = 0; j < diag_val; ++j)
+        {
+            size_t ind = (k >= 0) ? (j * res_shape[1] + j + k) : (j - k) * res_shape[1] + j;
+            if (i == ind)
+            {
+                result[i] = 1;
+                break;
+            }
+        }
+    }
+
     return;
 }
 
@@ -161,6 +209,69 @@ template <typename _DataType>
 void dpnp_ones_like_c(void* result, size_t size)
 {
     dpnp_ones_c<_DataType>(result, size);
+}
+
+template <typename _DataType>
+void dpnp_ptp_c(void* result1_out,
+                const size_t result_size,
+                const size_t result_ndim,
+                const shape_elem_type* result_shape,
+                const shape_elem_type* result_strides,
+                const void* input1_in,
+                const size_t input_size,
+                const size_t input_ndim,
+                const shape_elem_type* input_shape,
+                const shape_elem_type* input_strides,
+                const shape_elem_type* axis,
+                const size_t naxis)
+{
+    (void)result_strides;
+    (void)input_strides;
+
+    if ((input1_in == nullptr) || (result1_out == nullptr))
+    {
+        return;
+    }
+
+    if (input_ndim < 1)
+    {
+        return;
+    }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, input_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1_out, result_size, false, true);
+    _DataType* arr = input1_ptr.get_ptr();
+    _DataType* result = result_ptr.get_ptr();
+
+    _DataType* min_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(result_size * sizeof(_DataType)));
+    _DataType* max_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(result_size * sizeof(_DataType)));
+
+    dpnp_min_c<_DataType>(arr, min_arr, result_size, input_shape, input_ndim, axis, naxis);
+    dpnp_max_c<_DataType>(arr, max_arr, result_size, input_shape, input_ndim, axis, naxis);
+
+    shape_elem_type* _strides =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result_ndim * sizeof(shape_elem_type)));
+    get_shape_offsets_inkernel(result_shape, result_ndim, _strides);
+
+    dpnp_subtract_c<_DataType, _DataType, _DataType>(result,
+                                                     result_size,
+                                                     result_ndim,
+                                                     result_shape,
+                                                     result_strides,
+                                                     max_arr,
+                                                     result_size,
+                                                     result_ndim,
+                                                     result_shape,
+                                                     _strides,
+                                                     min_arr,
+                                                     result_size,
+                                                     result_ndim,
+                                                     result_shape,
+                                                     _strides,
+                                                     NULL);
+
+    dpnp_memory_free_c(min_arr);
+    dpnp_memory_free_c(max_arr);
 }
 
 template <typename _DataType_input, typename _DataType_output>
@@ -551,6 +662,11 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_DIAG][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diag_c<float>};
     fmap[DPNPFuncName::DPNP_FN_DIAG][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_diag_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_EYE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_eye_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_EYE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_eye_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_EYE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eye_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_EYE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eye_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_full_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_full_c<float>};
@@ -587,6 +703,11 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_ones_like_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_C128][eft_C128] = {eft_C128,
                                                                  (void*)dpnp_ones_like_c<std::complex<double>>};
+
+    fmap[DPNPFuncName::DPNP_FN_PTP][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_ptp_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_PTP][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ptp_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_PTP][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_ptp_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_PTP][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_ptp_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_VANDER][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_vander_c<int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_VANDER][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_vander_c<int64_t, int64_t>};

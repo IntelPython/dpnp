@@ -67,7 +67,7 @@ int main(int, char**)
     for (size_t i = 0; i < ndim_cases; i++)
     {
         std::cout << "\nREPRODUCE: DPNPC dpnp_rng_shuffle_c:";
-        std::cout << "\nDIMS: " << ndim[i] <<std::endl;
+        std::cout << "\nDIMS: " << ndim[i] << std::endl;
         // init array 0, 1, 2, 3, 4, 5, 6, ....
         dpnp_arange_c<double>(0, 1, array_1, size);
         // print before shuffle
@@ -77,7 +77,7 @@ int main(int, char**)
         dpnp_rng_shuffle_c<double>(array_1, itemsize, ndim[i], high_dim_size[i], size);
         // print shuffle result
         std::cout << "\nSHUFFLE INPUT array:";
-        print_dpnp_array(array_1, size); 
+        print_dpnp_array(array_1, size);
     }
     dpnp_memory_free_c(array_1);
 }

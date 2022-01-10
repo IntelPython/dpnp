@@ -175,7 +175,8 @@ size_t get_id_by_xyz_inkernel(const _DataType* xyz, size_t xyz_size, const _Data
  *
  * @return                        Input shape is broadcastable to output one or not.
  */
-static inline bool broadcastable(const std::vector<shape_elem_type>& input_shape, const std::vector<shape_elem_type>& output_shape)
+static inline bool broadcastable(const std::vector<shape_elem_type>& input_shape,
+                                 const std::vector<shape_elem_type>& output_shape)
 {
     if (input_shape.size() > output_shape.size())
     {
@@ -195,8 +196,9 @@ static inline bool broadcastable(const std::vector<shape_elem_type>& input_shape
     return true;
 }
 
-static inline bool
-    broadcastable(const shape_elem_type* input_shape, const size_t input_shape_size, const std::vector<shape_elem_type>& output_shape)
+static inline bool broadcastable(const shape_elem_type* input_shape,
+                                 const size_t input_shape_size,
+                                 const std::vector<shape_elem_type>& output_shape)
 {
     const std::vector<shape_elem_type> input_shape_vec(input_shape, input_shape + input_shape_size);
     return broadcastable(input_shape_vec, output_shape);
@@ -217,7 +219,8 @@ template <typename _DataType>
 static inline bool
     array_equal(const _DataType* input1, const size_t input1_size, const _DataType* input2, const size_t input2_size)
 {
-    if (input1_size != input2_size) return false;
+    if (input1_size != input2_size)
+        return false;
 
     const std::vector<_DataType> input1_vec(input1, input1 + input1_size);
     const std::vector<_DataType> input2_vec(input2, input2 + input2_size);
@@ -289,8 +292,9 @@ static inline std::vector<_DataType> get_result_shape(const _DataType* input1_sh
  * @exception std::range_error    Particular axis is out of range or other error.
  * @return                        The normalized axes indexes, such that `0 <= result < __shape_size`
  */
-static inline std::vector<shape_elem_type>
-    get_validated_axes(const std::vector<shape_elem_type>& __axes, const size_t __shape_size, const bool __allow_duplicate = false)
+static inline std::vector<shape_elem_type> get_validated_axes(const std::vector<shape_elem_type>& __axes,
+                                                              const size_t __shape_size,
+                                                              const bool __allow_duplicate = false)
 {
     std::vector<shape_elem_type> result;
 

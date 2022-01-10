@@ -105,11 +105,21 @@ Extra defined commands for the build system
 
 TODO: spell check, valgrind, code coverage
 """
-dpnp_build_commands = {'style': source_style,
-                       'build_clib_setuptools': custom_build_clib,
-                       'build_clib': custom_build_cmake_clib,
-                       'clean': source_clean
-                       }
+
+# TODO: refactor/fix
+# on Win we need a specific build_clib definition to prevent using cmake during build_ext execution
+if IS_WIN:
+    dpnp_build_commands = {'style': source_style,
+                           'build_clib_setuptools': custom_build_clib,
+                           'build_clib': custom_build_clib,
+                           'clean': source_clean
+                           }
+else:
+    dpnp_build_commands = {'style': source_style,
+                           'build_clib_setuptools': custom_build_clib,
+                           'build_clib': custom_build_cmake_clib,
+                           'clean': source_clean
+                           }
 
 if IS_WIN:
     '''

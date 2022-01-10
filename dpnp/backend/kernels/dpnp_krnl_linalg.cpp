@@ -333,15 +333,20 @@ void dpnp_kron_c(void* array1_in,
     _DataType2* array2 = input2_ptr.get_ptr();
     _ResultType* result = result_ptr.get_ptr();
 
-    shape_elem_type* _in1_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
-    shape_elem_type* _in2_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type* _in1_shape =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type* _in2_shape =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
 
     dpnp_memory_memcpy_c(_in1_shape, in1_shape, ndim * sizeof(shape_elem_type));
     dpnp_memory_memcpy_c(_in2_shape, in2_shape, ndim * sizeof(shape_elem_type));
 
-    shape_elem_type* in1_offsets = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
-    shape_elem_type* in2_offsets = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
-    shape_elem_type* res_offsets = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type* in1_offsets =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type* in2_offsets =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type* res_offsets =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
 
     get_shape_offsets_inkernel(in1_shape, ndim, in1_offsets);
     get_shape_offsets_inkernel(in2_shape, ndim, in2_offsets);
