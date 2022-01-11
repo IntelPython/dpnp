@@ -144,7 +144,7 @@ def call_origin(function, *args, **kwargs):
         if args and args_new:
             arg, arg_new = args[0], args_new[0]
             if isinstance(arg_new, numpy.ndarray):
-                copy_from_origin(arg, arg_new)
+                copy_from_origin(unwrap_array(arg), arg_new)
             elif isinstance(arg_new, list):
                 for i, val in enumerate(arg_new):
                     arg[i] = val
@@ -160,7 +160,7 @@ def call_origin(function, *args, **kwargs):
         else:
             result = kwargs_out
 
-        copy_from_origin(result, result_origin)
+        copy_from_origin(unwrap_array(result), result_origin)
 
     elif isinstance(result, tuple):
         # convert tuple(fallback_array) to tuple(result_array)
@@ -169,12 +169,20 @@ def call_origin(function, *args, **kwargs):
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
                 res = dpnp_container.empty(res_origin.shape, dtype=res_origin.dtype)
-                copy_from_origin(res, res_origin)
+                copy_from_origin(res.get_array(), res_origin)
             result_list.append(res)
 
         result = tuple(result_list)
 
     return result
+
+
+def unwrap_array(x1):
+    """Get array from input object."""
+    if isinstance(x1, dpnp.dpnp_array.dpnp_array):
+        return x1.get_array()
+
+    return x1
 
 
 cpdef checker_throw_axis_error(function_name, param_name, param, expected):
