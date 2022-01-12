@@ -208,7 +208,9 @@ class dpnp_array:
     def __ne__(self, other):
         return dpnp.not_equal(self, other)
 
- # '__neg__',
+    def __neg__(self):
+        return dpnp.negative(self)
+
  # '__new__',
  # '__or__',
  # '__pos__',
