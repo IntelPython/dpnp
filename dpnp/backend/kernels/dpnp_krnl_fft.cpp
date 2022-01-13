@@ -64,7 +64,7 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
 
     const double kernel_pi = inverse ? -M_PI : M_PI;
 
@@ -84,8 +84,8 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
     get_shape_offsets_inkernel(output_shape, shape_size, output_shape_offsets);
     get_shape_offsets_inkernel(input_shape, shape_size, input_shape_offsets);
 
-    cl::sycl::range<1> gws(result_size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(result_size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t output_id = global_id[0];
 
         double sum_real = 0.0;
@@ -136,8 +136,8 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
             const size_t output_local_id = xyz_id;
             const double angle = 2.0 * kernel_pi * it * output_local_id / axis_length;
 
-            const double angle_cos = cl::sycl::cos(angle);
-            const double angle_sin = cl::sycl::sin(angle);
+            const double angle_cos = sycl::cos(angle);
+            const double angle_sin = sycl::sin(angle);
 
             sum_real += in_real * angle_cos + in_imag * angle_sin;
             sum_imag += -in_real * angle_sin + in_imag * angle_cos;
@@ -152,7 +152,7 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
         result[output_id] = _DataType_output(sum_real, sum_imag);
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_fft_fft_c_kernel<_DataType_input, _DataType_output>>(gws, kernel_parallel_for_func);
     };
 
@@ -174,7 +174,7 @@ void dpnp_fft_fft_mathlib_compute_c(const void* array1_in,
                                     _Descriptor_type& desc,
                                     const size_t norm)
 {
-    cl::sycl::event event;
+    sycl::event event;
 
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size);
     DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, result_size);

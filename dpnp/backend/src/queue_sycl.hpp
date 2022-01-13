@@ -68,7 +68,7 @@ namespace mkl_rng = oneapi::mkl::rng;
 class backend_sycl
 {
 #if defined(DPNP_LOCAL_QUEUE)
-    static cl::sycl::queue* queue; /**< contains SYCL queue pointer initialized in @ref backend_sycl_queue_init */
+    static sycl::queue* queue; /**< contains SYCL queue pointer initialized in @ref backend_sycl_queue_init */
 #endif
     static mkl_rng::mt19937* rng_engine; /**< RNG engine ptr. initialized in @ref backend_sycl_rng_engine_init */
 
@@ -125,7 +125,7 @@ public:
     /**
      * Return the @ref queue to the user
      */
-    static cl::sycl::queue& get_queue()
+    static sycl::queue& get_queue()
     {
 #if defined(DPNP_LOCAL_QUEUE)
         if (!queue)
@@ -137,7 +137,7 @@ public:
 #else
         // temporal solution. Started from Sept-2020
         DPCTLSyclQueueRef DPCtrl_queue = DPCTLQueueMgr_GetCurrentQueue();
-        return *(reinterpret_cast<cl::sycl::queue*>(DPCtrl_queue));
+        return *(reinterpret_cast<sycl::queue*>(DPCtrl_queue));
 #endif
     }
 

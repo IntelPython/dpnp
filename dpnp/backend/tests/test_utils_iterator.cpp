@@ -390,9 +390,9 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
 
     ASSERT_EQ(input.get_output_size(), result_size);
 
-    cl::sycl::range<1> gws(result_size);
+    sycl::range<1> gws(result_size);
     const DPNPC_id<data_type>* input_it = &input;
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         const size_t idx = global_id[0];
 
         data_type accumulator = 0;
@@ -403,11 +403,11 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
         result_ptr[idx] = accumulator;
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class test_sycl_reduce_axis_kernel>(gws, kernel_parallel_for_func);
     };
 
-    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+    sycl::event event = DPNP_QUEUE.submit(kernel_func);
     event.wait();
 
     for (dpnpc_index_t i = 0; i < result_size; ++i)
