@@ -235,7 +235,7 @@ cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):
          result_shape.data(),
          result_strides.data(),
          x1.get_data(),
-         x1.size,
+         x1.ndim,
          x1_shape.size(),
          x1_shape.data(),
          x1_strides.data(),
