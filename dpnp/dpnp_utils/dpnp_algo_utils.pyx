@@ -102,7 +102,7 @@ def copy_from_origin(dst, src):
     if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
         if src.size:
             # dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
-            dpctl.tensor._copy_utils._copy_from_numpy_into(dst, src)
+            dpctl.tensor._copy_utils._copy_from_numpy_into(unwrap_array(dst), src)
     else:
         for i in range(dst.size):
             dst.flat[i] = src.item(i)
@@ -144,7 +144,7 @@ def call_origin(function, *args, **kwargs):
         if args and args_new:
             arg, arg_new = args[0], args_new[0]
             if isinstance(arg_new, numpy.ndarray):
-                copy_from_origin(unwrap_array(arg), arg_new)
+                copy_from_origin(arg, arg_new)
             elif isinstance(arg_new, list):
                 for i, val in enumerate(arg_new):
                     arg[i] = val
@@ -160,7 +160,7 @@ def call_origin(function, *args, **kwargs):
         else:
             result = kwargs_out
 
-        copy_from_origin(unwrap_array(result), result_origin)
+        copy_from_origin(result, result_origin)
 
     elif isinstance(result, tuple):
         # convert tuple(fallback_array) to tuple(result_array)
@@ -169,7 +169,7 @@ def call_origin(function, *args, **kwargs):
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
                 res = dpnp_container.empty(res_origin.shape, dtype=res_origin.dtype)
-                copy_from_origin(res.get_array(), res_origin)
+                copy_from_origin(res, res_origin)
             result_list.append(res)
 
         result = tuple(result_list)
