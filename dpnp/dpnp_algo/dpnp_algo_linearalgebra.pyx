@@ -52,13 +52,13 @@ ctypedef void(*fptr_2in_1out_dot_t)(void * , const size_t, const size_t,
                                     const shape_elem_type *, const shape_elem_type * ,
                                     void * , const size_t, const size_t,
                                     const shape_elem_type *, const shape_elem_type * )
-ctypedef void(*fptr_2in_1out_matmul_t)(void * , const size_t, const size_t,
-                                       const shape_elem_type *, const shape_elem_type * ,
+ctypedef void(*fptr_2in_1out_matmul_t)(void * ,
                                        void * , const size_t, const size_t,
                                        const shape_elem_type *, const shape_elem_type * ,
                                        void * , const size_t, const size_t,
                                        const shape_elem_type *, const shape_elem_type * ,
-                                       void *)
+                                       void * , const size_t, const size_t,
+                                       const shape_elem_type *, const shape_elem_type * )
 
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
 
@@ -296,7 +296,8 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
 
     cdef fptr_2in_1out_matmul_t func = <fptr_2in_1out_matmul_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(),
+    func(q_ref,
+         result.get_data(),
          result.size,
          result.ndim,
          NULL,  # result_shape
@@ -310,8 +311,7 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
          in_array2.size,
          in_array2.ndim,
          shape2.data(),
-         NULL,   # in_array2_strides
-         q_ref)
+         NULL)  # in_array2_strides
 
     return result
 

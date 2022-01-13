@@ -202,6 +202,7 @@ INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
  *
  * Matrix multiplication procedure.
  *
+ * @param [in]  q_ref               Reference to SYCL queue.
  * @param [out] result_out          Output array.
  * @param [in]  result_size         Size of output array.
  * @param [in]  result_ndim         Number of output array dimensions.
@@ -217,10 +218,10 @@ INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
  * @param [in]  input2_ndim         Number of second input array dimensions.
  * @param [in]  input2_shape        Shape of second input array.
  * @param [in]  input2_strides      Strides of second input array.
- * @param [in]  q_ref               Reference to SYCL queue.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_matmul_c(void* result_out,
+INP_DLLEXPORT void dpnp_matmul_c(void* q_ref,
+                                 void* result_out,
                                  const size_t result_size,
                                  const size_t result_ndim,
                                  const shape_elem_type* result_shape,
@@ -234,8 +235,7 @@ INP_DLLEXPORT void dpnp_matmul_c(void* result_out,
                                  const size_t input2_size,
                                  const size_t input2_ndim,
                                  const shape_elem_type* input2_shape,
-                                 const shape_elem_type* input2_strides,
-                                 void* q_ref);
+                                 const shape_elem_type* input2_strides);
 
 /**
  * @ingroup BACKEND_API

@@ -534,7 +534,8 @@ template <typename _KernelNameSpecialization>
 class dpnp_matmul_c_kernel;
 
 template <typename _DataType>
-void dpnp_matmul_c(void* result_out,
+void dpnp_matmul_c(void* q_ref,
+                   void* result_out,
                    const size_t result_size,
                    const size_t result_ndim,
                    const shape_elem_type* result_shape,
@@ -548,8 +549,7 @@ void dpnp_matmul_c(void* result_out,
                    const size_t input2_size,
                    const size_t input2_ndim,
                    const shape_elem_type* input2_shape,
-                   const shape_elem_type* input2_strides,
-                   void* q_ref)
+                   const shape_elem_type* input2_strides)
 {
     (void)result_size;
     (void)result_ndim;
@@ -658,10 +658,10 @@ void dpnp_matmul_c(void* result_out,
                    const shape_elem_type* input2_shape,
                    const shape_elem_type* input2_strides)
 {
-    dpnp_matmul_c<_DataType>(result_out, result_size, result_ndim, result_shape, result_strides,
+    dpnp_matmul_c<_DataType>(&DPNP_QUEUE,
+                             result_out, result_size, result_ndim, result_shape, result_strides,
                              input1_in, input1_size, input1_ndim, input1_shape, input1_strides,
-                             input2_in, input2_size, input2_ndim, input2_shape, input2_strides,
-                             &DPNP_QUEUE);
+                             input2_in, input2_size, input2_ndim, input2_shape, input2_strides);
 }
 
 template <typename _DataType>
@@ -683,6 +683,7 @@ void (*dpnp_matmul_default_c)(void*,
 
 template <typename _DataType>
 void (*dpnp_matmul_ext_c)(void*,
+                          void*,
                           const size_t,
                           const size_t,
                           const shape_elem_type*,
@@ -696,8 +697,7 @@ void (*dpnp_matmul_ext_c)(void*,
                           const size_t,
                           const size_t,
                           const shape_elem_type*,
-                          const shape_elem_type*,
-                          void*) = dpnp_matmul_c<_DataType>;
+                          const shape_elem_type*) = dpnp_matmul_c<_DataType>;
 
 void func_map_init_linalg(func_map_t& fmap)
 {
