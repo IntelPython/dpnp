@@ -78,13 +78,13 @@ class dpnp_dot_c_kernel;
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 sycl::event dot(sycl::queue& queue,
-                    _DataType_output* result_out,
-                    _DataType_input1* input1_in,
-                    _DataType_input2* input2_in,
-                    size_t input1_strides,
-                    size_t input2_strides,
-                    size_t size,
-                    const std::vector<sycl::event>& dependencies = {})
+                _DataType_output* result_out,
+                _DataType_input1* input1_in,
+                _DataType_input2* input2_in,
+                size_t input1_strides,
+                size_t input2_strides,
+                size_t size,
+                const std::vector<sycl::event>& dependencies = {})
 {
     (void)dependencies;
 
@@ -108,8 +108,8 @@ sycl::event dot(sycl::queue& queue,
         event = queue.submit([&](sycl::handler& cgh) {
             cgh.parallel_for(sycl::range<1>{size},
                              sycl::reduction(result_out,
-                                                 std::plus<_DataType_output>(),
-                                                 sycl::property::reduction::initialize_to_identity{}),
+                                             std::plus<_DataType_output>(),
+                                             sycl::property::reduction::initialize_to_identity{}),
                              [=](sycl::id<1> idx, auto& sum) {
                                  sum += static_cast<_DataType_output>(input1_in[idx * input1_strides]) *
                                         static_cast<_DataType_output>(input2_in[idx * input2_strides]);
@@ -215,8 +215,7 @@ void dpnp_dot_c(void* result_out,
     if ((input1_ndim == 1) && (input2_ndim == 1))
     {
         assert(input1_size == input2_size);
-        sycl::event event =
-            dot(DPNP_QUEUE, result, input1, input2, input1_strides[0], input2_strides[0], input1_size);
+        sycl::event event = dot(DPNP_QUEUE, result, input1, input2, input1_strides[0], input2_strides[0], input1_size);
         event.wait();
         return;
     }
@@ -307,19 +306,19 @@ void dpnp_dot_c(void* result_out,
             const std::int64_t ldc = size_n;
 
             sycl::event event = mkl_blas_rm::gemm(DPNP_QUEUE,
-                                                      trans1,
-                                                      trans2,
-                                                      size_m,
-                                                      size_n,
-                                                      size_k,
-                                                      _DataType_output(1), // alpha
-                                                      input1,
-                                                      lda,
-                                                      input2,
-                                                      ldb,
-                                                      _DataType_output(0), // beta
-                                                      result,
-                                                      ldc);
+                                                  trans1,
+                                                  trans2,
+                                                  size_m,
+                                                  size_n,
+                                                  size_k,
+                                                  _DataType_output(1), // alpha
+                                                  input1,
+                                                  lda,
+                                                  input2,
+                                                  ldb,
+                                                  _DataType_output(0), // beta
+                                                  result,
+                                                  ldc);
             event.wait();
             return;
 #endif
