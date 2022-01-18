@@ -45,18 +45,18 @@ void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
 
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t i = global_id[0];
 
         result[i] = start + i * step;
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_arange_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
@@ -174,18 +174,18 @@ void dpnp_identity_c(void* result1, const size_t n)
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
 
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    cl::sycl::range<2> gws(n, n);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+    sycl::range<2> gws(n, n);
+    auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
         size_t i = global_id[0];
         size_t j = global_id[1];
         result[i * n + j] = i == j;
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_identity_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
@@ -351,7 +351,7 @@ void dpnp_trace_c(const void* array1_in, void* result_in, const shape_elem_type*
     const _DataType* input = input1_ptr.get_ptr();
     _ResultType* result = reinterpret_cast<_ResultType*>(result_in);
 
-    cl::sycl::range<1> gws(size);
+    sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](auto index) {
         size_t i = index[0];
         _ResultType acc = _ResultType(0);
@@ -364,7 +364,7 @@ void dpnp_trace_c(const void* array1_in, void* result_in, const shape_elem_type*
         result[i] = acc;
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_trace_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
@@ -378,7 +378,7 @@ class dpnp_tri_c_kernel;
 template <typename _DataType>
 void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
 {
-    cl::sycl::event event;
+    sycl::event event;
 
     if (!result1 || !N || !M)
     {
@@ -388,8 +388,8 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     size_t idx = N * M;
-    cl::sycl::range<1> gws(idx);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(idx);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t ind = global_id[0];
         size_t i = ind / M;
         size_t j = ind % M;
@@ -408,7 +408,7 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
         }
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_tri_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 

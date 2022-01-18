@@ -104,7 +104,7 @@ void dpnp_sum_c(void* result_out,
         if (axes_ndim < 1)
         {
             auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, input_size, input);
-            cl::sycl::event event = mkl_stats::raw_sum(DPNP_QUEUE, dataset, result);
+            sycl::event event = mkl_stats::raw_sum(DPNP_QUEUE, dataset, result);
             event.wait();
 
             return;
