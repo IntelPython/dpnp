@@ -5,7 +5,28 @@ import dpctl
 import numpy
 
 
-DEVICES = dpctl.get_devices()
+list_of_backend_str = [
+    "host",
+    "level_zero",
+    "opencl",
+]
+
+list_of_device_type_str = [
+    "host",
+    "gpu",
+    "cpu",
+]
+
+available_devices = dpctl.get_devices()
+
+valid_devices = []
+for device in available_devices:
+    if device.backend.name not in list_of_backend_str:
+        pass
+    elif device.device_type.name not in list_of_device_type_str:
+        pass
+    else:
+        valid_devices.append(device)
 
 
 def assert_sycl_queue_equal(result, expected):
@@ -14,8 +35,8 @@ def assert_sycl_queue_equal(result, expected):
 
 
 @pytest.mark.parametrize("device",
-                         DEVICES,
-                         ids=[device.filter_string for device in DEVICES])
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
 def test_matmul(device):
     data1 = [[1., 1., 1.], [1., 1., 1.]]
     data2 = [[1., 1.], [1., 1.], [1., 1.]]
@@ -41,8 +62,8 @@ def test_matmul(device):
 @pytest.mark.parametrize("func",
                          [])
 @pytest.mark.parametrize("device",
-                         DEVICES,
-                         ids=[device.filter_string for device in DEVICES])
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
 def test_2in_1out(func, device):
     data1 = [1., 1., 1., 1., 1.]
     data2 = [1., 2., 3., 4., 5.]
