@@ -77,7 +77,7 @@ void test_mkl_random_normal(
     double dev_time_used = 0.0;
     double sum_dev_time_used = 0.0;
 
-    cl::sycl::queue queue{cl::sycl::gpu_selector()};
+    sycl::queue queue{sycl::gpu_selector()};
 
     double* result = reinterpret_cast<double*>(malloc_shared(size * sizeof(double), queue));
     if (result == nullptr)

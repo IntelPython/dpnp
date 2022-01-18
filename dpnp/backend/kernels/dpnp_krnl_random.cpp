@@ -167,7 +167,7 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
     {
         return;
     }
-    std::vector<cl::sycl::event> no_deps;
+    std::vector<sycl::event> no_deps;
 
     const _DataType d_zero = (_DataType(0.0));
 
@@ -284,7 +284,7 @@ void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const
         mkl_rng::gumbel<_DataType> distribution(negloc, scale);
         auto event_distribution = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
 
-        cl::sycl::event prod_event;
+        sycl::event prod_event;
         prod_event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, incx, {event_distribution});
         prod_event.wait();
     }
@@ -360,13 +360,13 @@ void dpnp_rng_logistic_c(void* result, const double loc, const double scale, con
     mkl_rng::uniform<_DataType> distribution(d_zero, d_one);
     auto event_distribution = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t i = global_id[0];
-        result1[i] = cl::sycl::log(result1[i] / (1.0 - result1[i]));
+        result1[i] = sycl::log(result1[i] / (1.0 - result1[i]));
         result1[i] = loc + scale * result1[i];
     };
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.depends_on({event_distribution});
         cgh.parallel_for<class dpnp_rng_logistic_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
@@ -556,12 +556,12 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             _DataType* tmp = nullptr;
             idx = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(size * sizeof(size_t)));
 
-            cl::sycl::range<1> gws1(size);
-            auto kernel_parallel_for_func1 = [=](cl::sycl::id<1> global_id) {
+            sycl::range<1> gws1(size);
+            auto kernel_parallel_for_func1 = [=](sycl::id<1> global_id) {
                 size_t i = global_id[0];
                 idx[i] = i;
             };
-            auto kernel_func1 = [&](cl::sycl::handler& cgh) {
+            auto kernel_func1 = [&](sycl::handler& cgh) {
                 cgh.parallel_for<class dpnp_rng_noncentral_chisquare_c_kernel1<_DataType>>(gws1,
                                                                                            kernel_parallel_for_func1);
             };
@@ -590,12 +590,12 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                 event_out = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, j - i, tmp);
                 event_out.wait();
 
-                cl::sycl::range<1> gws2(j - i);
-                auto kernel_parallel_for_func2 = [=](cl::sycl::id<1> global_id) {
+                sycl::range<1> gws2(j - i);
+                auto kernel_parallel_for_func2 = [=](sycl::id<1> global_id) {
                     size_t index = global_id[0];
                     result1[idx[index + i]] = tmp[index];
                 };
-                auto kernel_func2 = [&](cl::sycl::handler& cgh) {
+                auto kernel_func2 = [&](sycl::handler& cgh) {
                     cgh.parallel_for<class dpnp_rng_noncentral_chisquare_c_kernel2<_DataType>>(
                         gws2, kernel_parallel_for_func2);
                 };
@@ -651,7 +651,7 @@ void dpnp_rng_pareto_c(void* result, const double alpha, const size_t size)
     {
         return;
     }
-    std::vector<cl::sycl::event> no_deps;
+    std::vector<sycl::event> no_deps;
 
     const _DataType d_zero = _DataType(0.0);
     const _DataType d_one = _DataType(1.0);
@@ -689,7 +689,7 @@ void dpnp_rng_power_c(void* result, const double alpha, const size_t size)
     {
         return;
     }
-    std::vector<cl::sycl::event> no_deps;
+    std::vector<sycl::event> no_deps;
 
     const _DataType d_zero = _DataType(0.0);
     const _DataType d_one = _DataType(1.0);
@@ -713,7 +713,7 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
         return;
     }
 
-    std::vector<cl::sycl::event> no_deps;
+    std::vector<sycl::event> no_deps;
 
     const _DataType a = 0.0;
     const _DataType beta = 2.0;
@@ -764,12 +764,12 @@ void dpnp_rng_shuffle_c(
             if (i != j)
             {
                 auto memcpy1 =
-                    DPNP_QUEUE.submit([&](cl::sycl::handler& h) { h.memcpy(buf, result1 + j * itemsize, itemsize); });
-                auto memcpy2 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                    DPNP_QUEUE.submit([&](sycl::handler& h) { h.memcpy(buf, result1 + j * itemsize, itemsize); });
+                auto memcpy2 = DPNP_QUEUE.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy1});
                     h.memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
                 });
-                auto memcpy3 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                auto memcpy3 = DPNP_QUEUE.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy2});
                     h.memcpy(result1 + i * itemsize, buf, itemsize);
                 });
@@ -789,12 +789,12 @@ void dpnp_rng_shuffle_c(
             if (j < i)
             {
                 auto memcpy1 =
-                    DPNP_QUEUE.submit([&](cl::sycl::handler& h) { h.memcpy(buf, result1 + j * step_size, step_size); });
-                auto memcpy2 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                    DPNP_QUEUE.submit([&](sycl::handler& h) { h.memcpy(buf, result1 + j * step_size, step_size); });
+                auto memcpy2 = DPNP_QUEUE.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy1});
                     h.memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
                 });
-                auto memcpy3 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                auto memcpy3 = DPNP_QUEUE.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy2});
                     h.memcpy(result1 + i * step_size, buf, step_size);
                 });
@@ -932,31 +932,31 @@ void dpnp_rng_triangular_c(
         throw std::runtime_error("DPNP RNG Error: dpnp_rng_triangular_c() failed.");
     }
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t i = global_id[0];
         if (ratio <= 0)
         {
-            result1[i] = x_max - cl::sycl::sqrt(result1[i] * rpr);
+            result1[i] = x_max - sycl::sqrt(result1[i] * rpr);
         }
         else if (ratio >= 1)
         {
-            result1[i] = x_min + cl::sycl::sqrt(result1[i] * lpr);
+            result1[i] = x_min + sycl::sqrt(result1[i] * lpr);
         }
         else
         {
             _DataType ui = result1[i];
             if (ui > ratio)
             {
-                result1[i] = x_max - cl::sycl::sqrt((1.0 - ui) * rpr);
+                result1[i] = x_max - sycl::sqrt((1.0 - ui) * rpr);
             }
             else
             {
-                result1[i] = x_min + cl::sycl::sqrt(ui * lpr);
+                result1[i] = x_min + sycl::sqrt(ui * lpr);
             }
         }
     };
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.depends_on({event_uniform});
         cgh.parallel_for<class dpnp_rng_triangular_ration_acceptance_c_kernel<_DataType>>(gws,
                                                                                           kernel_parallel_for_func);
@@ -1067,16 +1067,16 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
 
-    cl::sycl::range<1> gws(size);
+    sycl::range<1> gws(size);
 
-    auto paral_kernel_acceptance = [&](cl::sycl::handler& cgh) {
+    auto paral_kernel_acceptance = [&](sycl::handler& cgh) {
         cgh.depends_on({uniform_distr_event});
-        cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
+        cgh.parallel_for(gws, [=](sycl::id<1> global_id) {
             size_t i = global_id[0];
             double mod, resi;
             resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
-            mod = cl::sycl::fabs(resi);
-            mod = (cl::sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
+            mod = sycl::fabs(resi);
+            mod = (sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
             result1[i] = (resi < 0) ? -mod : mod;
         });
     };
@@ -1149,15 +1149,15 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
 
-    cl::sycl::range<1> gws(size);
-    auto paral_kernel_acceptance = [&](cl::sycl::handler& cgh) {
+    sycl::range<1> gws(size);
+    auto paral_kernel_acceptance = [&](sycl::handler& cgh) {
         cgh.depends_on({uniform_distr_event});
-        cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
+        cgh.parallel_for(gws, [=](sycl::id<1> global_id) {
             size_t i = global_id[0];
             double mod, resi;
             resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
-            mod = cl::sycl::fabs(resi);
-            mod = (cl::sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
+            mod = sycl::fabs(resi);
+            mod = (sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
             result1[i] = (resi < 0) ? -mod : mod;
         });
     };
@@ -1211,19 +1211,19 @@ void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, 
     /* Y = mean/(2 scale) * Z^2 */
     auto sqr_event = mkl_vm::sqr(DPNP_QUEUE, size, result1, result1, {gaussian_dstr_event}, mkl_vm::mode::ha);
 
-    cl::sycl::range<1> gws(size);
-    auto acceptance_kernel1 = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto acceptance_kernel1 = [=](sycl::id<1> global_id) {
         size_t i = global_id[0];
         if (result1[i] <= 2.0)
         {
-            result1[i] = 1.0 + result1[i] + cl::sycl::sqrt(result1[i] * (result1[i] + 2.0));
+            result1[i] = 1.0 + result1[i] + sycl::sqrt(result1[i] * (result1[i] + 2.0));
         }
         else
         {
-            result1[i] = 1.0 + result1[i] * (1.0 + cl::sycl::sqrt(1.0 + 2.0 / result1[i]));
+            result1[i] = 1.0 + result1[i] * (1.0 + sycl::sqrt(1.0 + 2.0 / result1[i]));
         }
     };
-    auto parallel_for_acceptance1 = [&](cl::sycl::handler& cgh) {
+    auto parallel_for_acceptance1 = [&](sycl::handler& cgh) {
         cgh.depends_on({sqr_event});
         cgh.parallel_for<class dpnp_rng_wald_acceptance_kernel1<_DataType>>(gws, acceptance_kernel1);
     };
@@ -1234,14 +1234,14 @@ void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, uvec);
 
-    auto acceptance_kernel2 = [=](cl::sycl::id<1> global_id) {
+    auto acceptance_kernel2 = [=](sycl::id<1> global_id) {
         size_t i = global_id[0];
         if (uvec[i] * (1.0 + result1[i]) <= result1[i])
             result1[i] = mean / result1[i];
         else
             result1[i] = mean * result1[i];
     };
-    auto parallel_for_acceptance2 = [&](cl::sycl::handler& cgh) {
+    auto parallel_for_acceptance2 = [&](sycl::handler& cgh) {
         cgh.depends_on({event_ration_acceptance, uniform_distr_event});
         cgh.parallel_for<class dpnp_rng_wald_acceptance_kernel2<_DataType>>(gws, acceptance_kernel2);
     };
@@ -1283,7 +1283,7 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
         return;
     }
 
-    cl::sycl::event event_out;
+    sycl::event event_out;
 
     size_t i, n_accepted, batch_size;
     _DataType T, U, V, am1, b;

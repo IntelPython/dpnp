@@ -31,7 +31,7 @@
 #include "queue_sycl.hpp"
 
 #if defined(DPNP_LOCAL_QUEUE)
-cl::sycl::queue* backend_sycl::queue = nullptr;
+sycl::queue* backend_sycl::queue = nullptr;
 #endif
 mkl_rng::mt19937* backend_sycl::rng_engine = nullptr;
 
@@ -60,27 +60,27 @@ static void dpnpc_show_mathlib_version()
 #if (not defined(NDEBUG)) && defined(DPNP_LOCAL_QUEUE)
 static void show_available_sycl_devices()
 {
-    const std::vector<cl::sycl::device> devices = cl::sycl::device::get_devices();
+    const std::vector<sycl::device> devices = sycl::device::get_devices();
 
     std::cout << "Available SYCL devices:" << std::endl;
-    for (std::vector<cl::sycl::device>::const_iterator it = devices.cbegin(); it != devices.cend(); ++it)
+    for (std::vector<sycl::device>::const_iterator it = devices.cbegin(); it != devices.cend(); ++it)
     {
         std::cout
             // not yet implemented error << " " << it->has(sycl::aspect::usm_shared_allocations)  << " "
-            << " - id=" << it->get_info<cl::sycl::info::device::vendor_id>()
-            << ", type=" << static_cast<pi_uint64>(it->get_info<cl::sycl::info::device::device_type>())
-            << ", gws=" << it->get_info<cl::sycl::info::device::max_work_group_size>()
-            << ", cu=" << it->get_info<cl::sycl::info::device::max_compute_units>()
-            << ", name=" << it->get_info<cl::sycl::info::device::name>() << std::endl;
+            << " - id=" << it->get_info<sycl::info::device::vendor_id>()
+            << ", type=" << static_cast<pi_uint64>(it->get_info<sycl::info::device::device_type>())
+            << ", gws=" << it->get_info<sycl::info::device::max_work_group_size>()
+            << ", cu=" << it->get_info<sycl::info::device::max_compute_units>()
+            << ", name=" << it->get_info<sycl::info::device::name>() << std::endl;
     }
 }
 #endif
 
 #if defined(DPNP_LOCAL_QUEUE)
-static cl::sycl::device get_default_sycl_device()
+static sycl::device get_default_sycl_device()
 {
     int dpnpc_queue_gpu = 0;
-    cl::sycl::device dev = cl::sycl::device(cl::sycl::cpu_selector());
+    sycl::device dev = sycl::device(sycl::cpu_selector());
 
     const char* dpnpc_queue_gpu_var = getenv("DPNPC_QUEUE_GPU");
     if (dpnpc_queue_gpu_var != NULL)
@@ -90,7 +90,7 @@ static cl::sycl::device get_default_sycl_device()
 
     if (dpnpc_queue_gpu)
     {
-        dev = cl::sycl::device(cl::sycl::gpu_selector());
+        dev = sycl::device(sycl::gpu_selector());
     }
 
     return dev;
@@ -125,7 +125,7 @@ static long dpnp_kernels_link()
 
 #if defined(DPNP_LOCAL_QUEUE)
 // Catch asynchronous exceptions
-static void exception_handler(cl::sycl::exception_list exceptions)
+static void exception_handler(sycl::exception_list exceptions)
 {
     for (std::exception_ptr const& e : exceptions)
     {
@@ -133,7 +133,7 @@ static void exception_handler(cl::sycl::exception_list exceptions)
         {
             std::rethrow_exception(e);
         }
-        catch (cl::sycl::exception const& e)
+        catch (sycl::exception const& e)
         {
             std::cout << "DPNP. Caught asynchronous SYCL exception:\n" << e.what() << std::endl;
         }
@@ -151,7 +151,7 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
         backend_sycl::destroy();
     }
 
-    cl::sycl::device dev;
+    sycl::device dev;
 
 #if not defined(NDEBUG)
     show_available_sycl_devices();
@@ -159,11 +159,11 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 
     if (QueueOptions::CPU_SELECTOR == selector)
     {
-        dev = cl::sycl::device(cl::sycl::cpu_selector());
+        dev = sycl::device(sycl::cpu_selector());
     }
     else if (QueueOptions::GPU_SELECTOR == selector)
     {
-        dev = cl::sycl::device(cl::sycl::gpu_selector());
+        dev = sycl::device(sycl::gpu_selector());
     }
     else
     {
@@ -172,12 +172,12 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 
     if (is_verbose_mode())
     {
-        cl::sycl::property_list properties{sycl::property::queue::enable_profiling()};
-        queue = new cl::sycl::queue(dev, exception_handler, properties);
+        sycl::property_list properties{sycl::property::queue::enable_profiling()};
+        queue = new sycl::queue(dev, exception_handler, properties);
     }
     else
     {
-        queue = new cl::sycl::queue(dev, exception_handler);
+        queue = new sycl::queue(dev, exception_handler);
     }
 
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
@@ -209,7 +209,7 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 
 bool backend_sycl::backend_sycl_is_cpu()
 {
-    cl::sycl::queue& qptr = get_queue();
+    sycl::queue& qptr = get_queue();
 
     if (qptr.is_host() || qptr.get_device().is_cpu() || qptr.get_device().is_host())
     {
