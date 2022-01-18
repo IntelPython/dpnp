@@ -58,6 +58,8 @@ typedef ssize_t shape_elem_type;
 #include "dpnp_iface_fft.hpp"
 #include "dpnp_iface_random.hpp"
 
+#include <dpctl_sycl_interface.h>
+
 /**
  * @defgroup BACKEND_API Backend C++ library interface API
  * @{
@@ -220,7 +222,7 @@ INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
  * @param [in]  input2_strides      Strides of second input array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_matmul_c(void* q_ref,
+INP_DLLEXPORT void dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
                                  void* result_out,
                                  const size_t result_size,
                                  const size_t result_ndim,

@@ -534,7 +534,7 @@ template <typename _KernelNameSpecialization>
 class dpnp_matmul_c_kernel;
 
 template <typename _DataType>
-void dpnp_matmul_c(void* q_ref,
+void dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
                    void* result_out,
                    const size_t result_size,
                    const size_t result_ndim,
@@ -574,12 +574,9 @@ void dpnp_matmul_c(void* q_ref,
     cl::sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     cl::sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, size_m * size_k);
-    DPNPC_ptr_adapter<_DataType> input2_ptr(input2_in, size_k * size_n);
-    DPNPC_ptr_adapter<_DataType> result_ptr(result_out, size_m * size_n, false, true);
-    _DataType* array_1 = input1_ptr.get_ptr();
-    _DataType* array_2 = input2_ptr.get_ptr();
-    _DataType* result = result_ptr.get_ptr();
+    _DataType* array_1 = reinterpret_cast<_DataType*>(const_cast<void*>(input1_in));
+    _DataType* array_2 = reinterpret_cast<_DataType*>(const_cast<void*>(input2_in));
+    _DataType* result = reinterpret_cast<_DataType*>(result_out);
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
@@ -658,7 +655,8 @@ void dpnp_matmul_c(void* result_out,
                    const shape_elem_type* input2_shape,
                    const shape_elem_type* input2_strides)
 {
-    dpnp_matmul_c<_DataType>(&DPNP_QUEUE,
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    dpnp_matmul_c<_DataType>(q_ref,
                              result_out, result_size, result_ndim, result_shape, result_strides,
                              input1_in, input1_size, input1_ndim, input1_shape, input1_strides,
                              input2_in, input2_size, input2_ndim, input2_shape, input2_strides);
@@ -682,7 +680,7 @@ void (*dpnp_matmul_default_c)(void*,
                               const shape_elem_type*) = dpnp_matmul_c<_DataType>;
 
 template <typename _DataType>
-void (*dpnp_matmul_ext_c)(void*,
+void (*dpnp_matmul_ext_c)(DPCTLSyclQueueRef,
                           void*,
                           const size_t,
                           const size_t,
