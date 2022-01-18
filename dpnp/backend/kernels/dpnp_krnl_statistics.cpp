@@ -108,7 +108,7 @@ void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
     }
     policy.queue().wait();
 
-    cl::sycl::event event_syrk;
+    sycl::event event_syrk;
 
     const _DataType alpha = _DataType(1) / (ncols - 1);
     const _DataType beta = _DataType(0);
@@ -127,9 +127,9 @@ void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
     event_syrk.wait();
 
     // fill lower elements
-    cl::sycl::event event;
-    cl::sycl::range<1> gws(nrows * nrows);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::event event;
+    sycl::range<1> gws(nrows * nrows);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         const size_t idx = global_id[0];
         const size_t row_idx = idx / nrows;
         const size_t col_idx = idx - row_idx * nrows;
@@ -139,7 +139,7 @@ void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
         }
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_cov_c_kernel2<_DataType>>(gws, kernel_parallel_for_func);
     };
 
@@ -219,7 +219,7 @@ void dpnp_max_c(void* array1_in,
 
             auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
 
-            cl::sycl::event event = mkl_stats::max(DPNP_QUEUE, dataset, result);
+            sycl::event event = mkl_stats::max(DPNP_QUEUE, dataset, result);
 
             event.wait();
         }
@@ -402,7 +402,7 @@ void dpnp_mean_c(void* array1_in,
     {
         auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major /*, _ResultType*/>(1, size, array);
 
-        cl::sycl::event event = mkl_stats::mean(DPNP_QUEUE, dataset, result);
+        sycl::event event = mkl_stats::mean(DPNP_QUEUE, dataset, result);
 
         event.wait();
     }
@@ -491,7 +491,7 @@ void dpnp_min_c(void* array1_in,
 
             auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size_input, array_1);
 
-            cl::sycl::event event = mkl_stats::min(DPNP_QUEUE, dataset, result);
+            sycl::event event = mkl_stats::min(DPNP_QUEUE, dataset, result);
 
             event.wait();
         }
@@ -754,7 +754,7 @@ void dpnp_var_c(void* array1_in,
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
     DPNPC_ptr_adapter<_ResultType> result_ptr(result1, 1, true, true);
     _DataType* array1 = input1_ptr.get_ptr();
@@ -766,8 +766,8 @@ void dpnp_var_c(void* array1_in,
 
     _ResultType* squared_deviations = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(size * sizeof(_ResultType)));
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
         {
             _ResultType deviation = static_cast<_ResultType>(array1[i]) - mean_val;
@@ -775,7 +775,7 @@ void dpnp_var_c(void* array1_in,
         }
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_var_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 

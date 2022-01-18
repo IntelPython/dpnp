@@ -48,7 +48,7 @@ void dpnp_around_c(const void* input_in, void* result_out, const size_t input_si
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(input_in, input_size);
     _DataType* input = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result_out);
@@ -59,15 +59,15 @@ void dpnp_around_c(const void* input_in, void* result_out, const size_t input_si
     }
     else
     {
-        cl::sycl::range<1> gws(input_size);
-        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        sycl::range<1> gws(input_size);
+        auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
             size_t i = global_id[0];
             {
                 result[i] = std::rint(input[i]);
             }
         };
 
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
+        auto kernel_func = [&](sycl::handler& cgh) {
             cgh.parallel_for<class dpnp_around_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
         };
 
@@ -88,7 +88,7 @@ void dpnp_elemwise_absolute_c(const void* input1_in, void* result1, size_t size)
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, size);
     _DataType* array1 = input1_ptr.get_ptr();
     DPNPC_ptr_adapter<_DataType> result1_ptr(result1, size, false, true);
@@ -101,8 +101,8 @@ void dpnp_elemwise_absolute_c(const void* input1_in, void* result1, size_t size)
     }
     else
     {
-        cl::sycl::range<1> gws(size);
-        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        sycl::range<1> gws(size);
+        auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
             const size_t idx = global_id[0];
 
             if (array1[idx] >= 0)
@@ -115,7 +115,7 @@ void dpnp_elemwise_absolute_c(const void* input1_in, void* result1, size_t size)
             }
         };
 
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
+        auto kernel_func = [&](sycl::handler& cgh) {
             cgh.parallel_for<class dpnp_elemwise_absolute_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
         };
 
@@ -322,21 +322,21 @@ void dpnp_floor_divide_c(void* result_out,
 
     const size_t result_size = input1_it->get_output_size();
 
-    cl::sycl::range<1> gws(result_size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(result_size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         const size_t i = global_id[0]; /* for (size_t i = 0; i < result_size; ++i) */
         const _DataType_output input1_elem = (*input1_it)[i];
         const _DataType_output input2_elem = (*input2_it)[i];
 
         double div = (double)input1_elem / (double)input2_elem;
-        result[i] = static_cast<_DataType_output>(cl::sycl::floor(div));
+        result[i] = static_cast<_DataType_output>(sycl::floor(div));
     };
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_floor_divide_c_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(
             gws, kernel_parallel_for_func);
     };
 
-    cl::sycl::event event;
+    sycl::event event;
 
     if (input1_size == input2_size)
     {
@@ -372,7 +372,7 @@ class dpnp_modf_c_kernel;
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t size)
 {
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size);
     _DataType_input* array1 = input1_ptr.get_ptr();
     _DataType_output* result1 = reinterpret_cast<_DataType_output*>(result1_out);
@@ -384,16 +384,16 @@ void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t s
     }
     else
     {
-        cl::sycl::range<1> gws(size);
-        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        sycl::range<1> gws(size);
+        auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
             size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
             {
                 _DataType_input input_elem1 = array1[i];
-                result2[i] = cl::sycl::modf(double(input_elem1), &result1[i]);
+                result2[i] = sycl::modf(double(input_elem1), &result1[i]);
             }
         };
 
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
+        auto kernel_func = [&](sycl::handler& cgh) {
             cgh.parallel_for<class dpnp_modf_c_kernel<_DataType_input, _DataType_output>>(gws,
                                                                                           kernel_parallel_for_func);
         };
@@ -451,21 +451,21 @@ void dpnp_remainder_c(void* result_out,
 
     const size_t result_size = input1_it->get_output_size();
 
-    cl::sycl::range<1> gws(result_size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(result_size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         const size_t i = global_id[0];
         const _DataType_output input1_elem = (*input1_it)[i];
         const _DataType_output input2_elem = (*input2_it)[i];
-        double fmod_res = cl::sycl::fmod((double)input1_elem, (double)input2_elem);
+        double fmod_res = sycl::fmod((double)input1_elem, (double)input2_elem);
         double add = fmod_res + input2_elem;
-        result[i] = cl::sycl::fmod(add, (double)input2_elem);
+        result[i] = sycl::fmod(add, (double)input2_elem);
     };
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_remainder_c_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(
             gws, kernel_parallel_for_func);
     };
 
-    cl::sycl::event event;
+    sycl::event event;
 
     if (input1_size == input2_size)
     {
@@ -506,7 +506,7 @@ void dpnp_trapz_c(
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType_input1> input1_ptr(array1_in, array1_size);
     DPNPC_ptr_adapter<_DataType_input2> input2_ptr(array2_in, array2_size);
     _DataType_input1* array1 = input1_ptr.get_ptr();
@@ -527,15 +527,15 @@ void dpnp_trapz_c(
         _DataType_output* cur_res =
             reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c((cur_res_size) * sizeof(_DataType_output)));
 
-        cl::sycl::range<1> gws(cur_res_size);
-        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        sycl::range<1> gws(cur_res_size);
+        auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
             size_t i = global_id[0];
             {
                 cur_res[i] = array1[i + 1] * (array2[i + 2] - array2[i]);
             }
         };
 
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
+        auto kernel_func = [&](sycl::handler& cgh) {
             cgh.parallel_for<class dpnp_trapz_c_kernel<_DataType_input1, _DataType_input2, _DataType_output>>(
                 gws, kernel_parallel_for_func);
         };
