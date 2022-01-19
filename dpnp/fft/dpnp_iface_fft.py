@@ -105,11 +105,11 @@ def fft(x1, n=None, axis=-1, norm=None):
             pass                 # let fallback to handle exception
         elif norm is not None:
             pass
+        elif axis != -1:
+            pass
         else:
             output_boundarie = input_boundarie
-
             return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, 0).get_pyobj()
-
     return call_origin(numpy.fft.fft, x1, n, axis, norm)
 
 
