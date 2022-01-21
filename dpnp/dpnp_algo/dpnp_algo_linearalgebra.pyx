@@ -52,13 +52,14 @@ ctypedef void(*fptr_2in_1out_dot_t)(void * , const size_t, const size_t,
                                     const shape_elem_type *, const shape_elem_type * ,
                                     void * , const size_t, const size_t,
                                     const shape_elem_type *, const shape_elem_type * )
-ctypedef void(*fptr_2in_1out_matmul_t)(c_dpctl.DPCTLSyclQueueRef,
-                                       void * , const size_t, const size_t,
-                                       const shape_elem_type *, const shape_elem_type * ,
-                                       void * , const size_t, const size_t,
-                                       const shape_elem_type *, const shape_elem_type * ,
-                                       void * , const size_t, const size_t,
-                                       const shape_elem_type *, const shape_elem_type * )
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_matmul_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                            void * , const size_t, const size_t,
+                                                            const shape_elem_type *, const shape_elem_type * ,
+                                                            void * , const size_t, const size_t,
+                                                            const shape_elem_type *, const shape_elem_type * ,
+                                                            void * , const size_t, const size_t,
+                                                            const shape_elem_type *, const shape_elem_type * ,
+                                                            const c_dpctl.DPCTLEventVectorRef)
 
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
 
@@ -296,22 +297,25 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
 
     cdef fptr_2in_1out_matmul_t func = <fptr_2in_1out_matmul_t > kernel_data.ptr
     # call FPTR function
-    func(q_ref,
-         result.get_data(),
-         result.size,
-         result.ndim,
-         NULL,  # result_shape
-         NULL,  # result_strides
-         in_array1.get_data(),
-         in_array1.size,
-         in_array1.ndim,
-         shape1.data(),
-         NULL,  # in_array1_strides
-         in_array2.get_data(),
-         in_array2.size,
-         in_array2.ndim,
-         shape2.data(),
-         NULL)  # in_array2_strides
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    result.get_data(),
+                                                    result.size,
+                                                    result.ndim,
+                                                    NULL,  # result_shape
+                                                    NULL,  # result_strides
+                                                    in_array1.get_data(),
+                                                    in_array1.size,
+                                                    in_array1.ndim,
+                                                    shape1.data(),
+                                                    NULL,  # in_array1_strides
+                                                    in_array2.get_data(),
+                                                    in_array2.size,
+                                                    in_array2.ndim,
+                                                    shape2.data(),
+                                                    NULL,  # in_array2_strides
+                                                    NULL)  # dep_events_ref
+    with nogil: c_dpctl.DPCTLEvent_Wait(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
