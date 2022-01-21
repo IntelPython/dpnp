@@ -534,7 +534,14 @@ class dpnp_array:
         for i in range(self.size):
             self.flat[i] = value
 
- # 'flags',
+    @property
+    def flags(self):
+        """
+        Return integer whose bits correspond to the flags.
+
+        """
+
+        return self._array_obj.flags
 
     @property
     def flat(self):
