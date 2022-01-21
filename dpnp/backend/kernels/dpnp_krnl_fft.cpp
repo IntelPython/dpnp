@@ -191,7 +191,7 @@ void dpnp_fft_fft_mathlib_compute_c(const void* array1_in,
 
     const size_t shift = input_shape[shape_size - 1];
 
-    std::vector<cl::sycl::event> fft_events;
+    std::vector<sycl::event> fft_events;
     fft_events.reserve(n_iter);
 
     for (size_t i = 0; i < n_iter; ++i) {
@@ -212,7 +212,7 @@ void dpnp_fft_fft_mathlib_c(const void* array1_in,
                             const size_t result_size,
                             const size_t norm)
 {
-    if (!shape_size || !result_size || !array1_in || !result1)
+    if (!shape_size || !result_size || !array1_in || !result1 || !input_shape)
     {
         return;
     }
