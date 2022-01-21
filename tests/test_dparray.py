@@ -1,4 +1,5 @@
 import dpnp
+import dpctl.tensor as dpt
 import numpy
 import pytest
 
@@ -32,3 +33,30 @@ def test_flatten(arr, arr_dtype):
     expected = numpy_array.flatten()
     result = dpnp_array.flatten()
     numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("shape",
+                         [(5,), (5, 2)],
+                         ids=['(5,)', '(5, 2)'])
+def test_flags(shape):
+    X = dpt.usm_ndarray(shape)
+    Y = dpnp.ndarray(shape)
+    assert X.flags == Y.flags
+
+
+@pytest.mark.parametrize("shape",
+                         [(5, 2), (5, 1, 2)],
+                         ids=['(5,)', '(5, 2)'])
+def test_flags_order(shape):
+    X = dpt.usm_ndarray(shape, order="F")
+    Y = dpnp.ndarray(shape, order="F")
+    assert X.flags == Y.flags
+
+
+@pytest.mark.parametrize("strides",
+                         [(2, 0, 1), (1, 0, 5)],
+                         ids=['(2, 0, 1)', '(1, 0, 5)'])
+def test_flags_strides(strides):
+    X = dpt.usm_ndarray((5, 1, 2), strides=strides)
+    Y = dpnp.ndarray((5, 1, 2), strides=strides)
+    assert X.flags == Y.flags
