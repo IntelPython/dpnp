@@ -81,8 +81,8 @@ cl::sycl::event dot(cl::sycl::queue& queue,
                     _DataType_output* result_out,
                     _DataType_input1* input1_in,
                     _DataType_input2* input2_in,
-                    size_t input1_strides,
-                    size_t input2_strides,
+                    ssize_t input1_strides,
+                    ssize_t input2_strides,
                     size_t size,
                     const std::vector<cl::sycl::event>& dependencies = {})
 {
@@ -111,8 +111,16 @@ cl::sycl::event dot(cl::sycl::queue& queue,
                                                  std::plus<_DataType_output>(),
                                                  cl::sycl::property::reduction::initialize_to_identity{}),
                              [=](cl::sycl::id<1> idx, auto& sum) {
-                                 sum += static_cast<_DataType_output>(input1_in[idx * input1_strides]) *
-                                        static_cast<_DataType_output>(input2_in[idx * input2_strides]);
+                                 if (input1_strides > 0)
+                                 {
+                                     sum += static_cast<_DataType_output>(input1_in[idx * input1_strides]) *
+                                            static_cast<_DataType_output>(input2_in[idx * input2_strides]);
+                                 }
+                                 else
+                                 {
+                                     sum += static_cast<_DataType_output>(input1_in[size + idx * input1_strides - 1]) *
++                                           static_cast<_DataType_output>(input2_in[size + idx * input2_strides - 1]); 
+                                 }
                              });
         });
         // for some reason few such kernels cannot work in parallel
@@ -229,7 +237,7 @@ void dpnp_dot_c(void* result_out,
     {
         ext_input1_shape[0] = 1;
         ext_input1_shape[1] = input1_shape[0];
-        ext_input1_strides[0] = 0;
+        ext_input1_strides[0] = input1_shape[0];
         ext_input1_strides[1] = input1_strides[0];
     }
     else
@@ -248,7 +256,7 @@ void dpnp_dot_c(void* result_out,
         ext_input2_shape[0] = input2_shape[0];
         ext_input2_shape[1] = 1;
         ext_input2_strides[0] = input2_strides[0];
-        ext_input2_strides[1] = 0;
+        ext_input2_strides[1] = 1;
     }
     else
     {
@@ -298,10 +306,10 @@ void dpnp_dot_c(void* result_out,
             const size_t size_k = ext_input1_shape[1];
 
             const std::int64_t lda =
-                trans1 == oneapi::mkl::transpose::nontrans ? ext_input1_strides[0] : ext_input1_strides[1];
+                trans1 == oneapi::mkl::transpose::nontrans ? ext_input1_shape[1] : ext_input1_shape[0];
             const std::int64_t ldb =
-                trans2 == oneapi::mkl::transpose::nontrans ? ext_input2_strides[0] : ext_input2_strides[1];
-            ;
+                trans2 == oneapi::mkl::transpose::nontrans ? ext_input2_shape[1] : ext_input2_shape[0];
+
             // defenition of ldc will be another for result with non-standard (c-contiguous) strides
             // const std::int64_t ldc = result_strides[0] == 1 ? result_strides[1] : result_strides[0];
             const std::int64_t ldc = size_n;
