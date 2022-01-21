@@ -46,7 +46,7 @@ def test_flags(shape):
 
 @pytest.mark.parametrize("shape",
                          [(5, 2), (5, 1, 2)],
-                         ids=['(5,)', '(5, 2)'])
+                         ids=['(5, 2)', '(5, 1, 2)'])
 def test_flags_order(shape):
     X = dpt.usm_ndarray(shape, order="F")
     Y = dpnp.ndarray(shape, order="F")
