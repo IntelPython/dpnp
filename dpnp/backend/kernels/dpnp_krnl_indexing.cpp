@@ -36,17 +36,31 @@ template <typename _DataType1, typename _DataType2>
 class dpnp_choose_c_kernel;
 
 template <typename _DataType1, typename _DataType2>
-void dpnp_choose_c(
-    void* result1, void* array1_in, void** choices1, size_t size, size_t choices_size, size_t choice_size)
+DPCTLSyclEventRef dpnp_choose_c(DPCTLSyclQueueRef q_ref,
+                                void* result1,
+                                void* array1_in,
+                                void** choices1,
+                                size_t size,
+                                size_t choices_size,
+                                size_t choice_size,
+                                const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if ((array1_in == nullptr) || (result1 == nullptr) || (choices1 == nullptr))
     {
-        return;
+        return event_ref;
     }
     if (!size || !choices_size || !choice_size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     DPNPC_ptr_adapter<_DataType1> input1_ptr(array1_in, size);
     _DataType1* array_in = input1_ptr.get_ptr();
 
@@ -72,36 +86,95 @@ void dpnp_choose_c(
         cgh.parallel_for<class dpnp_choose_c_kernel<_DataType1, _DataType2>>(gws, kernel_parallel_for_func);
     };
 
-    sycl::event event = DPNP_QUEUE.submit(kernel_func);
+    sycl::event event = q.submit(kernel_func);
     event.wait();
+
+    return event_ref;
 }
 
+template <typename _DataType1, typename _DataType2>
+void dpnp_choose_c(
+    void* result1, void* array1_in, void** choices1, size_t size, size_t choices_size, size_t choice_size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_choose_c<_DataType1, _DataType2>(q_ref,
+                                                                        result1,
+                                                                        array1_in,
+                                                                        choices1,
+                                                                        size,
+                                                                        choices_size,
+                                                                        choice_size,
+                                                                        dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType1, typename _DataType2>
+void (*dpnp_choose_default_c)(void*, void*, void**, size_t, size_t, size_t) = dpnp_choose_c<_DataType1, _DataType2>;
+
+template <typename _DataType1, typename _DataType2>
+DPCTLSyclEventRef (*dpnp_choose_ext_c)(DPCTLSyclQueueRef,
+                                       void*,
+                                       void*,
+                                       void**,
+                                       size_t,
+                                       size_t,
+                                       size_t,
+                                       const DPCTLEventVectorRef) = dpnp_choose_c<_DataType1, _DataType2>;
+
 template <typename _DataType>
-class dpnp_diag_indices_c_kernel;
+DPCTLSyclEventRef dpnp_diag_indices_c(DPCTLSyclQueueRef q_ref,
+                                      void* result1,
+                                      size_t size,
+                                      const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    return dpnp_arange_c<_DataType>(q_ref, 0, 1, result1, size, dep_event_vec_ref);
+}
 
 template <typename _DataType>
 void dpnp_diag_indices_c(void* result1, size_t size)
 {
-    dpnp_arange_c<_DataType>(0, 1, result1, size);
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_diag_indices_c<_DataType>(q_ref,
+                                                                 result1,
+                                                                 size,
+                                                                 dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-class dpnp_diagonal_c_kernel;
+void (*dpnp_diag_indices_default_c)(void*, size_t) = dpnp_diag_indices_c<_DataType>;
 
 template <typename _DataType>
-void dpnp_diagonal_c(void* array1_in,
-                     const size_t input1_size,
-                     void* result1,
-                     const size_t offset,
-                     shape_elem_type* shape,
-                     shape_elem_type* res_shape,
-                     const size_t res_ndim)
+DPCTLSyclEventRef (*dpnp_diag_indices_ext_c)(DPCTLSyclQueueRef,
+                                             void*,
+                                             size_t,
+                                             const DPCTLEventVectorRef) = dpnp_diag_indices_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
+                                  void* array1_in,
+                                  const size_t input1_size,
+                                  void* result1,
+                                  const size_t offset,
+                                  shape_elem_type* shape,
+                                  shape_elem_type* res_shape,
+                                  const size_t res_ndim,
+                                  const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     const size_t res_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<shape_elem_type>());
     if (!(res_size && input1_size))
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, input1_size, true);
     DPNPC_ptr_adapter<_DataType> result_ptr(result1, res_size, true, true);
@@ -201,17 +274,72 @@ void dpnp_diagonal_c(void* array1_in,
         }
     }
 
-    return;
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_fill_diagonal_c(void* array1_in, void* val_in, shape_elem_type* shape, const size_t ndim)
+void dpnp_diagonal_c(void* array1_in,
+                     const size_t input1_size,
+                     void* result1,
+                     const size_t offset,
+                     shape_elem_type* shape,
+                     shape_elem_type* res_shape,
+                     const size_t res_ndim)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_diagonal_c<_DataType>(q_ref,
+                                                             array1_in,
+                                                             input1_size,
+                                                             result1,
+                                                             offset,
+                                                             shape,
+                                                             res_shape,
+                                                             res_ndim,
+                                                             dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_diagonal_default_c)(void*,
+                                const size_t,
+                                void*,
+                                const size_t,
+                                shape_elem_type*,
+                                shape_elem_type*,
+                                const size_t) = dpnp_diagonal_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_diagonal_ext_c)(DPCTLSyclQueueRef,
+                                         void*,
+                                         const size_t,
+                                         void*,
+                                         const size_t,
+                                         shape_elem_type*,
+                                         shape_elem_type*,
+                                         const size_t,
+                                         const DPCTLEventVectorRef) = dpnp_diagonal_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_fill_diagonal_c(DPCTLSyclQueueRef q_ref,
+                                       void* array1_in,
+                                       void* val_in,
+                                       shape_elem_type* shape,
+                                       const size_t ndim,
+                                       const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     const size_t result_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!(result_size && array1_in))
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     DPNPC_ptr_adapter<_DataType> result_ptr(array1_in, result_size, true, true);
     DPNPC_ptr_adapter<_DataType> val_ptr(val_in, 1, true);
@@ -242,26 +370,60 @@ void dpnp_fill_diagonal_c(void* array1_in, void* val_in, shape_elem_type* shape,
         array_1[ind] = val;
     }
 
-    return;
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_nonzero_c(const void* in_array1,
-                    void* result1,
-                    const size_t result_size,
-                    const shape_elem_type* shape,
-                    const size_t ndim,
-                    const size_t j)
+void dpnp_fill_diagonal_c(void* array1_in, void* val_in, shape_elem_type* shape, const size_t ndim)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_fill_diagonal_c<_DataType>(q_ref,
+                                                                  array1_in,
+                                                                  val_in,
+                                                                  shape,
+                                                                  ndim,
+                                                                  dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_fill_diagonal_default_c)(void*, void*, shape_elem_type*, const size_t) = dpnp_fill_diagonal_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_fill_diagonal_ext_c)(DPCTLSyclQueueRef,
+                                              void*,
+                                              void*,
+                                              shape_elem_type*,
+                                              const size_t,
+                                              const DPCTLEventVectorRef) = dpnp_fill_diagonal_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_nonzero_c(DPCTLSyclQueueRef q_ref,
+                                 const void* in_array1,
+                                 void* result1,
+                                 const size_t result_size,
+                                 const shape_elem_type* shape,
+                                 const size_t ndim,
+                                 const size_t j,
+                                 const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if ((in_array1 == nullptr) || (result1 == nullptr))
     {
-        return;
+        return event_ref;
     }
 
     if (ndim == 0)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     const size_t input1_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
 
@@ -290,21 +452,73 @@ void dpnp_nonzero_c(const void* in_array1,
         }
     }
 
-    return;
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_place_c(void* arr_in, long* mask_in, void* vals_in, const size_t arr_size, const size_t vals_size)
+void dpnp_nonzero_c(const void* in_array1,
+                    void* result1,
+                    const size_t result_size,
+                    const shape_elem_type* shape,
+                    const size_t ndim,
+                    const size_t j)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_nonzero_c<_DataType>(q_ref,
+                                                            in_array1,
+                                                            result1,
+                                                            result_size,
+                                                            shape,
+                                                            ndim,
+                                                            j,
+                                                            dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_nonzero_default_c)(const void*,
+                               void*,
+                               const size_t,
+                               const shape_elem_type*,
+                               const size_t,
+                               const size_t) = dpnp_nonzero_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_nonzero_ext_c)(DPCTLSyclQueueRef,
+                                        const void*,
+                                        void*,
+                                        const size_t,
+                                        const shape_elem_type*,
+                                        const size_t,
+                                        const size_t,
+                                        const DPCTLEventVectorRef) = dpnp_nonzero_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_place_c(DPCTLSyclQueueRef q_ref,
+                               void* arr_in,
+                               long* mask_in,
+                               void* vals_in,
+                               const size_t arr_size,
+                               const size_t vals_size,
+                               const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!arr_size)
     {
-        return;
+        return event_ref;
     }
 
     if (!vals_size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(vals_in, vals_size, true);
     DPNPC_ptr_adapter<_DataType> result_ptr(arr_in, arr_size, true, true);
@@ -324,22 +538,62 @@ void dpnp_place_c(void* arr_in, long* mask_in, void* vals_in, const size_t arr_s
         }
     }
 
-    return;
+    return event_ref;
 }
 
-template <typename _DataType, typename _IndecesType, typename _ValueType>
-void dpnp_put_c(
-    void* array1_in, void* ind_in, void* v_in, const size_t size, const size_t size_ind, const size_t size_v)
+template <typename _DataType>
+void dpnp_place_c(void* arr_in, long* mask_in, void* vals_in, const size_t arr_size, const size_t vals_size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_place_c<_DataType>(q_ref,
+                                                          arr_in,
+                                                          mask_in,
+                                                          vals_in,
+                                                          arr_size,
+                                                          vals_size,
+                                                          dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_place_default_c)(void*, long*, void*, const size_t, const size_t) = dpnp_place_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_place_ext_c)(DPCTLSyclQueueRef,
+                                      void*,
+                                      long*,
+                                      void*,
+                                      const size_t,
+                                      const size_t,
+                                      const DPCTLEventVectorRef) = dpnp_place_c<_DataType>;
+
+template <typename _DataType, typename _IndecesType, typename _ValueType>
+DPCTLSyclEventRef dpnp_put_c(DPCTLSyclQueueRef q_ref,
+                             void* array1_in,
+                             void* ind_in,
+                             void* v_in,
+                             const size_t size,
+                             const size_t size_ind,
+                             const size_t size_v,
+                             const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if ((array1_in == nullptr) || (ind_in == nullptr) || (v_in == nullptr))
     {
-        return;
+        return event_ref;
     }
 
     if (size_v == 0)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     DPNPC_ptr_adapter<size_t> input1_ptr(ind_in, size_ind, true);
     DPNPC_ptr_adapter<_DataType> input2_ptr(v_in, size_v, true);
@@ -359,19 +613,62 @@ void dpnp_put_c(
         }
     }
 
-    return;
+    return event_ref;
 }
 
-template <typename _DataType>
-void dpnp_put_along_axis_c(void* arr_in,
-                           long* indices_in,
-                           void* values_in,
-                           size_t axis,
-                           const shape_elem_type* shape,
-                           size_t ndim,
-                           size_t size_indices,
-                           size_t values_size)
+template <typename _DataType, typename _IndecesType, typename _ValueType>
+void dpnp_put_c(
+    void* array1_in, void* ind_in, void* v_in, const size_t size, const size_t size_ind, const size_t size_v)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_put_c<_DataType, _IndecesType, _ValueType>(q_ref,
+                                                                                  array1_in,
+                                                                                  ind_in,
+                                                                                  v_in,
+                                                                                  size,
+                                                                                  size_ind,
+                                                                                  size_v,
+                                                                                  dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType, typename _IndecesType, typename _ValueType>
+void (*dpnp_put_default_c)(void*,
+                           void*,
+                           void*,
+                           const size_t,
+                           const size_t,
+                           const size_t) = dpnp_put_c<_DataType, _IndecesType, _ValueType>;
+
+template <typename _DataType, typename _IndecesType, typename _ValueType>
+DPCTLSyclEventRef (*dpnp_put_ext_c)(DPCTLSyclQueueRef,
+                                    void*,
+                                    void*,
+                                    void*,
+                                    const size_t,
+                                    const size_t,
+                                    const size_t,
+                                    const DPCTLEventVectorRef) = dpnp_put_c<_DataType, _IndecesType, _ValueType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_put_along_axis_c(DPCTLSyclQueueRef q_ref,
+                                        void* arr_in,
+                                        long* indices_in,
+                                        void* values_in,
+                                        size_t axis,
+                                        const shape_elem_type* shape,
+                                        size_t ndim,
+                                        size_t size_indices,
+                                        size_t values_size,
+                                        const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     size_t res_ndim = ndim - 1;
     size_t res_shape[res_ndim];
     const size_t size_arr = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
@@ -535,15 +832,74 @@ void dpnp_put_along_axis_c(void* arr_in,
             arr[ind] = values[i % values_size];
         }
     }
-    return;
+    return event_ref;
 }
+
+template <typename _DataType>
+void dpnp_put_along_axis_c(void* arr_in,
+                           long* indices_in,
+                           void* values_in,
+                           size_t axis,
+                           const shape_elem_type* shape,
+                           size_t ndim,
+                           size_t size_indices,
+                           size_t values_size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_put_along_axis_c<_DataType>(q_ref,
+                                                                   arr_in,
+                                                                   indices_in,
+                                                                   values_in,
+                                                                   axis,
+                                                                   shape,
+                                                                   ndim,
+                                                                   size_indices,
+                                                                   values_size,
+                                                                   dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_put_along_axis_default_c)(void*,
+                                      long*,
+                                      void*,
+                                      size_t,
+                                      const shape_elem_type*,
+                                      size_t,
+                                      size_t,
+                                      size_t) = dpnp_put_along_axis_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_put_along_axis_ext_c)(DPCTLSyclQueueRef,
+                                               void*,
+                                               long*,
+                                               void*,
+                                               size_t,
+                                               const shape_elem_type*,
+                                               size_t,
+                                               size_t,
+                                               size_t,
+                                               const DPCTLEventVectorRef) = dpnp_put_along_axis_c<_DataType>;
 
 template <typename _DataType, typename _IndecesType>
 class dpnp_take_c_kernel;
 
 template <typename _DataType, typename _IndecesType>
-void dpnp_take_c(void* array1_in, const size_t array1_size, void* indices1, void* result1, size_t size)
+DPCTLSyclEventRef dpnp_take_c(DPCTLSyclQueueRef q_ref,
+                              void* array1_in,
+                              const size_t array1_size,
+                              void* indices1,
+                              void* result1,
+                              size_t size,
+                              const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, array1_size, true);
     DPNPC_ptr_adapter<_IndecesType> input2_ptr(indices1, size);
     _DataType* array_1 = input1_ptr.get_ptr();
@@ -560,66 +916,109 @@ void dpnp_take_c(void* array1_in, const size_t array1_size, void* indices1, void
         cgh.parallel_for<class dpnp_take_c_kernel<_DataType, _IndecesType>>(gws, kernel_parallel_for_func);
     };
 
-    sycl::event event = DPNP_QUEUE.submit(kernel_func);
+    sycl::event event = q.submit(kernel_func);
 
     event.wait();
 
-    return;
+    return event_ref;
 }
+
+template <typename _DataType, typename _IndecesType>
+void dpnp_take_c(void* array1_in, const size_t array1_size, void* indices1, void* result1, size_t size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_take_c<_DataType, _IndecesType>(q_ref,
+                                                                       array1_in,
+                                                                       array1_size,
+                                                                       indices1,
+                                                                       result1,
+                                                                       size,
+                                                                       dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType, typename _IndecesType>
+void (*dpnp_take_default_c)(void*, const size_t, void*, void*, size_t) = dpnp_take_c<_DataType, _IndecesType>;
+
+template <typename _DataType, typename _IndecesType>
+DPCTLSyclEventRef (*dpnp_take_ext_c)(DPCTLSyclQueueRef,
+                                     void*,
+                                     const size_t,
+                                     void*,
+                                     void*,
+                                     size_t,
+                                     const DPCTLEventVectorRef) = dpnp_take_c<_DataType, _IndecesType>;
 
 void func_map_init_indexing_func(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_choose_c<int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_choose_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_choose_c<int32_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_choose_c<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_choose_c<int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_choose_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_LNG][eft_FLT] = {eft_FLT, (void*)dpnp_choose_c<int64_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_choose_c<int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_choose_default_c<int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_choose_default_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_choose_default_c<int32_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_choose_default_c<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_choose_default_c<int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_choose_default_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_LNG][eft_FLT] = {eft_FLT, (void*)dpnp_choose_default_c<int64_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_choose_default_c<int64_t, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_diag_indices_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diag_indices_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diag_indices_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_diag_indices_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_INT][eft_INT] = {eft_INT,
+                                                                  (void*)dpnp_diag_indices_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_LNG][eft_LNG] = {eft_LNG,
+                                                                  (void*)dpnp_diag_indices_default_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_FLT][eft_FLT] = {eft_FLT,
+                                                                  (void*)dpnp_diag_indices_default_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                  (void*)dpnp_diag_indices_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_diagonal_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diagonal_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diagonal_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_diagonal_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_diagonal_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diagonal_default_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diagonal_default_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_diagonal_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_fill_diagonal_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_fill_diagonal_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_fill_diagonal_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_fill_diagonal_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_INT][eft_INT] = {eft_INT,
+                                                                   (void*)dpnp_fill_diagonal_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_LNG][eft_LNG] = {eft_LNG,
+                                                                   (void*)dpnp_fill_diagonal_default_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_FLT][eft_FLT] = {eft_FLT,
+                                                                   (void*)dpnp_fill_diagonal_default_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                   (void*)dpnp_fill_diagonal_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_NONZERO][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_nonzero_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_NONZERO][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_nonzero_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_NONZERO][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_nonzero_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_NONZERO][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_nonzero_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_NONZERO][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_nonzero_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_NONZERO][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_nonzero_default_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_NONZERO][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_nonzero_default_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_NONZERO][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_nonzero_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_place_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_place_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_place_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_place_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_place_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_place_default_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_place_default_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_place_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_PUT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_put_c<int32_t, int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_PUT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_put_c<int64_t, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_PUT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_put_c<float, int64_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_PUT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_put_c<double, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_PUT][eft_INT][eft_INT] = {eft_INT,
+                                                         (void*)dpnp_put_default_c<int32_t, int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_PUT][eft_LNG][eft_LNG] = {eft_LNG,
+                                                         (void*)dpnp_put_default_c<int64_t, int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_PUT][eft_FLT][eft_FLT] = {eft_FLT,
+                                                         (void*)dpnp_put_default_c<float, int64_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_PUT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                         (void*)dpnp_put_default_c<double, int64_t, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_put_along_axis_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_put_along_axis_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_put_along_axis_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_put_along_axis_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_INT][eft_INT] = {eft_INT,
+                                                                    (void*)dpnp_put_along_axis_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_LNG][eft_LNG] = {eft_LNG,
+                                                                    (void*)dpnp_put_along_axis_default_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_FLT][eft_FLT] = {eft_FLT,
+                                                                    (void*)dpnp_put_along_axis_default_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                    (void*)dpnp_put_along_axis_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_take_c<bool, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_take_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_take_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_take_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_take_c<double, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_take_default_c<bool, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_take_default_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_take_default_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_take_default_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_take_default_c<double, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_C128][eft_C128] = {eft_C128,
-                                                            (void*)dpnp_take_c<std::complex<double>, int64_t>};
+                                                            (void*)dpnp_take_default_c<std::complex<double>, int64_t>};
 
     return;
 }
