@@ -81,8 +81,8 @@ cl::sycl::event dot(cl::sycl::queue& queue,
                     _DataType_output* result_out,
                     _DataType_input1* input1_in,
                     _DataType_input2* input2_in,
-                    ssize_t input1_strides,
-                    ssize_t input2_strides,
+                    shape_elem_type input1_strides,
+                    shape_elem_type input2_strides,
                     size_t size,
                     const std::vector<cl::sycl::event>& dependencies = {})
 {
@@ -111,16 +111,10 @@ cl::sycl::event dot(cl::sycl::queue& queue,
                                                  std::plus<_DataType_output>(),
                                                  cl::sycl::property::reduction::initialize_to_identity{}),
                              [=](cl::sycl::id<1> idx, auto& sum) {
-                                 if (input1_strides > 0)
-                                 {
-                                     sum += static_cast<_DataType_output>(input1_in[idx * input1_strides]) *
-                                            static_cast<_DataType_output>(input2_in[idx * input2_strides]);
-                                 }
-                                 else
-                                 {
-                                     sum += static_cast<_DataType_output>(input1_in[size + idx * input1_strides - 1]) *
-+                                           static_cast<_DataType_output>(input2_in[size + idx * input2_strides - 1]); 
-                                 }
+                                 size_t i1 = input1_strides >= 0 ? i * input1_strides : size + i * input1_strides - 1;
+                                 size_t i2 = input2_strides >= 0 ? i * input2_strides : size + i * input2_strides - 1;
+                                 sum += static_cast<_DataType_output>(input1_in[i1]) *
+                                        static_cast<_DataType_output>(input2_in[i2]);
                              });
         });
         // for some reason few such kernels cannot work in parallel
