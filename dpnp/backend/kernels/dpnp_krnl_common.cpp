@@ -77,14 +77,14 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_dot_c_kernel;
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-cl::sycl::event dot(cl::sycl::queue& queue,
-                    _DataType_output* result_out,
-                    _DataType_input1* input1_in,
-                    _DataType_input2* input2_in,
-                    shape_elem_type input1_strides,
-                    shape_elem_type input2_strides,
-                    size_t size,
-                    const std::vector<cl::sycl::event>& dependencies = {})
+sycl::event dot(sycl::queue& queue,
+                _DataType_output* result_out,
+                _DataType_input1* input1_in,
+                _DataType_input2* input2_in,
+                shape_elem_type input1_strides,
+                shape_elem_type input2_strides,
+                size_t size,
+                const std::vector<sycl::event>& dependencies = {})
 {
     (void)dependencies;
 
@@ -107,10 +107,10 @@ cl::sycl::event dot(cl::sycl::queue& queue,
 #if LIBSYCL_VERSION_GREATER(5, 3, 0)
         event = queue.submit([&](sycl::handler& cgh) {
             cgh.parallel_for(sycl::range<1>{size},
-                             cl::sycl::reduction(result_out,
-                                                 std::plus<_DataType_output>(),
-                                                 cl::sycl::property::reduction::initialize_to_identity{}),
-                             [=](cl::sycl::id<1> idx, auto& sum) {
+                             sycl::reduction(result_out,
+                                             std::plus<_DataType_output>(),
+                                             sycl::property::reduction::initialize_to_identity{}),
+                             [=](sycl::id<1> idx, auto& sum) {
                                  size_t i1 = input1_strides >= 0 ? i * input1_strides : size + i * input1_strides - 1;
                                  size_t i2 = input2_strides >= 0 ? i * input2_strides : size + i * input2_strides - 1;
                                  sum += static_cast<_DataType_output>(input1_in[i1]) *
