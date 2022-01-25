@@ -1,7 +1,6 @@
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([[i, i] for i in x])]
 
 tests/test_arraymanipulation.py::TestConcatenate::test_concatenate
-tests/test_histograms.py::TestHistogram::test_density
 tests/test_mathematical.py::TestGradient::test_gradient_y1[array0]
 tests/test_mathematical.py::TestGradient::test_gradient_y1[array1]
 tests/test_mathematical.py::TestGradient::test_gradient_y1[array2]
