@@ -84,12 +84,12 @@
         bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
         dpnp_memory_free_c(input1_shape_offsets);                                                                      \
                                                                                                                        \
-        cl::sycl::event event;                                                                                         \
-        cl::sycl::range<1> gws(result_size);                                                                           \
+        sycl::event event;                                                                                             \
+        sycl::range<1> gws(result_size);                                                                               \
                                                                                                                        \
         if (use_strides)                                                                                               \
         {                                                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                          \
                 {                                                                                                      \
                     size_t input_id = 0;                                                                               \
@@ -104,7 +104,7 @@
                     result[output_id] = __operation1__;                                                                \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
                 cgh.parallel_for<class __name__##_strides_kernel<_DataType_input, _DataType_output>>(                  \
                     gws, kernel_parallel_for_func);                                                                    \
             };                                                                                                         \
@@ -113,14 +113,14 @@
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                          \
                 {                                                                                                      \
                     const _DataType_output input_elem = input1_data[output_id];                                        \
                     result[output_id] = __operation1__;                                                                \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
                 cgh.parallel_for<class __name__##_kernel<_DataType_input, _DataType_output>>(                          \
                     gws, kernel_parallel_for_func);                                                                    \
             };                                                                                                         \
@@ -364,12 +364,12 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
         bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
         dpnp_memory_free_c(input1_shape_offsets);                                                                      \
                                                                                                                        \
-        cl::sycl::event event;                                                                                         \
-        cl::sycl::range<1> gws(result_size);                                                                           \
+        sycl::event event;                                                                                             \
+        sycl::range<1> gws(result_size);                                                                               \
                                                                                                                        \
         if (use_strides)                                                                                               \
         {                                                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                          \
                 {                                                                                                      \
                     size_t input_id = 0;                                                                               \
@@ -384,21 +384,21 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
                     result[output_id] = __operation1__;                                                                \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
                 cgh.parallel_for<class __name__##_strides_kernel<_DataType>>(gws, kernel_parallel_for_func);           \
             };                                                                                                         \
             event = DPNP_QUEUE.submit(kernel_func);                                                                    \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                                  \
                 {                                                                                                      \
                     const _DataType input_elem = input1_data[i];                                                       \
                     result[i] = __operation1__;                                                                        \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
                 cgh.parallel_for<class __name__##_kernel<_DataType>>(gws, kernel_parallel_for_func);                   \
             };                                                                                                         \
                                                                                                                        \
@@ -551,8 +551,8 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
             use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);          \
         dpnp_memory_free_c(input2_shape_offsets);                                                                      \
                                                                                                                        \
-        cl::sycl::event event;                                                                                         \
-        cl::sycl::range<1> gws(result_size);                                                                           \
+        sycl::event event;                                                                                             \
+        sycl::range<1> gws(result_size);                                                                               \
                                                                                                                        \
         if (use_broadcasting)                                                                                          \
         {                                                                                                              \
@@ -572,7 +572,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                                                                                                                        \
             input2_it->broadcast_to_shape(result_shape_data, result_ndim);                                             \
                                                                                                                        \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 const size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                            \
                 {                                                                                                      \
                     const _DataType_output input1_elem = (*input1_it)[i];                                              \
@@ -580,7 +580,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                     result[i] = __operation1__;                                                                        \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
                 cgh.parallel_for<                                                                                      \
                     class __name__##_broadcast_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(          \
                     gws, kernel_parallel_for_func);                                                                    \
@@ -594,7 +594,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
         }                                                                                                              \
         else if (use_strides)                                                                                          \
         {                                                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 const size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                    \
                 {                                                                                                      \
                     size_t input1_id = 0;                                                                              \
@@ -612,7 +612,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                     result[output_id] = __operation1__;                                                                \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
                 cgh.parallel_for<                                                                                      \
                     class __name__##_strides_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(            \
                     gws, kernel_parallel_for_func);                                                                    \
@@ -631,7 +631,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
             }                                                                                                          \
             else                                                                                                       \
             {                                                                                                          \
-                auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                       \
+                auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                           \
                     const size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                        \
                     {                                                                                                  \
                         const _DataType_output input1_elem = input1_data[i];                                           \
@@ -639,7 +639,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                         result[i] = __operation1__;                                                                    \
                     }                                                                                                  \
                 };                                                                                                     \
-                auto kernel_func = [&](cl::sycl::handler& cgh) {                                                       \
+                auto kernel_func = [&](sycl::handler& cgh) {                                                           \
                     cgh.parallel_for<class __name__##_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(   \
                         gws, kernel_parallel_for_func);                                                                \
                 };                                                                                                     \
