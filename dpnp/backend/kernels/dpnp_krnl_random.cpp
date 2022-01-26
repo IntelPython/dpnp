@@ -335,7 +335,7 @@ DPCTLSyclEventRef dpnp_rng_f_c(DPCTLSyclQueueRef q_ref,
     _DataType scale = 2.0 / df_num;
     _DataType* den = nullptr;
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q, result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
     mkl_rng::gamma<_DataType> gamma_distribution1(shape, d_zero, scale);
@@ -947,7 +947,7 @@ DPCTLSyclEventRef dpnp_rng_multinomial_c(DPCTLSyclQueueRef q_ref,
         // which follow the condition
         if (is_cpu_queue || (!is_cpu_queue && (p_vector_size >= ((size_t)ntrial * 16)) && (ntrial <= 16)))
         {
-            DPNPC_ptr_adapter<std::int32_t> result_ptr(result, size, false, true);
+            DPNPC_ptr_adapter<std::int32_t> result_ptr(q, result, size, false, true);
             std::int32_t* result1 = result_ptr.get_ptr();
             mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
             // perform generation
@@ -956,7 +956,7 @@ DPCTLSyclEventRef dpnp_rng_multinomial_c(DPCTLSyclQueueRef q_ref,
         }
         else
         {
-            DPNPC_ptr_adapter<std::int32_t> result_ptr(result, size, true, true);
+            DPNPC_ptr_adapter<std::int32_t> result_ptr(q, result, size, true, true);
             std::int32_t* result1 = result_ptr.get_ptr();
             int errcode = viRngMultinomial(
                 VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_vector_size, p_vector);
@@ -1167,7 +1167,7 @@ DPCTLSyclEventRef dpnp_rng_noncentral_chisquare_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, false, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q, result, size, false, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
     const _DataType d_zero = _DataType(0.0);
@@ -1573,7 +1573,7 @@ DPCTLSyclEventRef dpnp_rng_rayleigh_c(DPCTLSyclQueueRef q_ref,
     const _DataType a = 0.0;
     const _DataType beta = 2.0;
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q, result, size);
     _DataType* result1 = result1_ptr.get_ptr();
 
     mkl_rng::exponential<_DataType> distribution(a, beta);
@@ -1635,7 +1635,7 @@ DPCTLSyclEventRef dpnp_rng_shuffle_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<char> result1_ptr(result, size * itemsize, true, true);
+    DPNPC_ptr_adapter<char> result1_ptr(q, result, size * itemsize, true, true);
     char* result1 = result1_ptr.get_ptr();
 
     size_t uvec_size = high_dim_size - 1;
@@ -2198,7 +2198,7 @@ DPCTLSyclEventRef dpnp_rng_vonmises_large_kappa_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q, result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
     _DataType r_over_two_kappa, recip_two_kappa;
@@ -2336,7 +2336,7 @@ DPCTLSyclEventRef dpnp_rng_vonmises_small_kappa_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q, result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
     _DataType rho_over_kappa, rho, r, s_kappa;
@@ -2689,7 +2689,7 @@ DPCTLSyclEventRef dpnp_rng_zipf_c(DPCTLSyclQueueRef q_ref,
     const _DataType d_zero = 0.0;
     const _DataType d_one = 1.0;
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q, result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
     am1 = a - d_one;

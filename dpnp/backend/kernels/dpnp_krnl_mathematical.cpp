@@ -59,7 +59,7 @@ DPCTLSyclEventRef dpnp_around_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(input_in, input_size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q, input_in, input_size);
     _DataType* input = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result_out);
 
@@ -137,9 +137,9 @@ DPCTLSyclEventRef dpnp_elemwise_absolute_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q, input1_in, size);
     _DataType* array1 = input1_ptr.get_ptr();
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result1, size, false, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q, result1, size, false, true);
     _DataType* result = result1_ptr.get_ptr();
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
@@ -229,9 +229,9 @@ DPCTLSyclEventRef dpnp_cross_c(DPCTLSyclQueueRef q_ref,
     DPCTLSyclEventRef event_ref = nullptr;
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size, true);
-    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size, true);
-    DPNPC_ptr_adapter<_DataType_output> result_ptr(result_out, input1_size, true, true);
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(q, input1_in, input1_size, true);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(q, input2_in, input2_size, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(q, result_out, input1_size, true, true);
     const _DataType_input1* input1 = input1_ptr.get_ptr();
     const _DataType_input2* input2 = input2_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
@@ -323,8 +323,8 @@ DPCTLSyclEventRef dpnp_cumprod_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size, true);
-    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, size, true, true);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(q, array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(q, result1, size, true, true);
     _DataType_input* array1 = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
 
@@ -384,8 +384,8 @@ DPCTLSyclEventRef dpnp_cumsum_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size, true);
-    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, size, true, true);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(q, array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(q, result1, size, true, true);
     _DataType_input* array1 = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
 
@@ -460,8 +460,8 @@ DPCTLSyclEventRef dpnp_ediff1d_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(input1_in, input1_size);
-    DPNPC_ptr_adapter<_DataType_output> result_ptr(result_out, result_size, false, true);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(q, input1_in, input1_size);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(q, result_out, result_size, false, true);
 
     _DataType_input* input1_data = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
@@ -576,8 +576,8 @@ DPCTLSyclEventRef dpnp_floor_divide_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);
-    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(q, input1_in, input1_size);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(q, input2_in, input2_size);
     _DataType_input1* input1_data = input1_ptr.get_ptr();
     _DataType_input2* input2_data = input2_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
@@ -724,7 +724,7 @@ DPCTLSyclEventRef dpnp_modf_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(q, array1_in, size);
     _DataType_input* array1 = input1_ptr.get_ptr();
     _DataType_output* result1 = reinterpret_cast<_DataType_output*>(result1_out);
     _DataType_output* result2 = reinterpret_cast<_DataType_output*>(result2_out);
@@ -812,8 +812,8 @@ DPCTLSyclEventRef dpnp_remainder_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);
-    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(q, input1_in, input1_size);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(q, input2_in, input2_size);
     _DataType_input1* input1_data = input1_ptr.get_ptr();
     _DataType_input2* input2_data = input2_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
@@ -966,8 +966,8 @@ DPCTLSyclEventRef dpnp_trapz_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(array1_in, array1_size);
-    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(array2_in, array2_size);
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(q, array1_in, array1_size);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(q, array2_in, array2_size);
     _DataType_input1* array1 = input1_ptr.get_ptr();
     _DataType_input2* array2 = input2_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);

@@ -63,7 +63,7 @@ DPCTLSyclEventRef dpnp_repeat_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q, array1_in, size);
     const _DataType* array_in = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
@@ -137,7 +137,7 @@ DPCTLSyclEventRef dpnp_elemwise_transpose_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q, array1_in, size);
     _DataType* array1 = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 

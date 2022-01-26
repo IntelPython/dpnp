@@ -86,7 +86,7 @@ DPCTLSyclEventRef dpnp_sum_c(DPCTLSyclQueueRef q_ref,
     const size_t input_size =
         std::accumulate(input_shape, input_shape + input_shape_ndim, 1, std::multiplies<shape_elem_type>());
 
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(input_in, input_size, true);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(q, input_in, input_size, true);
     _DataType_input* input = input1_ptr.get_ptr();
     _DataType_output* result = get_array_ptr<_DataType_output>(result_out);
 
@@ -219,7 +219,7 @@ DPCTLSyclEventRef dpnp_prod_c(DPCTLSyclQueueRef q_ref,
     const size_t input_size =
         std::accumulate(input_shape, input_shape + input_shape_ndim, 1, std::multiplies<shape_elem_type>());
 
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(input_in, input_size, true);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(q, input_in, input_size, true);
     _DataType_input* input = input1_ptr.get_ptr();
     _DataType_output* result = get_array_ptr<_DataType_output>(result_out);
 

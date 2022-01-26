@@ -53,8 +53,8 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
-    DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, 1, true, true);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q, array1_in, size);
+    DPNPC_ptr_adapter<_ResultType> result1_ptr(q, result1, 1, true, true);
     const _DataType* array_in = input1_ptr.get_ptr();
     _ResultType* result = result1_ptr.get_ptr();
 
@@ -135,9 +135,9 @@ DPCTLSyclEventRef dpnp_allclose_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType1> input1_ptr(array1_in, size);
-    DPNPC_ptr_adapter<_DataType2> input2_ptr(array2_in, size);
-    DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, 1, true, true);
+    DPNPC_ptr_adapter<_DataType1> input1_ptr(q, array1_in, size);
+    DPNPC_ptr_adapter<_DataType2> input2_ptr(q, array2_in, size);
+    DPNPC_ptr_adapter<_ResultType> result1_ptr(q, result1, 1, true, true);
     const _DataType1* array1 = input1_ptr.get_ptr();
     const _DataType2* array2 = input2_ptr.get_ptr();
     _ResultType* result = result1_ptr.get_ptr();
@@ -230,8 +230,8 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
-    DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, 1, true, true);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q, array1_in, size);
+    DPNPC_ptr_adapter<_ResultType> result1_ptr(q, result1, 1, true, true);
     const _DataType* array_in = input1_ptr.get_ptr();
     _ResultType* result = result1_ptr.get_ptr();
 
