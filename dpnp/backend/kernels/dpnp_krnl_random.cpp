@@ -1005,6 +1005,8 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     _DataType s_minus_one, hpt, r_over_two_kappa_minus_one, rho_minus_one;
     _DataType* Uvec = nullptr;
     _DataType* Vvec = nullptr;
+    bool* result_ready = nullptr;
+    bool* result_mask = nullptr;
     const _DataType d_zero = 0.0, d_one = 1.0;
 
     assert(kappa > 1.0);
@@ -1020,49 +1022,59 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
 
     Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
     Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    
+    result_ready = reinterpret_cast<bool*>(dpnp_memory_alloc_c(1 * sizeof(bool)));
+    result_ready[0] = false;
+    result_mask = reinterpret_cast<bool*>(dpnp_memory_alloc_c(size * sizeof(bool)));
+    dpnp_full_c<bool>(result_ready, result_mask, size);
 
-    for (size_t n = 0; n < size;)
+    while(!result_ready[0])
     {
-        size_t diff_size = size - n;
         mkl_rng::uniform<_DataType> uniform_distribution_u(d_zero, 0.5 * M_PI);
-        auto event_out = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, diff_size, Uvec);
-        event_out.wait();
-        // TODO
-        // use deps case
+        auto uniform_distr_u_event = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, size, Uvec);
         mkl_rng::uniform<_DataType> uniform_distribution_v(d_zero, d_one);
-        event_out = mkl_rng::generate(uniform_distribution_v, DPNP_RNG_ENGINE, diff_size, Vvec);
-        event_out.wait();
+        auto uniform_distr_v_event = mkl_rng::generate(uniform_distribution_v, DPNP_RNG_ENGINE, size, Vvec);
 
-        // TODO
-        // kernel
-        for (size_t i = 0; i < diff_size; i++)
-        {
-            _DataType sn, cn, sn2, cn2;
-            _DataType neg_W_minus_one, V, Y;
+        cl::sycl::range<1> gws(size);
+        auto paral_kernel_some = [&](cl::sycl::handler& cgh) {
+            cgh.depends_on({uniform_distr_u_event, uniform_distr_v_event});
+            cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
+                size_t i = global_id[0];
+                if (!result_mask[i]) {
+                    _DataType sn, cn, sn2, cn2;
+                    _DataType neg_W_minus_one, V, Y;
 
-            sn = sin(Uvec[i]);
-            cn = cos(Uvec[i]);
-            V = Vvec[i];
-            sn2 = sn * sn;
-            cn2 = cn * cn;
+                    sn = cl::sycl::sin(Uvec[i]);
+                    cn = cl::sycl::cos(Uvec[i]);
+                    V = Vvec[i];
+                    sn2 = sn * sn;
+                    cn2 = cn * cn;
 
-            neg_W_minus_one = s_minus_one * sn2 / (0.5 * s_minus_one + cn2);
-            Y = kappa * (s_minus_one + neg_W_minus_one);
+                    neg_W_minus_one = s_minus_one * sn2 / (0.5 * s_minus_one + cn2);
+                    Y = kappa * (s_minus_one + neg_W_minus_one);
 
-            if ((Y * (2 - Y) >= V) || (log(Y / V) + 1 >= Y))
-            {
-                Y = neg_W_minus_one * (2 - neg_W_minus_one);
-                if (Y < 0)
-                    Y = 0.0;
-                else if (Y > 1.0)
-                    Y = 1.0;
+                    if ((Y * (2 - Y) >= V) || (cl::sycl::log(Y / V) + 1 >= Y))
+                    {
+                        Y = neg_W_minus_one * (2 - neg_W_minus_one);
+                        if (Y < 0)
+                            Y = 0.0;
+                        else if (Y > 1.0)
+                            Y = 1.0;
+                        
+                        result1[i] = cl::sycl::asin(cl::sycl::sqrt(Y));
+                        result_mask[i] = true;
+                    }
+                }
+            });
+        };
+        auto some_event = DPNP_QUEUE.submit(paral_kernel_some);
+        some_event.wait();
 
-                result1[n++] = asin(sqrt(Y));
-            }
-        }
+        dpnp_all_c<bool, bool>(result_mask, result_ready, size);
     }
-
     dpnp_memory_free_c(Uvec);
+    dpnp_memory_free_c(result_ready);
+    dpnp_memory_free_c(result_mask);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
@@ -1101,6 +1113,8 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     _DataType rho_over_kappa, rho, r, s_kappa;
     _DataType* Uvec = nullptr;
     _DataType* Vvec = nullptr;
+    bool* result_ready = nullptr;
+    bool* result_mask = nullptr;
 
     const _DataType d_zero = 0.0, d_one = 1.0;
 
@@ -1116,35 +1130,46 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
     Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
 
-    for (size_t n = 0; n < size;)
+    result_ready = reinterpret_cast<bool*>(dpnp_memory_alloc_c(1 * sizeof(bool)));
+    result_ready[0] = false;
+    result_mask = reinterpret_cast<bool*>(dpnp_memory_alloc_c(size * sizeof(bool)));
+    dpnp_full_c<bool>(result_ready, result_mask, size);
+
+    while (!result_ready[0])
     {
-        size_t diff_size = size - n;
         mkl_rng::uniform<_DataType> uniform_distribution_u(d_zero, M_PI);
-        auto event_out = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, diff_size, Uvec);
-        event_out.wait();
-        // TODO
-        // use deps case
+        auto uniform_distr_u_event = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, size, Uvec);
         mkl_rng::uniform<_DataType> uniform_distribution_v(d_zero, d_one);
-        event_out = mkl_rng::generate(uniform_distribution_v, DPNP_RNG_ENGINE, diff_size, Vvec);
-        event_out.wait();
+        auto uniform_distr_v_event = mkl_rng::generate(uniform_distribution_v, DPNP_RNG_ENGINE, size, Vvec);
 
-        // TODO
-        // kernel
-        for (size_t i = 0; i < diff_size; i++)
-        {
-            _DataType Z, W, Y, V;
-            Z = cos(Uvec[i]);
-            V = Vvec[i];
-            W = (kappa + s_kappa * Z) / (s_kappa + kappa * Z);
-            Y = s_kappa - kappa * W;
-            if ((Y * (2 - Y) >= V) || (log(Y / V) + 1 >= Y))
-            {
-                result1[n++] = acos(W);
-            }
-        }
+        cl::sycl::range<1> gws((size));
+
+        auto paral_kernel_some = [&](cl::sycl::handler& cgh) {
+            cgh.depends_on({uniform_distr_u_event, uniform_distr_v_event});
+            cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
+                size_t i = global_id[0];
+                if (!result_mask[i]) {
+                    _DataType Z, W, Y, V;
+                    Z = cl::sycl::cos(Uvec[i]);
+                    V = Vvec[i];
+                    W = (kappa + s_kappa * Z) / (s_kappa + kappa * Z);
+                    Y = s_kappa - kappa * W;
+                    if ((Y * (2 - Y) >= V) || (cl::sycl::log(Y / V) + 1 >= Y))
+                    {
+                        result1[i] = cl::sycl::acos(W);
+                        result_mask[i] = true;
+                    }
+                }
+            });
+        };
+        auto some_event = DPNP_QUEUE.submit(paral_kernel_some);
+        some_event.wait();
+
+        dpnp_all_c<bool, bool>(result_mask, result_ready, size);
     }
-
     dpnp_memory_free_c(Uvec);
+    dpnp_memory_free_c(result_ready);
+    dpnp_memory_free_c(result_mask);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
