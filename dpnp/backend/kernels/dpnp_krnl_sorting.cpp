@@ -91,7 +91,7 @@ class dpnp_partition_c_kernel;
 
 template <typename _DataType>
 void dpnp_partition_c(
-    void* array1_in, void* array2_in, void* result1, const size_t kth, const size_t* shape_, const size_t ndim)
+    void* array1_in, void* array2_in, void* result1, const size_t kth, const shape_elem_type* shape_, const size_t ndim)
 {
     if ((array1_in == nullptr) || (array2_in == nullptr) || (result1 == nullptr))
     {
@@ -103,7 +103,7 @@ void dpnp_partition_c(
         return;
     }
 
-    const size_t size = std::accumulate(shape_, shape_ + ndim, 1, std::multiplies<size_t>());
+    const size_t size = std::accumulate(shape_, shape_ + ndim, 1, std::multiplies<shape_elem_type>());
     size_t size_ = size / shape_[ndim - 1];
 
     if (size_ == 0)
@@ -140,13 +140,13 @@ void dpnp_partition_c(
         }
     }
 
-    size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
-    auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
+    shape_elem_type* shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(shape_elem_type));
 
     memcpy_event.wait();
 
-    cl::sycl::range<2> gws(size_, kth + 1);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+    sycl::range<2> gws(size_, kth + 1);
+    auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
         size_t j = global_id[0];
         size_t k = global_id[1];
 
@@ -164,7 +164,7 @@ void dpnp_partition_c(
         }
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.depends_on({memcpy_event});
         cgh.parallel_for<class dpnp_partition_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
@@ -204,8 +204,8 @@ void dpnp_searchsorted_c(
     const _DataType* v = input2_ptr.get_ptr();
     _IndexingType* result = reinterpret_cast<_IndexingType*>(result1);
 
-    cl::sycl::range<2> gws(v_size, arr_size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+    sycl::range<2> gws(v_size, arr_size);
+    auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
         size_t i = global_id[0];
         size_t j = global_id[1];
 
@@ -269,7 +269,7 @@ void dpnp_searchsorted_c(
         }
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_searchsorted_c_kernel<_DataType, _IndexingType>>(gws, kernel_parallel_for_func);
     };
 
@@ -302,23 +302,25 @@ void dpnp_sort_c(void* array1_in, void* result1, size_t size)
 
 void func_map_init_sorting(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_argsort_c<int, long>};
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_argsort_c<long, long>};
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_FLT][eft_FLT] = {eft_LNG, (void*)dpnp_argsort_c<float, long>};
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_DBL][eft_DBL] = {eft_LNG, (void*)dpnp_argsort_c<double, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_argsort_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_argsort_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_FLT][eft_FLT] = {eft_LNG, (void*)dpnp_argsort_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_DBL][eft_DBL] = {eft_LNG, (void*)dpnp_argsort_c<double, int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_partition_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_partition_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_partition_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_partition_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_partition_c<float>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_partition_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_searchsorted_c<int, long>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_searchsorted_c<long, long>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_searchsorted_c<float, long>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_searchsorted_c<double, long>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_INT][eft_INT] = {eft_INT,
+                                                                  (void*)dpnp_searchsorted_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_LNG][eft_LNG] = {eft_LNG,
+                                                                  (void*)dpnp_searchsorted_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_searchsorted_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_searchsorted_c<double, int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_SORT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_sort_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_SORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_sort_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_SORT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_sort_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_SORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_sort_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_sort_c<float>};
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_sort_c<double>};
 

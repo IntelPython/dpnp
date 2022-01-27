@@ -175,15 +175,16 @@ size_t get_id_by_xyz_inkernel(const _DataType* xyz, size_t xyz_size, const _Data
  *
  * @return                        Input shape is broadcastable to output one or not.
  */
-static inline bool broadcastable(const std::vector<size_t>& input_shape, const std::vector<size_t>& output_shape)
+static inline bool broadcastable(const std::vector<shape_elem_type>& input_shape,
+                                 const std::vector<shape_elem_type>& output_shape)
 {
     if (input_shape.size() > output_shape.size())
     {
         return false;
     }
 
-    std::vector<size_t>::const_reverse_iterator irit = input_shape.rbegin();
-    std::vector<size_t>::const_reverse_iterator orit = output_shape.rbegin();
+    std::vector<shape_elem_type>::const_reverse_iterator irit = input_shape.rbegin();
+    std::vector<shape_elem_type>::const_reverse_iterator orit = output_shape.rbegin();
     for (; irit != input_shape.rend(); ++irit, ++orit)
     {
         if (*irit != 1 && *irit != *orit)
@@ -195,11 +196,36 @@ static inline bool broadcastable(const std::vector<size_t>& input_shape, const s
     return true;
 }
 
-static inline bool
-    broadcastable(const size_t* input_shape, const size_t input_shape_size, const std::vector<size_t>& output_shape)
+static inline bool broadcastable(const shape_elem_type* input_shape,
+                                 const size_t input_shape_size,
+                                 const std::vector<shape_elem_type>& output_shape)
 {
-    const std::vector<size_t> input_shape_vec(input_shape, input_shape + input_shape_size);
+    const std::vector<shape_elem_type> input_shape_vec(input_shape, input_shape + input_shape_size);
     return broadcastable(input_shape_vec, output_shape);
+}
+
+/**
+ * @ingroup BACKEND_UTILS
+ * @brief Check arrays are equal.
+ *
+ * @param [in] input1        Input1.
+ * @param [in] input1_size   Input1 size.
+ * @param [in] input2        Input2.
+ * @param [in] input2_size   Input2 size.
+ *
+ * @return                   Arrays are equal.
+ */
+template <typename _DataType>
+static inline bool
+    array_equal(const _DataType* input1, const size_t input1_size, const _DataType* input2, const size_t input2_size)
+{
+    if (input1_size != input2_size)
+        return false;
+
+    const std::vector<_DataType> input1_vec(input1, input1 + input1_size);
+    const std::vector<_DataType> input2_vec(input2, input2 + input2_size);
+
+    return std::equal(std::begin(input1_vec), std::end(input1_vec), std::begin(input2_vec));
 }
 
 /**
@@ -219,19 +245,20 @@ static inline bool
  * @exception std::domain_error    Input shapes are not broadcastable.
  * @return                         Common shape.
  */
-static inline std::vector<size_t> get_result_shape(const size_t* input1_shape,
-                                                   const size_t input1_shape_size,
-                                                   const size_t* input2_shape,
-                                                   const size_t input2_shape_size)
+template <typename _DataType>
+static inline std::vector<_DataType> get_result_shape(const _DataType* input1_shape,
+                                                      const size_t input1_shape_size,
+                                                      const _DataType* input2_shape,
+                                                      const size_t input2_shape_size)
 {
     const size_t result_shape_size = (input2_shape_size > input1_shape_size) ? input2_shape_size : input1_shape_size;
-    std::vector<size_t> result_shape;
+    std::vector<_DataType> result_shape;
     result_shape.reserve(result_shape_size);
 
     for (int irit1 = input1_shape_size - 1, irit2 = input2_shape_size - 1; irit1 >= 0 || irit2 >= 0; --irit1, --irit2)
     {
-        size_t input1_val = (irit1 >= 0) ? input1_shape[irit1] : 1;
-        size_t input2_val = (irit2 >= 0) ? input2_shape[irit2] : 1;
+        _DataType input1_val = (irit1 >= 0) ? input1_shape[irit1] : 1;
+        _DataType input2_val = (irit2 >= 0) ? input2_shape[irit2] : 1;
 
         if (input1_val == input2_val || input1_val == 1)
         {
@@ -265,10 +292,11 @@ static inline std::vector<size_t> get_result_shape(const size_t* input1_shape,
  * @exception std::range_error    Particular axis is out of range or other error.
  * @return                        The normalized axes indexes, such that `0 <= result < __shape_size`
  */
-static inline std::vector<size_t>
-    get_validated_axes(const std::vector<long>& __axes, const size_t __shape_size, const bool __allow_duplicate = false)
+static inline std::vector<shape_elem_type> get_validated_axes(const std::vector<shape_elem_type>& __axes,
+                                                              const size_t __shape_size,
+                                                              const bool __allow_duplicate = false)
 {
-    std::vector<size_t> result;
+    std::vector<shape_elem_type> result;
 
     if (__axes.empty())
     {
@@ -281,10 +309,10 @@ static inline std::vector<size_t>
     }
 
     result.reserve(__axes.size());
-    for (std::vector<long>::const_iterator it = __axes.cbegin(); it != __axes.cend(); ++it)
+    for (std::vector<shape_elem_type>::const_iterator it = __axes.cbegin(); it != __axes.cend(); ++it)
     {
-        const long _axis = *it;
-        const long input_shape_size_signed = static_cast<long>(__shape_size);
+        const shape_elem_type _axis = *it;
+        const shape_elem_type input_shape_size_signed = static_cast<shape_elem_type>(__shape_size);
         if (_axis >= input_shape_size_signed)
         { // positive axis range check
             goto err;
@@ -295,7 +323,7 @@ static inline std::vector<size_t>
             goto err;
         }
 
-        const size_t positive_axis = _axis < 0 ? (_axis + input_shape_size_signed) : _axis;
+        const shape_elem_type positive_axis = _axis < 0 ? (_axis + input_shape_size_signed) : _axis;
 
         if (!__allow_duplicate)
         {

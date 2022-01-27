@@ -84,19 +84,15 @@ def test_input_shape(func):
                          ids=['random', 'random_sample',
                               'ranf', 'sample',
                               'rand'])
-def test_check_otput(func):
+def test_check_output(func):
     shape = (10, 5)
     size = 10 * 5
     if func == dpnp.random.rand:
         res = func(size)
     else:
         res = func(shape)
-#    assert numpy.all(res >= 0)
-#    assert numpy.all(res < 1)
-    res_as_numpy = dpnp.asnumpy(res)
-    for i in range(res_as_numpy.size):
-        assert res_as_numpy[i] >= 0.0
-        assert res_as_numpy[i] < 1.0
+    assert dpnp.all(res >= 0)
+    assert dpnp.all(res < 1)
 
 
 @pytest.mark.parametrize("func",
@@ -509,7 +505,6 @@ class TestDistributionsMultinomial(TestDistribution):
         n = 20
         pvals = [1 / 6.] * 6
         self.check_seed('multinomial', {'n': n, 'pvals': pvals})
-
 
     def test_seed1(self):
         # pvals_size >= ntrial * 16 && ntrial <= 16
@@ -1015,14 +1010,12 @@ class TestPermutationsTestShuffle:
         list_1d = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
         dpnp_1d = dpnp.array(list_1d)
         dpnp.random.shuffle(dpnp_1d)  # inplace
-        dpnp_desired_1d = dpnp_1d
-        desired_1d = [i for i in dpnp_desired_1d]
 
         dpnp.random.seed(seed)
         alist = conv(list_1d)
         dpnp.random.shuffle(alist)  # inplace
         actual = alist
-        desired = conv(desired_1d)
+        desired = conv(dpnp_1d)
         assert_array_equal(actual, desired)
 
     @pytest.mark.parametrize("conv", [lambda x: x,

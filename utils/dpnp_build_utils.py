@@ -77,9 +77,9 @@ def find_library(var_name, rel_header_paths, rel_lib_paths,
     return [include_find], [libpath_find]
 
 
-def _find_cmplr_in_dpcpp_root(verbose=False):
+def find_cmplr(verbose=False):
     """
-    Find compiler in dpcpp root using $DPCPPROOT.
+    Find compiler.
 
     Parameters
     ----------
@@ -91,8 +91,10 @@ def _find_cmplr_in_dpcpp_root(verbose=False):
     tuple(list(str), list(str))
         path to include directory, path to library directory
     """
+
     rel_header_paths = rel_lib_paths = []
 
+    # try to find library in specified directory from $DPCPPROOT
     if 'linux' in sys.platform:
         rel_include_path = os.path.join('linux', 'include')
         rel_libdir_path = os.path.join('linux', 'lib')
@@ -100,66 +102,56 @@ def _find_cmplr_in_dpcpp_root(verbose=False):
         rel_include_path = os.path.join('windows', 'include')
         rel_libdir_path = os.path.join('windows', 'lib')
     else:
-        rel_include_path, rel_libdir_path = 'include', 'lib'
+        raise EnvironmentError("DPNP: " + sys.platform + " not supported")
 
-    return find_library("DPCPPROOT", rel_header_paths, rel_lib_paths,
-                        rel_include_path=rel_include_path, rel_libdir_path=rel_libdir_path, verbose=verbose)
+    cmplr_include, cmplr_libpath = find_library("DPCPPROOT", rel_header_paths, rel_lib_paths,
+                                                rel_include_path=rel_include_path,
+                                                rel_libdir_path=rel_libdir_path,
+                                                verbose=verbose)
 
+    # try to find library in specified directory from $ONEAPI_ROOT
+    if not cmplr_include or not cmplr_libpath:
+        if sys.platform in ['linux']:
+            rel_include_path = os.path.join('compiler', 'latest', 'linux', 'include')
+            rel_libdir_path = os.path.join('compiler', 'latest', 'linux', 'lib')
+        elif sys.platform in ['win32', 'cygwin']:
+            rel_include_path = os.path.join('compiler', 'latest', 'windows', 'include')
+            rel_libdir_path = os.path.join('compiler', 'latest', 'windows', 'lib')
+        else:
+            raise EnvironmentError("DPNP: " + sys.platform + " not supported")
 
-def find_cmplr(verbose=False):
-    """
-    Find compiler in environment.
+        cmplr_include, cmplr_libpath = find_library("ONEAPI_ROOT", rel_header_paths, rel_lib_paths,
+                                                    rel_include_path=rel_include_path,
+                                                    rel_libdir_path=rel_libdir_path,
+                                                    verbose=verbose)
 
-    Parameters
-    ----------
-    verbose : bool
-        to print paths to include and library directories
+    # try to find in Python environment
+    if not cmplr_include or not mathlib_path:
+        if sys.platform in ['linux']:
+            rel_include_path = os.path.join('include')
+            rel_libdir_path = os.path.join('lib')
+        elif sys.platform in ['win32', 'cygwin']:
+            rel_include_path = os.path.join('Library', 'include')
+            rel_libdir_path = os.path.join('Library', 'lib')
+        else:
+            raise EnvironmentError("DPNP: " + sys.platform + " not supported")
 
-    Returns
-    -------
-    tuple(list(str), list(str))
-        path to include directory, path to library directory
-    """
-    cmplr_include, cmplr_libpath = _find_cmplr_in_dpcpp_root(verbose=verbose)
+        conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
+
+        cmplr_include, cmplr_libpath = find_library(conda_root_var, rel_header_paths, rel_lib_paths,
+                                                    rel_include_path=rel_include_path,
+                                                    rel_libdir_path=rel_libdir_path,
+                                                    verbose=verbose)
 
     if not cmplr_include or not cmplr_libpath:
-        raise EnvironmentError(f"DPNP: Unable to find compiler. Please install Intel OneAPI environment")
+        raise EnvironmentError("DPNP: Unable to find compiler")
 
     return cmplr_include, cmplr_libpath
 
 
-def _find_dpl_in_oneapi_root(verbose=False):
-    """
-    Find DPL in oneAPI root using $ONEAPI_ROOT.
-
-    Parameters
-    ----------
-    verbose : bool
-        to print paths to include and library directories
-
-    Returns
-    -------
-    tuple(list(str), list(str))
-        path to include directory, path to library directory
-    """
-    rel_header_paths = rel_lib_paths = []
-
-    if 'linux' in sys.platform:
-        rel_include_path = os.path.join('dpl', 'latest', 'linux', 'include')
-        rel_libdir_path = os.path.join('dpl', 'latest', 'linux', 'lib')
-    elif sys.platform in ['win32', 'cygwin']:
-        rel_include_path = os.path.join('dpl', 'latest', 'windows', 'include')
-        rel_libdir_path = os.path.join('dpl', 'latest', 'windows', 'lib')
-    else:
-        rel_include_path, rel_libdir_path = 'include', 'lib'
-
-    return find_library("ONEAPI_ROOT", rel_header_paths, rel_lib_paths,
-                        rel_include_path=rel_include_path, rel_libdir_path=rel_libdir_path, verbose=verbose)
-
-
 def find_dpl(verbose=False):
     """
-    Find DPL in environment.
+    Find DPL.
 
     Parameters
     ----------
@@ -171,17 +163,72 @@ def find_dpl(verbose=False):
     tuple(list(str), list(str))
         path to include directory, path to library directory
     """
-    dpl_include, dpl_libpath = _find_dpl_in_oneapi_root(verbose=verbose)
+
+    rel_header_paths = [os.path.join("oneapi", "dpl", "algorithm")]
+    rel_lib_paths = []
+    rel_libdir_path = ""
+
+    # try to find library in specified directory from $DPLROOT like a repository
+    rel_include_path = os.path.join('include')
+
+    dpl_include, dpl_libpath = find_library("DPLROOT", rel_header_paths, rel_lib_paths,
+                                            rel_include_path=rel_include_path,
+                                            rel_libdir_path=rel_libdir_path,
+                                            verbose=verbose)
+
+    # try to find library in specified directory from $DPLROOT
+    if not dpl_include or not dpl_libpath:
+        if 'linux' in sys.platform:
+            rel_include_path = os.path.join('linux', 'include')
+        elif sys.platform in ['win32', 'cygwin']:
+            rel_include_path = os.path.join('windows', 'include')
+        else:
+            raise EnvironmentError("DPNP: " + sys.platform + " not supported")
+
+        dpl_include, dpl_libpath = find_library("DPLROOT", rel_header_paths, rel_lib_paths,
+                                                rel_include_path=rel_include_path,
+                                                rel_libdir_path=rel_libdir_path,
+                                                verbose=verbose)
+
+    # try to find library in specified directory from $ONEAPI_ROOT
+    if not dpl_include or not dpl_libpath:
+        if sys.platform in ['linux']:
+            rel_include_path = os.path.join('dpl', 'latest', 'linux', 'include')
+        elif sys.platform in ['win32', 'cygwin']:
+            rel_include_path = os.path.join('dpl', 'latest', 'windows', 'include')
+        else:
+            raise EnvironmentError("DPNP: " + sys.platform + " not supported")
+
+        dpl_include, dpl_libpath = find_library("ONEAPI_ROOT", rel_header_paths, rel_lib_paths,
+                                                rel_include_path=rel_include_path,
+                                                rel_libdir_path=rel_libdir_path,
+                                                verbose=verbose)
+
+    # try to find in Python environment
+    if not dpl_include or not dpl_libpath:
+        if sys.platform in ['linux']:
+            rel_include_path = os.path.join('include')
+        elif sys.platform in ['win32', 'cygwin']:
+            rel_include_path = os.path.join('Library', 'include')
+        else:
+            raise EnvironmentError("DPNP: " + sys.platform + " not supported")
+
+        conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
+
+        dpl_include, dpl_libpath = find_library(conda_root_var, rel_header_paths, rel_lib_paths,
+                                                rel_include_path=rel_include_path,
+                                                rel_libdir_path=rel_libdir_path,
+                                                verbose=verbose)
 
     if not dpl_include or not dpl_libpath:
-        raise EnvironmentError(f"DPNP: Unable to find DPL. Please install Intel OneAPI environment")
+        raise EnvironmentError("DPNP: Unable to find DPL")
 
     return dpl_include, dpl_libpath
 
 
 def find_mathlib(verbose=False):
     """
-    Find mathlib in conda root then in mathlib root.
+    Find mathlib.
 
     Parameters
     ----------
@@ -194,18 +241,62 @@ def find_mathlib(verbose=False):
         path to include directory, path to library directory
     """
 
-    rel_header_paths = [os.path.join("oneapi", "mkl.hpp")]
-    rel_lib_paths = ["libmkl_sycl.so"]
+    if sys.platform in ['linux']:
+        rel_header_paths = [os.path.join("oneapi", "mkl.hpp")]
+        rel_lib_paths = ["libmkl_sycl.so"]
+    elif sys.platform in ['win32', 'cygwin']:
+        rel_header_paths = [os.path.join("oneapi", "mkl.hpp")]
+        rel_lib_paths = ["mkl_sycl_dll.lib"]
+    else:
+        raise EnvironmentError("DPNP: " + sys.platform + " not supported")
 
-    # try to find library in Python environment
-    conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
-    mathlib_include, mathlib_path = find_library(conda_root_var, rel_header_paths, rel_lib_paths, verbose=verbose)
+    # try to find library in specified directory from $MKLROOT
+    if sys.platform in ['linux']:
+        rel_include_path = os.path.join('linux', 'include')
+        rel_libdir_path = os.path.join('linux', 'lib')
+    elif sys.platform in ['win32', 'cygwin']:
+        rel_include_path = os.path.join('windows', 'include')
+        rel_libdir_path = os.path.join('windows', 'lib')
+    else:
+        raise EnvironmentError("DPNP: " + sys.platform + " not supported")
 
-    # otherwise, try to find library in specified directory from $MKLROOT
+    mathlib_include, mathlib_path = find_library("MKLROOT", rel_header_paths, rel_lib_paths,
+                                                 rel_include_path=rel_include_path,
+                                                 rel_libdir_path=rel_libdir_path,
+                                                 verbose=verbose)
+
+    # try to find library in specified directory from $ONEAPI_ROOT
     if not mathlib_include or not mathlib_path:
-        mathlib_include, mathlib_path = find_library("MKLROOT", rel_header_paths, rel_lib_paths,
-                                                     rel_include_path=os.path.join("include"),
-                                                     rel_libdir_path=os.path.join("lib", "intel64"),
+        if sys.platform in ['linux']:
+            rel_include_path = os.path.join('mkl', 'latest', 'linux', 'include')
+            rel_libdir_path = os.path.join('mkl', 'latest', 'linux', 'lib')
+        elif sys.platform in ['win32', 'cygwin']:
+            rel_include_path = os.path.join('mkl', 'latest', 'windows', 'include')
+            rel_libdir_path = os.path.join('mkl', 'latest', 'windows', 'lib')
+        else:
+            raise EnvironmentError("DPNP: " + sys.platform + " not supported")
+
+        mathlib_include, mathlib_path = find_library("ONEAPI_ROOT", rel_header_paths, rel_lib_paths,
+                                                     rel_include_path=rel_include_path,
+                                                     rel_libdir_path=rel_libdir_path,
+                                                     verbose=verbose)
+
+    # try to find in Python environment
+    if not mathlib_include or not mathlib_path:
+        if sys.platform in ['linux']:
+            rel_include_path = os.path.join('include')
+            rel_libdir_path = os.path.join('lib')
+        elif sys.platform in ['win32', 'cygwin']:
+            rel_include_path = os.path.join('Library', 'include')
+            rel_libdir_path = os.path.join('Library', 'lib')
+        else:
+            raise EnvironmentError("DPNP: " + sys.platform + " not supported")
+
+        conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
+
+        mathlib_include, mathlib_path = find_library(conda_root_var, rel_header_paths, rel_lib_paths,
+                                                     rel_include_path=rel_include_path,
+                                                     rel_libdir_path=rel_libdir_path,
                                                      verbose=verbose)
 
     if not mathlib_include or not mathlib_path:
@@ -263,3 +354,44 @@ def find_omp(verbose=False):
         raise EnvironmentError(f"DPNP: Unable to find omp. Please install Intel OneAPI environment")
 
     return omp_include, omp_libpath
+
+
+def find_python_env(verbose=False):
+    """
+    Find Python environment.
+
+    Parameters
+    ----------
+    verbose : bool
+        to print paths to include and library directories
+
+    Returns
+    -------
+    tuple(list(str), list(str))
+        path to include directory, path to library directory
+    """
+
+    rel_header_paths = rel_lib_paths = []
+
+    if sys.platform in ['linux']:
+        rel_include_path = os.path.join('include')
+        rel_libdir_path = os.path.join('lib')
+    elif sys.platform in ['win32', 'cygwin']:
+        rel_include_path = os.path.join('Library', 'include')
+        rel_libdir_path = os.path.join('Library', 'lib')
+    else:
+        raise EnvironmentError("DPNP: " + sys.platform + " not supported")
+
+    conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
+
+    env_include, env_path = find_library(conda_root_var, rel_header_paths, rel_lib_paths,
+                                         rel_include_path=rel_include_path,
+                                         rel_libdir_path=rel_libdir_path,
+                                         verbose=verbose)
+
+    env_include += [os.path.join(os.getenv(conda_root_var), 'include')]
+
+    if not env_include or not env_path:
+        raise EnvironmentError(f"DPNP: Unable to find Python environment paths")
+
+    return env_include, env_path

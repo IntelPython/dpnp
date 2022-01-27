@@ -51,11 +51,14 @@ __all__ += [
 # C function pointer to the C library template functions
 ctypedef void(*fptr_custom_cov_1in_1out_t)(void *, void * , size_t, size_t)
 ctypedef void(*fptr_custom_nanvar_t)(void *, void * , void * , size_t, size_t)
-ctypedef void(*fptr_custom_std_var_1in_1out_t)(void *, void * , size_t * , size_t, size_t * , size_t, size_t)
+ctypedef void(*fptr_custom_std_var_1in_1out_t)(void *, void * , shape_elem_type * , size_t,
+                                               shape_elem_type * , size_t, size_t)
 
 # C function pointer to the C library template functions
-ctypedef void(*custom_statistic_1in_1out_func_ptr_t)(void *, void * , size_t * , size_t, size_t * , size_t)
-ctypedef void(*custom_statistic_1in_1out_func_ptr_t_max)(void *, void * , const size_t, size_t * , size_t, size_t * , size_t)
+ctypedef void(*custom_statistic_1in_1out_func_ptr_t)(void *, void * , shape_elem_type * , size_t,
+                                                     shape_elem_type * , size_t)
+ctypedef void(*custom_statistic_1in_1out_func_ptr_t_max)(void *, void * , const size_t, shape_elem_type * , size_t,
+                                                         shape_elem_type * , size_t)
 
 
 cdef utils.dpnp_descriptor call_fptr_custom_std_var_1in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1, ddof):
@@ -78,8 +81,8 @@ cdef utils.dpnp_descriptor call_fptr_custom_std_var_1in_1out(DPNPFuncName fptr_n
     cdef Py_ssize_t axis_size = 0
 
     """ Call FPTR function """
-    func(x1.get_data(), result.get_data(), < size_t * > x1_shape.data(),
-         x1.ndim, < size_t * > axis.data(), axis_size, ddof)
+    func(x1.get_data(), result.get_data(), x1_shape.data(),
+         x1.ndim, axis.data(), axis_size, ddof)
 
     return result
 
@@ -162,9 +165,9 @@ cdef utils.dpnp_descriptor _dpnp_max(utils.dpnp_descriptor input, _axis_, shape_
     func(input.get_data(),
          result.get_data(),
          result.size,
-         < size_t * > input_shape.data(),
+         input_shape.data(),
          input.ndim,
-         < size_t * > axis_.data(),
+         axis_.data(),
          axis_size)
 
     return result
@@ -218,9 +221,9 @@ cpdef utils.dpnp_descriptor _dpnp_mean(utils.dpnp_descriptor input):
 
     func(input.get_data(),
          result.get_data(),
-         < size_t * > input_shape.data(),
+         input_shape.data(),
          input.ndim,
-         < size_t * > axis.data(),
+         axis.data(),
          axis_size)
 
     return result
@@ -346,9 +349,9 @@ cpdef utils.dpnp_descriptor dpnp_median(utils.dpnp_descriptor array1):
 
     func(array1.get_data(),
          result.get_data(),
-         < size_t * > x1_shape.data(),
+         x1_shape.data(),
          array1.ndim,
-         < size_t * > axis.data(),
+         axis.data(),
          axis_size)
 
     return result
@@ -379,9 +382,9 @@ cpdef utils.dpnp_descriptor _dpnp_min(utils.dpnp_descriptor input, _axis_, shape
     func(input.get_data(),
          result.get_data(),
          result.size,
-         < size_t * > input_shape.data(),
+         input_shape.data(),
          input.ndim,
-         < size_t * > axis_.data(),
+         axis_.data(),
          axis_size)
 
     return result
@@ -420,7 +423,7 @@ cpdef utils.dpnp_descriptor dpnp_nanvar(utils.dpnp_descriptor arr, ddof):
     # dpnp_isnan does not support USM array as input in comparison to dpnp.isnan
     cdef utils.dpnp_descriptor mask_arr = dpnp.get_dpnp_descriptor(dpnp.isnan(arr.get_pyobj()))
     n = dpnp.count_nonzero(mask_arr.get_pyobj())
-    res_size = arr.size - n
+    res_size = int(arr.size - n)
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_NANVAR, param1_type, param1_type)

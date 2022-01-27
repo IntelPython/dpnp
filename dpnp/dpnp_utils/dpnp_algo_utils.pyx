@@ -31,11 +31,12 @@ This module contains differnt helpers and utilities
 
 """
 
+import dpctl
 import numpy
 import dpnp.config as config
+import dpnp.dpnp_container as dpnp_container
 import dpnp
-from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
-from dpnp.dpnp_container import create_output_container, container_copy
+from dpnp.dpnp_algo.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
@@ -43,7 +44,6 @@ cimport cpython
 cimport cython
 cimport numpy
 
-import dpctl
 
 """
 Python import functions
@@ -102,7 +102,7 @@ def copy_from_origin(dst, src):
     if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
         if src.size:
             # dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
-            dpctl.tensor._copy_utils.copy_from_numpy_into(dst, src)
+            dpctl.tensor._copy_utils._copy_from_numpy_into(unwrap_array(dst), src)
     else:
         for i in range(dst.size):
             dst.flat[i] = src.item(i)
@@ -156,7 +156,7 @@ def call_origin(function, *args, **kwargs):
             if (kwargs_dtype is not None):
                 result_dtype = kwargs_dtype
 
-            result = create_output_container(result_origin.shape, result_dtype)
+            result = dpnp_container.empty(result_origin.shape, dtype=result_dtype)
         else:
             result = kwargs_out
 
@@ -168,13 +168,21 @@ def call_origin(function, *args, **kwargs):
         for res_origin in result:
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
-                res = create_output_container(res_origin.shape, res_origin.dtype)
+                res = dpnp_container.empty(res_origin.shape, dtype=res_origin.dtype)
                 copy_from_origin(res, res_origin)
             result_list.append(res)
 
         result = tuple(result_list)
 
     return result
+
+
+def unwrap_array(x1):
+    """Get array from input object."""
+    if isinstance(x1, dpnp.dpnp_array.dpnp_array):
+        return x1.get_array()
+
+    return x1
 
 
 cpdef checker_throw_axis_error(function_name, param_name, param, expected):
@@ -204,12 +212,22 @@ cpdef checker_throw_value_error(function_name, param_name, param, expected):
     raise ValueError(err_msg)
 
 
-cpdef dpnp_descriptor create_output_descriptor_py(shape_type_c output_shape, object d_type, object requested_out):
+cpdef dpnp_descriptor create_output_descriptor_py(shape_type_c output_shape,
+                                                  d_type,
+                                                  requested_out,
+                                                  device=None,
+                                                  usm_type="device",
+                                                  sycl_queue=None):
     py_type = dpnp.default_float_type() if d_type is None else d_type
 
     cdef DPNPFuncType c_type = dpnp_dtype_to_DPNPFuncType(py_type)
 
-    return create_output_descriptor(output_shape, c_type, requested_out)
+    return create_output_descriptor(output_shape,
+                                    c_type,
+                                    requested_out,
+                                    device=device,
+                                    usm_type=usm_type,
+                                    sycl_queue=sycl_queue)
 
 
 cpdef tuple get_axis_indeces(idx, shape):
@@ -372,13 +390,20 @@ cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
 
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
-                                              dpnp_descriptor requested_out):
+                                              dpnp_descriptor requested_out,
+                                              device=None,
+                                              usm_type="device",
+                                              sycl_queue=None):
     cdef dpnp_descriptor result_desc
 
     if requested_out is None:
         result = None
         result_dtype = dpnp_DPNPFuncType_to_dtype(< size_t > c_type)
-        result_obj = create_output_container(output_shape, result_dtype)
+        result_obj = dpnp_container.empty(output_shape,
+                                          dtype=result_dtype,
+                                          device=device,
+                                          usm_type=usm_type,
+                                          sycl_queue=sycl_queue)
         result_desc = dpnp_descriptor(result_obj)
     else:
         """ Based on 'out' parameter """
@@ -486,6 +511,41 @@ cdef shape_type_c strides_to_vector(object strides, object shape) except *:
         res = strides
 
     return res
+
+
+cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
+    """Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)."""
+    array1_obj = x1.get_array()
+    array2_obj = x2.get_array()
+
+    def get_usm_type(usm_types):
+        if not isinstance(usm_types, (list, tuple)):
+            raise TypeError(
+                "Expected a list or a tuple, got {}".format(type(usm_types))
+            )
+        if len(usm_types) == 0:
+            return None
+        elif len(usm_types) == 1:
+            return usm_types[0]
+        for usm_type1, usm_type2 in zip(usm_types, usm_types[1:]):
+            if usm_type1 != usm_type2:
+                return None
+        return usm_types[0]
+
+    # TODO: use similar function from dpctl.utils instead of get_usm_type
+    common_usm_type = get_usm_type((array1_obj.usm_type, array2_obj.usm_type))
+    if common_usm_type is None:
+        raise ValueError(
+            "could not recognize common USM type for inputs of USM types {} and {}"
+            "".format(array1_obj.usm_type, array2_obj.usm_type))
+
+    common_sycl_queue = dpctl.utils.get_execution_queue((array1_obj.sycl_queue, array2_obj.sycl_queue))
+    if common_sycl_queue is None:
+        raise ValueError(
+            "could not recognize common SYCL queue for inputs in SYCL queues {} and {}"
+            "".format(array1_obj.sycl_queue, array2_obj.sycl_queue))
+
+    return (common_sycl_queue.sycl_device, common_usm_type, common_sycl_queue)
 
 
 cdef class dpnp_descriptor:
@@ -596,6 +656,16 @@ cdef class dpnp_descriptor:
 
     def get_pyobj(self):
         return self.origin_pyobj
+
+    def get_array(self):
+        if isinstance(self.origin_pyobj, dpctl.tensor.usm_ndarray):
+            return self.origin_pyobj
+        if isinstance(self.origin_pyobj, dpnp.dpnp_array.dpnp_array):
+            return self.origin_pyobj.get_array()
+
+        raise TypeError(
+            "expected either dpctl.tensor.usm_ndarray or dpnp.dpnp_array.dpnp_array, got {}"
+            "".format(type(self.origin_pyobj)))
 
     cdef void * get_data(self):
         cdef size_t val = self.data

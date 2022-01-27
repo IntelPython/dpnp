@@ -43,7 +43,7 @@ class dpnp_astype_c_kernel;
 template <typename _DataType, typename _ResultType>
 void dpnp_astype_c(const void* array1_in, void* result1, const size_t size)
 {
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
     const _DataType* array_in = input1_ptr.get_ptr();
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
@@ -58,13 +58,13 @@ void dpnp_astype_c(const void* array1_in, void* result1, const size_t size)
         return;
     }
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t i = global_id[0];
         result[i] = array_in[i];
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_astype_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
@@ -77,18 +77,18 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_dot_c_kernel;
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-cl::sycl::event dot(cl::sycl::queue& queue,
-                    _DataType_output* result_out,
-                    _DataType_input1* input1_in,
-                    _DataType_input2* input2_in,
-                    size_t input1_strides,
-                    size_t input2_strides,
-                    size_t size,
-                    const std::vector<cl::sycl::event>& dependencies = {})
+sycl::event dot(sycl::queue& queue,
+                _DataType_output* result_out,
+                _DataType_input1* input1_in,
+                _DataType_input2* input2_in,
+                size_t input1_strides,
+                size_t input2_strides,
+                size_t size,
+                const std::vector<sycl::event>& dependencies = {})
 {
     (void)dependencies;
 
-    cl::sycl::event event;
+    sycl::event event;
 
     if constexpr ((std::is_same<_DataType_input1, double>::value || std::is_same<_DataType_input1, float>::value) &&
                   std::is_same<_DataType_input2, _DataType_input1>::value &&
@@ -107,10 +107,10 @@ cl::sycl::event dot(cl::sycl::queue& queue,
 #if LIBSYCL_VERSION_GREATER(5, 3, 0)
         event = queue.submit([&](sycl::handler& cgh) {
             cgh.parallel_for(sycl::range<1>{size},
-                             cl::sycl::reduction(result_out,
-                                                 std::plus<_DataType_output>(),
-                                                 cl::sycl::property::reduction::initialize_to_identity{}),
-                             [=](cl::sycl::id<1> idx, auto& sum) {
+                             sycl::reduction(result_out,
+                                             std::plus<_DataType_output>(),
+                                             sycl::property::reduction::initialize_to_identity{}),
+                             [=](sycl::id<1> idx, auto& sum) {
                                  sum += static_cast<_DataType_output>(input1_in[idx * input1_strides]) *
                                         static_cast<_DataType_output>(input2_in[idx * input2_strides]);
                              });
@@ -124,14 +124,14 @@ cl::sycl::event dot(cl::sycl::queue& queue,
             reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c(size * sizeof(_DataType_output)));
 
         // what about reduction??
-        cl::sycl::range<1> gws(size);
+        sycl::range<1> gws(size);
 
-        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
             const size_t index = global_id[0];
             local_mem[index] = input1_in[index * input1_strides] * input2_in[index * input2_strides];
         };
 
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
+        auto kernel_func = [&](sycl::handler& cgh) {
             cgh.parallel_for<class dpnp_dot_c_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(
                 gws, kernel_parallel_for_func);
         };
@@ -160,21 +160,19 @@ template <typename _DataType_output, typename _DataType_input1, typename _DataTy
 void dpnp_dot_c(void* result_out,
                 const size_t result_size,
                 const size_t result_ndim,
-                const size_t* result_shape,
-                const size_t* result_strides,
+                const shape_elem_type* result_shape,
+                const shape_elem_type* result_strides,
                 const void* input1_in,
                 const size_t input1_size,
                 const size_t input1_ndim,
-                const size_t* input1_shape,
-                const size_t* input1_strides,
+                const shape_elem_type* input1_shape,
+                const shape_elem_type* input1_strides,
                 const void* input2_in,
                 const size_t input2_size,
                 const size_t input2_ndim,
-                const size_t* input2_shape,
-                const size_t* input2_strides)
+                const shape_elem_type* input2_shape,
+                const shape_elem_type* input2_strides)
 {
-    (void)result_strides;
-
     DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);
     DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);
 
@@ -195,14 +193,20 @@ void dpnp_dot_c(void* result_out,
         // there is no support of strides in multiply function
         // so result can be wrong if input array has non-standard (c-contiguous) strides
         dpnp_multiply_c<_DataType_output, _DataType_input1, _DataType_input2>(result,
+                                                                              result_size,
+                                                                              result_ndim,
+                                                                              result_shape,
+                                                                              result_strides,
                                                                               input1_in,
                                                                               input1_size,
-                                                                              input1_shape,
                                                                               input1_ndim,
+                                                                              input1_shape,
+                                                                              input1_strides,
                                                                               input2_in,
                                                                               input2_size,
-                                                                              input2_shape,
                                                                               input2_ndim,
+                                                                              input2_shape,
+                                                                              input2_strides,
                                                                               NULL);
         return;
     }
@@ -211,16 +215,15 @@ void dpnp_dot_c(void* result_out,
     if ((input1_ndim == 1) && (input2_ndim == 1))
     {
         assert(input1_size == input2_size);
-        cl::sycl::event event =
-            dot(DPNP_QUEUE, result, input1, input2, input1_strides[0], input2_strides[0], input1_size);
+        sycl::event event = dot(DPNP_QUEUE, result, input1, input2, input1_strides[0], input2_strides[0], input1_size);
         event.wait();
         return;
     }
 
     // 1D vector
     size_t ext_input1_ndim = input1_ndim == 1 ? 2 : input1_ndim;
-    size_t* ext_input1_shape = new size_t[ext_input1_ndim];
-    size_t* ext_input1_strides = new size_t[ext_input1_ndim];
+    shape_elem_type* ext_input1_shape = new shape_elem_type[ext_input1_ndim];
+    shape_elem_type* ext_input1_strides = new shape_elem_type[ext_input1_ndim];
     if (input1_ndim == 1)
     {
         ext_input1_shape[0] = 1;
@@ -237,8 +240,8 @@ void dpnp_dot_c(void* result_out,
         }
     }
     size_t ext_input2_ndim = input2_ndim == 1 ? 2 : input2_ndim;
-    size_t* ext_input2_shape = new size_t[ext_input2_ndim];
-    size_t* ext_input2_strides = new size_t[ext_input2_ndim];
+    shape_elem_type* ext_input2_shape = new shape_elem_type[ext_input2_ndim];
+    shape_elem_type* ext_input2_strides = new shape_elem_type[ext_input2_ndim];
     if (input2_ndim == 1)
     {
         ext_input2_shape[0] = input2_shape[0];
@@ -255,7 +258,7 @@ void dpnp_dot_c(void* result_out,
         }
     }
     size_t ext_result_ndim = ((input1_ndim == 1) || (input2_ndim == 1)) ? 2 : result_ndim;
-    size_t* ext_result_shape = new size_t[ext_result_ndim];
+    shape_elem_type* ext_result_shape = new shape_elem_type[ext_result_ndim];
     if ((input1_ndim == 1) || (input2_ndim == 1))
     {
         ext_result_shape[0] = ext_input1_shape[0];
@@ -302,35 +305,35 @@ void dpnp_dot_c(void* result_out,
             // const std::int64_t ldc = result_strides[0] == 1 ? result_strides[1] : result_strides[0];
             const std::int64_t ldc = size_n;
 
-            cl::sycl::event event = mkl_blas_rm::gemm(DPNP_QUEUE,
-                                                      trans1,
-                                                      trans2,
-                                                      size_m,
-                                                      size_n,
-                                                      size_k,
-                                                      _DataType_output(1), // alpha
-                                                      input1,
-                                                      lda,
-                                                      input2,
-                                                      ldb,
-                                                      _DataType_output(0), // beta
-                                                      result,
-                                                      ldc);
+            sycl::event event = mkl_blas_rm::gemm(DPNP_QUEUE,
+                                                  trans1,
+                                                  trans2,
+                                                  size_m,
+                                                  size_n,
+                                                  size_k,
+                                                  _DataType_output(1), // alpha
+                                                  input1,
+                                                  lda,
+                                                  input2,
+                                                  ldb,
+                                                  _DataType_output(0), // beta
+                                                  result,
+                                                  ldc);
             event.wait();
             return;
 #endif
         }
     }
 
-    std::vector<cl::sycl::event> dot_events;
+    std::vector<sycl::event> dot_events;
     dot_events.reserve(result_size);
 
     size_t dot_st1 = ext_input1_strides[ext_input1_ndim - 1];
     size_t dot_st2 = ext_input2_strides[ext_input2_ndim - 2];
     size_t dot_size = ext_input1_shape[ext_input1_ndim - 1];
 
-    size_t* res_coords = new size_t[ext_result_ndim];
-    size_t* result_offsets = new size_t[ext_result_ndim];
+    shape_elem_type* res_coords = new shape_elem_type[ext_result_ndim];
+    shape_elem_type* result_offsets = new shape_elem_type[ext_result_ndim];
     get_shape_offsets_inkernel(ext_result_shape, ext_result_ndim, result_offsets);
 
     for (size_t i = 0; i < result_size; ++i)
@@ -379,7 +382,7 @@ void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size * size, true);
     DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, size, true, true);
     DPNPC_ptr_adapter<_ResultType> result2_ptr(result2, size * size, true, true);
@@ -452,7 +455,7 @@ void dpnp_eigvals_c(const void* array_in, void* result1, size_t size)
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size * size, true);
     DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, size, true, true);
     const _DataType* array = input1_ptr.get_ptr();
@@ -511,17 +514,17 @@ void dpnp_initval_c(void* result1, void* value, size_t size)
     _DataType* result = result1_ptr.get_ptr();
     _DataType* val = value_ptr.get_ptr();
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         const size_t idx = global_id[0];
         result[idx] = *val;
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_initval_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
-    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+    sycl::event event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
 }
@@ -533,18 +536,18 @@ template <typename _DataType>
 void dpnp_matmul_c(void* result_out,
                    const size_t result_size,
                    const size_t result_ndim,
-                   const size_t* result_shape,
-                   const size_t* result_strides,
+                   const shape_elem_type* result_shape,
+                   const shape_elem_type* result_strides,
                    const void* input1_in,
                    const size_t input1_size,
                    const size_t input1_ndim,
-                   const size_t* input1_shape,
-                   const size_t* input1_strides,
+                   const shape_elem_type* input1_shape,
+                   const shape_elem_type* input1_strides,
                    const void* input2_in,
                    const size_t input2_size,
                    const size_t input2_ndim,
-                   const size_t* input2_shape,
-                   const size_t* input2_strides)
+                   const shape_elem_type* input2_shape,
+                   const shape_elem_type* input2_strides)
 {
     (void)result_size;
     (void)result_ndim;
@@ -566,7 +569,7 @@ void dpnp_matmul_c(void* result_out,
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, size_m * size_k);
     DPNPC_ptr_adapter<_DataType> input2_ptr(input2_in, size_k * size_n);
     DPNPC_ptr_adapter<_DataType> result_ptr(result_out, size_m * size_n, false, true);
@@ -605,9 +608,9 @@ void dpnp_matmul_c(void* result_out,
         const size_t dim_n = size_n; // shape2.back();  // Last dimensions of array2
         const size_t dim_k = size_k; // shape1.back(); // First dimensions of array2
 
-        cl::sycl::range<2> gws(dim_m, dim_n); // dimensions are: "i" and "j"
+        sycl::range<2> gws(dim_m, dim_n); // dimensions are: "i" and "j"
 
-        auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+        auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
             size_t i = global_id[0]; //for (size_t i = 0; i < size; ++i)
             {
                 size_t j = global_id[1]; //for (size_t j = 0; j < size; ++j)
@@ -625,7 +628,7 @@ void dpnp_matmul_c(void* result_out,
             }
         };
 
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
+        auto kernel_func = [&](sycl::handler& cgh) {
             cgh.parallel_for<class dpnp_matmul_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
         };
 
@@ -637,28 +640,28 @@ void dpnp_matmul_c(void* result_out,
 void func_map_init_linalg(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_astype_c<bool, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_BLN][eft_INT] = {eft_INT, (void*)dpnp_astype_c<bool, int>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_BLN][eft_LNG] = {eft_LNG, (void*)dpnp_astype_c<bool, long>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_BLN][eft_INT] = {eft_INT, (void*)dpnp_astype_c<bool, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_BLN][eft_LNG] = {eft_LNG, (void*)dpnp_astype_c<bool, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_BLN][eft_FLT] = {eft_FLT, (void*)dpnp_astype_c<bool, float>};
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_BLN][eft_DBL] = {eft_DBL, (void*)dpnp_astype_c<bool, double>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_INT][eft_BLN] = {eft_BLN, (void*)dpnp_astype_c<int, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_astype_c<int, int>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_astype_c<int, long>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_astype_c<int, float>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_astype_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_LNG][eft_BLN] = {eft_BLN, (void*)dpnp_astype_c<long, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_astype_c<long, int>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_astype_c<long, long>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_LNG][eft_FLT] = {eft_FLT, (void*)dpnp_astype_c<long, float>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_astype_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_INT][eft_BLN] = {eft_BLN, (void*)dpnp_astype_c<int32_t, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_astype_c<int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_astype_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_astype_c<int32_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_astype_c<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_LNG][eft_BLN] = {eft_BLN, (void*)dpnp_astype_c<int64_t, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_astype_c<int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_astype_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_LNG][eft_FLT] = {eft_FLT, (void*)dpnp_astype_c<int64_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_astype_c<int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_FLT][eft_BLN] = {eft_BLN, (void*)dpnp_astype_c<float, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_FLT][eft_INT] = {eft_INT, (void*)dpnp_astype_c<float, int>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_FLT][eft_LNG] = {eft_LNG, (void*)dpnp_astype_c<float, long>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_FLT][eft_INT] = {eft_INT, (void*)dpnp_astype_c<float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_FLT][eft_LNG] = {eft_LNG, (void*)dpnp_astype_c<float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_astype_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_astype_c<float, double>};
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_DBL][eft_BLN] = {eft_BLN, (void*)dpnp_astype_c<double, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_DBL][eft_INT] = {eft_INT, (void*)dpnp_astype_c<double, int>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_DBL][eft_LNG] = {eft_LNG, (void*)dpnp_astype_c<double, long>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_DBL][eft_INT] = {eft_INT, (void*)dpnp_astype_c<double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_DBL][eft_LNG] = {eft_LNG, (void*)dpnp_astype_c<double, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_DBL][eft_FLT] = {eft_FLT, (void*)dpnp_astype_c<double, float>};
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_astype_c<double, double>};
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_C64][eft_C64] = {
@@ -666,41 +669,41 @@ void func_map_init_linalg(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_astype_c<std::complex<double>, std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_dot_c<int, int, int>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_dot_c<long, int, long>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<double, int, float>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_dot_c<long, long, int>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_dot_c<long, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<double, long, float>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_dot_c<double, float, int>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_dot_c<double, float, long>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_dot_c<int32_t, int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_dot_c<int64_t, int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<double, int32_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double, int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_dot_c<int64_t, int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_dot_c<int64_t, int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<double, int64_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_dot_c<double, float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_dot_c<double, float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_dot_c<float, float, float>};
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_dot_c<double, double, int>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_dot_c<double, double, long>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_dot_c<double, double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_dot_c<double, double, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double, double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_EIG][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_eig_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_EIG][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eig_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIG][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_eig_c<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIG][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eig_c<int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eig_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eig_c<double, double>};
-    fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_eigvals_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eigvals_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_eigvals_c<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eigvals_c<int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eigvals_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eigvals_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_initval_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_initval_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_initval_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_initval_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_initval_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_initval_c<float>};
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_initval_c<double>};
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_initval_c<std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matmul_c<float>};
     fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matmul_c<double>};
 

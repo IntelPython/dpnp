@@ -47,26 +47,46 @@
     /**                                                                                                              */ \
     /** Function "__name__" executes operator "__operation1__" over each element of the array                        */ \
     /**                                                                                                              */ \
-    /** @param[in]  array1   Input array.                                                                            */ \
-    /** @param[out] result1  Output array.                                                                           */ \
-    /** @param[in]  size     Number of elements in the input array.                                                  */ \
+    /** @param[out] result_out      Output array.                                                                    */ \
+    /** @param[in]  result_size     Output array size.                                                               */ \
+    /** @param[in]  result_ndim     Number of output array dimensions.                                               */ \
+    /** @param[in]  result_shape    Output array shape.                                                              */ \
+    /** @param[in]  result_strides  Output array strides.                                                            */ \
+    /** @param[in]  input1_in       Input array 1.                                                                   */ \
+    /** @param[in]  input1_size     Input array 1 size.                                                              */ \
+    /** @param[in]  input1_ndim     Number of input array 1 dimensions.                                              */ \
+    /** @param[in]  input1_shape    Input array 1 shape.                                                             */ \
+    /** @param[in]  input1_strides  Input array 1 strides.                                                           */ \
+    /** @param[in]  where           Where condition.                                                                 */ \
     template <typename _DataType>                                                                                       \
-    void __name__(void* array1, void* result1, size_t size);
+    void __name__(void* result_out,                                                                                     \
+                  const size_t result_size,                                                                             \
+                  const size_t result_ndim,                                                                             \
+                  const shape_elem_type* result_shape,                                                                  \
+                  const shape_elem_type* result_strides,                                                                \
+                  const void* input1_in,                                                                                \
+                  const size_t input1_size,                                                                             \
+                  const size_t input1_ndim,                                                                             \
+                  const shape_elem_type* input1_shape,                                                                  \
+                  const shape_elem_type* input1_strides,                                                                \
+                  const size_t* where);
 
 #endif
 
 MACRO_1ARG_1TYPE_OP(dpnp_conjugate_c, std::conj(input_elem), DPNP_QUEUE.submit(kernel_func))
 MACRO_1ARG_1TYPE_OP(dpnp_copy_c, input_elem, DPNP_QUEUE.submit(kernel_func))
 MACRO_1ARG_1TYPE_OP(dpnp_erf_c,
-                    cl::sycl::erf((double)input_elem),
-                    oneapi::mkl::vm::erf(DPNP_QUEUE, size, array1, result)) // no sycl::erf for int and long
+                    sycl::erf((double)input_elem),
+                    oneapi::mkl::vm::erf(DPNP_QUEUE, input1_size, input1_data, result)) // no sycl::erf for int and long
 MACRO_1ARG_1TYPE_OP(dpnp_negative_c, -input_elem, DPNP_QUEUE.submit(kernel_func))
 MACRO_1ARG_1TYPE_OP(dpnp_recip_c,
                     _DataType(1) / input_elem,
-                    DPNP_QUEUE.submit(kernel_func)) // error: no member named 'recip' in namespace 'cl::sycl'
+                    DPNP_QUEUE.submit(kernel_func)) // error: no member named 'recip' in namespace 'sycl'
 MACRO_1ARG_1TYPE_OP(dpnp_sign_c,
-                    cl::sycl::sign((double)input_elem),
+                    sycl::sign((double)input_elem),
                     DPNP_QUEUE.submit(kernel_func)) // no sycl::sign for int and long
-MACRO_1ARG_1TYPE_OP(dpnp_square_c, input_elem* input_elem, oneapi::mkl::vm::sqr(DPNP_QUEUE, size, array1, result))
+MACRO_1ARG_1TYPE_OP(dpnp_square_c,
+                    input_elem* input_elem,
+                    oneapi::mkl::vm::sqr(DPNP_QUEUE, input1_size, input1_data, result))
 
 #undef MACRO_1ARG_1TYPE_OP
