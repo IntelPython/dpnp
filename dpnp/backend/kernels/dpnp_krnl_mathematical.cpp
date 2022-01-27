@@ -220,6 +220,61 @@ void dpnp_cumsum_c(void* array1_in, void* result1, size_t size)
     return;
 }
 
+template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2>
+class dpnp_ediff1d_c_kernel;
+
+template <typename _DataType_input, typename _DataType_output>
+void dpnp_ediff1d_c(void* result_out,
+                    const size_t result_size,
+                    const size_t result_ndim,
+                    const shape_elem_type* result_shape,
+                    const shape_elem_type* result_strides,
+                    const void* input1_in,
+                    const size_t input1_size,
+                    const size_t input1_ndim,
+                    const shape_elem_type* input1_shape,
+                    const shape_elem_type* input1_strides,
+                    const size_t* where)
+{
+    /* avoid warning unused variable*/
+    (void)result_ndim;
+    (void)result_shape;
+    (void)result_strides;
+    (void)input1_ndim;
+    (void)input1_shape;
+    (void)input1_strides;
+    (void)where;
+
+    if (!input1_size)
+    {
+        return;
+    }
+
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(input1_in, input1_size);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result_out, result_size, false, true);
+
+    _DataType_input* input1_data = input1_ptr.get_ptr();
+    _DataType_output* result = result_ptr.get_ptr();
+
+    cl::sycl::event event;
+    cl::sycl::range<1> gws(result_size);
+
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/
+        {
+            const _DataType_output curr_elem = input1_data[output_id];
+            const _DataType_output next_elem = input1_data[output_id + 1];
+            result[output_id] = next_elem - curr_elem;
+        }
+    };
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_ediff1d_c_kernel<_DataType_input, _DataType_output>>(
+            gws, kernel_parallel_for_func);
+    };
+    event = DPNP_QUEUE.submit(kernel_func);
+    event.wait();
+}
+
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
 class dpnp_floor_divide_c_kernel;
 
@@ -547,6 +602,11 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_CUMSUM][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_cumsum_c<int64_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_CUMSUM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cumsum_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_CUMSUM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cumsum_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_ediff1d_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ediff1d_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_ediff1d_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_ediff1d_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_INT][eft_INT] = {
         eft_INT, (void*)dpnp_floor_divide_c<int32_t, int32_t, int32_t>};

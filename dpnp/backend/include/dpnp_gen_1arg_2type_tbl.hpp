@@ -105,7 +105,6 @@ MACRO_1ARG_2TYPES_OP(dpnp_cosh_c,
                      sycl::cosh(input_elem),
                      oneapi::mkl::vm::cosh(DPNP_QUEUE, input1_size, input1_data, result))
 MACRO_1ARG_2TYPES_OP(dpnp_degrees_c, sycl::degrees(input_elem), DPNP_QUEUE.submit(kernel_func))
-MACRO_1ARG_2TYPES_OP(dpnp_ediff1d_c, input1_data[output_id + 1] - input_elem, DPNP_QUEUE.submit(kernel_func))
 MACRO_1ARG_2TYPES_OP(dpnp_exp2_c,
                      sycl::exp2(input_elem),
                      oneapi::mkl::vm::exp2(DPNP_QUEUE, input1_size, input1_data, result))
