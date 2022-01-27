@@ -38,7 +38,7 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 template <typename _DataType>
 void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const size_t data_size)
 {
-    cl::sycl::event event;
+    sycl::event event;
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size, true);
     DPNPC_ptr_adapter<_DataType> result_ptr(result1, size, true, true);
@@ -352,8 +352,8 @@ void dpnp_kron_c(void* array1_in,
     get_shape_offsets_inkernel(in2_shape, ndim, in2_offsets);
     get_shape_offsets_inkernel(res_shape, ndim, res_offsets);
 
-    cl::sycl::range<1> gws(result_size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(result_size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         const size_t idx = global_id[0];
 
         size_t idx1 = 0;
@@ -374,11 +374,11 @@ void dpnp_kron_c(void* array1_in,
         result[idx] = array1[idx1] * array2[idx2];
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_kron_c_kernel<_DataType1, _DataType2, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
-    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+    sycl::event event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
 }
@@ -428,7 +428,7 @@ void dpnp_matrix_rank_c(void* array1_in, void* result1, shape_elem_type* shape, 
 template <typename _InputDT, typename _ComputeDT>
 void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, size_t size_m, size_t size_n)
 {
-    cl::sycl::event event;
+    sycl::event event;
 
     DPNPC_ptr_adapter<_InputDT> input1_ptr(array1_in, size_m * size_n, true);
     _InputDT* in_array = input1_ptr.get_ptr();
@@ -460,7 +460,7 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
     _ComputeDT* geqrf_scratchpad =
         reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(geqrf_scratchpad_size * sizeof(_ComputeDT)));
 
-    std::vector<cl::sycl::event> depends(1);
+    std::vector<sycl::event> depends(1);
     set_barrier_event(DPNP_QUEUE, depends);
 
     event =
@@ -529,7 +529,7 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
 template <typename _InputDT, typename _ComputeDT, typename _SVDT>
 void dpnp_svd_c(void* array1_in, void* result1, void* result2, void* result3, size_t size_m, size_t size_n)
 {
-    cl::sycl::event event;
+    sycl::event event;
 
     DPNPC_ptr_adapter<_InputDT> input1_ptr(array1_in, size_m * size_n, true); // TODO no need this if use dpnp_copy_to()
     _InputDT* in_array = input1_ptr.get_ptr();

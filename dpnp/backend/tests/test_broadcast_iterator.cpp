@@ -90,17 +90,17 @@ TEST_P(IteratorBroadcasting, sycl_broadcast)
 
     ASSERT_EQ(input_it->get_output_size(), result_size);
 
-    cl::sycl::range<1> gws(result_size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(result_size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         const size_t idx = global_id[0];
         result[idx] = (*input_it)[idx];
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class test_sycl_reduce_axis_kernel>(gws, kernel_parallel_for_func);
     };
 
-    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+    sycl::event event = DPNP_QUEUE.submit(kernel_func);
     event.wait();
 
     for (dpnpc_index_t i = 0; i < result_size; ++i)

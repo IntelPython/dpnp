@@ -65,8 +65,8 @@ public:
         size_in_bytes = size * sizeof(_DataType);
 
         // enum class alloc { host = 0, device = 1, shared = 2, unknown = 3 };
-        cl::sycl::usm::alloc src_ptr_type = cl::sycl::usm::alloc::unknown;
-        src_ptr_type = cl::sycl::get_pointer_type(src_ptr, DPNP_QUEUE.get_context());
+        sycl::usm::alloc src_ptr_type = sycl::usm::alloc::unknown;
+        src_ptr_type = sycl::get_pointer_type(src_ptr, DPNP_QUEUE.get_context());
         if (verbose)
         {
             std::cerr << "DPNPC_ptr_converter:";
@@ -121,15 +121,15 @@ public:
         }
     }
 
-    bool is_memcpy_required(cl::sycl::usm::alloc src_ptr_type)
+    bool is_memcpy_required(sycl::usm::alloc src_ptr_type)
     {
         if (target_no_queue || DPNP_QUEUE.get_device().is_gpu())
         {
-            if (src_ptr_type == cl::sycl::usm::alloc::unknown)
+            if (src_ptr_type == sycl::usm::alloc::unknown)
             {
                 return true;
             }
-            else if (target_no_queue && src_ptr_type == cl::sycl::usm::alloc::device)
+            else if (target_no_queue && src_ptr_type == sycl::usm::alloc::device)
             {
                 return true;
             }

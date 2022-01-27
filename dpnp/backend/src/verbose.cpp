@@ -46,17 +46,17 @@ bool is_verbose_mode()
 
 class barrierKernelClass;
 
-void set_barrier_event(cl::sycl::queue queue, std::vector<cl::sycl::event>& depends)
+void set_barrier_event(sycl::queue queue, std::vector<sycl::event>& depends)
 {
     if (is_verbose_mode())
     {
-        cl::sycl::event barrier_event = queue.single_task<barrierKernelClass>(depends, [=] {});
+        sycl::event barrier_event = queue.single_task<barrierKernelClass>(depends, [=] {});
         depends.clear();
         depends.push_back(barrier_event);
     }
 }
 
-void verbose_print(std::string header, cl::sycl::event first_event, cl::sycl::event last_event)
+void verbose_print(std::string header, sycl::event first_event, sycl::event last_event)
 {
     if (is_verbose_mode())
     {
