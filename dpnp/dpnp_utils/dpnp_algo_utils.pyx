@@ -63,6 +63,7 @@ __all__ = [
     "_get_linear_index",
     "normalize_axis",
     "_object_to_tuple",
+    "unwrap_array",
     "use_origin_backend"
 ]
 
