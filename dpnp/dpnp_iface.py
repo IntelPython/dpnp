@@ -182,6 +182,8 @@ def convert_single_elem_array_to_scalar(obj, keepdims=False):
 
     if (obj.ndim > 0) and (obj.size == 1) and (keepdims is False):
         return obj.dtype.type(obj[0])
+    elif (obj.ndim == 0):
+        return obj.dtype.type(obj)
 
     return obj
 
@@ -220,6 +222,9 @@ def get_dpnp_descriptor(ext_obj, copy_when_strides=True):
 
         if ext_obj.strides != shape_offsets or ext_obj_offset != 0:
             ext_obj = array(ext_obj)
+
+    if numpy.isscalar(ext_obj) and isinstance(ext_obj, numpy.generic):
+        ext_obj = array(ext_obj)
 
     dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:

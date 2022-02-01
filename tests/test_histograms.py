@@ -40,14 +40,14 @@ class TestHistogram:
         v = dpnp.random.rand(n)
         a, b = dpnp.histogram(v, density=True)
         area = dpnp.sum(a * dpnp.diff(b)[0])
-        numpy.testing.assert_array_almost_equal(area, 1)
+        numpy.testing.assert_almost_equal(area, 1)
 
         # Check with non-constant bin widths
         v = dpnp.arange(10)
         bins = [0, 1, 3, 6, 10]
         a, b = dpnp.histogram(v, bins, density=True)
         numpy.testing.assert_array_equal(a, .1)
-        numpy.testing.assert_array_equal(dpnp.sum(a * dpnp.diff(b)), 1)
+        numpy.testing.assert_equal(dpnp.sum(a * dpnp.diff(b)), 1)
 
         # Test that passing False works too
         a, b = dpnp.histogram(v, bins, density=False)
