@@ -106,6 +106,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_LOG1P
         DPNP_FN_LOG2
         DPNP_FN_MATMUL
+        DPNP_FN_MATMUL_EXT
         DPNP_FN_MATRIX_RANK
         DPNP_FN_MAX
         DPNP_FN_MAXIMUM

@@ -131,6 +131,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_LOG2,                     /**< Used in numpy.log2() implementation  */
     DPNP_FN_LOG1P,                    /**< Used in numpy.log1p() implementation  */
     DPNP_FN_MATMUL,                   /**< Used in numpy.matmul() implementation  */
+    DPNP_FN_MATMUL_EXT,               /**< Used in numpy.matmul() implementation, requires extra parameters  */
     DPNP_FN_MATRIX_RANK,              /**< Used in numpy.linalg.matrix_rank() implementation  */
     DPNP_FN_MAX,                      /**< Used in numpy.max() implementation  */
     DPNP_FN_MAXIMUM,                  /**< Used in numpy.maximum() implementation  */

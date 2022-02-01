@@ -58,6 +58,8 @@ typedef ssize_t shape_elem_type;
 #include "dpnp_iface_fft.hpp"
 #include "dpnp_iface_random.hpp"
 
+#include <dpctl_sycl_interface.h>
+
 /**
  * @defgroup BACKEND_API Backend C++ library interface API
  * @{
@@ -195,6 +197,47 @@ INP_DLLEXPORT void dpnp_full_c(void* array_in, void* result, const size_t size);
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Matrix multiplication.
+ *
+ * Matrix multiplication procedure.
+ *
+ * @param [in]  q_ref               Reference to SYCL queue.
+ * @param [out] result_out          Output array.
+ * @param [in]  result_size         Size of output array.
+ * @param [in]  result_ndim         Number of output array dimensions.
+ * @param [in]  result_shape        Shape of output array.
+ * @param [in]  result_strides      Strides of output array.
+ * @param [in]  input1_in           First input array.
+ * @param [in]  input1_size         Size of first input array.
+ * @param [in]  input1_ndim         Number of first input array dimensions.
+ * @param [in]  input1_shape        Shape of first input array.
+ * @param [in]  input1_strides      Strides of first input array.
+ * @param [in]  input2_in           Second input array.
+ * @param [in]  input2_size         Size of second input array.
+ * @param [in]  input2_ndim         Number of second input array dimensions.
+ * @param [in]  input2_shape        Shape of second input array.
+ * @param [in]  input2_strides      Strides of second input array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
+                                 void* result_out,
+                                 const size_t result_size,
+                                 const size_t result_ndim,
+                                 const shape_elem_type* result_shape,
+                                 const shape_elem_type* result_strides,
+                                 const void* input1_in,
+                                 const size_t input1_size,
+                                 const size_t input1_ndim,
+                                 const shape_elem_type* input1_shape,
+                                 const shape_elem_type* input1_strides,
+                                 const void* input2_in,
+                                 const size_t input2_size,
+                                 const size_t input2_ndim,
+                                 const shape_elem_type* input2_shape,
+                                 const shape_elem_type* input2_strides);
 
 /**
  * @ingroup BACKEND_API
@@ -367,6 +410,35 @@ INP_DLLEXPORT void dpnp_cumprod_c(void* array1_in, void* result1, size_t size);
  */
 template <typename _DataType_input, typename _DataType_output>
 INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief The differences between consecutive elements of an array.
+ *
+ * @param [out] result_out          Output array.
+ * @param [in]  result_size         Size of output array.
+ * @param [in]  result_ndim         Number of output array dimensions.
+ * @param [in]  result_shape        Shape of output array.
+ * @param [in]  result_strides      Strides of output array.
+ * @param [in]  input1_in           First input array.
+ * @param [in]  input1_size         Size of first input array.
+ * @param [in]  input1_ndim         Number of first input array dimensions.
+ * @param [in]  input1_shape        Shape of first input array.
+ * @param [in]  input1_strides      Strides of first input array.
+ * @param [in]  where               Mask array.
+ */
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_ediff1d_c(void* result_out,
+                                  const size_t result_size,
+                                  const size_t result_ndim,
+                                  const shape_elem_type* result_shape,
+                                  const shape_elem_type* result_strides,
+                                  const void* input1_in,
+                                  const size_t input1_size,
+                                  const size_t input1_ndim,
+                                  const shape_elem_type* input1_shape,
+                                  const shape_elem_type* input1_strides,
+                                  const size_t* where);
 
 /**
  * @ingroup BACKEND_API
