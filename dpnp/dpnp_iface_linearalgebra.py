@@ -245,8 +245,8 @@ def matmul(x1, x2, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
     if x1_desc and x2_desc and not kwargs:
         if x1_desc.ndim != 2 or x2_desc.ndim != 2:
             pass

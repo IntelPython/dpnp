@@ -76,6 +76,7 @@ def fft(x1, n=None, axis=-1, norm=None):
     Limitations
     -----------
     Parameter ``norm`` is unsupported.
+    Parameter ``axis`` is supported with its default value.
     Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64``,
     ``dpnp.complex64`` and ``dpnp.complex128`` datatypes only.
 
@@ -105,11 +106,11 @@ def fft(x1, n=None, axis=-1, norm=None):
             pass                 # let fallback to handle exception
         elif norm is not None:
             pass
+        elif axis != -1:
+            pass
         else:
             output_boundarie = input_boundarie
-
             return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, 0).get_pyobj()
-
     return call_origin(numpy.fft.fft, x1, n, axis, norm)
 
 

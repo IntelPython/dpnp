@@ -21,8 +21,8 @@ requirements:
     run:
       - python
       - dpctl >=0.10
-      - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x.x') }}
-      - {{ pin_compatible('mkl-dpcpp', min_pin='x.x', max_pin='x.x') }}
+      - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
+      - {{ pin_compatible('mkl-dpcpp', min_pin='x.x', max_pin='x') }}
       - numpy >=1.15
 
 build:

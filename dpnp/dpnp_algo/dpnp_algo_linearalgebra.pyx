@@ -52,6 +52,13 @@ ctypedef void(*fptr_2in_1out_dot_t)(void * , const size_t, const size_t,
                                     const shape_elem_type *, const shape_elem_type * ,
                                     void * , const size_t, const size_t,
                                     const shape_elem_type *, const shape_elem_type * )
+ctypedef void(*fptr_2in_1out_matmul_t)(c_dpctl.DPCTLSyclQueueRef,
+                                       void * , const size_t, const size_t,
+                                       const shape_elem_type *, const shape_elem_type * ,
+                                       void * , const size_t, const size_t,
+                                       const shape_elem_type *, const shape_elem_type * ,
+                                       void * , const size_t, const size_t,
+                                       const shape_elem_type *, const shape_elem_type * )
 
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
 
@@ -271,7 +278,7 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL, param1_type, param2_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL_EXT, param1_type, param2_type)
 
     # ceate result array with type given by FPTR data
     result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(in_array1, in_array2)
@@ -284,9 +291,13 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
     if result.size == 0:
         return result
 
-    cdef fptr_2in_1out_dot_t func = <fptr_2in_1out_dot_t > kernel_data.ptr
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
+    cdef fptr_2in_1out_matmul_t func = <fptr_2in_1out_matmul_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(),
+    func(q_ref,
+         result.get_data(),
          result.size,
          result.ndim,
          NULL,  # result_shape

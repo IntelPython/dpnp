@@ -63,6 +63,7 @@ __all__ = [
     "_get_linear_index",
     "normalize_axis",
     "_object_to_tuple",
+    "unwrap_array",
     "use_origin_backend"
 ]
 
@@ -102,7 +103,7 @@ def copy_from_origin(dst, src):
     if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
         if src.size:
             # dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
-            dpctl.tensor._copy_utils._copy_from_numpy_into(dst, src)
+            dpctl.tensor._copy_utils._copy_from_numpy_into(unwrap_array(dst), src)
     else:
         for i in range(dst.size):
             dst.flat[i] = src.item(i)
@@ -175,6 +176,14 @@ def call_origin(function, *args, **kwargs):
         result = tuple(result_list)
 
     return result
+
+
+def unwrap_array(x1):
+    """Get array from input object."""
+    if isinstance(x1, dpnp.dpnp_array.dpnp_array):
+        return x1.get_array()
+
+    return x1
 
 
 cpdef checker_throw_axis_error(function_name, param_name, param, expected):
