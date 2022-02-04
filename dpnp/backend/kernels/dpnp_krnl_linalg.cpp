@@ -502,9 +502,9 @@ DPCTLSyclEventRef dpnp_kron_c(DPCTLSyclQueueRef q_ref,
 
     sycl::event event = q.submit(kernel_func);
 
-    event.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>

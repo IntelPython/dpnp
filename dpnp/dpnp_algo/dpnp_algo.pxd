@@ -438,7 +438,16 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_strides_t)(c_dpctl.DPCTLSyclQu
                                                              const long * ,
                                                              const c_dpctl.DPCTLEventVectorRef)
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void *, void * , void * , size_t, size_t, size_t)
-ctypedef void(*dpnp_reduction_c_t)(void *, const void * , const shape_elem_type*, const size_t, const shape_elem_type*, const size_t, const void * , const long*)
+ctypedef c_dpctl.DPCTLSyclEventRef(*dpnp_reduction_c_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                        void *,
+                                                        const void * ,
+                                                        const shape_elem_type*,
+                                                        const size_t,
+                                                        const shape_elem_type*,
+                                                        const size_t,
+                                                        const void * ,
+                                                        const long*,
+                                                        const c_dpctl.DPCTLEventVectorRef)
 
 cpdef dpnp_descriptor dpnp_astype(dpnp_descriptor x1, dtype)
 cpdef dpnp_descriptor dpnp_flatten(dpnp_descriptor x1)

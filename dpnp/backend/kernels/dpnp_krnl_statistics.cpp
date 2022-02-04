@@ -598,6 +598,10 @@ DPCTLSyclEventRef dpnp_mean_c(DPCTLSyclQueueRef q_ref,
         sycl::event event = mkl_stats::mean(q, dataset, result);
 
         event.wait();
+
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+
+        return DPCTLEvent_Copy(event_ref);
     }
     else
     {
@@ -608,9 +612,9 @@ DPCTLSyclEventRef dpnp_mean_c(DPCTLSyclQueueRef q_ref,
         result[0] = sum[0] / static_cast<_ResultType>(size);
 
         sycl::free(sum, q);
-    }
 
-    return event_ref;
+        return event_ref;
+    }
 }
 
 template <typename _DataType, typename _ResultType>

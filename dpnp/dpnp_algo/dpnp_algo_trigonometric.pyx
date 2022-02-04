@@ -171,7 +171,14 @@ cpdef utils.dpnp_descriptor dpnp_unwrap(utils.dpnp_descriptor array1):
     if array1.dtype == dpnp.float32:
         result_type = dpnp.float32
 
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(array1.shape, result_type, None)
+    array1_obj = array1.get_array()
+
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(array1.shape,
+                                                                             result_type,
+                                                                             None,
+                                                                             device=array1_obj.sycl_device,
+                                                                             usm_type=array1_obj.usm_type,
+                                                                             sycl_queue=array1_obj.sycl_queue)
 
     for i in range(result.size):
         val, = numpy.unwrap([array1.get_pyobj()[i]])

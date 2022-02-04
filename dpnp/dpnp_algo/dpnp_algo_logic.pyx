@@ -55,20 +55,44 @@ __all__ += [
 ]
 
 
-ctypedef void(*custom_logic_1in_1out_func_ptr_t)(void *, void * , const size_t)
-ctypedef void(*custom_allclose_1in_1out_func_ptr_t)(void * , void * , void * , const size_t, double, double)
+ctypedef c_dpctl.DPCTLSyclEventRef(*custom_logic_1in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                      void *, void * , const size_t,
+                                                                      const c_dpctl.DPCTLEventVectorRef)
+ctypedef c_dpctl.DPCTLSyclEventRef(*custom_allclose_1in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                         void * ,
+                                                                         void * ,
+                                                                         void * ,
+                                                                         const size_t,
+                                                                         double,
+                                                                         double,
+                                                                         const c_dpctl.DPCTLEventVectorRef)
 
 
 cpdef utils.dpnp_descriptor dpnp_all(utils.dpnp_descriptor array1):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py((1,), dpnp.bool, None)
+    array1_obj = array1.get_array()
+
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py((1,),
+                                                                             dpnp.bool,
+                                                                             None,
+                                                                             device=array1_obj.sycl_device,
+                                                                             usm_type=array1_obj.usm_type,
+                                                                             sycl_queue=array1_obj.sycl_queue)
+
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ALL, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ALL_EXT, param1_type, param1_type)
 
     cdef custom_logic_1in_1out_func_ptr_t func = <custom_logic_1in_1out_func_ptr_t > kernel_data.ptr
 
-    func(array1.get_data(), result.get_data(), array1.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, array1.get_data(), result.get_data(), array1.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -77,48 +101,93 @@ cpdef utils.dpnp_descriptor dpnp_allclose(utils.dpnp_descriptor array1,
                                           utils.dpnp_descriptor array2,
                                           double rtol_val,
                                           double atol_val):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py((1,), dpnp.bool, None)
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(array1, array2)
+
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py((1,),
+                                                                             dpnp.bool,
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(array2.dtype)
 
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ALLCLOSE, param1_type, param2_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ALLCLOSE_EXT, param1_type, param2_type)
+
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     cdef custom_allclose_1in_1out_func_ptr_t func = <custom_allclose_1in_1out_func_ptr_t > kernel_data.ptr
 
-    func(array1.get_data(), array2.get_data(), result.get_data(), array1.size, rtol_val, atol_val)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    array1.get_data(),
+                                                    array2.get_data(),
+                                                    result.get_data(),
+                                                    array1.size,
+                                                    rtol_val,
+                                                    atol_val,
+                                                    NULL)  # dep_events_ref
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
 
 cpdef utils.dpnp_descriptor dpnp_any(utils.dpnp_descriptor array1):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py((1,), dpnp.bool, None)
+    array1_obj = array1.get_array()
+
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py((1,),
+                                                                             dpnp.bool,
+                                                                             None,
+                                                                             device=array1_obj.sycl_device,
+                                                                             usm_type=array1_obj.usm_type,
+                                                                             sycl_queue=array1_obj.sycl_queue)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ANY, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ANY_EXT, param1_type, param1_type)
+
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     cdef custom_logic_1in_1out_func_ptr_t func = <custom_logic_1in_1out_func_ptr_t > kernel_data.ptr
 
-    func(array1.get_data(), result.get_data(), array1.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, array1.get_data(), result.get_data(), array1.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_equal(utils.dpnp_descriptor array1, utils.dpnp_descriptor input2):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(array1.shape,
+cpdef utils.dpnp_descriptor dpnp_equal(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
                                                                              dpnp.bool,
-                                                                             None)
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
     for i in range(result.size):
-        result.get_pyobj()[i] = dpnp.bool(array1.get_pyobj()[i] == input2.get_pyobj()[i])
+        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] == input2.get_pyobj()[i])
 
     return result
 
 
 cpdef utils.dpnp_descriptor dpnp_greater(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
                                                                              dpnp.bool,
-                                                                             None)
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
     for i in range(result.size):
         result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] > input2.get_pyobj()[i])
 
@@ -126,9 +195,13 @@ cpdef utils.dpnp_descriptor dpnp_greater(utils.dpnp_descriptor input1, utils.dpn
 
 
 cpdef utils.dpnp_descriptor dpnp_greater_equal(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
                                                                              dpnp.bool,
-                                                                             None)
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
     for i in range(result.size):
         result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] >= input2.get_pyobj()[i])
 
@@ -140,7 +213,13 @@ cpdef utils.dpnp_descriptor dpnp_isclose(utils.dpnp_descriptor input1,
                                          double rtol=1e-05,
                                          double atol=1e-08,
                                          cpp_bool equal_nan=False):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
 
     for i in range(result.size):
         result.get_pyobj()[i] = numpy.isclose(input1.get_pyobj()[i], input2.get_pyobj()[i], rtol, atol, equal_nan)
@@ -149,7 +228,13 @@ cpdef utils.dpnp_descriptor dpnp_isclose(utils.dpnp_descriptor input1,
 
 
 cpdef utils.dpnp_descriptor dpnp_isfinite(utils.dpnp_descriptor input1):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
+    input1_obj = input1.get_array()
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None,
+                                                                             device=input1_obj.sycl_device,
+                                                                             usm_type=input1_obj.usm_type,
+                                                                             sycl_queue=input1_obj.sycl_queue)
 
     for i in range(result.size):
         result.get_pyobj()[i] = numpy.isfinite(input1.get_pyobj()[i])
@@ -158,7 +243,13 @@ cpdef utils.dpnp_descriptor dpnp_isfinite(utils.dpnp_descriptor input1):
 
 
 cpdef utils.dpnp_descriptor dpnp_isinf(utils.dpnp_descriptor input1):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
+    input1_obj = input1.get_array()
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None,
+                                                                             device=input1_obj.sycl_device,
+                                                                             usm_type=input1_obj.usm_type,
+                                                                             sycl_queue=input1_obj.sycl_queue)
 
     for i in range(result.size):
         result.get_pyobj()[i] = numpy.isinf(input1.get_pyobj()[i])
@@ -167,7 +258,13 @@ cpdef utils.dpnp_descriptor dpnp_isinf(utils.dpnp_descriptor input1):
 
 
 cpdef utils.dpnp_descriptor dpnp_isnan(utils.dpnp_descriptor input1):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
+    input1_obj = input1.get_array()
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None,
+                                                                             device=input1_obj.sycl_device,
+                                                                             usm_type=input1_obj.usm_type,
+                                                                             sycl_queue=input1_obj.sycl_queue)
 
     for i in range(result.size):
         result.get_pyobj()[i] = numpy.isnan(input1.get_pyobj()[i])
@@ -176,9 +273,13 @@ cpdef utils.dpnp_descriptor dpnp_isnan(utils.dpnp_descriptor input1):
 
 
 cpdef utils.dpnp_descriptor dpnp_less(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
                                                                              dpnp.bool,
-                                                                             None)
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
     for i in range(result.size):
         result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] < input2.get_pyobj()[i])
 
@@ -186,9 +287,13 @@ cpdef utils.dpnp_descriptor dpnp_less(utils.dpnp_descriptor input1, utils.dpnp_d
 
 
 cpdef utils.dpnp_descriptor dpnp_less_equal(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
                                                                              dpnp.bool,
-                                                                             None)
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
     for i in range(result.size):
         result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] <= input2.get_pyobj()[i])
 
@@ -196,7 +301,13 @@ cpdef utils.dpnp_descriptor dpnp_less_equal(utils.dpnp_descriptor input1, utils.
 
 
 cpdef utils.dpnp_descriptor dpnp_logical_and(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
 
     for i in range(result.size):
         result.get_pyobj()[i] = numpy.logical_and(input1.get_pyobj()[i], input2.get_pyobj()[i])
@@ -205,7 +316,13 @@ cpdef utils.dpnp_descriptor dpnp_logical_and(utils.dpnp_descriptor input1, utils
 
 
 cpdef utils.dpnp_descriptor dpnp_logical_not(utils.dpnp_descriptor input1):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
+    input1_obj = input1.get_array()
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None,
+                                                                             device=input1_obj.sycl_device,
+                                                                             usm_type=input1_obj.usm_type,
+                                                                             sycl_queue=input1_obj.sycl_queue)
 
     for i in range(result.size):
         result.get_pyobj()[i] = numpy.logical_not(input1.get_pyobj()[i])
@@ -214,7 +331,13 @@ cpdef utils.dpnp_descriptor dpnp_logical_not(utils.dpnp_descriptor input1):
 
 
 cpdef utils.dpnp_descriptor dpnp_logical_or(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
 
     for i in range(result.size):
         result.get_pyobj()[i] = numpy.logical_or(input1.get_pyobj()[i], input2.get_pyobj()[i])
@@ -223,7 +346,13 @@ cpdef utils.dpnp_descriptor dpnp_logical_or(utils.dpnp_descriptor input1, utils.
 
 
 cpdef utils.dpnp_descriptor dpnp_logical_xor(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
 
     for i in range(result.size):
         result.get_pyobj()[i] = numpy.logical_xor(input1.get_pyobj()[i], input2.get_pyobj()[i])
@@ -232,9 +361,13 @@ cpdef utils.dpnp_descriptor dpnp_logical_xor(utils.dpnp_descriptor input1, utils
 
 
 cpdef utils.dpnp_descriptor dpnp_not_equal(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
                                                                              dpnp.bool,
-                                                                             None)
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
     for i in range(result.size):
         result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] != input2.get_pyobj()[i])
 

@@ -617,9 +617,6 @@ DPCTLSyclEventRef dpnp_vander_c(DPCTLSyclQueueRef q_ref,
                                 const int increasing,
                                 const DPCTLEventVectorRef dep_event_vec_ref)
 {
-    // avoid warning unused variable
-    (void)dep_event_vec_ref;
-
     DPCTLSyclEventRef event_ref = nullptr;
 
     if ((array1_in == nullptr) || (result1 == nullptr))
@@ -637,8 +634,7 @@ DPCTLSyclEventRef dpnp_vander_c(DPCTLSyclQueueRef q_ref,
 
     if (N == 1)
     {
-        dpnp_ones_c<_DataType_output>(result, size_in);
-        return event_ref;
+        return dpnp_ones_c<_DataType_output>(q_ref, result, size_in, dep_event_vec_ref);
     }
 
     if (increasing)
@@ -762,9 +758,10 @@ DPCTLSyclEventRef dpnp_trace_c(DPCTLSyclQueueRef q_ref,
     };
 
     auto event = q.submit(kernel_func);
-    event.wait();
 
-    return event_ref;
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -849,9 +846,9 @@ DPCTLSyclEventRef dpnp_tri_c(DPCTLSyclQueueRef q_ref,
 
     event = q.submit(kernel_func);
 
-    event.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>

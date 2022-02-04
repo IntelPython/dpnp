@@ -47,9 +47,18 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , shape_elem_type * , shape_elem_type * ,
-                                                          shape_elem_type * , size_t, void * , size_t)
-ctypedef void(*fptr_dpnp_repeat_t)(const void *, void * , const size_t , const size_t)
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_custom_elemwise_transpose_1in_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                               void * ,
+                                                                               shape_elem_type * ,
+                                                                               shape_elem_type * ,
+                                                                               shape_elem_type * ,
+                                                                               size_t,
+                                                                               void * ,
+                                                                               size_t,
+                                                                               const c_dpctl.DPCTLEventVectorRef)
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_repeat_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                        const void *, void * , const size_t , const size_t,
+                                                        const c_dpctl.DPCTLEventVectorRef)
 
 
 cpdef utils.dpnp_descriptor dpnp_atleast_2d(utils.dpnp_descriptor arr):
@@ -58,7 +67,13 @@ cpdef utils.dpnp_descriptor dpnp_atleast_2d(utils.dpnp_descriptor arr):
     cdef size_t arr_ndim = arr.ndim
     cdef long arr_size = arr.size
     if arr_ndim == 1:
-        result = utils_py.create_output_descriptor_py((1, arr_size), arr.dtype, None)
+        arr_obj = arr.get_array()
+        result = utils_py.create_output_descriptor_py((1, arr_size),
+                                                      arr.dtype,
+                                                      None,
+                                                      device=arr_obj.sycl_device,
+                                                      usm_type=arr_obj.usm_type,
+                                                      sycl_queue=arr_obj.sycl_queue)
         for i in range(arr_size):
             result.get_pyobj()[0, i] = arr.get_pyobj()[i]
         return result
@@ -72,13 +87,26 @@ cpdef utils.dpnp_descriptor dpnp_atleast_3d(utils.dpnp_descriptor arr):
     cdef size_t arr_ndim = arr.ndim
     cdef shape_type_c arr_shape = arr.shape
     cdef long arr_size = arr.size
+
+    arr_obj = arr.get_array()
+
     if arr_ndim == 1:
-        result = utils_py.create_output_descriptor_py((1, 1, arr_size), arr.dtype, None)
+        result = utils_py.create_output_descriptor_py((1, 1, arr_size),
+                                                      arr.dtype,
+                                                      None,
+                                                      device=arr_obj.sycl_device,
+                                                      usm_type=arr_obj.usm_type,
+                                                      sycl_queue=arr_obj.sycl_queue)
         for i in range(arr_size):
             result.get_pyobj()[0, 0, i] = arr.get_pyobj()[i]
         return result
     elif arr_ndim == 2:
-        result = utils_py.create_output_descriptor_py((1, arr_shape[0], arr_shape[1]), arr.dtype, None)
+        result = utils_py.create_output_descriptor_py((1, arr_shape[0], arr_shape[1]),
+                                                      arr.dtype,
+                                                      None,
+                                                      device=arr_obj.sycl_device,
+                                                      usm_type=arr_obj.usm_type,
+                                                      sycl_queue=arr_obj.sycl_queue)
         for i in range(arr_shape[0]):
             for j in range(arr_shape[1]):
                 result.get_pyobj()[0, i, j] = arr.get_pyobj()[i, j]
@@ -122,7 +150,7 @@ cpdef dpnp_copyto(utils.dpnp_descriptor dst, utils.dpnp_descriptor src, where=Tr
                                                     NULL,
                                                     NULL)  # dep_events_ref
 
-    with nogil: c_dpctl.DPCTLEvent_Wait(event_ref)
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
 
@@ -152,22 +180,39 @@ cpdef utils.dpnp_descriptor dpnp_expand_dims(utils.dpnp_descriptor in_array, axi
             shape_list.push_back(in_array.shape[axis_idx])
             axis_idx = axis_idx + 1
 
-    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp.reshape(dpnp_copy(in_array).get_pyobj(), (shape_list)))
-
-    return result
+    return dpnp_reshape(in_array, shape_list)
 
 
 cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, axes=None):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_REPEAT, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_REPEAT_EXT, param1_type, param1_type)
+
+    array1_obj = array1.get_array()
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = (array1.size * repeats, )
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=array1_obj.sycl_device,
+                                                                       usm_type=array1_obj.usm_type,
+                                                                       sycl_queue=array1_obj.sycl_queue)
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     cdef fptr_dpnp_repeat_t func = <fptr_dpnp_repeat_t > kernel_data.ptr
-    func(array1.get_data(), result.get_data(), repeats, array1.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    array1.get_data(),
+                                                    result.get_data(),
+                                                    repeats,
+                                                    array1.size,
+                                                    NULL)  # dep_events_ref
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -175,8 +220,14 @@ cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, a
 cpdef utils.dpnp_descriptor dpnp_reshape(utils.dpnp_descriptor array1, newshape, order="C"):
     # return dpnp.get_dpnp_descriptor(dpctl.tensor.usm_ndarray(newshape, dtype=numpy.dtype(array1.dtype).name, buffer=array1.get_pyobj()))
     # return dpnp.get_dpnp_descriptor(dpctl.tensor.reshape(array1.get_pyobj(), newshape))
-    array_obj = dpctl.tensor.reshape(array1.get_array(), newshape, order=order)
-    return dpnp.get_dpnp_descriptor(dpnp_array(array_obj.shape, buffer=array_obj, order=order))
+    array1_obj = array1.get_array()
+    array_obj = dpctl.tensor.reshape(array1_obj, newshape, order=order)
+    return dpnp.get_dpnp_descriptor(dpnp_array(array_obj.shape,
+                                               buffer=array_obj,
+                                               order=order,
+                                               device=array1_obj.sycl_device,
+                                               usm_type=array1_obj.usm_type,
+                                               sycl_queue=array1_obj.sycl_queue))
 
 
 cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
@@ -209,15 +260,36 @@ cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=No
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRANSPOSE, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRANSPOSE_EXT, param1_type, param1_type)
+
+    array1_obj = array1.get_array()
 
     # ceate result array with type given by FPTR data
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=array1_obj.sycl_device,
+                                                                       usm_type=array1_obj.usm_type,
+                                                                       sycl_queue=array1_obj.sycl_queue)
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
     # call FPTR function
-    func(array1.get_data(), input_shape.data(), result_shape.data(),
-         permute_axes.data(), input_shape_size, result.get_data(), array1.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    array1.get_data(),
+                                                    input_shape.data(),
+                                                    result_shape.data(),
+                                                    permute_axes.data(),
+                                                    input_shape_size,
+                                                    result.get_data(),
+                                                    array1.size,
+                                                    NULL)  # dep_events_ref
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -237,6 +309,6 @@ cpdef utils.dpnp_descriptor dpnp_squeeze(utils.dpnp_descriptor in_array, axis):
             else:
                 shape_list.push_back(in_array.shape[i])
 
-    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp.reshape(dpnp_copy(in_array).get_pyobj(), (shape_list)))
+    in_array_obj = in_array.get_array()
 
-    return result
+    return dpnp_reshape(dpnp_copy(in_array), shape_list)

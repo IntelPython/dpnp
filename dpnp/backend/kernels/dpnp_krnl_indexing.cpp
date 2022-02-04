@@ -87,9 +87,10 @@ DPCTLSyclEventRef dpnp_choose_c(DPCTLSyclQueueRef q_ref,
     };
 
     sycl::event event = q.submit(kernel_func);
-    event.wait();
 
-    return event_ref;
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType1, typename _DataType2>
@@ -917,9 +918,9 @@ DPCTLSyclEventRef dpnp_take_c(DPCTLSyclQueueRef q_ref,
 
     sycl::event event = q.submit(kernel_func);
 
-    event.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType, typename _IndecesType>
