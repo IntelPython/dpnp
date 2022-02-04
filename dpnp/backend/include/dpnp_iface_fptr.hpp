@@ -379,7 +379,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ZEROS_LIKE,                   /**< Used in numpy.zeros_like() impl */
     DPNP_FN_ZEROS_LIKE_EXT,               /**< Used in numpy.zeros_like() impl, requires extra parameters */
     DPNP_FN_LAST,                         /**< The latest element of the enumeration */
-    DPNP_FN_LAST_EXT                      /**< The latest element of the enumeration, requires extra parameters */
 };
 
 /**

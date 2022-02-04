@@ -50,7 +50,7 @@ cpdef utils.dpnp_descriptor dpnp_argsort(utils.dpnp_descriptor x1):
     cdef shape_type_c result_shape = x1.shape
     if result_shape == ():
         result_shape = (1,)
-    return call_fptr_1in_1out(DPNP_FN_ARGSORT, x1, result_shape)
+    return call_fptr_1in_1out(DPNP_FN_ARGSORT_EXT, x1, result_shape)
 
 
 cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, axis=-1, kind='introselect', order=None):
@@ -92,4 +92,4 @@ cpdef utils.dpnp_descriptor dpnp_searchsorted(utils.dpnp_descriptor arr, utils.d
 
 
 cpdef utils.dpnp_descriptor dpnp_sort(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_SORT, x1, x1.shape)
+    return call_fptr_1in_1out(DPNP_FN_SORT_EXT, x1, x1.shape)

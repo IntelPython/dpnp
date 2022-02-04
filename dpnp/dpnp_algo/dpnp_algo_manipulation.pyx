@@ -99,21 +99,31 @@ cpdef dpnp_copyto(utils.dpnp_descriptor dst, utils.dpnp_descriptor src, where=Tr
     cdef shape_type_c src_strides = utils.strides_to_vector(src.strides, src_shape)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, src_type, dst_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO_EXT, src_type, dst_type)
+
+    _, _, result_sycl_queue = utils.get_common_usm_allocation(dst, src)
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     # Call FPTR function
     cdef fptr_1in_1out_strides_t func = <fptr_1in_1out_strides_t > kernel_data.ptr
-    func(dst.get_data(),
-         dst.size,
-         dst.ndim,
-         dst_shape.data(),
-         dst_strides.data(),
-         src.get_data(),
-         src.size,
-         src.ndim,
-         src_shape.data(),
-         src_strides.data(),
-         NULL)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    dst.get_data(),
+                                                    dst.size,
+                                                    dst.ndim,
+                                                    dst_shape.data(),
+                                                    dst_strides.data(),
+                                                    src.get_data(),
+                                                    src.size,
+                                                    src.ndim,
+                                                    src_shape.data(),
+                                                    src_strides.data(),
+                                                    NULL,
+                                                    NULL)  # dep_events_ref
+
+    with nogil: c_dpctl.DPCTLEvent_Wait(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
 
 cpdef utils.dpnp_descriptor dpnp_expand_dims(utils.dpnp_descriptor in_array, axis):

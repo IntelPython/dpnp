@@ -482,7 +482,8 @@ DPCTLSyclEventRef dpnp_ediff1d_c(DPCTLSyclQueueRef q_ref,
             gws, kernel_parallel_for_func);
     };
     event = q.submit(kernel_func);
-    event.wait();
+
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
     return DPCTLEvent_Copy(event_ref);
 }

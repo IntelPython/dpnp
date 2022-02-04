@@ -81,9 +81,9 @@ DPCTLSyclEventRef dpnp_astype_c(DPCTLSyclQueueRef q_ref,
 
     event = q.submit(kernel_func);
 
-    event.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -732,9 +732,9 @@ DPCTLSyclEventRef dpnp_initval_c(DPCTLSyclQueueRef q_ref,
 
     sycl::event event = q.submit(kernel_func);
 
-    event.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -756,10 +756,10 @@ void (*dpnp_initval_default_c)(void*, void*, size_t) = dpnp_initval_c<_DataType>
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_initval_ext_c)(DPCTLSyclQueueRef,
-                                    void*,
-                                    void*,
-                                    size_t,
-                                    const DPCTLEventVectorRef) = dpnp_initval_c<_DataType>;
+                                        void*,
+                                        void*,
+                                        size_t,
+                                        const DPCTLEventVectorRef) = dpnp_initval_c<_DataType>;
 
 template <typename _KernelNameSpecialization>
 class dpnp_matmul_c_kernel;

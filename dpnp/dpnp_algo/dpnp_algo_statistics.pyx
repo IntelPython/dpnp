@@ -103,16 +103,39 @@ cpdef utils.dpnp_descriptor dpnp_correlate(utils.dpnp_descriptor x1, utils.dpnp_
     cdef shape_type_c x1_shape = x1.shape
     cdef shape_type_c x2_shape = x2.shape
 
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_CORRELATE, param1_type, param2_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_CORRELATE_EXT, param1_type, param2_type)
+
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1, x2)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = (1,)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=result_sycl_device,
+                                                                       usm_type=result_usm_type,
+                                                                       sycl_queue=result_sycl_queue)
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
 
-    func(result.get_data(), x1.get_data(), x1.size, x1_shape.data(), x1_shape.size(),
-         x2.get_data(), x2.size, x2_shape.data(), x2_shape.size(), NULL)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    result.get_data(),
+                                                    x1.get_data(),
+                                                    x1.size,
+                                                    x1_shape.data(),
+                                                    x1_shape.size(),
+                                                    x2.get_data(),
+                                                    x2.size,
+                                                    x2_shape.data(),
+                                                    x2_shape.size(),
+                                                    NULL,
+                                                    NULL)  # dep_events_ref
+
+    with nogil: c_dpctl.DPCTLEvent_Wait(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
