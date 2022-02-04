@@ -313,7 +313,7 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
                                                     in_array2.ndim,
                                                     shape2.data(),
                                                     NULL,  # in_array2_strides
-                                                    NULL)  # dep_events_ref
+                                                    NULL)  # dep_event_vec_ref
     with nogil: c_dpctl.DPCTLEvent_Wait(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
 

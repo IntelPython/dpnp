@@ -238,20 +238,22 @@ static inline bool
  *
  * @return                     Vector of SYCL events.
  */
-static inline std::vector<sycl::event>
-    cast_event_vector(const DPCTLEventVectorRef events_ref)
+namespace
 {
-    const size_t events_size = DPCTLEventVector_Size(events_ref);
-
-    std::vector<sycl::event> events;
-    events.reserve(events_size);
-    for (size_t i = 0; i < events_size; ++i)
+    std::vector<sycl::event> cast_event_vector(const DPCTLEventVectorRef event_vec_ref)
     {
-        DPCTLSyclEventRef event_ref = DPCTLEventVector_GetAt(events_ref, i);
-        sycl::event event = *(reinterpret_cast<sycl::event*>(event_ref));
-        events.push_back(event);
+        const size_t event_vec_size = DPCTLEventVector_Size(event_vec_ref);
+
+        std::vector<sycl::event> event_vec;
+        event_vec.reserve(event_vec_size);
+        for (size_t i = 0; i < event_vec_size; ++i)
+        {
+            DPCTLSyclEventRef event_ref = DPCTLEventVector_GetAt(event_vec_ref, i);
+            sycl::event event = *(reinterpret_cast<sycl::event*>(event_ref));
+            event_vec.push_back(event);
+        }
+        return event_vec;
     }
-    return events;
 }
 
 /**

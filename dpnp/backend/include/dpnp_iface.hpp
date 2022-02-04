@@ -220,7 +220,7 @@ INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
  * @param [in]  input2_ndim         Number of second input array dimensions.
  * @param [in]  input2_shape        Shape of second input array.
  * @param [in]  input2_strides      Strides of second input array.
- * @param [in]  dep_events_ref      Reference to vector of SYCL events.
+ * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
 INP_DLLEXPORT DPCTLSyclEventRef dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
@@ -239,7 +239,7 @@ INP_DLLEXPORT DPCTLSyclEventRef dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
                                               const size_t input2_ndim,
                                               const shape_elem_type* input2_shape,
                                               const shape_elem_type* input2_strides,
-                                              const DPCTLSyclEventRef dep_events_ref);
+                                              const DPCTLEventVectorRef dep_event_vec_ref);
 
 /**
  * @ingroup BACKEND_API

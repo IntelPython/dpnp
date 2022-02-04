@@ -549,7 +549,7 @@ DPCTLSyclEventRef dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
                                 const size_t input2_ndim,
                                 const shape_elem_type* input2_shape,
                                 const shape_elem_type* input2_strides,
-                                const DPCTLEventVectorRef dep_events_ref)
+                                const DPCTLEventVectorRef dep_event_vec_ref)
 {
     (void)result_size;
     (void)result_ndim;
@@ -574,7 +574,7 @@ DPCTLSyclEventRef dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-    std::vector<sycl::event> dep_events = cast_event_vector(dep_events_ref);
+    std::vector<sycl::event> dep_events = cast_event_vector(dep_event_vec_ref);
     sycl::event event;
 
     _DataType* array_1 = reinterpret_cast<_DataType*>(const_cast<void*>(input1_in));
@@ -664,7 +664,7 @@ void dpnp_matmul_c(void* result_out,
                    const shape_elem_type* input2_strides)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
-    DPCTLEventVectorRef dep_events_ref = nullptr;
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
     DPCTLSyclEventRef event_ref = dpnp_matmul_c<_DataType>(q_ref,
                                                            result_out,
                                                            result_size,
@@ -681,9 +681,9 @@ void dpnp_matmul_c(void* result_out,
                                                            input2_ndim,
                                                            input2_shape,
                                                            input2_strides,
-                                                           dep_events_ref);
+                                                           dep_event_vec_ref);
     sycl::event event = *(reinterpret_cast<sycl::event*>(event_ref));
-    event.wait();
+    event.wait_and_throw();
 }
 
 template <typename _DataType>
