@@ -108,6 +108,8 @@ def fft(x1, n=None, axis=-1, norm=None):
             pass
         elif axis != -1:
             pass
+        elif x1_desc.dtype in (numpy.int32, numpy.int64):
+            pass
         else:
             output_boundarie = input_boundarie
             return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, 0).get_pyobj()
@@ -611,7 +613,7 @@ def rfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie // 2 + 1  # rfft specific requirenment
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, 0).get_pyobj()
 
     return call_origin(numpy.fft.rfft, x1, n, axis, norm)
 

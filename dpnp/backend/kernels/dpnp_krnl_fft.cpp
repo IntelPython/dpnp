@@ -49,7 +49,7 @@ class dpnp_fft_fft_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_fft_fft_sycl_c(const void* array1_in,
-                         void* result1,
+                         void* result_out,
                          const shape_elem_type* input_shape,
                          const shape_elem_type* output_shape,
                          size_t shape_size,
@@ -70,7 +70,7 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
 
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, input_size);
     const _DataType_input* array_1 = input1_ptr.get_ptr();
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
+    _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
     // kernel specific temporal data
     shape_elem_type* output_shape_offsets =
@@ -168,7 +168,7 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
 
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
 void dpnp_fft_fft_mathlib_cmplx_to_cmplx_c(const void* array1_in,
-                                    void* result1,
+                                    void* result_out,
                                     const shape_elem_type* input_shape,
                                     const size_t shape_size,
                                     const size_t result_size,
@@ -181,7 +181,7 @@ void dpnp_fft_fft_mathlib_cmplx_to_cmplx_c(const void* array1_in,
     }
 
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size);
-    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, result_size);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result_out, result_size);
     _DataType_input* array_1 = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
 
@@ -217,7 +217,7 @@ class dpnp_fft_fft_mathlib_real_to_cmplx_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
 void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
-                                    void* result1,
+                                    void* result_out,
                                     const shape_elem_type* input_shape,
                                     const size_t shape_size,
                                     const size_t result_size,
@@ -230,7 +230,7 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
     }
 
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size);
-    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, result_size * 2, true, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result_out, result_size * 2, true, true);
     _DataType_input* array_1 = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
 
@@ -285,22 +285,22 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
 
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_fft_fft_c(const void* array1_in,
-                    void* result1,
+                    void* result_out,
                     const shape_elem_type* input_shape,
-                    const shape_elem_type* output_shape,
+                    const shape_elem_type* result_shape,
                     size_t shape_size,
                     long axis,
                     long input_boundarie,
                     size_t inverse,
                     const size_t norm)
 {
-    if (!shape_size || !array1_in || !result1)
+    if (!shape_size || !array1_in || !result_out)
     {
         return;
     }
 
     const size_t result_size =
-        std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<shape_elem_type>());
+        std::accumulate(result_shape, result_shape + shape_size, 1, std::multiplies<shape_elem_type>());
     const size_t input_size =
         std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<shape_elem_type>());
 
@@ -314,7 +314,7 @@ void dpnp_fft_fft_c(const void* array1_in,
         {
             desc_dp_cmplx_t desc(dim);
             dpnp_fft_fft_mathlib_cmplx_to_cmplx_c<_DataType_input, _DataType_output, desc_dp_cmplx_t>(
-                array1_in, result1, input_shape, shape_size, result_size, desc, norm);
+                array1_in, result_out, input_shape, shape_size, result_size, desc, norm);
         }
         /* complex-to-complex, single precision */
         else if (std::is_same<_DataType_input, std::complex<float>>::value &&
@@ -322,7 +322,7 @@ void dpnp_fft_fft_c(const void* array1_in,
         {
             desc_sp_cmplx_t desc(dim);
             dpnp_fft_fft_mathlib_cmplx_to_cmplx_c<_DataType_input, _DataType_output, desc_sp_cmplx_t>(
-                array1_in, result1, input_shape, shape_size, result_size, desc, norm);
+                array1_in, result_out, input_shape, shape_size, result_size, desc, norm);
         }
         /* real-to-complex, double precision */
         else if (std::is_same<_DataType_input, double>::value &&
@@ -331,7 +331,7 @@ void dpnp_fft_fft_c(const void* array1_in,
             desc_dp_real_t desc(dim);
 
             dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, double, desc_dp_real_t>(
-                array1_in, result1, input_shape, shape_size, result_size, desc, norm);
+                array1_in, result_out, input_shape, shape_size, result_size, desc, norm);
         }
         /* real-to-complex, single precision */
         else if (std::is_same<_DataType_input, float>::value &&
@@ -339,14 +339,14 @@ void dpnp_fft_fft_c(const void* array1_in,
         {
             desc_sp_real_t desc(dim); // try: 2 * result_size
             dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, float, desc_sp_real_t>(
-                array1_in, result1, input_shape, shape_size, result_size, desc, norm);
+                array1_in, result_out, input_shape, shape_size, result_size, desc, norm);
         }
         else
         {
             dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(array1_in,
-                                                        result1,
+                                                        result_out,
                                                         input_shape,
-                                                        output_shape,
+                                                        result_shape,
                                                         shape_size,
                                                         result_size,
                                                         input_size,
