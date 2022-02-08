@@ -533,22 +533,23 @@ template <typename _KernelNameSpecialization>
 class dpnp_matmul_c_kernel;
 
 template <typename _DataType>
-void dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
-                   void* result_out,
-                   const size_t result_size,
-                   const size_t result_ndim,
-                   const shape_elem_type* result_shape,
-                   const shape_elem_type* result_strides,
-                   const void* input1_in,
-                   const size_t input1_size,
-                   const size_t input1_ndim,
-                   const shape_elem_type* input1_shape,
-                   const shape_elem_type* input1_strides,
-                   const void* input2_in,
-                   const size_t input2_size,
-                   const size_t input2_ndim,
-                   const shape_elem_type* input2_shape,
-                   const shape_elem_type* input2_strides)
+DPCTLSyclEventRef dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
+                                void* result_out,
+                                const size_t result_size,
+                                const size_t result_ndim,
+                                const shape_elem_type* result_shape,
+                                const shape_elem_type* result_strides,
+                                const void* input1_in,
+                                const size_t input1_size,
+                                const size_t input1_ndim,
+                                const shape_elem_type* input1_shape,
+                                const shape_elem_type* input1_strides,
+                                const void* input2_in,
+                                const size_t input2_size,
+                                const size_t input2_ndim,
+                                const shape_elem_type* input2_shape,
+                                const shape_elem_type* input2_strides,
+                                const DPCTLEventVectorRef dep_event_vec_ref)
 {
     (void)result_size;
     (void)result_ndim;
@@ -561,16 +562,19 @@ void dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
     (void)input2_ndim;
     (void)input2_strides;
 
+    DPCTLSyclEventRef event_ref = nullptr;
+
     size_t size_m = input1_shape[0];
     size_t size_n = input2_shape[1];
     size_t size_k = input1_shape[1];
 
     if (!size_m || !size_n || !size_k)
     {
-        return;
+        return event_ref;
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+    std::vector<sycl::event> dep_events = cast_event_vector(dep_event_vec_ref);
     sycl::event event;
 
     _DataType* array_1 = reinterpret_cast<_DataType*>(const_cast<void*>(input1_in));
@@ -597,7 +601,8 @@ void dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
                                lda,
                                _DataType(0),
                                result,
-                               ldc);
+                               ldc,
+                               dep_events);
     }
     else
     {
@@ -629,12 +634,16 @@ void dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
         };
 
         auto kernel_func = [&](sycl::handler& cgh) {
+            cgh.depends_on(dep_events);
             cgh.parallel_for<class dpnp_matmul_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
         };
 
         event = q.submit(kernel_func);
     }
-    event.wait();
+
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -655,10 +664,26 @@ void dpnp_matmul_c(void* result_out,
                    const shape_elem_type* input2_strides)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
-    dpnp_matmul_c<_DataType>(q_ref,
-                             result_out, result_size, result_ndim, result_shape, result_strides,
-                             input1_in, input1_size, input1_ndim, input1_shape, input1_strides,
-                             input2_in, input2_size, input2_ndim, input2_shape, input2_strides);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_matmul_c<_DataType>(q_ref,
+                                                           result_out,
+                                                           result_size,
+                                                           result_ndim,
+                                                           result_shape,
+                                                           result_strides,
+                                                           input1_in,
+                                                           input1_size,
+                                                           input1_ndim,
+                                                           input1_shape,
+                                                           input1_strides,
+                                                           input2_in,
+                                                           input2_size,
+                                                           input2_ndim,
+                                                           input2_shape,
+                                                           input2_strides,
+                                                           dep_event_vec_ref);
+    sycl::event event = *(reinterpret_cast<sycl::event*>(event_ref));
+    event.wait_and_throw();
 }
 
 template <typename _DataType>
@@ -679,22 +704,23 @@ void (*dpnp_matmul_default_c)(void*,
                               const shape_elem_type*) = dpnp_matmul_c<_DataType>;
 
 template <typename _DataType>
-void (*dpnp_matmul_ext_c)(DPCTLSyclQueueRef,
-                          void*,
-                          const size_t,
-                          const size_t,
-                          const shape_elem_type*,
-                          const shape_elem_type*,
-                          const void*,
-                          const size_t,
-                          const size_t,
-                          const shape_elem_type*,
-                          const shape_elem_type*,
-                          const void*,
-                          const size_t,
-                          const size_t,
-                          const shape_elem_type*,
-                          const shape_elem_type*) = dpnp_matmul_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_matmul_ext_c)(DPCTLSyclQueueRef,
+                                       void*,
+                                       const size_t,
+                                       const size_t,
+                                       const shape_elem_type*,
+                                       const shape_elem_type*,
+                                       const void*,
+                                       const size_t,
+                                       const size_t,
+                                       const shape_elem_type*,
+                                       const shape_elem_type*,
+                                       const void*,
+                                       const size_t,
+                                       const size_t,
+                                       const shape_elem_type*,
+                                       const shape_elem_type*,
+                                       const DPCTLEventVectorRef) = dpnp_matmul_c<_DataType>;
 
 void func_map_init_linalg(func_map_t& fmap)
 {

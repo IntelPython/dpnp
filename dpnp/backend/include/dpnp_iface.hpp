@@ -220,24 +220,26 @@ INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
  * @param [in]  input2_ndim         Number of second input array dimensions.
  * @param [in]  input2_shape        Shape of second input array.
  * @param [in]  input2_strides      Strides of second input array.
+ * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
-                                 void* result_out,
-                                 const size_t result_size,
-                                 const size_t result_ndim,
-                                 const shape_elem_type* result_shape,
-                                 const shape_elem_type* result_strides,
-                                 const void* input1_in,
-                                 const size_t input1_size,
-                                 const size_t input1_ndim,
-                                 const shape_elem_type* input1_shape,
-                                 const shape_elem_type* input1_strides,
-                                 const void* input2_in,
-                                 const size_t input2_size,
-                                 const size_t input2_ndim,
-                                 const shape_elem_type* input2_shape,
-                                 const shape_elem_type* input2_strides);
+INP_DLLEXPORT DPCTLSyclEventRef dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
+                                              void* result_out,
+                                              const size_t result_size,
+                                              const size_t result_ndim,
+                                              const shape_elem_type* result_shape,
+                                              const shape_elem_type* result_strides,
+                                              const void* input1_in,
+                                              const size_t input1_size,
+                                              const size_t input1_ndim,
+                                              const shape_elem_type* input1_shape,
+                                              const shape_elem_type* input1_strides,
+                                              const void* input2_in,
+                                              const size_t input2_size,
+                                              const size_t input2_ndim,
+                                              const shape_elem_type* input2_shape,
+                                              const shape_elem_type* input2_strides,
+                                              const DPCTLEventVectorRef dep_event_vec_ref);
 
 /**
  * @ingroup BACKEND_API
