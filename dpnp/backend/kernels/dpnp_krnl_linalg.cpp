@@ -59,7 +59,7 @@ DPCTLSyclEventRef dpnp_cholesky_c(DPCTLSyclQueueRef q_ref,
     size_t iters = size / (data_size * data_size);
 
     // math lib func overrides input
-    _DataType* in_a = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(data_size * data_size * sizeof(_DataType)));
+    _DataType* in_a = reinterpret_cast<_DataType*>(sycl::malloc_shared(data_size * data_size * sizeof(_DataType), q));
 
     for (size_t k = 0; k < iters; ++k)
     {
@@ -75,7 +75,7 @@ DPCTLSyclEventRef dpnp_cholesky_c(DPCTLSyclQueueRef q_ref,
         const std::int64_t scratchpad_size =
             mkl_lapack::potrf_scratchpad_size<_DataType>(q, oneapi::mkl::uplo::upper, n, lda);
 
-        _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
+        _DataType* scratchpad = reinterpret_cast<_DataType*>(sycl::malloc_shared(scratchpad_size * sizeof(_DataType), q));
 
         event = mkl_lapack::potrf(q, oneapi::mkl::uplo::upper, n, in_a, lda, scratchpad, scratchpad_size);
 
@@ -97,7 +97,7 @@ DPCTLSyclEventRef dpnp_cholesky_c(DPCTLSyclQueueRef q_ref,
             }
         }
 
-        dpnp_memory_free_c(scratchpad);
+        sycl::free(scratchpad, q);
 
         for (size_t t = 0; t < data_size * data_size; ++t)
         {
@@ -105,7 +105,7 @@ DPCTLSyclEventRef dpnp_cholesky_c(DPCTLSyclQueueRef q_ref,
         }
     }
 
-    dpnp_memory_free_c(in_a);
+    sycl::free(in_a, q);
 
     return event_ref;
 }
@@ -454,19 +454,19 @@ DPCTLSyclEventRef dpnp_kron_c(DPCTLSyclQueueRef q_ref,
     _ResultType* result = result_ptr.get_ptr();
 
     shape_elem_type* _in1_shape =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
     shape_elem_type* _in2_shape =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
 
-    dpnp_memory_memcpy_c(_in1_shape, in1_shape, ndim * sizeof(shape_elem_type));
-    dpnp_memory_memcpy_c(_in2_shape, in2_shape, ndim * sizeof(shape_elem_type));
+    q.memcpy(_in1_shape, in1_shape, ndim * sizeof(shape_elem_type)).wait();
+    q.memcpy(_in2_shape, in2_shape, ndim * sizeof(shape_elem_type)).wait();
 
     shape_elem_type* in1_offsets =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
     shape_elem_type* in2_offsets =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
     shape_elem_type* res_offsets =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
 
     get_shape_offsets_inkernel(in1_shape, ndim, in1_offsets);
     get_shape_offsets_inkernel(in2_shape, ndim, in2_offsets);
@@ -649,7 +649,7 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
     _InputDT* in_array = input1_ptr.get_ptr();
 
     // math lib func overrides input
-    _ComputeDT* in_a = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(size_m * size_n * sizeof(_ComputeDT)));
+    _ComputeDT* in_a = reinterpret_cast<_ComputeDT*>(sycl::malloc_shared(size_m * size_n * sizeof(_ComputeDT), q));
 
     for (size_t i = 0; i < size_m; ++i)
     {
@@ -673,7 +673,7 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
         mkl_lapack::geqrf_scratchpad_size<_ComputeDT>(q, size_m, size_n, lda);
 
     _ComputeDT* geqrf_scratchpad =
-        reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(geqrf_scratchpad_size * sizeof(_ComputeDT)));
+        reinterpret_cast<_ComputeDT*>(sycl::malloc_shared(geqrf_scratchpad_size * sizeof(_ComputeDT), q));
 
     std::vector<sycl::event> depends(1);
     set_barrier_event(q, depends);
@@ -685,7 +685,7 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
 
     verbose_print("oneapi::mkl::lapack::geqrf", depends.front(), event);
 
-    dpnp_memory_free_c(geqrf_scratchpad);
+    sycl::free(geqrf_scratchpad, q);
 
     // R
     for (size_t i = 0; i < size_m; ++i)
@@ -709,7 +709,7 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
         mkl_lapack::orgqr_scratchpad_size<_ComputeDT>(q, size_m, size_m, nrefl, lda);
 
     _ComputeDT* orgqr_scratchpad =
-        reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(orgqr_scratchpad_size * sizeof(_ComputeDT)));
+        reinterpret_cast<_ComputeDT*>(sycl::malloc_shared(orgqr_scratchpad_size * sizeof(_ComputeDT), q));
 
     depends.clear();
     set_barrier_event(q, depends);
@@ -721,7 +721,7 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
 
     verbose_print("oneapi::mkl::lapack::orgqr", depends.front(), event);
 
-    dpnp_memory_free_c(orgqr_scratchpad);
+    sycl::free(orgqr_scratchpad, q);
 
     for (size_t i = 0; i < size_m; ++i)
     {
@@ -738,7 +738,7 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
         }
     }
 
-    dpnp_memory_free_c(in_a);
+    sycl::free(in_a, q);
 
     return event_ref;
 }
@@ -794,7 +794,7 @@ DPCTLSyclEventRef dpnp_svd_c(DPCTLSyclQueueRef q_ref,
     _InputDT* in_array = input1_ptr.get_ptr();
 
     // math lib gesvd func overrides input
-    _ComputeDT* in_a = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(size_m * size_n * sizeof(_ComputeDT)));
+    _ComputeDT* in_a = reinterpret_cast<_ComputeDT*>(sycl::malloc_shared(size_m * size_n * sizeof(_ComputeDT), q));
     for (size_t it = 0; it < size_m * size_n; ++it)
     {
         in_a[it] = in_array[it]; // TODO Type conversion. memcpy can not be used directly. dpnp_copy_to() ?
@@ -817,7 +817,8 @@ DPCTLSyclEventRef dpnp_svd_c(DPCTLSyclQueueRef q_ref,
     const std::int64_t scratchpad_size = mkl_lapack::gesvd_scratchpad_size<_ComputeDT>(
         q, oneapi::mkl::jobsvd::vectors, oneapi::mkl::jobsvd::vectors, n, m, lda, ldvt, ldu);
 
-    _ComputeDT* scratchpad = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_ComputeDT)));
+    _ComputeDT* scratchpad = reinterpret_cast<_ComputeDT*>(sycl::malloc_shared(scratchpad_size * sizeof(_ComputeDT),
+                                                                               q));
 
     event = mkl_lapack::gesvd(q,
                               oneapi::mkl::jobsvd::vectors, // onemkl::job jobu,
@@ -836,7 +837,7 @@ DPCTLSyclEventRef dpnp_svd_c(DPCTLSyclQueueRef q_ref,
 
     event.wait();
 
-    dpnp_memory_free_c(scratchpad);
+    sycl::free(scratchpad, q);
 
     return event_ref;
 }

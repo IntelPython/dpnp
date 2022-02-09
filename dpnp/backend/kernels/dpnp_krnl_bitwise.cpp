@@ -169,18 +169,18 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
                                                                                                                        \
         const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(shape_elem_type);                               \
         shape_elem_type* input1_shape_offsets =                                                                        \
-            reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));                       \
+            reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(input1_shape_size_in_bytes, q));                    \
         get_shape_offsets_inkernel(input1_shape_data, input1_ndim, input1_shape_offsets);                              \
         bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
-        dpnp_memory_free_c(input1_shape_offsets);                                                                      \
+        sycl::free(input1_shape_offsets, q);                                                                           \
                                                                                                                        \
         const size_t input2_shape_size_in_bytes = input2_ndim * sizeof(shape_elem_type);                               \
         shape_elem_type* input2_shape_offsets =                                                                        \
-            reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input2_shape_size_in_bytes));                       \
+            reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(input2_shape_size_in_bytes, q));                    \
         get_shape_offsets_inkernel(input2_shape_data, input2_ndim, input2_shape_offsets);                              \
         use_strides =                                                                                                  \
             use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);          \
-        dpnp_memory_free_c(input2_shape_offsets);                                                                      \
+        sycl::free(input2_shape_offsets, q);                                                                           \
                                                                                                                        \
         sycl::event event;                                                                                             \
         sycl::range<1> gws(result_size);                                                                               \

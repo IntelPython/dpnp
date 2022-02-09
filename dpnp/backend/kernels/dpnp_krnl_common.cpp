@@ -157,7 +157,7 @@ sycl::event dot(sycl::queue& queue,
         event.wait();
 #else
         _DataType_output* local_mem =
-            reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c(size * sizeof(_DataType_output)));
+            reinterpret_cast<_DataType_output*>(sycl::malloc_shared(size * sizeof(_DataType_output), queue));
 
         // what about reduction??
         sycl::range<1> gws(size);
@@ -172,21 +172,21 @@ sycl::event dot(sycl::queue& queue,
                 gws, kernel_parallel_for_func);
         };
 
-        event = DPNP_QUEUE.submit(kernel_func);
+        event = queue.submit(kernel_func);
 
         event.wait();
 
         auto policy = oneapi::dpl::execution::make_device_policy<
-            class dpnp_dot_c_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(DPNP_QUEUE);
+            class dpnp_dot_c_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(queue);
 
         _DataType_output accumulator = 0;
         accumulator =
             std::reduce(policy, local_mem, local_mem + size, _DataType_output(0), std::plus<_DataType_output>());
         policy.queue().wait();
 
-        dpnp_memory_memcpy_c(result_out, &accumulator, sizeof(_DataType_output)); // result[0] = accumulator;
+        queue.memcpy(result_out, &accumulator, sizeof(_DataType_output)).wait();
 
-        free(local_mem, DPNP_QUEUE);
+        sycl::free(local_mem, queue);
 #endif
     }
     return event;
@@ -523,8 +523,8 @@ DPCTLSyclEventRef dpnp_eig_c(DPCTLSyclQueueRef q_ref,
     _ResultType* result_val = result1_ptr.get_ptr();
     _ResultType* result_vec = result2_ptr.get_ptr();
 
-    double* result_val_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
-    double* result_vec_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * size * sizeof(double)));
+    double* result_val_kern = reinterpret_cast<double*>(sycl::malloc_shared(size * sizeof(double), q));
+    double* result_vec_kern = reinterpret_cast<double*>(sycl::malloc_shared(size * size * sizeof(double), q));
 
     // type conversion. Also, math library requires copy memory because override
     for (size_t it = 0; it < (size * size); ++it)
@@ -546,7 +546,7 @@ DPCTLSyclEventRef dpnp_eig_c(DPCTLSyclQueueRef q_ref,
     // High-level reason of the issues is numpy is imported before dpnp in third party tests.
     // Low-level reason of the issues could be related to MKL runtime library loaded during numpy import.
 
-    double* scratchpad = reinterpret_cast<double*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(double)));
+    double* scratchpad = reinterpret_cast<double*>(sycl::malloc_shared(scratchpad_size * sizeof(double), q));
 
     event = mkl_lapack::syevd(q,                        // queue
                               oneapi::mkl::job::vec,    // jobz
@@ -559,7 +559,7 @@ DPCTLSyclEventRef dpnp_eig_c(DPCTLSyclQueueRef q_ref,
                               scratchpad_size);
     event.wait();
 
-    dpnp_memory_free_c(scratchpad);
+    sycl::free(scratchpad, q);
 
     for (size_t it1 = 0; it1 < size; ++it1)
     {
@@ -571,8 +571,8 @@ DPCTLSyclEventRef dpnp_eig_c(DPCTLSyclQueueRef q_ref,
         }
     }
 
-    dpnp_memory_free_c(result_val_kern);
-    dpnp_memory_free_c(result_vec_kern);
+    sycl::free(result_val_kern, q);
+    sycl::free(result_vec_kern, q);
 
     return event_ref;
 }
@@ -632,8 +632,8 @@ DPCTLSyclEventRef dpnp_eigvals_c(DPCTLSyclQueueRef q_ref,
     const _DataType* array = input1_ptr.get_ptr();
     _ResultType* result_val = result1_ptr.get_ptr();
 
-    double* result_val_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
-    double* result_vec_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * size * sizeof(double)));
+    double* result_val_kern = reinterpret_cast<double*>(sycl::malloc_shared(size * sizeof(double), q));
+    double* result_vec_kern = reinterpret_cast<double*>(sycl::malloc_shared(size * size * sizeof(double), q));
 
     // type conversion. Also, math library requires copy memory because override
     for (size_t it = 0; it < (size * size); ++it)
@@ -646,7 +646,7 @@ DPCTLSyclEventRef dpnp_eigvals_c(DPCTLSyclQueueRef q_ref,
     const std::int64_t scratchpad_size = mkl_lapack::syevd_scratchpad_size<double>(
         q, oneapi::mkl::job::vec, oneapi::mkl::uplo::upper, size, lda);
 
-    double* scratchpad = reinterpret_cast<double*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(double)));
+    double* scratchpad = reinterpret_cast<double*>(sycl::malloc_shared(scratchpad_size * sizeof(double), q));
 
     event = mkl_lapack::syevd(q,                        // queue
                               oneapi::mkl::job::vec,    // jobz
@@ -659,14 +659,14 @@ DPCTLSyclEventRef dpnp_eigvals_c(DPCTLSyclQueueRef q_ref,
                               scratchpad_size);
     event.wait();
 
-    dpnp_memory_free_c(scratchpad);
+    sycl::free(scratchpad, q);
 
     for (size_t it1 = 0; it1 < size; ++it1)
     {
         result_val[it1] = result_val_kern[it1];
     }
 
-    dpnp_memory_free_c(result_val_kern);
+    sycl::free(result_val_kern, q);
 
     return event_ref;
 }

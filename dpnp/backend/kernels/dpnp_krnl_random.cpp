@@ -161,10 +161,10 @@ DPCTLSyclEventRef dpnp_rng_binomial_c(DPCTLSyclQueueRef q_ref,
     }
     else if (p == 1)
     {
-        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
         fill_value[0] = static_cast<_DataType>(ntrial);
         dpnp_initval_c<_DataType>(result, fill_value, size);
-        dpnp_memory_free_c(fill_value);
+        sycl::free(fill_value, q);
     }
     else
     {
@@ -341,7 +341,7 @@ DPCTLSyclEventRef dpnp_rng_f_c(DPCTLSyclQueueRef q_ref,
     mkl_rng::gamma<_DataType> gamma_distribution1(shape, d_zero, scale);
     auto event_gamma_distribution1 = mkl_rng::generate(gamma_distribution1, DPNP_RNG_ENGINE, size, result1);
 
-    den = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    den = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
     shape = 0.5 * df_den;
     scale = 2.0 / df_den;
     mkl_rng::gamma<_DataType> gamma_distribution2(shape, d_zero, scale);
@@ -356,7 +356,7 @@ DPCTLSyclEventRef dpnp_rng_f_c(DPCTLSyclQueueRef q_ref,
                                  mkl_vm::mode::ha);
     event_out.wait();
 
-    dpnp_memory_free_c(den);
+    sycl::free(den, q);
 
     return event_ref;
 }
@@ -585,10 +585,10 @@ DPCTLSyclEventRef dpnp_rng_gumbel_c(DPCTLSyclQueueRef q_ref,
 
     if (scale == 0.0)
     {
-        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
         fill_value[0] = static_cast<_DataType>(loc);
         dpnp_initval_c<_DataType>(result, fill_value, size);
-        dpnp_memory_free_c(fill_value);
+        sycl::free(fill_value, q);
     }
     else
     {
@@ -659,10 +659,10 @@ DPCTLSyclEventRef dpnp_rng_hypergeometric_c(DPCTLSyclQueueRef q_ref,
     }
     else if (l == m)
     {
-        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
         fill_value[0] = static_cast<_DataType>(s);
         dpnp_initval_c<_DataType>(result, fill_value, size);
-        dpnp_memory_free_c(fill_value);
+        sycl::free(fill_value, q);
     }
     else
     {
@@ -862,10 +862,10 @@ DPCTLSyclEventRef dpnp_rng_lognormal_c(DPCTLSyclQueueRef q_ref,
 
     if (stddev == 0.0)
     {
-        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
         fill_value[0] = static_cast<_DataType>(std::exp(mean + (stddev * stddev) / 2));
         dpnp_initval_c<_DataType>(result, fill_value, size);
-        dpnp_memory_free_c(fill_value);
+        sycl::free(fill_value, q);
     }
     else
     {
@@ -1186,7 +1186,7 @@ DPCTLSyclEventRef dpnp_rng_noncentral_chisquare_c(DPCTLSyclQueueRef q_ref,
         mkl_rng::gamma<_DataType> gamma_distribution(shape, d_zero, d_two);
         auto event_gamma_distr = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, size, result1);
 
-        nvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+        nvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
 
         loc = sqrt(nonc);
 
@@ -1198,14 +1198,14 @@ DPCTLSyclEventRef dpnp_rng_noncentral_chisquare_c(DPCTLSyclQueueRef q_ref,
             mkl_vm::sqr(q, size, nvec, nvec, {event_gamma_distr, event_gaussian_distr}, mkl_vm::mode::ha);
         auto event_add_out = mkl_vm::add(q, size, result1, nvec, result1, {event_sqr_out}, mkl_vm::mode::ha);
         event_add_out.wait();
-        dpnp_memory_free_c(nvec);
+        sycl::free(nvec, q);
     }
     else if (df < 1)
     {
         /* noncentral_chisquare(df, nonc) ~ G( df/2 + Poisson(nonc/2), 2) */
         double lambda;
         int* pvec = nullptr;
-        pvec = reinterpret_cast<int*>(dpnp_memory_alloc_c(size * sizeof(int)));
+        pvec = reinterpret_cast<int*>(sycl::malloc_shared(size * sizeof(int), q));
         lambda = 0.5 * nonc;
 
         mkl_rng::poisson<int> poisson_distribution(lambda);
@@ -1217,7 +1217,7 @@ DPCTLSyclEventRef dpnp_rng_noncentral_chisquare_c(DPCTLSyclQueueRef q_ref,
         {
             size_t* idx = nullptr;
             _DataType* tmp = nullptr;
-            idx = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(size * sizeof(size_t)));
+            idx = reinterpret_cast<size_t*>(sycl::malloc_shared(size * sizeof(size_t), q));
 
             sycl::range<1> gws1(size);
             auto kernel_parallel_for_func1 = [=](sycl::id<1> global_id) {
@@ -1235,7 +1235,7 @@ DPCTLSyclEventRef dpnp_rng_noncentral_chisquare_c(DPCTLSyclQueueRef q_ref,
             /* idx now contains original indexes of ordered Poisson outputs */
 
             /* allocate workspace to store samples of gamma, enough to hold entire output */
-            tmp = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+            tmp = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
             for (i = 0; i < size;)
             {
                 size_t j;
@@ -1267,8 +1267,8 @@ DPCTLSyclEventRef dpnp_rng_noncentral_chisquare_c(DPCTLSyclQueueRef q_ref,
 
                 i = j;
             }
-            dpnp_memory_free_c(tmp);
-            dpnp_memory_free_c(idx);
+            sycl::free(tmp, q);
+            sycl::free(idx, q);
         }
         else
         {
@@ -1279,7 +1279,7 @@ DPCTLSyclEventRef dpnp_rng_noncentral_chisquare_c(DPCTLSyclQueueRef q_ref,
                 event_out.wait();
             }
         }
-        dpnp_memory_free_c(pvec);
+        sycl::free(pvec, q);
     }
     else
     {
@@ -1639,7 +1639,7 @@ DPCTLSyclEventRef dpnp_rng_shuffle_c(DPCTLSyclQueueRef q_ref,
     char* result1 = result1_ptr.get_ptr();
 
     size_t uvec_size = high_dim_size - 1;
-    double* Uvec = reinterpret_cast<double*>(dpnp_memory_alloc_c(uvec_size * sizeof(double)));
+    double* Uvec = reinterpret_cast<double*>(sycl::malloc_shared(uvec_size * sizeof(double), q));
     mkl_rng::uniform<double> uniform_distribution(0.0, 1.0);
     auto uniform_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, uvec_size, Uvec);
     uniform_event.wait();
@@ -1649,7 +1649,7 @@ DPCTLSyclEventRef dpnp_rng_shuffle_c(DPCTLSyclQueueRef q_ref,
         // Fast, statically typed path: shuffle the underlying buffer.
         // Only for non-empty, 1d objects of class ndarray (subclasses such
         // as MaskedArrays may not support this approach).
-        char* buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(itemsize * sizeof(char)));
+        char* buf = reinterpret_cast<char*>(sycl::malloc_shared(itemsize * sizeof(char), q));
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
@@ -1668,13 +1668,13 @@ DPCTLSyclEventRef dpnp_rng_shuffle_c(DPCTLSyclQueueRef q_ref,
                 memcpy3.wait();
             }
         }
-        dpnp_memory_free_c(buf);
+        sycl::free(buf, q);
     }
     else
     {
         // Multidimensional ndarrays require a bounce buffer.
         size_t step_size = (size / high_dim_size) * itemsize; // size in bytes for x[i] element
-        char* buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(step_size * sizeof(char)));
+        char* buf = reinterpret_cast<char*>(sycl::malloc_shared(step_size * sizeof(char), q));
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
@@ -1693,9 +1693,10 @@ DPCTLSyclEventRef dpnp_rng_shuffle_c(DPCTLSyclQueueRef q_ref,
                 memcpy3.wait();
             }
         }
-        dpnp_memory_free_c(buf);
+        sycl::free(buf, q);
     }
-    dpnp_memory_free_c(Uvec);
+
+    sycl::free(Uvec, q);
 
     return event_ref;
 }
@@ -1958,7 +1959,7 @@ DPCTLSyclEventRef dpnp_rng_standard_t_c(DPCTLSyclQueueRef q_ref,
 
     auto invsqrt_event = mkl_vm::invsqrt(q, size, result1, result1, {gamma_distr_event}, mkl_vm::mode::ha);
 
-    sn = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    sn = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
 
     mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
     auto gaussian_distr_event = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, sn);
@@ -1966,7 +1967,8 @@ DPCTLSyclEventRef dpnp_rng_standard_t_c(DPCTLSyclQueueRef q_ref,
     auto event_out =
         mkl_vm::mul(q, size, result1, sn, result1, {invsqrt_event, gaussian_distr_event}, mkl_vm::mode::ha);
     event_out.wait();
-    dpnp_memory_free_c(sn);
+
+    sycl::free(sn, q);
 
     return event_ref;
 }
@@ -2216,8 +2218,8 @@ DPCTLSyclEventRef dpnp_rng_vonmises_large_kappa_c(DPCTLSyclQueueRef q_ref,
     rho_minus_one = r_over_two_kappa_minus_one - sqrt(2 * r_over_two_kappa * recip_two_kappa);
     s_minus_one = rho_minus_one * (0.5 * rho_minus_one / (1 + rho_minus_one));
 
-    Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    Uvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
+    Vvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
 
     for (size_t n = 0; n < size;)
     {
@@ -2260,7 +2262,7 @@ DPCTLSyclEventRef dpnp_rng_vonmises_large_kappa_c(DPCTLSyclQueueRef q_ref,
         }
     }
 
-    dpnp_memory_free_c(Uvec);
+    sycl::free(Uvec, q);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
@@ -2281,7 +2283,7 @@ DPCTLSyclEventRef dpnp_rng_vonmises_large_kappa_c(DPCTLSyclQueueRef q_ref,
     auto acceptance_event = q.submit(paral_kernel_acceptance);
     acceptance_event.wait();
 
-    dpnp_memory_free_c(Vvec);
+    sycl::free(Vvec, q);
     return event_ref;
 }
 
@@ -2352,8 +2354,8 @@ DPCTLSyclEventRef dpnp_rng_vonmises_small_kappa_c(DPCTLSyclQueueRef q_ref,
     /* s times kappa */
     s_kappa = (1 + rho * rho) / (2 * rho_over_kappa);
 
-    Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    Uvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
+    Vvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
 
     for (size_t n = 0; n < size;)
     {
@@ -2383,7 +2385,7 @@ DPCTLSyclEventRef dpnp_rng_vonmises_small_kappa_c(DPCTLSyclQueueRef q_ref,
         }
     }
 
-    dpnp_memory_free_c(Uvec);
+    sycl::free(Uvec, q);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
@@ -2403,7 +2405,7 @@ DPCTLSyclEventRef dpnp_rng_vonmises_small_kappa_c(DPCTLSyclQueueRef q_ref,
     auto acceptance_event = q.submit(paral_kernel_acceptance);
     acceptance_event.wait();
 
-    dpnp_memory_free_c(Vvec);
+    sycl::free(Vvec, q);
     return event_ref;
 }
 
@@ -2551,7 +2553,7 @@ DPCTLSyclEventRef dpnp_rng_wald_c(DPCTLSyclQueueRef q_ref,
     };
     auto event_ration_acceptance = q.submit(parallel_for_acceptance1);
 
-    uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    uvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, uvec);
@@ -2570,7 +2572,7 @@ DPCTLSyclEventRef dpnp_rng_wald_c(DPCTLSyclQueueRef q_ref,
     auto event_out = q.submit(parallel_for_acceptance2);
     event_out.wait();
 
-    dpnp_memory_free_c(uvec);
+    sycl::free(uvec, q);
 
     return event_ref;
 }
@@ -2693,7 +2695,7 @@ DPCTLSyclEventRef dpnp_rng_zipf_c(DPCTLSyclQueueRef q_ref,
     am1 = a - d_one;
     b = pow(2.0, am1);
 
-    Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * 2 * sizeof(_DataType)));
+    Uvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * 2 * sizeof(_DataType), q));
     Vvec = Uvec + size;
 
     // TODO
@@ -2726,7 +2728,7 @@ DPCTLSyclEventRef dpnp_rng_zipf_c(DPCTLSyclQueueRef q_ref,
         }
     }
 
-    dpnp_memory_free_c(Uvec);
+    sycl::free(Uvec, q);
 
     return event_ref;
 }

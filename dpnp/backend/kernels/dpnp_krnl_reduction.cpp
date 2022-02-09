@@ -95,9 +95,9 @@ DPCTLSyclEventRef dpnp_sum_c(DPCTLSyclQueueRef q_ref,
         //result[0] = input[0];
         _DataType_input input_elem = 0;
         _DataType_output result_elem = 0;
-        dpnp_memory_memcpy_c(&input_elem, input, sizeof(_DataType_input));
+        q.memcpy(&input_elem, input, sizeof(_DataType_input)).wait();
         result_elem = input_elem;
-        dpnp_memory_memcpy_c(result, &result_elem, sizeof(_DataType_output));
+        q.memcpy(result, &result_elem, sizeof(_DataType_output)).wait();
 
         return event_ref;
     }
@@ -132,8 +132,8 @@ DPCTLSyclEventRef dpnp_sum_c(DPCTLSyclQueueRef q_ref,
             policy, input_it.begin(output_id), input_it.end(output_id), init, std::plus<_DataType_output>());
         policy.queue().wait(); // TODO move out of the loop
 
-        dpnp_memory_memcpy_c(
-            result + output_id, &accumulator, sizeof(_DataType_output)); // result[output_id] = accumulator;
+        q.memcpy(
+            result + output_id, &accumulator, sizeof(_DataType_output)).wait(); // result[output_id] = accumulator;
     }
 
     return event_ref;
@@ -228,9 +228,9 @@ DPCTLSyclEventRef dpnp_prod_c(DPCTLSyclQueueRef q_ref,
         // result[0] = input[0];
         _DataType_input input_elem = 0;
         _DataType_output result_elem = 0;
-        dpnp_memory_memcpy_c(&input_elem, input, sizeof(_DataType_input));
+        q.memcpy(&input_elem, input, sizeof(_DataType_input)).wait();
         result_elem = input_elem;
-        dpnp_memory_memcpy_c(result, &result_elem, sizeof(_DataType_output));
+        q.memcpy(result, &result_elem, sizeof(_DataType_output)).wait();
 
         return event_ref;
     }
@@ -248,8 +248,8 @@ DPCTLSyclEventRef dpnp_prod_c(DPCTLSyclQueueRef q_ref,
             policy, input_it.begin(output_id), input_it.end(output_id), init, std::multiplies<_DataType_output>());
         policy.queue().wait(); // TODO move out of the loop
 
-        dpnp_memory_memcpy_c(
-            result + output_id, &accumulator, sizeof(_DataType_output)); // result[output_id] = accumulator;
+        q.memcpy(
+            result + output_id, &accumulator, sizeof(_DataType_output)).wait(); // result[output_id] = accumulator;
     }
 
     return event_ref;

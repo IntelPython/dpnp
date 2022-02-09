@@ -587,14 +587,14 @@ DPCTLSyclEventRef dpnp_floor_divide_c(DPCTLSyclQueueRef q_ref,
 
     DPNPC_id<_DataType_input1>* input1_it;
     const size_t input1_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input1>);
-    input1_it = reinterpret_cast<DPNPC_id<_DataType_input1>*>(dpnp_memory_alloc_c(input1_it_size_in_bytes));
+    input1_it = reinterpret_cast<DPNPC_id<_DataType_input1>*>(sycl::malloc_shared(input1_it_size_in_bytes, q));
     new (input1_it) DPNPC_id<_DataType_input1>(input1_data, input1_shape, input1_shape_ndim);
 
     input1_it->broadcast_to_shape(result_shape);
 
     DPNPC_id<_DataType_input2>* input2_it;
     const size_t input2_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input2>);
-    input2_it = reinterpret_cast<DPNPC_id<_DataType_input2>*>(dpnp_memory_alloc_c(input2_it_size_in_bytes));
+    input2_it = reinterpret_cast<DPNPC_id<_DataType_input2>*>(sycl::malloc_shared(input2_it_size_in_bytes, q));
     new (input2_it) DPNPC_id<_DataType_input2>(input2_data, input2_shape, input2_shape_ndim);
 
     input2_it->broadcast_to_shape(result_shape);
@@ -641,8 +641,8 @@ DPCTLSyclEventRef dpnp_floor_divide_c(DPCTLSyclQueueRef q_ref,
     input1_it->~DPNPC_id();
     input2_it->~DPNPC_id();
 
-    dpnp_memory_free_c(input1_it);
-    dpnp_memory_free_c(input2_it);
+    sycl::free(input1_it, q);
+    sycl::free(input2_it, q);
 
     return event_ref;
 }
@@ -822,14 +822,14 @@ DPCTLSyclEventRef dpnp_remainder_c(DPCTLSyclQueueRef q_ref,
 
     DPNPC_id<_DataType_input1>* input1_it;
     const size_t input1_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input1>);
-    input1_it = reinterpret_cast<DPNPC_id<_DataType_input1>*>(dpnp_memory_alloc_c(input1_it_size_in_bytes));
+    input1_it = reinterpret_cast<DPNPC_id<_DataType_input1>*>(sycl::malloc_shared(input1_it_size_in_bytes, q));
     new (input1_it) DPNPC_id<_DataType_input1>(input1_data, input1_shape, input1_shape_ndim);
 
     input1_it->broadcast_to_shape(result_shape);
 
     DPNPC_id<_DataType_input2>* input2_it;
     const size_t input2_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input2>);
-    input2_it = reinterpret_cast<DPNPC_id<_DataType_input2>*>(dpnp_memory_alloc_c(input2_it_size_in_bytes));
+    input2_it = reinterpret_cast<DPNPC_id<_DataType_input2>*>(sycl::malloc_shared(input2_it_size_in_bytes, q));
     new (input2_it) DPNPC_id<_DataType_input2>(input2_data, input2_shape, input2_shape_ndim);
 
     input2_it->broadcast_to_shape(result_shape);
@@ -974,7 +974,8 @@ DPCTLSyclEventRef dpnp_trapz_c(DPCTLSyclQueueRef q_ref,
     if (array1_size < 2)
     {
         const _DataType_output init_val = 0;
-        dpnp_memory_memcpy_c(result, &init_val, sizeof(_DataType_output)); // result[0] = 0;
+        q.memcpy(result, &init_val, sizeof(_DataType_output)).wait(); // result[0] = 0;
+
         return event_ref;
     }
 
@@ -983,7 +984,7 @@ DPCTLSyclEventRef dpnp_trapz_c(DPCTLSyclQueueRef q_ref,
         size_t cur_res_size = array1_size - 2;
 
         _DataType_output* cur_res =
-            reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c((cur_res_size) * sizeof(_DataType_output)));
+            reinterpret_cast<_DataType_output*>(sycl::malloc_shared((cur_res_size) * sizeof(_DataType_output), q));
 
         sycl::range<1> gws(cur_res_size);
         auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
@@ -1005,7 +1006,7 @@ DPCTLSyclEventRef dpnp_trapz_c(DPCTLSyclQueueRef q_ref,
         shape_elem_type _shape = cur_res_size;
         dpnp_sum_c<_DataType_output, _DataType_output>(result, cur_res, &_shape, 1, NULL, 0, NULL, NULL);
 
-        dpnp_memory_free_c(cur_res);
+        sycl::free(cur_res, q);
 
         result[0] += array1[0] * (array2[1] - array2[0]) +
                      array1[array1_size - 1] * (array2[array2_size - 1] - array2[array2_size - 2]);

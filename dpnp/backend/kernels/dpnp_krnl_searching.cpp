@@ -57,7 +57,7 @@ DPCTLSyclEventRef dpnp_argmax_c(DPCTLSyclQueueRef q_ref,
     policy.queue().wait();
 
     _idx_DataType result_val = std::distance(array_1, res);
-    dpnp_memory_memcpy_c(result, &result_val, sizeof(_idx_DataType)); // result[0] = std::distance(array_1, res);
+    q.memcpy(result, &result_val, sizeof(_idx_DataType)).wait(); // result[0] = std::distance(array_1, res);
 
     return event_ref;
 }
@@ -112,7 +112,7 @@ DPCTLSyclEventRef dpnp_argmin_c(DPCTLSyclQueueRef q_ref,
     policy.queue().wait();
 
     _idx_DataType result_val = std::distance(array_1, res);
-    dpnp_memory_memcpy_c(result, &result_val, sizeof(_idx_DataType)); // result[0] = std::distance(array_1, res);
+    q.memcpy(result, &result_val, sizeof(_idx_DataType)).wait(); // result[0] = std::distance(array_1, res);
 
     return event_ref;
 }

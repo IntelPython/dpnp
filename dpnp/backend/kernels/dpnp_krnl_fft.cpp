@@ -75,12 +75,13 @@ void dpnp_fft_fft_sycl_c(sycl::queue& queue,
 
     // kernel specific temporal data
     shape_elem_type* output_shape_offsets =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(shape_size * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(shape_size * sizeof(shape_elem_type), queue));
     shape_elem_type* input_shape_offsets =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(shape_size * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(shape_size * sizeof(shape_elem_type), queue));
     // must be a thread local storage.
     shape_elem_type* axis_iterator =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result_size * shape_size * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(result_size * shape_size * sizeof(shape_elem_type),
+                                                               queue));
 
     get_shape_offsets_inkernel(output_shape, shape_size, output_shape_offsets);
     get_shape_offsets_inkernel(input_shape, shape_size, input_shape_offsets);
@@ -160,9 +161,9 @@ void dpnp_fft_fft_sycl_c(sycl::queue& queue,
     event = queue.submit(kernel_func);
     event.wait();
 
-    dpnp_memory_free_c(input_shape_offsets);
-    dpnp_memory_free_c(output_shape_offsets);
-    dpnp_memory_free_c(axis_iterator);
+    sycl::free(input_shape_offsets, queue);
+    sycl::free(output_shape_offsets, queue);
+    sycl::free(axis_iterator, queue);
 
     return;
 }

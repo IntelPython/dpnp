@@ -188,7 +188,8 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
         }
     }
 
-    shape_elem_type* shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type* shape = reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type),
+                                                                                    q));
     auto memcpy_event = q.memcpy(shape, shape_, ndim * sizeof(shape_elem_type));
 
     memcpy_event.wait();
@@ -221,7 +222,7 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
 
     event.wait();
 
-    dpnp_memory_free_c(shape);
+    sycl::free(shape, q);
 
     return event_ref;
 }

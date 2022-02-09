@@ -407,13 +407,15 @@ DPCTLSyclEventRef dpnp_ones_c(DPCTLSyclQueueRef q_ref,
                               size_t size,
                               const DPCTLEventVectorRef dep_event_vec_ref)
 {
-    _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
     fill_value[0] = 1;
 
     DPCTLSyclEventRef event_ref = dpnp_initval_c<_DataType>(q_ref, result, fill_value, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 
-    dpnp_memory_free_c(fill_value);
+    sycl::free(fill_value, q);
 
     return event_ref;
 }
@@ -509,14 +511,14 @@ DPCTLSyclEventRef dpnp_ptp_c(DPCTLSyclQueueRef q_ref,
     _DataType* arr = input1_ptr.get_ptr();
     _DataType* result = result_ptr.get_ptr();
 
-    _DataType* min_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(result_size * sizeof(_DataType)));
-    _DataType* max_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(result_size * sizeof(_DataType)));
+    _DataType* min_arr = reinterpret_cast<_DataType*>(sycl::malloc_shared(result_size * sizeof(_DataType), q));
+    _DataType* max_arr = reinterpret_cast<_DataType*>(sycl::malloc_shared(result_size * sizeof(_DataType), q));
 
     dpnp_min_c<_DataType>(arr, min_arr, result_size, input_shape, input_ndim, axis, naxis);
     dpnp_max_c<_DataType>(arr, max_arr, result_size, input_shape, input_ndim, axis, naxis);
 
     shape_elem_type* _strides =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result_ndim * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(result_ndim * sizeof(shape_elem_type), q));
     get_shape_offsets_inkernel(result_shape, result_ndim, _strides);
 
     dpnp_subtract_c<_DataType, _DataType, _DataType>(result,
@@ -536,8 +538,9 @@ DPCTLSyclEventRef dpnp_ptp_c(DPCTLSyclQueueRef q_ref,
                                                      _strides,
                                                      NULL);
 
-    dpnp_memory_free_c(min_arr);
-    dpnp_memory_free_c(max_arr);
+    sycl::free(min_arr, q);
+    sycl::free(max_arr, q);
+    sycl::free(_strides, q);
 
     return event_ref;
 }
@@ -1204,13 +1207,15 @@ DPCTLSyclEventRef dpnp_zeros_c(DPCTLSyclQueueRef q_ref,
                                size_t size,
                                const DPCTLEventVectorRef dep_event_vec_ref)
 {
-    _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
     fill_value[0] = 0;
 
     DPCTLSyclEventRef event_ref = dpnp_initval_c<_DataType>(q_ref, result, fill_value, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 
-    dpnp_memory_free_c(fill_value);
+    sycl::free(fill_value, q);
 
     return event_ref;
 }

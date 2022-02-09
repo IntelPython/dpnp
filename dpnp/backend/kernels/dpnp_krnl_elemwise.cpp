@@ -86,10 +86,10 @@
                                                                                                                        \
         const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(shape_elem_type);                               \
         shape_elem_type* input1_shape_offsets =                                                                        \
-            reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));                       \
+            reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(input1_shape_size_in_bytes, q));                    \
         get_shape_offsets_inkernel(input1_shape_data, input1_ndim, input1_shape_offsets);                              \
         bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
-        dpnp_memory_free_c(input1_shape_offsets);                                                                      \
+        sycl::free(input1_shape_offsets, q);                                                                           \
                                                                                                                        \
         sycl::event event;                                                                                             \
         sycl::range<1> gws(result_size);                                                                               \
@@ -428,10 +428,10 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
                                                                                                                        \
         const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(shape_elem_type);                               \
         shape_elem_type* input1_shape_offsets =                                                                        \
-            reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));                       \
+            reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(input1_shape_size_in_bytes, q));                    \
         get_shape_offsets_inkernel(input1_shape_data, input1_ndim, input1_shape_offsets);                              \
         bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
-        dpnp_memory_free_c(input1_shape_offsets);                                                                      \
+        sycl::free(input1_shape_offsets, q);                                                                           \
                                                                                                                        \
         sycl::event event;                                                                                             \
         sycl::range<1> gws(result_size);                                                                               \
@@ -677,18 +677,18 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                                                                                                                        \
         const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(shape_elem_type);                               \
         shape_elem_type* input1_shape_offsets =                                                                        \
-            reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));                       \
+            reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(input1_shape_size_in_bytes, q));                    \
         get_shape_offsets_inkernel(input1_shape_data, input1_ndim, input1_shape_offsets);                              \
         bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
-        dpnp_memory_free_c(input1_shape_offsets);                                                                      \
+        sycl::free(input1_shape_offsets, q);                                                                           \
                                                                                                                        \
         const size_t input2_shape_size_in_bytes = input2_ndim * sizeof(shape_elem_type);                               \
         shape_elem_type* input2_shape_offsets =                                                                        \
-            reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input2_shape_size_in_bytes));                       \
+            reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(input2_shape_size_in_bytes, q));                    \
         get_shape_offsets_inkernel(input2_shape_data, input2_ndim, input2_shape_offsets);                              \
         use_strides =                                                                                                  \
             use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);          \
-        dpnp_memory_free_c(input2_shape_offsets);                                                                      \
+        sycl::free(input2_shape_offsets, q);                                                                           \
                                                                                                                        \
         sycl::event event;                                                                                             \
         sycl::range<1> gws(result_size);                                                                               \
@@ -697,7 +697,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
         {                                                                                                              \
             DPNPC_id<_DataType_input1>* input1_it;                                                                     \
             const size_t input1_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input1>);                                 \
-            input1_it = reinterpret_cast<DPNPC_id<_DataType_input1>*>(dpnp_memory_alloc_c(input1_it_size_in_bytes));   \
+            input1_it = reinterpret_cast<DPNPC_id<_DataType_input1>*>(sycl::malloc_shared(input1_it_size_in_bytes, q));\
             new (input1_it)                                                                                            \
                 DPNPC_id<_DataType_input1>(input1_data, input1_shape_data, input1_strides_data, input1_ndim);          \
                                                                                                                        \
@@ -705,7 +705,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                                                                                                                        \
             DPNPC_id<_DataType_input2>* input2_it;                                                                     \
             const size_t input2_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input2>);                                 \
-            input2_it = reinterpret_cast<DPNPC_id<_DataType_input2>*>(dpnp_memory_alloc_c(input2_it_size_in_bytes));   \
+            input2_it = reinterpret_cast<DPNPC_id<_DataType_input2>*>(sycl::malloc_shared(input2_it_size_in_bytes, q));\
             new (input2_it)                                                                                            \
                 DPNPC_id<_DataType_input2>(input2_data, input2_shape_data, input2_strides_data, input2_ndim);          \
                                                                                                                        \

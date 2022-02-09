@@ -142,15 +142,15 @@ DPCTLSyclEventRef dpnp_elemwise_transpose_c(DPCTLSyclQueueRef q_ref,
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     shape_elem_type* input_offset_shape =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
     get_shape_offsets_inkernel(input_shape, ndim, input_offset_shape);
 
     shape_elem_type* temp_result_offset_shape =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
     get_shape_offsets_inkernel(result_shape, ndim, temp_result_offset_shape);
 
     shape_elem_type* result_offset_shape =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
     for (size_t axis = 0; axis < ndim; ++axis)
     {
         result_offset_shape[permute_axes[axis]] = temp_result_offset_shape[axis];
@@ -183,9 +183,9 @@ DPCTLSyclEventRef dpnp_elemwise_transpose_c(DPCTLSyclQueueRef q_ref,
 
     event.wait();
 
-    dpnp_memory_free_c(input_offset_shape);
-    dpnp_memory_free_c(temp_result_offset_shape);
-    dpnp_memory_free_c(result_offset_shape);
+    sycl::free(input_offset_shape, q);
+    sycl::free(temp_result_offset_shape, q);
+    sycl::free(result_offset_shape, q);
 
     return event_ref;
 }

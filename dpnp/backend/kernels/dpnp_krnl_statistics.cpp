@@ -163,7 +163,7 @@ DPCTLSyclEventRef dpnp_cov_c(DPCTLSyclQueueRef q_ref,
 
     auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_cov_c_kernel1<_DataType>>(q);
 
-    _DataType* mean = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(nrows * sizeof(_DataType)));
+    _DataType* mean = reinterpret_cast<_DataType*>(sycl::malloc_shared(nrows * sizeof(_DataType), q));
     for (size_t i = 0; i < nrows; ++i)
     {
         _DataType* row_start = array_1 + ncols * i;
@@ -171,7 +171,7 @@ DPCTLSyclEventRef dpnp_cov_c(DPCTLSyclQueueRef q_ref,
     }
     policy.queue().wait();
 
-    _DataType* temp = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(nrows * ncols * sizeof(_DataType)));
+    _DataType* temp = reinterpret_cast<_DataType*>(sycl::malloc_shared(nrows * ncols * sizeof(_DataType), q));
     for (size_t i = 0; i < nrows; ++i)
     {
         size_t offset = ncols * i;
@@ -219,8 +219,8 @@ DPCTLSyclEventRef dpnp_cov_c(DPCTLSyclQueueRef q_ref,
 
     event.wait();
 
-    dpnp_memory_free_c(mean);
-    dpnp_memory_free_c(temp);
+    sycl::free(mean, q);
+    sycl::free(temp, q);
 
     return event_ref;
 }
@@ -601,13 +601,13 @@ DPCTLSyclEventRef dpnp_mean_c(DPCTLSyclQueueRef q_ref,
     }
     else
     {
-        _ResultType* sum = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
+        _ResultType* sum = reinterpret_cast<_ResultType*>(sycl::malloc_shared(1 * sizeof(_ResultType), q));
 
         dpnp_sum_c<_ResultType, _DataType>(sum, array, shape, ndim, axis, naxis, nullptr, nullptr);
 
         result[0] = sum[0] / static_cast<_ResultType>(size);
 
-        dpnp_memory_free_c(sum);
+        sycl::free(sum, q);
     }
 
     return event_ref;
@@ -680,7 +680,7 @@ DPCTLSyclEventRef dpnp_median_c(DPCTLSyclQueueRef q_ref,
     DPNPC_ptr_adapter<_ResultType> result_ptr(result1, 1, true, true);
     _ResultType* result = result_ptr.get_ptr();
 
-    _DataType* sorted = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    _DataType* sorted = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
 
     dpnp_sort_c<_DataType>(array1_in, sorted, size);
 
@@ -693,7 +693,7 @@ DPCTLSyclEventRef dpnp_median_c(DPCTLSyclQueueRef q_ref,
         result[0] = sorted[(size - 1) / 2];
     }
 
-    dpnp_memory_free_c(sorted);
+    sycl::free(sorted, q);
 
     return event_ref;
 }
@@ -1071,7 +1071,7 @@ DPCTLSyclEventRef dpnp_std_c(DPCTLSyclQueueRef q_ref,
     DPCTLSyclEventRef event_ref = nullptr;
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    _ResultType* var = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
+    _ResultType* var = reinterpret_cast<_ResultType*>(sycl::malloc_shared(1 * sizeof(_ResultType), q));
 
     dpnp_var_c<_DataType, _ResultType>(array1_in, var, shape, ndim, axis, naxis, ddof);
 
@@ -1080,19 +1080,20 @@ DPCTLSyclEventRef dpnp_std_c(DPCTLSyclQueueRef q_ref,
     const size_t result1_shape_size_in_bytes = result1_ndim * sizeof(shape_elem_type);
     const size_t result1_strides_size_in_bytes = result1_ndim * sizeof(shape_elem_type);
     shape_elem_type* result1_shape =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result1_shape_size_in_bytes));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(result1_shape_size_in_bytes, q));
     *result1_shape = 1;
     shape_elem_type* result1_strides =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result1_strides_size_in_bytes));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(result1_strides_size_in_bytes, q));
     *result1_strides = 1;
 
     const size_t var_size = 1;
     const size_t var_ndim = 1;
     const size_t var_shape_size_in_bytes = var_ndim * sizeof(shape_elem_type);
     const size_t var_strides_size_in_bytes = var_ndim * sizeof(shape_elem_type);
-    shape_elem_type* var_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(var_shape_size_in_bytes));
+    shape_elem_type* var_shape = reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(var_shape_size_in_bytes, q));
     *var_shape = 1;
-    shape_elem_type* var_strides = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(var_strides_size_in_bytes));
+    shape_elem_type* var_strides = reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(var_strides_size_in_bytes,
+                                                                      q));
     *var_strides = 1;
 
     dpnp_sqrt_c<_ResultType, _ResultType>(result1,
@@ -1107,11 +1108,11 @@ DPCTLSyclEventRef dpnp_std_c(DPCTLSyclQueueRef q_ref,
                                           var_strides,
                                           NULL);
 
-    dpnp_memory_free_c(var);
-    dpnp_memory_free_c(result1_shape);
-    dpnp_memory_free_c(result1_strides);
-    dpnp_memory_free_c(var_shape);
-    dpnp_memory_free_c(var_strides);
+    sycl::free(var, q);
+    sycl::free(result1_shape, q);
+    sycl::free(result1_strides, q);
+    sycl::free(var_shape, q);
+    sycl::free(var_strides, q);
 
     return event_ref;
 }
@@ -1192,11 +1193,12 @@ DPCTLSyclEventRef dpnp_var_c(DPCTLSyclQueueRef q_ref,
     _DataType* array1 = input1_ptr.get_ptr();
     _ResultType* result = result_ptr.get_ptr();
 
-    _ResultType* mean = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
+    _ResultType* mean = reinterpret_cast<_ResultType*>(sycl::malloc_shared(1 * sizeof(_ResultType), q));
     dpnp_mean_c<_DataType, _ResultType>(array1, mean, shape, ndim, axis, naxis);
     _ResultType mean_val = mean[0];
 
-    _ResultType* squared_deviations = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(size * sizeof(_ResultType)));
+    _ResultType* squared_deviations = reinterpret_cast<_ResultType*>(sycl::malloc_shared(size * sizeof(_ResultType),
+                                                                     q));
 
     sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
@@ -1220,8 +1222,8 @@ DPCTLSyclEventRef dpnp_var_c(DPCTLSyclQueueRef q_ref,
 
     result[0] = mean_val * size / static_cast<_ResultType>(size - ddof);
 
-    dpnp_memory_free_c(mean);
-    dpnp_memory_free_c(squared_deviations);
+    sycl::free(mean, q);
+    sycl::free(squared_deviations, q);
 
     return event_ref;
 }
