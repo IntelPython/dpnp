@@ -167,7 +167,7 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
     {
         return;
     }
-    std::vector<cl::sycl::event> no_deps;
+    std::vector<sycl::event> no_deps;
 
     const _DataType d_zero = (_DataType(0.0));
 
@@ -178,7 +178,6 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
     DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
-
     mkl_rng::gamma<_DataType> gamma_distribution1(shape, d_zero, scale);
     auto event_gamma_distribution1 = mkl_rng::generate(gamma_distribution1, DPNP_RNG_ENGINE, size, result1);
 
@@ -188,11 +187,16 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
     mkl_rng::gamma<_DataType> gamma_distribution2(shape, d_zero, scale);
     auto event_gamma_distribution2 = mkl_rng::generate(gamma_distribution2, DPNP_RNG_ENGINE, size, den);
 
-    auto event_out = mkl_vm::div(DPNP_QUEUE, size, result1, den, result1, {event_gamma_distribution1, event_gamma_distribution2}, mkl_vm::mode::ha);
+    auto event_out = mkl_vm::div(DPNP_QUEUE,
+                                 size,
+                                 result1,
+                                 den,
+                                 result1,
+                                 {event_gamma_distribution1, event_gamma_distribution2},
+                                 mkl_vm::mode::ha);
     event_out.wait();
 
     dpnp_memory_free_c(den);
-
 }
 
 template <typename _DataType>
@@ -280,7 +284,7 @@ void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const
         mkl_rng::gumbel<_DataType> distribution(negloc, scale);
         auto event_distribution = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
 
-        cl::sycl::event prod_event;
+        sycl::event prod_event;
         prod_event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, incx, {event_distribution});
         prod_event.wait();
     }
@@ -356,13 +360,13 @@ void dpnp_rng_logistic_c(void* result, const double loc, const double scale, con
     mkl_rng::uniform<_DataType> distribution(d_zero, d_one);
     auto event_distribution = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t i = global_id[0];
-        result1[i] = cl::sycl::log(result1[i] / (1.0 - result1[i]));
+        result1[i] = sycl::log(result1[i] / (1.0 - result1[i]));
         result1[i] = loc + scale * result1[i];
     };
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.depends_on({event_distribution});
         cgh.parallel_for<class dpnp_rng_logistic_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
@@ -413,7 +417,6 @@ void dpnp_rng_multinomial_c(
     }
     else
     {
-        std::int32_t* result1 = reinterpret_cast<std::int32_t*>(result);
         std::vector<double> p(p_vector, p_vector + p_vector_size);
         // size = size
         // `result` is a array for random numbers
@@ -427,6 +430,8 @@ void dpnp_rng_multinomial_c(
         // which follow the condition
         if (is_cpu_queue || (!is_cpu_queue && (p_vector_size >= ((size_t)ntrial * 16)) && (ntrial <= 16)))
         {
+            DPNPC_ptr_adapter<std::int32_t> result_ptr(result, size, false, true);
+            std::int32_t* result1 = result_ptr.get_ptr();
             mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
             // perform generation
             auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
@@ -434,6 +439,8 @@ void dpnp_rng_multinomial_c(
         }
         else
         {
+            DPNPC_ptr_adapter<std::int32_t> result_ptr(result, size, true, true);
+            std::int32_t* result1 = result_ptr.get_ptr();
             int errcode = viRngMultinomial(
                 VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_vector_size, p_vector);
             if (errcode != VSL_STATUS_OK)
@@ -486,6 +493,10 @@ void dpnp_rng_negative_binomial_c(void* result, const double a, const double p, 
     event_out.wait();
 }
 
+template <typename _KernelNameSpecialization>
+class dpnp_rng_noncentral_chisquare_c_kernel1;
+template <typename _KernelNameSpecialization>
+class dpnp_rng_noncentral_chisquare_c_kernel2;
 template <typename _DataType>
 void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size)
 {
@@ -493,15 +504,15 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
     {
         return;
     }
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, false, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
     const _DataType d_zero = _DataType(0.0);
     const _DataType d_one = _DataType(1.0);
     const _DataType d_two = _DataType(2.0);
 
-        _DataType shape, loc;
-        size_t i;
+    _DataType shape, loc;
+    size_t i;
 
     if (df > 1)
     {
@@ -522,8 +533,7 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         /* squaring could result in an overflow */
         auto event_sqr_out =
             mkl_vm::sqr(DPNP_QUEUE, size, nvec, nvec, {event_gamma_distr, event_gaussian_distr}, mkl_vm::mode::ha);
-        auto event_add_out =
-            mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, {event_sqr_out}, mkl_vm::mode::ha);
+        auto event_add_out = mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, {event_sqr_out}, mkl_vm::mode::ha);
         event_add_out.wait();
         dpnp_memory_free_c(nvec);
     }
@@ -540,14 +550,23 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         event_out.wait();
 
         shape = 0.5 * df;
-
         if (0.125 * size > sqrt(lambda))
         {
             size_t* idx = nullptr;
             _DataType* tmp = nullptr;
             idx = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(size * sizeof(size_t)));
-            for (i = 0; i < size; i++)
+
+            sycl::range<1> gws1(size);
+            auto kernel_parallel_for_func1 = [=](sycl::id<1> global_id) {
+                size_t i = global_id[0];
                 idx[i] = i;
+            };
+            auto kernel_func1 = [&](sycl::handler& cgh) {
+                cgh.parallel_for<class dpnp_rng_noncentral_chisquare_c_kernel1<_DataType>>(gws1,
+                                                                                           kernel_parallel_for_func1);
+            };
+            event_out = DPNP_QUEUE.submit(kernel_func1);
+            event_out.wait();
 
             std::sort(idx, idx + size, [pvec](size_t i1, size_t i2) { return pvec[i1] < pvec[i2]; });
             /* idx now contains original indexes of ordered Poisson outputs */
@@ -556,14 +575,13 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             tmp = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
             for (i = 0; i < size;)
             {
-                size_t k, j;
+                size_t j;
                 int cv = pvec[idx[i]];
-
                 // TODO vectorize
                 for (j = i + 1; (j < size) && (pvec[idx[j]] == cv); j++)
                 {
                 }
-                // assert(j > i);
+
                 if (j <= i)
                 {
                     throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
@@ -572,13 +590,20 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                 event_out = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, j - i, tmp);
                 event_out.wait();
 
-                // TODO vectorize
-                for (k = i; k < j; k++)
-                    result1[idx[k]] = tmp[k - i];
+                sycl::range<1> gws2(j - i);
+                auto kernel_parallel_for_func2 = [=](sycl::id<1> global_id) {
+                    size_t index = global_id[0];
+                    result1[idx[index + i]] = tmp[index];
+                };
+                auto kernel_func2 = [&](sycl::handler& cgh) {
+                    cgh.parallel_for<class dpnp_rng_noncentral_chisquare_c_kernel2<_DataType>>(
+                        gws2, kernel_parallel_for_func2);
+                };
+                event_out = DPNP_QUEUE.submit(kernel_func2);
+                event_out.wait();
 
                 i = j;
             }
-
             dpnp_memory_free_c(tmp);
             dpnp_memory_free_c(idx);
         }
@@ -626,7 +651,7 @@ void dpnp_rng_pareto_c(void* result, const double alpha, const size_t size)
     {
         return;
     }
-    std::vector<cl::sycl::event> no_deps;
+    std::vector<sycl::event> no_deps;
 
     const _DataType d_zero = _DataType(0.0);
     const _DataType d_one = _DataType(1.0);
@@ -664,7 +689,7 @@ void dpnp_rng_power_c(void* result, const double alpha, const size_t size)
     {
         return;
     }
-    std::vector<cl::sycl::event> no_deps;
+    std::vector<sycl::event> no_deps;
 
     const _DataType d_zero = _DataType(0.0);
     const _DataType d_one = _DataType(1.0);
@@ -688,27 +713,20 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
         return;
     }
 
-    std::vector<cl::sycl::event> no_deps;
+    std::vector<sycl::event> no_deps;
 
     const _DataType a = 0.0;
     const _DataType beta = 2.0;
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size);
     _DataType* result1 = result1_ptr.get_ptr();
 
     mkl_rng::exponential<_DataType> distribution(a, beta);
 
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
-    event_out = mkl_vm::sqrt(DPNP_QUEUE, size, result1, result1, no_deps, mkl_vm::mode::ha);
-    event_out.wait();
-    // with MKL
-    // event_out = mkl_blas::axpy(DPNP_QUEUE, size, scale, result1, 1, result1, 1);
-    // event_out.wait();
-    for (size_t i = 0; i < size; i++)
-    {
-        result1[i] *= scale;
-    }
+    auto exponential_rng_event = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    auto sqrt_event = mkl_vm::sqrt(DPNP_QUEUE, size, result1, result1, {exponential_rng_event}, mkl_vm::mode::ha);
+    auto scal_event = mkl_blas::scal(DPNP_QUEUE, size, scale, result1, 1, {sqrt_event});
+    scal_event.wait();
 }
 
 template <typename _DataType>
@@ -746,12 +764,12 @@ void dpnp_rng_shuffle_c(
             if (i != j)
             {
                 auto memcpy1 =
-                    DPNP_QUEUE.submit([&](cl::sycl::handler& h) { h.memcpy(buf, result1 + j * itemsize, itemsize); });
-                auto memcpy2 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                    DPNP_QUEUE.submit([&](sycl::handler& h) { h.memcpy(buf, result1 + j * itemsize, itemsize); });
+                auto memcpy2 = DPNP_QUEUE.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy1});
                     h.memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
                 });
-                auto memcpy3 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                auto memcpy3 = DPNP_QUEUE.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy2});
                     h.memcpy(result1 + i * itemsize, buf, itemsize);
                 });
@@ -771,12 +789,12 @@ void dpnp_rng_shuffle_c(
             if (j < i)
             {
                 auto memcpy1 =
-                    DPNP_QUEUE.submit([&](cl::sycl::handler& h) { h.memcpy(buf, result1 + j * step_size, step_size); });
-                auto memcpy2 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                    DPNP_QUEUE.submit([&](sycl::handler& h) { h.memcpy(buf, result1 + j * step_size, step_size); });
+                auto memcpy2 = DPNP_QUEUE.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy1});
                     h.memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
                 });
-                auto memcpy3 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                auto memcpy3 = DPNP_QUEUE.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy2});
                     h.memcpy(result1 + i * step_size, buf, step_size);
                 });
@@ -871,11 +889,10 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
     mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
     auto gaussian_distr_event = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, sn);
 
-    auto event_out = mkl_vm::mul(
-        DPNP_QUEUE, size, result1, sn, result1, {invsqrt_event, gaussian_distr_event}, mkl_vm::mode::ha);
+    auto event_out =
+        mkl_vm::mul(DPNP_QUEUE, size, result1, sn, result1, {invsqrt_event, gaussian_distr_event}, mkl_vm::mode::ha);
     event_out.wait();
     dpnp_memory_free_c(sn);
-
 }
 
 template <typename _KernelNameSpecialization>
@@ -915,31 +932,31 @@ void dpnp_rng_triangular_c(
         throw std::runtime_error("DPNP RNG Error: dpnp_rng_triangular_c() failed.");
     }
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t i = global_id[0];
         if (ratio <= 0)
         {
-            result1[i] = x_max - cl::sycl::sqrt(result1[i] * rpr);
+            result1[i] = x_max - sycl::sqrt(result1[i] * rpr);
         }
         else if (ratio >= 1)
         {
-            result1[i] = x_min + cl::sycl::sqrt(result1[i] * lpr);
+            result1[i] = x_min + sycl::sqrt(result1[i] * lpr);
         }
         else
         {
             _DataType ui = result1[i];
             if (ui > ratio)
             {
-                result1[i] = x_max - cl::sycl::sqrt((1.0 - ui) * rpr);
+                result1[i] = x_max - sycl::sqrt((1.0 - ui) * rpr);
             }
             else
             {
-                result1[i] = x_min + cl::sycl::sqrt(ui * lpr);
+                result1[i] = x_min + sycl::sqrt(ui * lpr);
             }
         }
     };
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.depends_on({event_uniform});
         cgh.parallel_for<class dpnp_rng_triangular_ration_acceptance_c_kernel<_DataType>>(gws,
                                                                                           kernel_parallel_for_func);
@@ -1050,16 +1067,16 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
 
-    cl::sycl::range<1> gws(size);
+    sycl::range<1> gws(size);
 
-    auto paral_kernel_acceptance = [&](cl::sycl::handler& cgh) {
+    auto paral_kernel_acceptance = [&](sycl::handler& cgh) {
         cgh.depends_on({uniform_distr_event});
-        cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
+        cgh.parallel_for(gws, [=](sycl::id<1> global_id) {
             size_t i = global_id[0];
             double mod, resi;
             resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
-            mod = cl::sycl::fabs(resi);
-            mod = (cl::sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
+            mod = sycl::fabs(resi);
+            mod = (sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
             result1[i] = (resi < 0) ? -mod : mod;
         });
     };
@@ -1132,15 +1149,15 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
 
-    cl::sycl::range<1> gws(size);
-    auto paral_kernel_acceptance = [&](cl::sycl::handler& cgh) {
+    sycl::range<1> gws(size);
+    auto paral_kernel_acceptance = [&](sycl::handler& cgh) {
         cgh.depends_on({uniform_distr_event});
-        cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
+        cgh.parallel_for(gws, [=](sycl::id<1> global_id) {
             size_t i = global_id[0];
             double mod, resi;
             resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
-            mod = cl::sycl::fabs(resi);
-            mod = (cl::sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
+            mod = sycl::fabs(resi);
+            mod = (sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
             result1[i] = (resi < 0) ? -mod : mod;
         });
     };
@@ -1194,19 +1211,19 @@ void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, 
     /* Y = mean/(2 scale) * Z^2 */
     auto sqr_event = mkl_vm::sqr(DPNP_QUEUE, size, result1, result1, {gaussian_dstr_event}, mkl_vm::mode::ha);
 
-    cl::sycl::range<1> gws(size);
-    auto acceptance_kernel1 = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto acceptance_kernel1 = [=](sycl::id<1> global_id) {
         size_t i = global_id[0];
         if (result1[i] <= 2.0)
         {
-            result1[i] = 1.0 + result1[i] + cl::sycl::sqrt(result1[i] * (result1[i] + 2.0));
+            result1[i] = 1.0 + result1[i] + sycl::sqrt(result1[i] * (result1[i] + 2.0));
         }
         else
         {
-            result1[i] = 1.0 + result1[i] * (1.0 + cl::sycl::sqrt(1.0 + 2.0 / result1[i]));
+            result1[i] = 1.0 + result1[i] * (1.0 + sycl::sqrt(1.0 + 2.0 / result1[i]));
         }
     };
-    auto parallel_for_acceptance1 = [&](cl::sycl::handler& cgh) {
+    auto parallel_for_acceptance1 = [&](sycl::handler& cgh) {
         cgh.depends_on({sqr_event});
         cgh.parallel_for<class dpnp_rng_wald_acceptance_kernel1<_DataType>>(gws, acceptance_kernel1);
     };
@@ -1217,14 +1234,14 @@ void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, uvec);
 
-    auto acceptance_kernel2 = [=](cl::sycl::id<1> global_id) {
+    auto acceptance_kernel2 = [=](sycl::id<1> global_id) {
         size_t i = global_id[0];
         if (uvec[i] * (1.0 + result1[i]) <= result1[i])
             result1[i] = mean / result1[i];
         else
             result1[i] = mean * result1[i];
     };
-    auto parallel_for_acceptance2 = [&](cl::sycl::handler& cgh) {
+    auto parallel_for_acceptance2 = [&](sycl::handler& cgh) {
         cgh.depends_on({event_ration_acceptance, uniform_distr_event});
         cgh.parallel_for<class dpnp_rng_wald_acceptance_kernel2<_DataType>>(gws, acceptance_kernel2);
     };
@@ -1266,7 +1283,7 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
         return;
     }
 
-    cl::sycl::event event_out;
+    sycl::event event_out;
 
     size_t i, n_accepted, batch_size;
     _DataType T, U, V, am1, b;
@@ -1339,7 +1356,8 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_GUMBEL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gumbel_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_HYPERGEOMETRIC][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_hypergeometric_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_HYPERGEOMETRIC][eft_INT][eft_INT] = {eft_INT,
+                                                                        (void*)dpnp_rng_hypergeometric_c<int32_t>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_LAPLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_laplace_c<double>};
 
@@ -1352,8 +1370,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_MULTIVARIATE_NORMAL][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_multivariate_normal_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {eft_INT,
-                                                                           (void*)dpnp_rng_negative_binomial_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {
+        eft_INT, (void*)dpnp_rng_negative_binomial_c<int32_t>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_NONCENTRAL_CHISQUARE][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_noncentral_chisquare_c<double>};

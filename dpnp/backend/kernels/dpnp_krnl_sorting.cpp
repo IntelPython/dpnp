@@ -145,8 +145,8 @@ void dpnp_partition_c(
 
     memcpy_event.wait();
 
-    cl::sycl::range<2> gws(size_, kth + 1);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+    sycl::range<2> gws(size_, kth + 1);
+    auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
         size_t j = global_id[0];
         size_t k = global_id[1];
 
@@ -164,7 +164,7 @@ void dpnp_partition_c(
         }
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.depends_on({memcpy_event});
         cgh.parallel_for<class dpnp_partition_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
@@ -204,8 +204,8 @@ void dpnp_searchsorted_c(
     const _DataType* v = input2_ptr.get_ptr();
     _IndexingType* result = reinterpret_cast<_IndexingType*>(result1);
 
-    cl::sycl::range<2> gws(v_size, arr_size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+    sycl::range<2> gws(v_size, arr_size);
+    auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
         size_t i = global_id[0];
         size_t j = global_id[1];
 
@@ -269,7 +269,7 @@ void dpnp_searchsorted_c(
         }
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_searchsorted_c_kernel<_DataType, _IndexingType>>(gws, kernel_parallel_for_func);
     };
 
@@ -312,8 +312,10 @@ void func_map_init_sorting(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_partition_c<float>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_partition_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_searchsorted_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_searchsorted_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_INT][eft_INT] = {eft_INT,
+                                                                  (void*)dpnp_searchsorted_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_LNG][eft_LNG] = {eft_LNG,
+                                                                  (void*)dpnp_searchsorted_c<int64_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_searchsorted_c<float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_searchsorted_c<double, int64_t>};
 

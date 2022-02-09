@@ -31,6 +31,7 @@ Implementation of flatiter
 
 import dpnp
 
+
 class flatiter:
     def __init__(self, X):
         if type(X) is not dpnp.ndarray:

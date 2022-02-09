@@ -54,10 +54,10 @@ char* dpnp_memory_alloc_c(size_t size_in_bytes)
     //std::cout << "dpnp_memory_alloc_c(size=" << size_in_bytes << std::flush;
     if (size_in_bytes > 0)
     {
-        cl::sycl::usm::alloc memory_type = cl::sycl::usm::alloc::shared;
+        sycl::usm::alloc memory_type = sycl::usm::alloc::shared;
         if (use_sycl_device_memory())
         {
-            memory_type = cl::sycl::usm::alloc::device;
+            memory_type = sycl::usm::alloc::device;
         }
         array = reinterpret_cast<char*>(sycl::malloc(size_in_bytes, DPNP_QUEUE, memory_type));
         if (array == nullptr)
@@ -67,7 +67,7 @@ char* dpnp_memory_alloc_c(size_t size_in_bytes)
         }
 
 #if not defined(NDEBUG)
-        if (memory_type != cl::sycl::usm::alloc::device)
+        if (memory_type != sycl::usm::alloc::device)
         {
             for (size_t i = 0; i < size_in_bytes / sizeof(char); ++i)
             {

@@ -25,15 +25,11 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-from libcpp.vector cimport vector
 from libcpp cimport bool as cpp_bool
 
 from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 
-
-ctypedef long shape_elem_type
-ctypedef vector.vector[shape_elem_type] shape_type_c
-
+from dpnp.dpnp_algo cimport shape_elem_type, shape_type_c
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
@@ -110,6 +106,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_LOG1P
         DPNP_FN_LOG2
         DPNP_FN_MATMUL
+        DPNP_FN_MATMUL_EXT
         DPNP_FN_MATRIX_RANK
         DPNP_FN_MAX
         DPNP_FN_MAXIMUM

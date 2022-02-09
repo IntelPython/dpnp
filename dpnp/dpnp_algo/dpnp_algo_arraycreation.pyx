@@ -58,14 +58,14 @@ __all__ += [
 ]
 
 
-ctypedef void(*custom_1in_1out_func_ptr_t)(void * , void * , const int , shape_elem_type * , shape_elem_type * , const size_t, const size_t)
-ctypedef void(*ftpr_custom_vander_1in_1out_t)(void *, void * , size_t, size_t, int)
-ctypedef void(*custom_arraycreation_1in_1out_func_ptr_t)(void * , const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
-                                                         void * , const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
-                                                         const shape_elem_type*, const size_t)
-ctypedef void(*custom_indexing_1out_func_ptr_t)(void *, const size_t , const size_t , const int)
-ctypedef void(*fptr_dpnp_eye_t)(void * , int , const shape_elem_type * )
-ctypedef void(*fptr_dpnp_trace_t)(const void * , void * , const shape_elem_type * , const size_t)
+ctypedef void(*custom_1in_1out_func_ptr_t)(void *, void * , const int , shape_elem_type * , shape_elem_type * , const size_t, const size_t)
+ctypedef void(*ftpr_custom_vander_1in_1out_t)(void * , void * , size_t, size_t, int)
+ctypedef void(*custom_arraycreation_1in_1out_func_ptr_t)(void *, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
+                                                         void *, const size_t, const size_t, const shape_elem_type*, const shape_elem_type*,
+                                                         const shape_elem_type *, const size_t)
+ctypedef void(*custom_indexing_1out_func_ptr_t)(void * , const size_t , const size_t , const int)
+ctypedef void(*fptr_dpnp_eye_t)(void *, int , const shape_elem_type * )
+ctypedef void(*fptr_dpnp_trace_t)(const void *, void * , const shape_elem_type * , const size_t)
 
 
 cpdef utils.dpnp_descriptor dpnp_copy(utils.dpnp_descriptor x1):
@@ -93,7 +93,7 @@ cpdef utils.dpnp_descriptor dpnp_diag(utils.dpnp_descriptor v, int k):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAG, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
 
     cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
     cdef shape_type_c result_shape = result.shape
@@ -101,7 +101,6 @@ cpdef utils.dpnp_descriptor dpnp_diag(utils.dpnp_descriptor v, int k):
     func(v.get_data(), result.get_data(), k, input_shape.data(), result_shape.data(), v.ndim, result.ndim)
 
     return result
-
 
 
 cpdef utils.dpnp_descriptor dpnp_eye(N, M=None, k=0, dtype=None):
@@ -328,7 +327,7 @@ cpdef dpnp_ptp(utils.dpnp_descriptor arr, axis=None):
             if id not in axis_:
                 out_shape.append(shape_axis)
         output_shape = tuple(out_shape)
- 
+
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PTP, param1_type, param1_type)
@@ -336,7 +335,7 @@ cpdef dpnp_ptp(utils.dpnp_descriptor arr, axis=None):
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(output_shape, kernel_data.return_type, None)
 
     cdef custom_arraycreation_1in_1out_func_ptr_t func = <custom_arraycreation_1in_1out_func_ptr_t > kernel_data.ptr
-    
+
     cdef shape_type_c axis1
     cdef Py_ssize_t axis_size = 0
     cdef shape_type_c axis2 = axis1

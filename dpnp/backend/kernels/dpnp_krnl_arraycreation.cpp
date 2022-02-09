@@ -26,8 +26,8 @@
 #include <iostream>
 
 #include "dpnp_fptr.hpp"
-#include "dpnp_utils.hpp"
 #include "dpnp_iface.hpp"
+#include "dpnp_utils.hpp"
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
@@ -45,18 +45,18 @@ void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
 
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t i = global_id[0];
 
         result[i] = start + i * step;
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_arange_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
@@ -66,8 +66,13 @@ void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_diag_c(
-    void* v_in, void* result1, const int k, shape_elem_type* shape, shape_elem_type* res_shape, const size_t ndim, const size_t res_ndim)
+void dpnp_diag_c(void* v_in,
+                 void* result1,
+                 const int k,
+                 shape_elem_type* shape,
+                 shape_elem_type* res_shape,
+                 const size_t ndim,
+                 const size_t res_ndim)
 {
     // avoid warning unused variable
     (void)res_ndim;
@@ -169,18 +174,18 @@ void dpnp_identity_c(void* result1, const size_t n)
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
 
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    cl::sycl::range<2> gws(n, n);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+    sycl::range<2> gws(n, n);
+    auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
         size_t i = global_id[0];
         size_t j = global_id[1];
         result[i * n + j] = i == j;
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_identity_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
@@ -220,8 +225,8 @@ void dpnp_ptp_c(void* result1_out,
                 const shape_elem_type* axis,
                 const size_t naxis)
 {
-    (void) result_strides;
-    (void) input_strides;
+    (void)result_strides;
+    (void)input_strides;
 
     if ((input1_in == nullptr) || (result1_out == nullptr))
     {
@@ -244,17 +249,29 @@ void dpnp_ptp_c(void* result1_out,
     dpnp_min_c<_DataType>(arr, min_arr, result_size, input_shape, input_ndim, axis, naxis);
     dpnp_max_c<_DataType>(arr, max_arr, result_size, input_shape, input_ndim, axis, naxis);
 
-    shape_elem_type* _strides = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result_ndim * sizeof(shape_elem_type)));
+    shape_elem_type* _strides =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result_ndim * sizeof(shape_elem_type)));
     get_shape_offsets_inkernel(result_shape, result_ndim, _strides);
 
-    dpnp_subtract_c<_DataType, _DataType, _DataType>(result, result_size, result_ndim, result_shape, result_strides,
-                                                     max_arr, result_size, result_ndim, result_shape, _strides,
-                                                     min_arr, result_size, result_ndim, result_shape, _strides,
+    dpnp_subtract_c<_DataType, _DataType, _DataType>(result,
+                                                     result_size,
+                                                     result_ndim,
+                                                     result_shape,
+                                                     result_strides,
+                                                     max_arr,
+                                                     result_size,
+                                                     result_ndim,
+                                                     result_shape,
+                                                     _strides,
+                                                     min_arr,
+                                                     result_size,
+                                                     result_ndim,
+                                                     result_shape,
+                                                     _strides,
                                                      NULL);
 
     dpnp_memory_free_c(min_arr);
     dpnp_memory_free_c(max_arr);
-
 }
 
 template <typename _DataType_input, typename _DataType_output>
@@ -334,7 +351,7 @@ void dpnp_trace_c(const void* array1_in, void* result_in, const shape_elem_type*
     const _DataType* input = input1_ptr.get_ptr();
     _ResultType* result = reinterpret_cast<_ResultType*>(result_in);
 
-    cl::sycl::range<1> gws(size);
+    sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](auto index) {
         size_t i = index[0];
         _ResultType acc = _ResultType(0);
@@ -347,7 +364,7 @@ void dpnp_trace_c(const void* array1_in, void* result_in, const shape_elem_type*
         result[i] = acc;
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_trace_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
@@ -361,7 +378,7 @@ class dpnp_tri_c_kernel;
 template <typename _DataType>
 void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
 {
-    cl::sycl::event event;
+    sycl::event event;
 
     if (!result1 || !N || !M)
     {
@@ -371,8 +388,8 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     size_t idx = N * M;
-    cl::sycl::range<1> gws(idx);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(idx);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t ind = global_id[0];
         size_t i = ind / M;
         size_t j = ind % M;
@@ -391,7 +408,7 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
         }
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_tri_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 

@@ -26,12 +26,9 @@
 # *****************************************************************************
 
 from libcpp cimport bool as cpp_bool
-from libcpp.vector cimport vector
 
 from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncType, DPNPFuncName
-
-
-ctypedef vector.vector[long] shape_type_c
+from dpnp.dpnp_algo cimport shape_type_c
 
 
 cpdef checker_throw_runtime_error(function_name, message)

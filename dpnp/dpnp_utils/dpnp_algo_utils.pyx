@@ -31,11 +31,12 @@ This module contains differnt helpers and utilities
 
 """
 
+import dpctl
 import numpy
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
 import dpnp
-from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
+from dpnp.dpnp_algo.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
@@ -43,7 +44,6 @@ cimport cpython
 cimport cython
 cimport numpy
 
-import dpctl
 
 """
 Python import functions
@@ -63,6 +63,7 @@ __all__ = [
     "_get_linear_index",
     "normalize_axis",
     "_object_to_tuple",
+    "unwrap_array",
     "use_origin_backend"
 ]
 
@@ -102,7 +103,7 @@ def copy_from_origin(dst, src):
     if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
         if src.size:
             # dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
-            dpctl.tensor._copy_utils._copy_from_numpy_into(dst, src)
+            dpctl.tensor._copy_utils._copy_from_numpy_into(unwrap_array(dst), src)
     else:
         for i in range(dst.size):
             dst.flat[i] = src.item(i)
@@ -175,6 +176,14 @@ def call_origin(function, *args, **kwargs):
         result = tuple(result_list)
 
     return result
+
+
+def unwrap_array(x1):
+    """Get array from input object."""
+    if isinstance(x1, dpnp.dpnp_array.dpnp_array):
+        return x1.get_array()
+
+    return x1
 
 
 cpdef checker_throw_axis_error(function_name, param_name, param, expected):
@@ -514,7 +523,7 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
         if not isinstance(usm_types, (list, tuple)):
             raise TypeError(
                 "Expected a list or a tuple, got {}".format(type(usm_types))
-        )
+            )
         if len(usm_types) == 0:
             return None
         elif len(usm_types) == 1:

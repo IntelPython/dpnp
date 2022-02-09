@@ -26,8 +26,8 @@
 #include <iostream>
 
 #include "dpnp_fptr.hpp"
-#include "dpnp_utils.hpp"
 #include "dpnp_iface.hpp"
+#include "dpnp_utils.hpp"
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
@@ -37,13 +37,13 @@ class dpnp_invert_c_kernel;
 template <typename _DataType>
 void dpnp_invert_c(void* array1_in, void* result1, size_t size)
 {
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
     _DataType* array1 = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
         {
             _DataType input_elem1 = array1[i];
@@ -51,7 +51,7 @@ void dpnp_invert_c(void* array1_in, void* result1, size_t size)
         }
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_invert_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
@@ -135,25 +135,24 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
         shape_elem_type* input2_shape_offsets =                                                                        \
             reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input2_shape_size_in_bytes));                       \
         get_shape_offsets_inkernel(input2_shape_data, input2_ndim, input2_shape_offsets);                              \
-        use_strides = use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);\
+        use_strides =                                                                                                  \
+            use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);          \
         dpnp_memory_free_c(input2_shape_offsets);                                                                      \
                                                                                                                        \
-        cl::sycl::event event;                                                                                         \
-        cl::sycl::range<1> gws(result_size);                                                                           \
+        sycl::event event;                                                                                             \
+        sycl::range<1> gws(result_size);                                                                               \
                                                                                                                        \
         if (use_strides)                                                                                               \
         {                                                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 const size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                    \
                 {                                                                                                      \
                     size_t input1_id = 0;                                                                              \
                     size_t input2_id = 0;                                                                              \
                     for (size_t i = 0; i < result_ndim; ++i)                                                           \
                     {                                                                                                  \
-                        const size_t output_xyz_id = get_xyz_id_by_id_inkernel(output_id,                              \
-                                                                               result_strides_data,                    \
-                                                                               result_ndim,                            \
-                                                                               i);                                     \
+                        const size_t output_xyz_id =                                                                   \
+                            get_xyz_id_by_id_inkernel(output_id, result_strides_data, result_ndim, i);                 \
                         input1_id += output_xyz_id * input1_strides_data[i];                                           \
                         input2_id += output_xyz_id * input2_strides_data[i];                                           \
                     }                                                                                                  \
@@ -163,7 +162,7 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
                     result[output_id] = __operation__;                                                                 \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
                 cgh.parallel_for<class __name__##_strides_kernel<_DataType>>(gws, kernel_parallel_for_func);           \
             };                                                                                                         \
             event = DPNP_QUEUE.submit(kernel_func);                                                                    \
@@ -171,13 +170,13 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                                  \
                 const _DataType input1_elem = (input1_size == 1) ? input1_data[0] : input1_data[i];                    \
                 const _DataType input2_elem = (input2_size == 1) ? input2_data[0] : input2_data[i];                    \
                 result[i] = __operation__;                                                                             \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
                 cgh.parallel_for<class __name__##_kernel<_DataType>>(gws, kernel_parallel_for_func);                   \
             };                                                                                                         \
             event = DPNP_QUEUE.submit(kernel_func);                                                                    \

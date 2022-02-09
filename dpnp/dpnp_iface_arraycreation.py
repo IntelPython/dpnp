@@ -590,7 +590,6 @@ def eye(N, M=None, k=0, dtype=None, order='C', **kwargs):
     return call_origin(numpy.eye, N, M=M, k=k, dtype=dtype, order=order, **kwargs)
 
 
-
 def frombuffer(buffer, **kwargs):
     """
     Interpret a buffer as a 1-dimensional array.

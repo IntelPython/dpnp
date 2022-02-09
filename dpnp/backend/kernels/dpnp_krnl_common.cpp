@@ -43,7 +43,7 @@ class dpnp_astype_c_kernel;
 template <typename _DataType, typename _ResultType>
 void dpnp_astype_c(const void* array1_in, void* result1, const size_t size)
 {
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
     const _DataType* array_in = input1_ptr.get_ptr();
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
@@ -58,13 +58,13 @@ void dpnp_astype_c(const void* array1_in, void* result1, const size_t size)
         return;
     }
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t i = global_id[0];
         result[i] = array_in[i];
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_astype_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
@@ -77,18 +77,18 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_dot_c_kernel;
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-cl::sycl::event dot(cl::sycl::queue& queue,
-                    _DataType_output* result_out,
-                    _DataType_input1* input1_in,
-                    _DataType_input2* input2_in,
-                    size_t input1_strides,
-                    size_t input2_strides,
-                    size_t size,
-                    const std::vector<cl::sycl::event>& dependencies = {})
+sycl::event dot(sycl::queue& queue,
+                _DataType_output* result_out,
+                _DataType_input1* input1_in,
+                _DataType_input2* input2_in,
+                size_t input1_strides,
+                size_t input2_strides,
+                size_t size,
+                const std::vector<sycl::event>& dependencies = {})
 {
     (void)dependencies;
 
-    cl::sycl::event event;
+    sycl::event event;
 
     if constexpr ((std::is_same<_DataType_input1, double>::value || std::is_same<_DataType_input1, float>::value) &&
                   std::is_same<_DataType_input2, _DataType_input1>::value &&
@@ -107,10 +107,10 @@ cl::sycl::event dot(cl::sycl::queue& queue,
 #if LIBSYCL_VERSION_GREATER(5, 3, 0)
         event = queue.submit([&](sycl::handler& cgh) {
             cgh.parallel_for(sycl::range<1>{size},
-                             cl::sycl::reduction(result_out,
-                                                 std::plus<_DataType_output>(),
-                                                 cl::sycl::property::reduction::initialize_to_identity{}),
-                             [=](cl::sycl::id<1> idx, auto& sum) {
+                             sycl::reduction(result_out,
+                                             std::plus<_DataType_output>(),
+                                             sycl::property::reduction::initialize_to_identity{}),
+                             [=](sycl::id<1> idx, auto& sum) {
                                  sum += static_cast<_DataType_output>(input1_in[idx * input1_strides]) *
                                         static_cast<_DataType_output>(input2_in[idx * input2_strides]);
                              });
@@ -124,14 +124,14 @@ cl::sycl::event dot(cl::sycl::queue& queue,
             reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c(size * sizeof(_DataType_output)));
 
         // what about reduction??
-        cl::sycl::range<1> gws(size);
+        sycl::range<1> gws(size);
 
-        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
             const size_t index = global_id[0];
             local_mem[index] = input1_in[index * input1_strides] * input2_in[index * input2_strides];
         };
 
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
+        auto kernel_func = [&](sycl::handler& cgh) {
             cgh.parallel_for<class dpnp_dot_c_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(
                 gws, kernel_parallel_for_func);
         };
@@ -215,8 +215,7 @@ void dpnp_dot_c(void* result_out,
     if ((input1_ndim == 1) && (input2_ndim == 1))
     {
         assert(input1_size == input2_size);
-        cl::sycl::event event =
-            dot(DPNP_QUEUE, result, input1, input2, input1_strides[0], input2_strides[0], input1_size);
+        sycl::event event = dot(DPNP_QUEUE, result, input1, input2, input1_strides[0], input2_strides[0], input1_size);
         event.wait();
         return;
     }
@@ -306,27 +305,27 @@ void dpnp_dot_c(void* result_out,
             // const std::int64_t ldc = result_strides[0] == 1 ? result_strides[1] : result_strides[0];
             const std::int64_t ldc = size_n;
 
-            cl::sycl::event event = mkl_blas_rm::gemm(DPNP_QUEUE,
-                                                      trans1,
-                                                      trans2,
-                                                      size_m,
-                                                      size_n,
-                                                      size_k,
-                                                      _DataType_output(1), // alpha
-                                                      input1,
-                                                      lda,
-                                                      input2,
-                                                      ldb,
-                                                      _DataType_output(0), // beta
-                                                      result,
-                                                      ldc);
+            sycl::event event = mkl_blas_rm::gemm(DPNP_QUEUE,
+                                                  trans1,
+                                                  trans2,
+                                                  size_m,
+                                                  size_n,
+                                                  size_k,
+                                                  _DataType_output(1), // alpha
+                                                  input1,
+                                                  lda,
+                                                  input2,
+                                                  ldb,
+                                                  _DataType_output(0), // beta
+                                                  result,
+                                                  ldc);
             event.wait();
             return;
 #endif
         }
     }
 
-    std::vector<cl::sycl::event> dot_events;
+    std::vector<sycl::event> dot_events;
     dot_events.reserve(result_size);
 
     size_t dot_st1 = ext_input1_strides[ext_input1_ndim - 1];
@@ -383,7 +382,7 @@ void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size * size, true);
     DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, size, true, true);
     DPNPC_ptr_adapter<_ResultType> result2_ptr(result2, size * size, true, true);
@@ -456,7 +455,7 @@ void dpnp_eigvals_c(const void* array_in, void* result1, size_t size)
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size * size, true);
     DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, size, true, true);
     const _DataType* array = input1_ptr.get_ptr();
@@ -515,23 +514,137 @@ void dpnp_initval_c(void* result1, void* value, size_t size)
     _DataType* result = result1_ptr.get_ptr();
     _DataType* val = value_ptr.get_ptr();
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         const size_t idx = global_id[0];
         result[idx] = *val;
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_initval_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
-    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+    sycl::event event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
 }
 
 template <typename _KernelNameSpecialization>
 class dpnp_matmul_c_kernel;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
+                                void* result_out,
+                                const size_t result_size,
+                                const size_t result_ndim,
+                                const shape_elem_type* result_shape,
+                                const shape_elem_type* result_strides,
+                                const void* input1_in,
+                                const size_t input1_size,
+                                const size_t input1_ndim,
+                                const shape_elem_type* input1_shape,
+                                const shape_elem_type* input1_strides,
+                                const void* input2_in,
+                                const size_t input2_size,
+                                const size_t input2_ndim,
+                                const shape_elem_type* input2_shape,
+                                const shape_elem_type* input2_strides,
+                                const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    (void)result_size;
+    (void)result_ndim;
+    (void)result_shape;
+    (void)result_strides;
+    (void)input1_size;
+    (void)input1_ndim;
+    (void)input1_strides;
+    (void)input2_size;
+    (void)input2_ndim;
+    (void)input2_strides;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
+    size_t size_m = input1_shape[0];
+    size_t size_n = input2_shape[1];
+    size_t size_k = input1_shape[1];
+
+    if (!size_m || !size_n || !size_k)
+    {
+        return event_ref;
+    }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+    std::vector<sycl::event> dep_events = cast_event_vector(dep_event_vec_ref);
+    sycl::event event;
+
+    _DataType* array_1 = reinterpret_cast<_DataType*>(const_cast<void*>(input1_in));
+    _DataType* array_2 = reinterpret_cast<_DataType*>(const_cast<void*>(input2_in));
+    _DataType* result = reinterpret_cast<_DataType*>(result_out);
+
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        // using std::max for these ldx variables is required by math library
+        const std::int64_t lda = std::max<size_t>(1UL, size_k); // First dimensions of array_1
+        const std::int64_t ldb = std::max<size_t>(1UL, size_n); // First dimensions of array_2
+        const std::int64_t ldc = std::max<size_t>(1UL, size_n); // Fast dimensions of result
+
+        event = mkl_blas::gemm(q,
+                               oneapi::mkl::transpose::nontrans,
+                               oneapi::mkl::transpose::nontrans,
+                               size_n,
+                               size_m,
+                               size_k,
+                               _DataType(1),
+                               array_2,
+                               ldb,
+                               array_1,
+                               lda,
+                               _DataType(0),
+                               result,
+                               ldc,
+                               dep_events);
+    }
+    else
+    {
+        // input1: M x K
+        // input2: K x N
+        // result: M x N
+        const size_t dim_m = size_m; // shape1.front(); // First dimensions of array1
+        const size_t dim_n = size_n; // shape2.back();  // Last dimensions of array2
+        const size_t dim_k = size_k; // shape1.back(); // First dimensions of array2
+
+        sycl::range<2> gws(dim_m, dim_n); // dimensions are: "i" and "j"
+
+        auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
+            size_t i = global_id[0]; //for (size_t i = 0; i < size; ++i)
+            {
+                size_t j = global_id[1]; //for (size_t j = 0; j < size; ++j)
+                {
+                    _DataType acc = _DataType(0);
+                    for (size_t k = 0; k < dim_k; ++k)
+                    {
+                        const size_t index_1 = i * dim_k + k;
+                        const size_t index_2 = k * dim_n + j;
+                        acc += array_1[index_1] * array_2[index_2];
+                    }
+                    const size_t index_result = i * dim_n + j;
+                    result[index_result] = acc;
+                }
+            }
+        };
+
+        auto kernel_func = [&](sycl::handler& cgh) {
+            cgh.depends_on(dep_events);
+            cgh.parallel_for<class dpnp_matmul_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        };
+
+        event = q.submit(kernel_func);
+    }
+
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+
+    return DPCTLEvent_Copy(event_ref);
+}
 
 template <typename _DataType>
 void dpnp_matmul_c(void* result_out,
@@ -550,93 +663,64 @@ void dpnp_matmul_c(void* result_out,
                    const shape_elem_type* input2_shape,
                    const shape_elem_type* input2_strides)
 {
-    (void)result_size;
-    (void)result_ndim;
-    (void)result_shape;
-    (void)result_strides;
-    (void)input1_size;
-    (void)input1_ndim;
-    (void)input1_strides;
-    (void)input2_size;
-    (void)input2_ndim;
-    (void)input2_strides;
-
-    size_t size_m = input1_shape[0];
-    size_t size_n = input2_shape[1];
-    size_t size_k = input1_shape[1];
-
-    if (!size_m || !size_n || !size_k)
-    {
-        return;
-    }
-
-    cl::sycl::event event;
-    DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, size_m * size_k);
-    DPNPC_ptr_adapter<_DataType> input2_ptr(input2_in, size_k * size_n);
-    DPNPC_ptr_adapter<_DataType> result_ptr(result_out, size_m * size_n, false, true);
-    _DataType* array_1 = input1_ptr.get_ptr();
-    _DataType* array_2 = input2_ptr.get_ptr();
-    _DataType* result = result_ptr.get_ptr();
-
-    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
-    {
-        // using std::max for these ldx variables is required by math library
-        const std::int64_t lda = std::max<size_t>(1UL, size_k); // First dimensions of array_1
-        const std::int64_t ldb = std::max<size_t>(1UL, size_n); // First dimensions of array_2
-        const std::int64_t ldc = std::max<size_t>(1UL, size_n); // Fast dimensions of result
-
-        event = mkl_blas::gemm(DPNP_QUEUE,
-                               oneapi::mkl::transpose::nontrans,
-                               oneapi::mkl::transpose::nontrans,
-                               size_n,
-                               size_m,
-                               size_k,
-                               _DataType(1),
-                               array_2,
-                               ldb,
-                               array_1,
-                               lda,
-                               _DataType(0),
-                               result,
-                               ldc);
-    }
-    else
-    {
-        // input1: M x K
-        // input2: K x N
-        // result: M x N
-        const size_t dim_m = size_m; // shape1.front(); // First dimensions of array1
-        const size_t dim_n = size_n; // shape2.back();  // Last dimensions of array2
-        const size_t dim_k = size_k; // shape1.back(); // First dimensions of array2
-
-        cl::sycl::range<2> gws(dim_m, dim_n); // dimensions are: "i" and "j"
-
-        auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
-            size_t i = global_id[0]; //for (size_t i = 0; i < size; ++i)
-            {
-                size_t j = global_id[1]; //for (size_t j = 0; j < size; ++j)
-                {
-                    _DataType acc = _DataType(0);
-                    for (size_t k = 0; k < dim_k; ++k)
-                    {
-                        const size_t index_1 = i * dim_k + k;
-                        const size_t index_2 = k * dim_n + j;
-                        acc += array_1[index_1] * array_2[index_2];
-                    }
-                    const size_t index_result = i * dim_n + j;
-                    result[index_result] = acc;
-                }
-            }
-        };
-
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_matmul_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
-        };
-
-        event = DPNP_QUEUE.submit(kernel_func);
-    }
-    event.wait();
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_matmul_c<_DataType>(q_ref,
+                                                           result_out,
+                                                           result_size,
+                                                           result_ndim,
+                                                           result_shape,
+                                                           result_strides,
+                                                           input1_in,
+                                                           input1_size,
+                                                           input1_ndim,
+                                                           input1_shape,
+                                                           input1_strides,
+                                                           input2_in,
+                                                           input2_size,
+                                                           input2_ndim,
+                                                           input2_shape,
+                                                           input2_strides,
+                                                           dep_event_vec_ref);
+    sycl::event event = *(reinterpret_cast<sycl::event*>(event_ref));
+    event.wait_and_throw();
 }
+
+template <typename _DataType>
+void (*dpnp_matmul_default_c)(void*,
+                              const size_t,
+                              const size_t,
+                              const shape_elem_type*,
+                              const shape_elem_type*,
+                              const void*,
+                              const size_t,
+                              const size_t,
+                              const shape_elem_type*,
+                              const shape_elem_type*,
+                              const void*,
+                              const size_t,
+                              const size_t,
+                              const shape_elem_type*,
+                              const shape_elem_type*) = dpnp_matmul_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_matmul_ext_c)(DPCTLSyclQueueRef,
+                                       void*,
+                                       const size_t,
+                                       const size_t,
+                                       const shape_elem_type*,
+                                       const shape_elem_type*,
+                                       const void*,
+                                       const size_t,
+                                       const size_t,
+                                       const shape_elem_type*,
+                                       const shape_elem_type*,
+                                       const void*,
+                                       const size_t,
+                                       const size_t,
+                                       const shape_elem_type*,
+                                       const shape_elem_type*,
+                                       const DPCTLEventVectorRef) = dpnp_matmul_c<_DataType>;
 
 void func_map_init_linalg(func_map_t& fmap)
 {
@@ -703,10 +787,15 @@ void func_map_init_linalg(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_initval_c<double>};
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_initval_c<std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matmul_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matmul_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_default_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matmul_default_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matmul_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_MATMUL_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_ext_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_ext_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matmul_ext_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matmul_ext_c<double>};
 
     return;
 }

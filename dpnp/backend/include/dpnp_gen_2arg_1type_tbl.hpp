@@ -82,7 +82,7 @@
 
 #endif
 
-MACRO_2ARG_1TYPE_OP(dpnp_bitwise_and_c, input1_elem & input2_elem)
+MACRO_2ARG_1TYPE_OP(dpnp_bitwise_and_c, input1_elem& input2_elem)
 MACRO_2ARG_1TYPE_OP(dpnp_bitwise_or_c, input1_elem | input2_elem)
 MACRO_2ARG_1TYPE_OP(dpnp_bitwise_xor_c, input1_elem ^ input2_elem)
 MACRO_2ARG_1TYPE_OP(dpnp_left_shift_c, input1_elem << input2_elem)

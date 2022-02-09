@@ -84,21 +84,19 @@
         bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
         dpnp_memory_free_c(input1_shape_offsets);                                                                      \
                                                                                                                        \
-        cl::sycl::event event;                                                                                         \
-        cl::sycl::range<1> gws(result_size);                                                                           \
+        sycl::event event;                                                                                             \
+        sycl::range<1> gws(result_size);                                                                               \
                                                                                                                        \
         if (use_strides)                                                                                               \
         {                                                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                          \
                 {                                                                                                      \
                     size_t input_id = 0;                                                                               \
                     for (size_t i = 0; i < input1_ndim; ++i)                                                           \
                     {                                                                                                  \
-                        const size_t output_xyz_id = get_xyz_id_by_id_inkernel(output_id,                              \
-                                                                               result_strides_data,                    \
-                                                                               result_ndim,                            \
-                                                                               i);                                     \
+                        const size_t output_xyz_id =                                                                   \
+                            get_xyz_id_by_id_inkernel(output_id, result_strides_data, result_ndim, i);                 \
                         input_id += output_xyz_id * input1_strides_data[i];                                            \
                     }                                                                                                  \
                                                                                                                        \
@@ -106,25 +104,25 @@
                     result[output_id] = __operation1__;                                                                \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
-                cgh.parallel_for<class __name__##_strides_kernel<_DataType_input,                                      \
-                                                                 _DataType_output>>(gws, kernel_parallel_for_func);    \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
+                cgh.parallel_for<class __name__##_strides_kernel<_DataType_input, _DataType_output>>(                  \
+                    gws, kernel_parallel_for_func);                                                                    \
             };                                                                                                         \
             event = DPNP_QUEUE.submit(kernel_func);                                                                    \
             event.wait();                                                                                              \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                          \
                 {                                                                                                      \
                     const _DataType_output input_elem = input1_data[output_id];                                        \
                     result[output_id] = __operation1__;                                                                \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
-                cgh.parallel_for<class __name__##_kernel<_DataType_input,                                              \
-                                                         _DataType_output>>(gws, kernel_parallel_for_func);            \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
+                cgh.parallel_for<class __name__##_kernel<_DataType_input, _DataType_output>>(                          \
+                    gws, kernel_parallel_for_func);                                                                    \
             };                                                                                                         \
                                                                                                                        \
             if constexpr ((std::is_same<_DataType_input, double>::value ||                                             \
@@ -227,11 +225,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_DEGREES][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_degrees_c<int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_DEGREES][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_degrees_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_DEGREES][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_degrees_c<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_ediff1d_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ediff1d_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_ediff1d_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_ediff1d_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_EXP2][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_exp2_c<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_EXP2][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_exp2_c<int64_t, double>};
@@ -361,26 +354,24 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
                                                                                                                        \
         const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(shape_elem_type);                               \
         shape_elem_type* input1_shape_offsets =                                                                        \
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));                           \
+            reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));                       \
         get_shape_offsets_inkernel(input1_shape_data, input1_ndim, input1_shape_offsets);                              \
         bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
         dpnp_memory_free_c(input1_shape_offsets);                                                                      \
                                                                                                                        \
-        cl::sycl::event event;                                                                                         \
-        cl::sycl::range<1> gws(result_size);                                                                           \
+        sycl::event event;                                                                                             \
+        sycl::range<1> gws(result_size);                                                                               \
                                                                                                                        \
         if (use_strides)                                                                                               \
         {                                                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                          \
                 {                                                                                                      \
                     size_t input_id = 0;                                                                               \
                     for (size_t i = 0; i < input1_ndim; ++i)                                                           \
                     {                                                                                                  \
-                        const size_t output_xyz_id = get_xyz_id_by_id_inkernel(output_id,                              \
-                                                                               result_strides_data,                    \
-                                                                               result_ndim,                            \
-                                                                               i);                                     \
+                        const size_t output_xyz_id =                                                                   \
+                            get_xyz_id_by_id_inkernel(output_id, result_strides_data, result_ndim, i);                 \
                         input_id += output_xyz_id * input1_strides_data[i];                                            \
                     }                                                                                                  \
                                                                                                                        \
@@ -388,21 +379,21 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
                     result[output_id] = __operation1__;                                                                \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
                 cgh.parallel_for<class __name__##_strides_kernel<_DataType>>(gws, kernel_parallel_for_func);           \
             };                                                                                                         \
             event = DPNP_QUEUE.submit(kernel_func);                                                                    \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                                  \
                 {                                                                                                      \
                     const _DataType input_elem = input1_data[i];                                                       \
                     result[i] = __operation1__;                                                                        \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
                 cgh.parallel_for<class __name__##_kernel<_DataType>>(gws, kernel_parallel_for_func);                   \
             };                                                                                                         \
                                                                                                                        \
@@ -549,37 +540,34 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                                                                                                                        \
         const size_t input2_shape_size_in_bytes = input2_ndim * sizeof(shape_elem_type);                               \
         shape_elem_type* input2_shape_offsets =                                                                        \
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input2_shape_size_in_bytes));                           \
+            reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input2_shape_size_in_bytes));                       \
         get_shape_offsets_inkernel(input2_shape_data, input2_ndim, input2_shape_offsets);                              \
-        use_strides = use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);\
+        use_strides =                                                                                                  \
+            use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);          \
         dpnp_memory_free_c(input2_shape_offsets);                                                                      \
                                                                                                                        \
-        cl::sycl::event event;                                                                                         \
-        cl::sycl::range<1> gws(result_size);                                                                           \
+        sycl::event event;                                                                                             \
+        sycl::range<1> gws(result_size);                                                                               \
                                                                                                                        \
         if (use_broadcasting)                                                                                          \
         {                                                                                                              \
             DPNPC_id<_DataType_input1>* input1_it;                                                                     \
             const size_t input1_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input1>);                                 \
             input1_it = reinterpret_cast<DPNPC_id<_DataType_input1>*>(dpnp_memory_alloc_c(input1_it_size_in_bytes));   \
-            new (input1_it) DPNPC_id<_DataType_input1>(input1_data,                                                    \
-                                                       input1_shape_data,                                              \
-                                                       input1_strides_data,                                            \
-                                                       input1_ndim);                                                   \
+            new (input1_it)                                                                                            \
+                DPNPC_id<_DataType_input1>(input1_data, input1_shape_data, input1_strides_data, input1_ndim);          \
                                                                                                                        \
             input1_it->broadcast_to_shape(result_shape_data, result_ndim);                                             \
                                                                                                                        \
             DPNPC_id<_DataType_input2>* input2_it;                                                                     \
             const size_t input2_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input2>);                                 \
             input2_it = reinterpret_cast<DPNPC_id<_DataType_input2>*>(dpnp_memory_alloc_c(input2_it_size_in_bytes));   \
-            new (input2_it) DPNPC_id<_DataType_input2>(input2_data,                                                    \
-                                                       input2_shape_data,                                              \
-                                                       input2_strides_data,                                            \
-                                                       input2_ndim);                                                   \
+            new (input2_it)                                                                                            \
+                DPNPC_id<_DataType_input2>(input2_data, input2_shape_data, input2_strides_data, input2_ndim);          \
                                                                                                                        \
             input2_it->broadcast_to_shape(result_shape_data, result_ndim);                                             \
                                                                                                                        \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 const size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                            \
                 {                                                                                                      \
                     const _DataType_output input1_elem = (*input1_it)[i];                                              \
@@ -587,10 +575,10 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                     result[i] = __operation1__;                                                                        \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
-                cgh.parallel_for<class __name__##_broadcast_kernel<_DataType_output,                                   \
-                                                                   _DataType_input1,                                   \
-                                                                   _DataType_input2>>(gws, kernel_parallel_for_func);  \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
+                cgh.parallel_for<                                                                                      \
+                    class __name__##_broadcast_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(          \
+                    gws, kernel_parallel_for_func);                                                                    \
             };                                                                                                         \
                                                                                                                        \
             event = DPNP_QUEUE.submit(kernel_func);                                                                    \
@@ -601,17 +589,15 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
         }                                                                                                              \
         else if (use_strides)                                                                                          \
         {                                                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 const size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                    \
                 {                                                                                                      \
                     size_t input1_id = 0;                                                                              \
                     size_t input2_id = 0;                                                                              \
                     for (size_t i = 0; i < result_ndim; ++i)                                                           \
                     {                                                                                                  \
-                        const size_t output_xyz_id = get_xyz_id_by_id_inkernel(output_id,                              \
-                                                                               result_strides_data,                    \
-                                                                               result_ndim,                            \
-                                                                               i);                                     \
+                        const size_t output_xyz_id =                                                                   \
+                            get_xyz_id_by_id_inkernel(output_id, result_strides_data, result_ndim, i);                 \
                         input1_id += output_xyz_id * input1_strides_data[i];                                           \
                         input2_id += output_xyz_id * input2_strides_data[i];                                           \
                     }                                                                                                  \
@@ -621,10 +607,10 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                     result[output_id] = __operation1__;                                                                \
                 }                                                                                                      \
             };                                                                                                         \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
-                cgh.parallel_for<class __name__##_strides_kernel<_DataType_output,                                     \
-                                                                 _DataType_input1,                                     \
-                                                                 _DataType_input2>>(gws, kernel_parallel_for_func);    \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
+                cgh.parallel_for<                                                                                      \
+                    class __name__##_strides_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(            \
+                    gws, kernel_parallel_for_func);                                                                    \
             };                                                                                                         \
                                                                                                                        \
             event = DPNP_QUEUE.submit(kernel_func);                                                                    \
@@ -640,7 +626,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
             }                                                                                                          \
             else                                                                                                       \
             {                                                                                                          \
-                auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                       \
+                auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                           \
                     const size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                        \
                     {                                                                                                  \
                         const _DataType_output input1_elem = input1_data[i];                                           \
@@ -648,10 +634,9 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                         result[i] = __operation1__;                                                                    \
                     }                                                                                                  \
                 };                                                                                                     \
-                auto kernel_func = [&](cl::sycl::handler& cgh) {                                                       \
-                    cgh.parallel_for<class __name__##_kernel<_DataType_output,                                         \
-                                                             _DataType_input1,                                         \
-                                                             _DataType_input2>>(gws, kernel_parallel_for_func);        \
+                auto kernel_func = [&](sycl::handler& cgh) {                                                           \
+                    cgh.parallel_for<class __name__##_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(   \
+                        gws, kernel_parallel_for_func);                                                                \
                 };                                                                                                     \
                 event = DPNP_QUEUE.submit(kernel_func);                                                                \
             }                                                                                                          \
@@ -697,12 +682,16 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_arctan2_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_arctan2_c<double, double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_copysign_c<double, int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_INT][eft_LNG] = {eft_DBL, (void*)dpnp_copysign_c<double, int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_INT][eft_INT] = {eft_DBL,
+                                                              (void*)dpnp_copysign_c<double, int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_INT][eft_LNG] = {eft_DBL,
+                                                              (void*)dpnp_copysign_c<double, int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_copysign_c<double, int32_t, float>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_copysign_c<double, int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_LNG][eft_INT] = {eft_DBL, (void*)dpnp_copysign_c<double, int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_copysign_c<double, int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_LNG][eft_INT] = {eft_DBL,
+                                                              (void*)dpnp_copysign_c<double, int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_LNG][eft_LNG] = {eft_DBL,
+                                                              (void*)dpnp_copysign_c<double, int64_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_copysign_c<double, int64_t, float>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_copysign_c<double, int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_copysign_c<double, float, int32_t>};
@@ -805,13 +794,17 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_FLT] = {eft_FLT, (void*)dpnp_multiply_c<float, bool, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<double, bool, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_BLN] = {eft_INT, (void*)dpnp_multiply_c<int32_t, int32_t, bool>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_multiply_c<int32_t, int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_multiply_c<int64_t, int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_INT] = {eft_INT,
+                                                              (void*)dpnp_multiply_c<int32_t, int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_LNG] = {eft_LNG,
+                                                              (void*)dpnp_multiply_c<int64_t, int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_multiply_c<double, int32_t, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<double, int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_BLN] = {eft_LNG, (void*)dpnp_multiply_c<int64_t, int64_t, bool>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_multiply_c<int64_t, int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_multiply_c<int64_t, int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_INT] = {eft_LNG,
+                                                              (void*)dpnp_multiply_c<int64_t, int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_LNG] = {eft_LNG,
+                                                              (void*)dpnp_multiply_c<int64_t, int64_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_multiply_c<double, int64_t, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<double, int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_BLN] = {eft_FLT, (void*)dpnp_multiply_c<float, float, bool>};
@@ -844,12 +837,16 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_POWER][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_power_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_POWER][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_power_c<double, double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_subtract_c<int32_t, int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_subtract_c<int64_t, int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_INT] = {eft_INT,
+                                                              (void*)dpnp_subtract_c<int32_t, int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_LNG] = {eft_LNG,
+                                                              (void*)dpnp_subtract_c<int64_t, int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_subtract_c<double, int32_t, float>};
     fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_subtract_c<double, int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_subtract_c<int64_t, int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_subtract_c<int64_t, int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_LNG][eft_INT] = {eft_LNG,
+                                                              (void*)dpnp_subtract_c<int64_t, int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_LNG][eft_LNG] = {eft_LNG,
+                                                              (void*)dpnp_subtract_c<int64_t, int64_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_subtract_c<double, int64_t, float>};
     fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_subtract_c<double, int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_subtract_c<double, float, int32_t>};

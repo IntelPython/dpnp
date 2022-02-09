@@ -50,19 +50,19 @@ void dpnp_repeat_c(const void* array1_in, void* result1, const size_t repeats, c
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
     const _DataType* array_in = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    cl::sycl::range<2> gws(size, repeats);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+    sycl::range<2> gws(size, repeats);
+    auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
         size_t idx1 = global_id[0];
         size_t idx2 = global_id[1];
         result[(idx1 * repeats) + idx2] = array_in[idx1];
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_repeat_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
@@ -88,25 +88,28 @@ void dpnp_elemwise_transpose_c(void* array1_in,
         return;
     }
 
-    cl::sycl::event event;
+    sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
     _DataType* array1 = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    shape_elem_type* input_offset_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type* input_offset_shape =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
     get_shape_offsets_inkernel(input_shape, ndim, input_offset_shape);
 
-    shape_elem_type* temp_result_offset_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type* temp_result_offset_shape =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
     get_shape_offsets_inkernel(result_shape, ndim, temp_result_offset_shape);
 
-    shape_elem_type* result_offset_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type* result_offset_shape =
+        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
     for (size_t axis = 0; axis < ndim; ++axis)
     {
         result_offset_shape[permute_axes[axis]] = temp_result_offset_shape[axis];
     }
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         const size_t idx = global_id[0];
 
         size_t output_index = 0;
@@ -124,7 +127,7 @@ void dpnp_elemwise_transpose_c(void* array1_in,
         result[output_index] = array1[idx];
     };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
+    auto kernel_func = [&](sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_elemwise_transpose_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 

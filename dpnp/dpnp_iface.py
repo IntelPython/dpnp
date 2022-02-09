@@ -186,7 +186,7 @@ def convert_single_elem_array_to_scalar(obj, keepdims=False):
     return obj
 
 
-def get_dpnp_descriptor(ext_obj, copy_when_strides=True):
+def get_dpnp_descriptor(ext_obj, copy_when_strides=True, copy_when_nondefault_queue=True):
     """
     Return True:
       never
@@ -211,7 +211,7 @@ def get_dpnp_descriptor(ext_obj, copy_when_strides=True):
     # then this behavior can be disabled with setting "copy_when_strides"
     if copy_when_strides and getattr(ext_obj, "strides", None) is not None:
         # TODO: replace this workaround when usm_ndarray will provide such functionality
-        shape_offsets = tuple(numpy.prod(ext_obj.shape[i+1:], dtype=numpy.int64) for i in range(ext_obj.ndim))
+        shape_offsets = tuple(numpy.prod(ext_obj.shape[i + 1:], dtype=numpy.int64) for i in range(ext_obj.ndim))
 
         if hasattr(ext_obj, "__sycl_usm_array_interface__"):
             ext_obj_offset = ext_obj.__sycl_usm_array_interface__.get("offset", 0)
@@ -220,6 +220,18 @@ def get_dpnp_descriptor(ext_obj, copy_when_strides=True):
 
         if ext_obj.strides != shape_offsets or ext_obj_offset != 0:
             ext_obj = array(ext_obj)
+
+    # while dpnp functions are based on DPNP_QUEUE
+    # we need to create a copy on device associated with DPNP_QUEUE
+    # if function get implementation for different queue
+    # then this behavior can be disabled with setting "copy_when_nondefault_queue"
+    arr_obj = unwrap_array(ext_obj)
+    queue = getattr(arr_obj, "sycl_queue", None)
+    if queue is not None and copy_when_nondefault_queue:
+        default_queue = dpctl.SyclQueue()
+        queue_is_default = dpctl.utils.get_execution_queue([queue, default_queue]) is not None
+        if not queue_is_default:
+            ext_obj = array(arr_obj, sycl_queue=default_queue)
 
     dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:
