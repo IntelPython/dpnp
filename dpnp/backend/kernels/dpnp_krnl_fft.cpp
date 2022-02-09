@@ -168,12 +168,12 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
 
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
 void dpnp_fft_fft_mathlib_cmplx_to_cmplx_c(const void* array1_in,
-                                    void* result_out,
-                                    const shape_elem_type* input_shape,
-                                    const size_t shape_size,
-                                    const size_t result_size,
-                                    _Descriptor_type& desc,
-                                    const size_t norm)
+                                          void* result_out,
+                                          const shape_elem_type* input_shape,
+                                          const size_t shape_size,
+                                          const size_t result_size,
+                                          _Descriptor_type& desc,
+                                          const size_t norm)
 {
     if (!shape_size)
     {
@@ -217,12 +217,12 @@ class dpnp_fft_fft_mathlib_real_to_cmplx_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
 void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
-                                    void* result_out,
-                                    const shape_elem_type* input_shape,
-                                    const size_t shape_size,
-                                    const size_t result_size,
-                                    _Descriptor_type& desc,
-                                    const size_t norm)
+                                          void* result_out,
+                                          const shape_elem_type* input_shape,
+                                          const size_t shape_size,
+                                          const size_t result_size,
+                                          _Descriptor_type& desc,
+                                          const size_t norm)
 {
     if (!shape_size)
     {
@@ -306,8 +306,8 @@ void dpnp_fft_fft_c(const void* array1_in,
 
     size_t dim = input_shape[shape_size - 1];
 
-    if (std::is_same<_DataType_output, std::complex<float>>::value ||
-        std::is_same<_DataType_output, std::complex<double>>::value) 
+    if constexpr (std::is_same<_DataType_output, std::complex<float>>::value ||
+                  std::is_same<_DataType_output, std::complex<double>>::value)
     {
         if constexpr (std::is_same<_DataType_input, std::complex<double>>::value &&
                       std::is_same<_DataType_output, std::complex<double>>::value)
@@ -317,16 +317,16 @@ void dpnp_fft_fft_c(const void* array1_in,
                 array1_in, result_out, input_shape, shape_size, result_size, desc, norm);
         }
         /* complex-to-complex, single precision */
-        else if (std::is_same<_DataType_input, std::complex<float>>::value &&
-                 std::is_same<_DataType_output, std::complex<float>>::value)
+        else if constexpr (std::is_same<_DataType_input, std::complex<float>>::value &&
+                           std::is_same<_DataType_output, std::complex<float>>::value)
         {
             desc_sp_cmplx_t desc(dim);
             dpnp_fft_fft_mathlib_cmplx_to_cmplx_c<_DataType_input, _DataType_output, desc_sp_cmplx_t>(
                 array1_in, result_out, input_shape, shape_size, result_size, desc, norm);
         }
         /* real-to-complex, double precision */
-        else if (std::is_same<_DataType_input, double>::value &&
-                 std::is_same<_DataType_output, std::complex<double>>::value)
+        else if constexpr (std::is_same<_DataType_input, double>::value &&
+                           std::is_same<_DataType_output, std::complex<double>>::value)
         {
             desc_dp_real_t desc(dim);
 
@@ -334,12 +334,33 @@ void dpnp_fft_fft_c(const void* array1_in,
                 array1_in, result_out, input_shape, shape_size, result_size, desc, norm);
         }
         /* real-to-complex, single precision */
-        else if (std::is_same<_DataType_input, float>::value &&
-                 std::is_same<_DataType_output, std::complex<float>>::value)
+        else if constexpr (std::is_same<_DataType_input, float>::value &&
+                           std::is_same<_DataType_output, std::complex<float>>::value)
         {
             desc_sp_real_t desc(dim); // try: 2 * result_size
             dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, float, desc_sp_real_t>(
                 array1_in, result_out, input_shape, shape_size, result_size, desc, norm);
+        }
+        else if constexpr (std::is_same<_DataType_input, int32_t>::value ||
+                           std::is_same<_DataType_input, int64_t>::value)
+        {
+            double* array1_copy = reinterpret_cast<double*>(dpnp_memory_alloc_c(input_size * sizeof(double)));
+
+            shape_elem_type* copy_strides = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(sizeof(shape_elem_type)));
+            *copy_strides = 1;
+            shape_elem_type* copy_shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(sizeof(shape_elem_type)));
+            *copy_shape = input_size;
+            shape_elem_type copy_shape_size = 1;
+            dpnp_copyto_c<_DataType_input, double>(array1_copy, input_size, copy_shape_size, copy_shape, copy_strides,
+                                                   array1_in, input_size, copy_shape_size, copy_shape, copy_strides, NULL);
+
+            desc_dp_real_t desc(dim);
+            dpnp_fft_fft_mathlib_real_to_cmplx_c<double, double, desc_dp_real_t>(
+                array1_copy, result_out, input_shape, shape_size, result_size, desc, norm);
+
+            dpnp_memory_free_c(array1_copy);
+            dpnp_memory_free_c(copy_strides);
+            dpnp_memory_free_c(copy_shape);
         }
         else
         {
