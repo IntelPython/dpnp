@@ -168,12 +168,12 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
 
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
 void dpnp_fft_fft_mathlib_cmplx_to_cmplx_c(const void* array1_in,
-                                          void* result_out,
-                                          const shape_elem_type* input_shape,
-                                          const size_t shape_size,
-                                          const size_t result_size,
-                                          _Descriptor_type& desc,
-                                          const size_t norm)
+                                           void* result_out,
+                                           const shape_elem_type* input_shape,
+                                           const size_t shape_size,
+                                           const size_t result_size,
+                                           _Descriptor_type& desc,
+                                           const size_t norm)
 {
     if (!shape_size)
     {
