@@ -54,32 +54,12 @@ def test_diff(array):
     numpy.testing.assert_allclose(expected, result)
 
 
-@pytest.mark.parametrize("data",
-                         [[[1 + 1j, -2j], [3 - 3j, 4j]]],
-                         ids=['[[1+1j, -2j], [3-3j, 4j]]'])
-def test_multiply_complex(data):
-    np_a = numpy.array(data)
-    dpnp_a = dpnp.array(data)
-
-    result = dpnp.multiply(dpnp_a, dpnp_a)
-    expected = numpy.multiply(np_a, np_a)
-    numpy.testing.assert_array_equal(result, expected)
-
-    result = dpnp.multiply(dpnp_a, 0.5j)
-    expected = numpy.multiply(np_a, 0.5j)
-    numpy.testing.assert_array_equal(result, expected)
-
-    result = dpnp.multiply(0.5j, dpnp_a)
-    expected = numpy.multiply(0.5j, np_a)
-    numpy.testing.assert_array_equal(result, expected)
-
-
 @pytest.mark.parametrize("dtype1",
-                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.complex64, numpy.complex128],
+                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32', 'numpy.complex64', 'numpy.complex128'])
 @pytest.mark.parametrize("dtype2",
-                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.complex64, numpy.complex128],
+                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32', 'numpy.complex64', 'numpy.complex128'])
 @pytest.mark.parametrize("data",
                          [[[1, 2], [3, 4]]],
                          ids=['[[1, 2], [3, 4]]'])

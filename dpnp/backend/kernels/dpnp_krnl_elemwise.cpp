@@ -817,6 +817,34 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_multiply_c<double, double, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_multiply_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<double, double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C64][eft_BLN] = {
+        eft_C64, (void*)dpnp_multiply_c<std::complex<float>, std::complex<float>, bool>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C64][eft_INT] = {
+        eft_C64, (void*)dpnp_multiply_c<std::complex<float>, std::complex<float>, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C64][eft_LNG] = {
+        eft_C64, (void*)dpnp_multiply_c<std::complex<float>, std::complex<float>, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C64][eft_FLT] = {
+        eft_C64, (void*)dpnp_multiply_c<std::complex<float>, std::complex<float>, float>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C64][eft_DBL] = {
+        eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<float>, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C64][eft_C64] = {
+        eft_C64, (void*)dpnp_multiply_c<std::complex<float>, std::complex<float>, std::complex<float>>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C64][eft_C128] = {
+        eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<float>, std::complex<double>>};
+
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C128][eft_BLN] = {
+        eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<double>, bool>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C128][eft_INT] = {
+        eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<double>, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C128][eft_LNG] = {
+        eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<double>, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C128][eft_FLT] = {
+        eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<double>, float>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C128][eft_DBL] = {
+        eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<double>, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C128][eft_C64] = {
+        eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<double>, std::complex<float>>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<double>, std::complex<double>>};
 
