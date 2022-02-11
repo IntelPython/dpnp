@@ -679,20 +679,21 @@ void dpnp_floor_divide_c(void* result_out,
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 void (*dpnp_floor_divide_default_c)(
-    void*,
-    const void*,
-    const size_t,
-    const shape_elem_type*,
-    const size_t,
-    const void*,
-    const size_t,
-    const shape_elem_type*,
-    const size_t,
-    const size_t*) = dpnp_floor_divide_c<_DataType_output, _DataType_input1, _DataType_input2>;
+      void*,
+      const void*,
+      const size_t,
+      const shape_elem_type*,
+      const size_t,
+      const void*,
+      const size_t,
+      const shape_elem_type*,
+      const size_t,
+      const size_t*) = dpnp_floor_divide_c<_DataType_output, _DataType_input1, _DataType_input2>;
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 DPCTLSyclEventRef (*dpnp_floor_divide_ext_c)(
     DPCTLSyclQueueRef,
+    void*,
     const void*,
     const size_t,
     const shape_elem_type*,
@@ -1071,10 +1072,24 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_DBL][eft_DBL] = {eft_DBL,
                                                               (void*)dpnp_elemwise_absolute_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_INT][eft_INT] = {eft_INT,
+                                                                  (void*)dpnp_elemwise_absolute_ext_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_LNG][eft_LNG] = {eft_LNG,
+                                                                  (void*)dpnp_elemwise_absolute_ext_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_FLT][eft_FLT] = {eft_FLT,
+                                                                  (void*)dpnp_elemwise_absolute_ext_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                  (void*)dpnp_elemwise_absolute_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_AROUND][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_around_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_AROUND][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_around_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_AROUND][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_around_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_AROUND][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_around_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_AROUND_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_around_ext_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_AROUND_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_around_ext_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_AROUND_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_around_ext_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_AROUND_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_around_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_CROSS][eft_INT][eft_INT] = {eft_INT,
                                                            (void*)dpnp_cross_default_c<int32_t, int32_t, int32_t>};
@@ -1109,20 +1124,68 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_CROSS][eft_DBL][eft_DBL] = {eft_DBL,
                                                            (void*)dpnp_cross_default_c<double, double, double>};
 
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_INT][eft_INT] = {eft_INT,
+                                                               (void*)dpnp_cross_ext_c<int32_t, int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_INT][eft_LNG] = {eft_LNG,
+                                                               (void*)dpnp_cross_ext_c<int64_t, int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_INT][eft_FLT] = {eft_DBL,
+                                                               (void*)dpnp_cross_ext_c<double, int32_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_INT][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_cross_ext_c<double, int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_LNG][eft_INT] = {eft_LNG,
+                                                               (void*)dpnp_cross_ext_c<int64_t, int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_LNG][eft_LNG] = {eft_LNG,
+                                                               (void*)dpnp_cross_ext_c<int64_t, int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_LNG][eft_FLT] = {eft_DBL,
+                                                               (void*)dpnp_cross_ext_c<double, int64_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_LNG][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_cross_ext_c<double, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_FLT][eft_INT] = {eft_DBL,
+                                                               (void*)dpnp_cross_ext_c<double, float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_FLT][eft_LNG] = {eft_DBL,
+                                                               (void*)dpnp_cross_ext_c<double, float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_FLT][eft_FLT] = {eft_FLT,
+                                                               (void*)dpnp_cross_ext_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_FLT][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_cross_ext_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_DBL][eft_INT] = {eft_DBL,
+                                                               (void*)dpnp_cross_ext_c<double, double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_DBL][eft_LNG] = {eft_DBL,
+                                                               (void*)dpnp_cross_ext_c<double, double, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_DBL][eft_FLT] = {eft_DBL,
+                                                               (void*)dpnp_cross_ext_c<double, double, float>};
+    fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_cross_ext_c<double, double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_CUMPROD][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_cumprod_default_c<int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_CUMPROD][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_cumprod_default_c<int64_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_CUMPROD][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cumprod_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_CUMPROD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cumprod_default_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_CUMPROD_EXT][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_cumprod_ext_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CUMPROD_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_cumprod_ext_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CUMPROD_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cumprod_ext_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_CUMPROD_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cumprod_ext_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_CUMSUM][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_cumsum_default_c<int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_CUMSUM][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_cumsum_default_c<int64_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_CUMSUM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cumsum_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_CUMSUM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cumsum_default_c<double, double>};
 
+    fmap[DPNPFuncName::DPNP_FN_CUMSUM_EXT][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_cumsum_ext_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CUMSUM_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_cumsum_ext_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CUMSUM_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cumsum_ext_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_CUMSUM_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cumsum_ext_c<double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_ediff1d_default_c<int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ediff1d_default_c<int64_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_ediff1d_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_ediff1d_default_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_EDIFF1D_EXT][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_ediff1d_ext_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_EDIFF1D_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ediff1d_ext_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_EDIFF1D_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_ediff1d_ext_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_EDIFF1D_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_ediff1d_ext_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_INT][eft_INT] = {
         eft_INT, (void*)dpnp_floor_divide_default_c<int32_t, int32_t, int32_t>};
@@ -1157,10 +1220,48 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_floor_divide_default_c<double, double, double>};
 
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_INT][eft_INT] = {
+        eft_INT, (void*)dpnp_floor_divide_ext_c<int32_t, int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_INT][eft_LNG] = {
+        eft_LNG, (void*)dpnp_floor_divide_ext_c<int64_t, int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_INT][eft_FLT] = {
+        eft_DBL, (void*)dpnp_floor_divide_ext_c<double, int32_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_INT][eft_DBL] = {
+        eft_DBL, (void*)dpnp_floor_divide_ext_c<double, int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_LNG][eft_INT] = {
+        eft_LNG, (void*)dpnp_floor_divide_ext_c<int64_t, int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_LNG][eft_LNG] = {
+        eft_LNG, (void*)dpnp_floor_divide_ext_c<int64_t, int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_LNG][eft_FLT] = {
+        eft_DBL, (void*)dpnp_floor_divide_ext_c<double, int64_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_LNG][eft_DBL] = {
+        eft_DBL, (void*)dpnp_floor_divide_ext_c<double, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_FLT][eft_INT] = {
+        eft_DBL, (void*)dpnp_floor_divide_ext_c<double, float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_FLT][eft_LNG] = {
+        eft_DBL, (void*)dpnp_floor_divide_ext_c<double, float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_FLT][eft_FLT] = {
+        eft_FLT, (void*)dpnp_floor_divide_ext_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_FLT][eft_DBL] = {
+        eft_DBL, (void*)dpnp_floor_divide_ext_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_DBL][eft_INT] = {
+        eft_DBL, (void*)dpnp_floor_divide_ext_c<double, double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_DBL][eft_LNG] = {
+        eft_DBL, (void*)dpnp_floor_divide_ext_c<double, double, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_DBL][eft_FLT] = {
+        eft_DBL, (void*)dpnp_floor_divide_ext_c<double, double, float>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_floor_divide_ext_c<double, double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_modf_default_c<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_modf_default_c<int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_modf_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_modf_default_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_MODF_EXT][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_modf_ext_c<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_MODF_EXT][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_modf_ext_c<int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_MODF_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_modf_ext_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_MODF_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_modf_ext_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_INT] = {
         eft_INT, (void*)dpnp_remainder_default_c<int32_t, int32_t, int32_t>};
@@ -1195,6 +1296,39 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_remainder_default_c<double, double, double>};
 
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_INT][eft_INT] = {
+        eft_INT, (void*)dpnp_remainder_ext_c<int32_t, int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_INT][eft_LNG] = {
+        eft_LNG, (void*)dpnp_remainder_ext_c<int64_t, int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_INT][eft_FLT] = {
+        eft_DBL, (void*)dpnp_remainder_ext_c<double, int32_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_INT][eft_DBL] = {
+        eft_DBL, (void*)dpnp_remainder_ext_c<double, int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_LNG][eft_INT] = {
+        eft_LNG, (void*)dpnp_remainder_ext_c<int64_t, int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_LNG][eft_LNG] = {
+        eft_LNG, (void*)dpnp_remainder_ext_c<int64_t, int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_LNG][eft_FLT] = {
+        eft_DBL, (void*)dpnp_remainder_ext_c<double, int64_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_LNG][eft_DBL] = {
+        eft_DBL, (void*)dpnp_remainder_ext_c<double, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_FLT][eft_INT] = {
+        eft_DBL, (void*)dpnp_remainder_ext_c<double, float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_FLT][eft_LNG] = {
+        eft_DBL, (void*)dpnp_remainder_ext_c<double, float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_FLT][eft_FLT] = {
+        eft_FLT, (void*)dpnp_remainder_ext_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_FLT][eft_DBL] = {
+        eft_DBL, (void*)dpnp_remainder_ext_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_DBL][eft_INT] = {
+        eft_DBL, (void*)dpnp_remainder_ext_c<double, double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_DBL][eft_LNG] = {
+        eft_DBL, (void*)dpnp_remainder_ext_c<double, double, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_DBL][eft_FLT] = {
+        eft_DBL, (void*)dpnp_remainder_ext_c<double, double, float>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_remainder_ext_c<double, double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_INT][eft_INT] = {eft_DBL,
                                                            (void*)dpnp_trapz_default_c<int32_t, int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_INT][eft_LNG] = {eft_DBL,
@@ -1227,6 +1361,39 @@ void func_map_init_mathematical(func_map_t& fmap)
                                                            (void*)dpnp_trapz_default_c<double, float, double>};
     fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_DBL][eft_DBL] = {eft_DBL,
                                                            (void*)dpnp_trapz_default_c<double, double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_INT][eft_INT] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<int32_t, int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_INT][eft_LNG] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<int32_t, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_INT][eft_FLT] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<int32_t, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_INT][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<int32_t, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_LNG][eft_INT] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<int64_t, int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_LNG][eft_LNG] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<int64_t, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_LNG][eft_FLT] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<int64_t, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_LNG][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<int64_t, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_FLT][eft_INT] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<float, int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_FLT][eft_LNG] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<float, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_FLT][eft_FLT] = {eft_FLT,
+                                                               (void*)dpnp_trapz_ext_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_FLT][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_DBL][eft_INT] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<double, int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_DBL][eft_LNG] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<double, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_DBL][eft_FLT] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_trapz_ext_c<double, double, double>};
 
     return;
 }

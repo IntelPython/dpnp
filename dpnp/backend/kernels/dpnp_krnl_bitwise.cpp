@@ -314,17 +314,32 @@ static void func_map_init_bitwise_2arg_1type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_BITWISE_AND][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_and_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_AND][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_and_c_default<int64_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_AND_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_and_c_ext<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_AND_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_and_c_ext<int64_t>};
+
     fmap[DPNPFuncName::DPNP_FN_BITWISE_OR][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_or_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_OR][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_or_c_default<int64_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_OR_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_or_c_ext<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_OR_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_or_c_ext<int64_t>};
 
     fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_xor_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_xor_c_default<int64_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_xor_c_ext<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_xor_c_ext<int64_t>};
+
     fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_left_shift_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_left_shift_c_default<int64_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_left_shift_c_ext<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_left_shift_c_ext<int64_t>};
+
     fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_right_shift_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_right_shift_c_default<int64_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_right_shift_c_ext<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_right_shift_c_ext<int64_t>};
 
     return;
 }
