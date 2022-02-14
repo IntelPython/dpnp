@@ -2,10 +2,19 @@ import pytest
 
 import dpnp as inp
 
+import dpctl
 import numpy
 
 
 def vvsort(val, vec, size, xp):
+    val_kwargs = dict()
+    if hasattr(val, 'sycl_queue'):
+        val_kwargs['sycl_queue'] = getattr(val, "sycl_queue", None)
+
+    vec_kwargs = dict()
+    if hasattr(vec, 'sycl_queue'):
+        vec_kwargs['sycl_queue'] = getattr(vec, "sycl_queue", None)
+
     for i in range(size):
         imax = i
         for j in range(i + 1, size):
@@ -17,16 +26,15 @@ def vvsort(val, vec, size, xp):
         unravel_i = numpy.unravel_index(i, val.shape)
         unravel_imax = numpy.unravel_index(imax, val.shape)
 
-        temp = xp.empty(tuple(), dtype=vec.dtype)
-        temp[()] = val[unravel_i]  # make a copy
+        # swap elements in val array
+        temp = xp.array(val[unravel_i], dtype=vec.dtype, **val_kwargs)
         val[unravel_i] = val[unravel_imax]
         val[unravel_imax] = temp
 
-        for k in range(size):
-            temp = xp.empty(tuple(), dtype=val.dtype)
-            temp[()] = vec[k, i]  # make a copy
-            vec[k, i] = vec[k, imax]
-            vec[k, imax] = temp
+        # swap corresponding columns in vec matrix
+        temp = xp.array(vec[:, i], dtype=val.dtype, **vec_kwargs)
+        vec[:, i] = vec[:, imax]
+        vec[:, imax] = temp
 
 
 @pytest.mark.parametrize("array",
@@ -83,6 +91,9 @@ def test_det(array):
 @pytest.mark.parametrize("size",
                          [2, 4, 8, 16, 300])
 def test_eig_arange(type, size):
+    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
+        pytest.skip("eig function doesn\'t work on CPU: https://github.com/IntelPython/dpnp/issues/1005")
+
     a = numpy.arange(size * size, dtype=type).reshape((size, size))
     symm_orig = numpy.tril(a) + numpy.tril(a, -1).T + numpy.diag(numpy.full((size,), size * size, dtype=type))
     symm = symm_orig
@@ -115,14 +126,20 @@ def test_eig_arange(type, size):
     numpy.testing.assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
 
 
-def test_eigvals():
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+def test_eigvals(type):
+    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
+        pytest.skip("eigvals function doesn\'t work on CPU: https://github.com/IntelPython/dpnp/issues/1005")
+
     arrays = [
         [[0, 0], [0, 0]],
         [[1, 2], [1, 2]],
         [[1, 2], [3, 4]]
     ]
     for array in arrays:
-        a = numpy.array(array)
+        a = numpy.array(array, dtype=type)
         ia = inp.array(a)
         result = inp.linalg.eigvals(ia)
         expected = numpy.linalg.eigvals(a)
@@ -143,23 +160,23 @@ def test_inv(type, array):
     numpy.testing.assert_allclose(expected, result)
 
 
-def test_matrix_rank():
-    arrays = [
-        [0, 0],
-        # [0, 1],
-        [1, 2],
-        [[0, 0], [0, 0]],
-        # [[1, 2], [1, 2]],
-        # [[1, 2], [3, 4]],
-    ]
-    tols = [None]
-    for array in arrays:
-        for tol in tols:
-            a = numpy.array(array)
-            ia = inp.array(a)
-            result = inp.linalg.matrix_rank(ia, tol=tol)
-            expected = numpy.linalg.matrix_rank(a, tol=tol)
-            numpy.testing.assert_array_equal(expected, result)
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("array",
+                         [[0, 0], [0, 1], [1, 2], [[0, 0], [0, 0]], [[1, 2], [1, 2]], [[1, 2], [3, 4]]],
+                         ids=['[0, 0]', '[0, 1]', '[1, 2]', '[[0, 0], [0, 0]]', '[[1, 2], [1, 2]]', '[[1, 2], [3, 4]]'])
+@pytest.mark.parametrize("tol",
+                         [None],
+                         ids=['None'])
+def test_matrix_rank(type, tol, array):
+    a = numpy.array(array, dtype=type)
+    ia = inp.array(a)
+
+    result = inp.linalg.matrix_rank(ia, tol=tol)
+    expected = numpy.linalg.matrix_rank(a, tol=tol)
+
+    numpy.testing.assert_allclose(expected, result)
 
 
 @pytest.mark.parametrize("array",

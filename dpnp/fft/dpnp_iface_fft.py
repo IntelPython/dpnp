@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -100,7 +100,7 @@ def fft(x1, n=None, axis=-1, norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         norm_ = get_validated_norm(norm)
 
@@ -144,7 +144,7 @@ def fft2(x1, s=None, axes=(-2, -1), norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if norm is not None:
             pass
@@ -185,7 +185,7 @@ def fftn(x1, s=None, axes=None, norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if s is None:
             boundaries = tuple([x1_desc.shape[i] for i in range(x1_desc.ndim)])
@@ -231,7 +231,7 @@ def fftshift(x1, axes=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc and 0:
 
         norm_= Norm.backward
@@ -263,7 +263,7 @@ def hfft(x1, n=None, axis=-1, norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc and 0:
         norm_ = get_validated_norm(norm)
 
@@ -305,7 +305,7 @@ def ifft(x1, n=None, axis=-1, norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         norm_ = get_validated_norm(norm)
 
@@ -348,7 +348,7 @@ def ifft2(x1, s=None, axes=(-2, -1), norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if norm is not None:
             pass
@@ -372,7 +372,7 @@ def ifftshift(x1, axes=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc and 0:
 
         norm_ = Norm.backward
@@ -385,7 +385,7 @@ def ifftshift(x1, axes=None):
         if x1_desc.size < 1:
             pass                 # let fallback to handle exception
         else:
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.ifftshift, x1, axes)
 
@@ -406,7 +406,7 @@ def ifftn(x1, s=None, axes=None, norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc and 0:
         if s is None:
             boundaries = tuple([x1_desc.shape[i] for i in range(x1_desc.ndim)])
@@ -453,7 +453,7 @@ def ihfft(x1, n=None, axis=-1, norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc and 0:
         norm_ = get_validated_norm(norm)
 
@@ -478,7 +478,7 @@ def ihfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.ihfft, x1, n, axis, norm)
 
@@ -497,7 +497,7 @@ def irfft(x1, n=None, axis=-1, norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc and 0:
         norm_ = get_validated_norm(norm)
 
@@ -548,7 +548,7 @@ def irfft2(x1, s=None, axes=(-2, -1), norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if norm is not None:
             pass
@@ -574,7 +574,7 @@ def irfftn(x1, s=None, axes=None, norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc and 0:
         if s is None:
             boundaries = tuple([x1_desc.shape[i] for i in range(x1_desc.ndim)])
@@ -621,7 +621,7 @@ def rfft(x1, n=None, axis=-1, norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         norm_ = get_validated_norm(norm)
 
@@ -670,7 +670,7 @@ def rfft2(x1, s=None, axes=(-2, -1), norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if norm is not None:
             pass
@@ -711,7 +711,7 @@ def rfftn(x1, s=None, axes=None, norm=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc and 0:
         if s is None:
             boundaries = tuple([x1_desc.shape[i] for i in range(x1_desc.ndim)])
@@ -738,7 +738,7 @@ def rfftn(x1, s=None, axes=None, norm=None):
                 except IndexError:
                     checker_throw_axis_error("fft.rfftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
 
-                x1_iter_desc = dpnp.get_dpnp_descriptor(x1_iter)
+                x1_iter_desc = dpnp.get_dpnp_descriptor(x1_iter, copy_when_nondefault_queue=False)
                 x1_iter = rfft(x1_iter_desc.get_pyobj(), n=param_n, axis=param_axis, norm=norm)
 
             return x1_iter

@@ -88,14 +88,14 @@ def cholesky(input):
         matrix object if `input` is a matrix object.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input)
+    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
     if x1_desc:
         if x1_desc.shape[-1] != x1_desc.shape[-2]:
             pass
         else:
             if input.dtype == dpnp.int32 or input.dtype == dpnp.int64:
                 # TODO memory copy. needs to move into DPNPC
-                input_ = dpnp.get_dpnp_descriptor(dpnp.astype(input, dpnp.float64))
+                input_ = dpnp.get_dpnp_descriptor(dpnp.astype(input, dpnp.float64), copy_when_nondefault_queue=False)
             else:
                 input_ = x1_desc
             return dpnp_cholesky(input_).get_pyobj()
@@ -145,7 +145,7 @@ def det(input):
         Determinant of `input`.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input)
+    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
     if x1_desc:
         if x1_desc.shape[-1] == x1_desc.shape[-2]:
             result_obj = dpnp_det(x1_desc).get_pyobj()
@@ -164,7 +164,7 @@ def eig(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if (x1_desc.size > 0):
             return dpnp_eig(x1_desc)
@@ -191,7 +191,7 @@ def eigvals(input):
         real for real matrices.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input)
+    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
     if x1_desc:
         if x1_desc.size > 0:
             return dpnp_eigvals(x1_desc).get_pyobj()
@@ -213,7 +213,7 @@ def inv(input):
         Otherwise the function will be executed sequentially on CPU.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input)
+    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
     if x1_desc:
         if x1_desc.ndim == 2 and x1_desc.shape[0] == x1_desc.shape[1] and x1_desc.shape[0] >= 2:
             return dpnp_inv(x1_desc).get_pyobj()
@@ -277,7 +277,7 @@ def matrix_rank(input, tol=None, hermitian=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input)
+    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
     if x1_desc:
         if tol is not None:
             pass
@@ -362,7 +362,7 @@ def norm(x1, ord=None, axis=None, keepdims=False):
         Norm of the matrix or vector(s).
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if not isinstance(axis, int) and not isinstance(axis, tuple) and axis is not None:
             pass
@@ -395,7 +395,7 @@ def qr(x1, mode='reduced'):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if mode != 'reduced':
             pass
@@ -464,7 +464,7 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if not x1_desc.ndim == 2:
             pass

@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,8 +24,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
-cimport dpctl as c_dpctl
-
 cimport dpctl as c_dpctl
 
 from libcpp cimport bool as cpp_bool
@@ -145,6 +143,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FFT_FFT
         DPNP_FN_FFT_FFT_EXT
         DPNP_FN_FFT_RFFT
+        DPNP_FN_FFT_RFFT_EXT
         DPNP_FN_FILL_DIAGONAL
         DPNP_FN_FILL_DIAGONAL_EXT
         DPNP_FN_FLATTEN
