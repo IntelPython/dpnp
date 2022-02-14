@@ -32,6 +32,8 @@
 #include <iostream>
 #include <iterator>
 
+#include <CL/sycl.hpp>
+
 #include <dpnp_iface_fptr.hpp>
 
 #define LIBSYCL_VERSION_GREATER(major, minor, patch)                                                                   \
@@ -226,6 +228,32 @@ static inline bool
     const std::vector<_DataType> input2_vec(input2, input2 + input2_size);
 
     return std::equal(std::begin(input1_vec), std::end(input1_vec), std::begin(input2_vec));
+}
+
+/**
+ * @ingroup BACKEND_UTILS
+ * @brief Cast vector of DPCtl events to vector of SYCL enents.
+ *
+ * @param [in] events_ref      Reference to vector of DPCtl events.
+ *
+ * @return                     Vector of SYCL events.
+ */
+namespace
+{
+    std::vector<sycl::event> cast_event_vector(const DPCTLEventVectorRef event_vec_ref)
+    {
+        const size_t event_vec_size = DPCTLEventVector_Size(event_vec_ref);
+
+        std::vector<sycl::event> event_vec;
+        event_vec.reserve(event_vec_size);
+        for (size_t i = 0; i < event_vec_size; ++i)
+        {
+            DPCTLSyclEventRef event_ref = DPCTLEventVector_GetAt(event_vec_ref, i);
+            sycl::event event = *(reinterpret_cast<sycl::event*>(event_ref));
+            event_vec.push_back(event);
+        }
+        return event_vec;
+    }
 }
 
 /**
