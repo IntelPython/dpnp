@@ -1775,7 +1775,7 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_C128][eft_C64] = {
         eft_C128, (void*)dpnp_multiply_c_ext<std::complex<double>, std::complex<double>, std::complex<float>>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void*)dpnp_multiply_c_extdpnp_multiply_c_ext<std::complex<double>, std::complex<double>, std::complex<double>>};
+        eft_C128, (void*)dpnp_multiply_c_ext<std::complex<double>, std::complex<double>, std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_POWER][eft_INT][eft_INT] = {eft_INT,
                                                            (void*)dpnp_power_c_default<int32_t, int32_t, int32_t>};
