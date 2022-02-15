@@ -45,6 +45,7 @@ import numpy
 
 from dpnp.dpnp_utils import *
 from dpnp.fft.dpnp_algo_fft import *
+from enum import Enum
 
 
 __all__ = [
@@ -69,6 +70,22 @@ __all__ = [
 ]
 
 
+class Norm(Enum):
+    backward = 0
+    forward = 1
+    ortho = 2
+
+def _norm_value(norm):
+    if norm is None or norm == "backward":
+        return Norm.backward
+    if norm == "forward":
+        return Norm.forward
+    elif norm == "ortho":
+        return Norm.ortho
+    else:
+        raise ValueError("Unknown norm value.")
+
+
 def fft(x1, n=None, axis=-1, norm=None):
     """
     Compute the one-dimensional discrete Fourier Transform.
@@ -86,11 +103,7 @@ def fft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        norm_val = 0
-        if norm is "forward":
-            norm_val = 1
-        elif norm is "ortho":
-            norm_val = 2
+        norm_ = _norm_value(norm)
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -114,7 +127,7 @@ def fft(x1, n=None, axis=-1, norm=None):
             pass
         else:
             output_boundarie = input_boundarie
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_val).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
     return call_origin(numpy.fft.fft, x1, n, axis, norm)
 
 
@@ -224,7 +237,7 @@ def fftshift(x1, axes=None):
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and 0:
 
-        norm_val = 0
+        norm_= _norm_value(None)
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -234,7 +247,7 @@ def fftshift(x1, axes=None):
         if x1_desc.size < 1:
             pass                 # let fallback to handle exception
         else:
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_val).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.fftshift, x1, axes)
 
@@ -255,11 +268,7 @@ def hfft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and 0:
-        norm_val = 0
-        if norm is "forward":
-            norm_val = 1
-        elif norm is "ortho":
-            norm_val = 2
+        norm_ = _norm_value(norm)
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -280,7 +289,7 @@ def hfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_val).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.hfft, x1, n, axis, norm)
 
@@ -301,11 +310,7 @@ def ifft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and 0:
-        norm_val = 0
-        if norm is "forward":
-            norm_val = 1
-        elif norm is "ortho":
-            norm_val = 2
+        norm_ = _norm_value(norm)
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -326,7 +331,7 @@ def ifft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True, norm_val).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.ifft, x1, n, axis, norm)
 
@@ -373,17 +378,18 @@ def ifftshift(x1, axes=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and 0:
+
+        norm_ = _norm_value(None)
+
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
         else:
             axis_param = axes
 
-        norm_val = 0
-
         if x1_desc.size < 1:
             pass                 # let fallback to handle exception
         else:
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_val).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.ifftshift, x1, axes)
 
@@ -453,11 +459,7 @@ def ihfft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and 0:
-        norm_val = 0
-        if norm is "forward":
-            norm_val = 1
-        elif norm is "ortho":
-            norm_val = 2
+        norm_ = _norm_value(norm)
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -478,7 +480,7 @@ def ihfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_val).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.ihfft, x1, n, axis, norm)
 
@@ -499,11 +501,7 @@ def irfft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and 0:
-        norm_val = 0
-        if norm is "forward":
-            norm_val = 1
-        elif norm is "ortho":
-            norm_val = 2
+        norm_ = _norm_value(norm)
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -524,7 +522,7 @@ def irfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = 2 * (input_boundarie - 1)
 
-            result = dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True, norm_val).get_pyobj()
+            result = dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True, norm_.value).get_pyobj()
             # TODO tmp = utils.create_output_array(result_shape, result_c_type, out)
             # tmp = dparray(result.shape, dtype=dpnp.float64)
             # for it in range(tmp.size):
@@ -625,11 +623,7 @@ def rfft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        norm_val = 0
-        if norm is "forward":
-            norm_val = 1
-        elif norm is "ortho":
-            norm_val = 2
+        norm_ = _norm_value(norm)
 
         if axis is None:
             axis_param = -1                             # the most right dimension (default value)
@@ -654,7 +648,7 @@ def rfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie // 2 + 1  # rfft specific requirenment
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_val).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.rfft, x1, n, axis, norm)
 
