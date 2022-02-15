@@ -75,7 +75,7 @@ class Norm(Enum):
     forward = 1
     ortho = 2
 
-def _norm_value(norm):
+def get_validated_norm(norm):
     if norm is None or norm == "backward":
         return Norm.backward
     if norm == "forward":
@@ -103,7 +103,7 @@ def fft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        norm_ = _norm_value(norm)
+        norm_ = get_validated_norm(norm)
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -237,7 +237,7 @@ def fftshift(x1, axes=None):
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and 0:
 
-        norm_= _norm_value(None)
+        norm_= Norm.backward
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -268,7 +268,7 @@ def hfft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and 0:
-        norm_ = _norm_value(norm)
+        norm_ = get_validated_norm(norm)
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -310,7 +310,7 @@ def ifft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and 0:
-        norm_ = _norm_value(norm)
+        norm_ = get_validated_norm(norm)
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -379,7 +379,7 @@ def ifftshift(x1, axes=None):
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and 0:
 
-        norm_ = _norm_value(None)
+        norm_ = Norm.backward
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -459,7 +459,7 @@ def ihfft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and 0:
-        norm_ = _norm_value(norm)
+        norm_ = get_validated_norm(norm)
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -501,7 +501,7 @@ def irfft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and 0:
-        norm_ = _norm_value(norm)
+        norm_ = get_validated_norm(norm)
 
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
@@ -623,7 +623,7 @@ def rfft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        norm_ = _norm_value(norm)
+        norm_ = get_validated_norm(norm)
 
         if axis is None:
             axis_param = -1                             # the most right dimension (default value)
