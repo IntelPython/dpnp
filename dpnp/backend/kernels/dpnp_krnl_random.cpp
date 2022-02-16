@@ -2834,7 +2834,7 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_standard_normal_default_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_rng_standard_normal_default_c<double>};
+        eft_DBL, (void*)dpnp_rng_standard_t_default_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_TRIANGULAR][eft_DBL][eft_DBL] = {eft_DBL,
                                                                     (void*)dpnp_rng_triangular_default_c<double>};
