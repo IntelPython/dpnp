@@ -80,10 +80,9 @@ def get_validated_norm(norm):
         return Norm.backward
     if norm == "forward":
         return Norm.forward
-    elif norm == "ortho":
+    if norm == "ortho":
         return Norm.ortho
-    else:
-        raise ValueError("Unknown norm value.")
+    raise ValueError("Unknown norm value.")
 
 
 def fft(x1, n=None, axis=-1, norm=None):
