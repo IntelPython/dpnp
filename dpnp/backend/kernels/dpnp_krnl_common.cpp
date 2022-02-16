@@ -110,7 +110,7 @@ sycl::event dot(sycl::queue& queue,
                              sycl::reduction(result_out,
                                              std::plus<_DataType_output>(),
                                              sycl::property::reduction::initialize_to_identity{}),
-                             [=](sycl::id<1> idx, auto& sum) {
+                             [=](sycl::id<1> i, auto& sum) {
                                  size_t i1 = input1_strides >= 0 ? i * input1_strides : size + i * input1_strides - 1;
                                  size_t i2 = input2_strides >= 0 ? i * input2_strides : size + i * input2_strides - 1;
                                  sum += static_cast<_DataType_output>(input1_in[i1]) *
