@@ -101,6 +101,9 @@
    .. automethod:: prod
 
 
+   .. automethod:: ptp
+
+
    .. automethod:: ravel
 
 
