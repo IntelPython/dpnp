@@ -1023,7 +1023,7 @@ def rand(d0, *dn):
     return call_origin(numpy.random.rand, d0, *dn)
 
 
-def randint(low, high=None, size=None, dtype=int):
+def randint(low, high=None, size=None, dtype=int, usm_type='device'):
     """
     Return random integers from `low` (inclusive) to `high` (exclusive).
 
@@ -1073,7 +1073,7 @@ def randint(low, high=None, size=None, dtype=int):
         else:
             low = int(low)
             high = int(high)
-            return dpnp_rng_uniform(low, high, size, _dtype).get_pyobj()
+            return dpnp_rng_uniform(low, high, size, _dtype, usm_type).get_pyobj()
 
     return call_origin(numpy.random.randint, low, high, size, dtype)
 
@@ -1533,7 +1533,7 @@ def triangular(left, mode, right, size=None):
     return call_origin(numpy.random.triangular, left, mode, right, size)
 
 
-def uniform(low=0.0, high=1.0, size=None):
+def uniform(low=0.0, high=1.0, size=None, usm_type='device'):
     """
 
     Draw samples from a uniform distribution.
@@ -1566,7 +1566,7 @@ def uniform(low=0.0, high=1.0, size=None):
         else:
             if low > high:
                 low, high = high, low
-            return dpnp_rng_uniform(low, high, size, dtype=numpy.float64).get_pyobj()
+            return dpnp_rng_uniform(low, high, size, dtype=numpy.float64, usm_type=usm_type).get_pyobj()
 
     return call_origin(numpy.random.uniform, low, high, size)
 

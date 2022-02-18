@@ -696,6 +696,7 @@ INP_DLLEXPORT void dpnp_rng_triangular_c(
  * @param [in]  low                 Left bound of array values.
  * @param [in]  high                Right bound of array values.
  * @param [in]  size                Number of elements in `result` array.
+ * @param [in]  random_state_in     Pointer on class with random state.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
@@ -704,6 +705,7 @@ INP_DLLEXPORT DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
                                                    const long low,
                                                    const long high,
                                                    const size_t size,
+                                                   void* random_state_in,
                                                    const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>

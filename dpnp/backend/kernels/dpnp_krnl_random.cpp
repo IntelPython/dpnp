@@ -35,6 +35,7 @@
 #include "dpnp_utils.hpp"
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
+#include "dpnp_random_state.hpp"
 
 namespace mkl_blas = oneapi::mkl::blas;
 namespace mkl_rng = oneapi::mkl::rng;
@@ -2119,6 +2120,7 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
                                      const long low,
                                      const long high,
                                      const size_t size,
+                                     void* mt19937_in,
                                      const DPCTLEventVectorRef dep_event_vec_ref)
 {
     // avoid warning unused variable
@@ -2133,6 +2135,8 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
+    mt19937_class* mt19937 = reinterpret_cast<mt19937_class*>(mt19937_in);
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     // set left bound of distribution
@@ -2142,7 +2146,7 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
 
     mkl_rng::uniform<_DataType> distribution(a, b);
     // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    auto event_out = mkl_rng::generate(distribution, *(mt19937->engine), size, result1);
     event_out.wait();
 
     return event_ref;
@@ -2153,13 +2157,17 @@ void dpnp_rng_uniform_c(void* result, const long low, const long high, const siz
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    IRandomState* mt19937 = new mt19937_class();
+    mt19937->engine = &DPNP_RNG_ENGINE;
     DPCTLSyclEventRef event_ref = dpnp_rng_uniform_c<_DataType>(q_ref,
                                                                 result,
                                                                 low,
                                                                 high,
                                                                 size,
+                                                                mt19937,
                                                                 dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    delete mt19937;
 }
 
 template <typename _DataType>
@@ -2171,6 +2179,7 @@ DPCTLSyclEventRef (*dpnp_rng_uniform_ext_c)(DPCTLSyclQueueRef,
                                             const long,
                                             const long,
                                             const size_t,
+                                            void*,
                                             const DPCTLEventVectorRef) = dpnp_rng_uniform_c<_DataType>;
 
 #ifndef M_PI
@@ -2842,6 +2851,10 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_uniform_default_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_uniform_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_default_c<int32_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_uniform_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_uniform_ext_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_ext_c<int32_t>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_VONMISES][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_vonmises_default_c<double>};
 

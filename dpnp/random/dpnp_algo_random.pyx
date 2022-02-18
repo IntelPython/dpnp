@@ -35,7 +35,11 @@ and the rest of the library
 
 import numpy
 import dpnp.config as config
+import dpctl
+from libc.stdlib cimport free, malloc
+
 from dpnp.dpnp_algo cimport *
+cimport dpctl as c_dpctl
 
 cimport dpnp.dpnp_utils as utils
 
@@ -130,11 +134,115 @@ ctypedef void(*fptr_dpnp_rng_triangular_c_1out_t)(void * ,
                                                   const double,
                                                   const double,
                                                   const size_t) except +
-ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void * , const long, const long, const size_t) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_uniform_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                    void * ,
+                                                                    const long,
+                                                                    const long,
+                                                                    const size_t,
+                                                                    void * ,
+                                                                    const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef void(*fptr_dpnp_rng_vonmises_c_1out_t)(void * , const double, const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_wald_c_1out_t)(void *, const double, const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void * , const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_zipf_c_1out_t)(void * , const double, const size_t) except +
+
+
+
+cdef extern from "dpnp_random_state.hpp":
+    cdef cppclass mt19937_class:
+        void InitScalarSeed(c_dpctl.DPCTLSyclQueueRef, size_t)
+        void InitVectorSeed(c_dpctl.DPCTLSyclQueueRef, unsigned int *, int)
+        void Delete()
+
+
+cdef class MT19937:
+    """Class storing MKL engine for MT199374x32x10 algorithm
+    """
+    cdef mt19937_class mt19937
+    cdef c_dpctl.DPCTLSyclQueueRef QRef
+    cdef c_dpctl.SyclQueue Queue
+
+    def __cinit__(self, seed, sycl_queue=None):
+        cdef size_t scalar_seed = 0
+        cdef int is_vector_seed = 0
+        cdef int vector_seed_len = 0
+        cdef unsigned int *vector_seed = NULL
+
+        self.QRef = NULL
+        if sycl_queue is None:
+            sycl_queue = dpctl.SyclQueue()
+        if not isinstance(sycl_queue, dpctl.SyclQueue):
+            raise TypeError
+        if isinstance(seed, int):
+            scalar_seed = <size_t>seed
+        elif isinstance(seed, (list, tuple)):
+            is_vector_seed = 1
+            vector_seed_len = len(seed)
+            vector_seed = <unsigned int *>malloc(vector_seed_len * sizeof(size_t))
+            if (not vector_seed):
+                raise MemoryError
+            try:
+                for i in range(vector_seed_len):
+                    vector_seed[i] = <size_t> seed[i]
+            except (ValueError, TypeError) as e:
+                free(vector_seed)
+                raise e
+        else:
+            raise TypeError("Seed must be an size_t, or a sequence of size_t elements")
+        self.Queue = <c_dpctl.SyclQueue>sycl_queue
+        self.QRef = c_dpctl.DPCTLQueue_Copy((self.Queue).get_queue_ref())
+        if is_vector_seed:
+            self.mt19937.InitVectorSeed(self.QRef, vector_seed, vector_seed_len)
+            free(vector_seed)
+        else:
+            self.mt19937.InitScalarSeed(self.QRef, scalar_seed)
+
+    def __dealloc__(self):
+        self.mt19937.Delete()
+        c_dpctl.DPCTLQueue_Delete(self.QRef)
+
+    cdef mt19937_class * mt19937(self):
+        return &self.mt19937
+
+    cdef c_dpctl.DPCTLSyclQueueRef get_queue_ref(self):
+        return self.QRef
+
+    cpdef utils.dpnp_descriptor uniform(self, low, high, size, dtype, usm_type):
+        cdef shape_type_c result_shape
+        cdef utils.dpnp_descriptor result
+        cdef DPNPFuncType param1_type
+        cdef DPNPFuncData kernel_data
+        cdef fptr_dpnp_rng_uniform_c_1out_t func
+        cdef c_dpctl.SyclQueue q
+        cdef c_dpctl.DPCTLSyclQueueRef q_ref
+        cdef c_dpctl.DPCTLSyclEventRef event_ref
+
+        if low == high:
+            return dpnp_full(size, low, dtype)
+        else:
+            # convert string type names (array.dtype) to C enum DPNPFuncType
+            param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+            # get the FPTR data structure
+            kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM_EXT, param1_type, param1_type)
+
+            # ceate result array with type given by FPTR data
+            result_shape = utils._object_to_tuple(size)
+            result = utils.create_output_descriptor(result_shape,
+                                                    kernel_data.return_type,
+                                                    None,
+                                                    device=None,
+                                                    usm_type=usm_type,
+                                                    sycl_queue=self.Queue)
+
+            func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
+            # call FPTR function
+            event_ref = func(self.QRef, result.get_data(), low, high, result.size, &self.mt19937, NULL)
+
+            with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+            c_dpctl.DPCTLEvent_Delete(event_ref)
+
+            return result
 
 
 cpdef utils.dpnp_descriptor dpnp_rng_beta(double a, double b, size):
@@ -774,21 +882,9 @@ cpdef utils.dpnp_descriptor dpnp_rng_random(dims):
     cdef long low = 0
     cdef long high = 1
 
-    # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    mt19937 = MT19937(seed=1)
 
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM, param1_type, param1_type)
-
-    # ceate result array with type given by FPTR data
-    cdef shape_type_c result_shape = utils._object_to_tuple(dims)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
-
-    cdef fptr_dpnp_rng_uniform_c_1out_t func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
-    # call FPTR function
-    func(result.get_data(), low, high, result.size)
-
-    return result
+    return mt19937.uniform(low, high, dims, dtype=numpy.float64, usm_type="device")
 
 
 cpdef utils.dpnp_descriptor dpnp_rng_rayleigh(double scale, size):
@@ -1027,7 +1123,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_triangular(double left, double mode, double
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_rng_uniform(long low, long high, size, dtype):
+cpdef utils.dpnp_descriptor dpnp_rng_uniform(long low, long high, size, dtype, usm_type):
     """
     Returns an array populated with samples from standard uniform distribution.
     Generates a matrix filled with random numbers sampled from a
@@ -1045,21 +1141,9 @@ cpdef utils.dpnp_descriptor dpnp_rng_uniform(long low, long high, size, dtype):
     if low == high:
         return dpnp_full(size, low, dtype)
     else:
-        # convert string type names (array.dtype) to C enum DPNPFuncType
-        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+        mt19937 = MT19937(seed=1)
 
-        # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM, param1_type, param1_type)
-
-        # ceate result array with type given by FPTR data
-        result_shape = utils._object_to_tuple(size)
-        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
-
-        func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
-        # call FPTR function
-        func(result.get_data(), low, high, result.size)
-
-    return result
+        return mt19937.uniform(low, high, size, dtype, usm_type)
 
 
 cpdef utils.dpnp_descriptor dpnp_rng_vonmises(double mu, double kappa, size):
