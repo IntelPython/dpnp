@@ -61,7 +61,7 @@
  * @param[in]  axis                Axis ID to compute by.
  * @param[in]  input_boundarie     Limit number of elements for @ref axis.
  * @param[in]  inverse             Using inverse algorithm.
- * @param[in]  norm                Normalization mode. 0 - backward, 1 - forward.
+ * @param[in]  norm                Normalization mode. 0 - backward, 1 - forward, 2 - ortho.
  * @param[in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
