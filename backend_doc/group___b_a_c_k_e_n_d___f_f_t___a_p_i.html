@@ -91,16 +91,16 @@ $(document).ready(function(){initNavTree('group___b_a_c_k_e_n_d___f_f_t___a_p_i.
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga89c66f7027d40a49c0d3d3d8665cbbdb"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga89c66f7027d40a49c0d3d3d8665cbbdb"><td class="memTemplItemLeft" align="right" valign="top">INP_DLLEXPORT void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga89c66f7027d40a49c0d3d3d8665cbbdb">dpnp_fft_fft_c</a> (const void *array_in, void *result, const shape_elem_type *input_shape, const shape_elem_type *output_shape, size_t shape_size, long axis, long input_boundarie, size_t inverse, const size_t norm)</td></tr>
-<tr class="memdesc:ga89c66f7027d40a49c0d3d3d8665cbbdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">1D discrete Fourier Transform.  <a href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga89c66f7027d40a49c0d3d3d8665cbbdb">More...</a><br /></td></tr>
-<tr class="separator:ga89c66f7027d40a49c0d3d3d8665cbbdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaba833cf617f755b2112b025000f7d239"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:gaba833cf617f755b2112b025000f7d239"><td class="memTemplItemLeft" align="right" valign="top">INP_DLLEXPORT DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#gaba833cf617f755b2112b025000f7d239">dpnp_fft_fft_c</a> (DPCTLSyclQueueRef q_ref, const void *array_in, void *result, const shape_elem_type *input_shape, const shape_elem_type *output_shape, size_t shape_size, long axis, long input_boundarie, size_t inverse, const size_t norm, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
+<tr class="memdesc:gaba833cf617f755b2112b025000f7d239"><td class="mdescLeft">&#160;</td><td class="mdescRight">1D discrete Fourier Transform.  <a href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#gaba833cf617f755b2112b025000f7d239">More...</a><br /></td></tr>
+<tr class="separator:gaba833cf617f755b2112b025000f7d239"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p >This section describes Backend API for Discrete Fourier Transform (DFT) part. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga89c66f7027d40a49c0d3d3d8665cbbdb" name="ga89c66f7027d40a49c0d3d3d8665cbbdb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga89c66f7027d40a49c0d3d3d8665cbbdb">&#9670;&nbsp;</a></span>dpnp_fft_fft_c()</h2>
+<a id="gaba833cf617f755b2112b025000f7d239" name="gaba833cf617f755b2112b025000f7d239"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaba833cf617f755b2112b025000f7d239">&#9670;&nbsp;</a></span>dpnp_fft_fft_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -108,8 +108,14 @@ Functions</h2></td></tr>
 template&lt;typename _DataType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">INP_DLLEXPORT void dpnp_fft_fft_c </td>
+          <td class="memname">INP_DLLEXPORT DPCTLSyclEventRef dpnp_fft_fft_c </td>
           <td>(</td>
+          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
+          <td class="paramname"><em>q_ref</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const void *&#160;</td>
           <td class="paramname"><em>array_in</em>, </td>
         </tr>
@@ -159,7 +165,13 @@ template&lt;typename _DataType &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>norm</em>&#160;</td>
+          <td class="paramname"><em>norm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const DPCTLEventVectorRef&#160;</td>
+          <td class="paramname"><em>dep_event_vec_ref</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -173,6 +185,7 @@ template&lt;typename _DataType &gt; </div>
 <p >Compute the one-dimensional discrete Fourier Transform.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">array_in</td><td>Input array. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">input_shape</td><td>Array with shape information for input array. </td></tr>
@@ -182,6 +195,7 @@ template&lt;typename _DataType &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">input_boundarie</td><td>Limit number of elements for axis. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">inverse</td><td>Using inverse algorithm. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">norm</td><td>Normalization mode. 0 - backward, 1 - forward, 2 - ortho. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
   </table>
   </dd>
 </dl>
