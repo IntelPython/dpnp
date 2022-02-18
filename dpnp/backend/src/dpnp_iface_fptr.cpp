@@ -72,6 +72,23 @@ DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name, DPNPFuncType first_
     return func_info;
 }
 
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
+void (*dpnp_dot_default_c)(void*,
+                           const size_t,
+                           const size_t,
+                           const shape_elem_type*,
+                           const shape_elem_type*,
+                           const void*,
+                           const size_t,
+                           const size_t,
+                           const shape_elem_type*,
+                           const shape_elem_type*,
+                           const void*,
+                           const size_t,
+                           const size_t,
+                           const shape_elem_type*,
+                           const shape_elem_type*) = dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>;
+
 void* get_backend_function_name(const char* func_name, const char* type_name)
 {
     /** Implement it in this way to allow easier play with it */
@@ -86,19 +103,19 @@ void* get_backend_function_name(const char* func_name, const char* type_name)
     {
         if (!strncmp(type_name, supported_type1_name, strlen(supported_type1_name)))
         {
-            return reinterpret_cast<void*>(dpnp_dot_c<double, double, double>);
+            return reinterpret_cast<void*>(dpnp_dot_default_c<double, double, double>);
         }
         else if (!strncmp(type_name, supported_type2_name, strlen(supported_type2_name)))
         {
-            return reinterpret_cast<void*>(dpnp_dot_c<float, float, float>);
+            return reinterpret_cast<void*>(dpnp_dot_default_c<float, float, float>);
         }
         else if (!strncmp(type_name, supported_type3_name, strlen(supported_type3_name)))
         {
-            return reinterpret_cast<void*>(dpnp_dot_c<int64_t, int64_t, int64_t>);
+            return reinterpret_cast<void*>(dpnp_dot_default_c<int64_t, int64_t, int64_t>);
         }
         else if (!strncmp(type_name, supported_type4_name, strlen(supported_type4_name)))
         {
-            return reinterpret_cast<void*>(dpnp_dot_c<int32_t, int32_t, int32_t>);
+            return reinterpret_cast<void*>(dpnp_dot_default_c<int32_t, int32_t, int32_t>);
         }
     }
 
