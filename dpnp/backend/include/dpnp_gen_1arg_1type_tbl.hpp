@@ -90,20 +90,20 @@
 
 #endif
 
-MACRO_1ARG_1TYPE_OP(dpnp_conjugate_c, std::conj(input_elem), DPNP_QUEUE.submit(kernel_func))
-MACRO_1ARG_1TYPE_OP(dpnp_copy_c, input_elem, DPNP_QUEUE.submit(kernel_func))
+MACRO_1ARG_1TYPE_OP(dpnp_conjugate_c, std::conj(input_elem), q.submit(kernel_func))
+MACRO_1ARG_1TYPE_OP(dpnp_copy_c, input_elem, q.submit(kernel_func))
 MACRO_1ARG_1TYPE_OP(dpnp_erf_c,
                     sycl::erf((double)input_elem),
-                    oneapi::mkl::vm::erf(DPNP_QUEUE, input1_size, input1_data, result)) // no sycl::erf for int and long
-MACRO_1ARG_1TYPE_OP(dpnp_negative_c, -input_elem, DPNP_QUEUE.submit(kernel_func))
+                    oneapi::mkl::vm::erf(q, input1_size, input1_data, result)) // no sycl::erf for int and long
+MACRO_1ARG_1TYPE_OP(dpnp_negative_c, -input_elem, q.submit(kernel_func))
 MACRO_1ARG_1TYPE_OP(dpnp_recip_c,
                     _DataType(1) / input_elem,
-                    DPNP_QUEUE.submit(kernel_func)) // error: no member named 'recip' in namespace 'sycl'
+                    q.submit(kernel_func)) // error: no member named 'recip' in namespace 'sycl'
 MACRO_1ARG_1TYPE_OP(dpnp_sign_c,
                     sycl::sign((double)input_elem),
-                    DPNP_QUEUE.submit(kernel_func)) // no sycl::sign for int and long
+                    q.submit(kernel_func)) // no sycl::sign for int and long
 MACRO_1ARG_1TYPE_OP(dpnp_square_c,
                     input_elem* input_elem,
-                    oneapi::mkl::vm::sqr(DPNP_QUEUE, input1_size, input1_data, result))
+                    oneapi::mkl::vm::sqr(q, input1_size, input1_data, result))
 
 #undef MACRO_1ARG_1TYPE_OP

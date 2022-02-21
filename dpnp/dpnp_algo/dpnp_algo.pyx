@@ -379,6 +379,8 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out(DPNPFuncName fptr_name,
 
         result = out
 
+        utils.get_common_usm_allocation(x1, result)  # check USM allocation is common
+
     result_sycl_queue = result.get_array().sycl_queue
 
     cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
@@ -432,6 +434,8 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
 
         result = out
 
+        utils.get_common_usm_allocation(x1, result)  # check USM allocation is common
+
     result_sycl_queue = result.get_array().sycl_queue
 
     cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
@@ -484,9 +488,10 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
     cdef shape_type_c result_shape = utils.get_common_shape(x1_shape, x2_shape)
     cdef utils.dpnp_descriptor result
 
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
+
     if out is None:
         """ Create result array with type given by FPTR data """
-        result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
         result = utils.create_output_descriptor(result_shape,
                                                 kernel_data.return_type,
                                                 None,
@@ -500,6 +505,8 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
             utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
 
         result = out
+
+        utils.get_common_usm_allocation(x1_obj, result)  # check USM allocation is common
 
     cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
     cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
@@ -551,9 +558,10 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
     cdef shape_type_c result_shape = utils.get_common_shape(x1_shape, x2_shape)
     cdef utils.dpnp_descriptor result
 
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
+
     if out is None:
         """ Create result array with type given by FPTR data """
-        result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
         result = utils.create_output_descriptor(result_shape,
                                                 kernel_data.return_type,
                                                 None,
@@ -567,6 +575,8 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
             utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
 
         result = out
+
+        utils.get_common_usm_allocation(x1_obj, result)  # check USM allocation is common
 
     cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result_shape)
 

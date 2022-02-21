@@ -1,3 +1,13 @@
+tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-conjugate-data2]
+tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-trapz-data19]
+tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-conjugate-data2]
+tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-trapz-data19]
+tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-conjugate-data2]
+tests/test_sycl_queue.py::test_broadcasting[opencl:gpu:0-floor_divide-data12-data22]
+tests/test_sycl_queue.py::test_broadcasting[opencl:gpu:0-remainder-data15-data25]
+tests/test_sycl_queue.py::test_broadcasting[opencl:cpu:0-floor_divide-data12-data22]
+tests/test_sycl_queue.py::test_broadcasting[opencl:cpu:0-remainder-data15-data25]
+
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_15_{axes=(), norm=None, s=None, shape=(2, 3, 4)}::test_fft2
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_15_{axes=(), norm=None, s=None, shape=(2, 3, 4)}::test_ifft2
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_16_{axes=(0, 1, 2), norm='ortho', s=(2, 3), shape=(2, 3, 4)}::test_fft2

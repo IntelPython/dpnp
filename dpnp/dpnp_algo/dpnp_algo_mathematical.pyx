@@ -451,7 +451,7 @@ cpdef utils.dpnp_descriptor dpnp_nancumprod(utils.dpnp_descriptor x1):
         if dpnp.isnan(cur_x1_flatiter[i]):
             cur_x1_flatiter[i] = 1
 
-    x1_desc = dpnp.get_dpnp_descriptor(cur_x1)
+    x1_desc = dpnp.get_dpnp_descriptor(cur_x1, copy_when_nondefault_queue=False)
     return dpnp_cumprod(x1_desc)
 
 
@@ -464,7 +464,7 @@ cpdef utils.dpnp_descriptor dpnp_nancumsum(utils.dpnp_descriptor x1):
         if dpnp.isnan(cur_x1_flatiter[i]):
             cur_x1_flatiter[i] = 0
 
-    x1_desc = dpnp.get_dpnp_descriptor(cur_x1)
+    x1_desc = dpnp.get_dpnp_descriptor(cur_x1, copy_when_nondefault_queue=False)
     return dpnp_cumsum(x1_desc)
 
 
