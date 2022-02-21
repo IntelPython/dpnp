@@ -97,8 +97,8 @@ $(document).ready(function(){initNavTree('class_d_p_n_p_c__ptr__adapter.html',''
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae477f0ba298297c6b869d78fdc820600"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_p_n_p_c__ptr__adapter.html#ae477f0ba298297c6b869d78fdc820600">DPNPC_ptr_adapter</a> (const void *src_ptr, const size_t size, bool target_no_sycl=false, bool copy_back_request=false)</td></tr>
-<tr class="separator:ae477f0ba298297c6b869d78fdc820600"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45d1b2fb33eb65b87226a0d4517a866d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_p_n_p_c__ptr__adapter.html#a45d1b2fb33eb65b87226a0d4517a866d">DPNPC_ptr_adapter</a> (DPCTLSyclQueueRef q_ref, const void *src_ptr, const size_t size, bool target_no_sycl=false, bool copy_back_request=false)</td></tr>
+<tr class="separator:a45d1b2fb33eb65b87226a0d4517a866d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf7ce5d31f175e7443202d007a02ba87"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_p_n_p_c__ptr__adapter.html#acf7ce5d31f175e7443202d007a02ba87">is_memcpy_required</a> (sycl::usm::alloc src_ptr_type)</td></tr>
 <tr class="separator:acf7ce5d31f175e7443202d007a02ba87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abed583724379e2f012f2a668ee1a5837"><td class="memItemLeft" align="right" valign="top">_DataType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_p_n_p_c__ptr__adapter.html#abed583724379e2f012f2a668ee1a5837">get_ptr</a> () const</td></tr>
@@ -114,8 +114,8 @@ class DPNPC_ptr_adapter&lt; _DataType &gt;</div><p >Adapter for the memory given
 
 <p class="definition">Definition at line <a class="el" href="dpnpc__memory__adapter_8hpp_source.html#l00044">44</a> of file <a class="el" href="dpnpc__memory__adapter_8hpp_source.html">dpnpc_memory_adapter.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ae477f0ba298297c6b869d78fdc820600" name="ae477f0ba298297c6b869d78fdc820600"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae477f0ba298297c6b869d78fdc820600">&#9670;&nbsp;</a></span>DPNPC_ptr_adapter()</h2>
+<a id="a45d1b2fb33eb65b87226a0d4517a866d" name="a45d1b2fb33eb65b87226a0d4517a866d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45d1b2fb33eb65b87226a0d4517a866d">&#9670;&nbsp;</a></span>DPNPC_ptr_adapter()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -128,6 +128,12 @@ template&lt;typename _DataType &gt; </div>
         <tr>
           <td class="memname"><a class="el" href="class_d_p_n_p_c__ptr__adapter.html">DPNPC_ptr_adapter</a>&lt; _DataType &gt;<a class="el" href="class_d_p_n_p_c__ptr__adapter.html">::DPNPC_ptr_adapter</a> </td>
           <td>(</td>
+          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
+          <td class="paramname"><em>q_ref</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const void *&#160;</td>
           <td class="paramname"><em>src_ptr</em>, </td>
         </tr>
@@ -162,7 +168,7 @@ template&lt;typename _DataType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnpc__memory__adapter_8hpp_source.html#l00057">57</a> of file <a class="el" href="dpnpc__memory__adapter_8hpp_source.html">dpnpc_memory_adapter.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnpc__memory__adapter_8hpp_source.html#l00059">59</a> of file <a class="el" href="dpnpc__memory__adapter_8hpp_source.html">dpnpc_memory_adapter.hpp</a>.</p>
 
 </div>
 </div>
@@ -191,7 +197,7 @@ template&lt;typename _DataType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnpc__memory__adapter_8hpp_source.html#l00106">106</a> of file <a class="el" href="dpnpc__memory__adapter_8hpp_source.html">dpnpc_memory_adapter.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnpc__memory__adapter_8hpp_source.html#l00111">111</a> of file <a class="el" href="dpnpc__memory__adapter_8hpp_source.html">dpnpc_memory_adapter.hpp</a>.</p>
 
 </div>
 </div>
@@ -221,7 +227,7 @@ template&lt;typename _DataType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnpc__memory__adapter_8hpp_source.html#l00146">146</a> of file <a class="el" href="dpnpc__memory__adapter_8hpp_source.html">dpnpc_memory_adapter.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnpc__memory__adapter_8hpp_source.html#l00151">151</a> of file <a class="el" href="dpnpc__memory__adapter_8hpp_source.html">dpnpc_memory_adapter.hpp</a>.</p>
 
 </div>
 </div>
@@ -250,7 +256,7 @@ template&lt;typename _DataType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnpc__memory__adapter_8hpp_source.html#l00141">141</a> of file <a class="el" href="dpnpc__memory__adapter_8hpp_source.html">dpnpc_memory_adapter.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnpc__memory__adapter_8hpp_source.html#l00146">146</a> of file <a class="el" href="dpnpc__memory__adapter_8hpp_source.html">dpnpc_memory_adapter.hpp</a>.</p>
 
 </div>
 </div>
@@ -280,7 +286,7 @@ template&lt;typename _DataType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnpc__memory__adapter_8hpp_source.html#l00124">124</a> of file <a class="el" href="dpnpc__memory__adapter_8hpp_source.html">dpnpc_memory_adapter.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnpc__memory__adapter_8hpp_source.html#l00129">129</a> of file <a class="el" href="dpnpc__memory__adapter_8hpp_source.html">dpnpc_memory_adapter.hpp</a>.</p>
 
 </div>
 </div>

@@ -82,7 +82,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_maximum_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaf0e055d77fe8ea220f23f30229c29a5b", null ],
     [ "dpnp_mean_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga9ffb57d8d58fc2d3bc4c76fce7dd4fb4", null ],
     [ "dpnp_median_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga1aec65af16a011e7ac26fb1cd2daf1eb", null ],
-    [ "dpnp_memory_alloc_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga92dfbe7682dd7680e8b1b874ea626564", null ],
+    [ "dpnp_memory_alloc_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab577c1444f9e878b90162013bf2c4591", null ],
     [ "dpnp_min_c", "group___b_a_c_k_e_n_d___a_p_i.html#gae183e59a05697d37ecfb659ef783224a", null ],
     [ "dpnp_minimum_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab0288ed066c1f88253114ff29ca93b47", null ],
     [ "dpnp_modf_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab66364798efa3d954afdc1659383ee54", null ],

@@ -77,7 +77,7 @@ var searchData=
   ['dpnp_5fmaximum_5fc_74',['dpnp_maximum_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gaf0e055d77fe8ea220f23f30229c29a5b',1,'dpnp_gen_2arg_3type_tbl.hpp']]],
   ['dpnp_5fmean_5fc_75',['dpnp_mean_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga9ffb57d8d58fc2d3bc4c76fce7dd4fb4',1,'dpnp_iface.hpp']]],
   ['dpnp_5fmedian_5fc_76',['dpnp_median_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga1aec65af16a011e7ac26fb1cd2daf1eb',1,'dpnp_iface.hpp']]],
-  ['dpnp_5fmemory_5falloc_5fc_77',['dpnp_memory_alloc_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga92dfbe7682dd7680e8b1b874ea626564',1,'dpnp_iface.hpp']]],
+  ['dpnp_5fmemory_5falloc_5fc_77',['dpnp_memory_alloc_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gab577c1444f9e878b90162013bf2c4591',1,'dpnp_iface.hpp']]],
   ['dpnp_5fmin_5fc_78',['dpnp_min_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gae183e59a05697d37ecfb659ef783224a',1,'dpnp_iface.hpp']]],
   ['dpnp_5fminimum_5fc_79',['dpnp_minimum_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gab0288ed066c1f88253114ff29ca93b47',1,'dpnp_gen_2arg_3type_tbl.hpp']]],
   ['dpnp_5fmodf_5fc_80',['dpnp_modf_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gab66364798efa3d954afdc1659383ee54',1,'dpnp_iface.hpp']]],

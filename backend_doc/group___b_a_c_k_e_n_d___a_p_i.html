@@ -362,9 +362,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga2df766b3642aa4e94c8cef7927d6022d"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2df766b3642aa4e94c8cef7927d6022d">dpnp_queue_is_cpu_c</a> ()</td></tr>
 <tr class="memdesc:ga2df766b3642aa4e94c8cef7927d6022d"><td class="mdescLeft">&#160;</td><td class="mdescRight">SYCL queue device status.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga2df766b3642aa4e94c8cef7927d6022d">More...</a><br /></td></tr>
 <tr class="separator:ga2df766b3642aa4e94c8cef7927d6022d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga92dfbe7682dd7680e8b1b874ea626564"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga92dfbe7682dd7680e8b1b874ea626564">dpnp_memory_alloc_c</a> (size_t size_in_bytes)</td></tr>
-<tr class="memdesc:ga92dfbe7682dd7680e8b1b874ea626564"><td class="mdescLeft">&#160;</td><td class="mdescRight">SYCL queue memory allocation.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga92dfbe7682dd7680e8b1b874ea626564">More...</a><br /></td></tr>
-<tr class="separator:ga92dfbe7682dd7680e8b1b874ea626564"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab577c1444f9e878b90162013bf2c4591"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gab577c1444f9e878b90162013bf2c4591">dpnp_memory_alloc_c</a> (DPCTLSyclQueueRef q_ref, size_t size_in_bytes)</td></tr>
+<tr class="memdesc:gab577c1444f9e878b90162013bf2c4591"><td class="mdescLeft">&#160;</td><td class="mdescRight">SYCL queue memory allocation.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gab577c1444f9e878b90162013bf2c4591">More...</a><br /></td></tr>
+<tr class="separator:gab577c1444f9e878b90162013bf2c4591"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaada414343be2c637611ad7bc65a87871"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _ResultType &gt; </td></tr>
 <tr class="memitem:gaada414343be2c637611ad7bc65a87871"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaada414343be2c637611ad7bc65a87871">dpnp_all_c</a> (DPCTLSyclQueueRef q_ref, const void *array, void *result, const size_t size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:gaada414343be2c637611ad7bc65a87871"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether all array elements along a given axis evaluate to True.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaada414343be2c637611ad7bc65a87871">More...</a><br /></td></tr>
@@ -8880,8 +8880,8 @@ template&lt;typename _DataType , typename _ResultType &gt; </div>
 
 </div>
 </div>
-<a id="ga92dfbe7682dd7680e8b1b874ea626564" name="ga92dfbe7682dd7680e8b1b874ea626564"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga92dfbe7682dd7680e8b1b874ea626564">&#9670;&nbsp;</a></span>dpnp_memory_alloc_c()</h2>
+<a id="gab577c1444f9e878b90162013bf2c4591" name="gab577c1444f9e878b90162013bf2c4591"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab577c1444f9e878b90162013bf2c4591">&#9670;&nbsp;</a></span>dpnp_memory_alloc_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -8889,9 +8889,19 @@ template&lt;typename _DataType , typename _ResultType &gt; </div>
         <tr>
           <td class="memname">char * dpnp_memory_alloc_c </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>size_in_bytes</em></td><td>)</td>
+          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
+          <td class="paramname"><em>q_ref</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size_in_bytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -8900,7 +8910,8 @@ template&lt;typename _DataType , typename _ResultType &gt; </div>
 <p >Memory allocation on the SYCL backend.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">size_in_bytes</td><td>Number of bytes for requested memory allocation.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size_in_bytes</td><td>Number of bytes for requested memory allocation. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue.</td></tr>
   </table>
   </dd>
 </dl>
