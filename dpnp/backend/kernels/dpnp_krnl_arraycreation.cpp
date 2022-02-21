@@ -123,8 +123,8 @@ DPCTLSyclEventRef dpnp_diag_c(DPCTLSyclQueueRef q_ref,
 
     const size_t input1_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     const size_t result_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<shape_elem_type>());
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q, v_in, input1_size, true);
-    DPNPC_ptr_adapter<_DataType> result_ptr(q, result1, result_size, true, true);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,v_in, input1_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(q_ref,result1, result_size, true, true);
     _DataType* v = input1_ptr.get_ptr();
     _DataType* result = result_ptr.get_ptr();
 
@@ -219,7 +219,7 @@ DPCTLSyclEventRef dpnp_eye_c(DPCTLSyclQueueRef q_ref,
 
     size_t result_size = res_shape[0] * res_shape[1];
 
-    DPNPC_ptr_adapter<_DataType> result_ptr(q, result1, result_size, true, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(q_ref,result1, result_size, true, true);
     _DataType* result = result_ptr.get_ptr();
 
     int diag_val_;
@@ -506,8 +506,8 @@ DPCTLSyclEventRef dpnp_ptp_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q, input1_in, input_size, true);
-    DPNPC_ptr_adapter<_DataType> result_ptr(q, result1_out, result_size, false, true);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,input1_in, input_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(q_ref,result1_out, result_size, false, true);
     _DataType* arr = input1_ptr.get_ptr();
     _DataType* result = result_ptr.get_ptr();
 
@@ -630,8 +630,8 @@ DPCTLSyclEventRef dpnp_vander_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(q, array1_in, size_in, true);
-    DPNPC_ptr_adapter<_DataType_output> result_ptr(q, result1, size_in * N, true, true);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(q_ref,array1_in, size_in, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(q_ref,result1, size_in * N, true, true);
     const _DataType_input* array_in = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
 
@@ -739,7 +739,7 @@ DPCTLSyclEventRef dpnp_trace_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q, array1_in, size * last_dim);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,array1_in, size * last_dim);
 
     const _DataType* input = input1_ptr.get_ptr();
     _ResultType* result = reinterpret_cast<_ResultType*>(result_in);
@@ -927,8 +927,8 @@ DPCTLSyclEventRef dpnp_tril_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q, array_in, input_size, true);
-    DPNPC_ptr_adapter<_DataType> result_ptr(q, result1, res_size, true, true);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,array_in, input_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(q_ref,result1, res_size, true, true);
     _DataType* array_m = input1_ptr.get_ptr();
     _DataType* result = result_ptr.get_ptr();
 
@@ -1087,8 +1087,8 @@ DPCTLSyclEventRef dpnp_triu_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q, array_in, input_size, true);
-    DPNPC_ptr_adapter<_DataType> result_ptr(q, result1, res_size, true, true);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,array_in, input_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(q_ref,result1, res_size, true, true);
     _DataType* array_m = input1_ptr.get_ptr();
     _DataType* result = result_ptr.get_ptr();
 

@@ -43,7 +43,8 @@
 template <typename _DataType>
 class DPNPC_ptr_adapter final
 {
-    sycl::queue q;                /**< sycl queue */
+    DPCTLSyclQueueRef queue_ref;      /**< reference to SYCL queue */
+    sycl::queue queue;                /**< SYCL queue */
     void* aux_ptr = nullptr;      /**< pointer to allocated memory by this adapter */
     void* orig_ptr = nullptr;     /**< original pointer to memory given by parameters */
     size_t size_in_bytes = 0;     /**< size of bytes of the memory */
@@ -55,13 +56,14 @@ class DPNPC_ptr_adapter final
 public:
     DPNPC_ptr_adapter() = delete;
 
-    DPNPC_ptr_adapter(sycl::queue& queue,
+    DPNPC_ptr_adapter(DPCTLSyclQueueRef q_ref,
                       const void* src_ptr,
                       const size_t size,
                       bool target_no_sycl = false,
                       bool copy_back_request = false)
     {
-        q = queue;
+        queue_ref = q_ref;
+        queue = *(reinterpret_cast<sycl::queue*>(queue_ref));
         target_no_queue = target_no_sycl;
         copy_back = copy_back_request;
         orig_ptr = const_cast<void*>(src_ptr);
@@ -69,7 +71,7 @@ public:
 
         // enum class alloc { host = 0, device = 1, shared = 2, unknown = 3 };
         sycl::usm::alloc src_ptr_type = sycl::usm::alloc::unknown;
-        src_ptr_type = sycl::get_pointer_type(src_ptr, q.get_context());
+        src_ptr_type = sycl::get_pointer_type(src_ptr, queue.get_context());
         if (verbose)
         {
             std::cerr << "DPNPC_ptr_converter:";
@@ -79,19 +81,19 @@ public:
             std::cerr << "\n\t size=" << size;
             std::cerr << "\n\t size_in_bytes=" << size_in_bytes;
             std::cerr << "\n\t pointer type=" << (long)src_ptr_type;
-            std::cerr << "\n\t queue inorder=" << q.is_in_order();
-            std::cerr << "\n\t queue is_host=" << q.is_host();
-            std::cerr << "\n\t queue device is_host=" << q.get_device().is_host();
-            std::cerr << "\n\t queue device is_cpu=" << q.get_device().is_cpu();
-            std::cerr << "\n\t queue device is_gpu=" << q.get_device().is_gpu();
-            std::cerr << "\n\t queue device is_accelerator=" << q.get_device().is_accelerator();
+            std::cerr << "\n\t queue inorder=" << queue.is_in_order();
+            std::cerr << "\n\t queue is_host=" << queue.is_host();
+            std::cerr << "\n\t queue device is_host=" << queue.get_device().is_host();
+            std::cerr << "\n\t queue device is_cpu=" << queue.get_device().is_cpu();
+            std::cerr << "\n\t queue device is_gpu=" << queue.get_device().is_gpu();
+            std::cerr << "\n\t queue device is_accelerator=" << queue.get_device().is_accelerator();
             std::cerr << std::endl;
         }
 
         if (is_memcpy_required(src_ptr_type))
         {
-            aux_ptr = dpnp_memory_alloc_c(size_in_bytes);
-            dpnp_memory_memcpy_c(aux_ptr, src_ptr, size_in_bytes);
+            aux_ptr = dpnp_memory_alloc_c(queue_ref, size_in_bytes);
+            dpnp_memory_memcpy_c(queue_ref, aux_ptr, src_ptr, size_in_bytes);
             allocated = true;
             if (verbose)
             {
@@ -120,13 +122,13 @@ public:
                 copy_data_back();
             }
 
-            dpnp_memory_free_c(aux_ptr);
+            dpnp_memory_free_c(queue_ref, aux_ptr);
         }
     }
 
     bool is_memcpy_required(sycl::usm::alloc src_ptr_type)
     {
-        if (target_no_queue || q.get_device().is_gpu())
+        if (target_no_queue || queue.get_device().is_gpu())
         {
             if (src_ptr_type == sycl::usm::alloc::unknown)
             {
@@ -154,7 +156,7 @@ public:
                       << " from=" << aux_ptr << " to=" << orig_ptr << " size_in_bytes=" << size_in_bytes << std::endl;
         }
 
-        dpnp_memory_memcpy_c(orig_ptr, aux_ptr, size_in_bytes);
+        dpnp_memory_memcpy_c(queue_ref, orig_ptr, aux_ptr, size_in_bytes);
     }
 };
 
