@@ -46,7 +46,7 @@ DPCTLSyclEventRef dpnp_argmax_c(DPCTLSyclQueueRef q_ref,
     DPCTLSyclEventRef event_ref = nullptr;
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
     _DataType* array_1 = input1_ptr.get_ptr();
     _idx_DataType* result = reinterpret_cast<_idx_DataType*>(result1);
 
@@ -100,8 +100,7 @@ DPCTLSyclEventRef dpnp_argmin_c(DPCTLSyclQueueRef q_ref,
 
     DPCTLSyclEventRef event_ref = nullptr;
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
     _DataType* array_1 = input1_ptr.get_ptr();
     _idx_DataType* result = reinterpret_cast<_idx_DataType*>(result1);
 

@@ -70,12 +70,12 @@
                                                                                                                        \
         sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));                                                      \
                                                                                                                        \
-        DPNPC_ptr_adapter<_DataType_input> input1_ptr(input1_in, input1_size);                                         \
-        DPNPC_ptr_adapter<shape_elem_type> input1_shape_ptr(input1_shape, input1_ndim, true);                          \
-        DPNPC_ptr_adapter<shape_elem_type> input1_strides_ptr(input1_strides, input1_ndim, true);                      \
+        DPNPC_ptr_adapter<_DataType_input> input1_ptr(q_ref, input1_in, input1_size);                                  \
+        DPNPC_ptr_adapter<shape_elem_type> input1_shape_ptr(q_ref, input1_shape, input1_ndim, true);                   \
+        DPNPC_ptr_adapter<shape_elem_type> input1_strides_ptr(q_ref, input1_strides, input1_ndim, true);               \
                                                                                                                        \
-        DPNPC_ptr_adapter<_DataType_output> result_ptr(result_out, result_size, false, true);                          \
-        DPNPC_ptr_adapter<shape_elem_type> result_strides_ptr(result_strides, result_ndim);                            \
+        DPNPC_ptr_adapter<_DataType_output> result_ptr(q_ref, result_out, result_size, false, true);                   \
+        DPNPC_ptr_adapter<shape_elem_type> result_strides_ptr(q_ref, result_strides, result_ndim);                     \
                                                                                                                        \
         _DataType_input* input1_data = input1_ptr.get_ptr();                                                           \
         shape_elem_type* input1_shape_data = input1_shape_ptr.get_ptr();                                               \
@@ -575,12 +575,11 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
                                                                                                                        \
         sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));                                                      \
                                                                                                                        \
-        DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, input1_size);                                               \
-        DPNPC_ptr_adapter<shape_elem_type> input1_shape_ptr(input1_shape, input1_ndim, true);                          \
-        DPNPC_ptr_adapter<shape_elem_type> input1_strides_ptr(input1_strides, input1_ndim, true);                      \
-                                                                                                                       \
-        DPNPC_ptr_adapter<_DataType> result_ptr(result_out, result_size, false, true);                                 \
-        DPNPC_ptr_adapter<shape_elem_type> result_strides_ptr(result_strides, result_ndim);                            \
+        DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, input1_in, input1_size);                                        \
+        DPNPC_ptr_adapter<shape_elem_type> input1_shape_ptr(q_ref, input1_shape, input1_ndim, true);                   \
+        DPNPC_ptr_adapter<shape_elem_type> input1_strides_ptr(q_ref, input1_strides, input1_ndim, true);               \
+        DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result_out, result_size, false, true);                          \
+        DPNPC_ptr_adapter<shape_elem_type> result_strides_ptr(q_ref, result_strides, result_ndim);                     \
                                                                                                                        \
         _DataType* input1_data = input1_ptr.get_ptr();                                                                 \
         shape_elem_type* input1_shape_data = input1_shape_ptr.get_ptr();                                               \
@@ -860,17 +859,16 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                                                                                                                        \
         sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));                                                      \
                                                                                                                        \
-        DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);                                        \
-        DPNPC_ptr_adapter<shape_elem_type> input1_shape_ptr(input1_shape, input1_ndim, true);                          \
-        DPNPC_ptr_adapter<shape_elem_type> input1_strides_ptr(input1_strides, input1_ndim, true);                      \
+        DPNPC_ptr_adapter<_DataType_input1> input1_ptr(q_ref, input1_in, input1_size);                                 \
+        DPNPC_ptr_adapter<shape_elem_type> input1_shape_ptr(q_ref, input1_shape, input1_ndim, true);                   \
+        DPNPC_ptr_adapter<shape_elem_type> input1_strides_ptr(q_ref, input1_strides, input1_ndim, true);               \
+        DPNPC_ptr_adapter<_DataType_input2> input2_ptr(q_ref, input2_in, input2_size);                                 \
+        DPNPC_ptr_adapter<shape_elem_type> input2_shape_ptr(q_ref, input2_shape, input2_ndim, true);                   \
+        DPNPC_ptr_adapter<shape_elem_type> input2_strides_ptr(q_ref, input2_strides, input2_ndim, true);               \
                                                                                                                        \
-        DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);                                        \
-        DPNPC_ptr_adapter<shape_elem_type> input2_shape_ptr(input2_shape, input2_ndim, true);                          \
-        DPNPC_ptr_adapter<shape_elem_type> input2_strides_ptr(input2_strides, input2_ndim, true);                      \
-                                                                                                                       \
-        DPNPC_ptr_adapter<_DataType_output> result_ptr(result_out, result_size, false, true);                          \
-        DPNPC_ptr_adapter<shape_elem_type> result_shape_ptr(result_shape, result_ndim);                                \
-        DPNPC_ptr_adapter<shape_elem_type> result_strides_ptr(result_strides, result_ndim);                            \
+        DPNPC_ptr_adapter<_DataType_output> result_ptr(q_ref, result_out, result_size, false, true);                   \
+        DPNPC_ptr_adapter<shape_elem_type> result_shape_ptr(q_ref, result_shape, result_ndim);                         \
+        DPNPC_ptr_adapter<shape_elem_type> result_strides_ptr(q_ref, result_strides, result_ndim);                     \
                                                                                                                        \
         _DataType_input1* input1_data = input1_ptr.get_ptr();                                                          \
         shape_elem_type* input1_shape_data = input1_shape_ptr.get_ptr();                                               \

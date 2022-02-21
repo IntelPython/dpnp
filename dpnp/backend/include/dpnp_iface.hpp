@@ -106,14 +106,18 @@ INP_DLLEXPORT size_t dpnp_queue_is_cpu_c();
  * Memory allocation on the SYCL backend.
  *
  * @param [in]  size_in_bytes  Number of bytes for requested memory allocation.
+ * @param [in]  q_ref          Reference to SYCL queue.
  *
  * @return  A pointer to newly created memory on @ref dpnp_queue_initialize_c "initialized SYCL device".
  */
+INP_DLLEXPORT char* dpnp_memory_alloc_c(DPCTLSyclQueueRef q_ref, size_t size_in_bytes);
 INP_DLLEXPORT char* dpnp_memory_alloc_c(size_t size_in_bytes);
 
+INP_DLLEXPORT void dpnp_memory_free_c(DPCTLSyclQueueRef q_ref, void* ptr);
 INP_DLLEXPORT void dpnp_memory_free_c(void* ptr);
-void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes);
 
+INP_DLLEXPORT void dpnp_memory_memcpy_c(DPCTLSyclQueueRef q_ref, void* dst, const void* src, size_t size_in_bytes);
+INP_DLLEXPORT void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes);
 /**
  * @ingroup BACKEND_API
  * @brief Test whether all array elements along a given axis evaluate to True.

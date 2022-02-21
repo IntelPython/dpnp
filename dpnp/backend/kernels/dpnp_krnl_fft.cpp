@@ -48,7 +48,7 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_fft_fft_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output>
-void dpnp_fft_fft_sycl_c(sycl::queue& queue,
+void dpnp_fft_fft_sycl_c(DPCTLSyclQueueRef q_ref,
                          const void* array1_in,
                          void* result1,
                          const shape_elem_type* input_shape,
@@ -69,7 +69,9 @@ void dpnp_fft_fft_sycl_c(sycl::queue& queue,
 
     const double kernel_pi = inverse ? -M_PI : M_PI;
 
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, input_size);
+    sycl::queue queue = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(q_ref, array1_in, input_size);
     const _DataType_input* array_1 = input1_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
@@ -169,7 +171,7 @@ void dpnp_fft_fft_sycl_c(sycl::queue& queue,
 }
 
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
-void dpnp_fft_fft_mathlib_compute_c(sycl::queue& queue,
+void dpnp_fft_fft_mathlib_compute_c(DPCTLSyclQueueRef q_ref,
                                     const void* array1_in,
                                     void* result1,
                                     const shape_elem_type* input_shape,
@@ -182,9 +184,11 @@ void dpnp_fft_fft_mathlib_compute_c(sycl::queue& queue,
     {
         return;
     }
-
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size);
-    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, result_size);
+    
+    sycl::queue queue = *(reinterpret_cast<sycl::queue*>(q_ref));
+    
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(q_ref, array1_in, result_size);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(q_ref, result1, result_size);
     _DataType_input* array_1 = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
 
@@ -213,7 +217,7 @@ void dpnp_fft_fft_mathlib_compute_c(sycl::queue& queue,
 
 // norm: backward - 0, forward is 1
 template <typename _DataType_input, typename _DataType_output>
-void dpnp_fft_fft_mathlib_c(sycl::queue& queue,
+void dpnp_fft_fft_mathlib_c(DPCTLSyclQueueRef q_ref,
                             const void* array1_in,
                             void* result1,
                             const shape_elem_type* input_shape,
@@ -234,7 +238,7 @@ void dpnp_fft_fft_mathlib_c(sycl::queue& queue,
         desc_dp_cmplx_t desc(input_shape[shape_size - 1]);
 
         dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_dp_cmplx_t>(
-            queue, array1_in, result1, input_shape, shape_size, result_size, desc, norm);
+            q_ref, array1_in, result1, input_shape, shape_size, result_size, desc, norm);
     }
     else if (std::is_same<_DataType_input, std::complex<float>>::value &&
              std::is_same<_DataType_output, std::complex<float>>::value)
@@ -242,7 +246,7 @@ void dpnp_fft_fft_mathlib_c(sycl::queue& queue,
         desc_sp_cmplx_t desc(input_shape[shape_size - 1]);
 
         dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_sp_cmplx_t>(
-            queue, array1_in, result1, input_shape, shape_size, result_size, desc, norm);
+            q_ref, array1_in, result1, input_shape, shape_size, result_size, desc, norm);
     }
     return;
 }
@@ -288,11 +292,11 @@ DPCTLSyclEventRef dpnp_fft_fft_c(DPCTLSyclQueueRef q_ref,
           std::is_same<_DataType_output, std::complex<float>>::value))
     {
         dpnp_fft_fft_mathlib_c<_DataType_input, _DataType_output>(
-            q, array1_in, result1, input_shape, shape_size, result_size, norm);
+            q_ref, array1_in, result1, input_shape, shape_size, result_size, norm);
     }
     else
     {
-        dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(q,
+        dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(q_ref,
                                                                array1_in,
                                                                result1,
                                                                input_shape,
