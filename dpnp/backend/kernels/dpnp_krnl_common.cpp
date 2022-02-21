@@ -809,12 +809,9 @@ DPCTLSyclEventRef dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
     std::vector<sycl::event> dep_events = cast_event_vector(dep_event_vec_ref);
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q, input1_in, size_m * size_k);
-    DPNPC_ptr_adapter<_DataType> input2_ptr(q, input2_in, size_k * size_n);
-    DPNPC_ptr_adapter<_DataType> result_ptr(q, result_out, size_m * size_n, false, true);
-    _DataType* array_1 = input1_ptr.get_ptr();
-    _DataType* array_2 = input2_ptr.get_ptr();
-    _DataType* result = result_ptr.get_ptr();
+    _DataType* array_1 = reinterpret_cast<_DataType*>(const_cast<void*>(input1_in));
+    _DataType* array_2 = reinterpret_cast<_DataType*>(const_cast<void*>(input2_in));
+    _DataType* result = reinterpret_cast<_DataType*>(result_out);
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
