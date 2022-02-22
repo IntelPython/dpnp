@@ -119,7 +119,7 @@ DPCTLSyclEventRef dpnp_sum_c(DPCTLSyclQueueRef q_ref,
         }
     }
 
-    DPNPC_id<_DataType_input> input_it(input, input_shape, input_shape_ndim);
+    DPNPC_id<_DataType_input> input_it(q_ref, input, input_shape, input_shape_ndim);
     input_it.set_axes(axes, axes_ndim);
 
     const size_t output_size = input_it.get_output_size();
@@ -235,7 +235,7 @@ DPCTLSyclEventRef dpnp_prod_c(DPCTLSyclQueueRef q_ref,
         return event_ref;
     }
 
-    DPNPC_id<_DataType_input> input_it(input, input_shape, input_shape_ndim);
+    DPNPC_id<_DataType_input> input_it(q_ref, input, input_shape, input_shape_ndim);
     input_it.set_axes(axes, axes_ndim);
 
     const size_t output_size = input_it.get_output_size();

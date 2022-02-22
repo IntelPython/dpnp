@@ -587,15 +587,15 @@ DPCTLSyclEventRef dpnp_floor_divide_c(DPCTLSyclQueueRef q_ref,
 
     DPNPC_id<_DataType_input1>* input1_it;
     const size_t input1_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input1>);
-    input1_it = reinterpret_cast<DPNPC_id<_DataType_input1>*>(sycl::malloc_shared(input1_it_size_in_bytes, q));
-    new (input1_it) DPNPC_id<_DataType_input1>(input1_data, input1_shape, input1_shape_ndim);
+    input1_it = reinterpret_cast<DPNPC_id<_DataType_input1>*>(dpnp_memory_alloc_c(q_ref, input1_it_size_in_bytes));
+    new (input1_it) DPNPC_id<_DataType_input1>(q_ref, input1_data, input1_shape, input1_shape_ndim);
 
     input1_it->broadcast_to_shape(result_shape);
 
     DPNPC_id<_DataType_input2>* input2_it;
     const size_t input2_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input2>);
-    input2_it = reinterpret_cast<DPNPC_id<_DataType_input2>*>(sycl::malloc_shared(input2_it_size_in_bytes, q));
-    new (input2_it) DPNPC_id<_DataType_input2>(input2_data, input2_shape, input2_shape_ndim);
+    input2_it = reinterpret_cast<DPNPC_id<_DataType_input2>*>(dpnp_memory_alloc_c(q_ref, input2_it_size_in_bytes));
+    new (input2_it) DPNPC_id<_DataType_input2>(q_ref, input2_data, input2_shape, input2_shape_ndim);
 
     input2_it->broadcast_to_shape(result_shape);
 
@@ -823,15 +823,15 @@ DPCTLSyclEventRef dpnp_remainder_c(DPCTLSyclQueueRef q_ref,
 
     DPNPC_id<_DataType_input1>* input1_it;
     const size_t input1_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input1>);
-    input1_it = reinterpret_cast<DPNPC_id<_DataType_input1>*>(sycl::malloc_shared(input1_it_size_in_bytes, q));
-    new (input1_it) DPNPC_id<_DataType_input1>(input1_data, input1_shape, input1_shape_ndim);
+    input1_it = reinterpret_cast<DPNPC_id<_DataType_input1>*>(dpnp_memory_alloc_c(q_ref, input1_it_size_in_bytes));
+    new (input1_it) DPNPC_id<_DataType_input1>(q_ref, input1_data, input1_shape, input1_shape_ndim);
 
     input1_it->broadcast_to_shape(result_shape);
 
     DPNPC_id<_DataType_input2>* input2_it;
     const size_t input2_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input2>);
-    input2_it = reinterpret_cast<DPNPC_id<_DataType_input2>*>(sycl::malloc_shared(input2_it_size_in_bytes, q));
-    new (input2_it) DPNPC_id<_DataType_input2>(input2_data, input2_shape, input2_shape_ndim);
+    input2_it = reinterpret_cast<DPNPC_id<_DataType_input2>*>(dpnp_memory_alloc_c(q_ref, input2_it_size_in_bytes));
+    new (input2_it) DPNPC_id<_DataType_input2>(q_ref, input2_data, input2_shape, input2_shape_ndim);
 
     input2_it->broadcast_to_shape(result_shape);
 

@@ -60,7 +60,9 @@ TEST_P(IteratorBroadcasting, loop_broadcast)
     const IteratorParameters& param = GetParam();
     std::vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
 
-    DPNPC_id<data_type> input(input_data.data(), param.input_shape);
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
+    DPNPC_id<data_type> input(q_ref, input_data.data(), param.input_shape);
     input.broadcast_to_shape(param.output_shape);
 
     ASSERT_EQ(input.get_output_size(), param.result.size());
@@ -82,9 +84,11 @@ TEST_P(IteratorBroadcasting, sycl_broadcast)
     std::vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
     data_type* shared_data = get_shared_data<data_type>(input_data);
 
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     DPNPC_id<data_type>* input_it;
-    input_it = reinterpret_cast<DPNPC_id<data_type>*>(dpnp_memory_alloc_c(sizeof(DPNPC_id<data_type>)));
-    new (input_it) DPNPC_id<data_type>(shared_data, param.input_shape);
+    input_it = reinterpret_cast<DPNPC_id<data_type>*>(dpnp_memory_alloc_c(q_ref, sizeof(DPNPC_id<data_type>)));
+    new (input_it) DPNPC_id<data_type>(q_ref, shared_data, param.input_shape);
 
     input_it->broadcast_to_shape(param.output_shape);
 
