@@ -229,7 +229,7 @@ public:
      *
      * @note this function is designed for non-SYCL environment execution
      *
-     * @param [in]  q        Sycl queue.
+     * @param [in]  q_ref    Reference to SYCL queue.
      * @param [in]  __ptr    Pointer to input data. Used to get values only.
      * @param [in]  __shape  Shape of data provided by @ref __ptr.
      *                       Empty container means scalar value pointed by @ref __ptr.
