@@ -89,7 +89,7 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(in_array1)
+    x1_desc = dpnp.get_dpnp_descriptor(in_array1, copy_when_nondefault_queue=False)
     if x1_desc:
         if axis != -1:
             pass
@@ -115,7 +115,7 @@ def partition(x1, kth, axis=-1, kind='introselect', order=None):
     Parameters ``axis``, ``kind`` and ``order`` are supported only with default values.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if not isinstance(kth, int):
             pass
@@ -148,8 +148,8 @@ def searchsorted(x1, x2, side='left', sorter=None):
     Parameters ``sorter`` is supported only with default values.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
     if 0 and x1_desc and x2_desc:
         if x1_desc.ndim != 1:
             pass
@@ -198,7 +198,7 @@ def sort(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc and not kwargs:
         if x1_desc.ndim != 1:
             pass

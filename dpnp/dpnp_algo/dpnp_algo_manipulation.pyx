@@ -227,7 +227,8 @@ cpdef utils.dpnp_descriptor dpnp_reshape(utils.dpnp_descriptor array1, newshape,
                                                order=order,
                                                device=array1_obj.sycl_device,
                                                usm_type=array1_obj.usm_type,
-                                               sycl_queue=array1_obj.sycl_queue))
+                                               sycl_queue=array1_obj.sycl_queue),
+                                    copy_when_nondefault_queue=False)
 
 
 cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=None):

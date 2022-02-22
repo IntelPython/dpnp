@@ -85,7 +85,7 @@ def asfarray(x1, dtype=numpy.float64):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         # behavior of original function: int types replaced with float64
         if numpy.issubdtype(dtype, numpy.integer):
@@ -131,7 +131,7 @@ def atleast_2d(*arys):
     all_is_array = True
     arys_desc = []
     for ary in arys:
-        ary_desc = dpnp.get_dpnp_descriptor(ary)
+        ary_desc = dpnp.get_dpnp_descriptor(ary, copy_when_nondefault_queue=False)
         if ary_desc:
             arys_desc.append(ary_desc)
         else:
@@ -166,7 +166,7 @@ def atleast_3d(*arys):
     all_is_array = True
     arys_desc = []
     for ary in arys:
-        ary_desc = dpnp.get_dpnp_descriptor(ary)
+        ary_desc = dpnp.get_dpnp_descriptor(ary, copy_when_nondefault_queue=False)
         if ary_desc:
             arys_desc.append(ary_desc)
         else:
@@ -232,8 +232,8 @@ def copyto(dst, src, casting='same_kind', where=True):
 
     """
 
-    dst_desc = dpnp.get_dpnp_descriptor(dst, copy_when_strides=False)
-    src_desc = dpnp.get_dpnp_descriptor(src)
+    dst_desc = dpnp.get_dpnp_descriptor(dst, copy_when_strides=False, copy_when_nondefault_queue=False)
+    src_desc = dpnp.get_dpnp_descriptor(src, copy_when_nondefault_queue=False)
     if dst_desc and src_desc:
         if casting != 'same_kind':
             pass
@@ -315,7 +315,7 @@ def expand_dims(x1, axis):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         return dpnp_expand_dims(x1_desc, axis).get_pyobj()
 
@@ -370,7 +370,7 @@ def moveaxis(x1, source, destination):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         source_norm = normalize_axis(source, x1_desc.ndim)
         destination_norm = normalize_axis(destination, x1_desc.ndim)
@@ -418,7 +418,7 @@ def ravel(x1, order='C'):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         return dpnp_flatten(x1_desc).get_pyobj()
 
@@ -451,7 +451,7 @@ def repeat(x1, repeats, axis=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if axis is not None and axis != 0:
             pass
@@ -478,7 +478,7 @@ def reshape(x1, newshape, order='C'):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if order != 'C':
             pass
@@ -521,7 +521,7 @@ def rollaxis(x1, axis, start=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if not isinstance(axis, int):
             pass
@@ -570,7 +570,7 @@ def squeeze(x1, axis=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         return dpnp_squeeze(x1_desc, axis).get_pyobj()
 
@@ -614,7 +614,7 @@ def swapaxes(x1, axis1, axis2):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if axis1 >= x1_desc.ndim:
             pass
@@ -665,7 +665,7 @@ def transpose(x1, axes=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if axes is not None:
             if not any(axes):

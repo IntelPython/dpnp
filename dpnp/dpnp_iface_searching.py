@@ -95,7 +95,7 @@ def argmax(x1, axis=None, out=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if axis is not None:
             pass
@@ -150,7 +150,7 @@ def argmin(x1, axis=None, out=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if axis is not None:
             pass

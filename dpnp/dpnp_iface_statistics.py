@@ -154,7 +154,7 @@ def average(x1, axis=None, weights=None, returned=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if axis is not None:
             pass
@@ -221,8 +221,8 @@ def correlate(x1, x2, mode='valid'):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
     if x1_desc and x2_desc:
         if x1_desc.size != x2_desc.size or x1_desc.size == 0:
             pass
@@ -274,7 +274,7 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if x1_desc.ndim > 2:
             pass
@@ -292,7 +292,7 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
             pass
         else:
             if x1_desc.dtype != dpnp.float64:
-                x1_desc = dpnp.get_dpnp_descriptor(dpnp.astype(x1, dpnp.float64))
+                x1_desc = dpnp.get_dpnp_descriptor(dpnp.astype(x1, dpnp.float64), copy_when_nondefault_queue=False)
 
             return dpnp_cov(x1_desc).get_pyobj()
 
@@ -350,7 +350,7 @@ def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         # Negative values in 'shape' are not allowed in input array
         # 306-322 check on negative and duplicate axis
@@ -427,7 +427,7 @@ def mean(x1, axis=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc and not kwargs:
         if x1_desc.size == 0:
             pass
@@ -473,7 +473,7 @@ def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if axis is not None:
             pass
@@ -516,7 +516,7 @@ def min(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if out is not None:
             pass
@@ -551,7 +551,7 @@ def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     Otherwise the function will be executed sequentially on CPU.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if x1.size == 0:
             pass
@@ -609,7 +609,7 @@ def std(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if x1_desc.size == 0:
             pass
@@ -667,7 +667,7 @@ def var(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if x1_desc.size == 0:
             pass
