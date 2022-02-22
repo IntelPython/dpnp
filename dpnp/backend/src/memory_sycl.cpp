@@ -49,8 +49,6 @@ const char* numpy_stub = "...the NumPy Stub...";
 
 char* dpnp_memory_alloc_c(DPCTLSyclQueueRef q_ref, size_t size_in_bytes)
 {
-    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-
     char* array = const_cast<char*>(numpy_stub);
 
     //std::cout << "dpnp_memory_alloc_c(size=" << size_in_bytes << std::flush;
