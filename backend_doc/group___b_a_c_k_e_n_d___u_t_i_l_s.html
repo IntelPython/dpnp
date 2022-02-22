@@ -104,9 +104,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gae3c3b0a869dc364c99e7e33e739dfa07"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae3c3b0a869dc364c99e7e33e739dfa07">DPNPC_id&lt; _Tp &gt;::DPNPC_id</a> (pointer __ptr, const std::vector&lt; size_type &gt; &amp;__shape)</td></tr>
-<tr class="memdesc:gae3c3b0a869dc364c99e7e33e739dfa07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main container for reduction iterator.  <a href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae3c3b0a869dc364c99e7e33e739dfa07">More...</a><br /></td></tr>
-<tr class="separator:gae3c3b0a869dc364c99e7e33e739dfa07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1e1d9e72e8f1a92a6e25d7f563562b11"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga1e1d9e72e8f1a92a6e25d7f563562b11">DPNPC_id&lt; _Tp &gt;::DPNPC_id</a> (DPCTLSyclQueueRef q_ref, pointer __ptr, const std::vector&lt; size_type &gt; &amp;__shape)</td></tr>
+<tr class="memdesc:ga1e1d9e72e8f1a92a6e25d7f563562b11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main container for reduction iterator.  <a href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga1e1d9e72e8f1a92a6e25d7f563562b11">More...</a><br /></td></tr>
+<tr class="separator:ga1e1d9e72e8f1a92a6e25d7f563562b11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae67edf544bf0edce8e1cd74d68d8dc76"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae67edf544bf0edce8e1cd74d68d8dc76">DPNPC_id&lt; _Tp &gt;::DPNPC_id</a> (pointer __ptr, const std::vector&lt; size_type &gt; &amp;__shape, const std::vector&lt; size_type &gt; &amp;__strides)</td></tr>
 <tr class="memdesc:gae67edf544bf0edce8e1cd74d68d8dc76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main container for reduction/broadcasting iterator.  <a href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae67edf544bf0edce8e1cd74d68d8dc76">More...</a><br /></td></tr>
 <tr class="separator:gae67edf544bf0edce8e1cd74d68d8dc76"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -183,12 +183,12 @@ template&lt;typename _Tp &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00282">282</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00290">290</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
 
 </div>
 </div>
-<a id="gae3c3b0a869dc364c99e7e33e739dfa07" name="gae3c3b0a869dc364c99e7e33e739dfa07"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gae3c3b0a869dc364c99e7e33e739dfa07">&#9670;&nbsp;</a></span>DPNPC_id() <span class="overload">[1/2]</span></h2>
+<a id="ga1e1d9e72e8f1a92a6e25d7f563562b11" name="ga1e1d9e72e8f1a92a6e25d7f563562b11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1e1d9e72e8f1a92a6e25d7f563562b11">&#9670;&nbsp;</a></span>DPNPC_id() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -201,6 +201,12 @@ template&lt;typename _Tp &gt; </div>
         <tr>
           <td class="memname"><a class="el" href="class_d_p_n_p_c__id.html">DPNPC_id</a>&lt; _Tp &gt;<a class="el" href="class_d_p_n_p_c__id.html">::DPNPC_id</a> </td>
           <td>(</td>
+          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
+          <td class="paramname"><em>q_ref</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">pointer&#160;</td>
           <td class="paramname"><em>__ptr</em>, </td>
         </tr>
@@ -228,13 +234,14 @@ template&lt;typename _Tp &gt; </div>
 <dl class="section note"><dt>Note</dt><dd>this function is designed for non-SYCL environment execution</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">__ptr</td><td>Pointer to input data. Used to get values only. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">__shape</td><td>Shape of data provided by __ptr. Empty container means scalar value pointed by __ptr. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00230">230</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00237">237</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
 
 </div>
 </div>
@@ -292,7 +299,7 @@ template&lt;typename _Tp &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00248">248</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00256">256</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
 
 </div>
 </div>
@@ -626,7 +633,7 @@ template&lt;typename _Tp &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00372">372</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00382">382</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
 
 </div>
 </div>
@@ -667,7 +674,7 @@ template&lt;typename _Tp &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00344">344</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00354">354</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
 
 </div>
 </div>
