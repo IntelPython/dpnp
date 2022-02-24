@@ -61,9 +61,3 @@ from dpnp.version import __version__
 
 
 __all__ = _iface__all__
-
-
-dpnp_queue_initialize()
-'''
-SYCL queue initialization
-'''
