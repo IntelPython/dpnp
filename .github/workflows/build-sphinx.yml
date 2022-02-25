@@ -69,7 +69,7 @@ jobs:
       - name: Build library
         shell: bash -l {0}
         run: |
-          python setup.py build_clib
+          DPLROOT=/opt/intel/oneapi/dpl/latest python setup.py build_clib
           CC=dpcpp python setup.py build_ext --inplace
           python setup.py develop
       - name: Build docs

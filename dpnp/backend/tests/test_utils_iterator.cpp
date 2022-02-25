@@ -39,8 +39,10 @@ TEST(TestUtilsIterator, begin_prefix_postfix)
 {
     using test_it = dpnpc_it_t;
 
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {2});
 
     test_it begin = result_obj.begin();
     test_it end = result_obj.end();
@@ -66,9 +68,11 @@ TEST(TestUtilsIterator, take_value)
 {
     using test_it = dpnpc_it_t;
 
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     // expected data 1, 2
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {2});
 
     test_it begin = result_obj.begin();
     EXPECT_EQ(*begin, 1);
@@ -81,9 +85,11 @@ TEST(TestUtilsIterator, take_value)
 
 TEST(TestUtilsIterator, take_value_loop)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     // expected data 1, 2 ,3, 4
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({4});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {4});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {4});
 
     dpnpc_it_t begin = result_obj.begin();
     for (size_t i = 0; i < input_data.size(); ++i, ++begin)
@@ -94,9 +100,11 @@ TEST(TestUtilsIterator, take_value_loop)
 
 TEST(TestUtilsIterator, take_value_loop_3D)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     // expected input data 1, 2 ,3, 4...24
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3, 4});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3, 4});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {2, 3, 4});
 
     dpnpc_it_t begin = result_obj.begin();
     for (size_t i = 0; i < input_data.size(); ++i, ++begin)
@@ -107,10 +115,12 @@ TEST(TestUtilsIterator, take_value_loop_3D)
 
 TEST(TestUtilsIterator, take_value_axes_loop_3D)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     vector<dpnpc_value_t> expected_data{1, 2, 3, 4, 13, 14, 15, 16};
     // expected input data 1, 2 ,3, 4...24
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3, 4});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3, 4});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {2, 3, 4});
     result_obj.set_axes({0, 2});
 
     vector<dpnpc_value_t>::iterator expected_it = expected_data.begin();
@@ -123,8 +133,10 @@ TEST(TestUtilsIterator, take_value_axes_loop_3D)
 
 TEST(TestUtilsIterator, take_value_axis_0_0)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({4});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 2});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {2, 2});
     result_obj.set_axis(0); // expected data {{1, 3}, {2 ,4}} with shape {2, 2}
 
     dpnpc_it_t begin = result_obj.begin();
@@ -138,8 +150,10 @@ TEST(TestUtilsIterator, take_value_axis_0_0)
 
 TEST(TestUtilsIterator, take_value_axis_0_1)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({4});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 2});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {2, 2});
     result_obj.set_axis(0); // expected data {{1, 3}, {2 ,4}} with shape {2, 2}
 
     dpnpc_it_t begin = result_obj.begin(1);
@@ -153,8 +167,10 @@ TEST(TestUtilsIterator, take_value_axis_0_1)
 
 TEST(TestUtilsIterator, take_value_axis_1)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({4});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 2});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {2, 2});
     result_obj.set_axis(1); // expected data {{1, 2}, {3 ,4}}
 
     dpnpc_it_t begin = result_obj.begin();
@@ -169,8 +185,10 @@ TEST(TestUtilsIterator, take_value_axis_1)
 
 TEST(TestUtilsIterator, full_reduction_with_input_shape)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {2, 3});
 
     dpnpc_value_t result = 0;
     for (dpnpc_it_t data_it = result_obj.begin(0); data_it != result_obj.end(0); ++data_it)
@@ -183,9 +201,11 @@ TEST(TestUtilsIterator, full_reduction_with_input_shape)
 
 TEST(TestUtilsIterator, output_size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     // expected data 1, 2
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {2, 3});
 
     const dpnpc_index_t output_size = result_obj.get_output_size();
 
@@ -194,8 +214,10 @@ TEST(TestUtilsIterator, output_size)
 
 TEST(TestUtilsIterator, output_size_empty)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {});
 
     const dpnpc_index_t output_size = result_obj.get_output_size();
 
@@ -204,7 +226,9 @@ TEST(TestUtilsIterator, output_size_empty)
 
 TEST(TestUtilsIterator, output_size_nullptr)
 {
-    DPNPC_id<dpnpc_value_t> result_obj(nullptr, {});
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, nullptr, {});
 
     const dpnpc_index_t output_size = result_obj.get_output_size();
 
@@ -213,9 +237,11 @@ TEST(TestUtilsIterator, output_size_nullptr)
 
 TEST(TestUtilsIterator, output_size_axis)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     // expected data 1, 2
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3, 4});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3, 4});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {2, 3, 4});
 
     result_obj.set_axis(1);
     const dpnpc_index_t output_size = result_obj.get_output_size();
@@ -228,9 +254,11 @@ TEST(TestUtilsIterator, output_size_axis)
 
 TEST(TestUtilsIterator, output_size_axis_2D)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     // expected data 1, 2
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3, 4});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3, 4});
+    DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {2, 3, 4});
 
     result_obj.set_axes({0, 2});
     const dpnpc_index_t output_size = result_obj.get_output_size();
@@ -247,8 +275,10 @@ TEST(TestUtilsIterator, iterator_loop)
 
     vector<dpnpc_value_t> expected = get_input_data<dpnpc_value_t>({size});
 
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     dpnpc_value_t input_data[size];
-    DPNPC_id<dpnpc_value_t> result(input_data, {size});
+    DPNPC_id<dpnpc_value_t> result(q_ref, input_data, {size});
     iota(result.begin(), result.end(), 1);
 
     vector<dpnpc_value_t>::iterator it_expected = expected.begin();
@@ -262,8 +292,10 @@ TEST(TestUtilsIterator, iterator_loop)
 
 TEST(TestUtilsIterator, operator_minus)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({3, 4});
-    DPNPC_id<dpnpc_value_t> obj(input_data.data(), {3, 4});
+    DPNPC_id<dpnpc_value_t> obj(q_ref, input_data.data(), {3, 4});
 
     EXPECT_EQ(obj.begin() - obj.end(), -12);
     EXPECT_EQ(obj.end() - obj.begin(), 12);
@@ -285,8 +317,10 @@ TEST(TestUtilsIterator, operator_minus)
 
 TEST(TestUtilsIterator, iterator_distance)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({3, 4});
-    DPNPC_id<dpnpc_value_t> obj(input_data.data(), {3, 4});
+    DPNPC_id<dpnpc_value_t> obj(q_ref, input_data.data(), {3, 4});
 
     dpnpc_it_t::difference_type default_diff_distance = std::distance(obj.begin(), obj.end());
     EXPECT_EQ(default_diff_distance, 12);
@@ -331,8 +365,10 @@ TEST_P(IteratorReduction, loop_reduce_axis)
     const IteratorParameters& param = GetParam();
     const dpnpc_index_t result_size = param.result.size();
 
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>(param.input_shape);
-    DPNPC_id<dpnpc_value_t> input(input_data.data(), param.input_shape);
+    DPNPC_id<dpnpc_value_t> input(q_ref, input_data.data(), param.input_shape);
     input.set_axes(param.axes);
 
     ASSERT_EQ(input.get_output_size(), result_size);
@@ -357,8 +393,10 @@ TEST_P(IteratorReduction, pstl_reduce_axis)
     const IteratorParameters& param = GetParam();
     const dpnpc_index_t result_size = param.result.size();
 
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
-    DPNPC_id<data_type> input(input_data.data(), param.input_shape);
+    DPNPC_id<data_type> input(q_ref, input_data.data(), param.input_shape);
     input.set_axes(param.axes);
 
     ASSERT_EQ(input.get_output_size(), result_size);
@@ -384,8 +422,10 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
     vector<data_type> result(result_size, 42);
     data_type* result_ptr = result.data();
 
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+
     vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
-    DPNPC_id<data_type> input(input_data.data(), param.input_shape);
+    DPNPC_id<data_type> input(q_ref, input_data.data(), param.input_shape);
     input.set_axes(param.axes);
 
     ASSERT_EQ(input.get_output_size(), result_size);
