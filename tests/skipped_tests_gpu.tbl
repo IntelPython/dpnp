@@ -1,6 +1,9 @@
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-abs-data0]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-abs-data0]
 tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-abs-data0]
+tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-ceil-data1]
+tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-ceil-data1]
+tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-ceil-data1]
 
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-trapz-data19]
 tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-trapz-data19]
