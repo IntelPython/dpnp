@@ -62,6 +62,7 @@
  * @param[in]  input_boundarie     Limit number of elements for @ref axis.
  * @param[in]  inverse             Using inverse algorithm.
  * @param[in]  norm                Normalization mode. 0 - backward, 1 - forward, 2 - ortho.
+ * @param[in]  real                Real mode, 1 if type of array1_in is real and size of result_out is input_size/ 2 + 1, else 0.
  * @param[in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
@@ -75,5 +76,6 @@ INP_DLLEXPORT void dpnp_fft_fft_c(DPCTLSyclQueueRef q_ref,
                                   long input_boundarie,
                                   size_t inverse,
                                   const size_t norm,
+                                  const size_t real,
                                   const DPCTLEventVectorRef dep_event_vec_ref);
 #endif // BACKEND_IFACE_FFT_H

@@ -42,7 +42,7 @@ __all__ = [
 ]
 
 ctypedef void(*fptr_dpnp_fft_fft_t)(void *, void * , shape_elem_type * , shape_elem_type * ,
-                                    size_t, long, long, size_t, size_t)
+                                    size_t, long, long, size_t, size_t, size_t)
 
 
 cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
@@ -50,7 +50,8 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
                                      size_t output_boundarie,
                                      long axis,
                                      size_t inverse,
-                                     size_t norm):
+                                     size_t norm,
+                                     size_t real):
 
     cdef shape_type_c input_shape = input.shape
     cdef shape_type_c output_shape = input_shape
@@ -70,6 +71,6 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
     cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
     # call FPTR function
     func(input.get_data(), result.get_data(), input_shape.data(),
-         output_shape.data(), input_shape.size(), axis_norm, input_boundarie, inverse, norm)
+         output_shape.data(), input_shape.size(), axis_norm, input_boundarie, inverse, norm, real)
 
     return result
