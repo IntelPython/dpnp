@@ -15,24 +15,23 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Checkout oneDPL
+        uses: actions/checkout@v3
+        with:
+          repository: oneapi-src/oneDPL
+          path: oneDPL
+          ref: oneDPL-2021.6.1-release
 
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
       - name: Install conda-build
         run: conda install conda-build
       - name: Build conda package
-        run: |
-          CHANNELS="-c dppy/label/dev -c intel -c defaults --override-channels"
-          VERSIONS="--python ${{ matrix.python }}"
-          TEST="--no-test"
-          conda build \
-            $TEST \
-            $VERSIONS \
-            $CHANNELS \
-            conda-recipe
+        run: ./scripts/build_conda_package.sh ${{ matrix.python }} ${{ env.GITHUB_WORKSPACE }}/oneDPL
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
