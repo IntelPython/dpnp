@@ -18,7 +18,6 @@ requirements:
     build:
       - {{ compiler('dpcpp') }}
       - dpcpp-cpp-rt {{ environ.get('DPCPP_VER', '>=2021.1.1') }}
-      - dpl-include
     run:
       - python
       - dpctl >=0.10
