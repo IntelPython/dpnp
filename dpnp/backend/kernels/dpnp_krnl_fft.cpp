@@ -48,7 +48,8 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_fft_fft_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output>
-void dpnp_fft_fft_sycl_c(const void* array1_in,
+void dpnp_fft_fft_sycl_c(DPCTLSyclQueueRef q_ref,
+                         const void* array1_in,
                          void* result1,
                          const shape_elem_type* input_shape,
                          const shape_elem_type* output_shape,
@@ -68,18 +69,21 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
 
     const double kernel_pi = inverse ? -M_PI : M_PI;
 
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, input_size);
+    sycl::queue queue = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(q_ref, array1_in, input_size);
     const _DataType_input* array_1 = input1_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
     // kernel specific temporal data
     shape_elem_type* output_shape_offsets =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(shape_size * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(shape_size * sizeof(shape_elem_type), queue));
     shape_elem_type* input_shape_offsets =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(shape_size * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(shape_size * sizeof(shape_elem_type), queue));
     // must be a thread local storage.
     shape_elem_type* axis_iterator =
-        reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(result_size * shape_size * sizeof(shape_elem_type)));
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(result_size * shape_size * sizeof(shape_elem_type),
+                                                               queue));
 
     get_shape_offsets_inkernel(output_shape, shape_size, output_shape_offsets);
     get_shape_offsets_inkernel(input_shape, shape_size, input_shape_offsets);
@@ -156,18 +160,19 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
         cgh.parallel_for<class dpnp_fft_fft_c_kernel<_DataType_input, _DataType_output>>(gws, kernel_parallel_for_func);
     };
 
-    event = DPNP_QUEUE.submit(kernel_func);
+    event = queue.submit(kernel_func);
     event.wait();
 
-    dpnp_memory_free_c(input_shape_offsets);
-    dpnp_memory_free_c(output_shape_offsets);
-    dpnp_memory_free_c(axis_iterator);
+    sycl::free(input_shape_offsets, queue);
+    sycl::free(output_shape_offsets, queue);
+    sycl::free(axis_iterator, queue);
 
     return;
 }
 
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
-void dpnp_fft_fft_mathlib_compute_c(const void* array1_in,
+void dpnp_fft_fft_mathlib_compute_c(DPCTLSyclQueueRef q_ref,
+                                    const void* array1_in,
                                     void* result1,
                                     const shape_elem_type* input_shape,
                                     const size_t shape_size,
@@ -179,9 +184,11 @@ void dpnp_fft_fft_mathlib_compute_c(const void* array1_in,
     {
         return;
     }
-
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size);
-    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, result_size);
+    
+    sycl::queue queue = *(reinterpret_cast<sycl::queue*>(q_ref));
+    
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(q_ref, array1_in, result_size);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(q_ref, result1, result_size);
     _DataType_input* array_1 = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
 
@@ -189,7 +196,7 @@ void dpnp_fft_fft_mathlib_compute_c(const void* array1_in,
     // enum value from math library C interface
     // instead of mkl_dft::config_value::NOT_INPLACE
     desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
-    desc.commit(DPNP_QUEUE);
+    desc.commit(queue);
 
     const size_t n_iter =
         std::accumulate(input_shape, input_shape + shape_size - 1, 1, std::multiplies<shape_elem_type>());
@@ -210,7 +217,8 @@ void dpnp_fft_fft_mathlib_compute_c(const void* array1_in,
 
 // norm: backward - 0, forward is 1
 template <typename _DataType_input, typename _DataType_output>
-void dpnp_fft_fft_mathlib_c(const void* array1_in,
+void dpnp_fft_fft_mathlib_c(DPCTLSyclQueueRef q_ref,
+                            const void* array1_in,
                             void* result1,
                             const shape_elem_type* input_shape,
                             const size_t shape_size,
@@ -230,7 +238,7 @@ void dpnp_fft_fft_mathlib_c(const void* array1_in,
         desc_dp_cmplx_t desc(input_shape[shape_size - 1]);
 
         dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_dp_cmplx_t>(
-            array1_in, result1, input_shape, shape_size, result_size, desc, norm);
+            q_ref, array1_in, result1, input_shape, shape_size, result_size, desc, norm);
     }
     else if (std::is_same<_DataType_input, std::complex<float>>::value &&
              std::is_same<_DataType_output, std::complex<float>>::value)
@@ -238,9 +246,70 @@ void dpnp_fft_fft_mathlib_c(const void* array1_in,
         desc_sp_cmplx_t desc(input_shape[shape_size - 1]);
 
         dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_sp_cmplx_t>(
-            array1_in, result1, input_shape, shape_size, result_size, desc, norm);
+            q_ref, array1_in, result1, input_shape, shape_size, result_size, desc, norm);
     }
     return;
+}
+
+template <typename _DataType_input, typename _DataType_output>
+DPCTLSyclEventRef dpnp_fft_fft_c(DPCTLSyclQueueRef q_ref,
+                                 const void* array1_in,
+                                 void* result1,
+                                 const shape_elem_type* input_shape,
+                                 const shape_elem_type* output_shape,
+                                 size_t shape_size,
+                                 long axis,
+                                 long input_boundarie,
+                                 size_t inverse,
+                                 const size_t norm,
+                                 const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
+    if (!shape_size)
+    {
+        return event_ref;
+    }
+
+    const size_t result_size =
+        std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<shape_elem_type>());
+    const size_t input_size =
+        std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<shape_elem_type>());
+
+    if (!input_size || !result_size || !array1_in || !result1)
+    {
+        return event_ref;
+    }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    if ((std::is_same<_DataType_input, std::complex<double>>::value &&
+          std::is_same<_DataType_output, std::complex<double>>::value) ||
+         (std::is_same<_DataType_input, std::complex<float>>::value &&
+          std::is_same<_DataType_output, std::complex<float>>::value))
+    {
+        dpnp_fft_fft_mathlib_c<_DataType_input, _DataType_output>(
+            q_ref, array1_in, result1, input_shape, shape_size, result_size, norm);
+    }
+    else
+    {
+        dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(q_ref,
+                                                               array1_in,
+                                                               result1,
+                                                               input_shape,
+                                                               output_shape,
+                                                               shape_size,
+                                                               result_size,
+                                                               input_size,
+                                                               axis,
+                                                               input_boundarie,
+                                                               inverse);
+    }
+
+    return event_ref;
 }
 
 template <typename _DataType_input, typename _DataType_output>
@@ -254,59 +323,59 @@ void dpnp_fft_fft_c(const void* array1_in,
                     size_t inverse,
                     const size_t norm)
 {
-    if (!shape_size)
-    {
-        return;
-    }
-
-    const size_t result_size =
-        std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<shape_elem_type>());
-    const size_t input_size =
-        std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<shape_elem_type>());
-
-    if (!input_size || !result_size || !array1_in || !result1)
-    {
-        return;
-    }
-
-    if ((std::is_same<_DataType_input, std::complex<double>>::value &&
-          std::is_same<_DataType_output, std::complex<double>>::value) ||
-         (std::is_same<_DataType_input, std::complex<float>>::value &&
-          std::is_same<_DataType_output, std::complex<float>>::value))
-    {
-        dpnp_fft_fft_mathlib_c<_DataType_input, _DataType_output>(
-            array1_in, result1, input_shape, shape_size, result_size, norm);
-    }
-    else
-    {
-        dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(array1_in,
-                                                               result1,
-                                                               input_shape,
-                                                               output_shape,
-                                                               shape_size,
-                                                               result_size,
-                                                               input_size,
-                                                               axis,
-                                                               input_boundarie,
-                                                               inverse);
-    }
-
-    return;
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_fft_fft_c<_DataType_input, _DataType_output>(q_ref,
+                                                                                    array1_in,
+                                                                                    result1,
+                                                                                    input_shape,
+                                                                                    output_shape,
+                                                                                    shape_size,
+                                                                                    axis,
+                                                                                    input_boundarie,
+                                                                                    inverse,
+                                                                                    norm,
+                                                                                    dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
 }
+
+template <typename _DataType_input, typename _DataType_output>
+void (*dpnp_fft_fft_default_c)(const void*,
+                               void*,
+                               const shape_elem_type*,
+                               const shape_elem_type*,
+                               size_t,
+                               long,
+                               long,
+                               size_t,
+                               const size_t) = dpnp_fft_fft_c<_DataType_input, _DataType_output>;
+
+template <typename _DataType_input, typename _DataType_output>
+DPCTLSyclEventRef (*dpnp_fft_fft_ext_c)(DPCTLSyclQueueRef,
+                                        const void*,
+                                        void*,
+                                        const shape_elem_type*,
+                                        const shape_elem_type*,
+                                        size_t,
+                                        long,
+                                        long,
+                                        size_t,
+                                        const size_t,
+                                        const DPCTLEventVectorRef) = dpnp_fft_fft_c<_DataType_input, _DataType_output>;
 
 void func_map_init_fft_func(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_INT][eft_INT] = {eft_C128,
-                                                             (void*)dpnp_fft_fft_c<int32_t, std::complex<double>>};
-    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_LNG][eft_LNG] = {eft_C128,
-                                                             (void*)dpnp_fft_fft_c<int64_t, std::complex<double>>};
-    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_FLT][eft_FLT] = {eft_C64,
-                                                             (void*)dpnp_fft_fft_c<float, std::complex<float>>};
-    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_DBL][eft_DBL] = {eft_C128,
-                                                             (void*)dpnp_fft_fft_c<double, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_INT][eft_INT] = {
+        eft_C128, (void*)dpnp_fft_fft_default_c<int32_t, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_LNG][eft_LNG] = {
+        eft_C128, (void*)dpnp_fft_fft_default_c<int64_t, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_FLT][eft_FLT] = {
+        eft_C64, (void*)dpnp_fft_fft_default_c<float, std::complex<float>>};
+    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_DBL][eft_DBL] = {
+        eft_C128, (void*)dpnp_fft_fft_default_c<double, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_C64][eft_C64] = {
-        eft_C64, (void*)dpnp_fft_fft_c<std::complex<float>, std::complex<float>>};
+        eft_C64, (void*)dpnp_fft_fft_default_c<std::complex<float>, std::complex<float>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_C128][eft_C128] = {
-        eft_C128, (void*)dpnp_fft_fft_c<std::complex<double>, std::complex<double>>};
+        eft_C128, (void*)dpnp_fft_fft_default_c<std::complex<double>, std::complex<double>>};
     return;
 }

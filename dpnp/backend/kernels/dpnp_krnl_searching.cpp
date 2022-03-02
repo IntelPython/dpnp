@@ -34,65 +34,148 @@ template <typename _DataType, typename _idx_DataType>
 class dpnp_argmax_c_kernel;
 
 template <typename _DataType, typename _idx_DataType>
-void dpnp_argmax_c(void* array1_in, void* result1, size_t size)
+DPCTLSyclEventRef dpnp_argmax_c(DPCTLSyclQueueRef q_ref,
+                                void* array1_in,
+                                void* result1,
+                                size_t size,
+                                const DPCTLEventVectorRef dep_event_vec_ref)
 {
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
     _DataType* array_1 = input1_ptr.get_ptr();
     _idx_DataType* result = reinterpret_cast<_idx_DataType*>(result1);
 
     auto policy =
-        oneapi::dpl::execution::make_device_policy<class dpnp_argmax_c_kernel<_DataType, _idx_DataType>>(DPNP_QUEUE);
+        oneapi::dpl::execution::make_device_policy<class dpnp_argmax_c_kernel<_DataType, _idx_DataType>>(q);
 
     _DataType* res = std::max_element(policy, array_1, array_1 + size);
     policy.queue().wait();
 
     _idx_DataType result_val = std::distance(array_1, res);
-    dpnp_memory_memcpy_c(result, &result_val, sizeof(_idx_DataType)); // result[0] = std::distance(array_1, res);
+    q.memcpy(result, &result_val, sizeof(_idx_DataType)).wait(); // result[0] = std::distance(array_1, res);
 
-    return;
+    return event_ref;
 }
+
+template <typename _DataType, typename _idx_DataType>
+void dpnp_argmax_c(void* array1_in, void* result1, size_t size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_argmax_c<_DataType, _idx_DataType>(q_ref,
+                                                                          array1_in,
+                                                                          result1,
+                                                                          size,
+                                                                          dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType, typename _idx_DataType>
+void (*dpnp_argmax_default_c)(void*, void*, size_t) = dpnp_argmax_c<_DataType, _idx_DataType>;
+
+template <typename _DataType, typename _idx_DataType>
+DPCTLSyclEventRef (*dpnp_argmax_ext_c)(DPCTLSyclQueueRef,
+                                       void*,
+                                       void*,
+                                       size_t,
+                                       const DPCTLEventVectorRef) = dpnp_argmax_c<_DataType, _idx_DataType>;
 
 template <typename _DataType, typename _idx_DataType>
 class dpnp_argmin_c_kernel;
 
 template <typename _DataType, typename _idx_DataType>
-void dpnp_argmin_c(void* array1_in, void* result1, size_t size)
+DPCTLSyclEventRef dpnp_argmin_c(DPCTLSyclQueueRef q_ref,
+                                void* array1_in,
+                                void* result1,
+                                size_t size,
+                                const DPCTLEventVectorRef dep_event_vec_ref)
 {
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
     _DataType* array_1 = input1_ptr.get_ptr();
     _idx_DataType* result = reinterpret_cast<_idx_DataType*>(result1);
 
     auto policy =
-        oneapi::dpl::execution::make_device_policy<class dpnp_argmin_c_kernel<_DataType, _idx_DataType>>(DPNP_QUEUE);
+        oneapi::dpl::execution::make_device_policy<class dpnp_argmin_c_kernel<_DataType, _idx_DataType>>(q);
 
     _DataType* res = std::min_element(policy, array_1, array_1 + size);
     policy.queue().wait();
 
     _idx_DataType result_val = std::distance(array_1, res);
-    dpnp_memory_memcpy_c(result, &result_val, sizeof(_idx_DataType)); // result[0] = std::distance(array_1, res);
+    q.memcpy(result, &result_val, sizeof(_idx_DataType)).wait(); // result[0] = std::distance(array_1, res);
 
-    return;
+    return event_ref;
 }
+
+template <typename _DataType, typename _idx_DataType>
+void dpnp_argmin_c(void* array1_in, void* result1, size_t size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_argmin_c<_DataType, _idx_DataType>(q_ref,
+                                                                          array1_in,
+                                                                          result1,
+                                                                          size,
+                                                                          dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType, typename _idx_DataType>
+void (*dpnp_argmin_default_c)(void*, void*, size_t) = dpnp_argmin_c<_DataType, _idx_DataType>;
+
+template <typename _DataType, typename _idx_DataType>
+DPCTLSyclEventRef (*dpnp_argmin_ext_c)(DPCTLSyclQueueRef,
+                                       void*,
+                                       void*,
+                                       size_t,
+                                       const DPCTLEventVectorRef) = dpnp_argmin_c<_DataType, _idx_DataType>;
 
 void func_map_init_searching(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_argmax_c<int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_argmax_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_argmax_c<int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_argmax_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_FLT][eft_INT] = {eft_INT, (void*)dpnp_argmax_c<float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_FLT][eft_LNG] = {eft_LNG, (void*)dpnp_argmax_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_DBL][eft_INT] = {eft_INT, (void*)dpnp_argmax_c<double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_DBL][eft_LNG] = {eft_LNG, (void*)dpnp_argmax_c<double, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_argmax_default_c<int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_argmax_default_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_argmax_default_c<int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_argmax_default_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_FLT][eft_INT] = {eft_INT, (void*)dpnp_argmax_default_c<float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_FLT][eft_LNG] = {eft_LNG, (void*)dpnp_argmax_default_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_DBL][eft_INT] = {eft_INT, (void*)dpnp_argmax_default_c<double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_DBL][eft_LNG] = {eft_LNG, (void*)dpnp_argmax_default_c<double, int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_argmin_c<int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_argmin_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_argmin_c<int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_argmin_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_FLT][eft_INT] = {eft_INT, (void*)dpnp_argmin_c<float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_FLT][eft_LNG] = {eft_LNG, (void*)dpnp_argmin_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_DBL][eft_INT] = {eft_INT, (void*)dpnp_argmin_c<double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_DBL][eft_LNG] = {eft_LNG, (void*)dpnp_argmin_c<double, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_argmax_ext_c<int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_argmax_ext_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_argmax_ext_c<int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_argmax_ext_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_FLT][eft_INT] = {eft_INT, (void*)dpnp_argmax_ext_c<float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_FLT][eft_LNG] = {eft_LNG, (void*)dpnp_argmax_ext_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_DBL][eft_INT] = {eft_INT, (void*)dpnp_argmax_ext_c<double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_DBL][eft_LNG] = {eft_LNG, (void*)dpnp_argmax_ext_c<double, int64_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_argmin_default_c<int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_argmin_default_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_argmin_default_c<int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_argmin_default_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_FLT][eft_INT] = {eft_INT, (void*)dpnp_argmin_default_c<float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_FLT][eft_LNG] = {eft_LNG, (void*)dpnp_argmin_default_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_DBL][eft_INT] = {eft_INT, (void*)dpnp_argmin_default_c<double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_DBL][eft_LNG] = {eft_LNG, (void*)dpnp_argmin_default_c<double, int64_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_argmin_ext_c<int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_argmin_ext_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_argmin_ext_c<int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_argmin_ext_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_FLT][eft_INT] = {eft_INT, (void*)dpnp_argmin_ext_c<float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_FLT][eft_LNG] = {eft_LNG, (void*)dpnp_argmin_ext_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_DBL][eft_INT] = {eft_INT, (void*)dpnp_argmin_ext_c<double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_DBL][eft_LNG] = {eft_LNG, (void*)dpnp_argmin_ext_c<double, int64_t>};
 
     return;
 }

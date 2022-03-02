@@ -73,12 +73,24 @@ void dpnp_rng_srand_c(size_t seed)
 }
 
 template <typename _DataType>
-void dpnp_rng_beta_c(void* result, const _DataType a, const _DataType b, const size_t size)
+DPCTLSyclEventRef dpnp_rng_beta_c(DPCTLSyclQueueRef q_ref,
+                                  void* result,
+                                  const _DataType a,
+                                  const _DataType b,
+                                  const size_t size,
+                                  const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     _DataType displacement = _DataType(0.0);
 
@@ -91,20 +103,57 @@ void dpnp_rng_beta_c(void* result, const _DataType a, const _DataType b, const s
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
 
-    return;
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_binomial_c(void* result, const int ntrial, const double p, const size_t size)
+void dpnp_rng_beta_c(void* result, const _DataType a, const _DataType b, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_beta_c<_DataType>(q_ref,
+                                                             result,
+                                                             a,
+                                                             b,
+                                                             size,
+                                                             dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_beta_default_c)(void*, const _DataType, const _DataType, const size_t) = dpnp_rng_beta_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_beta_ext_c)(DPCTLSyclQueueRef,
+                                         void*,
+                                         const _DataType,
+                                         const _DataType,
+                                         const size_t,
+                                         const DPCTLEventVectorRef) = dpnp_rng_beta_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_binomial_c(DPCTLSyclQueueRef q_ref,
+                                      void* result,
+                                      const int ntrial,
+                                      const double p,
+                                      const size_t size,
+                                      const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (result == nullptr)
     {
-        return;
+        return event_ref;
     }
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     if (ntrial == 0 || p == 0)
     {
@@ -112,10 +161,10 @@ void dpnp_rng_binomial_c(void* result, const int ntrial, const double p, const s
     }
     else if (p == 1)
     {
-        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
         fill_value[0] = static_cast<_DataType>(ntrial);
         dpnp_initval_c<_DataType>(result, fill_value, size);
-        dpnp_memory_free_c(fill_value);
+        sycl::free(fill_value, q);
     }
     else
     {
@@ -124,30 +173,104 @@ void dpnp_rng_binomial_c(void* result, const int ntrial, const double p, const s
         auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
         event_out.wait();
     }
-    return;
+    return event_ref;
+
 }
 
 template <typename _DataType>
-void dpnp_rng_chisquare_c(void* result, const int df, const size_t size)
+void dpnp_rng_binomial_c(void* result, const int ntrial, const double p, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_binomial_c<_DataType>(q_ref,
+                                                                 result,
+                                                                 ntrial,
+                                                                 p,
+                                                                 size,
+                                                                 dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_binomial_default_c)(void*, const int, const double, const size_t) = dpnp_rng_binomial_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_binomial_ext_c)(DPCTLSyclQueueRef,
+                                             void*,
+                                             const int,
+                                             const double,
+                                             const size_t,
+                                             const DPCTLEventVectorRef) = dpnp_rng_binomial_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_chisquare_c(DPCTLSyclQueueRef q_ref,
+                                       void* result,
+                                       const int df,
+                                       const size_t size,
+                                       const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     mkl_rng::chi_square<_DataType> distribution(df);
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_exponential_c(void* result, const _DataType beta, const size_t size)
+void dpnp_rng_chisquare_c(void* result, const int df, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_chisquare_c<_DataType>(q_ref,
+                                                                  result,
+                                                                  df,
+                                                                  size,
+                                                                  dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_chisquare_default_c)(void*, const int, const size_t) = dpnp_rng_chisquare_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_chisquare_ext_c)(DPCTLSyclQueueRef,
+                                              void*,
+                                              const int,
+                                              const size_t,
+                                              const DPCTLEventVectorRef) = dpnp_rng_chisquare_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_exponential_c(DPCTLSyclQueueRef q_ref,
+                                         void* result,
+                                         const _DataType beta,
+                                         const size_t size,
+                                         const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     // set displacement a
     const _DataType a = (_DataType(0.0));
@@ -158,15 +281,52 @@ void dpnp_rng_exponential_c(void* result, const _DataType beta, const size_t siz
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, const size_t size)
+void dpnp_rng_exponential_c(void* result, const _DataType beta, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_exponential_c<_DataType>(q_ref,
+                                                                    result,
+                                                                    beta,
+                                                                    size,
+                                                                    dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_exponential_default_c)(void*, const _DataType, const size_t) = dpnp_rng_exponential_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_exponential_ext_c)(DPCTLSyclQueueRef,
+                                              void*,
+                                              const _DataType,
+                                              const size_t,
+                                              const DPCTLEventVectorRef) = dpnp_rng_exponential_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_f_c(DPCTLSyclQueueRef q_ref,
+                               void* result,
+                               const _DataType df_num,
+                               const _DataType df_den,
+                               const size_t size,
+                               const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     std::vector<sycl::event> no_deps;
 
     const _DataType d_zero = (_DataType(0.0));
@@ -175,19 +335,19 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
     _DataType scale = 2.0 / df_num;
     _DataType* den = nullptr;
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
     mkl_rng::gamma<_DataType> gamma_distribution1(shape, d_zero, scale);
     auto event_gamma_distribution1 = mkl_rng::generate(gamma_distribution1, DPNP_RNG_ENGINE, size, result1);
 
-    den = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    den = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
     shape = 0.5 * df_den;
     scale = 2.0 / df_den;
     mkl_rng::gamma<_DataType> gamma_distribution2(shape, d_zero, scale);
     auto event_gamma_distribution2 = mkl_rng::generate(gamma_distribution2, DPNP_RNG_ENGINE, size, den);
 
-    auto event_out = mkl_vm::div(DPNP_QUEUE,
+    auto event_out = mkl_vm::div(q,
                                  size,
                                  result1,
                                  den,
@@ -196,16 +356,55 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
                                  mkl_vm::mode::ha);
     event_out.wait();
 
-    dpnp_memory_free_c(den);
+    sycl::free(den, q);
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_gamma_c(void* result, const _DataType shape, const _DataType scale, const size_t size)
+void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_f_c<_DataType>(q_ref,
+                                                          result,
+                                                          df_num,
+                                                          df_den,
+                                                          size,
+                                                          dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_f_default_c)(void*, const _DataType, const _DataType, const size_t) = dpnp_rng_f_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_f_ext_c)(DPCTLSyclQueueRef,
+                                              void*,
+                                              const _DataType,
+                                              const _DataType,
+                                              const size_t,
+                                              const DPCTLEventVectorRef) = dpnp_rng_f_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_gamma_c(DPCTLSyclQueueRef q_ref,
+                      void* result,
+                      const _DataType shape,
+                      const _DataType scale,
+                      const size_t size,
+                      const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size || result == nullptr)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     if (shape == 0.0 || scale == 0.0)
     {
@@ -220,30 +419,111 @@ void dpnp_rng_gamma_c(void* result, const _DataType shape, const _DataType scale
         auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
         event_out.wait();
     }
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_gaussian_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
+void dpnp_rng_gamma_c(void* result, const _DataType shape, const _DataType scale, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_gamma_c<_DataType>(q_ref,
+                                                              result,
+                                                              shape,
+                                                              scale,
+                                                              size,
+                                                              dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_gamma_default_c)(void*, const _DataType, const _DataType, const size_t) = dpnp_rng_gamma_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_gamma_ext_c)(DPCTLSyclQueueRef,
+                                          void*,
+                                          const _DataType,
+                                          const _DataType,
+                                          const size_t,
+                                          const DPCTLEventVectorRef) = dpnp_rng_gamma_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_gaussian_c(DPCTLSyclQueueRef q_ref,
+                                      void* result,
+                                      const _DataType mean,
+                                      const _DataType stddev,
+                                      const size_t size,
+                                      const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_geometric_c(void* result, const float p, const size_t size)
+void dpnp_rng_gaussian_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_gaussian_c<_DataType>(q_ref,
+                                                                 result,
+                                                                 mean,
+                                                                 stddev,
+                                                                 size,
+                                                                 dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_gaussian_default_c)(void*,
+                                    const _DataType,
+                                    const _DataType,
+                                    const size_t) = dpnp_rng_gaussian_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_gaussian_ext_c)(DPCTLSyclQueueRef,
+                                             void*,
+                                             const _DataType,
+                                             const _DataType,
+                                             const size_t,
+                                             const DPCTLEventVectorRef) = dpnp_rng_gaussian_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_geometric_c(DPCTLSyclQueueRef q_ref,
+                                       void* result,
+                                       const float p,
+                                       const size_t size,
+                                       const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size || !result)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     if (p == 1.0)
     {
@@ -257,22 +537,58 @@ void dpnp_rng_geometric_c(void* result, const float p, const size_t size)
         auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
         event_out.wait();
     }
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const size_t size)
+void dpnp_rng_geometric_c(void* result, const float p, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_geometric_c<_DataType>(q_ref,
+                                                                  result,
+                                                                  p,
+                                                                  size,
+                                                                  dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_geometric_default_c)(void*, const float, const size_t) = dpnp_rng_geometric_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_geometric_ext_c)(DPCTLSyclQueueRef,
+                                              void*,
+                                              const float,
+                                              const size_t,
+                                              const DPCTLEventVectorRef) = dpnp_rng_geometric_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_gumbel_c(DPCTLSyclQueueRef q_ref,
+                                    void* result,
+                                    const double loc,
+                                    const double scale,
+                                    const size_t size,
+                                    const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size || !result)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     if (scale == 0.0)
     {
-        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
         fill_value[0] = static_cast<_DataType>(loc);
         dpnp_initval_c<_DataType>(result, fill_value, size);
-        dpnp_memory_free_c(fill_value);
+        sycl::free(fill_value, q);
     }
     else
     {
@@ -285,18 +601,57 @@ void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const
         auto event_distribution = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
 
         sycl::event prod_event;
-        prod_event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, incx, {event_distribution});
+        prod_event = mkl_blas::scal(q, size, alpha, result1, incx, {event_distribution});
         prod_event.wait();
     }
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_hypergeometric_c(void* result, const int l, const int s, const int m, const size_t size)
+void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_gumbel_c<_DataType>(q_ref,
+                                                               result,
+                                                               loc,
+                                                               scale,
+                                                               size,
+                                                               dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_gumbel_default_c)(void*, const double, const double, const size_t) = dpnp_rng_gumbel_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_gumbel_ext_c)(DPCTLSyclQueueRef,
+                                           void*,
+                                           const double,
+                                           const double,
+                                           const size_t,
+                                           const DPCTLEventVectorRef) = dpnp_rng_gumbel_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_hypergeometric_c(DPCTLSyclQueueRef q_ref,
+                                            void* result,
+                                            const int l,
+                                            const int s,
+                                            const int m,
+                                            const size_t size,
+                                            const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size || !result)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     if (m == 0)
     {
@@ -304,10 +659,10 @@ void dpnp_rng_hypergeometric_c(void* result, const int l, const int s, const int
     }
     else if (l == m)
     {
-        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
         fill_value[0] = static_cast<_DataType>(s);
         dpnp_initval_c<_DataType>(result, fill_value, size);
-        dpnp_memory_free_c(fill_value);
+        sycl::free(fill_value, q);
     }
     else
     {
@@ -316,15 +671,59 @@ void dpnp_rng_hypergeometric_c(void* result, const int l, const int s, const int
         auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
         event_out.wait();
     }
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_laplace_c(void* result, const double loc, const double scale, const size_t size)
+void dpnp_rng_hypergeometric_c(void* result, const int l, const int s, const int m, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_hypergeometric_c<_DataType>(q_ref,
+                                                                       result,
+                                                                       l,
+                                                                       s,
+                                                                       m,
+                                                                       size,
+                                                                       dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_hypergeometric_default_c)(void*,
+                                          const int,
+                                          const int,
+                                          const int,
+                                          const size_t) = dpnp_rng_hypergeometric_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_hypergeometric_ext_c)(DPCTLSyclQueueRef,
+                                                   void*,
+                                                   const int,
+                                                   const int,
+                                                   const int,
+                                                   const size_t,
+                                                   const DPCTLEventVectorRef) = dpnp_rng_hypergeometric_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_laplace_c(DPCTLSyclQueueRef q_ref,
+                                     void* result,
+                                     const double loc,
+                                     const double scale,
+                                     const size_t size,
+                                     const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size || !result)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     if (scale == 0.0)
     {
@@ -338,19 +737,57 @@ void dpnp_rng_laplace_c(void* result, const double loc, const double scale, cons
         auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
         event_out.wait();
     }
+    return event_ref;
 }
+
+template <typename _DataType>
+void dpnp_rng_laplace_c(void* result, const double loc, const double scale, const size_t size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_laplace_c<_DataType>(q_ref,
+                                                                result,
+                                                                loc,
+                                                                scale,
+                                                                size,
+                                                                dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_laplace_default_c)(void*, const double, const double, const size_t) = dpnp_rng_laplace_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_laplace_ext_c)(DPCTLSyclQueueRef,
+                                            void*,
+                                            const double,
+                                            const double,
+                                            const size_t,
+                                            const DPCTLEventVectorRef) = dpnp_rng_laplace_c<_DataType>;
 
 template <typename _KernelNameSpecialization>
 class dpnp_rng_logistic_c_kernel;
 
 /*   Logistic(loc, scale) ~ loc + scale * log(u/(1.0 - u)) */
 template <typename _DataType>
-void dpnp_rng_logistic_c(void* result, const double loc, const double scale, const size_t size)
+DPCTLSyclEventRef dpnp_rng_logistic_c(DPCTLSyclQueueRef q_ref,
+                                      void* result,
+                                      const double loc,
+                                      const double scale,
+                                      const size_t size,
+                                      const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size || !result)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     const _DataType d_zero = _DataType(0.0);
     const _DataType d_one = _DataType(1.0);
@@ -370,25 +807,65 @@ void dpnp_rng_logistic_c(void* result, const double loc, const double scale, con
         cgh.depends_on({event_distribution});
         cgh.parallel_for<class dpnp_rng_logistic_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
-    auto event = DPNP_QUEUE.submit(kernel_func);
+    auto event = q.submit(kernel_func);
     event.wait();
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_lognormal_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
+void dpnp_rng_logistic_c(void* result, const double loc, const double scale, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_logistic_c<_DataType>(q_ref,
+                                                                 result,
+                                                                 loc,
+                                                                 scale,
+                                                                 size,
+                                                                 dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_logistic_default_c)(void*, const double, const double, const size_t) = dpnp_rng_logistic_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_logistic_ext_c)(DPCTLSyclQueueRef,
+                                             void*,
+                                             const double,
+                                             const double,
+                                             const size_t,
+                                             const DPCTLEventVectorRef) = dpnp_rng_logistic_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_lognormal_c(DPCTLSyclQueueRef q_ref,
+                                       void* result,
+                                       const _DataType mean,
+                                       const _DataType stddev,
+                                       const size_t size,
+                                       const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size || !result)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     if (stddev == 0.0)
     {
-        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
         fill_value[0] = static_cast<_DataType>(std::exp(mean + (stddev * stddev) / 2));
         dpnp_initval_c<_DataType>(result, fill_value, size);
-        dpnp_memory_free_c(fill_value);
+        sycl::free(fill_value, q);
     }
     else
     {
@@ -399,17 +876,57 @@ void dpnp_rng_lognormal_c(void* result, const _DataType mean, const _DataType st
         auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
         event_out.wait();
     }
-    return;
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_multinomial_c(
-    void* result, const int ntrial, const double* p_vector, const size_t p_vector_size, const size_t size)
+void dpnp_rng_lognormal_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_lognormal_c<_DataType>(q_ref,
+                                                                  result,
+                                                                  mean,
+                                                                  stddev,
+                                                                  size,
+                                                                  dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_lognormal_default_c)(void*,
+                                     const _DataType,
+                                     const _DataType,
+                                     const size_t) = dpnp_rng_lognormal_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_lognormal_ext_c)(DPCTLSyclQueueRef,
+                                              void*,
+                                              const _DataType,
+                                              const _DataType,
+                                              const size_t,
+                                              const DPCTLEventVectorRef) = dpnp_rng_lognormal_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_multinomial_c(DPCTLSyclQueueRef q_ref,
+                                         void* result,
+                                         const int ntrial,
+                                         const double* p_vector,
+                                         const size_t p_vector_size,
+                                         const size_t size,
+                                         const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size || !result || (ntrial < 0))
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     if (ntrial == 0)
     {
@@ -430,7 +947,7 @@ void dpnp_rng_multinomial_c(
         // which follow the condition
         if (is_cpu_queue || (!is_cpu_queue && (p_vector_size >= ((size_t)ntrial * 16)) && (ntrial <= 16)))
         {
-            DPNPC_ptr_adapter<std::int32_t> result_ptr(result, size, false, true);
+            DPNPC_ptr_adapter<std::int32_t> result_ptr(q_ref, result, size, false, true);
             std::int32_t* result1 = result_ptr.get_ptr();
             mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
             // perform generation
@@ -439,7 +956,7 @@ void dpnp_rng_multinomial_c(
         }
         else
         {
-            DPNPC_ptr_adapter<std::int32_t> result_ptr(result, size, true, true);
+            DPNPC_ptr_adapter<std::int32_t> result_ptr(q_ref, result, size, true, true);
             std::int32_t* result1 = result_ptr.get_ptr();
             int errcode = viRngMultinomial(
                 VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_vector_size, p_vector);
@@ -449,22 +966,64 @@ void dpnp_rng_multinomial_c(
             }
         }
     }
-    return;
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_multivariate_normal_c(void* result,
-                                    const int dimen,
-                                    const double* mean_vector,
-                                    const size_t mean_vector_size,
-                                    const double* cov_vector,
-                                    const size_t cov_vector_size,
-                                    const size_t size)
+void dpnp_rng_multinomial_c(
+    void* result, const int ntrial, const double* p_vector, const size_t p_vector_size, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_multinomial_c<_DataType>(q_ref,
+                                                                    result,
+                                                                    ntrial,
+                                                                    p_vector,
+                                                                    p_vector_size,
+                                                                    size,
+                                                                    dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_multinomial_default_c)(void*,
+                                       const int,
+                                       const double*,
+                                       const size_t,
+                                       const size_t) = dpnp_rng_multinomial_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_multinomial_ext_c)(DPCTLSyclQueueRef,
+                                              void*,
+                                              const int,
+                                              const double*,
+                                              const size_t,
+                                              const size_t,
+                                              const DPCTLEventVectorRef) = dpnp_rng_multinomial_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_multivariate_normal_c(DPCTLSyclQueueRef q_ref,
+                                                 void* result,
+                                                 const int dimen,
+                                                 const double* mean_vector,
+                                                 const size_t mean_vector_size,
+                                                 const double* cov_vector,
+                                                 const size_t cov_vector_size,
+                                                 const size_t size,
+                                                 const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     std::vector<double> mean(mean_vector, mean_vector + mean_vector_size);
@@ -478,33 +1037,137 @@ void dpnp_rng_multivariate_normal_c(void* result,
     mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean, cov);
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size1, result1);
     event_out.wait();
+
+    return event_ref;
+}
+
+template <typename _DataType>
+void dpnp_rng_multivariate_normal_c(void* result,
+                                    const int dimen,
+                                    const double* mean_vector,
+                                    const size_t mean_vector_size,
+                                    const double* cov_vector,
+                                    const size_t cov_vector_size,
+                                    const size_t size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_multivariate_normal_c<_DataType>(q_ref,
+                                                                            result,
+                                                                            dimen,
+                                                                            mean_vector,
+                                                                            mean_vector_size,
+                                                                            cov_vector,
+                                                                            cov_vector_size,
+                                                                            size,
+                                                                            dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_multivariate_normal_default_c)(void*,
+                                               const int,
+                                               const double*,
+                                               const size_t,
+                                               const double*,
+                                               const size_t,
+                                               const size_t) = dpnp_rng_multivariate_normal_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_multivariate_normal_ext_c)(
+    DPCTLSyclQueueRef,
+    void*,
+    const int,
+    const double*,
+    const size_t,
+    const double*,
+    const size_t,
+    const size_t,
+    const DPCTLEventVectorRef) = dpnp_rng_multivariate_normal_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_negative_binomial_c(DPCTLSyclQueueRef q_ref,
+                                               void* result,
+                                               const double a,
+                                               const double p,
+                                               const size_t size,
+                                               const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
+    if (!size)
+    {
+        return event_ref;
+    }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    mkl_rng::negative_binomial<_DataType> distribution(a, p);
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+
+    return event_ref;
 }
 
 template <typename _DataType>
 void dpnp_rng_negative_binomial_c(void* result, const double a, const double p, const size_t size)
 {
-    if (!size)
-    {
-        return;
-    }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
-    mkl_rng::negative_binomial<_DataType> distribution(a, p);
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_negative_binomial_c<_DataType>(q_ref,
+                                                                          result,
+                                                                          a,
+                                                                          p,
+                                                                          size,
+                                                                          dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
 }
+
+template <typename _DataType>
+void (*dpnp_rng_negative_binomial_default_c)(void*,
+                                             const double,
+                                             const double,
+                                             const size_t) = dpnp_rng_negative_binomial_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_negative_binomial_ext_c)(
+    DPCTLSyclQueueRef,
+    void*,
+    const double,
+    const double,
+    const size_t,
+    const DPCTLEventVectorRef) = dpnp_rng_negative_binomial_c<_DataType>;
 
 template <typename _KernelNameSpecialization>
 class dpnp_rng_noncentral_chisquare_c_kernel1;
 template <typename _KernelNameSpecialization>
 class dpnp_rng_noncentral_chisquare_c_kernel2;
+
 template <typename _DataType>
-void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size)
+DPCTLSyclEventRef dpnp_rng_noncentral_chisquare_c(DPCTLSyclQueueRef q_ref,
+                                                  void* result,
+                                                  const _DataType df,
+                                                  const _DataType nonc,
+                                                  const size_t size,
+                                                  const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size || !result)
     {
-        return;
+        return event_ref;
     }
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, false, true);
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result, size, false, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
     const _DataType d_zero = _DataType(0.0);
@@ -523,7 +1186,7 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         mkl_rng::gamma<_DataType> gamma_distribution(shape, d_zero, d_two);
         auto event_gamma_distr = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, size, result1);
 
-        nvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+        nvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
 
         loc = sqrt(nonc);
 
@@ -532,17 +1195,17 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
 
         /* squaring could result in an overflow */
         auto event_sqr_out =
-            mkl_vm::sqr(DPNP_QUEUE, size, nvec, nvec, {event_gamma_distr, event_gaussian_distr}, mkl_vm::mode::ha);
-        auto event_add_out = mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, {event_sqr_out}, mkl_vm::mode::ha);
+            mkl_vm::sqr(q, size, nvec, nvec, {event_gamma_distr, event_gaussian_distr}, mkl_vm::mode::ha);
+        auto event_add_out = mkl_vm::add(q, size, result1, nvec, result1, {event_sqr_out}, mkl_vm::mode::ha);
         event_add_out.wait();
-        dpnp_memory_free_c(nvec);
+        sycl::free(nvec, q);
     }
     else if (df < 1)
     {
         /* noncentral_chisquare(df, nonc) ~ G( df/2 + Poisson(nonc/2), 2) */
         double lambda;
         int* pvec = nullptr;
-        pvec = reinterpret_cast<int*>(dpnp_memory_alloc_c(size * sizeof(int)));
+        pvec = reinterpret_cast<int*>(sycl::malloc_shared(size * sizeof(int), q));
         lambda = 0.5 * nonc;
 
         mkl_rng::poisson<int> poisson_distribution(lambda);
@@ -554,7 +1217,7 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         {
             size_t* idx = nullptr;
             _DataType* tmp = nullptr;
-            idx = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(size * sizeof(size_t)));
+            idx = reinterpret_cast<size_t*>(sycl::malloc_shared(size * sizeof(size_t), q));
 
             sycl::range<1> gws1(size);
             auto kernel_parallel_for_func1 = [=](sycl::id<1> global_id) {
@@ -565,14 +1228,14 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                 cgh.parallel_for<class dpnp_rng_noncentral_chisquare_c_kernel1<_DataType>>(gws1,
                                                                                            kernel_parallel_for_func1);
             };
-            event_out = DPNP_QUEUE.submit(kernel_func1);
+            event_out = q.submit(kernel_func1);
             event_out.wait();
 
             std::sort(idx, idx + size, [pvec](size_t i1, size_t i2) { return pvec[i1] < pvec[i2]; });
             /* idx now contains original indexes of ordered Poisson outputs */
 
             /* allocate workspace to store samples of gamma, enough to hold entire output */
-            tmp = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+            tmp = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
             for (i = 0; i < size;)
             {
                 size_t j;
@@ -599,13 +1262,13 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                     cgh.parallel_for<class dpnp_rng_noncentral_chisquare_c_kernel2<_DataType>>(
                         gws2, kernel_parallel_for_func2);
                 };
-                event_out = DPNP_QUEUE.submit(kernel_func2);
+                event_out = q.submit(kernel_func2);
                 event_out.wait();
 
                 i = j;
             }
-            dpnp_memory_free_c(tmp);
-            dpnp_memory_free_c(idx);
+            sycl::free(tmp, q);
+            sycl::free(idx, q);
         }
         else
         {
@@ -616,7 +1279,7 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                 event_out.wait();
             }
         }
-        dpnp_memory_free_c(pvec);
+        sycl::free(pvec, q);
     }
     else
     {
@@ -624,33 +1287,117 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         loc = sqrt(nonc);
         mkl_rng::gaussian<_DataType> gaussian_distribution(loc, d_one);
         auto event_gaussian_distr = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, result1);
-        auto event_out = mkl_vm::sqr(DPNP_QUEUE, size, result1, result1, {event_gaussian_distr}, mkl_vm::mode::ha);
+        auto event_out = mkl_vm::sqr(q, size, result1, result1, {event_gaussian_distr}, mkl_vm::mode::ha);
         event_out.wait();
     }
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_normal_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
+void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_noncentral_chisquare_c<_DataType>(q_ref,
+                                                                             result,
+                                                                             df,
+                                                                             nonc,
+                                                                             size,
+                                                                             dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_noncentral_chisquare_default_c)(void*,
+                                                const _DataType,
+                                                const _DataType,
+                                                const size_t) = dpnp_rng_noncentral_chisquare_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_noncentral_chisquare_ext_c)(
+    DPCTLSyclQueueRef,
+    void*,
+    const _DataType,
+    const _DataType,
+    const size_t,
+    const DPCTLEventVectorRef) = dpnp_rng_noncentral_chisquare_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_normal_c(DPCTLSyclQueueRef q_ref,
+                                    void* result,
+                                    const _DataType mean,
+                                    const _DataType stddev,
+                                    const size_t size,
+                                    const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_pareto_c(void* result, const double alpha, const size_t size)
+void dpnp_rng_normal_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_normal_c<_DataType>(q_ref,
+                                                               result,
+                                                               mean,
+                                                               stddev,
+                                                               size,
+                                                               dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_normal_default_c)(void*,
+                                  const _DataType,
+                                  const _DataType,
+                                  const size_t) = dpnp_rng_normal_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_normal_ext_c)(DPCTLSyclQueueRef,
+                                           void*,
+                                           const _DataType,
+                                           const _DataType,
+                                           const size_t,
+                                           const DPCTLEventVectorRef) = dpnp_rng_normal_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_pareto_c(DPCTLSyclQueueRef q_ref,
+                                    void* result,
+                                    const double alpha,
+                                    const size_t size,
+                                    const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     std::vector<sycl::event> no_deps;
 
     const _DataType d_zero = _DataType(0.0);
@@ -663,32 +1410,105 @@ void dpnp_rng_pareto_c(void* result, const double alpha, const size_t size)
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
 
-    event_out = mkl_vm::powx(DPNP_QUEUE, size, result1, neg_rec_alp, result1, no_deps, mkl_vm::mode::ha);
+    event_out = mkl_vm::powx(q, size, result1, neg_rec_alp, result1, no_deps, mkl_vm::mode::ha);
     event_out.wait();
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_poisson_c(void* result, const double lambda, const size_t size)
+void dpnp_rng_pareto_c(void* result, const double alpha, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_pareto_c<_DataType>(q_ref,
+                                                               result,
+                                                               alpha,
+                                                               size,
+                                                               dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_pareto_default_c)(void*, const double, const size_t) = dpnp_rng_pareto_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_pareto_ext_c)(DPCTLSyclQueueRef,
+                                           void*,
+                                           const double,
+                                           const size_t,
+                                           const DPCTLEventVectorRef) = dpnp_rng_pareto_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_poisson_c(DPCTLSyclQueueRef q_ref,
+                                     void* result,
+                                     const double lambda,
+                                     const size_t size,
+                                     const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     mkl_rng::poisson<_DataType> distribution(lambda);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_power_c(void* result, const double alpha, const size_t size)
+void dpnp_rng_poisson_c(void* result, const double lambda, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_poisson_c<_DataType>(q_ref,
+                                                                result,
+                                                                lambda,
+                                                                size,
+                                                                dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_poisson_default_c)(void*, const double, const size_t) = dpnp_rng_poisson_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_poisson_ext_c)(DPCTLSyclQueueRef,
+                                            void*,
+                                            const double,
+                                            const size_t,
+                                            const DPCTLEventVectorRef) = dpnp_rng_poisson_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_power_c(DPCTLSyclQueueRef q_ref,
+                                   void* result,
+                                   const double alpha,
+                                   const size_t size,
+                                   const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     std::vector<sycl::event> no_deps;
 
     const _DataType d_zero = _DataType(0.0);
@@ -701,53 +1521,125 @@ void dpnp_rng_power_c(void* result, const double alpha, const size_t size)
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
 
-    event_out = mkl_vm::powx(DPNP_QUEUE, size, result1, neg_rec_alp, result1, no_deps, mkl_vm::mode::ha);
+    event_out = mkl_vm::powx(q, size, result1, neg_rec_alp, result1, no_deps, mkl_vm::mode::ha);
     event_out.wait();
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
+void dpnp_rng_power_c(void* result, const double alpha, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_power_c<_DataType>(q_ref,
+                                                              result,
+                                                              alpha,
+                                                              size,
+                                                              dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_power_default_c)(void*, const double, const size_t) = dpnp_rng_power_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_power_ext_c)(DPCTLSyclQueueRef,
+                                          void*,
+                                          const double,
+                                          const size_t,
+                                          const DPCTLEventVectorRef) = dpnp_rng_power_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_rayleigh_c(DPCTLSyclQueueRef q_ref,
+                                      void* result,
+                                      const _DataType scale,
+                                      const size_t size,
+                                      const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
 
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     std::vector<sycl::event> no_deps;
 
     const _DataType a = 0.0;
     const _DataType beta = 2.0;
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result, size);
     _DataType* result1 = result1_ptr.get_ptr();
 
     mkl_rng::exponential<_DataType> distribution(a, beta);
 
     auto exponential_rng_event = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    auto sqrt_event = mkl_vm::sqrt(DPNP_QUEUE, size, result1, result1, {exponential_rng_event}, mkl_vm::mode::ha);
-    auto scal_event = mkl_blas::scal(DPNP_QUEUE, size, scale, result1, 1, {sqrt_event});
+    auto sqrt_event = mkl_vm::sqrt(q, size, result1, result1, {exponential_rng_event}, mkl_vm::mode::ha);
+    auto scal_event = mkl_blas::scal(q, size, scale, result1, 1, {sqrt_event});
     scal_event.wait();
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_shuffle_c(
-    void* result, const size_t itemsize, const size_t ndim, const size_t high_dim_size, const size_t size)
+void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_rayleigh_c<_DataType>(q_ref,
+                                                                 result,
+                                                                 scale,
+                                                                 size,
+                                                                 dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_rayleigh_default_c)(void*, const _DataType, const size_t) = dpnp_rng_rayleigh_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_rayleigh_ext_c)(DPCTLSyclQueueRef,
+                                             void*,
+                                             const _DataType,
+                                             const size_t,
+                                             const DPCTLEventVectorRef) = dpnp_rng_rayleigh_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_shuffle_c(DPCTLSyclQueueRef q_ref,
+                                     void* result,
+                                     const size_t itemsize,
+                                     const size_t ndim,
+                                     const size_t high_dim_size,
+                                     const size_t size,
+                                     const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!result)
     {
-        return;
+        return event_ref;
     }
 
     if (!size || !ndim || !(high_dim_size > 1))
     {
-        return;
+        return event_ref;
     }
 
-    DPNPC_ptr_adapter<char> result1_ptr(result, size * itemsize, true, true);
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    DPNPC_ptr_adapter<char> result1_ptr(q_ref, result, size * itemsize, true, true);
     char* result1 = result1_ptr.get_ptr();
 
     size_t uvec_size = high_dim_size - 1;
-    double* Uvec = reinterpret_cast<double*>(dpnp_memory_alloc_c(uvec_size * sizeof(double)));
+    double* Uvec = reinterpret_cast<double*>(sycl::malloc_shared(uvec_size * sizeof(double), q));
     mkl_rng::uniform<double> uniform_distribution(0.0, 1.0);
     auto uniform_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, uvec_size, Uvec);
     uniform_event.wait();
@@ -757,62 +1649,108 @@ void dpnp_rng_shuffle_c(
         // Fast, statically typed path: shuffle the underlying buffer.
         // Only for non-empty, 1d objects of class ndarray (subclasses such
         // as MaskedArrays may not support this approach).
-        char* buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(itemsize * sizeof(char)));
+        char* buf = reinterpret_cast<char*>(sycl::malloc_shared(itemsize * sizeof(char), q));
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
             if (i != j)
             {
                 auto memcpy1 =
-                    DPNP_QUEUE.submit([&](sycl::handler& h) { h.memcpy(buf, result1 + j * itemsize, itemsize); });
-                auto memcpy2 = DPNP_QUEUE.submit([&](sycl::handler& h) {
+                    q.submit([&](sycl::handler& h) { h.memcpy(buf, result1 + j * itemsize, itemsize); });
+                auto memcpy2 = q.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy1});
                     h.memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
                 });
-                auto memcpy3 = DPNP_QUEUE.submit([&](sycl::handler& h) {
+                auto memcpy3 = q.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy2});
                     h.memcpy(result1 + i * itemsize, buf, itemsize);
                 });
                 memcpy3.wait();
             }
         }
-        dpnp_memory_free_c(buf);
+        sycl::free(buf, q);
     }
     else
     {
         // Multidimensional ndarrays require a bounce buffer.
         size_t step_size = (size / high_dim_size) * itemsize; // size in bytes for x[i] element
-        char* buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(step_size * sizeof(char)));
+        char* buf = reinterpret_cast<char*>(sycl::malloc_shared(step_size * sizeof(char), q));
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
             if (j < i)
             {
                 auto memcpy1 =
-                    DPNP_QUEUE.submit([&](sycl::handler& h) { h.memcpy(buf, result1 + j * step_size, step_size); });
-                auto memcpy2 = DPNP_QUEUE.submit([&](sycl::handler& h) {
+                    q.submit([&](sycl::handler& h) { h.memcpy(buf, result1 + j * step_size, step_size); });
+                auto memcpy2 = q.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy1});
                     h.memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
                 });
-                auto memcpy3 = DPNP_QUEUE.submit([&](sycl::handler& h) {
+                auto memcpy3 = q.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy2});
                     h.memcpy(result1 + i * step_size, buf, step_size);
                 });
                 memcpy3.wait();
             }
         }
-        dpnp_memory_free_c(buf);
+        sycl::free(buf, q);
     }
-    dpnp_memory_free_c(Uvec);
+
+    sycl::free(Uvec, q);
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_standard_cauchy_c(void* result, const size_t size)
+void dpnp_rng_shuffle_c(
+    void* result, const size_t itemsize, const size_t ndim, const size_t high_dim_size, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_shuffle_c<_DataType>(q_ref,
+                                                                result,
+                                                                itemsize,
+                                                                ndim,
+                                                                high_dim_size,
+                                                                size,
+                                                                dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_shuffle_default_c)(void*,
+                                   const size_t,
+                                   const size_t,
+                                   const size_t,
+                                   const size_t) = dpnp_rng_shuffle_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_shuffle_ext_c)(DPCTLSyclQueueRef,
+                                            void*,
+                                            const size_t,
+                                            const size_t,
+                                            const size_t,
+                                            const size_t,
+                                            const DPCTLEventVectorRef) = dpnp_rng_shuffle_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_standard_cauchy_c(DPCTLSyclQueueRef q_ref,
+                                             void* result,
+                                             const size_t size,
+                                             const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     const _DataType displacement = _DataType(0.0);
@@ -823,56 +1761,193 @@ void dpnp_rng_standard_cauchy_c(void* result, const size_t size)
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_standard_exponential_c(void* result, const size_t size)
+void dpnp_rng_standard_cauchy_c(void* result, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_standard_cauchy_c<_DataType>(q_ref,
+                                                                        result,
+                                                                        size,
+                                                                        dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_standard_cauchy_default_c)(void*, const size_t) = dpnp_rng_standard_cauchy_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_standard_cauchy_ext_c)(DPCTLSyclQueueRef,
+                                                    void*,
+                                                    const size_t,
+                                                    const DPCTLEventVectorRef) = dpnp_rng_standard_cauchy_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_standard_exponential_c(DPCTLSyclQueueRef q_ref,
+                                                  void* result,
+                                                  const size_t size,
+                                                  const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     // set displacement a
     const _DataType beta = (_DataType(1.0));
 
     dpnp_rng_exponential_c(result, beta, size);
+
+    return event_ref;
+}
+
+template <typename _DataType>
+void dpnp_rng_standard_exponential_c(void* result, const size_t size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_standard_exponential_c<_DataType>(q_ref,
+                                                                             result,
+                                                                             size,
+                                                                             dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_standard_exponential_default_c)(void*, const size_t) = dpnp_rng_standard_exponential_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_standard_exponential_ext_c)(
+    DPCTLSyclQueueRef,
+    void*,
+    const size_t,
+    const DPCTLEventVectorRef) = dpnp_rng_standard_exponential_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_standard_gamma_c(DPCTLSyclQueueRef q_ref,
+                                            void* result,
+                                            const _DataType shape,
+                                            const size_t size,
+                                            const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
+    if (!size)
+    {
+        return event_ref;
+    }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    const _DataType scale = _DataType(1.0);
+
+    dpnp_rng_gamma_c(result, shape, scale, size);
+
+    return event_ref;
 }
 
 template <typename _DataType>
 void dpnp_rng_standard_gamma_c(void* result, const _DataType shape, const size_t size)
 {
-    if (!size)
-    {
-        return;
-    }
-
-    const _DataType scale = _DataType(1.0);
-
-    dpnp_rng_gamma_c(result, shape, scale, size);
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_standard_gamma_c<_DataType>(q_ref,
+                                                                       result,
+                                                                       shape,
+                                                                       size,
+                                                                       dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void dpnp_rng_standard_normal_c(void* result, size_t size)
+void (*dpnp_rng_standard_gamma_default_c)(void*, const _DataType, const size_t) = dpnp_rng_standard_gamma_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_standard_gamma_ext_c)(DPCTLSyclQueueRef,
+                                                   void*,
+                                                   const _DataType,
+                                                   const size_t,
+                                                   const DPCTLEventVectorRef) = dpnp_rng_standard_gamma_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_standard_normal_c(DPCTLSyclQueueRef q_ref,
+                                             void* result,
+                                             size_t size,
+                                             const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     const _DataType mean = _DataType(0.0);
     const _DataType stddev = _DataType(1.0);
 
     dpnp_rng_normal_c(result, mean, stddev, size);
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
+void dpnp_rng_standard_normal_c(void* result, size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_standard_normal_c<_DataType>(q_ref,
+                                                                        result,
+                                                                        size,
+                                                                        dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_standard_normal_default_c)(void*, const size_t) = dpnp_rng_standard_normal_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_standard_normal_ext_c)(DPCTLSyclQueueRef,
+                                                    void*,
+                                                    const size_t,
+                                                    const DPCTLEventVectorRef) = dpnp_rng_standard_normal_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_standard_t_c(DPCTLSyclQueueRef q_ref,
+                                        void* result,
+                                        const _DataType df,
+                                        const size_t size,
+                                        const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size || !result)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
     const _DataType d_zero = 0.0, d_one = 1.0;
@@ -882,30 +1957,69 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
     mkl_rng::gamma<_DataType> gamma_distribution(shape, d_zero, 1.0 / shape);
     auto gamma_distr_event = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, size, result1);
 
-    auto invsqrt_event = mkl_vm::invsqrt(DPNP_QUEUE, size, result1, result1, {gamma_distr_event}, mkl_vm::mode::ha);
+    auto invsqrt_event = mkl_vm::invsqrt(q, size, result1, result1, {gamma_distr_event}, mkl_vm::mode::ha);
 
-    sn = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    sn = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
 
     mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
     auto gaussian_distr_event = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, sn);
 
     auto event_out =
-        mkl_vm::mul(DPNP_QUEUE, size, result1, sn, result1, {invsqrt_event, gaussian_distr_event}, mkl_vm::mode::ha);
+        mkl_vm::mul(q, size, result1, sn, result1, {invsqrt_event, gaussian_distr_event}, mkl_vm::mode::ha);
     event_out.wait();
-    dpnp_memory_free_c(sn);
+
+    sycl::free(sn, q);
+
+    return event_ref;
 }
+
+template <typename _DataType>
+void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_standard_t_c<_DataType>(q_ref,
+                                                                   result,
+                                                                   df,
+                                                                   size,
+                                                                   dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_standard_t_default_c)(void*, const _DataType, const size_t) = dpnp_rng_standard_t_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_standard_t_ext_c)(DPCTLSyclQueueRef,
+                                               void*,
+                                               const _DataType,
+                                               const size_t,
+                                               const DPCTLEventVectorRef) = dpnp_rng_standard_t_c<_DataType>;
 
 template <typename _KernelNameSpecialization>
 class dpnp_rng_triangular_ration_acceptance_c_kernel;
 
 template <typename _DataType>
-void dpnp_rng_triangular_c(
-    void* result, const _DataType x_min, const _DataType x_mode, const _DataType x_max, const size_t size)
+DPCTLSyclEventRef dpnp_rng_triangular_c(DPCTLSyclQueueRef q_ref,
+                                        void* result,
+                                        const _DataType x_min,
+                                        const _DataType x_mode,
+                                        const _DataType x_max,
+                                        const size_t size,
+                                        const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
     const _DataType d_zero = (_DataType(0));
     const _DataType d_one = (_DataType(1));
@@ -961,17 +2075,64 @@ void dpnp_rng_triangular_c(
         cgh.parallel_for<class dpnp_rng_triangular_ration_acceptance_c_kernel<_DataType>>(gws,
                                                                                           kernel_parallel_for_func);
     };
-    auto event_ration_acceptance = DPNP_QUEUE.submit(kernel_func);
+    auto event_ration_acceptance = q.submit(kernel_func);
     event_ration_acceptance.wait();
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_uniform_c(void* result, const long low, const long high, const size_t size)
+void dpnp_rng_triangular_c(
+    void* result, const _DataType x_min, const _DataType x_mode, const _DataType x_max, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_triangular_c<_DataType>(q_ref,
+                                                                   result,
+                                                                   x_min,
+                                                                   x_mode,
+                                                                   x_max,
+                                                                   size,
+                                                                   dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_triangular_default_c)(void*,
+                                      const _DataType,
+                                      const _DataType,
+                                      const _DataType,
+                                      const size_t) = dpnp_rng_triangular_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_triangular_ext_c)(DPCTLSyclQueueRef,
+                                               void*,
+                                               const _DataType,
+                                               const _DataType,
+                                               const _DataType,
+                                               const size_t,
+                                               const DPCTLEventVectorRef) = dpnp_rng_triangular_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
+                                     void* result,
+                                     const long low,
+                                     const long high,
+                                     const size_t size,
+                                     const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     // set left bound of distribution
@@ -983,7 +2144,34 @@ void dpnp_rng_uniform_c(void* result, const long low, const long high, const siz
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
+
+    return event_ref;
 }
+
+template <typename _DataType>
+void dpnp_rng_uniform_c(void* result, const long low, const long high, const size_t size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_uniform_c<_DataType>(q_ref,
+                                                                result,
+                                                                low,
+                                                                high,
+                                                                size,
+                                                                dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_uniform_default_c)(void*, const long, const long, const size_t) = dpnp_rng_uniform_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_uniform_ext_c)(DPCTLSyclQueueRef,
+                                            void*,
+                                            const long,
+                                            const long,
+                                            const size_t,
+                                            const DPCTLEventVectorRef) = dpnp_rng_uniform_c<_DataType>;
 
 #ifndef M_PI
 /*  128-bits worth of pi */
@@ -991,14 +2179,26 @@ void dpnp_rng_uniform_c(void* result, const long low, const long high, const siz
 #endif
 
 template <typename _DataType>
-void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
+DPCTLSyclEventRef dpnp_rng_vonmises_large_kappa_c(DPCTLSyclQueueRef q_ref,
+                                                  void* result,
+                                                  const _DataType mu,
+                                                  const _DataType kappa,
+                                                  const size_t size,
+                                                  const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size || !result)
     {
-        return;
+        return event_ref;
     }
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
     _DataType r_over_two_kappa, recip_two_kappa;
@@ -1018,8 +2218,8 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     rho_minus_one = r_over_two_kappa_minus_one - sqrt(2 * r_over_two_kappa * recip_two_kappa);
     s_minus_one = rho_minus_one * (0.5 * rho_minus_one / (1 + rho_minus_one));
 
-    Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    Uvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
+    Vvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
 
     for (size_t n = 0; n < size;)
     {
@@ -1062,7 +2262,7 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
         }
     }
 
-    dpnp_memory_free_c(Uvec);
+    sycl::free(Uvec, q);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
@@ -1080,22 +2280,63 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
             result1[i] = (resi < 0) ? -mod : mod;
         });
     };
-    auto acceptance_event = DPNP_QUEUE.submit(paral_kernel_acceptance);
+    auto acceptance_event = q.submit(paral_kernel_acceptance);
     acceptance_event.wait();
 
-    dpnp_memory_free_c(Vvec);
-    return;
+    sycl::free(Vvec, q);
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
+void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_vonmises_large_kappa_c<_DataType>(q_ref,
+                                                                             result,
+                                                                             mu,
+                                                                             kappa,
+                                                                             size,
+                                                                             dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_vonmises_large_kappa_default_c)(void*,
+                                                const _DataType,
+                                                const _DataType,
+                                                const size_t) = dpnp_rng_vonmises_large_kappa_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_vonmises_large_kappa_ext_c)(
+    DPCTLSyclQueueRef,
+    void*,
+    const _DataType,
+    const _DataType,
+    const size_t,
+    const DPCTLEventVectorRef) = dpnp_rng_vonmises_large_kappa_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_vonmises_small_kappa_c(DPCTLSyclQueueRef q_ref,
+                                                  void* result,
+                                                  const _DataType mu,
+                                                  const _DataType kappa,
+                                                  const size_t size,
+                                                  const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size || !result)
     {
-        return;
+        return event_ref;
     }
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
     _DataType rho_over_kappa, rho, r, s_kappa;
@@ -1113,8 +2354,8 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     /* s times kappa */
     s_kappa = (1 + rho * rho) / (2 * rho_over_kappa);
 
-    Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    Uvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
+    Vvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
 
     for (size_t n = 0; n < size;)
     {
@@ -1144,7 +2385,7 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
         }
     }
 
-    dpnp_memory_free_c(Uvec);
+    sycl::free(Uvec, q);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
@@ -1161,12 +2402,41 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
             result1[i] = (resi < 0) ? -mod : mod;
         });
     };
-    auto acceptance_event = DPNP_QUEUE.submit(paral_kernel_acceptance);
+    auto acceptance_event = q.submit(paral_kernel_acceptance);
     acceptance_event.wait();
 
-    dpnp_memory_free_c(Vvec);
-    return;
+    sycl::free(Vvec, q);
+    return event_ref;
 }
+
+template <typename _DataType>
+void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_vonmises_small_kappa_c<_DataType>(q_ref,
+                                                                             result,
+                                                                             mu,
+                                                                             kappa,
+                                                                             size,
+                                                                             dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_vonmises_small_kappa_default_c)(void*,
+                                                const _DataType,
+                                                const _DataType,
+                                                const size_t) = dpnp_rng_vonmises_small_kappa_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_vonmises_small_kappa_ext_c)(
+    DPCTLSyclQueueRef,
+    void*,
+    const _DataType,
+    const _DataType,
+    const size_t,
+    const DPCTLEventVectorRef) = dpnp_rng_vonmises_small_kappa_c<_DataType>;
 
 /* Vonmisses uses the rejection algorithm compared against the wrapped
    Cauchy distribution suggested by Best and Fisher and documented in
@@ -1175,13 +2445,55 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
    (but corrected to match the algorithm in R and Python)
 */
 template <typename _DataType>
-void dpnp_rng_vonmises_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
+DPCTLSyclEventRef dpnp_rng_vonmises_c(DPCTLSyclQueueRef q_ref,
+                                      void* result,
+                                      const _DataType mu,
+                                      const _DataType kappa,
+                                      const size_t size,
+                                      const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     if (kappa > 1.0)
         dpnp_rng_vonmises_large_kappa_c<_DataType>(result, mu, kappa, size);
     else
         dpnp_rng_vonmises_small_kappa_c<_DataType>(result, mu, kappa, size);
+
+    return event_ref;
 }
+
+template <typename _DataType>
+void dpnp_rng_vonmises_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_vonmises_c<_DataType>(q_ref,
+                                                                 result,
+                                                                 mu,
+                                                                 kappa,
+                                                                 size,
+                                                                 dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_vonmises_default_c)(void*,
+                                    const _DataType,
+                                    const _DataType,
+                                    const size_t) = dpnp_rng_vonmises_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_vonmises_ext_c)(DPCTLSyclQueueRef,
+                                             void*,
+                                             const _DataType,
+                                             const _DataType,
+                                             const size_t,
+                                             const DPCTLEventVectorRef) = dpnp_rng_vonmises_c<_DataType>;
 
 template <typename _KernelNameSpecialization>
 class dpnp_rng_wald_acceptance_kernel1;
@@ -1190,12 +2502,24 @@ template <typename _KernelNameSpecialization>
 class dpnp_rng_wald_acceptance_kernel2;
 
 template <typename _DataType>
-void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, const size_t size)
+DPCTLSyclEventRef dpnp_rng_wald_c(DPCTLSyclQueueRef q_ref,
+                                  void* result,
+                                  const _DataType mean,
+                                  const _DataType scale,
+                                  const size_t size,
+                                  const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
     _DataType* uvec = nullptr;
@@ -1209,7 +2533,7 @@ void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, 
     auto gaussian_dstr_event = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, result1);
 
     /* Y = mean/(2 scale) * Z^2 */
-    auto sqr_event = mkl_vm::sqr(DPNP_QUEUE, size, result1, result1, {gaussian_dstr_event}, mkl_vm::mode::ha);
+    auto sqr_event = mkl_vm::sqr(q, size, result1, result1, {gaussian_dstr_event}, mkl_vm::mode::ha);
 
     sycl::range<1> gws(size);
     auto acceptance_kernel1 = [=](sycl::id<1> global_id) {
@@ -1227,9 +2551,9 @@ void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, 
         cgh.depends_on({sqr_event});
         cgh.parallel_for<class dpnp_rng_wald_acceptance_kernel1<_DataType>>(gws, acceptance_kernel1);
     };
-    auto event_ration_acceptance = DPNP_QUEUE.submit(parallel_for_acceptance1);
+    auto event_ration_acceptance = q.submit(parallel_for_acceptance1);
 
-    uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    uvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * sizeof(_DataType), q));
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, uvec);
@@ -1245,19 +2569,58 @@ void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, 
         cgh.depends_on({event_ration_acceptance, uniform_distr_event});
         cgh.parallel_for<class dpnp_rng_wald_acceptance_kernel2<_DataType>>(gws, acceptance_kernel2);
     };
-    auto event_out = DPNP_QUEUE.submit(parallel_for_acceptance2);
+    auto event_out = q.submit(parallel_for_acceptance2);
     event_out.wait();
 
-    dpnp_memory_free_c(uvec);
+    sycl::free(uvec, q);
+
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size)
+void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_wald_c<_DataType>(q_ref,
+                                                             result,
+                                                             mean,
+                                                             scale,
+                                                             size,
+                                                             dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+
+template <typename _DataType>
+void (*dpnp_rng_wald_default_c)(void*, const _DataType, const _DataType, const size_t) = dpnp_rng_wald_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_wald_ext_c)(DPCTLSyclQueueRef,
+                                         void*,
+                                         const _DataType,
+                                         const _DataType,
+                                         const size_t,
+                                         const DPCTLEventVectorRef) = dpnp_rng_wald_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_weibull_c(DPCTLSyclQueueRef q_ref,
+                                     void* result,
+                                     const double alpha,
+                                     const size_t size,
+                                     const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     if (alpha == 0)
     {
@@ -1273,16 +2636,50 @@ void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size)
         auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
         event_out.wait();
     }
+    return event_ref;
 }
 
 template <typename _DataType>
-void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
+void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size)
 {
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_weibull_c<_DataType>(q_ref,
+                                                                result,
+                                                                alpha,
+                                                                size,
+                                                                dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_weibull_default_c)(void*, const double, const size_t) = dpnp_rng_weibull_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_weibull_ext_c)(DPCTLSyclQueueRef,
+                                            void*,
+                                            const double,
+                                            const size_t,
+                                            const DPCTLEventVectorRef) = dpnp_rng_weibull_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef dpnp_rng_zipf_c(DPCTLSyclQueueRef q_ref,
+                                  void* result,
+                                  const _DataType a,
+                                  const size_t size,
+                                  const DPCTLEventVectorRef dep_event_vec_ref)
+{
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
     if (!size)
     {
-        return;
+        return event_ref;
     }
 
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event_out;
 
     size_t i, n_accepted, batch_size;
@@ -1292,13 +2689,13 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
     const _DataType d_zero = 0.0;
     const _DataType d_one = 1.0;
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
     am1 = a - d_one;
     b = pow(2.0, am1);
 
-    Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * 2 * sizeof(_DataType)));
+    Uvec = reinterpret_cast<_DataType*>(sycl::malloc_shared(size * 2 * sizeof(_DataType), q));
     Vvec = Uvec + size;
 
     // TODO
@@ -1331,94 +2728,128 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
         }
     }
 
-    dpnp_memory_free_c(Uvec);
+    sycl::free(Uvec, q);
+
+    return event_ref;
 }
+
+template <typename _DataType>
+void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_rng_zipf_c<_DataType>(q_ref,
+                                                             result,
+                                                             a,
+                                                             size,
+                                                             dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_rng_zipf_default_c)(void*, const _DataType, const size_t) = dpnp_rng_zipf_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_rng_zipf_ext_c)(DPCTLSyclQueueRef,
+                                         void*,
+                                         const _DataType,
+                                         const size_t,
+                                         const DPCTLEventVectorRef) = dpnp_rng_zipf_c<_DataType>;
 
 void func_map_init_random(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_beta_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_beta_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_binomial_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL][eft_INT][eft_INT] = {eft_INT,
+                                                                  (void*)dpnp_rng_binomial_default_c<int32_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_chisquare_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                   (void*)dpnp_rng_chisquare_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_exponential_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_exponential_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                     (void*)dpnp_rng_exponential_default_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_FLT][eft_FLT] = {eft_FLT,
+                                                                     (void*)dpnp_rng_exponential_default_c<float>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_F][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_f_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_F][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_f_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_GAMMA][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gamma_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_GAMMA][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gamma_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gaussian_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_gaussian_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gaussian_default_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_gaussian_default_c<float>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_GEOMETRIC][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_geometric_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_GEOMETRIC][eft_INT][eft_INT] = {eft_INT,
+                                                                   (void*)dpnp_rng_geometric_default_c<int32_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_GUMBEL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gumbel_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_GUMBEL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gumbel_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_HYPERGEOMETRIC][eft_INT][eft_INT] = {eft_INT,
-                                                                        (void*)dpnp_rng_hypergeometric_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_HYPERGEOMETRIC][eft_INT][eft_INT] = {
+        eft_INT, (void*)dpnp_rng_hypergeometric_default_c<int32_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_LAPLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_laplace_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_LAPLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_laplace_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_LOGISTIC][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_logistic_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_LOGISTIC][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_logistic_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_LOGNORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_lognormal_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_LOGNORMAL][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                   (void*)dpnp_rng_lognormal_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_MULTINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_multinomial_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_MULTINOMIAL][eft_INT][eft_INT] = {eft_INT,
+                                                                     (void*)dpnp_rng_multinomial_default_c<int32_t>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_MULTIVARIATE_NORMAL][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_rng_multivariate_normal_c<double>};
+        eft_DBL, (void*)dpnp_rng_multivariate_normal_default_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {
-        eft_INT, (void*)dpnp_rng_negative_binomial_c<int32_t>};
+        eft_INT, (void*)dpnp_rng_negative_binomial_default_c<int32_t>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_NONCENTRAL_CHISQUARE][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_rng_noncentral_chisquare_c<double>};
+        eft_DBL, (void*)dpnp_rng_noncentral_chisquare_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_normal_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_normal_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_PARETO][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_pareto_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_PARETO][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_pareto_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_POISSON][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_poisson_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_POISSON][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_poisson_default_c<int32_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_POWER][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_power_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_POWER][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_power_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_rayleigh_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_rayleigh_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_shuffle_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_shuffle_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_shuffle_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_rng_shuffle_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_shuffle_default_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_shuffle_default_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_shuffle_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_rng_shuffle_default_c<int64_t>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_SRAND][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_srand_c};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {eft_DBL,
-                                                                         (void*)dpnp_rng_standard_cauchy_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_rng_standard_cauchy_default_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_EXPONENTIAL][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_rng_standard_exponential_c<double>};
+        eft_DBL, (void*)dpnp_rng_standard_exponential_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_GAMMA][eft_DBL][eft_DBL] = {eft_DBL,
-                                                                        (void*)dpnp_rng_standard_gamma_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_GAMMA][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_rng_standard_gamma_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {eft_DBL,
-                                                                         (void*)dpnp_rng_standard_normal_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_standard_t_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_rng_standard_normal_default_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_rng_standard_t_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_TRIANGULAR][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_triangular_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_TRIANGULAR][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                    (void*)dpnp_rng_triangular_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_uniform_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_uniform_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_uniform_default_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_uniform_default_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_default_c<int32_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_VONMISES][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_vonmises_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_VONMISES][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_vonmises_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_WALD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_wald_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_WALD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_wald_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_weibull_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_weibull_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_ZIPF][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_zipf_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_ZIPF][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_zipf_default_c<double>};
 
     return;
 }
