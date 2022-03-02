@@ -82,59 +82,193 @@ __all__ = [
 ]
 
 
-ctypedef void(*fptr_dpnp_rng_beta_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_binomial_c_1out_t)(void * , const int, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_chisquare_c_1out_t)(void * , const int, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_exponential_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_f_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_gamma_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_geometric_c_1out_t)(void * , const float, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_gaussian_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_gumbel_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_hypergeometric_c_1out_t)(void * , const int, const int, const int, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_laplace_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_logistic_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_lognormal_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_multinomial_c_1out_t)(void * result,
-                                                   const int,
-                                                   const double * ,
-                                                   const size_t,
-                                                   const size_t) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_beta_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                 void * ,
+                                                                 const double,
+                                                                 const double,
+                                                                 const size_t,
+                                                                 const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_binomial_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                     void * ,
+                                                                     const int, const double,
+                                                                     const size_t,
+                                                                     const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_chisquare_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                      void * ,
+                                                                      const int,
+                                                                      const size_t,
+                                                                      const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_exponential_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                        void * ,
+                                                                        const double,
+                                                                        const size_t,
+                                                                        const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_f_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                              void * ,
+                                                              const double,
+                                                              const double,
+                                                              const size_t,
+                                                              const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_gamma_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                  void * ,
+                                                                  const double,
+                                                                  const double,
+                                                                  const size_t,
+                                                                  const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_geometric_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                      void * ,
+                                                                      const float,
+                                                                      const size_t,
+                                                                      const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_gaussian_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                     void * ,
+                                                                     const double,
+                                                                     const double,
+                                                                     const size_t,
+                                                                     const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_gumbel_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                   void * ,
+                                                                   const double,
+                                                                   const double,
+                                                                   const size_t,
+                                                                   const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_hypergeometric_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                           void * ,
+                                                                           const int,
+                                                                           const int,
+                                                                           const int,
+                                                                           const size_t,
+                                                                           const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_laplace_c_1out_t)(c_dpctl.DPCTLSyclQueueRef, void * ,
+                                                                    const double,
+                                                                    const double,
+                                                                    const size_t,
+                                                                    const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_logistic_c_1out_t)(c_dpctl.DPCTLSyclQueueRef, void * , 
+                                                                     const double,
+                                                                     const double,
+                                                                     const size_t,
+                                                                     const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_lognormal_c_1out_t)(c_dpctl.DPCTLSyclQueueRef, void * ,
+                                                                      const double,
+                                                                      const double,
+                                                                      const size_t,
+                                                                      const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_multinomial_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                        void * result,
+                                                                        const int,
+                                                                        void * ,
+                                                                        const size_t,
+                                                                        const size_t,
+                                                                        const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void * ,
                                                            const int,
-                                                           const double * ,
+                                                           void * ,
                                                            const size_t,
-                                                           const double * ,
+                                                           void * ,
                                                            const size_t,
                                                            const size_t) except +
-ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_noncentral_chisquare_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_power_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_shuffle_c_1out_t)(void * ,
-                                               const size_t,
-                                               const size_t,
-                                               const size_t,
-                                               const size_t) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_negative_binomial_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                              void * ,
+                                                                              const double,
+                                                                              const double,
+                                                                              const size_t,
+                                                                              const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_noncentral_chisquare_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                                 void * ,
+                                                                                 const double,
+                                                                                 const double,
+                                                                                 const size_t,
+                                                                                 const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_normal_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                   void * ,
+                                                                   const double,
+                                                                   const double,
+                                                                   const size_t,
+                                                                   const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_pareto_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                   void * ,
+                                                                   const double,
+                                                                   const size_t,
+                                                                   const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_poisson_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                    void * ,
+                                                                    const double,
+                                                                    const size_t,
+                                                                    const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_power_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                  void * ,
+                                                                  const double,
+                                                                  const size_t,
+                                                                  const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_rayleigh_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                     void * ,
+                                                                     const double,
+                                                                     const size_t,
+                                                                     const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_shuffle_c_1out_t)(c_dpctl.DPCTLSyclQueueRef, void * ,
+                                                                    const size_t,
+                                                                    const size_t,
+                                                                    const size_t,
+                                                                    const size_t,
+                                                                    const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef void(*fptr_dpnp_rng_srand_c_1out_t)(const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void * , const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void * , const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void * , const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_t_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_triangular_c_1out_t)(void * ,
-                                                  const double,
-                                                  const double,
-                                                  const double,
-                                                  const size_t) except +
-ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void * , const long, const long, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_vonmises_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_wald_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_zipf_c_1out_t)(void * , const double, const size_t) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                            void * ,
+                                                                            const size_t,
+                                                                            const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_standard_exponential_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                                 void * ,
+                                                                                 const size_t,
+                                                                                 const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_standard_gamma_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                           void * ,
+                                                                           const double,
+                                                                           const size_t,
+                                                                           const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_standard_normal_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                            void * ,
+                                                                            const size_t,
+                                                                            const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_standard_t_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                       void * ,
+                                                                       const double,
+                                                                       const size_t,
+                                                                       const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_triangular_c_1out_t)(c_dpctl.DPCTLSyclQueueRef, void * ,
+                                                                       const double,
+                                                                       const double,
+                                                                       const double,
+                                                                       const size_t,
+                                                                       const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_uniform_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                    void * ,
+                                                                    const long,
+                                                                    const long,
+                                                                    const size_t,
+                                                                    const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_vonmises_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                     void * ,
+                                                                     const double,
+                                                                     const double,
+                                                                     const size_t,
+                                                                     const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_wald_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                 void *,
+                                                                 const double,
+                                                                 const double,
+                                                                 const size_t,
+                                                                 const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_weibull_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                    void * ,
+                                                                    const double,
+                                                                    const size_t,
+                                                                    const c_dpctl.DPCTLEventVectorRef) except +
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_zipf_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                 void * ,
+                                                                 const double,
+                                                                 const size_t,
+                                                                 const c_dpctl.DPCTLEventVectorRef) except +
 
 
 cpdef utils.dpnp_descriptor dpnp_rng_beta(double a, double b, size):
@@ -149,15 +283,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_beta(double a, double b, size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_BETA, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_BETA_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_beta_c_1out_t func = <fptr_dpnp_rng_beta_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), a, b, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), a, b, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -180,16 +322,24 @@ cpdef utils.dpnp_descriptor dpnp_rng_binomial(int ntrial, double p, size):
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
-    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_BINOMIAL, param1_type, param1_type)
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_BINOMIAL_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     func = <fptr_dpnp_rng_binomial_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), ntrial, p, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), ntrial, p, result.size, NULL)
 
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
+    
     return result
 
 
@@ -205,15 +355,24 @@ cpdef utils.dpnp_descriptor dpnp_rng_chisquare(int df, size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_CHISQUARE, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_CHISQUARE_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
+
     cdef fptr_dpnp_rng_chisquare_c_1out_t func = <fptr_dpnp_rng_chisquare_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), df, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), df, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -231,15 +390,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_exponential(double beta, size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_EXPONENTIAL, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_EXPONENTIAL_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_exponential_c_1out_t func = <fptr_dpnp_rng_exponential_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), beta, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), beta, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -256,15 +423,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_f(double df_num, double df_den, size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_F, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_F_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_f_c_1out_t func = <fptr_dpnp_rng_f_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), df_num, df_den, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), df_num, df_den, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -284,15 +459,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_gamma(double shape, double scale, size):
 
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
-    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GAMMA, param1_type, param1_type)
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GAMMA_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     func = <fptr_dpnp_rng_gamma_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), shape, scale, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), shape, scale, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -315,15 +498,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_geometric(float p, size):
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
-    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GEOMETRIC, param1_type, param1_type)
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GEOMETRIC_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     func = <fptr_dpnp_rng_geometric_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), p, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), p, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -342,15 +533,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_gumbel(double loc, double scale, size):
     cdef fptr_dpnp_rng_gumbel_c_1out_t func
 
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
-    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GUMBEL, param1_type, param1_type)
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GUMBEL_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     func = <fptr_dpnp_rng_gumbel_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), loc, scale, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), loc, scale, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -372,15 +571,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_hypergeometric(int l, int s, int m, size):
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
-    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_HYPERGEOMETRIC, param1_type, param1_type)
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_HYPERGEOMETRIC_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     func = <fptr_dpnp_rng_hypergeometric_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), l, s, m, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), l, s, m, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -402,15 +609,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_laplace(double loc, double scale, size):
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
-    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LAPLACE, param1_type, param1_type)
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LAPLACE_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     func = <fptr_dpnp_rng_laplace_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), loc, scale, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), loc, scale, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -427,15 +642,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_logistic(double loc, double scale, size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGISTIC, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGISTIC_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_logistic_c_1out_t func = < fptr_dpnp_rng_logistic_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), loc, scale, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), loc, scale, result.size, NULL)
+    
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -457,20 +680,28 @@ cpdef utils.dpnp_descriptor dpnp_rng_lognormal(double mean, double stddev, size)
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
-    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGNORMAL, param1_type, param1_type)
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGNORMAL_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     func = <fptr_dpnp_rng_lognormal_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), mean, stddev, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), mean, stddev, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_rng_multinomial(int ntrial, p, size):
+cpdef utils.dpnp_descriptor dpnp_rng_multinomial(int ntrial, utils.dpnp_descriptor p, size):
     """
     Returns an array populated with samples from multinomial distribution.
 
@@ -484,29 +715,43 @@ cpdef utils.dpnp_descriptor dpnp_rng_multinomial(int ntrial, p, size):
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_multinomial_c_1out_t func
-    p = numpy.asarray(p, dtype=numpy.float64)
 
-    cdef double * p_vector = <double * > numpy.PyArray_DATA(p)
-    cdef size_t p_vector_size = len(p)
+    cdef size_t p_size = p.size
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
-    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTINOMIAL, param1_type, param1_type)
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTINOMIAL_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+
+    p_obj = p.get_array()
+
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=p_obj.device,
+                                                                       usm_type=p_obj.usm_type,
+                                                                       sycl_queue=p_obj.sycl_queue)
+
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     func = <fptr_dpnp_rng_multinomial_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), ntrial, p_vector, p_vector_size, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), ntrial, p.get_data(), p_size, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_rng_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov, size):
+cpdef utils.dpnp_descriptor dpnp_rng_multivariate_normal(utils.dpnp_descriptor mean, utils.dpnp_descriptor cov, size):
     """
     Returns an array populated with samples from multivariate normal distribution.
     `dpnp_rng_multivariate_normal` generates a matrix filled with random floats sampled from a
@@ -516,21 +761,15 @@ cpdef utils.dpnp_descriptor dpnp_rng_multivariate_normal(numpy.ndarray mean, num
 
     dtype = numpy.float64
     cdef int dimen
-    cdef double * mean_vector
-    cdef double * cov_vector
-    cdef size_t mean_vector_size
-    cdef size_t cov_vector_size
+    cdef size_t mean_size
+    cdef size_t cov_size
 
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_multivariate_normal_c_1out_t func
 
-    # mean and cov expected numpy.ndarray in C order (row major)
-    mean_vector = <double * > numpy.PyArray_DATA(mean)
-    cov_vector = <double * > numpy.PyArray_DATA(cov)
-
-    mean_vector_size = mean.size
-    cov_vector_size = cov.size
+    mean_size = mean.size
+    cov_size = cov.size
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -540,16 +779,22 @@ cpdef utils.dpnp_descriptor dpnp_rng_multivariate_normal(numpy.ndarray mean, num
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(mean, cov)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=result_sycl_device,
+                                                                       usm_type=result_usm_type,
+                                                                       sycl_queue=result_sycl_queue)
 
-    dimen = len(mean)
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     func = <fptr_dpnp_rng_multivariate_normal_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), dimen, mean_vector, mean_vector_size, cov_vector, cov_vector_size, result.size)
+    func(result.get_data(), mean_size, mean.get_data(), mean_size, cov.get_data(), cov_size, result.size)
 
     return result
-
 
 cpdef utils.dpnp_descriptor dpnp_rng_negative_binomial(double a, double p, size):
     """
@@ -567,6 +812,9 @@ cpdef utils.dpnp_descriptor dpnp_rng_negative_binomial(double a, double p, size)
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_negative_binomial_c_1out_t func
     cdef shape_type_c result_shape
+    cdef c_dpctl.SyclQueue q
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref
+    cdef c_dpctl.DPCTLSyclEventRef event_ref
 
     if p == 0.0:
         filled_val = numpy.iinfo(dtype).min
@@ -578,15 +826,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_negative_binomial(double a, double p, size)
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NEGATIVE_BINOMIAL, param1_type, param1_type)
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NEGATIVE_BINOMIAL_EXT, param1_type, param1_type)
 
         # ceate result array with type given by FPTR data
         result_shape = utils._object_to_tuple(size)
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+        result_sycl_queue = result.get_array().sycl_queue
+
+        q = <c_dpctl.SyclQueue> result_sycl_queue
+        q_ref = q.get_queue_ref()
+
         func = <fptr_dpnp_rng_negative_binomial_c_1out_t > kernel_data.ptr
         # call FPTR function
-        func(result.get_data(), a, p, result.size)
+        event_ref = func(q_ref, result.get_data(), a, p, result.size, NULL)
+        
+        with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+        c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -603,15 +859,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_noncentral_chisquare(double df, double nonc
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NONCENTRAL_CHISQUARE, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NONCENTRAL_CHISQUARE_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_noncentral_chisquare_c_1out_t func = < fptr_dpnp_rng_noncentral_chisquare_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), df, nonc, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), df, nonc, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -630,6 +894,9 @@ cpdef utils.dpnp_descriptor dpnp_rng_normal(double loc, double scale, size):
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_normal_c_1out_t func
+    cdef c_dpctl.SyclQueue q
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref
+    cdef c_dpctl.DPCTLSyclEventRef event_ref
 
     if scale == 0.0:
         return dpnp_full(size, loc, dtype)
@@ -638,15 +905,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_normal(double loc, double scale, size):
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NORMAL, param1_type, param1_type)
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NORMAL_EXT, param1_type, param1_type)
 
         # ceate result array with type given by FPTR data
         result_shape = utils._object_to_tuple(size)
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+        result_sycl_queue = result.get_array().sycl_queue
+
+        q = <c_dpctl.SyclQueue> result_sycl_queue
+        q_ref = q.get_queue_ref()
+
         func = <fptr_dpnp_rng_normal_c_1out_t > kernel_data.ptr
         # call FPTR function
-        func(result.get_data(), loc, scale, result.size)
+        event_ref = func(q_ref, result.get_data(), loc, scale, result.size, NULL)
+
+        with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+        c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -664,15 +939,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_pareto(double alpha, size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_PARETO, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_PARETO_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_pareto_c_1out_t func = <fptr_dpnp_rng_pareto_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), alpha, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), alpha, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -692,6 +975,9 @@ cpdef utils.dpnp_descriptor dpnp_rng_poisson(double lam, size):
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_poisson_c_1out_t func
+    cdef c_dpctl.SyclQueue q
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref
+    cdef c_dpctl.DPCTLSyclEventRef event_ref
 
     if lam == 0:
         return dpnp_full(size, 0, dtype)
@@ -700,15 +986,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_poisson(double lam, size):
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_POISSON, param1_type, param1_type)
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_POISSON_EXT, param1_type, param1_type)
 
         # ceate result array with type given by FPTR data
         result_shape = utils._object_to_tuple(size)
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+        result_sycl_queue = result.get_array().sycl_queue
+
+        q = <c_dpctl.SyclQueue> result_sycl_queue
+        q_ref = q.get_queue_ref()
+
         func = <fptr_dpnp_rng_poisson_c_1out_t > kernel_data.ptr
         # call FPTR function
-        func(result.get_data(), lam, result.size)
+        event_ref = func(q_ref, result.get_data(), lam, result.size, NULL)
+
+        with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+        c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -725,15 +1019,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_power(double alpha, size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_POWER, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_POWER_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_power_c_1out_t func = <fptr_dpnp_rng_power_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), alpha, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), alpha, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -752,15 +1054,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_randn(dims):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GAUSSIAN, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GAUSSIAN_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(dims)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_gaussian_c_1out_t func = <fptr_dpnp_rng_gaussian_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), mean, stddev, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), mean, stddev, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -778,15 +1088,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_random(dims):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(dims)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_uniform_c_1out_t func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), low, high, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), low, high, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -805,6 +1123,9 @@ cpdef utils.dpnp_descriptor dpnp_rng_rayleigh(double scale, size):
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_rayleigh_c_1out_t func
+    cdef c_dpctl.SyclQueue q
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref
+    cdef c_dpctl.DPCTLSyclEventRef event_ref
 
     if scale == 0.0:
         return dpnp_full(size, 0.0, dtype)
@@ -813,15 +1134,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_rayleigh(double scale, size):
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_RAYLEIGH, param1_type, param1_type)
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_RAYLEIGH_EXT, param1_type, param1_type)
 
         # ceate result array with type given by FPTR data
         result_shape = utils._object_to_tuple(size)
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+        result_sycl_queue = result.get_array().sycl_queue
+
+        q = <c_dpctl.SyclQueue> result_sycl_queue
+        q_ref = q.get_queue_ref()
+        
         func = <fptr_dpnp_rng_rayleigh_c_1out_t > kernel_data.ptr
         # call FPTR function
-        func(result.get_data(), scale, result.size)
+        event_ref = func(q_ref, result.get_data(), scale, result.size, NULL)
+
+        with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+        c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -839,11 +1168,19 @@ cpdef utils.dpnp_descriptor dpnp_rng_shuffle(utils.dpnp_descriptor x1):
     cdef size_t high_dim_size = x1.get_pyobj().size
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_SHUFFLE, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_SHUFFLE_EXT, param1_type, param1_type)
+
+    x1_sycl_queue = x1.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> x1_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     cdef fptr_dpnp_rng_shuffle_c_1out_t func = < fptr_dpnp_rng_shuffle_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(x1.get_data(), itemsize, ndim, high_dim_size, x1.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, x1.get_data(), itemsize, ndim, high_dim_size, x1.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return x1
 
@@ -877,15 +1214,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_cauchy(size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_CAUCHY, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_CAUCHY_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_standard_cauchy_c_1out_t func = < fptr_dpnp_rng_standard_cauchy_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -904,15 +1249,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_exponential(size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_EXPONENTIAL, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_EXPONENTIAL_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     func = < fptr_dpnp_rng_standard_exponential_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -931,6 +1284,9 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_gamma(double shape, size):
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_standard_gamma_c_1out_t func
+    cdef c_dpctl.SyclQueue q
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref
+    cdef c_dpctl.DPCTLSyclEventRef event_ref
 
     if shape == 0.0:
         return dpnp_full(size, 0.0, dtype)
@@ -939,15 +1295,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_gamma(double shape, size):
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_GAMMA, param1_type, param1_type)
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_GAMMA_EXT, param1_type, param1_type)
 
         # ceate result array with type given by FPTR data
         result_shape = utils._object_to_tuple(size)
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+        result_sycl_queue = result.get_array().sycl_queue
+
+        q = <c_dpctl.SyclQueue> result_sycl_queue
+        q_ref = q.get_queue_ref()
+
         func = <fptr_dpnp_rng_standard_gamma_c_1out_t > kernel_data.ptr
         # call FPTR function
-        func(result.get_data(), shape, result.size)
+        event_ref = func(q_ref, result.get_data(), shape, result.size, NULL)
+
+        with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+        c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -964,15 +1328,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_normal(size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_NORMAL, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_NORMAL_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_standard_normal_c_1out_t func = < fptr_dpnp_rng_standard_normal_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -988,15 +1360,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_t(double df, size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_T, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_T_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_standard_t_c_1out_t func = <fptr_dpnp_rng_standard_t_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), df, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), df, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -1014,15 +1394,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_triangular(double left, double mode, double
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_TRIANGULAR, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_TRIANGULAR_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_triangular_c_1out_t func = <fptr_dpnp_rng_triangular_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), left, mode, right, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), left, mode, right, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -1041,6 +1429,9 @@ cpdef utils.dpnp_descriptor dpnp_rng_uniform(long low, long high, size, dtype):
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_uniform_c_1out_t func
+    cdef c_dpctl.SyclQueue q
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref
+    cdef c_dpctl.DPCTLSyclEventRef event_ref
 
     if low == high:
         return dpnp_full(size, low, dtype)
@@ -1049,15 +1440,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_uniform(long low, long high, size, dtype):
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM, param1_type, param1_type)
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM_EXT, param1_type, param1_type)
 
         # ceate result array with type given by FPTR data
         result_shape = utils._object_to_tuple(size)
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+        result_sycl_queue = result.get_array().sycl_queue
+
+        q = <c_dpctl.SyclQueue> result_sycl_queue
+        q_ref = q.get_queue_ref()
+
         func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
         # call FPTR function
-        func(result.get_data(), low, high, result.size)
+        event_ref = func(q_ref, result.get_data(), low, high, result.size, NULL)
+
+        with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+        c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -1074,15 +1473,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_vonmises(double mu, double kappa, size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_VONMISES, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_VONMISES_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_vonmises_c_1out_t func = <fptr_dpnp_rng_vonmises_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), mu, kappa, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), mu, kappa, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -1100,15 +1507,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_wald(double mean, double scale, size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WALD, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WALD_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_wald_c_1out_t func = <fptr_dpnp_rng_wald_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), mean, scale, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), mean, scale, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -1130,15 +1545,23 @@ cpdef utils.dpnp_descriptor dpnp_rng_weibull(double a, size):
     param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WEIBULL, param1_type, param1_type)
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WEIBULL_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     func = <fptr_dpnp_rng_weibull_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), a, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), a, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -1155,14 +1578,22 @@ cpdef utils.dpnp_descriptor dpnp_rng_zipf(double a, size):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_ZIPF, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_ZIPF_EXT, param1_type, param1_type)
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_dpnp_rng_zipf_c_1out_t func = <fptr_dpnp_rng_zipf_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), a, result.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), a, result.size, NULL)
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
