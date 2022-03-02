@@ -31,7 +31,7 @@ jobs:
       - name: Install conda-build
         run: conda install conda-build
       - name: Build conda package
-        run: ./scripts/build_conda_package.sh ${{ matrix.python }} ${{ env.GITHUB_WORKSPACE }}/oneDPL
+        run: ./scripts/build_conda_package.sh ${{ matrix.python }} $GITHUB_WORKSPACE/oneDPL
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
