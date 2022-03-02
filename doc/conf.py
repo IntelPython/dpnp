@@ -31,9 +31,9 @@ copyright = '2020, Intel'
 author = 'Intel'
 
 # The short X.Y version
-version = '0.9'
+version = '0.10'
 # The full version, including alpha/beta/rc tags
-release = '0.9.0'
+release = '0.10.0'
 
 
 # -- General configuration ---------------------------------------------------
