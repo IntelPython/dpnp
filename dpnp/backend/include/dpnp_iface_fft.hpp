@@ -66,16 +66,16 @@
  */
 template <typename _DataType_input, typename _DataType_output>
 INP_DLLEXPORT DPCTLSyclEventRef dpnp_fft_fft_c(DPCTLSyclQueueRef q_ref,
-                                  const void* array1_in,
-                                  void* result_out,
-                                  const shape_elem_type* input_shape,
-                                  const shape_elem_type* result_shape,
-                                  size_t shape_size,
-                                  long axis,
-                                  long input_boundarie,
-                                  size_t inverse,
-                                  const size_t norm,
-                                  const DPCTLEventVectorRef dep_event_vec_ref);
+                                               const void* array1_in,
+                                               void* result_out,
+                                               const shape_elem_type* input_shape,
+                                               const shape_elem_type* result_shape,
+                                               size_t shape_size,
+                                               long axis,
+                                               long input_boundarie,
+                                               size_t inverse,
+                                               const size_t norm,
+                                               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType_input, typename _DataType_output>
 INP_DLLEXPORT void dpnp_fft_fft_c(const void* array1_in,
@@ -109,16 +109,16 @@ INP_DLLEXPORT void dpnp_fft_fft_c(const void* array1_in,
  */
 template <typename _DataType_input, typename _DataType_output>
 INP_DLLEXPORT DPCTLSyclEventRef dpnp_fft_rfft_c(DPCTLSyclQueueRef q_ref,
-                                  const void* array1_in,
-                                  void* result_out,
-                                  const shape_elem_type* input_shape,
-                                  const shape_elem_type* result_shape,
-                                  size_t shape_size,
-                                  long axis,
-                                  long input_boundarie,
-                                  size_t inverse,
-                                  const size_t norm,
-                                  const DPCTLEventVectorRef dep_event_vec_ref);
+                                                const void* array1_in,
+                                                void* result_out,
+                                                const shape_elem_type* input_shape,
+                                                const shape_elem_type* result_shape,
+                                                size_t shape_size,
+                                                long axis,
+                                                long input_boundarie,
+                                                size_t inverse,
+                                                const size_t norm,
+                                                const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType_input, typename _DataType_output>
 INP_DLLEXPORT void dpnp_fft_fft_c(const void* array1_in,

@@ -77,11 +77,11 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
 
 
 cpdef utils.dpnp_descriptor dpnp_rfft(utils.dpnp_descriptor input,
-                                     size_t input_boundarie,
-                                     size_t output_boundarie,
-                                     long axis,
-                                     size_t inverse,
-                                     size_t norm):
+                                      size_t input_boundarie,
+                                      size_t output_boundarie,
+                                      long axis,
+                                      size_t inverse,
+                                      size_t norm):
 
     cdef shape_type_c input_shape = input.shape
     cdef shape_type_c output_shape = input_shape

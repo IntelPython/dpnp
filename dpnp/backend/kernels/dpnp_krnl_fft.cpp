@@ -304,16 +304,16 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(DPCTLSyclQueueRef q_ref,
 
 template <typename _DataType_input, typename _DataType_output>
 DPCTLSyclEventRef dpnp_fft_fft_c(DPCTLSyclQueueRef q_ref,
-                    const void* array1_in,
-                    void* result_out,
-                    const shape_elem_type* input_shape,
-                    const shape_elem_type* result_shape,
-                    size_t shape_size,
-                    long axis,
-                    long input_boundarie,
-                    size_t inverse,
-                    const size_t norm,
-                    const DPCTLEventVectorRef dep_event_vec_ref)
+                                 const void* array1_in,
+                                 void* result_out,
+                                 const shape_elem_type* input_shape,
+                                 const shape_elem_type* result_shape,
+                                 size_t shape_size,
+                                 long axis,
+                                 long input_boundarie,
+                                 size_t inverse,
+                                 const size_t norm,
+                                 const DPCTLEventVectorRef dep_event_vec_ref)
 {
     DPCTLSyclEventRef event_ref = nullptr;
 
@@ -458,16 +458,16 @@ DPCTLSyclEventRef (*dpnp_fft_fft_ext_c)(DPCTLSyclQueueRef,
 
 template <typename _DataType_input, typename _DataType_output>
 DPCTLSyclEventRef dpnp_fft_rfft_c(DPCTLSyclQueueRef q_ref,
-                    const void* array1_in,
-                    void* result_out,
-                    const shape_elem_type* input_shape,
-                    const shape_elem_type* result_shape,
-                    size_t shape_size,
-                    long axis,
-                    long input_boundarie,
-                    size_t inverse,
-                    const size_t norm,
-                    const DPCTLEventVectorRef dep_event_vec_ref)
+                                  const void* array1_in,
+                                  void* result_out,
+                                  const shape_elem_type* input_shape,
+                                  const shape_elem_type* result_shape,
+                                  size_t shape_size,
+                                  long axis,
+                                  long input_boundarie,
+                                  size_t inverse,
+                                  const size_t norm,
+                                  const DPCTLEventVectorRef dep_event_vec_ref)
 {
     DPCTLSyclEventRef event_ref = nullptr;
 
@@ -531,54 +531,54 @@ DPCTLSyclEventRef dpnp_fft_rfft_c(DPCTLSyclQueueRef q_ref,
 
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_fft_rfft_c(const void* array1_in,
-                    void* result1,
-                    const shape_elem_type* input_shape,
-                    const shape_elem_type* output_shape,
-                    size_t shape_size,
-                    long axis,
-                    long input_boundarie,
-                    size_t inverse,
-                    const size_t norm)
+                     void* result1,
+                     const shape_elem_type* input_shape,
+                     const shape_elem_type* output_shape,
+                     size_t shape_size,
+                     long axis,
+                     long input_boundarie,
+                     size_t inverse,
+                     const size_t norm)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
     DPCTLSyclEventRef event_ref = dpnp_fft_rfft_c<_DataType_input, _DataType_output>(q_ref,
-                                                                                    array1_in,
-                                                                                    result1,
-                                                                                    input_shape,
-                                                                                    output_shape,
-                                                                                    shape_size,
-                                                                                    axis,
-                                                                                    input_boundarie,
-                                                                                    inverse,
-                                                                                    norm,
-                                                                                    dep_event_vec_ref);
+                                                                                     array1_in,
+                                                                                     result1,
+                                                                                     input_shape,
+                                                                                     output_shape,
+                                                                                     shape_size,
+                                                                                     axis,
+                                                                                     input_boundarie,
+                                                                                     inverse,
+                                                                                     norm,
+                                                                                     dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType_input, typename _DataType_output>
 void (*dpnp_fft_rfft_default_c)(const void*,
-                               void*,
-                               const shape_elem_type*,
-                               const shape_elem_type*,
-                               size_t,
-                               long,
-                               long,
-                               size_t,
-                               const size_t) = dpnp_fft_rfft_c<_DataType_input, _DataType_output>;
+                                void*,
+                                const shape_elem_type*,
+                                const shape_elem_type*,
+                                size_t,
+                                long,
+                                long,
+                                size_t,
+                                const size_t) = dpnp_fft_rfft_c<_DataType_input, _DataType_output>;
 
 template <typename _DataType_input, typename _DataType_output>
 DPCTLSyclEventRef (*dpnp_fft_rfft_ext_c)(DPCTLSyclQueueRef,
-                                        const void*,
-                                        void*,
-                                        const shape_elem_type*,
-                                        const shape_elem_type*,
-                                        size_t,
-                                        long,
-                                        long,
-                                        size_t,
-                                        const size_t,
-                                        const DPCTLEventVectorRef) = dpnp_fft_rfft_c<_DataType_input, _DataType_output>;
+                                         const void*,
+                                         void*,
+                                         const shape_elem_type*,
+                                         const shape_elem_type*,
+                                         size_t,
+                                         long,
+                                         long,
+                                         size_t,
+                                         const size_t,
+                                         const DPCTLEventVectorRef) = dpnp_fft_rfft_c<_DataType_input, _DataType_output>;
 
 void func_map_init_fft_func(func_map_t& fmap)
 {
