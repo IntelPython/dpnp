@@ -38,11 +38,12 @@ cimport dpnp.dpnp_utils as utils
 
 
 __all__ = [
-    "dpnp_fft"
+    "dpnp_fft",
+    "dpnp_rfft"
 ]
 
 ctypedef void(*fptr_dpnp_fft_fft_t)(void *, void * , shape_elem_type * , shape_elem_type * ,
-                                    size_t, long, long, size_t, size_t, size_t)
+                                    size_t, long, long, size_t, size_t)
 
 
 cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
@@ -50,8 +51,7 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
                                      size_t output_boundarie,
                                      long axis,
                                      size_t inverse,
-                                     size_t norm,
-                                     size_t real):
+                                     size_t norm):
 
     cdef shape_type_c input_shape = input.shape
     cdef shape_type_c output_shape = input_shape
@@ -71,6 +71,36 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
     cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
     # call FPTR function
     func(input.get_data(), result.get_data(), input_shape.data(),
-         output_shape.data(), input_shape.size(), axis_norm, input_boundarie, inverse, norm, real)
+         output_shape.data(), input_shape.size(), axis_norm, input_boundarie, inverse, norm)
+
+    return result
+
+
+cpdef utils.dpnp_descriptor dpnp_rfft(utils.dpnp_descriptor input,
+                                     size_t input_boundarie,
+                                     size_t output_boundarie,
+                                     long axis,
+                                     size_t inverse,
+                                     size_t norm):
+
+    cdef shape_type_c input_shape = input.shape
+    cdef shape_type_c output_shape = input_shape
+
+    cdef long axis_norm = utils.normalize_axis((axis,), input_shape.size())[0]
+    output_shape[axis_norm] = output_boundarie
+
+    # convert string type names (dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FFT_RFFT, param1_type, param1_type)
+
+    # ceate result array with type given by FPTR data
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(output_shape, kernel_data.return_type, None)
+
+    cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
+    # call FPTR function
+    func(input.get_data(), result.get_data(), input_shape.data(),
+         output_shape.data(), input_shape.size(), axis_norm, input_boundarie, inverse, norm)
 
     return result

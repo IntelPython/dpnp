@@ -126,7 +126,7 @@ def fft(x1, n=None, axis=-1, norm=None):
             pass
         else:
             output_boundarie = input_boundarie
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value, 0).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
     return call_origin(numpy.fft.fft, x1, n, axis, norm)
 
 
@@ -246,7 +246,7 @@ def fftshift(x1, axes=None):
         if x1_desc.size < 1:
             pass                 # let fallback to handle exception
         else:
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value, 0).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.fftshift, x1, axes)
 
@@ -288,7 +288,7 @@ def hfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value, 0).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.hfft, x1, n, axis, norm)
 
@@ -332,7 +332,7 @@ def ifft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True, norm_.value, 0).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.ifft, x1, n, axis, norm)
 
@@ -390,7 +390,7 @@ def ifftshift(x1, axes=None):
         if x1_desc.size < 1:
             pass                 # let fallback to handle exception
         else:
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value, 0).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.ifftshift, x1, axes)
 
@@ -483,7 +483,7 @@ def ihfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value, 0).get_pyobj()
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.ihfft, x1, n, axis, norm)
 
@@ -527,7 +527,7 @@ def irfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = 2 * (input_boundarie - 1)
 
-            result = dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True, norm_.value, 1).get_pyobj()
+            result = dpnp_rfft(x1_desc, input_boundarie, output_boundarie, axis_param, True, norm_.value).get_pyobj()
             # TODO tmp = utils.create_output_array(result_shape, result_c_type, out)
             # tmp = dparray(result.shape, dtype=dpnp.float64)
             # for it in range(tmp.size):
@@ -654,7 +654,7 @@ def rfft(x1, n=None, axis=-1, norm=None):
             pass
         else:
             output_boundarie = input_boundarie // 2 + 1  # rfft specific requirenment
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value, 1).get_pyobj()
+            return dpnp_rfft(x1_desc, input_boundarie, output_boundarie, axis_param, False, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.rfft, x1, n, axis, norm)
 
