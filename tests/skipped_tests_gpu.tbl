@@ -50,7 +50,6 @@ tests/test_sycl_queue.py::test_out[opencl:gpu:0-multiply-data17-data27]
 tests/test_sycl_queue.py::test_out[opencl:gpu:0-power-data18-data28]
 tests/test_sycl_queue.py::test_out[opencl:gpu:0-remainder-data19-data29]
 tests/test_sycl_queue.py::test_out[opencl:gpu:0-subtract-data110-data210]
-tests/test_sycl_queue.py::test_modf[opencl:gpu:0]
 
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-abs-data0]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-ceil-data1]
