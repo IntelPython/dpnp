@@ -1566,7 +1566,8 @@ def uniform(low=0.0, high=1.0, size=None, usm_type='device'):
         else:
             if low > high:
                 low, high = high, low
-            return dpnp_rng_uniform(low, high, size, dtype=numpy.float64, usm_type=usm_type).get_pyobj()
+            dtype = numpy.float64
+            return dpnp_rng_uniform(low, high, size, dtype, usm_type).get_pyobj()
 
     return call_origin(numpy.random.uniform, low, high, size)
 

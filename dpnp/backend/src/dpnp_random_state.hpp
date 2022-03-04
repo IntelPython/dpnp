@@ -28,43 +28,41 @@
 
 namespace mkl_rng = oneapi::mkl::rng;
 
-class IRandomState
+struct mt19937_struct
 {
-public:
-    void * engine;
-    virtual void InitScalarSeed(DPCTLSyclQueueRef, size_t) = 0;
-    virtual void InitVectorSeed(DPCTLSyclQueueRef QRef, unsigned int * seed, int n) = 0;
-    virtual void Delete() = 0;
-};
-
-class mt19937_class : public IRandomState
-{
-public:
     mkl_rng::mt19937* engine;
-    void InitScalarSeed(DPCTLSyclQueueRef QRef, size_t seed=1)
-    {
-        sycl::queue q = *(reinterpret_cast<sycl::queue *>(QRef));
-        this->engine = new mkl_rng::mt19937(q, seed);
-        return;
-    }
-
-    void InitVectorSeed(DPCTLSyclQueueRef QRef, unsigned int * seed, int n) {
-        sycl::queue q = *(reinterpret_cast<sycl::queue *>(QRef));
-        if (n==1) {
-	        this->engine = new mkl_rng::mt19937(q, {seed[0]});
-        } else if (n==2) {
-	        this->engine = new mkl_rng::mt19937(q, {seed[0], seed[1]});
-        } else if (n==3) {
-	        this->engine = new mkl_rng::mt19937(q, {seed[0], seed[1], seed[2]});
-        } else {
-	    throw std::runtime_error("Too long of a seed vector");
-        }
-        return;
-    }
-
-    void Delete() {
-        delete this->engine;
-        this->engine = nullptr;
-        return;
-    }
 };
+
+void MT19937_InitScalarSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef QRef, size_t seed=1)
+{
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(QRef));
+    mt19937->engine = new mkl_rng::mt19937(q, seed);
+    return;
+}
+
+void MT19937_InitVectorSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef QRef, unsigned int * seed, int n) {
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(QRef));
+    if (n==1)
+    {
+        mt19937->engine = new mkl_rng::mt19937(q, {seed[0]});
+    } 
+    else if (n==2)
+    {
+        mt19937->engine = new mkl_rng::mt19937(q, {seed[0], seed[1]});
+    }
+    else if (n==3)
+    {
+        mt19937->engine = new mkl_rng::mt19937(q, {seed[0], seed[1], seed[2]});
+    }
+    else
+    {
+        throw std::runtime_error("Too long of a seed vector");
+    }
+    return;
+}
+
+void MT19937_Delete(mt19937_struct *mt19937) {
+    delete mt19937->engine;
+    mt19937->engine = nullptr;
+    return;
+}

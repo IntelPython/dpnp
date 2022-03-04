@@ -2120,7 +2120,7 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
                                      const long low,
                                      const long high,
                                      const size_t size,
-                                     void* mt19937_in,
+                                     void* random_state_in,
                                      const DPCTLEventVectorRef dep_event_vec_ref)
 {
     // avoid warning unused variable
@@ -2135,7 +2135,7 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    mt19937_class* mt19937 = reinterpret_cast<mt19937_class*>(mt19937_in);
+    mt19937_struct* random_state = reinterpret_cast<mt19937_struct*>(random_state_in);
 
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
@@ -2146,7 +2146,7 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
 
     mkl_rng::uniform<_DataType> distribution(a, b);
     // perform generation
-    auto event_out = mkl_rng::generate(distribution, *(mt19937->engine), size, result1);
+    auto event_out = mkl_rng::generate(distribution, *(random_state->engine), size, result1);
     event_out.wait();
 
     return event_ref;
@@ -2157,7 +2157,7 @@ void dpnp_rng_uniform_c(void* result, const long low, const long high, const siz
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    IRandomState* mt19937 = new mt19937_class();
+    mt19937_struct* mt19937 = new mt19937_struct();
     mt19937->engine = &DPNP_RNG_ENGINE;
     DPCTLSyclEventRef event_ref = dpnp_rng_uniform_c<_DataType>(q_ref,
                                                                 result,
