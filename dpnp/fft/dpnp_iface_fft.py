@@ -118,8 +118,6 @@ def fft(x1, n=None, axis=-1, norm=None):
             pass                 # let fallback to handle exception
         elif input_boundarie < 1:
             pass                 # let fallback to handle exception
-        elif norm is not None:
-            pass
         elif axis != -1:
             pass
         elif x1_desc.dtype not in (numpy.complex128, numpy.complex64):
@@ -308,7 +306,7 @@ def ifft(x1, n=None, axis=-1, norm=None):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc and 0:
+    if x1_desc:
         norm_ = get_validated_norm(norm)
 
         if axis is None:
@@ -325,7 +323,7 @@ def ifft(x1, n=None, axis=-1, norm=None):
             pass                 # let fallback to handle exception
         elif input_boundarie < 1:
             pass                 # let fallback to handle exception
-        elif norm is not None:
+        elif x1_desc.dtype not in (numpy.complex128, numpy.complex64):
             pass
         else:
             output_boundarie = input_boundarie

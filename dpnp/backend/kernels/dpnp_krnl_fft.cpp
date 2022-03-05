@@ -178,7 +178,9 @@ void dpnp_fft_fft_mathlib_compute_c(DPCTLSyclQueueRef q_ref,
                                     const size_t shape_size,
                                     const size_t result_size,
                                     _Descriptor_type& desc,
-                                    const size_t norm)
+                                    size_t inverse,
+                                    double backward_scale,
+                                    double forward_scale)
 {
     if (!shape_size)
     {
@@ -192,7 +194,8 @@ void dpnp_fft_fft_mathlib_compute_c(DPCTLSyclQueueRef q_ref,
     _DataType_input* array_1 = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
 
-    desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, (1.0 / result_size));
+    desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, backward_scale);
+    desc.set_value(mkl_dft::config_param::FORWARD_SCALE, forward_scale);
     // enum value from math library C interface
     // instead of mkl_dft::config_value::NOT_INPLACE
     desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
@@ -205,9 +208,14 @@ void dpnp_fft_fft_mathlib_compute_c(DPCTLSyclQueueRef q_ref,
 
     std::vector<sycl::event> fft_events;
     fft_events.reserve(n_iter);
-
-    for (size_t i = 0; i < n_iter; ++i) {
-        fft_events.push_back(mkl_dft::compute_forward(desc, array_1 + i * shift, result + i * shift));
+    if (inverse) {
+        for (size_t i = 0; i < n_iter; ++i) {
+            fft_events.push_back(mkl_dft::compute_backward(desc, array_1 + i * shift, result + i * shift));
+        }
+    } else {
+        for (size_t i = 0; i < n_iter; ++i) {
+            fft_events.push_back(mkl_dft::compute_forward(desc, array_1 + i * shift, result + i * shift));
+        }
     }
 
     sycl::event::wait(fft_events);
@@ -223,6 +231,7 @@ void dpnp_fft_fft_mathlib_c(DPCTLSyclQueueRef q_ref,
                             const shape_elem_type* input_shape,
                             const size_t shape_size,
                             const size_t result_size,
+                            size_t inverse,
                             const size_t norm)
 {
     if (!shape_size || !result_size || !array1_in || !result1)
@@ -232,13 +241,29 @@ void dpnp_fft_fft_mathlib_c(DPCTLSyclQueueRef q_ref,
     //will be used with strides
     //std::vector<std::int64_t> dimensions(input_shape, input_shape + shape_size);
 
+    size_t dim = input_shape[shape_size - 1];
+
+    double backward_scale = 1;
+    double forward_scale = 1;
+    if (norm == 0) { // norm = "backward"
+        backward_scale = 1. / dim;
+    } else if (norm == 1) { // norm = "forward"
+        forward_scale = 1. / dim;
+    } else { // norm = "ortho"
+        if (inverse) {
+            backward_scale = 1. / sqrt(dim);
+        } else {
+            forward_scale = 1. / sqrt(dim);
+        }
+    }
+
     if constexpr (std::is_same<_DataType_input, std::complex<double>>::value &&
                   std::is_same<_DataType_output, std::complex<double>>::value)
     {
         desc_dp_cmplx_t desc(input_shape[shape_size - 1]);
 
         dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_dp_cmplx_t>(
-            q_ref, array1_in, result1, input_shape, shape_size, result_size, desc, norm);
+            q_ref, array1_in, result1, input_shape, shape_size, result_size, desc, inverse, backward_scale, forward_scale);
     }
     else if (std::is_same<_DataType_input, std::complex<float>>::value &&
              std::is_same<_DataType_output, std::complex<float>>::value)
@@ -246,7 +271,7 @@ void dpnp_fft_fft_mathlib_c(DPCTLSyclQueueRef q_ref,
         desc_sp_cmplx_t desc(input_shape[shape_size - 1]);
 
         dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_sp_cmplx_t>(
-            q_ref, array1_in, result1, input_shape, shape_size, result_size, desc, norm);
+            q_ref, array1_in, result1, input_shape, shape_size, result_size, desc, inverse, backward_scale, forward_scale);
     }
     return;
 }
@@ -292,7 +317,7 @@ DPCTLSyclEventRef dpnp_fft_fft_c(DPCTLSyclQueueRef q_ref,
           std::is_same<_DataType_output, std::complex<float>>::value))
     {
         dpnp_fft_fft_mathlib_c<_DataType_input, _DataType_output>(
-            q_ref, array1_in, result1, input_shape, shape_size, result_size, norm);
+            q_ref, array1_in, result1, input_shape, shape_size, result_size, inverse, norm);
     }
     else
     {
