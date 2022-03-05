@@ -272,32 +272,33 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(DPCTLSyclQueueRef q_ref,
 
     sycl::event::wait(fft_events);
 
-    if (!real) {
-
-        size_t n_conj = result_shift % 2 == 0 ? result_shift / 2 - 1 : result_shift / 2;
-
-        sycl::event event;
-
-        sycl::range<2> gws(n_iter, n_conj);
-
-        auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
-            size_t i = global_id[0];
-            {
-                size_t j = global_id[1];
-                {
-                    *(reinterpret_cast<std::complex<_DataType_output>*>(result) + result_shift * (i + 1) - (j + 1)) = std::conj(*(reinterpret_cast<std::complex<_DataType_output>*>(result) + result_shift * i + (j + 1)));
-                }
-            }
-        };
-
-        auto kernel_func = [&](sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_fft_fft_mathlib_real_to_cmplx_c_kernel<_DataType_input, _DataType_output, _Descriptor_type>>(
-                gws, kernel_parallel_for_func);
-        };
-
-        event = queue.submit(kernel_func);
-        event.wait();
+    if (real) { // the output size of the rfft function is input_size/2 + 1 so we don't need to fill the second half of the output
+        return;
     }
+
+    size_t n_conj = result_shift % 2 == 0 ? result_shift / 2 - 1 : result_shift / 2;
+
+    sycl::event event;
+
+    sycl::range<2> gws(n_iter, n_conj);
+
+    auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
+        size_t i = global_id[0];
+        {
+            size_t j = global_id[1];
+            {
+                *(reinterpret_cast<std::complex<_DataType_output>*>(result) + result_shift * (i + 1) - (j + 1)) = std::conj(*(reinterpret_cast<std::complex<_DataType_output>*>(result) + result_shift * i + (j + 1)));
+            }
+        }
+    };
+
+    auto kernel_func = [&](sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_fft_fft_mathlib_real_to_cmplx_c_kernel<_DataType_input, _DataType_output, _Descriptor_type>>(
+            gws, kernel_parallel_for_func);
+    };
+
+    event = queue.submit(kernel_func);
+    event.wait();
 
     return;
 }
