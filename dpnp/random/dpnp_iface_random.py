@@ -46,6 +46,7 @@ import operator
 
 
 __all__ = [
+    'RandomState',
     'beta',
     'binomial',
     'bytes',
@@ -95,6 +96,25 @@ __all__ = [
     'weibull',
     'zipf'
 ]
+
+
+class RandomState:
+    def __init__(self, seed, sycl_queue=None):
+        self.random_state = MT19937(seed, sycl_queue)
+
+    def uniform(self, low=0.0, high=1.0, size=None, dtype=numpy.float64, usm_type="device"):
+        if not use_origin_backend(low):
+            if not dpnp.isscalar(low):
+                pass
+            elif not dpnp.isscalar(high):
+                pass
+            else:
+                if low > high:
+                    low, high = high, low
+                res =  self.random_state.uniform(low, high, size, dtype, usm_type).get_pyobj()
+                return res
+
+        return call_origin(numpy.random.uniform, low, high, size)
 
 
 def _check_dims(dims):

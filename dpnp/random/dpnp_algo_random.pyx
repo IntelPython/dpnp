@@ -47,6 +47,7 @@ cimport numpy
 
 
 __all__ = [
+    "MT19937",
     "dpnp_rng_beta",
     "dpnp_rng_binomial",
     "dpnp_rng_chisquare",

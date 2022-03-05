@@ -96,3 +96,15 @@ def test_uniform(usm_type):
     res_usm_type = res.get_array().usm_type
     assert usm_type == res_usm_type
 
+
+@pytest.mark.parametrize("usm_type",
+                        ["host", "device", "shared"])
+def test_rs_uniform(usm_type):
+    seed = 123
+    low = 1.0
+    high = 2.0
+    rs = dpnp.random.RandomState(seed)
+    res = rs.uniform(low, high, usm_type=usm_type)
+
+    res_usm_type = res.get_array().usm_type
+    assert usm_type == res_usm_type
