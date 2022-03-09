@@ -88,10 +88,10 @@ def test_2in_1out(func, device):
 @pytest.mark.parametrize("usm_type",
                         ["host", "device", "shared"])
 def test_uniform(usm_type):
-    seed = 123
     low = 1.0
     high = 2.0
-    res = dpnp.random.uniform(low, high, usm_type=usm_type)
+    size = 3
+    res = dpnp.random.uniform(low, high, size=size, usm_type=usm_type)
 
     res_usm_type = res.get_array().usm_type
     assert usm_type == res_usm_type
@@ -101,10 +101,14 @@ def test_uniform(usm_type):
                         ["host", "device", "shared"])
 def test_rs_uniform(usm_type):
     seed = 123
+    sycl_queue = dpctl.SyclQueue()
     low = 1.0
     high = 2.0
-    rs = dpnp.random.RandomState(seed)
+    rs = dpnp.random.RandomState(seed, sycl_queue=sycl_queue)
     res = rs.uniform(low, high, usm_type=usm_type)
 
     res_usm_type = res.get_array().usm_type
     assert usm_type == res_usm_type
+
+    res_sycl_queue = res.get_array().sycl_queue
+    assert sycl_queue == res_sycl_queue

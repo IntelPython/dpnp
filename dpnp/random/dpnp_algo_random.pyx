@@ -79,7 +79,6 @@ __all__ = [
     "dpnp_rng_standard_normal",
     "dpnp_rng_standard_t",
     "dpnp_rng_triangular",
-    "dpnp_rng_uniform",
     "dpnp_rng_vonmises",
     "dpnp_rng_wald",
     "dpnp_rng_weibull",
@@ -1121,28 +1120,6 @@ cpdef utils.dpnp_descriptor dpnp_rng_triangular(double left, double mode, double
     func(result.get_data(), left, mode, right, result.size)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_rng_uniform(long low, long high, size, dtype, usm_type):
-    """
-    Returns an array populated with samples from standard uniform distribution.
-    Generates a matrix filled with random numbers sampled from a
-    uniform distribution of the certain left (low) and right (high)
-    bounds.
-
-    """
-
-    cdef shape_type_c result_shape
-    cdef utils.dpnp_descriptor result
-    cdef DPNPFuncType param1_type
-    cdef DPNPFuncData kernel_data
-    cdef fptr_dpnp_rng_uniform_c_1out_t func
-
-    if low == high:
-        return dpnp_full(size, low, dtype)
-
-    cdef MT19937 mt19937 = MT19937(seed=1)
-    return mt19937.uniform(low, high, size, dtype, usm_type)
 
 
 cpdef utils.dpnp_descriptor dpnp_rng_vonmises(double mu, double kappa, size):

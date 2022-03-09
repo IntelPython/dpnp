@@ -111,8 +111,7 @@ class RandomState:
             else:
                 if low > high:
                     low, high = high, low
-                res =  self.random_state.uniform(low, high, size, dtype, usm_type).get_pyobj()
-                return res
+                return self.random_state.uniform(low, high, size, dtype, usm_type).get_pyobj()
 
         return call_origin(numpy.random.uniform, low, high, size)
 
@@ -1082,18 +1081,14 @@ def randint(low, high=None, size=None, dtype=int, usm_type='device'):
             low = 0
         # TODO:
         # array_like of floats for `low` and `high` params
-        if not dpnp.isscalar(low):
-            pass
-        elif not dpnp.isscalar(high):
-            pass
-        elif int(low) >= int(high):
+        if int(low) >= int(high):
             pass
         elif _dtype is not dpnp.int32:
             pass
         else:
             low = int(low)
             high = int(high)
-            return dpnp_rng_uniform(low, high, size, _dtype, usm_type).get_pyobj()
+            return default_random_state.uniform(low, high, size, _dtype, usm_type)
 
     return call_origin(numpy.random.randint, low, high, size, dtype)
 
@@ -1577,19 +1572,8 @@ def uniform(low=0.0, high=1.0, size=None, usm_type='device'):
     :obj:`dpnp.random.random` : Floats uniformly distributed over ``[0, 1)``.
 
     """
-
-    if not use_origin_backend(low):
-        if not dpnp.isscalar(low):
-            pass
-        elif not dpnp.isscalar(high):
-            pass
-        else:
-            if low > high:
-                low, high = high, low
-            dtype = numpy.float64
-            return dpnp_rng_uniform(low, high, size, dtype, usm_type).get_pyobj()
-
-    return call_origin(numpy.random.uniform, low, high, size)
+    dtype = numpy.float64
+    return default_random_state.uniform(low, high, size, dtype, usm_type)
 
 
 def vonmises(mu, kappa, size=None):
@@ -1732,3 +1716,7 @@ def zipf(a, size=None):
             return dpnp_rng_zipf(a, size).get_pyobj()
 
     return call_origin(numpy.random.zipf, a, size)
+
+
+seed = 1
+default_random_state = RandomState(seed)
