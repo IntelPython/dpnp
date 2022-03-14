@@ -109,6 +109,9 @@
    .. automethod:: take
 
 
+   .. automethod:: to_device
+
+
    .. automethod:: transpose
 
 
