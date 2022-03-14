@@ -95,6 +95,6 @@ def test_to_device(device_from, device_to):
     data = [1., 1., 1., 1., 1.]
 
     x = dpnp.array(data, device=device_from)
-    y =  x.to_device(device_to)
+    y = x.to_device(device_to)
 
     assert y.get_array().sycl_device == device_to
