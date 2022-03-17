@@ -210,12 +210,11 @@ void dpnp_fft_fft_mathlib_cmplx_to_cmplx_c(DPCTLSyclQueueRef q_ref,
 
     std::vector<sycl::event> fft_events;
     fft_events.reserve(n_iter);
-    if (inverse) {
-        for (size_t i = 0; i < n_iter; ++i) {
+
+    for (size_t i = 0; i < n_iter; ++i) {
+        if (inverse) {
             fft_events.push_back(mkl_dft::compute_backward(desc, array_1 + i * shift, result + i * shift));
-        }
-    } else {
-        for (size_t i = 0; i < n_iter; ++i) {
+        } else {
             fft_events.push_back(mkl_dft::compute_forward(desc, array_1 + i * shift, result + i * shift));
         }
     }
@@ -240,7 +239,7 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(DPCTLSyclQueueRef q_ref,
                                           _Descriptor_type& desc,
                                           size_t inverse,
                                           double backward_scale,
-                                          double forward_scale
+                                          double forward_scale,
                                           const size_t real)
 {
     if (!shape_size)
@@ -261,23 +260,19 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(DPCTLSyclQueueRef q_ref,
     const size_t input_shift = input_shape[shape_size - 1];
     const size_t result_shift = result_shape[shape_size - 1];;
 
-    //double forward_scale = 1.0;
-    //double backward_scale = 1.0 / input_shift;
-
     desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, backward_scale);
     desc.set_value(mkl_dft::config_param::FORWARD_SCALE, forward_scale);
+    desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
 
     desc.commit(queue);
 
     std::vector<sycl::event> fft_events;
     fft_events.reserve(n_iter);
 
-    if (inverse) {
-        for (size_t i = 0; i < n_iter; ++i) {
+    for (size_t i = 0; i < n_iter; ++i) {
+        if (inverse) {
             fft_events.push_back(mkl_dft::compute_backward(desc, array_1 + i * input_shift, result + i * result_shift * 2));
-        }
-    } else {
-        for (size_t i = 0; i < n_iter; ++i) {
+        } else {
             fft_events.push_back(mkl_dft::compute_forward(desc, array_1 + i * input_shift, result + i * result_shift * 2));
         }
     }
@@ -344,6 +339,7 @@ DPCTLSyclEventRef dpnp_fft_fft_c(DPCTLSyclQueueRef q_ref,
 
     double backward_scale = 1;
     double forward_scale = 1;
+
     if (norm == 0) { // norm = "backward"
         backward_scale = 1. / dim;
     } else if (norm == 1) { // norm = "forward"
@@ -533,7 +529,7 @@ DPCTLSyclEventRef dpnp_fft_rfft_c(DPCTLSyclQueueRef q_ref,
             desc_dp_real_t desc(dim);
 
             dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, double, desc_dp_real_t>(
-                q_ref, array1_in, result_out, input_shape, result_shape, shape_size, input_size, result_size, desc, norm, 1l);
+                q_ref, array1_in, result_out, input_shape, result_shape, shape_size, input_size, result_size, desc, inverse, backward_scale, forward_scale, 1);
         }
         /* real-to-complex, single precision */
         else if constexpr (std::is_same<_DataType_input, float>::value &&
@@ -541,7 +537,7 @@ DPCTLSyclEventRef dpnp_fft_rfft_c(DPCTLSyclQueueRef q_ref,
         {
             desc_sp_real_t desc(dim); // try: 2 * result_size
             dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, float, desc_sp_real_t>(
-                q_ref, array1_in, result_out, input_shape, result_shape, shape_size, input_size, result_size, desc, norm, 1);
+                q_ref, array1_in, result_out, input_shape, result_shape, shape_size, input_size, result_size, desc, inverse, backward_scale, forward_scale, 1);
         }
         else if constexpr (std::is_same<_DataType_input, int32_t>::value ||
                            std::is_same<_DataType_input, int64_t>::value)
