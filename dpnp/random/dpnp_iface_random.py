@@ -1088,7 +1088,7 @@ def randint(low, high=None, size=None, dtype=int, usm_type='device'):
         else:
             low = int(low)
             high = int(high)
-            return default_random_state.uniform(low, high, size, _dtype, usm_type)
+            return dpnp_random_state.uniform(low, high, size, _dtype, usm_type)
 
     return call_origin(numpy.random.randint, low, high, size, dtype)
 
@@ -1573,7 +1573,7 @@ def uniform(low=0.0, high=1.0, size=None, usm_type='device'):
 
     """
     dtype = numpy.float64
-    return default_random_state.uniform(low, high, size, dtype, usm_type)
+    return dpnp_random_state.uniform(low, high, size, dtype, usm_type)
 
 
 def vonmises(mu, kappa, size=None):
@@ -1719,4 +1719,4 @@ def zipf(a, size=None):
 
 
 seed = 1
-default_random_state = RandomState(seed)
+dpnp_random_state = RandomState(seed)

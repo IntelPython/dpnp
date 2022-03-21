@@ -23,6 +23,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#pragma once
+#ifndef BACKEND_RANDOM_STATE_H // Cython compatibility
+#define BACKEND_RANDOM_STATE_H
+
 #include <CL/sycl.hpp>
 #include <oneapi/mkl/rng.hpp>
 
@@ -66,3 +70,5 @@ void MT19937_Delete(mt19937_struct *mt19937) {
     mt19937->engine = nullptr;
     return;
 }
+
+#endif // BACKEND_RANDOM_STATE_H
