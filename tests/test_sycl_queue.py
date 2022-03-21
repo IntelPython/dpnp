@@ -58,7 +58,6 @@ def test_matmul(device):
     assert result_queue.sycl_device == expected_queue.sycl_device
 
 
-
 @pytest.mark.parametrize("func",
                          [])
 @pytest.mark.parametrize("device",
@@ -112,3 +111,18 @@ def test_rs_uniform(usm_type):
 
     res_sycl_queue = res.get_array().sycl_queue
     assert sycl_queue == res_sycl_queue
+
+    
+@pytest.mark.parametrize("device_from",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize("device_to",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+def test_to_device(device_from, device_to):
+    data = [1., 1., 1., 1., 1.]
+
+    x = dpnp.array(data, device=device_from)
+    y = x.to_device(device_to)
+
+    assert y.get_array().sycl_device == device_to
