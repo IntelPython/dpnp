@@ -286,7 +286,7 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_result,
                                                                        kernel_data.return_type,
                                                                        out,
-                                                                       device=result_sycl_device,
+                                                                       device=None,
                                                                        usm_type=result_usm_type,
                                                                        sycl_queue=result_sycl_queue)
     if result.size == 0:
