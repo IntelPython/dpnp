@@ -41,6 +41,7 @@ from dpnp.dpnp_array import dpnp_array
 import numpy
 
 import dpctl.tensor as dpt
+from dpctl.tensor._device import normalize_queue_device
 
 
 if config.__DPNP_OUTPUT_DPCTL__:
@@ -76,13 +77,15 @@ def asarray(x1,
     else:
         x1_obj = x1
 
+    sycl_queue_normalized = normalize_queue_device(sycl_queue=sycl_queue,
+                                                   device=device)
     array_obj = dpt.asarray(x1_obj,
                             dtype=dtype,
                             copy=copy,
                             order=order,
                             device=device,
                             usm_type=usm_type,
-                            sycl_queue=sycl_queue)
+                            sycl_queue=sycl_queue_normalized)
 
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
@@ -94,11 +97,13 @@ def empty(shape,
           usm_type="device",
           sycl_queue=None):
     """Creates `dpnp_array` from uninitialized USM allocation."""
+    sycl_queue_normalized = normalize_queue_device(sycl_queue=sycl_queue,
+                                                   device=device)
     array_obj = dpt.empty(shape,
                           dtype=dtype,
                           order=order,
                           device=device,
                           usm_type=usm_type,
-                          sycl_queue=sycl_queue)
+                          sycl_queue=sycl_queue_normalized)
 
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
