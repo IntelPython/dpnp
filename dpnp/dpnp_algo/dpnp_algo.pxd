@@ -143,6 +143,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FABS_EXT
         DPNP_FN_FFT_FFT
         DPNP_FN_FFT_FFT_EXT
+        DPNP_FN_FFT_RFFT
+        DPNP_FN_FFT_RFFT_EXT
         DPNP_FN_FILL_DIAGONAL
         DPNP_FN_FILL_DIAGONAL_EXT
         DPNP_FN_FLATTEN
