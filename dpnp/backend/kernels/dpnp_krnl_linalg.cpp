@@ -683,7 +683,9 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
     event = mkl_lapack::geqrf(q, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size, depends);
     event.wait();
 
-    verbose_print("oneapi::mkl::lapack::geqrf", depends.front(), event);
+    if (!depends.empty()) {
+        verbose_print("oneapi::mkl::lapack::geqrf", depends.front(), event);
+    }
 
     sycl::free(geqrf_scratchpad, q);
 
@@ -712,14 +714,15 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
     _ComputeDT* orgqr_scratchpad =
         reinterpret_cast<_ComputeDT*>(sycl::malloc_shared(orgqr_scratchpad_size * sizeof(_ComputeDT), q));
 
-    depends.clear();
     set_barrier_event(q, depends);
 
     event =
         mkl_lapack::orgqr(q, size_m, nrefl, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size, depends);
     event.wait();
 
-    verbose_print("oneapi::mkl::lapack::orgqr", depends.front(), event);
+    if (!depends.empty()) {
+        verbose_print("oneapi::mkl::lapack::orgqr", depends.front(), event);
+    }
 
     sycl::free(orgqr_scratchpad, q);
 

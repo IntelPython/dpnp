@@ -219,12 +219,15 @@ def test_norm3(array, ord, axis):
 @pytest.mark.parametrize("shape",
                          [(2, 2), (3, 4), (5, 3), (16, 16)],
                          ids=['(2,2)', '(3,4)', '(5,3)', '(16,16)'])
-def test_qr(type, shape):
+@pytest.mark.parametrize("mode",
+                         ['complete', 'reduced'],
+                         ids=['complete', 'reduced'])
+def test_qr(type, shape, mode):
     a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
     ia = inp.array(a)
 
-    np_q, np_r = numpy.linalg.qr(a, "complete")
-    dpnp_q, dpnp_r = inp.linalg.qr(ia, "complete")
+    np_q, np_r = numpy.linalg.qr(a, mode)
+    dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
 
     assert (dpnp_q.dtype == np_q.dtype)
     assert (dpnp_r.dtype == np_r.dtype)
