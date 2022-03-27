@@ -113,69 +113,70 @@ def call_origin(function, *args, **kwargs):
     """
     Call fallback function for unsupported cases
     """
+    raise RuntimeError("call_origin")
 
-    dpnp_inplace = kwargs.pop("dpnp_inplace", False)
-    # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}, \n\t dpnp_inplace={dpnp_inplace}")
+    # dpnp_inplace = kwargs.pop("dpnp_inplace", False)
+    # # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}, \n\t dpnp_inplace={dpnp_inplace}")
 
-    kwargs_out = kwargs.get("out", None)
-    if (kwargs_out is not None):
-        if isinstance(kwargs_out, numpy.ndarray):
-            kwargs["out"] = kwargs_out
-        else:
-            kwargs["out"] = dpnp.asnumpy(kwargs_out)
+    # kwargs_out = kwargs.get("out", None)
+    # if (kwargs_out is not None):
+        # if isinstance(kwargs_out, numpy.ndarray):
+            # kwargs["out"] = kwargs_out
+        # else:
+            # kwargs["out"] = dpnp.asnumpy(kwargs_out)
 
-    args_new_list = []
-    for arg in args:
-        argx = convert_item(arg)
-        args_new_list.append(argx)
-    args_new = tuple(args_new_list)
+    # args_new_list = []
+    # for arg in args:
+        # argx = convert_item(arg)
+        # args_new_list.append(argx)
+    # args_new = tuple(args_new_list)
 
-    kwargs_new = {}
-    for key, kwarg in kwargs.items():
-        kwargx = convert_item(kwarg)
-        kwargs_new[key] = kwargx
+    # kwargs_new = {}
+    # for key, kwarg in kwargs.items():
+        # kwargx = convert_item(kwarg)
+        # kwargs_new[key] = kwargx
 
-    # print(f"DPNP call_origin(): bakend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
-    # TODO need to put array memory into NumPy call
-    result_origin = function(*args_new, **kwargs_new)
-    # print(f"DPNP call_origin(): result from backend. \n\t result_origin={result_origin}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
-    result = result_origin
-    if dpnp_inplace:
-        # enough to modify only first argument in place
-        if args and args_new:
-            arg, arg_new = args[0], args_new[0]
-            if isinstance(arg_new, numpy.ndarray):
-                copy_from_origin(arg, arg_new)
-            elif isinstance(arg_new, list):
-                for i, val in enumerate(arg_new):
-                    arg[i] = val
+    # # print(f"DPNP call_origin(): bakend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
+    # # TODO need to put array memory into NumPy call
+    # result_origin = function(*args_new, **kwargs_new)
+    # # print(f"DPNP call_origin(): result from backend. \n\t result_origin={result_origin}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
+    # result = result_origin
+    # if dpnp_inplace:
+        # # enough to modify only first argument in place
+        # if args and args_new:
+            # arg, arg_new = args[0], args_new[0]
+            # if isinstance(arg_new, numpy.ndarray):
+                # copy_from_origin(arg, arg_new)
+            # elif isinstance(arg_new, list):
+                # for i, val in enumerate(arg_new):
+                    # arg[i] = val
 
-    elif isinstance(result, numpy.ndarray):
-        if (kwargs_out is None):
-            result_dtype = result_origin.dtype
-            kwargs_dtype = kwargs.get("dtype", None)
-            if (kwargs_dtype is not None):
-                result_dtype = kwargs_dtype
+    # elif isinstance(result, numpy.ndarray):
+        # if (kwargs_out is None):
+            # result_dtype = result_origin.dtype
+            # kwargs_dtype = kwargs.get("dtype", None)
+            # if (kwargs_dtype is not None):
+                # result_dtype = kwargs_dtype
 
-            result = dpnp_container.empty(result_origin.shape, dtype=result_dtype)
-        else:
-            result = kwargs_out
+            # result = dpnp_container.empty(result_origin.shape, dtype=result_dtype)
+        # else:
+            # result = kwargs_out
 
-        copy_from_origin(result, result_origin)
+        # copy_from_origin(result, result_origin)
 
-    elif isinstance(result, tuple):
-        # convert tuple(fallback_array) to tuple(result_array)
-        result_list = []
-        for res_origin in result:
-            res = res_origin
-            if isinstance(res_origin, numpy.ndarray):
-                res = dpnp_container.empty(res_origin.shape, dtype=res_origin.dtype)
-                copy_from_origin(res, res_origin)
-            result_list.append(res)
+    # elif isinstance(result, tuple):
+        # # convert tuple(fallback_array) to tuple(result_array)
+        # result_list = []
+        # for res_origin in result:
+            # res = res_origin
+            # if isinstance(res_origin, numpy.ndarray):
+                # res = dpnp_container.empty(res_origin.shape, dtype=res_origin.dtype)
+                # copy_from_origin(res, res_origin)
+            # result_list.append(res)
 
-        result = tuple(result_list)
+        # result = tuple(result_list)
 
-    return result
+    # return result
 
 
 def unwrap_array(x1):
