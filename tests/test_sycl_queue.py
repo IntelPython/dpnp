@@ -297,3 +297,18 @@ def test_modf(device):
 
     assert result1_queue.sycl_device == expected_queue.sycl_device
     assert result2_queue.sycl_device == expected_queue.sycl_device
+
+
+@pytest.mark.parametrize("device_from",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize("device_to",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+def test_to_device(device_from, device_to):
+    data = [1., 1., 1., 1., 1.]
+
+    x = dpnp.array(data, device=device_from)
+    y = x.to_device(device_to)
+
+    assert y.get_array().sycl_device == device_to

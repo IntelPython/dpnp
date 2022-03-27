@@ -97,6 +97,13 @@ class dpnp_array:
         else:
             return dpnp.transpose(self)
 
+    def to_device(self, target_device):
+        """
+        Transfer array to target device
+        """
+
+        return dpnp_array(shape=self.shape, buffer=self.get_array().to_device(target_device))
+
     def __abs__(self):
         return dpnp.abs(self)
 
