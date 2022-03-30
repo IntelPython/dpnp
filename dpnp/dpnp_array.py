@@ -61,12 +61,8 @@ class dpnp_array:
                     "".format(shape, buffer.shape)
                 )
             self._array_obj = dpt.asarray(buffer,
-                                          dtype=buffer.dtype,
                                           copy=False,
-                                          order=order,
-                                          device=buffer.sycl_device,
-                                          usm_type=buffer.usm_type,
-                                          sycl_queue=buffer.sycl_queue)
+                                          order=order)
         else:
             sycl_queue_normalized = normalize_queue_device(sycl_queue=sycl_queue, device=device)
             self._array_obj = dpt.usm_ndarray(shape,

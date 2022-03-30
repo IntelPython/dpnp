@@ -97,8 +97,27 @@ def convert_list_args(input_list):
 
     return result_list
 
+def copy_from_origin(src, device=None, usm_type="device", sycl_queue=None):
+    """Copy result from origin."""
+    if not isinstance(src, numpy.ndarray):
+        return src
 
-def copy_from_origin(dst, src):
+    if src.size == 0:
+        return dpnp_container.empty(src.shape,
+                                    dtype=src.dtype,
+                                    device=device,
+                                    usm_type=usm_type,
+                                    sycl_queue=sycl_queue)
+
+    array_obj = dpctl.tensor._copy_utils.from_numpy(src,
+                                                    device=device,
+                                                    usm_type=usm_type,
+                                                    sycl_queue=sycl_queue)
+
+    return dpnp.dpnp_array.dpnp_array(src.shape, buffer=array_obj)
+
+
+def copy_from_origin_into(dst, src):
     """Copy origin result to output result."""
     if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
         if src.size:
@@ -145,7 +164,7 @@ def call_origin(function, *args, **kwargs):
         if args and args_new:
             arg, arg_new = args[0], args_new[0]
             if isinstance(arg_new, numpy.ndarray):
-                copy_from_origin(arg, arg_new)
+                copy_from_origin_into(arg, arg_new)
             elif isinstance(arg_new, list):
                 for i, val in enumerate(arg_new):
                     arg[i] = val
@@ -157,11 +176,10 @@ def call_origin(function, *args, **kwargs):
             if (kwargs_dtype is not None):
                 result_dtype = kwargs_dtype
 
-            result = dpnp_container.empty(result_origin.shape, dtype=result_dtype)
+            result = copy_from_origin(result_origin)
         else:
             result = kwargs_out
-
-        copy_from_origin(result, result_origin)
+            copy_from_origin_into(result, result_origin)
 
     elif isinstance(result, tuple):
         # convert tuple(fallback_array) to tuple(result_array)
@@ -169,8 +187,7 @@ def call_origin(function, *args, **kwargs):
         for res_origin in result:
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
-                res = dpnp_container.empty(res_origin.shape, dtype=res_origin.dtype)
-                copy_from_origin(res, res_origin)
+                res = copy_from_origin(res_origin)
             result_list.append(res)
 
         result = tuple(result_list)
@@ -399,6 +416,8 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
 
     if requested_out is None:
         result = None
+        if sycl_queue is not None:
+            device = None
         result_dtype = dpnp_DPNPFuncType_to_dtype(< size_t > c_type)
         result_obj = dpnp_container.empty(output_shape,
                                           dtype=result_dtype,
@@ -541,6 +560,9 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
             "".format(array1_obj.usm_type, array2_obj.usm_type))
 
     common_sycl_queue = dpctl.utils.get_execution_queue((array1_obj.sycl_queue, array2_obj.sycl_queue))
+    # TODO: refactor, remove when CFD is implemented in all array constructors
+    if common_sycl_queue is None and array1_obj.sycl_context == array2_obj.sycl_context:
+        common_sycl_queue = array1_obj.sycl_queue
     if common_sycl_queue is None:
         raise ValueError(
             "could not recognize common SYCL queue for inputs in SYCL queues {} and {}"
