@@ -462,7 +462,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Parameter mode=&#39;complete&#39; is supported.</span>
+<span class="sd">    Parameter mode=&#39;reduced&#39; is supported.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -471,7 +471,7 @@
         <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;reduced&#39;</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result_tup</span> <span class="o">=</span> <span class="n">dpnp_qr</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+            <span class="n">result_tup</span> <span class="o">=</span> <span class="n">dpnp_qr</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">result_tup</span>
 

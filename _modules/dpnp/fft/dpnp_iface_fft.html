@@ -368,9 +368,9 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``norm`` is unsupported.</span>
-<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
-<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
+<span class="sd">    Parameter ``axis`` is supported with its default value.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64``,</span>
+<span class="sd">    ``dpnp.complex64``and ``dpnp.complex128`` datatypes only.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fft.ifft`.</span>
 
@@ -395,8 +395,6 @@
         <span class="k">elif</span> <span class="n">input_boundarie</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">complex64</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output_boundarie</span> <span class="o">=</span> <span class="n">input_boundarie</span>
