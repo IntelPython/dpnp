@@ -391,7 +391,7 @@ def qr(x1, mode='reduced'):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter mode='complete' is supported.
+    Parameter mode='reduced' is supported.
 
     """
 
@@ -400,7 +400,7 @@ def qr(x1, mode='reduced'):
         if mode != 'reduced':
             pass
         else:
-            result_tup = dpnp_qr(x1, mode)
+            result_tup = dpnp_qr(x1_desc, mode)
 
             return result_tup
 
