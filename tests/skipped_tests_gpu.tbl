@@ -263,10 +263,6 @@ tests/test_linalg.py::test_eig_arange[16-float64]
 tests/test_linalg.py::test_eig_arange[16-float32]
 tests/test_linalg.py::test_eig_arange[16-int64]
 tests/test_linalg.py::test_eig_arange[16-int32]
-tests/test_linalg.py::test_qr[(16,16)-float64]
-tests/test_linalg.py::test_qr[(16,16)-float32]
-tests/test_linalg.py::test_qr[(16,16)-int64]
-tests/test_linalg.py::test_qr[(16,16)-int32]
 tests/test_random.py::test_randn_normal_distribution
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_outer
 tests/third_party/cupy/random_tests/test_sample.py::TestRandintDtype::test_dtype

@@ -308,13 +308,14 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
 cpdef tuple dpnp_qr(utils.dpnp_descriptor x1, str mode):
     cdef size_t size_m = x1.shape[0]
     cdef size_t size_n = x1.shape[1]
-    cdef size_t size_tau = min(size_m, size_n)
+    cdef size_t min_m_n = min(size_m, size_n)
+    cdef size_t size_tau = min_m_n
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_QR, param1_type, param1_type)
 
-    cdef utils.dpnp_descriptor res_q = utils.create_output_descriptor((size_m, size_m), kernel_data.return_type, None)
-    cdef utils.dpnp_descriptor res_r = utils.create_output_descriptor((size_m, size_n), kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor res_q = utils.create_output_descriptor((size_m, min_m_n), kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor res_r = utils.create_output_descriptor((min_m_n, size_n), kernel_data.return_type, None)
     cdef utils.dpnp_descriptor tau = utils.create_output_descriptor((size_tau, ), kernel_data.return_type, None)
 
     cdef custom_linalg_1in_3out_shape_t func = < custom_linalg_1in_3out_shape_t > kernel_data.ptr
