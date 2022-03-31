@@ -297,9 +297,9 @@ def ifft(x1, n=None, axis=-1, norm=None):
 
     Limitations
     -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Parameter ``axis`` is supported with its default value.
+    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64``,
+    ``dpnp.complex64``and ``dpnp.complex128`` datatypes only.
 
     For full documentation refer to :obj:`numpy.fft.ifft`.
 
@@ -324,8 +324,6 @@ def ifft(x1, n=None, axis=-1, norm=None):
         elif input_boundarie < 1:
             pass                 # let fallback to handle exception
         elif n is not None:
-            pass
-        elif x1_desc.dtype not in (numpy.complex128, numpy.complex64):
             pass
         else:
             output_boundarie = input_boundarie

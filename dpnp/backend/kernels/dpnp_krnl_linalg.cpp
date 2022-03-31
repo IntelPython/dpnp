@@ -662,17 +662,17 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
         }
     }
 
-    DPNPC_ptr_adapter<_ComputeDT> result1_ptr(q_ref, result1, size_m * size_m, true, true);
-    DPNPC_ptr_adapter<_ComputeDT> result2_ptr(q_ref, result2, size_m * size_n, true, true);
-    DPNPC_ptr_adapter<_ComputeDT> result3_ptr(q_ref, result3, std::min(size_m, size_n), true, true);
+    const size_t min_size_m_n = std::min<size_t>(size_m, size_n);
+    DPNPC_ptr_adapter<_ComputeDT> result1_ptr(q_ref, result1, size_m * min_size_m_n, true, true);
+    DPNPC_ptr_adapter<_ComputeDT> result2_ptr(q_ref, result2, min_size_m_n * size_n, true, true);
+    DPNPC_ptr_adapter<_ComputeDT> result3_ptr(q_ref, result3, min_size_m_n, true, true);
     _ComputeDT* res_q = result1_ptr.get_ptr();
     _ComputeDT* res_r = result2_ptr.get_ptr();
     _ComputeDT* tau = result3_ptr.get_ptr();
 
     const std::int64_t lda = size_m;
 
-    const std::int64_t geqrf_scratchpad_size =
-        mkl_lapack::geqrf_scratchpad_size<_ComputeDT>(q, size_m, size_n, lda);
+    const std::int64_t geqrf_scratchpad_size = mkl_lapack::geqrf_scratchpad_size<_ComputeDT>(q, size_m, size_n, lda);
 
     _ComputeDT* geqrf_scratchpad =
         reinterpret_cast<_ComputeDT*>(sycl::malloc_shared(geqrf_scratchpad_size * sizeof(_ComputeDT), q));
@@ -680,17 +680,18 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
     std::vector<sycl::event> depends(1);
     set_barrier_event(q, depends);
 
-    event =
-        mkl_lapack::geqrf(q, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size, depends);
-
+    event = mkl_lapack::geqrf(q, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size, depends);
     event.wait();
 
-    verbose_print("oneapi::mkl::lapack::geqrf", depends.front(), event);
+    if (!depends.empty()) {
+        verbose_print("oneapi::mkl::lapack::geqrf", depends.front(), event);
+    }
 
     sycl::free(geqrf_scratchpad, q);
 
     // R
-    for (size_t i = 0; i < size_m; ++i)
+    size_t mrefl = min_size_m_n;
+    for (size_t i = 0; i < mrefl; ++i)
     {
         for (size_t j = 0; j < size_n; ++j)
         {
@@ -706,37 +707,30 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
     }
 
     // Q
-    const size_t nrefl = std::min<size_t>(size_m, size_n);
+    const size_t nrefl = min_size_m_n;
     const std::int64_t orgqr_scratchpad_size =
-        mkl_lapack::orgqr_scratchpad_size<_ComputeDT>(q, size_m, size_m, nrefl, lda);
+        mkl_lapack::orgqr_scratchpad_size<_ComputeDT>(q, size_m, nrefl, nrefl, lda);
 
     _ComputeDT* orgqr_scratchpad =
         reinterpret_cast<_ComputeDT*>(sycl::malloc_shared(orgqr_scratchpad_size * sizeof(_ComputeDT), q));
 
-    depends.clear();
     set_barrier_event(q, depends);
 
-    event = mkl_lapack::orgqr(
-        q, size_m, size_m, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size, depends);
-
+    event =
+        mkl_lapack::orgqr(q, size_m, nrefl, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size, depends);
     event.wait();
 
-    verbose_print("oneapi::mkl::lapack::orgqr", depends.front(), event);
+    if (!depends.empty()) {
+        verbose_print("oneapi::mkl::lapack::orgqr", depends.front(), event);
+    }
 
     sycl::free(orgqr_scratchpad, q);
 
     for (size_t i = 0; i < size_m; ++i)
     {
-        for (size_t j = 0; j < size_m; ++j)
+        for (size_t j = 0; j < nrefl; ++j)
         {
-            if (j < nrefl)
-            {
-                res_q[i * size_m + j] = in_a[j * size_m + i];
-            }
-            else
-            {
-                res_q[i * size_m + j] = _ComputeDT(0);
-            }
+            res_q[i * nrefl + j] = in_a[j * size_m + i];
         }
     }
 

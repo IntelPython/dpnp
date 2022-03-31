@@ -82,7 +82,6 @@ def asarray(x1,
                             dtype=dtype,
                             copy=copy,
                             order=order,
-                            device=device,
                             usm_type=usm_type,
                             sycl_queue=sycl_queue_normalized)
 
@@ -101,7 +100,6 @@ def empty(shape,
     array_obj = dpt.empty(shape,
                           dtype=dtype,
                           order=order,
-                          device=device,
                           usm_type=usm_type,
                           sycl_queue=sycl_queue_normalized)
 
