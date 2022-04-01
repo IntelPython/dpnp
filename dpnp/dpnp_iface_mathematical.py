@@ -918,7 +918,9 @@ def imag(val):
 
     """
 
-    return dpnp.ndarray(val.get_array().shape, buffer=val.get_array().imag)
+    val_desc = dpnp.get_dpnp_descriptor(val, copy_when_strides=False, copy_when_nondefault_queue=False)
+    val_array = val_desc.get_array()
+    return dpnp.dpnp_array.dpnp_array(val_array.shape, buffer=val_array.imag)
 
 
 def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -1405,7 +1407,9 @@ def real(val):
 
     """
 
-    return dpnp.ndarray(val.get_array().shape, buffer=val.get_array().real)
+    val_desc = dpnp.get_dpnp_descriptor(val, copy_when_strides=False, copy_when_nondefault_queue=False)
+    val_array = val_desc.get_array()
+    return dpnp.dpnp_array.dpnp_array(val_array.shape, buffer=val_array.real)
 
 
 def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):
