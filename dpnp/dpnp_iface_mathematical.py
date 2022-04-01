@@ -70,6 +70,7 @@ __all__ = [
     "fmin",
     "fmod",
     "gradient",
+    "imag",
     "maximum",
     "minimum",
     "mod",
@@ -82,6 +83,7 @@ __all__ = [
     "negative",
     "power",
     "prod",
+    "real",
     "remainder",
     "round_",
     "sign",
@@ -908,6 +910,17 @@ def gradient(x1, *varargs, **kwargs):
     return call_origin(numpy.gradient, x1, *varargs, **kwargs)
 
 
+def imag(val):
+    """
+    Return the imaginary part of the complex argument.
+
+    For full documentation refer to :obj:`numpy.imag`.
+
+    """
+
+    return dpnp.ndarray(val.get_array().shape, buffer=val.get_array().imag)
+
+
 def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Element-wise maximum of array elements.
@@ -1382,6 +1395,17 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, wher
             return result
 
     return call_origin(numpy.prod, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
+
+
+def real(val):
+    """
+    Return the real part of the complex argument.
+
+    For full documentation refer to :obj:`numpy.real`.
+
+    """
+
+    return dpnp.ndarray(val.get_array().shape, buffer=val.get_array().real)
 
 
 def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):

@@ -585,7 +585,19 @@ class dpnp_array:
         return new_arr
 
  # 'getfield',
- # 'imag',
+
+    @property
+    def imag(self):
+        """
+        Return the imaginary part of the complex argument.
+
+        """
+
+        return dpnp.imag(self)
+
+    @imag.setter
+    def imag(self, value):
+        dpnp.imag(self)[:] = value
 
     def item(self, id=None):
         """
@@ -678,7 +690,20 @@ class dpnp_array:
  # 'ptp',
  # 'put',
  # 'ravel',
- # 'real',
+
+    @property
+    def real(self):
+        """
+        Return the real part of the complex argument.
+
+        """
+
+        return dpnp.real(self)
+
+    @real.setter
+    def real(self, value):
+        dpnp.real(self)[:] = value
+
  # 'repeat',
 
     def reshape(self, d0, *dn, order=b'C'):
