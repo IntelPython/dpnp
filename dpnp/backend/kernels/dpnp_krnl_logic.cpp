@@ -51,17 +51,17 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-    sycl::event event;
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
     DPNPC_ptr_adapter<_ResultType> result1_ptr(q_ref, result1, 1, true, true);
     const _DataType* array_in = input1_ptr.get_ptr();
     _ResultType* result = result1_ptr.get_ptr();
 
-    result[0] = true;
+    auto init_mem_event = q.fill<_ResultType>(result, true, 1);
 
     if (!size)
     {
+        init_mem_event.wait();
         return event_ref;
     }
 
@@ -74,14 +74,11 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
             result[0] = false;
         }
     };
+    auto parallel_for_event = 
+        q.parallel_for<class dpnp_all_c_kernel<_DataType, _ResultType>>(
+            gws, init_mem_event, kernel_parallel_for_func);
 
-    auto kernel_func = [&](sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_all_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
-    };
-
-    event = q.submit(kernel_func);
-
-    event.wait();
+    parallel_for_event.wait();
 
     return event_ref;
 }
@@ -228,17 +225,17 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-    sycl::event event;
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
     DPNPC_ptr_adapter<_ResultType> result1_ptr(q_ref, result1, 1, true, true);
     const _DataType* array_in = input1_ptr.get_ptr();
     _ResultType* result = result1_ptr.get_ptr();
 
-    result[0] = false;
+    auto init_mem_event = q.fill<_ResultType>(result, false, 1);
 
     if (!size)
     {
+        init_mem_event.wait();
         return event_ref;
     }
 
@@ -251,14 +248,11 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
             result[0] = true;
         }
     };
+    auto parallel_for_event = 
+        q.parallel_for<class dpnp_any_c_kernel<_DataType, _ResultType>>(
+            gws, init_mem_event, kernel_parallel_for_func);
 
-    auto kernel_func = [&](sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_any_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
-    };
-
-    event = q.submit(kernel_func);
-
-    event.wait();
+    parallel_for_event.wait();
 
     return event_ref;
 }
