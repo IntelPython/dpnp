@@ -97,27 +97,8 @@ def convert_list_args(input_list):
 
     return result_list
 
-def copy_from_origin(src, device=None, usm_type="device", sycl_queue=None):
-    """Copy result from origin."""
-    if not isinstance(src, numpy.ndarray):
-        return src
 
-    if src.size == 0:
-        return dpnp_container.empty(src.shape,
-                                    dtype=src.dtype,
-                                    device=device,
-                                    usm_type=usm_type,
-                                    sycl_queue=sycl_queue)
-
-    array_obj = dpctl.tensor._copy_utils.from_numpy(src,
-                                                    device=device,
-                                                    usm_type=usm_type,
-                                                    sycl_queue=sycl_queue)
-
-    return dpnp.dpnp_array.dpnp_array(src.shape, buffer=array_obj)
-
-
-def copy_from_origin_into(dst, src):
+def copy_from_origin(dst, src):
     """Copy origin result to output result."""
     if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
         if src.size:
@@ -164,7 +145,7 @@ def call_origin(function, *args, **kwargs):
         if args and args_new:
             arg, arg_new = args[0], args_new[0]
             if isinstance(arg_new, numpy.ndarray):
-                copy_from_origin_into(arg, arg_new)
+                copy_from_origin(arg, arg_new)
             elif isinstance(arg_new, list):
                 for i, val in enumerate(arg_new):
                     arg[i] = val
@@ -176,10 +157,11 @@ def call_origin(function, *args, **kwargs):
             if (kwargs_dtype is not None):
                 result_dtype = kwargs_dtype
 
-            result = copy_from_origin(result_origin)
+            result = dpnp_container.empty(result_origin.shape, dtype=result_dtype)
         else:
             result = kwargs_out
-            copy_from_origin_into(result, result_origin)
+
+        copy_from_origin(result, result_origin)
 
     elif isinstance(result, tuple):
         # convert tuple(fallback_array) to tuple(result_array)
@@ -187,7 +169,8 @@ def call_origin(function, *args, **kwargs):
         for res_origin in result:
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
-                res = copy_from_origin(res_origin)
+                res = dpnp_container.empty(res_origin.shape, dtype=res_origin.dtype)
+                copy_from_origin(res, res_origin)
             result_list.append(res)
 
         result = tuple(result_list)
