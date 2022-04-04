@@ -51,11 +51,8 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
-    DPNPC_ptr_adapter<_ResultType> result1_ptr(q_ref, result1, 1, true, true);
-    const _DataType* array_in = input1_ptr.get_ptr();
-    _ResultType* result = result1_ptr.get_ptr();
+    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     auto init_mem_event = q.fill<_ResultType>(result, true, 1);
 
@@ -225,11 +222,8 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
-    DPNPC_ptr_adapter<_ResultType> result1_ptr(q_ref, result1, 1, true, true);
-    const _DataType* array_in = input1_ptr.get_ptr();
-    _ResultType* result = result1_ptr.get_ptr();
+    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     auto init_mem_event = q.fill<_ResultType>(result, false, 1);
 
