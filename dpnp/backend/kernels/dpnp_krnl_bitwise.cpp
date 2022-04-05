@@ -35,10 +35,21 @@ template <typename _KernelNameSpecialization>
 class dpnp_invert_c_kernel;
 
 template <typename _DataType>
-void dpnp_invert_c(void* array1_in, void* result1, size_t size)
+DPCTLSyclEventRef dpnp_invert_c(DPCTLSyclQueueRef q_ref,
+                                void* array1_in,
+                                void* result1,
+                                size_t size,
+                                const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    // avoid warning unused variable
+    (void)dep_event_vec_ref;
+
+    DPCTLSyclEventRef event_ref = nullptr;
+
+    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
     _DataType* array1 = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
@@ -55,15 +66,40 @@ void dpnp_invert_c(void* array1_in, void* result1, size_t size)
         cgh.parallel_for<class dpnp_invert_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
-    event = DPNP_QUEUE.submit(kernel_func);
+    event = q.submit(kernel_func);
 
     event.wait();
+
+    return event_ref;
 }
+
+template <typename _DataType>
+void dpnp_invert_c(void* array1_in, void* result1, size_t size)
+{
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
+    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    DPCTLSyclEventRef event_ref = dpnp_invert_c<_DataType>(q_ref,
+                                                           array1_in,
+                                                           result1,
+                                                           size,
+                                                           dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+}
+
+template <typename _DataType>
+void (*dpnp_invert_default_c)(void*, void*, size_t) = dpnp_invert_c<_DataType>;
+
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_invert_ext_c)(DPCTLSyclQueueRef,
+                                       void*,
+                                       void*,
+                                       size_t,
+                                       const DPCTLEventVectorRef) = dpnp_invert_c<_DataType>;
 
 static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_INVERT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_invert_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_INVERT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_invert_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_INVERT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_invert_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_INVERT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_invert_default_c<int64_t>};
 
     return;
 }
@@ -76,42 +112,49 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
     class __name__##_strides_kernel;                                                                                   \
                                                                                                                        \
     template <typename _DataType>                                                                                      \
-    void __name__(void* result_out,                                                                                    \
-                  const size_t result_size,                                                                            \
-                  const size_t result_ndim,                                                                            \
-                  const shape_elem_type* result_shape,                                                                 \
-                  const shape_elem_type* result_strides,                                                               \
-                  const void* input1_in,                                                                               \
-                  const size_t input1_size,                                                                            \
-                  const size_t input1_ndim,                                                                            \
-                  const shape_elem_type* input1_shape,                                                                 \
-                  const shape_elem_type* input1_strides,                                                               \
-                  const void* input2_in,                                                                               \
-                  const size_t input2_size,                                                                            \
-                  const size_t input2_ndim,                                                                            \
-                  const shape_elem_type* input2_shape,                                                                 \
-                  const shape_elem_type* input2_strides,                                                               \
-                  const size_t* where)                                                                                 \
+    DPCTLSyclEventRef __name__(DPCTLSyclQueueRef q_ref,                                                                \
+                               void* result_out,                                                                       \
+                               const size_t result_size,                                                               \
+                               const size_t result_ndim,                                                               \
+                               const shape_elem_type* result_shape,                                                    \
+                               const shape_elem_type* result_strides,                                                  \
+                               const void* input1_in,                                                                  \
+                               const size_t input1_size,                                                               \
+                               const size_t input1_ndim,                                                               \
+                               const shape_elem_type* input1_shape,                                                    \
+                               const shape_elem_type* input1_strides,                                                  \
+                               const void* input2_in,                                                                  \
+                               const size_t input2_size,                                                               \
+                               const size_t input2_ndim,                                                               \
+                               const shape_elem_type* input2_shape,                                                    \
+                               const shape_elem_type* input2_strides,                                                  \
+                               const size_t* where,                                                                    \
+                               const DPCTLEventVectorRef dep_event_vec_ref)                                            \
     {                                                                                                                  \
         /* avoid warning unused variable*/                                                                             \
         (void)result_shape;                                                                                            \
         (void)where;                                                                                                   \
+        (void)dep_event_vec_ref;                                                                                       \
+                                                                                                                       \
+        DPCTLSyclEventRef event_ref = nullptr;                                                                         \
                                                                                                                        \
         if (!input1_size || !input2_size)                                                                              \
         {                                                                                                              \
-            return;                                                                                                    \
+            return event_ref;                                                                                          \
         }                                                                                                              \
                                                                                                                        \
-        DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, input1_size);                                               \
-        DPNPC_ptr_adapter<shape_elem_type> input1_shape_ptr(input1_shape, input1_ndim, true);                          \
-        DPNPC_ptr_adapter<shape_elem_type> input1_strides_ptr(input1_strides, input1_ndim, true);                      \
+        sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));                                                      \
                                                                                                                        \
-        DPNPC_ptr_adapter<_DataType> input2_ptr(input2_in, input2_size);                                               \
-        DPNPC_ptr_adapter<shape_elem_type> input2_shape_ptr(input2_shape, input2_ndim, true);                          \
-        DPNPC_ptr_adapter<shape_elem_type> input2_strides_ptr(input2_strides, input2_ndim, true);                      \
+        DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, input1_in, input1_size);                                            \
+        DPNPC_ptr_adapter<shape_elem_type> input1_shape_ptr(q_ref, input1_shape, input1_ndim, true);                       \
+        DPNPC_ptr_adapter<shape_elem_type> input1_strides_ptr(q_ref, input1_strides, input1_ndim, true);                   \
                                                                                                                        \
-        DPNPC_ptr_adapter<_DataType> result_ptr(result_out, result_size, false, true);                                 \
-        DPNPC_ptr_adapter<shape_elem_type> result_strides_ptr(result_strides, result_ndim);                            \
+        DPNPC_ptr_adapter<_DataType> input2_ptr(q_ref, input2_in, input2_size);                                            \
+        DPNPC_ptr_adapter<shape_elem_type> input2_shape_ptr(q_ref, input2_shape, input2_ndim, true);                       \
+        DPNPC_ptr_adapter<shape_elem_type> input2_strides_ptr(q_ref, input2_strides, input2_ndim, true);                   \
+                                                                                                                       \
+        DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result_out, result_size, false, true);                              \
+        DPNPC_ptr_adapter<shape_elem_type> result_strides_ptr(q_ref, result_strides, result_ndim);                         \
                                                                                                                        \
         _DataType* input1_data = input1_ptr.get_ptr();                                                                 \
         shape_elem_type* input1_shape_data = input1_shape_ptr.get_ptr();                                               \
@@ -126,18 +169,18 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
                                                                                                                        \
         const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(shape_elem_type);                               \
         shape_elem_type* input1_shape_offsets =                                                                        \
-            reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));                       \
+            reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(input1_shape_size_in_bytes, q));                    \
         get_shape_offsets_inkernel(input1_shape_data, input1_ndim, input1_shape_offsets);                              \
         bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
-        dpnp_memory_free_c(input1_shape_offsets);                                                                      \
+        sycl::free(input1_shape_offsets, q);                                                                           \
                                                                                                                        \
         const size_t input2_shape_size_in_bytes = input2_ndim * sizeof(shape_elem_type);                               \
         shape_elem_type* input2_shape_offsets =                                                                        \
-            reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(input2_shape_size_in_bytes));                       \
+            reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(input2_shape_size_in_bytes, q));                    \
         get_shape_offsets_inkernel(input2_shape_data, input2_ndim, input2_shape_offsets);                              \
         use_strides =                                                                                                  \
             use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);          \
-        dpnp_memory_free_c(input2_shape_offsets);                                                                      \
+        sycl::free(input2_shape_offsets, q);                                                                           \
                                                                                                                        \
         sycl::event event;                                                                                             \
         sycl::range<1> gws(result_size);                                                                               \
@@ -165,7 +208,7 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
             auto kernel_func = [&](sycl::handler& cgh) {                                                               \
                 cgh.parallel_for<class __name__##_strides_kernel<_DataType>>(gws, kernel_parallel_for_func);           \
             };                                                                                                         \
-            event = DPNP_QUEUE.submit(kernel_func);                                                                    \
+            event = q.submit(kernel_func);                                                                             \
             event.wait();                                                                                              \
         }                                                                                                              \
         else                                                                                                           \
@@ -179,29 +222,124 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
             auto kernel_func = [&](sycl::handler& cgh) {                                                               \
                 cgh.parallel_for<class __name__##_kernel<_DataType>>(gws, kernel_parallel_for_func);                   \
             };                                                                                                         \
-            event = DPNP_QUEUE.submit(kernel_func);                                                                    \
+            event = q.submit(kernel_func);                                                                             \
             event.wait();                                                                                              \
         }                                                                                                              \
-    }
+        return event_ref;                                                                             \
+    }                                                                                                                  \
+                                                                                                                       \
+    template <typename _DataType>                                                                                      \
+    void __name__(void* result_out,                                                                                    \
+                  const size_t result_size,                                                                            \
+                  const size_t result_ndim,                                                                            \
+                  const shape_elem_type* result_shape,                                                                 \
+                  const shape_elem_type* result_strides,                                                               \
+                  const void* input1_in,                                                                               \
+                  const size_t input1_size,                                                                            \
+                  const size_t input1_ndim,                                                                            \
+                  const shape_elem_type* input1_shape,                                                                 \
+                  const shape_elem_type* input1_strides,                                                               \
+                  const void* input2_in,                                                                               \
+                  const size_t input2_size,                                                                            \
+                  const size_t input2_ndim,                                                                            \
+                  const shape_elem_type* input2_shape,                                                                 \
+                  const shape_elem_type* input2_strides,                                                               \
+                  const size_t* where)                                                                                 \
+    {                                                                                                                  \
+        DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);                                    \
+        DPCTLEventVectorRef dep_event_vec_ref = nullptr;                                                               \
+        DPCTLSyclEventRef event_ref = __name__<_DataType>(q_ref,                                                       \
+                                                          result_out,                                                  \
+                                                          result_size,                                                 \
+                                                          result_ndim,                                                 \
+                                                          result_shape,                                                \
+                                                          result_strides,                                              \
+                                                          input1_in,                                                   \
+                                                          input1_size,                                                 \
+                                                          input1_ndim,                                                 \
+                                                          input1_shape,                                                \
+                                                          input1_strides,                                              \
+                                                          input2_in,                                                   \
+                                                          input2_size,                                                 \
+                                                          input2_ndim,                                                 \
+                                                          input2_shape,                                                \
+                                                          input2_strides,                                              \
+                                                          where,                                                       \
+                                                          dep_event_vec_ref);                                          \
+        DPCTLEvent_WaitAndThrow(event_ref);                                                                            \
+    }                                                                                                                  \
+                                                                                                                       \
+    template <typename _DataType>                                                                                      \
+    void (*__name__##_default)(void*,                                                                                  \
+                               const size_t,                                                                           \
+                               const size_t,                                                                           \
+                               const shape_elem_type*,                                                                 \
+                               const shape_elem_type*,                                                                 \
+                               const void*,                                                                            \
+                               const size_t,                                                                           \
+                               const size_t,                                                                           \
+                               const shape_elem_type*,                                                                 \
+                               const shape_elem_type*,                                                                 \
+                               const void*,                                                                            \
+                               const size_t,                                                                           \
+                               const size_t,                                                                           \
+                               const shape_elem_type*,                                                                 \
+                               const shape_elem_type*,                                                                 \
+                               const size_t*) = __name__<_DataType>;                                                   \
+                                                                                                                       \
+    template <typename _DataType>                                                                                      \
+    DPCTLSyclEventRef (*__name__##_ext)(DPCTLSyclQueueRef,                                                             \
+                                        void*,                                                                         \
+                                        const size_t,                                                                  \
+                                        const size_t,                                                                  \
+                                        const shape_elem_type*,                                                        \
+                                        const shape_elem_type*,                                                        \
+                                        const void*,                                                                   \
+                                        const size_t,                                                                  \
+                                        const size_t,                                                                  \
+                                        const shape_elem_type*,                                                        \
+                                        const shape_elem_type*,                                                        \
+                                        const void*,                                                                   \
+                                        const size_t,                                                                  \
+                                        const size_t,                                                                  \
+                                        const shape_elem_type*,                                                        \
+                                        const shape_elem_type*,                                                        \
+                                        const size_t*,                                                                 \
+                                        const DPCTLEventVectorRef) = __name__<_DataType>;
 
 #include <dpnp_gen_2arg_1type_tbl.hpp>
 
 static void func_map_init_bitwise_2arg_1type(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_AND][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_and_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_AND][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_and_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_AND][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_and_c_default<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_AND][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_and_c_default<int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_OR][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_or_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_OR][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_or_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_AND_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_and_c_ext<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_AND_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_and_c_ext<int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_xor_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_xor_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_OR][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_or_c_default<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_OR][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_or_c_default<int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_left_shift_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_left_shift_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_OR_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_or_c_ext<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_OR_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_or_c_ext<int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_right_shift_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_right_shift_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_xor_c_default<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_xor_c_default<int64_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_xor_c_ext<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_xor_c_ext<int64_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_left_shift_c_default<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_left_shift_c_default<int64_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_left_shift_c_ext<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_left_shift_c_ext<int64_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_right_shift_c_default<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_right_shift_c_default<int64_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_right_shift_c_ext<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_right_shift_c_ext<int64_t>};
 
     return;
 }

@@ -61,12 +61,8 @@ class dpnp_array:
                     "".format(shape, buffer.shape)
                 )
             self._array_obj = dpt.asarray(buffer,
-                                          dtype=buffer.dtype,
                                           copy=False,
-                                          order=order,
-                                          device=buffer.sycl_device,
-                                          usm_type=buffer.usm_type,
-                                          sycl_queue=buffer.sycl_queue)
+                                          order=order)
         else:
             sycl_queue_normalized = normalize_queue_device(sycl_queue=sycl_queue, device=device)
             self._array_obj = dpt.usm_ndarray(shape,
@@ -96,6 +92,13 @@ class dpnp_array:
             return self
         else:
             return dpnp.transpose(self)
+
+    def to_device(self, target_device):
+        """
+        Transfer array to target device
+        """
+
+        return dpnp_array(shape=self.shape, buffer=self.get_array().to_device(target_device))
 
     def __abs__(self):
         return dpnp.abs(self)

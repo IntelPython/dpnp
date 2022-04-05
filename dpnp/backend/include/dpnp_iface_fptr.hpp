@@ -57,169 +57,331 @@
  */
 enum class DPNPFuncName : size_t
 {
-    DPNP_FN_NONE,                     /**< Very first element of the enumeration */
-    DPNP_FN_ABSOLUTE,                 /**< Used in numpy.absolute() implementation  */
-    DPNP_FN_ADD,                      /**< Used in numpy.add() implementation  */
-    DPNP_FN_ALL,                      /**< Used in numpy.all() implementation  */
-    DPNP_FN_ALLCLOSE,                 /**< Used in numpy.allclose() implementation  */
-    DPNP_FN_ANY,                      /**< Used in numpy.any() implementation  */
-    DPNP_FN_ARANGE,                   /**< Used in numpy.arange() implementation  */
-    DPNP_FN_ARCCOS,                   /**< Used in numpy.arccos() implementation  */
-    DPNP_FN_ARCCOSH,                  /**< Used in numpy.arccosh() implementation  */
-    DPNP_FN_ARCSIN,                   /**< Used in numpy.arcsin() implementation  */
-    DPNP_FN_ARCSINH,                  /**< Used in numpy.arcsinh() implementation  */
-    DPNP_FN_ARCTAN,                   /**< Used in numpy.arctan() implementation  */
-    DPNP_FN_ARCTAN2,                  /**< Used in numpy.arctan2() implementation  */
-    DPNP_FN_ARCTANH,                  /**< Used in numpy.arctanh() implementation  */
-    DPNP_FN_ARGMAX,                   /**< Used in numpy.argmax() implementation  */
-    DPNP_FN_ARGMIN,                   /**< Used in numpy.argmin() implementation  */
-    DPNP_FN_ARGSORT,                  /**< Used in numpy.argsort() implementation  */
-    DPNP_FN_AROUND,                   /**< Used in numpy.around() implementation  */
-    DPNP_FN_ASTYPE,                   /**< Used in numpy.astype() implementation  */
-    DPNP_FN_BITWISE_AND,              /**< Used in numpy.bitwise_and() implementation  */
-    DPNP_FN_BITWISE_OR,               /**< Used in numpy.bitwise_or() implementation  */
-    DPNP_FN_BITWISE_XOR,              /**< Used in numpy.bitwise_xor() implementation  */
-    DPNP_FN_CBRT,                     /**< Used in numpy.cbrt() implementation  */
-    DPNP_FN_CEIL,                     /**< Used in numpy.ceil() implementation  */
-    DPNP_FN_CHOLESKY,                 /**< Used in numpy.linalg.cholesky() implementation  */
-    DPNP_FN_CONJIGUATE,               /**< Used in numpy.conjugate() implementation  */
-    DPNP_FN_CHOOSE,                   /**< Used in numpy.choose() implementation  */
-    DPNP_FN_COPY,                     /**< Used in numpy.copy() implementation  */
-    DPNP_FN_COPYSIGN,                 /**< Used in numpy.copysign() implementation  */
-    DPNP_FN_COPYTO,                   /**< Used in numpy.copyto() implementation  */
-    DPNP_FN_CORRELATE,                /**< Used in numpy.correlate() implementation  */
-    DPNP_FN_COS,                      /**< Used in numpy.cos() implementation  */
-    DPNP_FN_COSH,                     /**< Used in numpy.cosh() implementation  */
-    DPNP_FN_COUNT_NONZERO,            /**< Used in numpy.count_nonzero() implementation  */
-    DPNP_FN_COV,                      /**< Used in numpy.cov() implementation  */
-    DPNP_FN_CROSS,                    /**< Used in numpy.cross() implementation  */
-    DPNP_FN_CUMPROD,                  /**< Used in numpy.cumprod() implementation  */
-    DPNP_FN_CUMSUM,                   /**< Used in numpy.cumsum() implementation  */
-    DPNP_FN_DEGREES,                  /**< Used in numpy.degrees() implementation  */
-    DPNP_FN_DET,                      /**< Used in numpy.linalg.det() implementation  */
-    DPNP_FN_DIAG,                     /**< Used in numpy.diag() implementation  */
-    DPNP_FN_DIAG_INDICES,             /**< Used in numpy.diag_indices() implementation  */
-    DPNP_FN_DIAGONAL,                 /**< Used in numpy.diagonal() implementation  */
-    DPNP_FN_DIVIDE,                   /**< Used in numpy.divide() implementation  */
-    DPNP_FN_DOT,                      /**< Used in numpy.dot() implementation  */
-    DPNP_FN_EDIFF1D,                  /**< Used in numpy.ediff1d() implementation  */
-    DPNP_FN_EIG,                      /**< Used in numpy.linalg.eig() implementation  */
-    DPNP_FN_EIGVALS,                  /**< Used in numpy.linalg.eigvals() implementation  */
-    DPNP_FN_ERF,                      /**< Used in scipy.special.erf implementation  */
-    DPNP_FN_EYE,                      /**< Used in numpy.eye() implementation  */
-    DPNP_FN_EXP,                      /**< Used in numpy.exp() implementation  */
-    DPNP_FN_EXP2,                     /**< Used in numpy.exp2() implementation  */
-    DPNP_FN_EXPM1,                    /**< Used in numpy.expm1() implementation  */
-    DPNP_FN_FABS,                     /**< Used in numpy.fabs() implementation  */
-    DPNP_FN_FFT_FFT,                  /**< Used in numpy.fft.fft() implementation  */
-    DPNP_FN_FILL_DIAGONAL,            /**< Used in numpy.fill_diagonal() implementation  */
-    DPNP_FN_FLATTEN,                  /**< Used in numpy.flatten() implementation  */
-    DPNP_FN_FLOOR,                    /**< Used in numpy.floor() implementation  */
-    DPNP_FN_FLOOR_DIVIDE,             /**< Used in numpy.floor_divide() implementation  */
-    DPNP_FN_FMOD,                     /**< Used in numpy.fmod() implementation  */
-    DPNP_FN_FULL,                     /**< Used in numpy.full() implementation  */
-    DPNP_FN_FULL_LIKE,                /**< Used in numpy.full_like() implementation  */
-    DPNP_FN_HYPOT,                    /**< Used in numpy.hypot() implementation  */
-    DPNP_FN_IDENTITY,                 /**< Used in numpy.identity() implementation  */
-    DPNP_FN_INITVAL,                  /**< Used in numpy ones, ones_like, zeros, zeros_like, full, full_like impl  */
-    DPNP_FN_INV,                      /**< Used in numpy.linalg.inv() implementation  */
-    DPNP_FN_INVERT,                   /**< Used in numpy.invert() implementation  */
-    DPNP_FN_KRON,                     /**< Used in numpy.kron() implementation  */
-    DPNP_FN_LEFT_SHIFT,               /**< Used in numpy.left_shift() implementation  */
-    DPNP_FN_LOG,                      /**< Used in numpy.log() implementation  */
-    DPNP_FN_LOG10,                    /**< Used in numpy.log10() implementation  */
-    DPNP_FN_LOG2,                     /**< Used in numpy.log2() implementation  */
-    DPNP_FN_LOG1P,                    /**< Used in numpy.log1p() implementation  */
-    DPNP_FN_MATMUL,                   /**< Used in numpy.matmul() implementation  */
-    DPNP_FN_MATMUL_EXT,               /**< Used in numpy.matmul() implementation, requires extra parameters  */
-    DPNP_FN_MATRIX_RANK,              /**< Used in numpy.linalg.matrix_rank() implementation  */
-    DPNP_FN_MAX,                      /**< Used in numpy.max() implementation  */
-    DPNP_FN_MAXIMUM,                  /**< Used in numpy.maximum() implementation  */
-    DPNP_FN_MEAN,                     /**< Used in numpy.mean() implementation  */
-    DPNP_FN_MEDIAN,                   /**< Used in numpy.median() implementation  */
-    DPNP_FN_MIN,                      /**< Used in numpy.min() implementation  */
-    DPNP_FN_MINIMUM,                  /**< Used in numpy.minimum() implementation  */
-    DPNP_FN_MODF,                     /**< Used in numpy.modf() implementation  */
-    DPNP_FN_MULTIPLY,                 /**< Used in numpy.multiply() implementation  */
-    DPNP_FN_NANVAR,                   /**< Used in numpy.nanvar() implementation  */
-    DPNP_FN_NEGATIVE,                 /**< Used in numpy.negative() implementation  */
-    DPNP_FN_NONZERO,                  /**< Used in numpy.nonzero() implementation  */
-    DPNP_FN_ONES,                     /**< Used in numpy.ones() implementation */
-    DPNP_FN_ONES_LIKE,                /**< Used in numpy.ones_like() implementation */
-    DPNP_FN_PARTITION,                /**< Used in numpy.partition() implementation */
-    DPNP_FN_PLACE,                    /**< Used in numpy.place() implementation  */
-    DPNP_FN_POWER,                    /**< Used in numpy.power() implementation  */
-    DPNP_FN_PROD,                     /**< Used in numpy.prod() implementation  */
-    DPNP_FN_PTP,                      /**< Used in numpy.ptp() implementation  */
-    DPNP_FN_PUT,                      /**< Used in numpy.put() implementation  */
-    DPNP_FN_PUT_ALONG_AXIS,           /**< Used in numpy.put_along_axis() implementation  */
-    DPNP_FN_QR,                       /**< Used in numpy.linalg.qr() implementation  */
-    DPNP_FN_RADIANS,                  /**< Used in numpy.radians() implementation  */
-    DPNP_FN_REMAINDER,                /**< Used in numpy.remainder() implementation  */
-    DPNP_FN_RECIP,                    /**< Used in numpy.recip() implementation  */
-    DPNP_FN_REPEAT,                   /**< Used in numpy.repeat() implementation  */
-    DPNP_FN_RIGHT_SHIFT,              /**< Used in numpy.right_shift() implementation  */
-    DPNP_FN_RNG_BETA,                 /**< Used in numpy.random.beta() implementation  */
-    DPNP_FN_RNG_BINOMIAL,             /**< Used in numpy.random.binomial() implementation  */
-    DPNP_FN_RNG_CHISQUARE,            /**< Used in numpy.random.chisquare() implementation  */
-    DPNP_FN_RNG_EXPONENTIAL,          /**< Used in numpy.random.exponential() implementation  */
-    DPNP_FN_RNG_F,                    /**< Used in numpy.random.f() implementation  */
-    DPNP_FN_RNG_GAMMA,                /**< Used in numpy.random.gamma() implementation  */
-    DPNP_FN_RNG_GAUSSIAN,             /**< Used in numpy.random.randn() implementation  */
-    DPNP_FN_RNG_GEOMETRIC,            /**< Used in numpy.random.geometric() implementation  */
-    DPNP_FN_RNG_GUMBEL,               /**< Used in numpy.random.gumbel() implementation  */
-    DPNP_FN_RNG_HYPERGEOMETRIC,       /**< Used in numpy.random.hypergeometric() implementation  */
-    DPNP_FN_RNG_LAPLACE,              /**< Used in numpy.random.laplace() implementation  */
-    DPNP_FN_RNG_LOGISTIC,             /**< Used in numpy.random.logistic() implementation  */
-    DPNP_FN_RNG_LOGNORMAL,            /**< Used in numpy.random.lognormal() implementation  */
-    DPNP_FN_RNG_MULTINOMIAL,          /**< Used in numpy.random.multinomial() implementation  */
-    DPNP_FN_RNG_MULTIVARIATE_NORMAL,  /**< Used in numpy.random.multivariate_normal() implementation  */
-    DPNP_FN_RNG_NEGATIVE_BINOMIAL,    /**< Used in numpy.random.negative_binomial() implementation  */
-    DPNP_FN_RNG_NONCENTRAL_CHISQUARE, /**< Used in numpy.random.noncentral_chisquare() implementation  */
-    DPNP_FN_RNG_NORMAL,               /**< Used in numpy.random.normal() implementation  */
-    DPNP_FN_RNG_PARETO,               /**< Used in numpy.random.pareto() implementation  */
-    DPNP_FN_RNG_POISSON,              /**< Used in numpy.random.poisson() implementation  */
-    DPNP_FN_RNG_POWER,                /**< Used in numpy.random.power() implementation  */
-    DPNP_FN_RNG_RAYLEIGH,             /**< Used in numpy.random.rayleigh() implementation  */
-    DPNP_FN_RNG_SRAND,                /**< Used in numpy.random.seed() implementation  */
-    DPNP_FN_RNG_SHUFFLE,              /**< Used in numpy.random.shuffle() implementation  */
-    DPNP_FN_RNG_STANDARD_CAUCHY,      /**< Used in numpy.random.standard_cauchy() implementation  */
-    DPNP_FN_RNG_STANDARD_EXPONENTIAL, /**< Used in numpy.random.standard_exponential() implementation  */
-    DPNP_FN_RNG_STANDARD_GAMMA,       /**< Used in numpy.random.standard_gamma() implementation  */
-    DPNP_FN_RNG_STANDARD_NORMAL,      /**< Used in numpy.random.standard_normal() implementation  */
-    DPNP_FN_RNG_STANDARD_T,           /**< Used in numpy.random.standard_t() implementation  */
-    DPNP_FN_RNG_TRIANGULAR,           /**< Used in numpy.random.triangular() implementation  */
-    DPNP_FN_RNG_UNIFORM,              /**< Used in numpy.random.uniform() implementation  */
-    DPNP_FN_RNG_VONMISES,             /**< Used in numpy.random.vonmises() implementation  */
-    DPNP_FN_RNG_WALD,                 /**< Used in numpy.random.wald() implementation  */
-    DPNP_FN_RNG_WEIBULL,              /**< Used in numpy.random.weibull() implementation  */
-    DPNP_FN_RNG_ZIPF,                 /**< Used in numpy.random.zipf() implementation  */
-    DPNP_FN_SEARCHSORTED,             /**< Used in numpy.searchsorted() implementation  */
-    DPNP_FN_SIGN,                     /**< Used in numpy.sign() implementation  */
-    DPNP_FN_SIN,                      /**< Used in numpy.sin() implementation  */
-    DPNP_FN_SINH,                     /**< Used in numpy.sinh() implementation  */
-    DPNP_FN_SORT,                     /**< Used in numpy.sort() implementation  */
-    DPNP_FN_SQRT,                     /**< Used in numpy.sqrt() implementation  */
-    DPNP_FN_SQUARE,                   /**< Used in numpy.square() implementation  */
-    DPNP_FN_STD,                      /**< Used in numpy.std() implementation  */
-    DPNP_FN_SUBTRACT,                 /**< Used in numpy.subtract() implementation  */
-    DPNP_FN_SUM,                      /**< Used in numpy.sum() implementation  */
-    DPNP_FN_SVD,                      /**< Used in numpy.linalg.svd() implementation  */
-    DPNP_FN_TAKE,                     /**< Used in numpy.take() implementation  */
-    DPNP_FN_TAN,                      /**< Used in numpy.tan() implementation  */
-    DPNP_FN_TANH,                     /**< Used in numpy.tanh() implementation  */
-    DPNP_FN_TRANSPOSE,                /**< Used in numpy.transpose() implementation  */
-    DPNP_FN_TRACE,                    /**< Used in numpy.trace() implementation  */
-    DPNP_FN_TRAPZ,                    /**< Used in numpy.trapz() implementation  */
-    DPNP_FN_TRI,                      /**< Used in numpy.tri() implementation  */
-    DPNP_FN_TRIL,                     /**< Used in numpy.tril() implementation  */
-    DPNP_FN_TRIU,                     /**< Used in numpy.triu() implementation  */
-    DPNP_FN_TRUNC,                    /**< Used in numpy.trunc() implementation  */
-    DPNP_FN_VANDER,                   /**< Used in numpy.vander() implementation  */
-    DPNP_FN_VAR,                      /**< Used in numpy.var() implementation  */
-    DPNP_FN_ZEROS,                    /**< Used in numpy.zeros() implementation */
-    DPNP_FN_ZEROS_LIKE,               /**< Used in numpy.zeros_like() implementation */
-    DPNP_FN_LAST                      /**< The latest element of the enumeration */
+    DPNP_FN_NONE,                         /**< Very first element of the enumeration */
+    DPNP_FN_ABSOLUTE,                     /**< Used in numpy.absolute() impl  */
+    DPNP_FN_ABSOLUTE_EXT,                 /**< Used in numpy.absolute() impl, requires extra parameters */
+    DPNP_FN_ADD,                          /**< Used in numpy.add() impl  */
+    DPNP_FN_ADD_EXT,                      /**< Used in numpy.add() impl, requires extra parameters */
+    DPNP_FN_ALL,                          /**< Used in numpy.all() impl  */
+    DPNP_FN_ALL_EXT,                      /**< Used in numpy.all() impl, requires extra parameters */
+    DPNP_FN_ALLCLOSE,                     /**< Used in numpy.allclose() impl  */
+    DPNP_FN_ALLCLOSE_EXT,                 /**< Used in numpy.allclose() impl, requires extra parameters */
+    DPNP_FN_ANY,                          /**< Used in numpy.any() impl  */
+    DPNP_FN_ANY_EXT,                      /**< Used in numpy.any() impl, requires extra parameters */
+    DPNP_FN_ARANGE,                       /**< Used in numpy.arange() impl  */
+    DPNP_FN_ARANGE_EXT,                   /**< Used in numpy.arange() impl, requires extra parameters */
+    DPNP_FN_ARCCOS,                       /**< Used in numpy.arccos() impl  */
+    DPNP_FN_ARCCOS_EXT,                   /**< Used in numpy.arccos() impl, requires extra parameters */
+    DPNP_FN_ARCCOSH,                      /**< Used in numpy.arccosh() impl  */
+    DPNP_FN_ARCCOSH_EXT,                  /**< Used in numpy.arccosh() impl, requires extra parameters */
+    DPNP_FN_ARCSIN,                       /**< Used in numpy.arcsin() impl  */
+    DPNP_FN_ARCSIN_EXT,                   /**< Used in numpy.arcsin() impl, requires extra parameters */
+    DPNP_FN_ARCSINH,                      /**< Used in numpy.arcsinh() impl  */
+    DPNP_FN_ARCSINH_EXT,                  /**< Used in numpy.arcsinh() impl, requires extra parameters */
+    DPNP_FN_ARCTAN,                       /**< Used in numpy.arctan() impl  */
+    DPNP_FN_ARCTAN_EXT,                   /**< Used in numpy.arctan() impl, requires extra parameters */
+    DPNP_FN_ARCTAN2,                      /**< Used in numpy.arctan2() impl  */
+    DPNP_FN_ARCTAN2_EXT,                  /**< Used in numpy.arctan2() impl, requires extra parameters */
+    DPNP_FN_ARCTANH,                      /**< Used in numpy.arctanh() impl  */
+    DPNP_FN_ARCTANH_EXT,                  /**< Used in numpy.arctanh() impl, requires extra parameters */
+    DPNP_FN_ARGMAX,                       /**< Used in numpy.argmax() impl  */
+    DPNP_FN_ARGMAX_EXT,                   /**< Used in numpy.argmax() impl, requires extra parameters */
+    DPNP_FN_ARGMIN,                       /**< Used in numpy.argmin() impl  */
+    DPNP_FN_ARGMIN_EXT,                   /**< Used in numpy.argmin() impl, requires extra parameters */
+    DPNP_FN_ARGSORT,                      /**< Used in numpy.argsort() impl  */
+    DPNP_FN_ARGSORT_EXT,                  /**< Used in numpy.argsort() impl, requires extra parameters */
+    DPNP_FN_AROUND,                       /**< Used in numpy.around() impl  */
+    DPNP_FN_AROUND_EXT,                   /**< Used in numpy.around() impl, requires extra parameters */
+    DPNP_FN_ASTYPE,                       /**< Used in numpy.astype() impl  */
+    DPNP_FN_ASTYPE_EXT,                   /**< Used in numpy.astype() impl, requires extra parameters */
+    DPNP_FN_BITWISE_AND,                  /**< Used in numpy.bitwise_and() impl  */
+    DPNP_FN_BITWISE_AND_EXT,              /**< Used in numpy.bitwise_and() impl, requires extra parameters */
+    DPNP_FN_BITWISE_OR,                   /**< Used in numpy.bitwise_or() impl  */
+    DPNP_FN_BITWISE_OR_EXT,               /**< Used in numpy.bitwise_or() impl, requires extra parameters */
+    DPNP_FN_BITWISE_XOR,                  /**< Used in numpy.bitwise_xor() impl  */
+    DPNP_FN_BITWISE_XOR_EXT,              /**< Used in numpy.bitwise_xor() impl, requires extra parameters */
+    DPNP_FN_CBRT,                         /**< Used in numpy.cbrt() impl  */
+    DPNP_FN_CBRT_EXT,                     /**< Used in numpy.cbrt() impl, requires extra parameters */
+    DPNP_FN_CEIL,                         /**< Used in numpy.ceil() impl  */
+    DPNP_FN_CEIL_EXT,                     /**< Used in numpy.ceil() impl, requires extra parameters */
+    DPNP_FN_CHOLESKY,                     /**< Used in numpy.linalg.cholesky() impl  */
+    DPNP_FN_CHOLESKY_EXT,                 /**< Used in numpy.linalg.cholesky() impl, requires extra parameters */
+    DPNP_FN_CONJIGUATE,                   /**< Used in numpy.conjugate() impl  */
+    DPNP_FN_CONJIGUATE_EXT,               /**< Used in numpy.conjugate() impl, requires extra parameters */
+    DPNP_FN_CHOOSE,                       /**< Used in numpy.choose() impl  */
+    DPNP_FN_CHOOSE_EXT,                   /**< Used in numpy.choose() impl, requires extra parameters */
+    DPNP_FN_COPY,                         /**< Used in numpy.copy() impl  */
+    DPNP_FN_COPY_EXT,                     /**< Used in numpy.copy() impl, requires extra parameters */
+    DPNP_FN_COPYSIGN,                     /**< Used in numpy.copysign() impl  */
+    DPNP_FN_COPYSIGN_EXT,                 /**< Used in numpy.copysign() impl, requires extra parameters */
+    DPNP_FN_COPYTO,                       /**< Used in numpy.copyto() impl  */
+    DPNP_FN_COPYTO_EXT,                   /**< Used in numpy.copyto() impl, requires extra parameters */
+    DPNP_FN_CORRELATE,                    /**< Used in numpy.correlate() impl  */
+    DPNP_FN_CORRELATE_EXT,                /**< Used in numpy.correlate() impl, requires extra parameters */
+    DPNP_FN_COS,                          /**< Used in numpy.cos() impl  */
+    DPNP_FN_COS_EXT,                      /**< Used in numpy.cos() impl, requires extra parameters */
+    DPNP_FN_COSH,                         /**< Used in numpy.cosh() impl  */
+    DPNP_FN_COSH_EXT,                     /**< Used in numpy.cosh() impl, requires extra parameters */
+    DPNP_FN_COUNT_NONZERO,                /**< Used in numpy.count_nonzero() impl  */
+    DPNP_FN_COUNT_NONZERO_EXT,            /**< Used in numpy.count_nonzero() impl, requires extra parameters */
+    DPNP_FN_COV,                          /**< Used in numpy.cov() impl  */
+    DPNP_FN_COV_EXT,                      /**< Used in numpy.cov() impl, requires extra parameters */
+    DPNP_FN_CROSS,                        /**< Used in numpy.cross() impl  */
+    DPNP_FN_CROSS_EXT,                    /**< Used in numpy.cross() impl, requires extra parameters */
+    DPNP_FN_CUMPROD,                      /**< Used in numpy.cumprod() impl  */
+    DPNP_FN_CUMPROD_EXT,                  /**< Used in numpy.cumprod() impl, requires extra parameters */
+    DPNP_FN_CUMSUM,                       /**< Used in numpy.cumsum() impl  */
+    DPNP_FN_CUMSUM_EXT,                   /**< Used in numpy.cumsum() impl, requires extra parameters */
+    DPNP_FN_DEGREES,                      /**< Used in numpy.degrees() impl  */
+    DPNP_FN_DEGREES_EXT,                  /**< Used in numpy.degrees() impl, requires extra parameters */
+    DPNP_FN_DET,                          /**< Used in numpy.linalg.det() impl  */
+    DPNP_FN_DET_EXT,                      /**< Used in numpy.linalg.det() impl, requires extra parameters */
+    DPNP_FN_DIAG,                         /**< Used in numpy.diag() impl  */
+    DPNP_FN_DIAG_EXT,                     /**< Used in numpy.diag() impl, requires extra parameters */
+    DPNP_FN_DIAG_INDICES,                 /**< Used in numpy.diag_indices() impl  */
+    DPNP_FN_DIAG_INDICES_EXT,             /**< Used in numpy.diag_indices() impl, requires extra parameters */
+    DPNP_FN_DIAGONAL,                     /**< Used in numpy.diagonal() impl  */
+    DPNP_FN_DIAGONAL_EXT,                 /**< Used in numpy.diagonal() impl, requires extra parameters */
+    DPNP_FN_DIVIDE,                       /**< Used in numpy.divide() impl  */
+    DPNP_FN_DIVIDE_EXT,                   /**< Used in numpy.divide() impl, requires extra parameters */
+    DPNP_FN_DOT,                          /**< Used in numpy.dot() impl  */
+    DPNP_FN_DOT_EXT,                      /**< Used in numpy.dot() impl, requires extra parameters */
+    DPNP_FN_EDIFF1D,                      /**< Used in numpy.ediff1d() impl  */
+    DPNP_FN_EDIFF1D_EXT,                  /**< Used in numpy.ediff1d() impl, requires extra parameters */
+    DPNP_FN_EIG,                          /**< Used in numpy.linalg.eig() impl  */
+    DPNP_FN_EIG_EXT,                      /**< Used in numpy.linalg.eig() impl, requires extra parameters */
+    DPNP_FN_EIGVALS,                      /**< Used in numpy.linalg.eigvals() impl  */
+    DPNP_FN_EIGVALS_EXT,                  /**< Used in numpy.linalg.eigvals() impl, requires extra parameters */
+    DPNP_FN_ERF,                          /**< Used in scipy.special.erf impl  */
+    DPNP_FN_ERF_EXT,                      /**< Used in scipy.special.erf impl, requires extra parameters */
+    DPNP_FN_EYE,                          /**< Used in numpy.eye() impl  */
+    DPNP_FN_EYE_EXT,                      /**< Used in numpy.eye() impl, requires extra parameters */
+    DPNP_FN_EXP,                          /**< Used in numpy.exp() impl  */
+    DPNP_FN_EXP_EXT,                      /**< Used in numpy.exp() impl, requires extra parameters */
+    DPNP_FN_EXP2,                         /**< Used in numpy.exp2() impl  */
+    DPNP_FN_EXP2_EXT,                     /**< Used in numpy.exp2() impl, requires extra parameters */
+    DPNP_FN_EXPM1,                        /**< Used in numpy.expm1() impl  */
+    DPNP_FN_EXPM1_EXT,                    /**< Used in numpy.expm1() impl, requires extra parameters */
+    DPNP_FN_FABS,                         /**< Used in numpy.fabs() impl  */
+    DPNP_FN_FABS_EXT,                     /**< Used in numpy.fabs() impl, requires extra parameters */
+    DPNP_FN_FFT_FFT,                      /**< Used in numpy.fft.fft() impl  */
+    DPNP_FN_FFT_FFT_EXT,                  /**< Used in numpy.fft.fft() impl, requires extra parameters */
+    DPNP_FN_FFT_RFFT,                     /**< Used in numpy.fft.rfft() impl  */
+    DPNP_FN_FFT_RFFT_EXT,                 /**< Used in numpy.fft.rfft() impl, requires extra parameters */
+    DPNP_FN_FILL_DIAGONAL,                /**< Used in numpy.fill_diagonal() impl  */
+    DPNP_FN_FILL_DIAGONAL_EXT,            /**< Used in numpy.fill_diagonal() impl, requires extra parameters */
+    DPNP_FN_FLATTEN,                      /**< Used in numpy.flatten() impl  */
+    DPNP_FN_FLATTEN_EXT,                  /**< Used in numpy.flatten() impl, requires extra parameters  */
+    DPNP_FN_FLOOR,                        /**< Used in numpy.floor() impl  */
+    DPNP_FN_FLOOR_EXT,                    /**< Used in numpy.floor() impl, requires extra parameters  */
+    DPNP_FN_FLOOR_DIVIDE,                 /**< Used in numpy.floor_divide() impl  */
+    DPNP_FN_FLOOR_DIVIDE_EXT,             /**< Used in numpy.floor_divide() impl, requires extra parameters  */
+    DPNP_FN_FMOD,                         /**< Used in numpy.fmod() impl  */
+    DPNP_FN_FMOD_EXT,                     /**< Used in numpy.fmod() impl, requires extra parameters  */
+    DPNP_FN_FULL,                         /**< Used in numpy.full() impl  */
+    DPNP_FN_FULL_EXT,                     /**< Used in numpy.full() impl, requires extra parameters  */
+    DPNP_FN_FULL_LIKE,                    /**< Used in numpy.full_like() impl  */
+    DPNP_FN_FULL_LIKE_EXT,                /**< Used in numpy.full_like() impl, requires extra parameters  */
+    DPNP_FN_HYPOT,                        /**< Used in numpy.hypot() impl  */
+    DPNP_FN_HYPOT_EXT,                    /**< Used in numpy.hypot() impl, requires extra parameters  */
+    DPNP_FN_IDENTITY,                     /**< Used in numpy.identity() impl  */
+    DPNP_FN_IDENTITY_EXT,                 /**< Used in numpy.identity() impl, requires extra parameters  */
+    DPNP_FN_INITVAL,                      /**< Used in numpy ones, ones_like, zeros, zeros_like impls  */
+    DPNP_FN_INITVAL_EXT,                  /**< Used in numpy ones, ones_like, zeros, zeros_like impls  */
+    DPNP_FN_INV,                          /**< Used in numpy.linalg.inv() impl  */
+    DPNP_FN_INV_EXT,                      /**< Used in numpy.linalg.inv() impl, requires extra parameters  */
+    DPNP_FN_INVERT,                       /**< Used in numpy.invert() impl  */
+    DPNP_FN_INVERT_EXT,                   /**< Used in numpy.invert() impl, requires extra parameters  */
+    DPNP_FN_KRON,                         /**< Used in numpy.kron() impl  */
+    DPNP_FN_KRON_EXT,                     /**< Used in numpy.kron() impl, requires extra parameters  */
+    DPNP_FN_LEFT_SHIFT,                   /**< Used in numpy.left_shift() impl  */
+    DPNP_FN_LEFT_SHIFT_EXT,               /**< Used in numpy.left_shift() impl, requires extra parameters  */
+    DPNP_FN_LOG,                          /**< Used in numpy.log() impl  */
+    DPNP_FN_LOG_EXT,                      /**< Used in numpy.log() impl, requires extra parameters  */
+    DPNP_FN_LOG10,                        /**< Used in numpy.log10() impl  */
+    DPNP_FN_LOG10_EXT,                    /**< Used in numpy.log10() impl, requires extra parameters  */
+    DPNP_FN_LOG2,                         /**< Used in numpy.log2() impl  */
+    DPNP_FN_LOG2_EXT,                     /**< Used in numpy.log2() impl, requires extra parameters  */
+    DPNP_FN_LOG1P,                        /**< Used in numpy.log1p() impl  */
+    DPNP_FN_LOG1P_EXT,                    /**< Used in numpy.log1p() impl, requires extra parameters  */
+    DPNP_FN_MATMUL,                       /**< Used in numpy.matmul() impl  */
+    DPNP_FN_MATMUL_EXT,                   /**< Used in numpy.matmul() impl, requires extra parameters */
+    DPNP_FN_MATRIX_RANK,                  /**< Used in numpy.linalg.matrix_rank() impl  */
+    DPNP_FN_MATRIX_RANK_EXT,              /**< Used in numpy.linalg.matrix_rank() impl, requires extra parameters */
+    DPNP_FN_MAX,                          /**< Used in numpy.max() impl  */
+    DPNP_FN_MAX_EXT,                      /**< Used in numpy.max() impl, requires extra parameters */
+    DPNP_FN_MAXIMUM,                      /**< Used in numpy.maximum() impl  */
+    DPNP_FN_MAXIMUM_EXT,                  /**< Used in numpy.maximum() impl , requires extra parameters */
+    DPNP_FN_MEAN,                         /**< Used in numpy.mean() impl  */
+    DPNP_FN_MEAN_EXT,                     /**< Used in numpy.mean() impl, requires extra parameters */
+    DPNP_FN_MEDIAN,                       /**< Used in numpy.median() impl  */
+    DPNP_FN_MEDIAN_EXT,                   /**< Used in numpy.median() impl, requires extra parameters */
+    DPNP_FN_MIN,                          /**< Used in numpy.min() impl  */
+    DPNP_FN_MIN_EXT,                      /**< Used in numpy.min() impl, requires extra parameters */
+    DPNP_FN_MINIMUM,                      /**< Used in numpy.minimum() impl  */
+    DPNP_FN_MINIMUM_EXT,                  /**< Used in numpy.minimum() impl, requires extra parameters */
+    DPNP_FN_MODF,                         /**< Used in numpy.modf() impl  */
+    DPNP_FN_MODF_EXT,                     /**< Used in numpy.modf() impl, requires extra parameters */
+    DPNP_FN_MULTIPLY,                     /**< Used in numpy.multiply() impl  */
+    DPNP_FN_MULTIPLY_EXT,                 /**< Used in numpy.multiply() impl, requires extra parameters */
+    DPNP_FN_NANVAR,                       /**< Used in numpy.nanvar() impl  */
+    DPNP_FN_NANVAR_EXT,                   /**< Used in numpy.nanvar() impl, requires extra parameters */
+    DPNP_FN_NEGATIVE,                     /**< Used in numpy.negative() impl  */
+    DPNP_FN_NEGATIVE_EXT,                 /**< Used in numpy.negative() impl, requires extra parameters */
+    DPNP_FN_NONZERO,                      /**< Used in numpy.nonzero() impl  */
+    DPNP_FN_NONZERO_EXT,                  /**< Used in numpy.nonzero() impl, requires extra parameters */
+    DPNP_FN_ONES,                         /**< Used in numpy.ones() impl */
+    DPNP_FN_ONES_EXT,                     /**< Used in numpy.ones() impl, requires extra parameters */
+    DPNP_FN_ONES_LIKE,                    /**< Used in numpy.ones_like() impl */
+    DPNP_FN_ONES_LIKE_EXT,                /**< Used in numpy.ones_like() impl, requires extra parameters */
+    DPNP_FN_PARTITION,                    /**< Used in numpy.partition() impl */
+    DPNP_FN_PARTITION_EXT,                /**< Used in numpy.partition() impl, requires extra parameters */
+    DPNP_FN_PLACE,                        /**< Used in numpy.place() impl  */
+    DPNP_FN_PLACE_EXT,                    /**< Used in numpy.place() impl, requires extra parameters */
+    DPNP_FN_POWER,                        /**< Used in numpy.power() impl  */
+    DPNP_FN_POWER_EXT,                    /**< Used in numpy.power() impl, requires extra parameters */
+    DPNP_FN_PROD,                         /**< Used in numpy.prod() impl  */
+    DPNP_FN_PROD_EXT,                     /**< Used in numpy.prod() impl, requires extra parameters */
+    DPNP_FN_PTP,                          /**< Used in numpy.ptp() impl  */
+    DPNP_FN_PTP_EXT,                      /**< Used in numpy.ptp() impl, requires extra parameters */
+    DPNP_FN_PUT,                          /**< Used in numpy.put() impl  */
+    DPNP_FN_PUT_EXT,                      /**< Used in numpy.put() impl, requires extra parameters */
+    DPNP_FN_PUT_ALONG_AXIS,               /**< Used in numpy.put_along_axis() impl  */
+    DPNP_FN_PUT_ALONG_AXIS_EXT,           /**< Used in numpy.put_along_axis() impl, requires extra parameters */
+    DPNP_FN_QR,                           /**< Used in numpy.linalg.qr() impl  */
+    DPNP_FN_QR_EXT,                       /**< Used in numpy.linalg.qr() impl, requires extra parameters */
+    DPNP_FN_RADIANS,                      /**< Used in numpy.radians() impl  */
+    DPNP_FN_RADIANS_EXT,                  /**< Used in numpy.radians() impl, requires extra parameters */
+    DPNP_FN_REMAINDER,                    /**< Used in numpy.remainder() impl  */
+    DPNP_FN_REMAINDER_EXT,                /**< Used in numpy.remainder() impl, requires extra parameters */
+    DPNP_FN_RECIP,                        /**< Used in numpy.recip() impl  */
+    DPNP_FN_RECIP_EXT,                    /**< Used in numpy.recip() impl, requires extra parameters */
+    DPNP_FN_REPEAT,                       /**< Used in numpy.repeat() impl  */
+    DPNP_FN_REPEAT_EXT,                   /**< Used in numpy.repeat() impl, requires extra parameters */
+    DPNP_FN_RIGHT_SHIFT,                  /**< Used in numpy.right_shift() impl  */
+    DPNP_FN_RIGHT_SHIFT_EXT,              /**< Used in numpy.right_shift() impl, requires extra parameters */
+    DPNP_FN_RNG_BETA,                     /**< Used in numpy.random.beta() impl  */
+    DPNP_FN_RNG_BETA_EXT,                 /**< Used in numpy.random.beta() impl, requires extra parameters */
+    DPNP_FN_RNG_BINOMIAL,                 /**< Used in numpy.random.binomial() impl  */
+    DPNP_FN_RNG_BINOMIAL_EXT,             /**< Used in numpy.random.binomial() impl, requires extra parameters */
+    DPNP_FN_RNG_CHISQUARE,                /**< Used in numpy.random.chisquare() impl  */
+    DPNP_FN_RNG_CHISQUARE_EXT,            /**< Used in numpy.random.chisquare() impl, requires extra parameters */
+    DPNP_FN_RNG_EXPONENTIAL,              /**< Used in numpy.random.exponential() impl  */
+    DPNP_FN_RNG_EXPONENTIAL_EXT,          /**< Used in numpy.random.exponential() impl, requires extra parameters */
+    DPNP_FN_RNG_F,                        /**< Used in numpy.random.f() impl  */
+    DPNP_FN_RNG_F_EXT,                    /**< Used in numpy.random.f() impl, requires extra parameters */
+    DPNP_FN_RNG_GAMMA,                    /**< Used in numpy.random.gamma() impl  */
+    DPNP_FN_RNG_GAMMA_EXT,                /**< Used in numpy.random.gamma() impl, requires extra parameters */
+    DPNP_FN_RNG_GAUSSIAN,                 /**< Used in numpy.random.randn() impl  */
+    DPNP_FN_RNG_GAUSSIAN_EXT,             /**< Used in numpy.random.randn() impl, requires extra parameters */
+    DPNP_FN_RNG_GEOMETRIC,                /**< Used in numpy.random.geometric() impl  */
+    DPNP_FN_RNG_GEOMETRIC_EXT,            /**< Used in numpy.random.geometric() impl, requires extra parameters */
+    DPNP_FN_RNG_GUMBEL,                   /**< Used in numpy.random.gumbel() impl  */
+    DPNP_FN_RNG_GUMBEL_EXT,               /**< Used in numpy.random.gumbel() impl, requires extra parameters */
+    DPNP_FN_RNG_HYPERGEOMETRIC,           /**< Used in numpy.random.hypergeometric() impl  */
+    DPNP_FN_RNG_HYPERGEOMETRIC_EXT,       /**< Used in numpy.random.hypergeometric() impl, requires extra parameters */
+    DPNP_FN_RNG_LAPLACE,                  /**< Used in numpy.random.laplace() impl  */
+    DPNP_FN_RNG_LAPLACE_EXT,              /**< Used in numpy.random.laplace() impl  */
+    DPNP_FN_RNG_LOGISTIC,                 /**< Used in numpy.random.logistic() impl  */
+    DPNP_FN_RNG_LOGISTIC_EXT,             /**< Used in numpy.random.logistic() impl, requires extra parameters */
+    DPNP_FN_RNG_LOGNORMAL,                /**< Used in numpy.random.lognormal() impl  */
+    DPNP_FN_RNG_LOGNORMAL_EXT,            /**< Used in numpy.random.lognormal() impl, requires extra parameters */
+    DPNP_FN_RNG_MULTINOMIAL,              /**< Used in numpy.random.multinomial() impl  */
+    DPNP_FN_RNG_MULTINOMIAL_EXT,          /**< Used in numpy.random.multinomial() impl, requires extra parameters */
+    DPNP_FN_RNG_MULTIVARIATE_NORMAL,      /**< Used in numpy.random.multivariate_normal() impl  */
+    DPNP_FN_RNG_MULTIVARIATE_NORMAL_EXT,  /**< Used in numpy.random.multivariate_normal() impl  */
+    DPNP_FN_RNG_NEGATIVE_BINOMIAL,        /**< Used in numpy.random.negative_binomial() impl  */
+    DPNP_FN_RNG_NEGATIVE_BINOMIAL_EXT,    /**< Used in numpy.random.negative_binomial() impl  */
+    DPNP_FN_RNG_NONCENTRAL_CHISQUARE,     /**< Used in numpy.random.noncentral_chisquare() impl  */
+    DPNP_FN_RNG_NONCENTRAL_CHISQUARE_EXT, /**< Used in numpy.random.noncentral_chisquare() impl  */
+    DPNP_FN_RNG_NORMAL,                   /**< Used in numpy.random.normal() impl  */
+    DPNP_FN_RNG_NORMAL_EXT,               /**< Used in numpy.random.normal() impl, requires extra parameters */
+    DPNP_FN_RNG_PARETO,                   /**< Used in numpy.random.pareto() impl  */
+    DPNP_FN_RNG_PARETO_EXT,               /**< Used in numpy.random.pareto() impl, requires extra parameters */
+    DPNP_FN_RNG_POISSON,                  /**< Used in numpy.random.poisson() impl  */
+    DPNP_FN_RNG_POISSON_EXT,              /**< Used in numpy.random.poisson() impl, requires extra parameters */
+    DPNP_FN_RNG_POWER,                    /**< Used in numpy.random.power() impl  */
+    DPNP_FN_RNG_POWER_EXT,                /**< Used in numpy.random.power() impl, requires extra parameters */
+    DPNP_FN_RNG_RAYLEIGH,                 /**< Used in numpy.random.rayleigh() impl  */
+    DPNP_FN_RNG_RAYLEIGH_EXT,             /**< Used in numpy.random.rayleigh() impl, requires extra parameters */
+    DPNP_FN_RNG_SRAND,                    /**< Used in numpy.random.seed() impl  */
+    DPNP_FN_RNG_SRAND_EXT,                /**< Used in numpy.random.seed() impl, requires extra parameters */
+    DPNP_FN_RNG_SHUFFLE,                  /**< Used in numpy.random.shuffle() impl  */
+    DPNP_FN_RNG_SHUFFLE_EXT,              /**< Used in numpy.random.shuffle() impl, requires extra parameters */
+    DPNP_FN_RNG_STANDARD_CAUCHY,          /**< Used in numpy.random.standard_cauchy() impl  */
+    DPNP_FN_RNG_STANDARD_CAUCHY_EXT,      /**< Used in numpy.random.standard_cauchy() impl  */
+    DPNP_FN_RNG_STANDARD_EXPONENTIAL,     /**< Used in numpy.random.standard_exponential() impl  */
+    DPNP_FN_RNG_STANDARD_EXPONENTIAL_EXT, /**< Used in numpy.random.standard_exponential() impl  */
+    DPNP_FN_RNG_STANDARD_GAMMA,           /**< Used in numpy.random.standard_gamma() impl  */
+    DPNP_FN_RNG_STANDARD_GAMMA_EXT,       /**< Used in numpy.random.standard_gamma() impl, requires extra parameters */
+    DPNP_FN_RNG_STANDARD_NORMAL,          /**< Used in numpy.random.standard_normal() impl  */
+    DPNP_FN_RNG_STANDARD_NORMAL_EXT,      /**< Used in numpy.random.standard_normal() impl  */
+    DPNP_FN_RNG_STANDARD_T,               /**< Used in numpy.random.standard_t() impl  */
+    DPNP_FN_RNG_STANDARD_T_EXT,           /**< Used in numpy.random.standard_t() impl, requires extra parameters */
+    DPNP_FN_RNG_TRIANGULAR,               /**< Used in numpy.random.triangular() impl  */
+    DPNP_FN_RNG_TRIANGULAR_EXT,           /**< Used in numpy.random.triangular() impl, requires extra parameters */
+    DPNP_FN_RNG_UNIFORM,                  /**< Used in numpy.random.uniform() impl  */
+    DPNP_FN_RNG_UNIFORM_EXT,              /**< Used in numpy.random.uniform() impl, requires extra parameters */
+    DPNP_FN_RNG_VONMISES,                 /**< Used in numpy.random.vonmises() impl  */
+    DPNP_FN_RNG_VONMISES_EXT,             /**< Used in numpy.random.vonmises() impl, requires extra parameters */
+    DPNP_FN_RNG_WALD,                     /**< Used in numpy.random.wald() impl  */
+    DPNP_FN_RNG_WALD_EXT,                 /**< Used in numpy.random.wald() impl, requires extra parameters */
+    DPNP_FN_RNG_WEIBULL,                  /**< Used in numpy.random.weibull() impl  */
+    DPNP_FN_RNG_WEIBULL_EXT,              /**< Used in numpy.random.weibull() impl, requires extra parameters */
+    DPNP_FN_RNG_ZIPF,                     /**< Used in numpy.random.zipf() impl  */
+    DPNP_FN_RNG_ZIPF_EXT,                 /**< Used in numpy.random.zipf() impl, requires extra parameters */
+    DPNP_FN_SEARCHSORTED,                 /**< Used in numpy.searchsorted() impl  */
+    DPNP_FN_SEARCHSORTED_EXT,             /**< Used in numpy.searchsorted() impl, requires extra parameters */
+    DPNP_FN_SIGN,                         /**< Used in numpy.sign() impl  */
+    DPNP_FN_SIGN_EXT,                     /**< Used in numpy.sign() impl, requires extra parameters */
+    DPNP_FN_SIN,                          /**< Used in numpy.sin() impl  */
+    DPNP_FN_SIN_EXT,                      /**< Used in numpy.sin() impl, requires extra parameters */
+    DPNP_FN_SINH,                         /**< Used in numpy.sinh() impl  */
+    DPNP_FN_SINH_EXT,                     /**< Used in numpy.sinh() impl, requires extra parameters */
+    DPNP_FN_SORT,                         /**< Used in numpy.sort() impl  */
+    DPNP_FN_SORT_EXT,                     /**< Used in numpy.sort() impl, requires extra parameters */
+    DPNP_FN_SQRT,                         /**< Used in numpy.sqrt() impl  */
+    DPNP_FN_SQRT_EXT,                     /**< Used in numpy.sqrt() impl, requires extra parameters */
+    DPNP_FN_SQUARE,                       /**< Used in numpy.square() impl  */
+    DPNP_FN_SQUARE_EXT,                   /**< Used in numpy.square() impl, requires extra parameters */
+    DPNP_FN_STD,                          /**< Used in numpy.std() impl  */
+    DPNP_FN_STD_EXT,                      /**< Used in numpy.std() impl, requires extra parameters */
+    DPNP_FN_SUBTRACT,                     /**< Used in numpy.subtract() impl  */
+    DPNP_FN_SUBTRACT_EXT,                 /**< Used in numpy.subtract() impl, requires extra parameters */
+    DPNP_FN_SUM,                          /**< Used in numpy.sum() impl  */
+    DPNP_FN_SUM_EXT,                      /**< Used in numpy.sum() impl, requires extra parameters */
+    DPNP_FN_SVD,                          /**< Used in numpy.linalg.svd() impl  */
+    DPNP_FN_SVD_EXT,                      /**< Used in numpy.linalg.svd() impl, requires extra parameters */
+    DPNP_FN_TAKE,                         /**< Used in numpy.take() impl  */
+    DPNP_FN_TAKE_EXT,                     /**< Used in numpy.take() impl, requires extra parameters */
+    DPNP_FN_TAN,                          /**< Used in numpy.tan() impl  */
+    DPNP_FN_TAN_EXT,                      /**< Used in numpy.tan() impl, requires extra parameters */
+    DPNP_FN_TANH,                         /**< Used in numpy.tanh() impl  */
+    DPNP_FN_TANH_EXT,                     /**< Used in numpy.tanh() impl, requires extra parameters */
+    DPNP_FN_TRANSPOSE,                    /**< Used in numpy.transpose() impl  */
+    DPNP_FN_TRANSPOSE_EXT,                /**< Used in numpy.transpose() impl, requires extra parameters */
+    DPNP_FN_TRACE,                        /**< Used in numpy.trace() impl  */
+    DPNP_FN_TRACE_EXT,                    /**< Used in numpy.trace() impl, requires extra parameters */
+    DPNP_FN_TRAPZ,                        /**< Used in numpy.trapz() impl  */
+    DPNP_FN_TRAPZ_EXT,                    /**< Used in numpy.trapz() impl, requires extra parameters */
+    DPNP_FN_TRI,                          /**< Used in numpy.tri() impl  */
+    DPNP_FN_TRI_EXT,                      /**< Used in numpy.tri() impl, requires extra parameters */
+    DPNP_FN_TRIL,                         /**< Used in numpy.tril() impl  */
+    DPNP_FN_TRIL_EXT,                     /**< Used in numpy.tril() impl, requires extra parameters */
+    DPNP_FN_TRIU,                         /**< Used in numpy.triu() impl  */
+    DPNP_FN_TRIU_EXT,                     /**< Used in numpy.triu() impl, requires extra parameters */
+    DPNP_FN_TRUNC,                        /**< Used in numpy.trunc() impl  */
+    DPNP_FN_TRUNC_EXT,                    /**< Used in numpy.trunc() impl, requires extra parameters */
+    DPNP_FN_VANDER,                       /**< Used in numpy.vander() impl  */
+    DPNP_FN_VANDER_EXT,                   /**< Used in numpy.vander() impl, requires extra parameters */
+    DPNP_FN_VAR,                          /**< Used in numpy.var() impl  */
+    DPNP_FN_VAR_EXT,                      /**< Used in numpy.var() impl, requires extra parameters */
+    DPNP_FN_ZEROS,                        /**< Used in numpy.zeros() impl */
+    DPNP_FN_ZEROS_EXT,                    /**< Used in numpy.zeros() impl, requires extra parameters */
+    DPNP_FN_ZEROS_LIKE,                   /**< Used in numpy.zeros_like() impl */
+    DPNP_FN_ZEROS_LIKE_EXT,               /**< Used in numpy.zeros_like() impl, requires extra parameters */
+    DPNP_FN_LAST,                         /**< The latest element of the enumeration */
+    DPNP_FN_LAST_EXT                      /**< The latest element of the enumeration, requires extra parameters */
 };
 
 /**
