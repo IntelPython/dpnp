@@ -30,6 +30,11 @@ for device in available_devices:
 
 
 def assert_sycl_queue_equal(result, expected):
+    assert result.backend == expected.backend
+    assert result.sycl_context == expected.sycl_context
+    assert result.sycl_device == expected.sycl_device
+    assert result.is_in_order == expected.is_in_order
+    assert result.has_enable_profiling == expected.has_enable_profiling
     exec_queue = dpctl.utils.get_execution_queue([result, expected])
     assert exec_queue is not None
 
