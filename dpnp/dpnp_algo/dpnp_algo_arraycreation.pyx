@@ -121,20 +121,14 @@ cpdef utils.dpnp_descriptor dpnp_diag(utils.dpnp_descriptor v, int k):
         result_shape = (n, )
 
     v_obj = v.get_array()
-    
-    result_obj = dpnp_container.empty(result_shape,
-                                      dtype=v.dtype,
-                                      device=v_obj.sycl_device,
-                                      usm_type=v_obj.usm_type,
-                                      sycl_queue=v_obj.sycl_queue)
+
+    # TODO need to call dpnp_container.zeros instead
+    result_obj = dpnp.zeros(result_shape, dtype=v.dtype).to_device(v_obj.sycl_device)
     cdef utils.dpnp_descriptor result = dpnp_descriptor(result_obj)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(v.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAG_EXT, param1_type, param1_type)
-
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-
 
     result_sycl_queue = result.get_array().sycl_queue
 

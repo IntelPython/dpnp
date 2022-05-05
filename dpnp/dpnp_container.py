@@ -43,6 +43,7 @@ import numpy
 import dpctl.tensor as dpt
 from dpctl.tensor._device import normalize_queue_device
 
+
 if config.__DPNP_OUTPUT_DPCTL__:
     try:
         """
