@@ -156,7 +156,7 @@ DPCTLSyclEventRef dpnp_cov_c(DPCTLSyclQueueRef q_ref,
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-    
+
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, nrows * ncols);
     _DataType* array_1 = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
@@ -379,12 +379,12 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
         size_t res_ndim = ndim - naxis;
         size_t res_shape[res_ndim];
         int ind = 0;
-        for (size_t i = 0; i < ndim; i++)
+        for (size_t i = 0; i < ndim; ++i)
         {
             bool found = false;
-            for (size_t j = 0; j < naxis; j++)
+            for (size_t j = 0; j < naxis; ++j)
             {
-                if (axis[j] == i)
+                if (static_cast<size_t>(axis[j]) == i)
                 {
                     found = true;
                     break;
@@ -442,7 +442,7 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
                 bool found = false;
                 for (size_t i = 0; i < naxis; ++i)
                 {
-                    if (axis[i] == idx)
+                    if (static_cast<size_t>(axis[i]) == idx)
                     {
                         found = true;
                         break;
@@ -488,7 +488,7 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
                 bool found = false;
                 for (size_t i = 0; i < naxis; ++i)
                 {
-                    if (axis[i] == idx)
+                    if (static_cast<size_t>(axis[i]) == idx)
                     {
                         found = true;
                         break;
@@ -598,6 +598,10 @@ DPCTLSyclEventRef dpnp_mean_c(DPCTLSyclQueueRef q_ref,
         sycl::event event = mkl_stats::mean(q, dataset, result);
 
         event.wait();
+
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+
+        return DPCTLEvent_Copy(event_ref);
     }
     else
     {
@@ -608,9 +612,9 @@ DPCTLSyclEventRef dpnp_mean_c(DPCTLSyclQueueRef q_ref,
         result[0] = sum[0] / static_cast<_ResultType>(size);
 
         sycl::free(sum, q);
-    }
 
-    return event_ref;
+        return event_ref;
+    }
 }
 
 template <typename _DataType, typename _ResultType>
@@ -804,7 +808,7 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
             bool found = false;
             for (size_t j = 0; j < naxis; j++)
             {
-                if (axis[j] == i)
+                if (static_cast<size_t>(axis[j]) == i)
                 {
                     found = true;
                     break;
@@ -862,7 +866,7 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
                 bool found = false;
                 for (size_t i = 0; i < naxis; ++i)
                 {
-                    if (axis[i] == idx)
+                    if (static_cast<size_t>(axis[i]) == idx)
                     {
                         found = true;
                         break;
@@ -908,7 +912,7 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
                 bool found = false;
                 for (size_t i = 0; i < naxis; ++i)
                 {
-                    if (axis[i] == idx)
+                    if (static_cast<size_t>(axis[i]) == idx)
                     {
                         found = true;
                         break;

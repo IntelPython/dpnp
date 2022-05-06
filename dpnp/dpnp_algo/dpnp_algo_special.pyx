@@ -40,4 +40,4 @@ __all__ += [
 
 
 cpdef utils.dpnp_descriptor dpnp_erf(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_ERF, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_ERF_EXT, x1)

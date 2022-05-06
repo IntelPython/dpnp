@@ -40,4 +40,4 @@ __all__ += [
 
 
 cpdef utils.dpnp_descriptor dpnp_count_nonzero(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_COUNT_NONZERO, x1, (1,))
+    return call_fptr_1in_1out(DPNP_FN_COUNT_NONZERO_EXT, x1, (1,))

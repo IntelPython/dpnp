@@ -159,7 +159,7 @@ private:
         if (iteration_shape_size > 0)
         {
             long reminder = iteration_id;
-            for (size_t it = 0; it < iteration_shape_size; ++it)
+            for (size_t it = 0; it < static_cast<size_t>(iteration_shape_size); ++it)
             {
                 const size_type axis_val = iteration_shape_strides[it];
                 size_type xyz_id = reminder / axis_val;
@@ -436,7 +436,7 @@ public:
 
             axes_shape_strides = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref,
                                                                                   iteration_shape_size_in_bytes));
-            for (size_t i = 0; i < iteration_shape_size; ++i)
+            for (size_t i = 0; i < static_cast<size_t>(iteration_shape_size); ++i)
             {
                 axes_shape_strides[i] = input_shape_strides[axes[i]];
             }
@@ -558,7 +558,7 @@ private:
         {
             assert(output_global_id < output_size);
 
-            for (size_t iit = 0, oit = 0; iit < input_shape_size; ++iit)
+            for (size_t iit = 0, oit = 0; iit < static_cast<size_t>(input_shape_size); ++iit)
             {
                 if (std::find(axes.begin(), axes.end(), iit) == axes.end())
                 {
