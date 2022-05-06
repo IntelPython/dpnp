@@ -4,3 +4,4 @@ __pycache__/
 *dpnp_backend*
 dpnp/**/*.cpython*.so
 dpnp/**/*.pyd
+*~
