@@ -151,6 +151,7 @@
 
 
    .. autoattribute:: T
+   .. autoattribute:: device
    .. autoattribute:: dtype
    .. autoattribute:: flat
    .. autoattribute:: itemsize
@@ -158,4 +159,7 @@
    .. autoattribute:: shape
    .. autoattribute:: size
    .. autoattribute:: strides
+   .. autoattribute:: sycl_context
+   .. autoattribute:: sycl_device
+   .. autoattribute:: sycl_queue
  

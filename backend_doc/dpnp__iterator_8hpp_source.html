@@ -236,7 +236,7 @@ $(document).ready(function(){initNavTree('dpnp__iterator_8hpp_source.html',''); 
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <span class="keywordflow">if</span> (iteration_shape_size &gt; 0)</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        {</div>
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>            <span class="keywordtype">long</span> reminder = iteration_id;</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> it = 0; it &lt; iteration_shape_size; ++it)</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> it = 0; it &lt; static_cast&lt;size_t&gt;(iteration_shape_size); ++it)</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            {</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                <span class="keyword">const</span> size_type axis_val = iteration_shape_strides[it];</div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                size_type xyz_id = reminder / axis_val;</div>
@@ -433,7 +433,7 @@ $(document).ready(function(){initNavTree('dpnp__iterator_8hpp_source.html',''); 
 <div class="line"><a id="l00436" name="l00436"></a><span class="lineno">  436</span> </div>
 <div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span>            axes_shape_strides = <span class="keyword">reinterpret_cast&lt;</span>size_type*<span class="keyword">&gt;</span>(<a class="code hl_function" href="group___b_a_c_k_e_n_d___a_p_i.html#gab577c1444f9e878b90162013bf2c4591">dpnp_memory_alloc_c</a>(queue_ref,</div>
 <div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span>                                                                                  iteration_shape_size_in_bytes));</div>
-<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; iteration_shape_size; ++i)</div>
+<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; static_cast&lt;size_t&gt;(iteration_shape_size); ++i)</div>
 <div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span>            {</div>
 <div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span>                axes_shape_strides[i] = input_shape_strides[axes[i]];</div>
 <div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span>            }</div>
@@ -551,7 +551,7 @@ $(document).ready(function(){initNavTree('dpnp__iterator_8hpp_source.html',''); 
 <div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>        {</div>
 <div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>            assert(output_global_id &lt; output_size);</div>
 <div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span> </div>
-<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> iit = 0, oit = 0; iit &lt; input_shape_size; ++iit)</div>
+<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> iit = 0, oit = 0; iit &lt; static_cast&lt;size_t&gt;(input_shape_size); ++iit)</div>
 <div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>            {</div>
 <div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>                <span class="keywordflow">if</span> (std::find(axes.begin(), axes.end(), iit) == axes.end())</div>
 <div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>                {</div>
