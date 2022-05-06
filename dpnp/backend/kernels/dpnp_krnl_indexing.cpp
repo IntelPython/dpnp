@@ -184,7 +184,7 @@ DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
 
     if (res_ndim <= 1)
     {
-        for (size_t i = 0; i < res_shape[res_ndim - 1]; ++i)
+        for (size_t i = 0; i < static_cast<size_t>(res_shape[res_ndim - 1]); ++i)
         {
             result[i] = array_1[i * shape[res_ndim] + i + offset];
         }
@@ -192,7 +192,7 @@ DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
     else
     {
         std::map<size_t, std::vector<size_t>> xyz;
-        for (size_t i = 0; i < res_shape[0]; i++)
+        for (size_t i = 0; i < static_cast<size_t>(res_shape[0]); i++)
         {
             xyz[i] = {i};
         }
@@ -227,7 +227,7 @@ DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
             index += 1;
         }
 
-        for (size_t i = 0; i < res_shape[res_ndim - 1]; i++)
+        for (size_t i = 0; i < static_cast<size_t>(res_shape[res_ndim - 1]); i++)
         {
             for (size_t j = 0; j < xyz.size(); j++)
             {
@@ -347,7 +347,7 @@ DPCTLSyclEventRef dpnp_fill_diagonal_c(DPCTLSyclQueueRef q_ref,
     _DataType* array_1 = result_ptr.get_ptr();
     _DataType* val_arr = val_ptr.get_ptr();
 
-    size_t min_shape = shape[0];
+    shape_elem_type min_shape = shape[0];
     for (size_t i = 0; i < ndim; ++i)
     {
         if (shape[i] < min_shape)
@@ -358,7 +358,7 @@ DPCTLSyclEventRef dpnp_fill_diagonal_c(DPCTLSyclQueueRef q_ref,
 
     _DataType val = val_arr[0];
 
-    for (size_t i = 0; i < min_shape; ++i)
+    for (size_t i = 0; i < static_cast<size_t>(min_shape); ++i)
     {
         size_t ind = 0;
         size_t n = 1;
@@ -765,11 +765,12 @@ DPCTLSyclEventRef dpnp_put_along_axis_c(DPCTLSyclQueueRef q_ref,
                 }
             }
 
-            size_t source_idx = 0;
-            for (size_t i = 0; i < ndim; ++i)
-            {
-                source_idx += arr_shape_offsets[i] * source_axis[i];
-            }
+	    // FIXME: computed, but unused. Commented out per compiler warning
+            // size_t source_idx = 0;
+            // for (size_t i = 0; i < static_cast<size_t>(ndim); ++i)
+            // {
+            //   source_idx += arr_shape_offsets[i] * source_axis[i];
+            // }
         }
 
         for (size_t source_idx = 0; source_idx < size_arr; ++source_idx)
@@ -899,7 +900,7 @@ DPCTLSyclEventRef dpnp_take_c(DPCTLSyclQueueRef q_ref,
 
     DPCTLSyclEventRef event_ref = nullptr;
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-    
+
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, array1_size, true);
     DPNPC_ptr_adapter<_IndecesType> input2_ptr(q_ref, indices1, size);
     _DataType* array_1 = input1_ptr.get_ptr();

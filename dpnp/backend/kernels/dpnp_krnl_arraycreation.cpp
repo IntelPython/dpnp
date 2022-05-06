@@ -133,7 +133,7 @@ DPCTLSyclEventRef dpnp_diag_c(DPCTLSyclQueueRef q_ref,
 
     if (ndim == 1)
     {
-        for (size_t i = 0; i < shape[0]; ++i)
+        for (size_t i = 0; i < static_cast<size_t>(shape[0]); ++i)
         {
             size_t ind = (init0 + i) * res_shape[1] + init1 + i;
             result[ind] = v[i];
@@ -141,7 +141,7 @@ DPCTLSyclEventRef dpnp_diag_c(DPCTLSyclQueueRef q_ref,
     }
     else
     {
-        for (size_t i = 0; i < res_shape[0]; ++i)
+        for (size_t i = 0; i < static_cast<size_t>(res_shape[0]); ++i)
         {
             size_t ind = (init0 + i) * shape[1] + init1 + i;
             result[i] = v[ind];
