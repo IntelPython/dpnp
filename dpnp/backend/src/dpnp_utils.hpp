@@ -240,6 +240,7 @@ static inline bool
  */
 namespace
 {
+    [[maybe_unused]]
     std::vector<sycl::event> cast_event_vector(const DPCTLEventVectorRef event_vec_ref)
     {
         const size_t event_vec_size = DPCTLEventVector_Size(event_vec_ref);

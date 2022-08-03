@@ -116,7 +116,6 @@
                     gws, kernel_parallel_for_func);                                                                    \
             };                                                                                                         \
             event = q.submit(kernel_func);                                                                             \
-            event.wait();                                                                                              \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
@@ -142,9 +141,11 @@
             {                                                                                                          \
                 event = q.submit(kernel_func);                                                                         \
             }                                                                                                          \
-            event.wait();                                                                                              \
         }                                                                                                              \
-        return event_ref;                                                                                              \
+                                                                                                                       \
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                                       \
+                                                                                                                       \
+        return DPCTLEvent_Copy(event_ref);                                                                             \
     }                                                                                                                  \
                                                                                                                        \
     template <typename _DataType_input, typename _DataType_output>                                                     \
@@ -643,9 +644,9 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
             }                                                                                                          \
         }                                                                                                              \
                                                                                                                        \
-        event.wait();                                                                                                  \
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                                       \
                                                                                                                        \
-        return event_ref;                                                                                              \
+        return DPCTLEvent_Copy(event_ref);                                                                             \
     }                                                                                                                  \
                                                                                                                        \
     template <typename _DataType>                                                                                      \
@@ -723,7 +724,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_CONJIGUATE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_copy_c_ext<float>};
     fmap[DPNPFuncName::DPNP_FN_CONJIGUATE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_copy_c_ext<double>};
     fmap[DPNPFuncName::DPNP_FN_CONJIGUATE_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void*)dpnp_copy_c_ext<std::complex<double>>};
+        eft_C128, (void*)dpnp_conjugate_c_ext<std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_COPY][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_copy_c_default<bool>};
     fmap[DPNPFuncName::DPNP_FN_COPY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_copy_c_default<int32_t>};
@@ -941,6 +942,8 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                                                                                                                        \
             input1_it->~DPNPC_id();                                                                                    \
             input2_it->~DPNPC_id();                                                                                    \
+                                                                                                                       \
+            return event_ref;                                                                                          \
         }                                                                                                              \
         else if (use_strides)                                                                                          \
         {                                                                                                              \
@@ -969,7 +972,6 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
             };                                                                                                         \
                                                                                                                        \
             event = q.submit(kernel_func);                                                                             \
-            event.wait();                                                                                              \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
@@ -995,9 +997,10 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                 };                                                                                                     \
                 event = q.submit(kernel_func);                                                                         \
             }                                                                                                          \
-            event.wait();                                                                                              \
         }                                                                                                              \
-        return event_ref;                                                                                              \
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                                       \
+                                                                                                                       \
+        return DPCTLEvent_Copy(event_ref);                                                                             \
     }                                                                                                                  \
                                                                                                                        \
     template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>                         \

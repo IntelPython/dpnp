@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -119,6 +119,7 @@ if IS_WIN:
     _project_cmplr_flag_stdcpp_static = []
     _project_cmplr_flag_compatibility = []
     _project_cmplr_flag_lib = ["/DLL"]
+    _project_cmplr_flag_release_build += _project_cmplr_flag_sycl_devel
     _project_cmplr_macro += [("_WIN", "1")]
     _project_rpath = []
     # TODO this flag creates unexpected behavior during compilation, need to be fixed
@@ -134,12 +135,12 @@ if __dpnp_debug__ is not None:
     """
     Debug configuration
     """
-    _project_cmplr_flag_sycl += _project_cmplr_flag_sycl_devel
     _project_cmplr_flag_default_build = _project_cmplr_flag_debug_build
 else:
     """
     Release configuration
     """
+    _project_cmplr_flag_sycl += _project_cmplr_flag_sycl_devel
     _project_cmplr_flag_default_build = _project_cmplr_flag_release_build
 
 """

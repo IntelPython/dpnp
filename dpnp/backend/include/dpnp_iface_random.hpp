@@ -335,8 +335,8 @@ INP_DLLEXPORT void dpnp_rng_lognormal_c(void* result, const _DataType mean, cons
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [out] result              Output array.
  * @param [in]  ntrial              Number of independent trials.
- * @param [in]  p_vector            Probability vector of possible outcomes (k length).
- * @param [in]  p_vector_size       Length of `p_vector`.
+ * @param [in]  p_in                Probability of possible outcomes (k length).
+ * @param [in]  p_size              Length of `p_in`.
  * @param [in]  size                Number of elements in `result` arrays.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
@@ -344,14 +344,14 @@ template <typename _DataType>
 INP_DLLEXPORT DPCTLSyclEventRef dpnp_rng_multinomial_c(DPCTLSyclQueueRef q_ref,
                                                        void* result,
                                                        const int ntrial,
-                                                       const double* p_vector,
-                                                       const size_t p_vector_size,
+                                                       const double* p_in,
+                                                       const size_t p_size,
                                                        const size_t size,
                                                        const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_rng_multinomial_c(
-    void* result, const int ntrial, const double* p_vector, const size_t p_vector_size, const size_t size);
+    void* result, const int ntrial, const double* p_in, const size_t p_size, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -360,10 +360,10 @@ INP_DLLEXPORT void dpnp_rng_multinomial_c(
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [out] result              Output array.
  * @param [in]  dimen               Dimension of output random vectors.
- * @param [in]  mean_vector         Mean vector a of dimension.
- * @param [in]  mean_vector_size    Length of `mean_vector`.
- * @param [in]  cov_vector          Variance-covariance matrix.
- * @param [in]  cov_vector_size     Length of `cov_vector`.
+ * @param [in]  mean_in             Mean arry of dimension.
+ * @param [in]  mean_size           Length of `mean_in`.
+ * @param [in]  cov                 Variance-covariance matrix.
+ * @param [in]  cov_size            Length of `cov_in`.
  * @param [in]  size                Number of elements in `result` arrays.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
@@ -371,20 +371,20 @@ template <typename _DataType>
 INP_DLLEXPORT DPCTLSyclEventRef dpnp_rng_multivariate_normal_c(DPCTLSyclQueueRef q_ref,
                                                                void* result,
                                                                const int dimen,
-                                                               const double* mean_vector,
-                                                               const size_t mean_vector_size,
-                                                               const double* cov_vector,
-                                                               const size_t cov_vector_size,
+                                                               const double* mean_in,
+                                                               const size_t mean_size,
+                                                               const double* cov_in,
+                                                               const size_t cov_size,
                                                                const size_t size,
                                                                const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_rng_multivariate_normal_c(void* result,
                                                   const int dimen,
-                                                  const double* mean_vector,
-                                                  const size_t mean_vector_size,
-                                                  const double* cov_vector,
-                                                  const size_t cov_vector_size,
+                                                  const double* mean_in,
+                                                  const size_t mean_size,
+                                                  const double* cov_in,
+                                                  const size_t cov_size,
                                                   const size_t size);
 
 /**

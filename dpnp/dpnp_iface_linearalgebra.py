@@ -91,8 +91,8 @@ def dot(x1, x2, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
     if x1_desc and x2_desc and not kwargs:
         # TODO: remove fallback with scalars when muliply backend func will support strides
         if(x1_desc.ndim == 0 and x2_desc.strides is not None
@@ -183,8 +183,8 @@ def inner(x1, x2, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
     if x1_desc and x2_desc and not kwargs:
         return dpnp_inner(x1_desc, x2_desc).get_pyobj()
 
@@ -201,8 +201,8 @@ def kron(x1, x2):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
     if x1_desc and x2_desc:
         return dpnp_kron(x1_desc, x2_desc).get_pyobj()
 
@@ -277,7 +277,7 @@ def matmul(x1, x2, out=None, **kwargs):
                 if (array1_size > cost_size) and (array2_size > cost_size):
                     return dpnp_matmul(x1_desc, x2_desc, out)
             else:
-                out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
                 return dpnp_matmul(x1_desc, x2_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.matmul, x1, x2, out=out, **kwargs)
@@ -312,8 +312,8 @@ def outer(x1, x2, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
     if x1_desc and x2_desc and not kwargs:
         return dpnp_outer(x1_desc, x2_desc).get_pyobj()
 
@@ -350,8 +350,8 @@ def tensordot(x1, x2, axes=2):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
     if x1_desc and x2_desc and (axes == 1):
         return dpnp_tensordot_not_implemented(x1_desc, x2_desc)  # dpnp_matmul
 

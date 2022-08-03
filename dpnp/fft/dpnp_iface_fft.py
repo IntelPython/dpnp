@@ -118,8 +118,6 @@ def fft(x1, n=None, axis=-1, norm=None):
             pass                 # let fallback to handle exception
         elif input_boundarie < 1:
             pass                 # let fallback to handle exception
-        elif norm is not None:
-            pass
         elif n is not None:
             pass
         elif axis != -1:
@@ -299,16 +297,16 @@ def ifft(x1, n=None, axis=-1, norm=None):
 
     Limitations
     -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Parameter ``axis`` is supported with its default value.
+    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64``,
+    ``dpnp.complex64``and ``dpnp.complex128`` datatypes only.
 
     For full documentation refer to :obj:`numpy.fft.ifft`.
 
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc and 0:
+    if x1_desc:
         norm_ = get_validated_norm(norm)
 
         if axis is None:
@@ -325,13 +323,10 @@ def ifft(x1, n=None, axis=-1, norm=None):
             pass                 # let fallback to handle exception
         elif input_boundarie < 1:
             pass                 # let fallback to handle exception
-        elif norm is not None:
-            pass
         elif n is not None:
             pass
         else:
             output_boundarie = input_boundarie
-
             return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True, norm_.value).get_pyobj()
 
     return call_origin(numpy.fft.ifft, x1, n, axis, norm)

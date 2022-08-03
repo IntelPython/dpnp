@@ -81,11 +81,11 @@ def choose(x1, choices, out=None, mode='raise'):
     --------
     :obj:`take_along_axis` : Preferable if choices is an array.
     """
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
 
     choices_list = []
     for choice in choices:
-        choices_list.append(dpnp.get_dpnp_descriptor(choice))
+        choices_list.append(dpnp.get_dpnp_descriptor(choice, copy_when_nondefault_queue=False))
 
     if x1_desc:
         if any(not desc for desc in choices_list):
@@ -186,7 +186,7 @@ def diag_indices_from(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         # original limitation
         if not x1_desc.ndim >= 2:
@@ -216,7 +216,7 @@ def diagonal(x1, offset=0, axis1=0, axis2=1):
     Otherwise the function will be executed sequentially on CPU.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if not isinstance(offset, int):
             pass
@@ -248,7 +248,7 @@ def fill_diagonal(x1, val, wrap=False):
     :obj:`dpnp.diag_indices_from` : Return the indices to access the main diagonal of an n-dimensional array.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
     if x1_desc:
         if not dpnp.isscalar(val):
             pass
@@ -329,7 +329,7 @@ def nonzero(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         return dpnp_nonzero(x1_desc)
 
@@ -347,9 +347,9 @@ def place(x1, mask, vals):
     Parameter ``vals`` is supported as 1-D sequence.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    mask_desc = dpnp.get_dpnp_descriptor(mask)
-    vals_desc = dpnp.get_dpnp_descriptor(vals)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    mask_desc = dpnp.get_dpnp_descriptor(mask, copy_when_nondefault_queue=False)
+    vals_desc = dpnp.get_dpnp_descriptor(vals, copy_when_nondefault_queue=False)
     if x1_desc and mask_desc and vals_desc:
         return dpnp_place(x1_desc, mask, vals_desc)
 
@@ -367,7 +367,7 @@ def put(x1, ind, v, mode='raise'):
     Not supported parameter mode.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
     if x1_desc:
         if mode != 'raise':
             pass
@@ -391,9 +391,9 @@ def put_along_axis(x1, indices, values, axis):
     :obj:`take_along_axis` : Take values from the input array by matching 1d index and data slices.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    indices_desc = dpnp.get_dpnp_descriptor(indices)
-    values_desc = dpnp.get_dpnp_descriptor(values)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    indices_desc = dpnp.get_dpnp_descriptor(indices, copy_when_nondefault_queue=False)
+    values_desc = dpnp.get_dpnp_descriptor(values, copy_when_nondefault_queue=False)
     if x1_desc and indices_desc and values_desc:
         if x1_desc.ndim != indices_desc.ndim:
             pass
@@ -419,9 +419,9 @@ def putmask(x1, mask, values):
     Input arrays ``arr``, ``mask`` and ``values``  are supported as :obj:`dpnp.ndarray`.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
-    mask_desc = dpnp.get_dpnp_descriptor(mask)
-    values_desc = dpnp.get_dpnp_descriptor(values)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    mask_desc = dpnp.get_dpnp_descriptor(mask, copy_when_nondefault_queue=False)
+    values_desc = dpnp.get_dpnp_descriptor(values, copy_when_nondefault_queue=False)
     if x1_desc and mask_desc and values_desc:
         return dpnp_putmask(x1_desc, mask_desc, values_desc)
 
@@ -477,8 +477,8 @@ def take(x1, indices, axis=None, out=None, mode='raise'):
     :obj:`take_along_axis` : Take elements by matching the array and the index arrays.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    indices_desc = dpnp.get_dpnp_descriptor(indices)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    indices_desc = dpnp.get_dpnp_descriptor(indices, copy_when_nondefault_queue=False)
     if x1_desc and indices_desc:
         if axis is not None:
             pass
@@ -503,8 +503,8 @@ def take_along_axis(x1, indices, axis):
     :obj:`put_along_axis` : Put values into the destination array by matching 1d index and data slices.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    indices_desc = dpnp.get_dpnp_descriptor(indices)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    indices_desc = dpnp.get_dpnp_descriptor(indices, copy_when_nondefault_queue=False)
     if x1_desc and indices_desc:
         if x1_desc.ndim != indices_desc.ndim:
             pass
@@ -578,7 +578,7 @@ def tril_indices_from(x1, k=0):
         Diagonal offset (see `tril` for details).
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if isinstance(k, int):
             return dpnp_tril_indices_from(x1_desc, k)
@@ -635,7 +635,7 @@ def triu_indices_from(x1, k=0):
         Diagonal offset (see `tril` for details).
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if isinstance(k, int):
             return dpnp_triu_indices_from(x1_desc, k)

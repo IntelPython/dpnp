@@ -68,9 +68,9 @@ DPCTLSyclEventRef dpnp_invert_c(DPCTLSyclQueueRef q_ref,
 
     event = q.submit(kernel_func);
 
-    event.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -100,6 +100,9 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_INVERT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_invert_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_INVERT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_invert_default_c<int64_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_INVERT_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_invert_ext_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_INVERT_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_invert_ext_c<int64_t>};
 
     return;
 }
@@ -209,7 +212,6 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
                 cgh.parallel_for<class __name__##_strides_kernel<_DataType>>(gws, kernel_parallel_for_func);           \
             };                                                                                                         \
             event = q.submit(kernel_func);                                                                             \
-            event.wait();                                                                                              \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
@@ -223,9 +225,10 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
                 cgh.parallel_for<class __name__##_kernel<_DataType>>(gws, kernel_parallel_for_func);                   \
             };                                                                                                         \
             event = q.submit(kernel_func);                                                                             \
-            event.wait();                                                                                              \
         }                                                                                                              \
-        return event_ref;                                                                             \
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                                       \
+                                                                                                                       \
+        return DPCTLEvent_Copy(event_ref);                                                                             \
     }                                                                                                                  \
                                                                                                                        \
     template <typename _DataType>                                                                                      \

@@ -201,7 +201,7 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
 
         _DataType val = arr2[j * shape[ndim - 1] + k];
 
-        for (size_t i = 0; i < shape[ndim - 1]; ++i)
+        for (size_t i = 0; i < static_cast<size_t>(shape[ndim - 1]); ++i)
         {
             if (result[j * shape[ndim - 1] + i] == val)
             {

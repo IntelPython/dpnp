@@ -34,8 +34,8 @@ class dpnp_array:
     """
     Multi-dimensional array object.
 
-    This is a wrapper around dpctl.tensor.usm_ndarray that provide
-    methods to be complient with original Numpy.
+    This is a wrapper around dpctl.tensor.usm_ndarray that provides
+    methods to be compliant with original Numpy.
 
     """
 
@@ -61,12 +61,8 @@ class dpnp_array:
                     "".format(shape, buffer.shape)
                 )
             self._array_obj = dpt.asarray(buffer,
-                                          dtype=buffer.dtype,
                                           copy=False,
-                                          order=order,
-                                          device=buffer.sycl_device,
-                                          usm_type=buffer.usm_type,
-                                          sycl_queue=buffer.sycl_queue)
+                                          order=order)
         else:
             sycl_queue_normalized = normalize_queue_device(sycl_queue=sycl_queue, device=device)
             self._array_obj = dpt.usm_ndarray(shape,
@@ -103,6 +99,22 @@ class dpnp_array:
         """
 
         return dpnp_array(shape=self.shape, buffer=self.get_array().to_device(target_device))
+
+    @property
+    def sycl_queue(self):
+        return self._array_obj.sycl_queue
+
+    @property
+    def sycl_device(self):
+        return self._array_obj.sycl_device
+
+    @property
+    def sycl_context(self):
+        return self._array_obj.sycl_context
+
+    @property
+    def device(self):
+        return self._array_obj.device
 
     def __abs__(self):
         return dpnp.abs(self)
