@@ -113,7 +113,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # SYCL related compile options
 add_compile_options(-fsycl)
 add_compile_options(-fsycl-device-code-split=per_kernel)
-add_compile_options(-fno-fast-math)
+add_compile_options(-fno-approx-func)
 add_link_options(-fsycl)
 add_link_options(-fsycl-device-code-split=per_kernel)
 
