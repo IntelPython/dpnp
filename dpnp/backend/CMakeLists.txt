@@ -68,7 +68,7 @@ message(STATUS "======= End of user controlled variables list ======")
 # Compiler-specific logic...
 # -----------------------------------------------------------------------------------------------
 
-# cmake 3.19.1 has a bug in dpcpp compiler detection. Let's assume it is a clang 
+# cmake 3.19.1 has a bug in dpcpp compiler detection. Let's assume it is a clang
 # set(CMAKE_CXX_COMPILER_ID "Clang")
 # set(CMAKE_CXX_COMPILER_VERSION 12.0)
 if (CMAKE_VERSION VERSION_EQUAL 3.19.1)
@@ -95,11 +95,11 @@ elseif(WIN32)
   set(CMAKE_CXX_COMPILER "dpcpp")
   # set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld-link")
   # set(CMAKE_LINKER "lld-link")
-  # include (Platform/Windows-Clang) 
-  # set(CMAKE_LINKER "dpcpp") 
-  # set(CMAKE_AR "llvm-ar") 
-  # set(CMAKE_RANLIB "llvm-ranlib") 
-  # set(CMAKE_CXX_FLAGS "/EHsc") 
+  # include (Platform/Windows-Clang)
+  # set(CMAKE_LINKER "dpcpp")
+  # set(CMAKE_AR "llvm-ar")
+  # set(CMAKE_RANLIB "llvm-ranlib")
+  # set(CMAKE_CXX_FLAGS "/EHsc")
 
   add_compile_options(/EHsc) # /Ox /W3 /GL /DNDEBUG /MD /EHsc
 else()
@@ -113,7 +113,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # SYCL related compile options
 add_compile_options(-fsycl)
 add_compile_options(-fsycl-device-code-split=per_kernel)
-add_compile_options(-fno-fast-math)
+add_compile_options(-fno-approx-func)
 add_link_options(-fsycl)
 add_link_options(-fsycl-device-code-split=per_kernel)
 
@@ -188,7 +188,7 @@ if(DPNP_STATIC_LIB_ENABLE)
   add_library(dpnp_backend_c STATIC ${DPNP_SRC})
 else()
   add_library(dpnp_backend_c SHARED ${DPNP_SRC})
-  set(CMAKE_POSITION_INDEPENDENT_CODE ON) # looks like this option doesn't work 
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON) # looks like this option doesn't work
 endif()
 
 target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -209,7 +209,7 @@ find_package(MathLib REQUIRED)
 add_definitions(-DMKL_ILP64=1)
 target_include_directories(dpnp_backend_c PUBLIC ${MATHLIB_INCLUDE_DIR})
 link_directories(dpnp_backend_c PUBLIC ${MATHLIB_LIBRARY_DIR}) # does not work with some cmake versions
-target_link_directories(dpnp_backend_c PUBLIC ${MATHLIB_LIBRARY_DIR}) # duplicate link_directories 
+target_link_directories(dpnp_backend_c PUBLIC ${MATHLIB_LIBRARY_DIR}) # duplicate link_directories
 
 if(UNIX)
 # Link Line Advisor v6.13
@@ -251,12 +251,12 @@ target_include_directories(dpnp_backend_c PUBLIC ${DPL_INCLUDE_DIR})
 # SYCL queue manager
 if(DPNP_SYCL_QUEUE_MGR_ENABLE)
     target_include_directories(dpnp_backend_c PUBLIC ${DPNP_QUEUEMGR_INCLUDE_DIR})
-    target_link_directories(dpnp_backend_c PUBLIC ${DPNP_QUEUEMGR_LIB_DIR}) 
+    target_link_directories(dpnp_backend_c PUBLIC ${DPNP_QUEUEMGR_LIB_DIR})
     target_link_libraries(dpnp_backend_c PUBLIC "DPCTLSyclInterface")
 
     # not sure but add runpath
     set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH}:${DPNP_QUEUEMGR_LIB_DIR}")
-    
+
     # disable stripping rpath in installation logic
     set_target_properties(dpnp_backend_c PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 else()
