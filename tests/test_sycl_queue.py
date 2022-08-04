@@ -21,7 +21,7 @@ available_devices = [d for d in dpctl.get_devices() if not d.has_aspect_host]
 
 valid_devices = []
 for device in available_devices:
-    if d.default_selector_score < 0:
+    if device.default_selector_score < 0:
         pass
     if device.backend.name not in list_of_backend_str:
         pass
