@@ -17,10 +17,12 @@ list_of_device_type_str = [
     "cpu",
 ]
 
-available_devices = dpctl.get_devices()
+available_devices = [d for d in dpctl.get_devices() if not d.has_aspect_host]
 
 valid_devices = []
 for device in available_devices:
+    if d.default_selector_score < 0:
+        pass
     if device.backend.name not in list_of_backend_str:
         pass
     elif device.device_type.name not in list_of_device_type_str:
