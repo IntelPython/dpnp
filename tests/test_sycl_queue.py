@@ -17,11 +17,13 @@ list_of_device_type_str = [
     "cpu",
 ]
 
-available_devices = dpctl.get_devices()
+available_devices = [d for d in dpctl.get_devices() if not d.has_aspect_host]
 
 valid_devices = []
 for device in available_devices:
-    if device.backend.name not in list_of_backend_str:
+    if device.default_selector_score < 0:
+        pass
+    elif device.backend.name not in list_of_backend_str:
         pass
     elif device.device_type.name not in list_of_device_type_str:
         pass
@@ -196,8 +198,6 @@ def test_2in_1out(func, data1, data2, device):
                      [0., 1., 2.]),
     ],
 )
-
-
 @pytest.mark.parametrize("device",
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
@@ -219,8 +219,6 @@ def test_broadcasting(func, data1, data2, device):
     assert result_queue.sycl_device == expected_queue.sycl_device
 
 
-@pytest.mark.parametrize("func",
-                         [])
 @pytest.mark.parametrize("usm_type",
                         ["host", "device", "shared"])
 def test_uniform(usm_type):
@@ -235,7 +233,10 @@ def test_uniform(usm_type):
 
 @pytest.mark.parametrize("usm_type",
                         ["host", "device", "shared"])
-def test_rs_uniform(usm_type):
+@pytest.mark.parametrize("seed",
+                        [123, (12, 58), [134, 99], (147, 56, 896), [1, 654, 78]],
+                        ids=['123', '(12, 58)', '[134, 99]', '(147, 56, 896)', '[1, 654, 78]'])
+def test_rs_uniform(usm_type, seed):
     seed = 123
     sycl_queue = dpctl.SyclQueue()
     low = 1.0

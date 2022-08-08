@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -696,7 +696,7 @@ INP_DLLEXPORT void dpnp_rng_triangular_c(
  * @param [in]  low                 Left bound of array values.
  * @param [in]  high                Right bound of array values.
  * @param [in]  size                Number of elements in `result` array.
- * @param [in]  random_state        Pointer on random state.
+ * @param [in]  random_state_in     Pointer on random state.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>

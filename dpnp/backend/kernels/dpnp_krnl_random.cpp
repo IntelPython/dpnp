@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -2140,7 +2140,7 @@ DPCTLSyclEventRef (*dpnp_rng_triangular_ext_c)(DPCTLSyclQueueRef,
                                                const DPCTLEventVectorRef) = dpnp_rng_triangular_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef random_cfd(DPCTLSyclQueueRef q_ref,
+DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
                                      void* result,
                                      const long low,
                                      const long high,

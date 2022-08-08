@@ -37,6 +37,7 @@ import numpy
 import dpnp.config as config
 import dpctl
 from libc.stdlib cimport free, malloc
+from libc.stdint cimport uint32_t
 
 from dpnp.dpnp_algo cimport *
 cimport dpctl as c_dpctl
@@ -280,8 +281,8 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_zipf_c_1out_t)(c_dpctl.DPCTLSy
 cdef extern from "dpnp_random_state.hpp":
     cdef struct mt19937_struct:
         pass
-    void MT19937_InitScalarSeed(mt19937_struct *, c_dpctl.DPCTLSyclQueueRef, size_t)
-    void MT19937_InitVectorSeed(mt19937_struct *, c_dpctl.DPCTLSyclQueueRef, unsigned int *, int)
+    void MT19937_InitScalarSeed(mt19937_struct *, c_dpctl.DPCTLSyclQueueRef, uint32_t)
+    void MT19937_InitVectorSeed(mt19937_struct *, c_dpctl.DPCTLSyclQueueRef, uint32_t *, unsigned int)
     void MT19937_Delete(mt19937_struct *)
 
 
@@ -293,9 +294,9 @@ cdef class MT19937:
     cdef c_dpctl.SyclQueue Queue
 
     def __cinit__(self, seed, sycl_queue=None):
-        cdef size_t scalar_seed = 0
-        cdef int is_vector_seed = 0
-        cdef int vector_seed_len = 0
+        cdef bint is_vector_seed = False
+        cdef uint32_t scalar_seed = 0
+        cdef unsigned int vector_seed_len = 0
         cdef unsigned int *vector_seed = NULL
 
         self.QRef = NULL
@@ -303,23 +304,26 @@ cdef class MT19937:
             sycl_queue = dpctl.SyclQueue()
         if not isinstance(sycl_queue, dpctl.SyclQueue):
             raise TypeError
+
         if isinstance(seed, int):
-            scalar_seed = <size_t>seed
+            scalar_seed = <uint32_t> seed
         elif isinstance(seed, (list, tuple)):
-            is_vector_seed = 1
+            is_vector_seed = True
             vector_seed_len = len(seed)
-            vector_seed = <unsigned int *>malloc(vector_seed_len * sizeof(size_t))
+            vector_seed = <uint32_t *> malloc(vector_seed_len * sizeof(uint32_t))
             if (not vector_seed):
                 raise MemoryError
+
             try:
                 for i in range(vector_seed_len):
-                    vector_seed[i] = <size_t> seed[i]
+                    vector_seed[i] = <uint32_t> seed[i]
             except (ValueError, TypeError) as e:
                 free(vector_seed)
                 raise e
         else:
-            raise TypeError("Seed must be an size_t, or a sequence of size_t elements")
-        self.Queue = <c_dpctl.SyclQueue>sycl_queue
+            raise TypeError("Seed must be an uint32_t, or a sequence of uint32_t elements")
+
+        self.Queue = <c_dpctl.SyclQueue> sycl_queue
         self.QRef = c_dpctl.DPCTLQueue_Copy((self.Queue).get_queue_ref())
         if is_vector_seed:
             MT19937_InitVectorSeed(&self.mt19937, self.QRef, vector_seed, vector_seed_len)

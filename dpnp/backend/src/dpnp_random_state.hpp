@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,30 +37,22 @@ struct mt19937_struct
     mkl_rng::mt19937* engine;
 };
 
-void MT19937_InitScalarSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef QRef, size_t seed=1)
+void MT19937_InitScalarSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef QRef, uint32_t seed=1)
 {
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(QRef));
     mt19937->engine = new mkl_rng::mt19937(q, seed);
     return;
 }
 
-void MT19937_InitVectorSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef QRef, unsigned int * seed, int n) {
+void MT19937_InitVectorSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef QRef, uint32_t * seed, unsigned int n) {
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(QRef));
-    if (n==1)
-    {
-        mt19937->engine = new mkl_rng::mt19937(q, {seed[0]});
-    } 
-    else if (n==2)
-    {
-        mt19937->engine = new mkl_rng::mt19937(q, {seed[0], seed[1]});
-    }
-    else if (n==3)
-    {
-        mt19937->engine = new mkl_rng::mt19937(q, {seed[0], seed[1], seed[2]});
-    }
-    else
-    {
-        throw std::runtime_error("Too long of a seed vector");
+    
+    switch (n) {
+        case 1: mt19937->engine = new mkl_rng::mt19937(q, {seed[0]}); break;
+        case 2: mt19937->engine = new mkl_rng::mt19937(q, {seed[0], seed[1]}); break;
+        case 3: mt19937->engine = new mkl_rng::mt19937(q, {seed[0], seed[1], seed[2]}); break;
+        default:
+        throw std::runtime_error("Too long seed vector");
     }
     return;
 }
