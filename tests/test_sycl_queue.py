@@ -220,11 +220,13 @@ def test_broadcasting(func, data1, data2, device):
 
 
 @pytest.mark.parametrize("usm_type",
-                        ["host", "device", "shared"])
-def test_uniform(usm_type):
+                         ["host", "device", "shared"])
+@pytest.mark.parametrize("size",
+                         [None, (), 3, (2, 1), (4, 2, 5)],
+                         ids=['None', '()', '3', '(2,1)', '(4,2,5)'])
+def test_uniform(usm_type, size):
     low = 1.0
     high = 2.0
-    size = 3
     res = dpnp.random.uniform(low, high, size=size, usm_type=usm_type)
 
     res_usm_type = res.get_array().usm_type
@@ -232,10 +234,10 @@ def test_uniform(usm_type):
 
 
 @pytest.mark.parametrize("usm_type",
-                        ["host", "device", "shared"])
+                         ["host", "device", "shared"])
 @pytest.mark.parametrize("seed",
-                        [123, (12, 58), [134, 99], (147, 56, 896), [1, 654, 78]],
-                        ids=['123', '(12, 58)', '[134, 99]', '(147, 56, 896)', '[1, 654, 78]'])
+                         [None, (), 123, (12, 58), (147, 56, 896), [1, 654, 78]],
+                         ids=['None', '()', '123', '(12,58)', '(147,56,896)', '[1,654,78]'])
 def test_rs_uniform(usm_type, seed):
     seed = 123
     sycl_queue = dpctl.SyclQueue()

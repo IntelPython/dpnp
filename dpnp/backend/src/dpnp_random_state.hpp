@@ -32,26 +32,40 @@
 
 namespace mkl_rng = oneapi::mkl::rng;
 
+// Structure storing MKL engine for MT199374x32x10 algorithm
 struct mt19937_struct
 {
     mkl_rng::mt19937* engine;
 };
 
-void MT19937_InitScalarSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef QRef, uint32_t seed=1)
+/**
+ * @brief Create a MKL engine from scalar seed
+ *
+ * Invoke a common seed initialization of the engine for MT199374x32x10 algorithm.
+ */
+void MT19937_InitScalarSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, uint32_t seed = 1)
 {
-    sycl::queue q = *(reinterpret_cast<sycl::queue *>(QRef));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
     mt19937->engine = new mkl_rng::mt19937(q, seed);
     return;
 }
 
-void MT19937_InitVectorSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef QRef, uint32_t * seed, unsigned int n) {
-    sycl::queue q = *(reinterpret_cast<sycl::queue *>(QRef));
+/**
+ * @brief Create a MKL engine from seed vector
+ *
+ * Invoke an extended seed initialization of the engine for MT199374x32x10 algorithm.
+ *
+ * @note the vector size is limited by length=3
+ */
+void MT19937_InitVectorSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, uint32_t * seed, unsigned int n) {
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
     
     switch (n) {
         case 1: mt19937->engine = new mkl_rng::mt19937(q, {seed[0]}); break;
         case 2: mt19937->engine = new mkl_rng::mt19937(q, {seed[0], seed[1]}); break;
         case 3: mt19937->engine = new mkl_rng::mt19937(q, {seed[0], seed[1], seed[2]}); break;
         default:
+        // TODO need to get rid of the limitation for seed vector length
         throw std::runtime_error("Too long seed vector");
     }
     return;

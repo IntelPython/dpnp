@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -287,11 +287,13 @@ cdef extern from "dpnp_random_state.hpp":
 
 
 cdef class MT19937:
-    """Class storing MKL engine for MT199374x32x10 algorithm
     """
+    Class storing MKL engine for MT199374x32x10 algorithm.
+    """
+
     cdef mt19937_struct mt19937
-    cdef c_dpctl.DPCTLSyclQueueRef QRef
-    cdef c_dpctl.SyclQueue Queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref
+    cdef c_dpctl.SyclQueue q
 
     def __cinit__(self, seed, sycl_queue=None):
         cdef bint is_vector_seed = False
@@ -299,21 +301,32 @@ cdef class MT19937:
         cdef unsigned int vector_seed_len = 0
         cdef unsigned int *vector_seed = NULL
 
-        self.QRef = NULL
+        self.q_ref = NULL
         if sycl_queue is None:
             sycl_queue = dpctl.SyclQueue()
-        if not isinstance(sycl_queue, dpctl.SyclQueue):
-            raise TypeError
 
-        if isinstance(seed, int):
+        # keep a refference on SYCL queue
+        self.q = <c_dpctl.SyclQueue> sycl_queue
+        self.q_ref = c_dpctl.DPCTLQueue_Copy((self.q).get_queue_ref())
+        if (self.q_ref is NULL):
+            raise ValueError("SyclQueue copy failed")
+
+        # get a scalar seed value or a vector of seeds
+        if isinstance(seed, int) and seed >= 0:
             scalar_seed = <uint32_t> seed
         elif isinstance(seed, (list, tuple)):
             is_vector_seed = True
             vector_seed_len = len(seed)
+            if vector_seed_len > 3:
+                raise ValueError(
+                    f"{vector_seed_len} length of seed vector isn't supported, "
+                    "the length is limited by 3")
+
             vector_seed = <uint32_t *> malloc(vector_seed_len * sizeof(uint32_t))
             if (not vector_seed):
-                raise MemoryError
+                raise MemoryError(f"Could not allocate memory for seed vector of length {vector_seed_len}")
 
+            # convert input seed's type to uint32_t one (expected in MKL function)
             try:
                 for i in range(vector_seed_len):
                     vector_seed[i] = <uint32_t> seed[i]
@@ -321,25 +334,26 @@ cdef class MT19937:
                 free(vector_seed)
                 raise e
         else:
-            raise TypeError("Seed must be an uint32_t, or a sequence of uint32_t elements")
+            raise TypeError("Seed must be an unsigned int, or a sequence of unsigned int elements")
 
-        self.Queue = <c_dpctl.SyclQueue> sycl_queue
-        self.QRef = c_dpctl.DPCTLQueue_Copy((self.Queue).get_queue_ref())
         if is_vector_seed:
-            MT19937_InitVectorSeed(&self.mt19937, self.QRef, vector_seed, vector_seed_len)
+            MT19937_InitVectorSeed(&self.mt19937, self.q_ref, vector_seed, vector_seed_len)
             free(vector_seed)
         else:
-            MT19937_InitScalarSeed(&self.mt19937, self.QRef, scalar_seed)
+            MT19937_InitScalarSeed(&self.mt19937, self.q_ref, scalar_seed)
 
     def __dealloc__(self):
         MT19937_Delete(&self.mt19937)
-        c_dpctl.DPCTLQueue_Delete(self.QRef)
+        c_dpctl.DPCTLQueue_Delete(self.q_ref)
 
-    cdef mt19937_struct * mt19937(self):
+    cdef mt19937_struct * get_mt19937(self):
         return &self.mt19937
 
+    cdef c_dpctl.SyclQueue get_queue(self):
+        return self.q
+
     cdef c_dpctl.DPCTLSyclQueueRef get_queue_ref(self):
-        return self.QRef
+        return self.q_ref
 
     cpdef utils.dpnp_descriptor uniform(self, low, high, size, dtype, usm_type):
         cdef shape_type_c result_shape
@@ -365,11 +379,11 @@ cdef class MT19937:
                                                 None,
                                                 device=None,
                                                 usm_type=usm_type,
-                                                sycl_queue=self.Queue)
+                                                sycl_queue=self.get_queue())
 
         func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
         # call FPTR function
-        event_ref = func(self.QRef, result.get_data(), low, high, result.size, &self.mt19937, NULL)
+        event_ref = func(self.get_queue_ref(), result.get_data(), low, high, result.size, self.get_mt19937(), NULL)
 
         with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
         c_dpctl.DPCTLEvent_Delete(event_ref)

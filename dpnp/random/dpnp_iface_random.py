@@ -99,10 +99,28 @@ __all__ = [
 
 
 class RandomState:
-    def __init__(self, seed, sycl_queue=None):
+    """
+    A container for the Mersenne Twister pseudo-random number generator.
+
+    For full documentation refer to :obj:`numpy.random.RandomState`.
+    """
+
+    def __init__(self, seed=1, sycl_queue=None):
+        if seed is None:
+            seed = 1
+
         self.random_state = MT19937(seed, sycl_queue)
 
     def uniform(self, low=0.0, high=1.0, size=None, dtype=numpy.float64, usm_type="device"):
+        """
+        Draw samples from a uniform distribution.
+
+        Samples are uniformly distributed over the half-open interval [low, high) (includes low, but excludes high).
+        In other words, any value within the given interval is equally likely to be drawn by uniform.
+
+        For full documentation refer to :obj:`numpy.random.RandomState.uniform`.
+        """
+
         if not use_origin_backend(low):
             if not dpnp.isscalar(low):
                 pass
