@@ -88,6 +88,16 @@ if (CMAKE_VERSION VERSION_EQUAL 3.19.1)
         )
 endif()
 
+# SYCL related compile options
+string(CONCAT COMMON_COMPILE_FLAGS
+  "-fsycl "
+  "-fsycl-device-code-split=per_kernel "
+  "-fno-approx-func "
+)
+string(CONCAT COMMON_LINK_FLAGS
+  "-fsycl "
+  "-fsycl-device-code-split=per_kernel "
+)
 if(UNIX)
   set(CMAKE_CXX_COMPILER "dpcpp")
   # add_compile_options(-fPIC)
@@ -101,7 +111,14 @@ elseif(WIN32)
   # set(CMAKE_RANLIB "llvm-ranlib")
   # set(CMAKE_CXX_FLAGS "/EHsc")
 
-  add_compile_options(/EHsc) # /Ox /W3 /GL /DNDEBUG /MD /EHsc
+  string(APPEND COMMON_COMPILER_FLAGS
+    "/EHsc "
+#    "/Ox "
+#    "/W3 "
+#    "/GL "
+#    "/DNDEBUG "
+#    "/MD "
+  )
 else()
   message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM} in compiler selection case")
 endif()
@@ -110,42 +127,61 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# SYCL related compile options
-add_compile_options(-fsycl)
-add_compile_options(-fsycl-device-code-split=per_kernel)
-add_compile_options(-fno-approx-func)
-add_link_options(-fsycl)
-add_link_options(-fsycl-device-code-split=per_kernel)
-
 # warning flag set
-set(DPNP_WARNING_FLAGS "-W -Wextra -Wshadow -Wall -Wstrict-prototypes" CACHE STRING "set of warning compiler switches")
-add_definitions(${DPNP_WARNING_FLAGS})
+string(CONCAT DPNP_WARNING_FLAGS
+  "-W "
+  "-Wextra "
+  "-Wshadow "
+  "-Wall "
+  "-Wstring-prototypes "
+  "-Wformat "
+  "-Wformat-security "
+)
+string(APPEND COMMON_COMPILER_FLAGS
+  "${DPNP_WARNING_FLAGS}"
+)
 
 # debug/release compile definitions
 if(DPNP_DEBUG_ENABLE)
   set(CMAKE_BUILD_TYPE "Debug")
-  add_compile_options(-O0)
+  string(APPEND COMMON_COMPILER_FLAGS
+    "-O0 "
+  )
 else()
   set(CMAKE_BUILD_TYPE "Release")
-  add_compile_options(-O3)
+  string(APPEND COMMON_COMPILER_FLAGS
+    "-O3 "
+  )
 endif()
 
 # -----------------------------------------------------------------------------------------------
 # Auxilary building options...
 # -----------------------------------------------------------------------------------------------
 # sdl
-add_definitions(-D_FORTIFY_SOURCE=2 -Wformat -Wformat-security)
+string(CONCAT DPNP_DEFS
+  "-D_FORTIFY_SOURCE=2 "
+)
 if(NOT WIN32)
-  add_compile_options(-fno-delete-null-pointer-checks -fstack-protector-strong -fno-strict-overflow)
-  # add_link_options(-static-libstdc++ -static-libgcc)
-  add_link_options(-Wl,-z,noexecstack,-z,relro,-z,now)
+  string(APPEND COMMON_COMPILER_FLAGS
+    "-fno-delete-null-pointer-checks "
+    "-fstack-protector-strong "
+    "-fno-strict-overflow "
+    )
+  string(APPEND COMMON_LINK_FLAGS
+    "LINKER:-z,noexecstack,-z,relro,-z,now "
+  )
 endif()
 
 # disable PSTL policies due to compiler bug
-add_definitions(-DPSTL_USE_PARALLEL_POLICIES=0 -D_GLIBCXX_USE_TBB_PAR_BACKEND=0)
+string(APPEND DPNP_DEFS
+  "-DPSTL_USE_PARALLEL_POLICIES=0 "
+  "-D_GLIBCXX_USE_TBB_PAR_BACKEND=0 "
+)
 
 # disable PSTL predefined policies objects (global queues, prevent fail on Windows)
-add_definitions(-DONEDPL_USE_PREDEFINED_POLICIES=0)
+string(APPEND DPNP_DEFS
+  "-DONEDPL_USE_PREDEFINED_POLICIES=0 "
+)
 
 # -----------------------------------------------------------------------------------------------
 # Create project...
@@ -188,11 +224,19 @@ if(DPNP_STATIC_LIB_ENABLE)
   add_library(dpnp_backend_c STATIC ${DPNP_SRC})
 else()
   add_library(dpnp_backend_c SHARED ${DPNP_SRC})
-  set(CMAKE_POSITION_INDEPENDENT_CODE ON) # looks like this option doesn't work
+  set_target_properties(dpnp_backend_c PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
 target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+string(REPLACE " " ";" COMMON_COMPILE_FLAGS_AS_LIST ${COMMON_COMPILE_FLAGS})
+target_compile_options(dpnp_backend_c PUBLIC ${COMMON_COMPILE_FLAGS_AS_LIST})
+string(REPLACE " " ";" DPNP_DEFS_AS_LIST ${DPNP_DEFS})
+target_compile_definitions(dpnp_backend_c PUBLIC ${DPNP_DEFS_AS_LIST})
+string(REPLACE " " ";" COMMON_LINK_FLAGS_AS_LIST ${COMMON_LINK_FLAGS})
+target_link_options(dpnp_backend_c PUBLIC ${COMMON_LINK_FLAGS_AS_LIST})
+
 
 # -----------------------------------------------------------------------------------------------
 # Testing logic...
@@ -206,8 +250,9 @@ endif()
 # -----------------------------------------------------------------------------------------------
 # Math library
 find_package(MathLib REQUIRED)
-add_definitions(-DMKL_ILP64=1)
+target_compile_definitions(dpnp_backend_c PUBLIC -DMKL_ILP64=1)
 target_include_directories(dpnp_backend_c PUBLIC ${MATHLIB_INCLUDE_DIR})
+
 link_directories(dpnp_backend_c PUBLIC ${MATHLIB_LIBRARY_DIR}) # does not work with some cmake versions
 target_link_directories(dpnp_backend_c PUBLIC ${MATHLIB_LIBRARY_DIR}) # duplicate link_directories
 
@@ -260,7 +305,7 @@ if(DPNP_SYCL_QUEUE_MGR_ENABLE)
     # disable stripping rpath in installation logic
     set_target_properties(dpnp_backend_c PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 else()
-    add_definitions(-DDPNP_LOCAL_QUEUE=1)
+    target_compiler_definitions(dpnp_backend_c PUBLIC -DDPNP_LOCAL_QUEUE=1)
 endif()
 
 # -----------------------------------------------------------------------------------------------
