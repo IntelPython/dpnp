@@ -2169,9 +2169,11 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
     // set right bound of distribution
     const _DataType b = (_DataType(high));
 
+    mkl_rng::mt19937 *engine = reinterpret_cast<mkl_rng::mt19937 *> (random_state->engine);
     mkl_rng::uniform<_DataType> distribution(a, b);
+
     // perform generation
-    auto event_out = mkl_rng::generate(distribution, *(random_state->engine), size, result1);
+    auto event_out = mkl_rng::generate(distribution, *engine, size, result1);
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
 
     return DPCTLEvent_Copy(event_ref);

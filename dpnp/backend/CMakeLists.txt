@@ -182,6 +182,7 @@ set(DPNP_SRC
     src/memory_sycl.cpp
     src/queue_sycl.cpp
     src/verbose.cpp
+    src/dpnp_random_state.cpp
     )
 
 if(DPNP_STATIC_LIB_ENABLE)

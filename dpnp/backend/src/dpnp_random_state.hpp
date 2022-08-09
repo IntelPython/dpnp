@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2022, Intel Corporation
+// Copyright (c) 2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -23,58 +23,69 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+/*
+ * This header file is for interface Cython with C++.
+ * It should not contains any backend specific headers (like SYCL or math library) because
+ * all included headers will be exposed in Cython compilation procedure
+ *
+ * We would like to avoid backend specific things in higher level Cython modules.
+ * Any backend interface functions and types should be defined here.
+ *
+ * Also, this file should contains documentation on functions and types
+ * which are used in the interface
+ */
+
 #pragma once
 #ifndef BACKEND_RANDOM_STATE_H // Cython compatibility
 #define BACKEND_RANDOM_STATE_H
 
-#include <CL/sycl.hpp>
-#include <oneapi/mkl/rng.hpp>
+#ifdef _WIN32
+#define INP_DLLEXPORT __declspec(dllexport)
+#else
+#define INP_DLLEXPORT
+#endif
 
-namespace mkl_rng = oneapi::mkl::rng;
+#include <dpctl_sycl_interface.h>
 
 // Structure storing MKL engine for MT199374x32x10 algorithm
 struct mt19937_struct
 {
-    mkl_rng::mt19937* engine;
+    void* engine;
 };
 
 /**
- * @brief Create a MKL engine from scalar seed
+ * @ingroup BACKEND_API
+ * @brief Create a MKL engine from scalar seed.
  *
  * Invoke a common seed initialization of the engine for MT199374x32x10 algorithm.
+ *
+ * @param [in]  mt19937       A structure with MKL engine which will be filled with generated value by MKL.
+ * @param [in]  q_ref         A refference on SYCL queue which will be used to obtain random numbers.
+ * @param [in]  seed          An initial condition of the generator state.
  */
-void MT19937_InitScalarSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, uint32_t seed = 1)
-{
-    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
-    mt19937->engine = new mkl_rng::mt19937(q, seed);
-    return;
-}
+INP_DLLEXPORT void MT19937_InitScalarSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, uint32_t seed = 1);
 
 /**
- * @brief Create a MKL engine from seed vector
+ * @ingroup BACKEND_API
+ * @brief Create a MKL engine from seed vector.
  *
- * Invoke an extended seed initialization of the engine for MT199374x32x10 algorithm.
+ * Invoke an extended seed initialization of the engine for MT199374x32x10 algorithm..
  *
- * @note the vector size is limited by length=3
+ * @param [in]  mt19937       A structure with MKL engine which will be filled with generated value by MKL.
+ * @param [in]  q_ref         A refference on SYCL queue which will be used to obtain random numbers.
+ * @param [in]  seed          A vector with the initial conditions of the generator state.
+ * @param [in]  n             Length of the vector.
  */
-void MT19937_InitVectorSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, uint32_t * seed, unsigned int n) {
-    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
-    
-    switch (n) {
-        case 1: mt19937->engine = new mkl_rng::mt19937(q, {seed[0]}); break;
-        case 2: mt19937->engine = new mkl_rng::mt19937(q, {seed[0], seed[1]}); break;
-        case 3: mt19937->engine = new mkl_rng::mt19937(q, {seed[0], seed[1], seed[2]}); break;
-        default:
-        // TODO need to get rid of the limitation for seed vector length
-        throw std::runtime_error("Too long seed vector");
-    }
-    return;
-}
+INP_DLLEXPORT void MT19937_InitVectorSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, uint32_t * seed, unsigned int n);
 
-void MT19937_Delete(mt19937_struct *mt19937) {
-    delete mt19937->engine;
-    mt19937->engine = nullptr;
-    return;
-}
+/**
+ * @ingroup BACKEND_API
+ * @brief Release a MKL engine.
+ *
+ * Release all resource required for storing of the MKL engine.
+ *
+ * @param [in]  mt19937       A structure with the MKL engine.
+ */
+INP_DLLEXPORT void MT19937_Delete(mt19937_struct *mt19937);
 
 #endif // BACKEND_RANDOM_STATE_H
