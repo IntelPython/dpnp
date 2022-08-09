@@ -133,7 +133,6 @@ class RandomState:
 
         return call_origin(numpy.random.uniform, low, high, size)
 
-
 def _check_dims(dims):
     for dim in dims:
         if not isinstance(dim, int):
@@ -1370,7 +1369,13 @@ def seed(seed=None):
         elif seed < 0:
             pass
         else:
-            dpnp_rng_srand(seed)
+            # TODO:
+            # migrate to a single approach with RandomState()
+
+            # update a mt19937 random number for both RandomState() class and legacy functionality
+            global dpnp_random_state
+            dpnp_random_state = RandomState(seed)
+            return dpnp_rng_srand(seed)
 
     return call_origin(numpy.random.seed, seed)
 
@@ -1737,5 +1742,4 @@ def zipf(a, size=None):
     return call_origin(numpy.random.zipf, a, size)
 
 
-seed = 1
-dpnp_random_state = RandomState(seed)
+dpnp_random_state = RandomState()
