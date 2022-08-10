@@ -524,8 +524,9 @@ cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default)
 
 cpdef utils.dpnp_descriptor dpnp_take(utils.dpnp_descriptor x1, utils.dpnp_descriptor indices):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(indices.dtype)
 
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TAKE_EXT, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TAKE_EXT, param1_type, param2_type)
 
     x1_obj = x1.get_array()
 
