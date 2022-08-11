@@ -110,6 +110,7 @@ class RandomState:
             seed = 1
 
         self.random_state = MT19937(seed, sycl_queue)
+        self.fallback_random_state = call_origin(numpy.random.RandomState, seed)
 
     def uniform(self, low=0.0, high=1.0, size=None, dtype=numpy.float64, usm_type="device"):
         """
@@ -119,6 +120,13 @@ class RandomState:
         In other words, any value within the given interval is equally likely to be drawn by uniform.
 
         For full documentation refer to :obj:`numpy.random.RandomState.uniform`.
+
+        Limitations
+        -----------
+        Parameters ``low`` and ``high`` are supported as scalar.
+        Otherwise, :obj:`numpy.random.uniform(low, high, size)` samples are drawn.
+        Parameter ``dtype`` is supported only for :obj:`dpnp.float32` or :obj:`dpnp.float64`.
+        Output array data type is the same as ``dtype``.
         """
 
         if not use_origin_backend(low):
@@ -129,9 +137,11 @@ class RandomState:
             else:
                 if low > high:
                     low, high = high, low
+                if not (dpnp.is_type_supported(dtype) and dtype in {dpnp.float32, dpnp.float64}):
+                    raise TypeError(f"{dtype} is unsupported.")
                 return self.random_state.uniform(low, high, size, dtype, usm_type).get_pyobj()
 
-        return call_origin(numpy.random.uniform, low, high, size)
+        return call_origin(self.fallback_random_state.uniform, low, high, size)
 
 def _check_dims(dims):
     for dim in dims:
@@ -1370,13 +1380,14 @@ def seed(seed=None):
             pass
         else:
             # TODO:
-            # migrate to a single approach with RandomState()
+            # migrate to a single approach with RandomState class
 
-            # update a mt19937 random number for both RandomState() class and legacy functionality
+            # update a mt19937 random number for both RandomState and legacy functionality
             global dpnp_random_state
             dpnp_random_state = RandomState(seed)
-            return dpnp_rng_srand(seed)
+            dpnp_rng_srand(seed)
 
+    # always reseed numpy engine also
     return call_origin(numpy.random.seed, seed)
 
 
@@ -1596,8 +1607,7 @@ def uniform(low=0.0, high=1.0, size=None, usm_type='device'):
     :obj:`dpnp.random.random` : Floats uniformly distributed over ``[0, 1)``.
 
     """
-    dtype = numpy.float64
-    return dpnp_random_state.uniform(low, high, size, dtype, usm_type)
+    return dpnp_random_state.uniform(low, high, size, dtype=numpy.float64, usm_type=usm_type)
 
 
 def vonmises(mu, kappa, size=None):

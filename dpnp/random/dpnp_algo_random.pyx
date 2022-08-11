@@ -34,8 +34,12 @@ and the rest of the library
 
 
 import numpy
-import dpnp.config as config
 import dpctl
+import numbers
+
+import dpnp.config as config
+from dpnp.dpnp_array import dpnp_array
+
 from libc.stdlib cimport free, malloc
 from libc.stdint cimport uint32_t
 
@@ -312,27 +316,39 @@ cdef class MT19937:
             raise ValueError("SyclQueue copy failed")
 
         # get a scalar seed value or a vector of seeds
-        if isinstance(seed, int) and seed >= 0:
-            scalar_seed = <uint32_t> seed
-        elif isinstance(seed, (list, tuple)):
-            is_vector_seed = True
-            vector_seed_len = len(seed)
-            if vector_seed_len > 3:
-                raise ValueError(
-                    f"{vector_seed_len} length of seed vector isn't supported, "
-                    "the length is limited by 3")
+        if self.is_integer(seed):
+            if self.is_uint_range(seed):
+                scalar_seed = <uint32_t> seed
+            else:
+                raise ValueError("Seed must be between 0 and 2**32 - 1")
+        elif isinstance(seed, (list, tuple, range, numpy.ndarray, dpnp_array)):
+            if len(seed) == 0:
+                raise ValueError("Seed must be non-empty")
+            elif numpy.ndim(seed) > 1:
+                raise ValueError("Seed array must be 1-d")
+            elif not all([self.is_integer(item) for item in seed]):
+                raise TypeError("Seed must be a sequence of unsigned int elements")
+            elif not all([self.is_uint_range(item) for item in seed]):
+                raise ValueError("Seed must be between 0 and 2**32 - 1")
+            else:
+                is_vector_seed = True
+                vector_seed_len = len(seed)
+                if vector_seed_len > 3:
+                    raise ValueError(
+                        f"{vector_seed_len} length of seed vector isn't supported, "
+                        "the length is limited by 3")
 
-            vector_seed = <uint32_t *> malloc(vector_seed_len * sizeof(uint32_t))
-            if (not vector_seed):
-                raise MemoryError(f"Could not allocate memory for seed vector of length {vector_seed_len}")
+                vector_seed = <uint32_t *> malloc(vector_seed_len * sizeof(uint32_t))
+                if (not vector_seed):
+                    raise MemoryError(f"Could not allocate memory for seed vector of length {vector_seed_len}")
 
-            # convert input seed's type to uint32_t one (expected in MKL function)
-            try:
-                for i in range(vector_seed_len):
-                    vector_seed[i] = <uint32_t> seed[i]
-            except (ValueError, TypeError) as e:
-                free(vector_seed)
-                raise e
+                # convert input seed's type to uint32_t one (expected in MKL function)
+                try:
+                    for i in range(vector_seed_len):
+                        vector_seed[i] = <uint32_t> seed[i]
+                except (ValueError, TypeError) as e:
+                    free(vector_seed)
+                    raise e
         else:
             raise TypeError("Seed must be an unsigned int, or a sequence of unsigned int elements")
 
@@ -345,6 +361,15 @@ cdef class MT19937:
     def __dealloc__(self):
         MT19937_Delete(&self.mt19937)
         c_dpctl.DPCTLQueue_Delete(self.q_ref)
+
+    cdef bint is_integer(self, value):
+        if isinstance(value, numbers.Number):
+            return isinstance(value, int) or isinstance(value, (numpy.int32, numpy.uint32))
+        # cover an element of dpnp array:
+        return numpy.ndim(value) == 0 and hasattr(value, "dtype") and numpy.issubdtype(value, (numpy.int32, numpy.uint32))
+
+    cdef bint is_uint_range(self, value):
+        return value >= 0 and value <= numpy.iinfo(numpy.uint32).max
 
     cdef mt19937_struct * get_mt19937(self):
         return &self.mt19937
