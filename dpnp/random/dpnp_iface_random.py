@@ -125,7 +125,7 @@ class RandomState:
         -----------
         Parameters ``low`` and ``high`` are supported as scalar.
         Otherwise, :obj:`numpy.random.uniform(low, high, size)` samples are drawn.
-        Parameter ``dtype`` is supported only for :obj:`dpnp.float32` or :obj:`dpnp.float64`.
+        Parameter ``dtype`` is supported only for :obj:`dpnp.int32`, :obj:`dpnp.float32` or :obj:`dpnp.float64`.
         Output array data type is the same as ``dtype``.
         """
 
@@ -137,7 +137,7 @@ class RandomState:
             else:
                 if low > high:
                     low, high = high, low
-                if not (dpnp.is_type_supported(dtype) and dtype in {dpnp.float32, dpnp.float64}):
+                if not (dpnp.is_type_supported(dtype) and dtype in {dpnp.int32, dpnp.float32, dpnp.float64}):
                     raise TypeError(f"{dtype} is unsupported.")
                 return self.random_state.uniform(low, high, size, dtype, usm_type).get_pyobj()
 

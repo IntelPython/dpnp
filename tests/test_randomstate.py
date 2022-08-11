@@ -5,7 +5,7 @@ import dpnp
 import numpy
 
 from dpnp.random import RandomState
-from numpy.testing import (assert_allclose, assert_raises, assert_array_almost_equal)
+from numpy.testing import (assert_allclose, assert_raises, assert_array_equal, assert_array_almost_equal)
 
 
 class TestSeed:
@@ -87,13 +87,27 @@ class TestUniform:
     @pytest.mark.parametrize("usm_type",
                              ["host", "device", "shared"],
                              ids=['host', 'device', 'shared'])
-    def test_uniform(self, dtype, usm_type):
+    def test_uniform_float(self, dtype, usm_type):
         seed = 28041997
         actual = dpnp.asnumpy(RandomState(seed).uniform(low=1.23, high=10.54, size=(3, 2), dtype=dtype, usm_type=usm_type))
         desired = numpy.array([[3.700744485249743, 8.390019132522866],
                                [2.60340195777826,  4.473366308724508],
                                [1.773701806552708, 4.193498786306009]])
         assert_array_almost_equal(actual, desired, decimal=6)
+
+    @pytest.mark.parametrize("dtype",
+                             [dpnp.int32, numpy.int32, numpy.intc],
+                             ids=['dpnp.int32', 'numpy.int32', 'numpy.intc'])
+    @pytest.mark.parametrize("usm_type",
+                             ["host", "device", "shared"],
+                             ids=['host', 'device', 'shared'])
+    def test_uniform_int(self, dtype, usm_type):
+        seed = 28041997
+        actual = dpnp.asnumpy(RandomState(seed).uniform(low=1.23, high=10.54, size=(3, 2), dtype=dtype, usm_type=usm_type))
+        desired = numpy.array([[3, 8],
+                               [2,  4],
+                               [1, 4]])
+        assert_array_equal(actual, desired)
 
     @pytest.mark.parametrize("high",
                              [dpnp.array([3]), numpy.array([3])],
@@ -109,8 +123,8 @@ class TestUniform:
         assert_array_almost_equal(actual, desired, decimal=15)
 
     @pytest.mark.parametrize("dtype",
-                             [dpnp.float16, numpy.integer, dpnp.int, dpnp.bool, numpy.int64, dpnp.int32],
-                             ids=['dpnp.float16', 'numpy.integer', 'dpnp.int', 'dpnp.bool', 'numpy.int64', 'dpnp.int32'])
+                             [dpnp.float16, numpy.integer, dpnp.int, dpnp.bool, numpy.int64],
+                             ids=['dpnp.float16', 'numpy.integer', 'dpnp.int', 'dpnp.bool', 'numpy.int64'])
     def test_invalid_dtype(self, dtype):
         # dtype must be float32 or float64
         assert_raises(TypeError, RandomState().uniform, dtype=dtype)
