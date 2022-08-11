@@ -96,8 +96,8 @@ class TestUniform:
         assert_array_almost_equal(actual, desired, decimal=6)
 
     @pytest.mark.parametrize("dtype",
-                             [dpnp.int32, numpy.int32, numpy.intc],
-                             ids=['dpnp.int32', 'numpy.int32', 'numpy.intc'])
+                             [dpnp.int32, numpy.int32],
+                             ids=['dpnp.int32', 'numpy.int32'])
     @pytest.mark.parametrize("usm_type",
                              ["host", "device", "shared"],
                              ids=['host', 'device', 'shared'])
