@@ -901,7 +901,7 @@ DPCTLSyclEventRef dpnp_take_c(DPCTLSyclQueueRef q_ref,
     DPCTLSyclEventRef event_ref = nullptr;
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, array1_size, true);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, array1_size);
     DPNPC_ptr_adapter<_IndecesType> input2_ptr(q_ref, indices1, size);
     _DataType* array_1 = input1_ptr.get_ptr();
     _IndecesType* indices = input2_ptr.get_ptr();
