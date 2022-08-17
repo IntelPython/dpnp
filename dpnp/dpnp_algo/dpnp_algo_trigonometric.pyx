@@ -65,103 +65,103 @@ __all__ += [
 
 
 cpdef utils.dpnp_descriptor dpnp_arccos(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_ARCCOS, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_ARCCOS_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_arccosh(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_ARCCOSH, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_ARCCOSH_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_arcsin(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_ARCSIN, x1, dtype=None, out=out, where=True, func_name='arcsin')
+    return call_fptr_1in_1out_strides(DPNP_FN_ARCSIN_EXT, x1, dtype=None, out=out, where=True, func_name='arcsin')
 
 
 cpdef utils.dpnp_descriptor dpnp_arcsinh(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_ARCSINH, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_ARCSINH_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_arctan(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_ARCTAN, x1, dtype=None, out=out, where=True, func_name='arctan')
+    return call_fptr_1in_1out_strides(DPNP_FN_ARCTAN_EXT, x1, dtype=None, out=out, where=True, func_name='arctan')
 
 
 cpdef utils.dpnp_descriptor dpnp_arctanh(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_ARCTANH, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_ARCTANH_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_cbrt(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_CBRT, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_CBRT_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_cos(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_COS, x1, dtype=None, out=out, where=True, func_name='cos')
+    return call_fptr_1in_1out_strides(DPNP_FN_COS_EXT, x1, dtype=None, out=out, where=True, func_name='cos')
 
 
 cpdef utils.dpnp_descriptor dpnp_cosh(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_COSH, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_COSH_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_degrees(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_DEGREES, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_DEGREES_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_exp(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_EXP, x1, dtype=None, out=out, where=True, func_name='exp')
+    return call_fptr_1in_1out_strides(DPNP_FN_EXP_EXT, x1, dtype=None, out=out, where=True, func_name='exp')
 
 
 cpdef utils.dpnp_descriptor dpnp_exp2(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_EXP2, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_EXP2_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_expm1(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_EXPM1, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_EXPM1_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_log(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_LOG, x1, dtype=None, out=out, where=True, func_name='log')
+    return call_fptr_1in_1out_strides(DPNP_FN_LOG_EXT, x1, dtype=None, out=out, where=True, func_name='log')
 
 
 cpdef utils.dpnp_descriptor dpnp_log10(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_LOG10, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_LOG10_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_log1p(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_LOG1P, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_LOG1P_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_log2(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_LOG2, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_LOG2_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_recip(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_RECIP, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_RECIP_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_radians(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_RADIANS, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_RADIANS_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_sin(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_SIN, x1, dtype=None, out=out, where=True, func_name='sin')
+    return call_fptr_1in_1out_strides(DPNP_FN_SIN_EXT, x1, dtype=None, out=out, where=True, func_name='sin')
 
 
 cpdef utils.dpnp_descriptor dpnp_sinh(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_SINH, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_SINH_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_sqrt(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_SQRT, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_SQRT_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_square(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_SQUARE, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_SQUARE_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_tan(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_TAN, x1, dtype=None, out=out, where=True, func_name='tan')
+    return call_fptr_1in_1out_strides(DPNP_FN_TAN_EXT, x1, dtype=None, out=out, where=True, func_name='tan')
 
 
 cpdef utils.dpnp_descriptor dpnp_tanh(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_TANH, x1)
+    return call_fptr_1in_1out_strides(DPNP_FN_TANH_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_unwrap(utils.dpnp_descriptor array1):
@@ -171,7 +171,14 @@ cpdef utils.dpnp_descriptor dpnp_unwrap(utils.dpnp_descriptor array1):
     if array1.dtype == dpnp.float32:
         result_type = dpnp.float32
 
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(array1.shape, result_type, None)
+    array1_obj = array1.get_array()
+
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(array1.shape,
+                                                                             result_type,
+                                                                             None,
+                                                                             device=array1_obj.sycl_device,
+                                                                             usm_type=array1_obj.usm_type,
+                                                                             sycl_queue=array1_obj.sycl_queue)
 
     for i in range(result.size):
         val, = numpy.unwrap([array1.get_pyobj()[i]])

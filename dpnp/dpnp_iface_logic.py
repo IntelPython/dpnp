@@ -108,7 +108,7 @@ def all(x1, axis=None, out=None, keepdims=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if axis is not None:
             pass
@@ -148,8 +148,8 @@ def allclose(x1, x2, rtol=1.e-5, atol=1.e-8, **kwargs):
 
     rtol_is_scalar = dpnp.isscalar(rtol)
     atol_is_scalar = dpnp.isscalar(atol)
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
 
     if x1_desc and x2_desc and not kwargs:
         if not rtol_is_scalar or not atol_is_scalar:
@@ -202,7 +202,7 @@ def any(x1, axis=None, out=None, keepdims=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if axis is not None:
             pass

@@ -118,23 +118,31 @@ def call_origin(function, *args, **kwargs):
     # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}, \n\t dpnp_inplace={dpnp_inplace}")
 
     kwargs_out = kwargs.get("out", None)
+    alloc_queues = []
     if (kwargs_out is not None):
         if isinstance(kwargs_out, numpy.ndarray):
             kwargs["out"] = kwargs_out
         else:
+            if hasattr(kwargs_out, "sycl_queue"):
+                alloc_queues.append(kwargs_out.sycl_queue)
             kwargs["out"] = dpnp.asnumpy(kwargs_out)
 
     args_new_list = []
     for arg in args:
+        if hasattr(arg, "sycl_queue"):
+            alloc_queues.append(arg.sycl_queue)
         argx = convert_item(arg)
         args_new_list.append(argx)
     args_new = tuple(args_new_list)
 
     kwargs_new = {}
     for key, kwarg in kwargs.items():
+        if hasattr(kwarg, "sycl_queue"):
+            alloc_queues.append(kwarg.sycl_queue)
         kwargx = convert_item(kwarg)
         kwargs_new[key] = kwargx
 
+    exec_q = dpctl.utils.get_execution_queue(alloc_queues)
     # print(f"DPNP call_origin(): bakend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     # TODO need to put array memory into NumPy call
     result_origin = function(*args_new, **kwargs_new)
@@ -157,7 +165,7 @@ def call_origin(function, *args, **kwargs):
             if (kwargs_dtype is not None):
                 result_dtype = kwargs_dtype
 
-            result = dpnp_container.empty(result_origin.shape, dtype=result_dtype)
+            result = dpnp_container.empty(result_origin.shape, dtype=result_dtype, sycl_queue=exec_q)
         else:
             result = kwargs_out
 
@@ -169,7 +177,7 @@ def call_origin(function, *args, **kwargs):
         for res_origin in result:
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
-                res = dpnp_container.empty(res_origin.shape, dtype=res_origin.dtype)
+                res = dpnp_container.empty(res_origin.shape, dtype=res_origin.dtype, sycl_queue=exec_q)
                 copy_from_origin(res, res_origin)
             result_list.append(res)
 

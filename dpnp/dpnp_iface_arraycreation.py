@@ -390,7 +390,7 @@ def copy(x1, order='K', subok=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
     if x1_desc:
         if order != 'K':
             pass
@@ -431,7 +431,7 @@ def diag(x1, k=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if not isinstance(k, int):
             pass
@@ -465,10 +465,10 @@ def diagflat(x1, k=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         input_ravel = dpnp.ravel(x1)
-        input_ravel_desc = dpnp.get_dpnp_descriptor(input_ravel)
+        input_ravel_desc = dpnp.get_dpnp_descriptor(input_ravel, copy_when_nondefault_queue=False)
 
         return dpnp_diag(input_ravel_desc, k).get_pyobj()
 
@@ -1138,7 +1138,7 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if order not in ('C', 'c', None):
             pass
@@ -1164,7 +1164,7 @@ def ptp(arr, axis=None, out=None, keepdims=numpy._NoValue):
     Input array is supported as :obj:`dpnp.ndarray`.
     Parameters ``out`` and ``keepdims`` are supported only with default values.
     """
-    arr_desc = dpnp.get_dpnp_descriptor(arr)
+    arr_desc = dpnp.get_dpnp_descriptor(arr, copy_when_nondefault_queue=False)
     if not arr_desc:
         pass
     elif axis is not None and not isinstance(axis, int):
@@ -1194,7 +1194,7 @@ def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
        Parameters ``axis1``, ``axis2``, ``out`` and ``dtype`` are supported only with default values.
        """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if x1_desc.size == 0:
             pass
@@ -1271,7 +1271,7 @@ def tril(x1, k=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if not isinstance(k, int):
             pass
@@ -1301,7 +1301,7 @@ def triu(x1, k=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if not isinstance(k, int):
             pass
@@ -1340,7 +1340,7 @@ def vander(x1, N=None, increasing=False):
            [  1,   5,  25, 125]])
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if x1.ndim != 1:
             pass
@@ -1425,7 +1425,7 @@ def zeros_like(x1, dtype=None, order='C', subok=False, shape=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if order not in ('C', 'c', None):
             pass

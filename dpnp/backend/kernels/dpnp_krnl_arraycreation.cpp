@@ -73,9 +73,9 @@ DPCTLSyclEventRef dpnp_arange_c(DPCTLSyclQueueRef q_ref,
 
     event = q.submit(kernel_func);
 
-    event.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -133,7 +133,7 @@ DPCTLSyclEventRef dpnp_diag_c(DPCTLSyclQueueRef q_ref,
 
     if (ndim == 1)
     {
-        for (size_t i = 0; i < shape[0]; ++i)
+        for (size_t i = 0; i < static_cast<size_t>(shape[0]); ++i)
         {
             size_t ind = (init0 + i) * res_shape[1] + init1 + i;
             result[ind] = v[i];
@@ -141,7 +141,7 @@ DPCTLSyclEventRef dpnp_diag_c(DPCTLSyclQueueRef q_ref,
     }
     else
     {
-        for (size_t i = 0; i < res_shape[0]; ++i)
+        for (size_t i = 0; i < static_cast<size_t>(res_shape[0]); ++i)
         {
             size_t ind = (init0 + i) * shape[1] + init1 + i;
             result[i] = v[ind];
@@ -617,9 +617,6 @@ DPCTLSyclEventRef dpnp_vander_c(DPCTLSyclQueueRef q_ref,
                                 const int increasing,
                                 const DPCTLEventVectorRef dep_event_vec_ref)
 {
-    // avoid warning unused variable
-    (void)dep_event_vec_ref;
-
     DPCTLSyclEventRef event_ref = nullptr;
 
     if ((array1_in == nullptr) || (result1 == nullptr))
@@ -637,8 +634,7 @@ DPCTLSyclEventRef dpnp_vander_c(DPCTLSyclQueueRef q_ref,
 
     if (N == 1)
     {
-        dpnp_ones_c<_DataType_output>(result, size_in);
-        return event_ref;
+        return dpnp_ones_c<_DataType_output>(q_ref, result, size_in, dep_event_vec_ref);
     }
 
     if (increasing)
@@ -762,9 +758,10 @@ DPCTLSyclEventRef dpnp_trace_c(DPCTLSyclQueueRef q_ref,
     };
 
     auto event = q.submit(kernel_func);
-    event.wait();
 
-    return event_ref;
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -849,9 +846,9 @@ DPCTLSyclEventRef dpnp_tri_c(DPCTLSyclQueueRef q_ref,
 
     event = q.submit(kernel_func);
 
-    event.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>

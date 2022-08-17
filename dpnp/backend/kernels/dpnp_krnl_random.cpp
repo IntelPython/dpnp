@@ -101,9 +101,10 @@ DPCTLSyclEventRef dpnp_rng_beta_c(DPCTLSyclQueueRef q_ref,
     mkl_rng::beta<_DataType> distribution(a, b, displacement, scalefactor);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
 
-    return event_ref;
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
+
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -157,23 +158,25 @@ DPCTLSyclEventRef dpnp_rng_binomial_c(DPCTLSyclQueueRef q_ref,
 
     if (ntrial == 0 || p == 0)
     {
-        dpnp_zeros_c<_DataType>(result, size);
+        event_ref = dpnp_zeros_c<_DataType>(q_ref, result, size, dep_event_vec_ref);
     }
     else if (p == 1)
     {
         _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
         fill_value[0] = static_cast<_DataType>(ntrial);
-        dpnp_initval_c<_DataType>(result, fill_value, size);
-        sycl::free(fill_value, q);
+
+        event_ref = dpnp_initval_c<_DataType>(q_ref, result, fill_value, size, dep_event_vec_ref);
+        DPCTLEvent_Wait(event_ref);
+        dpnp_memory_free_c(q_ref, fill_value);
     }
     else
     {
         _DataType* result1 = reinterpret_cast<_DataType*>(result);
         mkl_rng::binomial<_DataType> distribution(ntrial, p);
         auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-        event_out.wait();
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
     }
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 
 }
 
@@ -225,9 +228,10 @@ DPCTLSyclEventRef dpnp_rng_chisquare_c(DPCTLSyclQueueRef q_ref,
 
     mkl_rng::chi_square<_DataType> distribution(df);
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
 
-    return event_ref;
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
+
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -280,9 +284,10 @@ DPCTLSyclEventRef dpnp_rng_exponential_c(DPCTLSyclQueueRef q_ref,
     mkl_rng::exponential<_DataType> distribution(a, beta);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
 
-    return event_ref;
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
+
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -398,6 +403,7 @@ DPCTLSyclEventRef dpnp_rng_gamma_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
+    sycl::event event_out;
 
     if (!size || result == nullptr)
     {
@@ -408,7 +414,7 @@ DPCTLSyclEventRef dpnp_rng_gamma_c(DPCTLSyclQueueRef q_ref,
 
     if (shape == 0.0 || scale == 0.0)
     {
-        dpnp_zeros_c<_DataType>(result, size);
+        event_ref = dpnp_zeros_c<_DataType>(q_ref, result, size, dep_event_vec_ref);
     }
     else
     {
@@ -416,11 +422,11 @@ DPCTLSyclEventRef dpnp_rng_gamma_c(DPCTLSyclQueueRef q_ref,
         const _DataType a = (_DataType(0.0));
 
         mkl_rng::gamma<_DataType> distribution(shape, a, scale);
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-        event_out.wait();
+        event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
     }
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -473,9 +479,9 @@ DPCTLSyclEventRef dpnp_rng_gaussian_c(DPCTLSyclQueueRef q_ref,
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -517,6 +523,7 @@ DPCTLSyclEventRef dpnp_rng_geometric_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
+    sycl::event event_out;
 
     if (!size || !result)
     {
@@ -527,17 +534,17 @@ DPCTLSyclEventRef dpnp_rng_geometric_c(DPCTLSyclQueueRef q_ref,
 
     if (p == 1.0)
     {
-        dpnp_ones_c<_DataType>(result, size);
+        event_ref = dpnp_ones_c<_DataType>(q_ref, result, size, dep_event_vec_ref);
     }
     else
     {
         _DataType* result1 = reinterpret_cast<_DataType*>(result);
         mkl_rng::geometric<_DataType> distribution(p);
         // perform generation
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-        event_out.wait();
+        event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
     }
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -575,6 +582,7 @@ DPCTLSyclEventRef dpnp_rng_gumbel_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
+    sycl::event event_out;
 
     if (!size || !result)
     {
@@ -587,8 +595,10 @@ DPCTLSyclEventRef dpnp_rng_gumbel_c(DPCTLSyclQueueRef q_ref,
     {
         _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
         fill_value[0] = static_cast<_DataType>(loc);
-        dpnp_initval_c<_DataType>(result, fill_value, size);
-        sycl::free(fill_value, q);
+
+        event_ref = dpnp_initval_c<_DataType>(q_ref, result, fill_value, size, dep_event_vec_ref);
+        DPCTLEvent_Wait(event_ref);
+        dpnp_memory_free_c(q_ref, fill_value);
     }
     else
     {
@@ -600,11 +610,10 @@ DPCTLSyclEventRef dpnp_rng_gumbel_c(DPCTLSyclQueueRef q_ref,
         mkl_rng::gumbel<_DataType> distribution(negloc, scale);
         auto event_distribution = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
 
-        sycl::event prod_event;
-        prod_event = mkl_blas::scal(q, size, alpha, result1, incx, {event_distribution});
-        prod_event.wait();
+        event_out = mkl_blas::scal(q, size, alpha, result1, incx, {event_distribution});
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
     }
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -645,6 +654,7 @@ DPCTLSyclEventRef dpnp_rng_hypergeometric_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
+    sycl::event event_out;
 
     if (!size || !result)
     {
@@ -655,23 +665,26 @@ DPCTLSyclEventRef dpnp_rng_hypergeometric_c(DPCTLSyclQueueRef q_ref,
 
     if (m == 0)
     {
-        dpnp_zeros_c<_DataType>(result, size);
+        event_ref = dpnp_zeros_c<_DataType>(q_ref, result, size, dep_event_vec_ref);
     }
     else if (l == m)
     {
         _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
         fill_value[0] = static_cast<_DataType>(s);
-        dpnp_initval_c<_DataType>(result, fill_value, size);
-        sycl::free(fill_value, q);
+
+        event_ref = dpnp_initval_c<_DataType>(q_ref, result, fill_value, size, dep_event_vec_ref);
+        DPCTLEvent_Wait(event_ref);
+        dpnp_memory_free_c(q_ref, fill_value);
     }
     else
     {
         _DataType* result1 = reinterpret_cast<_DataType*>(result);
         mkl_rng::hypergeometric<_DataType> distribution(l, s, m);
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-        event_out.wait();
+        event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
+
     }
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -717,6 +730,7 @@ DPCTLSyclEventRef dpnp_rng_laplace_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
+    sycl::event event_out;
 
     if (!size || !result)
     {
@@ -727,17 +741,17 @@ DPCTLSyclEventRef dpnp_rng_laplace_c(DPCTLSyclQueueRef q_ref,
 
     if (scale == 0.0)
     {
-        dpnp_zeros_c<_DataType>(result, size);
+        event_ref = dpnp_zeros_c<_DataType>(q_ref, result, size, dep_event_vec_ref);
     }
     else
     {
         _DataType* result1 = reinterpret_cast<_DataType*>(result);
         mkl_rng::laplace<_DataType> distribution(loc, scale);
         // perform generation
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-        event_out.wait();
+        event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
     }
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -808,9 +822,9 @@ DPCTLSyclEventRef dpnp_rng_logistic_c(DPCTLSyclQueueRef q_ref,
         cgh.parallel_for<class dpnp_rng_logistic_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
     auto event = q.submit(kernel_func);
-    event.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -850,6 +864,7 @@ DPCTLSyclEventRef dpnp_rng_lognormal_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
+    sycl::event event_out;
 
     if (!size || !result)
     {
@@ -864,8 +879,10 @@ DPCTLSyclEventRef dpnp_rng_lognormal_c(DPCTLSyclQueueRef q_ref,
     {
         _DataType* fill_value = reinterpret_cast<_DataType*>(sycl::malloc_shared(sizeof(_DataType), q));
         fill_value[0] = static_cast<_DataType>(std::exp(mean + (stddev * stddev) / 2));
-        dpnp_initval_c<_DataType>(result, fill_value, size);
-        sycl::free(fill_value, q);
+
+        event_ref = dpnp_initval_c<_DataType>(q_ref, result, fill_value, size, dep_event_vec_ref);
+        DPCTLEvent_Wait(event_ref);
+        dpnp_memory_free_c(q_ref, fill_value);
     }
     else
     {
@@ -873,10 +890,10 @@ DPCTLSyclEventRef dpnp_rng_lognormal_c(DPCTLSyclQueueRef q_ref,
         const _DataType scalefactor = _DataType(1.0);
 
         mkl_rng::lognormal<_DataType> distribution(mean, stddev, displacement, scalefactor);
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-        event_out.wait();
+        event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
     }
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -911,8 +928,8 @@ template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_multinomial_c(DPCTLSyclQueueRef q_ref,
                                          void* result,
                                          const int ntrial,
-                                         const double* p_vector,
-                                         const size_t p_vector_size,
+                                         void* p_in,
+                                         const size_t p_size,
                                          const size_t size,
                                          const DPCTLEventVectorRef dep_event_vec_ref)
 {
@@ -920,6 +937,7 @@ DPCTLSyclEventRef dpnp_rng_multinomial_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
+    sycl::event event_out;
 
     if (!size || !result || (ntrial < 0))
     {
@@ -930,56 +948,58 @@ DPCTLSyclEventRef dpnp_rng_multinomial_c(DPCTLSyclQueueRef q_ref,
 
     if (ntrial == 0)
     {
-        dpnp_zeros_c<_DataType>(result, size);
+        event_ref = dpnp_zeros_c<_DataType>(q_ref, result, size, dep_event_vec_ref);
     }
     else
     {
-        std::vector<double> p(p_vector, p_vector + p_vector_size);
+        DPNPC_ptr_adapter<double> p_ptr(q_ref, p_in, p_size, true);
+        const double* p = p_ptr.get_ptr();
+        std::vector<double> p_vec(p, p + p_size);
         // size = size
         // `result` is a array for random numbers
         // `size` is a `result`'s len. `size = n * p.size()`
         // `n` is a number of random values to be generated.
-        size_t n = size / p.size();
+        size_t n = size / p_vec.size();
 
         size_t is_cpu_queue = dpnp_queue_is_cpu_c();
 
         // math library supports the distribution generation on GPU device with input parameters
         // which follow the condition
-        if (is_cpu_queue || (!is_cpu_queue && (p_vector_size >= ((size_t)ntrial * 16)) && (ntrial <= 16)))
+        if (is_cpu_queue || (!is_cpu_queue && (p_size >= ((size_t)ntrial * 16)) && (ntrial <= 16)))
         {
             DPNPC_ptr_adapter<std::int32_t> result_ptr(q_ref, result, size, false, true);
             std::int32_t* result1 = result_ptr.get_ptr();
-            mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
+            mkl_rng::multinomial<std::int32_t> distribution(ntrial, p_vec);
             // perform generation
-            auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
-            event_out.wait();
+            event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
+            event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
         }
         else
         {
             DPNPC_ptr_adapter<std::int32_t> result_ptr(q_ref, result, size, true, true);
             std::int32_t* result1 = result_ptr.get_ptr();
             int errcode = viRngMultinomial(
-                VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_vector_size, p_vector);
+                VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_size, p);
             if (errcode != VSL_STATUS_OK)
             {
                 throw std::runtime_error("DPNP RNG Error: dpnp_rng_multinomial_c() failed.");
             }
         }
     }
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
 void dpnp_rng_multinomial_c(
-    void* result, const int ntrial, const double* p_vector, const size_t p_vector_size, const size_t size)
+    void* result, const int ntrial, void* p_in, const size_t p_size, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
     DPCTLSyclEventRef event_ref = dpnp_rng_multinomial_c<_DataType>(q_ref,
                                                                     result,
                                                                     ntrial,
-                                                                    p_vector,
-                                                                    p_vector_size,
+                                                                    p_in,
+                                                                    p_size,
                                                                     size,
                                                                     dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
@@ -988,7 +1008,7 @@ void dpnp_rng_multinomial_c(
 template <typename _DataType>
 void (*dpnp_rng_multinomial_default_c)(void*,
                                        const int,
-                                       const double*,
+                                       void*,
                                        const size_t,
                                        const size_t) = dpnp_rng_multinomial_c<_DataType>;
 
@@ -996,7 +1016,7 @@ template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_multinomial_ext_c)(DPCTLSyclQueueRef,
                                               void*,
                                               const int,
-                                              const double*,
+                                              void*,
                                               const size_t,
                                               const size_t,
                                               const DPCTLEventVectorRef) = dpnp_rng_multinomial_c<_DataType>;
@@ -1005,10 +1025,10 @@ template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_multivariate_normal_c(DPCTLSyclQueueRef q_ref,
                                                  void* result,
                                                  const int dimen,
-                                                 const double* mean_vector,
-                                                 const size_t mean_vector_size,
-                                                 const double* cov_vector,
-                                                 const size_t cov_vector_size,
+                                                 void* mean_in,
+                                                 const size_t mean_size,
+                                                 void* cov_in,
+                                                 const size_t cov_size,
                                                  const size_t size,
                                                  const DPCTLEventVectorRef dep_event_vec_ref)
 {
@@ -1024,30 +1044,35 @@ DPCTLSyclEventRef dpnp_rng_multivariate_normal_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
+    DPNPC_ptr_adapter<double> mean_ptr(q_ref, mean_in, mean_size, true);
+    const double* mean = mean_ptr.get_ptr();
+    DPNPC_ptr_adapter<double> cov_ptr(q_ref, cov_in, cov_size, true);
+    const double* cov = cov_ptr.get_ptr();
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    std::vector<double> mean(mean_vector, mean_vector + mean_vector_size);
-    std::vector<double> cov(cov_vector, cov_vector + cov_vector_size);
+    std::vector<double> mean_vec(mean, mean + mean_size);
+    std::vector<double> cov_vec(cov, cov + cov_size);
 
     // `result` is a array for random numbers
     // `size` is a `result`'s len.
     // `size1` is a number of random values to be generated for each dimension.
     size_t size1 = size / dimen;
 
-    mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean, cov);
+    mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean_vec, cov_vec);
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size1, result1);
-    event_out.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
 void dpnp_rng_multivariate_normal_c(void* result,
                                     const int dimen,
-                                    const double* mean_vector,
-                                    const size_t mean_vector_size,
-                                    const double* cov_vector,
-                                    const size_t cov_vector_size,
+                                    void* mean_in,
+                                    const size_t mean_size,
+                                    void* cov_in,
+                                    const size_t cov_size,
                                     const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
@@ -1055,10 +1080,10 @@ void dpnp_rng_multivariate_normal_c(void* result,
     DPCTLSyclEventRef event_ref = dpnp_rng_multivariate_normal_c<_DataType>(q_ref,
                                                                             result,
                                                                             dimen,
-                                                                            mean_vector,
-                                                                            mean_vector_size,
-                                                                            cov_vector,
-                                                                            cov_vector_size,
+                                                                            mean_in,
+                                                                            mean_size,
+                                                                            cov_in,
+                                                                            cov_size,
                                                                             size,
                                                                             dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
@@ -1067,23 +1092,22 @@ void dpnp_rng_multivariate_normal_c(void* result,
 template <typename _DataType>
 void (*dpnp_rng_multivariate_normal_default_c)(void*,
                                                const int,
-                                               const double*,
+                                               void*,
                                                const size_t,
-                                               const double*,
+                                               void*,
                                                const size_t,
                                                const size_t) = dpnp_rng_multivariate_normal_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_rng_multivariate_normal_ext_c)(
-    DPCTLSyclQueueRef,
-    void*,
-    const int,
-    const double*,
-    const size_t,
-    const double*,
-    const size_t,
-    const size_t,
-    const DPCTLEventVectorRef) = dpnp_rng_multivariate_normal_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_rng_multivariate_normal_ext_c)(DPCTLSyclQueueRef,
+                                                        void*,
+                                                        const int,
+                                                        void*,
+                                                        const size_t,
+                                                        void*,
+                                                        const size_t,
+                                                        const size_t,
+                                                        const DPCTLEventVectorRef) = dpnp_rng_multivariate_normal_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_negative_binomial_c(DPCTLSyclQueueRef q_ref,
@@ -1108,9 +1132,9 @@ DPCTLSyclEventRef dpnp_rng_negative_binomial_c(DPCTLSyclQueueRef q_ref,
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
     mkl_rng::negative_binomial<_DataType> distribution(a, p);
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -1159,6 +1183,7 @@ DPCTLSyclEventRef dpnp_rng_noncentral_chisquare_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
+    sycl::event event_out;
 
     if (!size || !result)
     {
@@ -1209,7 +1234,7 @@ DPCTLSyclEventRef dpnp_rng_noncentral_chisquare_c(DPCTLSyclQueueRef q_ref,
         lambda = 0.5 * nonc;
 
         mkl_rng::poisson<int> poisson_distribution(lambda);
-        auto event_out = mkl_rng::generate(poisson_distribution, DPNP_RNG_ENGINE, size, pvec);
+        event_out = mkl_rng::generate(poisson_distribution, DPNP_RNG_ENGINE, size, pvec);
         event_out.wait();
 
         shape = 0.5 * df;
@@ -1287,10 +1312,10 @@ DPCTLSyclEventRef dpnp_rng_noncentral_chisquare_c(DPCTLSyclQueueRef q_ref,
         loc = sqrt(nonc);
         mkl_rng::gaussian<_DataType> gaussian_distribution(loc, d_one);
         auto event_gaussian_distr = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, result1);
-        auto event_out = mkl_vm::sqr(q, size, result1, result1, {event_gaussian_distr}, mkl_vm::mode::ha);
-        event_out.wait();
+        event_out = mkl_vm::sqr(q, size, result1, result1, {event_gaussian_distr}, mkl_vm::mode::ha);
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
     }
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -1347,9 +1372,9 @@ DPCTLSyclEventRef dpnp_rng_normal_c(DPCTLSyclQueueRef q_ref,
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -1411,9 +1436,9 @@ DPCTLSyclEventRef dpnp_rng_pareto_c(DPCTLSyclQueueRef q_ref,
     event_out.wait();
 
     event_out = mkl_vm::powx(q, size, result1, neg_rec_alp, result1, no_deps, mkl_vm::mode::ha);
-    event_out.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -1463,9 +1488,9 @@ DPCTLSyclEventRef dpnp_rng_poisson_c(DPCTLSyclQueueRef q_ref,
     mkl_rng::poisson<_DataType> distribution(lambda);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -1522,9 +1547,9 @@ DPCTLSyclEventRef dpnp_rng_power_c(DPCTLSyclQueueRef q_ref,
     event_out.wait();
 
     event_out = mkl_vm::powx(q, size, result1, neg_rec_alp, result1, no_deps, mkl_vm::mode::ha);
-    event_out.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -1581,9 +1606,9 @@ DPCTLSyclEventRef dpnp_rng_rayleigh_c(DPCTLSyclQueueRef q_ref,
     auto exponential_rng_event = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     auto sqrt_event = mkl_vm::sqrt(q, size, result1, result1, {exponential_rng_event}, mkl_vm::mode::ha);
     auto scal_event = mkl_blas::scal(q, size, scale, result1, 1, {sqrt_event});
-    scal_event.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&scal_event);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -1760,9 +1785,9 @@ DPCTLSyclEventRef dpnp_rng_standard_cauchy_c(DPCTLSyclQueueRef q_ref,
     mkl_rng::cauchy<_DataType> distribution(displacement, scalefactor);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -1807,9 +1832,9 @@ DPCTLSyclEventRef dpnp_rng_standard_exponential_c(DPCTLSyclQueueRef q_ref,
     // set displacement a
     const _DataType beta = (_DataType(1.0));
 
-    dpnp_rng_exponential_c(result, beta, size);
+    event_ref = dpnp_rng_exponential_c(q_ref, result, beta, size, dep_event_vec_ref);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -1855,9 +1880,9 @@ DPCTLSyclEventRef dpnp_rng_standard_gamma_c(DPCTLSyclQueueRef q_ref,
 
     const _DataType scale = _DataType(1.0);
 
-    dpnp_rng_gamma_c(result, shape, scale, size);
+    event_ref = dpnp_rng_gamma_c(q_ref, result, shape, scale, size, dep_event_vec_ref);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -1904,9 +1929,9 @@ DPCTLSyclEventRef dpnp_rng_standard_normal_c(DPCTLSyclQueueRef q_ref,
     const _DataType mean = _DataType(0.0);
     const _DataType stddev = _DataType(1.0);
 
-    dpnp_rng_normal_c(result, mean, stddev, size);
+    event_ref = dpnp_rng_normal_c(q_ref, result, mean, stddev, size, dep_event_vec_ref);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -2076,9 +2101,9 @@ DPCTLSyclEventRef dpnp_rng_triangular_c(DPCTLSyclQueueRef q_ref,
                                                                                           kernel_parallel_for_func);
     };
     auto event_ration_acceptance = q.submit(kernel_func);
-    event_ration_acceptance.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_ration_acceptance);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -2143,9 +2168,9 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
     mkl_rng::uniform<_DataType> distribution(a, b);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -2614,6 +2639,7 @@ DPCTLSyclEventRef dpnp_rng_weibull_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
+    sycl::event event_out;
 
     if (!size)
     {
@@ -2624,7 +2650,7 @@ DPCTLSyclEventRef dpnp_rng_weibull_c(DPCTLSyclQueueRef q_ref,
 
     if (alpha == 0)
     {
-        dpnp_zeros_c<_DataType>(result, size);
+        event_ref = dpnp_zeros_c<_DataType>(q_ref, result, size, dep_event_vec_ref);
     }
     else
     {
@@ -2633,10 +2659,10 @@ DPCTLSyclEventRef dpnp_rng_weibull_c(DPCTLSyclQueueRef q_ref,
         const _DataType beta = (_DataType(1.0));
 
         mkl_rng::weibull<_DataType> distribution(alpha, a, beta);
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-        event_out.wait();
+        event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
     }
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -2760,41 +2786,81 @@ void func_map_init_random(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_beta_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_BETA_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_beta_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL][eft_INT][eft_INT] = {eft_INT,
                                                                   (void*)dpnp_rng_binomial_default_c<int32_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL_EXT][eft_INT][eft_INT] = {eft_INT,
+                                                                      (void*)dpnp_rng_binomial_ext_c<int32_t>};         
+
     fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL,
                                                                    (void*)dpnp_rng_chisquare_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE_EXT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                       (void*)dpnp_rng_chisquare_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL,
                                                                      (void*)dpnp_rng_exponential_default_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_FLT][eft_FLT] = {eft_FLT,
                                                                      (void*)dpnp_rng_exponential_default_c<float>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL_EXT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                         (void*)dpnp_rng_exponential_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL_EXT][eft_FLT][eft_FLT] = {eft_FLT,
+                                                                         (void*)dpnp_rng_exponential_ext_c<float>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_F][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_f_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_F_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_f_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_GAMMA][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gamma_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_GAMMA_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gamma_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gaussian_default_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_gaussian_default_c<float>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN_EXT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                      (void*)dpnp_rng_gaussian_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN_EXT][eft_FLT][eft_FLT] = {eft_FLT,
+                                                                      (void*)dpnp_rng_gaussian_ext_c<float>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_GEOMETRIC][eft_INT][eft_INT] = {eft_INT,
                                                                    (void*)dpnp_rng_geometric_default_c<int32_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_GEOMETRIC_EXT][eft_INT][eft_INT] = {eft_INT,
+                                                                   (void*)dpnp_rng_geometric_ext_c<int32_t>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_GUMBEL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gumbel_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_GUMBEL_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gumbel_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_HYPERGEOMETRIC][eft_INT][eft_INT] = {
         eft_INT, (void*)dpnp_rng_hypergeometric_default_c<int32_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_HYPERGEOMETRIC_EXT][eft_INT][eft_INT] = {
+        eft_INT, (void*)dpnp_rng_hypergeometric_ext_c<int32_t>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_LAPLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_laplace_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_LAPLACE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_laplace_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_LOGISTIC][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_logistic_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_LOGISTIC_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_logistic_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_LOGNORMAL][eft_DBL][eft_DBL] = {eft_DBL,
                                                                    (void*)dpnp_rng_lognormal_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_LOGNORMAL_EXT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                       (void*)dpnp_rng_lognormal_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_MULTINOMIAL][eft_INT][eft_INT] = {eft_INT,
                                                                      (void*)dpnp_rng_multinomial_default_c<int32_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_MULTINOMIAL_EXT][eft_INT][eft_INT] = {eft_INT,
+                                                                         (void*)dpnp_rng_multinomial_ext_c<int32_t>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_MULTIVARIATE_NORMAL][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_multivariate_normal_default_c<double>};
@@ -2802,54 +2868,106 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {
         eft_INT, (void*)dpnp_rng_negative_binomial_default_c<int32_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_NEGATIVE_BINOMIAL_EXT][eft_INT][eft_INT] = {
+        eft_INT, (void*)dpnp_rng_negative_binomial_ext_c<int32_t>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_NONCENTRAL_CHISQUARE][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_noncentral_chisquare_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_NONCENTRAL_CHISQUARE_EXT][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_rng_noncentral_chisquare_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_normal_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_NORMAL_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_normal_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_PARETO][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_pareto_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_PARETO_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_pareto_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_POISSON][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_poisson_default_c<int32_t>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_POISSON_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_poisson_ext_c<int32_t>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_POWER][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_power_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_POWER_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_power_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_rayleigh_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_rayleigh_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_shuffle_default_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_shuffle_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_shuffle_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_rng_shuffle_default_c<int64_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_shuffle_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_shuffle_ext_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_shuffle_ext_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_rng_shuffle_ext_c<int64_t>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_SRAND][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_srand_c};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_standard_cauchy_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY_EXT][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_rng_standard_cauchy_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_EXPONENTIAL][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_standard_exponential_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_EXPONENTIAL_EXT][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_rng_standard_exponential_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_GAMMA][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_standard_gamma_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_GAMMA_EXT][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_rng_standard_gamma_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_standard_normal_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL_EXT][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_rng_standard_normal_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_standard_t_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T_EXT][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_rng_standard_t_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_TRIANGULAR][eft_DBL][eft_DBL] = {eft_DBL,
                                                                     (void*)dpnp_rng_triangular_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_TRIANGULAR_EXT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                    (void*)dpnp_rng_triangular_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_uniform_default_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_uniform_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_default_c<int32_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_uniform_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_uniform_ext_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_ext_c<int32_t>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_VONMISES][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_vonmises_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_VONMISES_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_vonmises_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_WALD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_wald_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_WALD_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_wald_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_weibull_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_weibull_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_ZIPF][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_zipf_default_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_ZIPF_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_zipf_ext_c<double>};
 
     return;
 }

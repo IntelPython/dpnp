@@ -228,10 +228,10 @@ DPCTLSyclEventRef dpnp_det_c(DPCTLSyclQueueRef q_ref,
             {
                 for (size_t j = l + 1; j < n; j++)
                 {
-                    _DataType q = -(matrix[j][l] / matrix[l][l]);
+                    _DataType quotient = -(matrix[j][l] / matrix[l][l]);
                     for (size_t k = l + 1; k < n; k++)
                     {
-                        matrix[j][k] += q * matrix[l][k];
+                        matrix[j][k] += quotient * matrix[l][k];
                     }
                 }
             }
@@ -502,9 +502,9 @@ DPCTLSyclEventRef dpnp_kron_c(DPCTLSyclQueueRef q_ref,
 
     sycl::event event = q.submit(kernel_func);
 
-    event.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
@@ -576,7 +576,7 @@ DPCTLSyclEventRef dpnp_matrix_rank_c(DPCTLSyclQueueRef q_ref,
     _DataType* array_1 = input1_ptr.get_ptr();
     _DataType* result = result_ptr.get_ptr();
 
-    size_t elems = 1;
+    shape_elem_type elems = 1;
     if (ndim > 1)
     {
         elems = shape[0];
@@ -590,7 +590,7 @@ DPCTLSyclEventRef dpnp_matrix_rank_c(DPCTLSyclQueueRef q_ref,
     }
 
     _DataType acc = 0;
-    for (size_t i = 0; i < elems; i++)
+    for (size_t i = 0; i < static_cast<size_t>(elems); i++)
     {
         size_t ind = 0;
         for (size_t j = 0; j < ndim; j++)

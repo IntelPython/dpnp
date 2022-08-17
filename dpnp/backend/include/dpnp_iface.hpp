@@ -533,7 +533,7 @@ INP_DLLEXPORT void dpnp_cumprod_c(void* array1_in, void* result1, size_t size);
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [in]  array1_in           Input array.
  * @param [out] result1             Output array.
- * @param [in]  size                 Number of elements in input arrays.
+ * @param [in]  size                Number of elements in input arrays.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  *
  */
@@ -551,7 +551,7 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
  * @ingroup BACKEND_API
  * @brief The differences between consecutive elements of an array.
  *
- * @param [in]  q_ref             Reference to SYCL queue.
+ * @param [in]  q_ref               Reference to SYCL queue.
  * @param [out] result_out          Output array.
  * @param [in]  result_size         Size of output array.
  * @param [in]  result_ndim         Number of output array dimensions.

@@ -42,15 +42,29 @@ __all__ += [
 ]
 
 
-ctypedef void(*fptr_dpnp_partition_t)(void * , void * , void * , const size_t , const shape_elem_type * , const size_t)
-ctypedef void(*fptr_dpnp_searchsorted_t)(void * , const void * , const void * , bool , const size_t , const size_t )
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_partition_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                           void * ,
+                                                           void * ,
+                                                           void * ,
+                                                           const size_t,
+                                                           const shape_elem_type * ,
+                                                           const size_t,
+                                                           const c_dpctl.DPCTLEventVectorRef)
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_searchsorted_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                              void * ,
+                                                              const void * ,
+                                                              const void * ,
+                                                              bool,
+                                                              const size_t,
+                                                              const size_t,
+                                                              const c_dpctl.DPCTLEventVectorRef)
 
 
 cpdef utils.dpnp_descriptor dpnp_argsort(utils.dpnp_descriptor x1):
     cdef shape_type_c result_shape = x1.shape
     if result_shape == ():
         result_shape = (1,)
-    return call_fptr_1in_1out(DPNP_FN_ARGSORT, x1, result_shape)
+    return call_fptr_1in_1out(DPNP_FN_ARGSORT_EXT, x1, result_shape)
 
 
 cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, axis=-1, kind='introselect', order=None):
@@ -59,15 +73,37 @@ cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, a
     cdef size_t kth_ = kth if kth >= 0 else (arr.ndim + kth)
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
 
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PARTITION, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PARTITION_EXT, param1_type, param1_type)
 
     cdef utils.dpnp_descriptor arr2 = dpnp_copy(arr)
 
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(arr.shape, kernel_data.return_type, None)
+    arr_obj = arr.get_array()
+
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(arr.shape,
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=arr_obj.sycl_device,
+                                                                       usm_type=arr_obj.usm_type,
+                                                                       sycl_queue=arr_obj.sycl_queue)
+
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     cdef fptr_dpnp_partition_t func = <fptr_dpnp_partition_t > kernel_data.ptr
 
-    func(arr.get_data(), arr2.get_data(), result.get_data(), kth_, shape1.data(), arr.ndim)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    arr.get_data(),
+                                                    arr2.get_data(),
+                                                    result.get_data(),
+                                                    kth_,
+                                                    shape1.data(),
+                                                    arr.ndim,
+                                                    NULL)  # dep_events_ref
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -80,16 +116,38 @@ cpdef utils.dpnp_descriptor dpnp_searchsorted(utils.dpnp_descriptor arr, utils.d
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
 
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SEARCHSORTED, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SEARCHSORTED_EXT, param1_type, param1_type)
 
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(v.shape, dpnp.int64, None)
+    arr_obj = arr.get_array()
+
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(v.shape,
+                                                                             dpnp.int64,
+                                                                             None,
+                                                                             device=arr_obj.sycl_device,
+                                                                             usm_type=arr_obj.usm_type,
+                                                                             sycl_queue=arr_obj.sycl_queue)
+
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     cdef fptr_dpnp_searchsorted_t func = <fptr_dpnp_searchsorted_t > kernel_data.ptr
 
-    func(arr.get_data(), v.get_data(), result.get_data(), side_, arr.size, v.size)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    arr.get_data(),
+                                                    v.get_data(),
+                                                    result.get_data(),
+                                                    side_,
+                                                    arr.size,
+                                                    v.size,
+                                                    NULL)  # dep_events_ref
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
 
 cpdef utils.dpnp_descriptor dpnp_sort(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_SORT, x1, x1.shape)
+    return call_fptr_1in_1out(DPNP_FN_SORT_EXT, x1, x1.shape)

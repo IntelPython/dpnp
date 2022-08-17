@@ -63,10 +63,10 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -90,7 +90,7 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
         elif not where:
             pass
         else:
-            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
             return dpnp_func(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
 
     return call_origin(origin_func, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
@@ -228,7 +228,7 @@ def invert(x, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x)
+    x1_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
     if x1_desc and not kwargs:
         return dpnp_invert(x1_desc).get_pyobj()
 

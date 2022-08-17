@@ -44,14 +44,18 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_2in_1out_shapes_t)(void *, void * , void * , shape_elem_type * ,
-                                       shape_elem_type *, shape_elem_type * , size_t)
-ctypedef void(*fptr_2in_1out_dot_t)(void * , const size_t, const size_t,
-                                    const shape_elem_type *, const shape_elem_type * ,
-                                    void * , const size_t, const size_t,
-                                    const shape_elem_type *, const shape_elem_type * ,
-                                    void * , const size_t, const size_t,
-                                    const shape_elem_type *, const shape_elem_type * )
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_shapes_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                            void *, void * , void * , shape_elem_type * ,
+                                                            shape_elem_type *, shape_elem_type * , size_t,
+                                                            const c_dpctl.DPCTLEventVectorRef)
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_dot_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                         void * , const size_t, const size_t,
+                                                         const shape_elem_type *, const shape_elem_type * ,
+                                                         void * , const size_t, const size_t,
+                                                         const shape_elem_type *, const shape_elem_type * ,
+                                                         void * , const size_t, const size_t,
+                                                         const shape_elem_type *, const shape_elem_type * ,
+                                                         const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_matmul_t)(c_dpctl.DPCTLSyclQueueRef,
                                                             void * , const size_t, const size_t,
                                                             const shape_elem_type *, const shape_elem_type * ,
@@ -73,7 +77,7 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DOT, param1_type, param2_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DOT_EXT, param1_type, param2_type)
 
     ndim1 = in_array1.ndim
     ndim2 = in_array2.ndim
@@ -95,8 +99,15 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
             shape2 = (shape1[0], 1)
         result_shape = shape1[:-1] + shape2[:-2] + shape2[-1:]
 
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(in_array1, in_array2)
+
     # create result array with type given by FPTR data
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=result_sycl_device,
+                                                                       usm_type=result_usm_type,
+                                                                       sycl_queue=result_sycl_queue)
 
     cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result.shape)
     cdef shape_type_c in_array1_shape = in_array1.shape
@@ -104,23 +115,31 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
     cdef shape_type_c in_array2_shape = in_array2.shape
     cdef shape_type_c in_array2_strides = utils.strides_to_vector(in_array2.strides, in_array2.shape)
 
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
     cdef fptr_2in_1out_dot_t func = <fptr_2in_1out_dot_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(),
-         result.size,
-         result.ndim,
-         result_shape.data(),
-         result_strides.data(),
-         in_array1.get_data(),
-         in_array1.size,
-         in_array1.ndim,
-         in_array1_shape.data(),
-         in_array1_strides.data(),
-         in_array2.get_data(),
-         in_array2.size,
-         in_array2.ndim,
-         in_array2_shape.data(),
-         in_array2_strides.data())
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    result.get_data(),
+                                                    result.size,
+                                                    result.ndim,
+                                                    result_shape.data(),
+                                                    result_strides.data(),
+                                                    in_array1.get_data(),
+                                                    in_array1.size,
+                                                    in_array1.ndim,
+                                                    in_array1_shape.data(),
+                                                    in_array1_strides.data(),
+                                                    in_array2.get_data(),
+                                                    in_array2.size,
+                                                    in_array2.ndim,
+                                                    in_array2_shape.data(),
+                                                    in_array2_strides.data(),
+                                                    NULL)  # dep_events_ref
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -136,8 +155,15 @@ cpdef utils.dpnp_descriptor dpnp_inner(dpnp_descriptor array1, dpnp_descriptor a
     cdef shape_type_c result_shape = array1_no_last_axes
     result_shape.insert(result_shape.end(), array2_no_last_axes.begin(), array2_no_last_axes.end())
 
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(array1, array2)
+
     # ceate result array with type given by FPTR data
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape, result_type, None)
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape,
+                                                                             result_type,
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
 
     # calculate input arrays offsets
     cdef shape_type_c array1_offsets = [1] * len(array1.shape)
@@ -218,15 +244,35 @@ cpdef utils.dpnp_descriptor dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_KRON, param1_type, param2_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_KRON_EXT, param1_type, param2_type)
+
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(in_array1, in_array2)
 
     # ceate result array with type given by FPTR data
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=result_sycl_device,
+                                                                       usm_type=result_usm_type,
+                                                                       sycl_queue=result_sycl_queue)
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     cdef fptr_2in_1out_shapes_t func = <fptr_2in_1out_shapes_t > kernel_data.ptr
     # call FPTR function
-    func(in_array1.get_data(), in_array2.get_data(), result.get_data(),
-         in_array1_shape.data(), in_array2_shape.data(), result_shape.data(), ndim)
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    in_array1.get_data(),
+                                                    in_array2.get_data(),
+                                                    result.get_data(),
+                                                    in_array1_shape.data(),
+                                                    in_array2_shape.data(),
+                                                    result_shape.data(),
+                                                    ndim,
+                                                    NULL)  # dep_events_ref
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -324,7 +370,14 @@ cpdef utils.dpnp_descriptor dpnp_outer(utils.dpnp_descriptor array1, utils.dpnp_
     cdef shape_type_c result_shape = (array1.size, array2.size)
     result_type = numpy.promote_types(array1.dtype, array1.dtype)
 
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape, result_type, None)
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(array1, array2)
+
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape,
+                                                                             result_type,
+                                                                             None,
+                                                                             device=result_sycl_device,
+                                                                             usm_type=result_usm_type,
+                                                                             sycl_queue=result_sycl_queue)
 
     result_flatiter = result.get_pyobj().flat
     array1_flatiter = array1.get_pyobj().flat

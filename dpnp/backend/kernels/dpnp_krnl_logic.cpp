@@ -71,13 +71,16 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
             result[0] = false;
         }
     };
-    auto parallel_for_event = 
-        q.parallel_for<class dpnp_all_c_kernel<_DataType, _ResultType>>(
-            gws, init_mem_event, kernel_parallel_for_func);
 
-    parallel_for_event.wait();
+    auto kernel_func = [&](sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_all_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
+    };
 
-    return event_ref;
+    event = q.submit(kernel_func);
+
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -160,9 +163,9 @@ DPCTLSyclEventRef dpnp_allclose_c(DPCTLSyclQueueRef q_ref,
 
     event = q.submit(kernel_func);
 
-    event.wait();
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
@@ -242,13 +245,16 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
             result[0] = true;
         }
     };
-    auto parallel_for_event = 
-        q.parallel_for<class dpnp_any_c_kernel<_DataType, _ResultType>>(
-            gws, init_mem_event, kernel_parallel_for_func);
 
-    parallel_for_event.wait();
+    auto kernel_func = [&](sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_any_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
+    };
 
-    return event_ref;
+    event = q.submit(kernel_func);
+
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
