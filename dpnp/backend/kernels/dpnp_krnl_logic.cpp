@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -51,15 +51,16 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
-    auto init_mem_event = q.fill<_ResultType>(result, true, 1);
+    auto fill_event = q.fill<_ResultType>(result, true, 1);
 
     if (!size)
     {
-        init_mem_event.wait();
-        return event_ref;
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&fill_event);
+        return DPCTLEvent_Copy(event_ref);
     }
 
     sycl::range<1> gws(size);
@@ -73,13 +74,12 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
     };
 
     auto kernel_func = [&](sycl::handler& cgh) {
+        cgh.depends_on(fill_event);
         cgh.parallel_for<class dpnp_all_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
-    event = q.submit(kernel_func);
-
+    auto event = q.submit(kernel_func);
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
-
     return DPCTLEvent_Copy(event_ref);
 }
 
@@ -94,6 +94,7 @@ void dpnp_all_c(const void* array1_in, void* result1, const size_t size)
                                                                      size,
                                                                      dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -124,26 +125,23 @@ DPCTLSyclEventRef dpnp_allclose_c(DPCTLSyclQueueRef q_ref,
 
     DPCTLSyclEventRef event_ref = nullptr;
 
-    if (!array1_in || !result1)
+    if (!array1_in || !array2_in || !result1)
     {
         return event_ref;
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-    sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType1> input1_ptr(q_ref, array1_in, size);
-    DPNPC_ptr_adapter<_DataType2> input2_ptr(q_ref, array2_in, size);
-    DPNPC_ptr_adapter<_ResultType> result1_ptr(q_ref, result1, 1, true, true);
-    const _DataType1* array1 = input1_ptr.get_ptr();
-    const _DataType2* array2 = input2_ptr.get_ptr();
-    _ResultType* result = result1_ptr.get_ptr();
+    const _DataType1* array1 = reinterpret_cast<const _DataType1*>(array1_in);
+    const _DataType2* array2 = reinterpret_cast<const _DataType2*>(array2_in);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
-    result[0] = true;
+    auto fill_event = q.fill<_ResultType>(result, true, 1);
 
     if (!size)
     {
-        return event_ref;
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&fill_event);
+        return DPCTLEvent_Copy(event_ref);
     }
 
     sycl::range<1> gws(size);
@@ -157,14 +155,13 @@ DPCTLSyclEventRef dpnp_allclose_c(DPCTLSyclQueueRef q_ref,
     };
 
     auto kernel_func = [&](sycl::handler& cgh) {
+        cgh.depends_on(fill_event);
         cgh.parallel_for<class dpnp_allclose_c_kernel<_DataType1, _DataType2, _ResultType>>(gws,
                                                                                             kernel_parallel_for_func);
     };
 
-    event = q.submit(kernel_func);
-
+    auto event = q.submit(kernel_func);
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
-
     return DPCTLEvent_Copy(event_ref);
 }
 
@@ -183,6 +180,7 @@ void dpnp_allclose_c(
                                                                                        atol_val,
                                                                                        dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
@@ -225,15 +223,16 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
-    auto init_mem_event = q.fill<_ResultType>(result, false, 1);
+    auto fill_event = q.fill<_ResultType>(result, false, 1);
 
     if (!size)
     {
-        init_mem_event.wait();
-        return event_ref;
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&fill_event);
+        return DPCTLEvent_Copy(event_ref);
     }
 
     sycl::range<1> gws(size);
@@ -247,13 +246,12 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
     };
 
     auto kernel_func = [&](sycl::handler& cgh) {
+        cgh.depends_on(fill_event);
         cgh.parallel_for<class dpnp_any_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
-    event = q.submit(kernel_func);
-
+    auto event = q.submit(kernel_func);
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
-
     return DPCTLEvent_Copy(event_ref);
 }
 
@@ -268,6 +266,7 @@ void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
                                                                      size,
                                                                      dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
