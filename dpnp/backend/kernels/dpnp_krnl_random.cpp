@@ -1674,14 +1674,17 @@ DPCTLSyclEventRef dpnp_rng_shuffle_c(DPCTLSyclQueueRef q_ref,
         // Fast, statically typed path: shuffle the underlying buffer.
         // Only for non-empty, 1d objects of class ndarray (subclasses such
         // as MaskedArrays may not support this approach).
-        char* buf = reinterpret_cast<char*>(sycl::malloc_shared(itemsize * sizeof(char), q));
+        char* buf = reinterpret_cast<char*>(sycl::malloc_shared((itemsize + 1) * sizeof(char), q));
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
             if (i != j)
             {
-                auto memcpy1 =
-                    q.submit([&](sycl::handler& h) { h.memcpy(buf, result1 + j * itemsize, itemsize); });
+                auto memcpy1 = q.submit([&](sycl::handler& h) {
+                    h.memcpy(buf, result1 + j * itemsize, itemsize);
+                    // Make as null-terminated buffer to resolve CheckMarx's false positive issue
+                    buf[itemsize] = '\0';
+                });
                 auto memcpy2 = q.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy1});
                     h.memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
@@ -1699,14 +1702,17 @@ DPCTLSyclEventRef dpnp_rng_shuffle_c(DPCTLSyclQueueRef q_ref,
     {
         // Multidimensional ndarrays require a bounce buffer.
         size_t step_size = (size / high_dim_size) * itemsize; // size in bytes for x[i] element
-        char* buf = reinterpret_cast<char*>(sycl::malloc_shared(step_size * sizeof(char), q));
+        char* buf = reinterpret_cast<char*>(sycl::malloc_shared((step_size + 1) * sizeof(char), q));
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
             if (j < i)
             {
-                auto memcpy1 =
-                    q.submit([&](sycl::handler& h) { h.memcpy(buf, result1 + j * step_size, step_size); });
+                auto memcpy1 = q.submit([&](sycl::handler& h) {
+                    h.memcpy(buf, result1 + j * step_size, step_size);
+                    // Make as null-terminated buffer to resolve CheckMarx's false positive issue
+                    buf[step_size] = '\0';
+                });
                 auto memcpy2 = q.submit([&](sycl::handler& h) {
                     h.depends_on({memcpy1});
                     h.memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
