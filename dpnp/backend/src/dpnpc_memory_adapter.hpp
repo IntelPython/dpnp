@@ -52,6 +52,7 @@ class DPNPC_ptr_adapter final
     bool target_no_queue = false; /**< Indicates that original memory will be accessed from non SYCL environment */
     bool copy_back = false;       /**< If the memory is 'result' it needs to be copied back to original */
     const bool verbose = false;
+    std::vector<sycl::event> deps;
 
 public:
     DPNPC_ptr_adapter() = delete;
@@ -68,6 +69,7 @@ public:
         copy_back = copy_back_request;
         orig_ptr = const_cast<void*>(src_ptr);
         size_in_bytes = size * sizeof(_DataType);
+        deps = std::vector<sycl::event>{};
 
         // enum class alloc { host = 0, device = 1, shared = 2, unknown = 3 };
         sycl::usm::alloc src_ptr_type = sycl::usm::alloc::unknown;
@@ -117,6 +119,8 @@ public:
                 std::cerr << "DPNPC_ptr_converter::free_memory at=" << aux_ptr << std::endl;
             }
 
+            sycl::event::wait(deps);
+
             if (copy_back)
             {
                 copy_data_back();
@@ -158,6 +162,17 @@ public:
 
         dpnp_memory_memcpy_c(queue_ref, orig_ptr, aux_ptr, size_in_bytes);
     }
+
+    void depends_on(const std::vector<sycl::event> &new_deps) {
+	assert(allocated);
+        deps.insert(std::end(deps), std::begin(new_deps), std::end(new_deps));
+    }
+
+    void depends_on(const sycl::event &new_dep) {
+	assert(allocated);
+        deps.push_back(new_dep);
+    }
+
 };
 
 #endif // DPNP_MEMORY_ADAPTER_H

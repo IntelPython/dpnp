@@ -91,6 +91,7 @@ void dpnp_argsort_c(void* array1_in, void* result1, size_t size)
                                                                            size,
                                                                            dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _idx_DataType>
@@ -242,6 +243,7 @@ void dpnp_partition_c(
                                                               ndim,
                                                               dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -394,6 +396,7 @@ void dpnp_searchsorted_c(
                                                                                 v_size,
                                                                                 dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _IndexingType>
@@ -459,6 +462,7 @@ void dpnp_sort_c(void* array1_in, void* result1, size_t size)
                                                          size,
                                                          dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
