@@ -1691,7 +1691,7 @@ DPCTLSyclEventRef dpnp_rng_shuffle_c(DPCTLSyclQueueRef q_ref,
     {
         // Multidimensional ndarrays require a bounce buffer.
         size_t step_size = (size / high_dim_size) * itemsize; // size in bytes for x[i] element
-        void* buf = sycl::malloc_device<void *>(step_size, q);
+        void* buf = sycl::malloc_device(step_size, q);
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
