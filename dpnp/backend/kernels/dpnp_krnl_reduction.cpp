@@ -162,6 +162,7 @@ void dpnp_sum_c(void* result_out,
                                                                                 where,
                                                                                 dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType_output, typename _DataType_input>
@@ -278,6 +279,7 @@ void dpnp_prod_c(void* result_out,
                                                                                  where,
                                                                                  dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType_output, typename _DataType_input>
