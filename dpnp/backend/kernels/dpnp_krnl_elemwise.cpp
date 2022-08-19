@@ -143,6 +143,12 @@
             }                                                                                                          \
         }                                                                                                              \
                                                                                                                        \
+        input1_ptr.depends_on(event);                                                                                  \
+        input1_shape_ptr.depends_on(event);                                                                            \
+        input1_strides_ptr.depends_on(event);                                                                          \
+        result_ptr.depends_on(event);                                                                                  \
+        result_strides_ptr.depends_on(event);                                                                          \
+                                                                                                                       \
         event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                                       \
                                                                                                                        \
         return DPCTLEvent_Copy(event_ref);                                                                             \
@@ -644,6 +650,12 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
             }                                                                                                          \
         }                                                                                                              \
                                                                                                                        \
+        input1_ptr.depends_on(event);                                                                                  \
+        input1_shape_ptr.depends_on(event);                                                                            \
+        input1_strides_ptr.depends_on(event);                                                                          \
+        result_ptr.depends_on(event);                                                                                  \
+        result_strides_ptr.depends_on(event);                                                                          \
+                                                                                                                       \
         event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                                       \
                                                                                                                        \
         return DPCTLEvent_Copy(event_ref);                                                                             \
@@ -998,6 +1010,17 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                 event = q.submit(kernel_func);                                                                         \
             }                                                                                                          \
         }                                                                                                              \
+                                                                                                                       \
+        input1_ptr.depends_on(event);                                                                                  \
+        input1_shape_ptr.depends_on(event);                                                                            \
+        input1_strides_ptr.depends_on(event);                                                                          \
+        input2_ptr.depends_on(event);                                                                                  \
+        input2_shape_ptr.depends_on(event);                                                                            \
+        input2_strides_ptr.depends_on(event);                                                                          \
+        result_ptr.depends_on(event);                                                                                  \
+        result_shape_ptr.depends_on(event);                                                                            \
+        result_strides_ptr.depends_on(event);                                                                          \
+                                                                                                                       \
         event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                                       \
                                                                                                                        \
         return DPCTLEvent_Copy(event_ref);                                                                             \
