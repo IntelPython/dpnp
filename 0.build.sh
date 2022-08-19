@@ -15,11 +15,11 @@ CC=dpcpp python setup.py build_ext --inplace
 # development build. Root privileges needed
 # python setup.py develop
 
-echo
-echo =========example3==============
-dpcpp -g -fPIC dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
+# echo
+# echo =========example3==============
+# dpcpp -g -fPIC dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
 # LD_DEBUG=libs,bindings,symbols ./example3
-./example3
+# ./example3
 
 # gcc --version
 # echo =========LD_LIBRARY_PATH==============
@@ -40,10 +40,10 @@ dpcpp -g -fPIC dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend/include 
 
 
 # echo
-echo =========example1==============
+# echo =========example1==============
 # LD_DEBUG=libs,bindings,symbols python examples/example1.py
 # LD_DEBUG=libs python examples/example1.py
-python examples/example1.py
+# python examples/example1.py
 
 # echo ========= find /opt ==============
 # find /opt -name libstdc++.so*
