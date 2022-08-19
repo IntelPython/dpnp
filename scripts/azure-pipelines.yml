@@ -33,26 +33,88 @@ jobs:
   steps:
 
   - bash: |
-      echo ========================= Conda ENV =======================================
-      conda create -q -y -n dpnp
+      set -x
+      echo =========================================== Required s/w ===========================================
+      wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | sudo apt-key add -
+      sudo apt-add-repository 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main'
+      sudo apt-get update
+      sudo apt-get -y install clinfo
+      sudo apt-get -y install valgrind
+      sudo apt-get -y install intel-opencl-icd 
+      # sudo apt-get -y intel-level-zero-gpu
+      # sudo apt-get -y level-zero
+      # sudo apt-get -y intel-media-va-driver-non-free
+      # sudo apt-get -y libmfx1
+      groups
+      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+      sudo apt install intel-oneapi-runtime-libs
+      echo ============================================ Conda ENV =============================================
+      conda create -q -y -n CondaValgrind python=3.9 conda-build conda-verify \
+                                                    numpy cython pytest pytest-cov pycodestyle autopep8 \
+                                                    dpctl mkl-devel-dpcpp tbb-devel dpcpp_linux-64 cmake=3.19 \
+                                                    -c dppy/label/dev -c intel -c conda-forge
       . /usr/share/miniconda/etc/profile.d/conda.sh
-      conda activate dpnp
-      echo ========================= CI ENV ==========================================
-      . ./scripts/set_ci_env.sh
-      echo ========================= build DPNP ======================================
-      ./0.build.sh
+      conda activate CondaValgrind
+      echo =========================================== Fetch OneDPL ===========================================
+      git clone --branch release/2021.7 https://github.com/oneapi-src/oneDPL.git $(System.ArtifactsDirectory)/oneDPL
+      ls -l $(System.ArtifactsDirectory)
+      ls -l $(System.ArtifactsDirectory)/oneDPL
+      echo ============================================ Build DPNP ============================================
+      DPLROOT=$(System.ArtifactsDirectory)/oneDPL python setup.py build_clib
+      CC=dpcpp python setup.py build_ext --inplace
+      # echo ========================= Conda ENV =======================================
+      # conda create -q -y -n dpnp
+      # . /usr/share/miniconda/etc/profile.d/conda.sh
+      # conda activate dpnp
+      # echo ========================= CI ENV ==========================================
+      # . ./scripts/set_ci_env.sh
+      # echo ========================= build DPNP ======================================
+      # ./0.build.sh
       echo ========================= run valgrind ====================================
+      pip3 install pytest-valgrind
+      valgrind --version
+      which valgrind
       export PYTHONMALLOC=malloc
       valgrind --show-leak-kinds=definite --log-file=/tmp/valgrind-output            \
                python -m pytest tests/third_party/cupy/math_tests/test_arithmetic.py \
                                 -vv --valgrind --valgrind-log=/tmp/valgrind-output
+      cat /tmp/valgrind-output
 
 - job: mycodecoverage
   displayName: Code coverage
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
+  # - task: DownloadGitHubRelease@0
+  #   inputs:
+  #     connection: 'Fetch OneDPL'
+  #     userRepository: 'oneapi-src/oneDPL'
+  #     defaultVersionType: 'specificVersion'
+  #     version: oneDPL-2021.7.0-release
+  #     downloadPath: '$(System.ArtifactsDirectory)'
   - bash: |
+      set -x
+      echo =========================================== Required s/w ===========================================
+      wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | sudo apt-key add -
+      sudo apt-add-repository 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main'
+      sudo apt-get update
+      sudo apt-get -y install clinfo
+      sudo apt-get -y install intel-opencl-icd 
+      # sudo apt-get -y intel-level-zero-gpu
+      # sudo apt-get -y level-zero
+      # sudo apt-get -y intel-media-va-driver-non-free
+      # sudo apt-get -y libmfx1
+      groups
+      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+      sudo apt install intel-oneapi-runtime-libs
       echo ============================================ Conda ENV =============================================
       conda create -q -y -n CondaCodeCov python=3.8 conda-build conda-verify \
                                                     numpy cython pytest pytest-cov pycodestyle autopep8 \
@@ -60,15 +122,41 @@ jobs:
                                                     -c dppy/label/dev -c intel -c conda-forge
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeCov
-      echo ============================================ build DPNP ============================================
-      python setup.py build_clib
+      echo =========================================== Fetch OneDPL ===========================================
+      git clone --branch release/2021.7 https://github.com/oneapi-src/oneDPL.git $(System.ArtifactsDirectory)/oneDPL
+      ls -l $(System.ArtifactsDirectory)
+      ls -l $(System.ArtifactsDirectory)/oneDPL
+      echo ============================================ Build DPNP ============================================
+      DPLROOT=$(System.ArtifactsDirectory)/oneDPL python setup.py build_clib
       CC=dpcpp python setup.py build_ext --inplace
-      echo ============================================ run code coverage =====================================
+      echo =========================================== Debug outputs ==========================================
+      lsb_release -a
+      env
+      conda list
+      python -c "import dpctl; dpctl.lsplatform(verbosity=2); dpctl.SyclDevice().print_device_info()"
+      lscpu
+      # cat /proc/cpuinfo
+      sudo lshw -C display
+      # sudo lshw
+      # sudo lspci
+      sudo lspci | grep ' VGA ' | cut -d" " -f 1 | xargs -i lspci -v -s {}
+      # clinfo
+      clinfo | grep Version
+      # apt list --installed
+      python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
+      python -c "import dpctl; dpctl.SyclDevice().print_device_info()"
+      sycl-ls
+      export SYCL_DEVICE_FILTER=cpu
+      python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
+      python -c "import dpctl; dpctl.SyclDevice().print_device_info()"
+      sycl-ls
+      echo ========================================= Run code coverage ========================================
       export OCL_ICD_FILENAMES=libintelocl.so
-      pytest --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
-      export CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b"
-      bash <(curl -s https://codecov.io/bash) -f coverage.xml
-
+      pytest -v --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
+      echo "run for failing suite"
+      pytest -v --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp tests/test_statistics.py
+      # export CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b"
+      # bash <(curl -s https://codecov.io/bash) -f coverage.xml
 #- job: ubuntu2004
 #  displayName: Ubuntu 20.04
 #  pool:
@@ -114,6 +202,9 @@ jobs:
     vmImage: 'ubuntu-20.04'
   variables:
     mkl.version: '>=2021.4'
+    onedpl.git.branch: 'release/2021.7'
+    onedpl.git.repo: 'https://github.com/oneapi-src/oneDPL.git'
+    onedpl.clone.path: '$(System.ArtifactsDirectory)/oneDPL'
   strategy:
     matrix:
       Python38:
@@ -126,14 +217,39 @@ jobs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
   - bash: |
+      set -x
+      echo =========================================== Required s/w ===========================================
+      wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | sudo apt-key add -
+      sudo apt-add-repository 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main'
+      sudo apt-get update
+      sudo apt-get -y install clinfo
+      sudo apt-get -y install valgrind
+      sudo apt-get -y install intel-opencl-icd 
+      # sudo apt-get -y intel-level-zero-gpu
+      # sudo apt-get -y level-zero
+      # sudo apt-get -y intel-media-va-driver-non-free
+      # sudo apt-get -y libmfx1
+      groups
+      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+      sudo apt install intel-oneapi-runtime-libs
       echo ========================= create Conda ENV ===========================
-      conda create -q -y -n dpnp$(python.version) conda-build --override-channels -c intel -c conda-forge
+      conda create -q -y -n dpnp$(python.version) python=$(python.version) conda-build --override-channels -c intel -c conda-forge
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate dpnp$(python.version)
+      echo =========================================== Fetch OneDPL ===========================================
+      git clone --branch $(onedpl.git.branch) $(onedpl.git.repo) $(onedpl.clone.path)
+      ls -l $(System.ArtifactsDirectory)
+      ls -l $(onedpl.clone.path)
       echo ========================= build DPNP and run tests ==========================
       export MKL_VER=$(mkl.version)
+      export DPLROOT=$(onedpl.clone.path)
       export OCL_ICD_FILENAMES=libintelocl.so
-      conda-build --python $(python.version) --override-channels -c intel -c conda-forge -c dppy/label/dev ./conda-recipe/
+      export SYCL_DEVICE_FILTER=cpu
+      conda-build -c dppy/label/dev -c intel -c defaults --override-channels conda-recipe
 
 #- job: ubuntu2004_tests_external
 #  displayName: Ubuntu 20.04 External Tests

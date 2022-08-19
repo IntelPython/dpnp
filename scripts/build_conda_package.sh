@@ -14,3 +14,5 @@ conda build \
   $VERSIONS \
   $CHANNELS \
   conda-recipe
+
+gdb python core
