@@ -493,6 +493,9 @@ DPCTLSyclEventRef dpnp_ptp_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
+    DPCTLSyclEventRef e1_ref = nullptr;
+    DPCTLSyclEventRef e2_ref = nullptr;
+    DPCTLSyclEventRef e3_ref = nullptr;
 
     if ((input1_in == nullptr) || (result1_out == nullptr))
     {
@@ -514,29 +517,36 @@ DPCTLSyclEventRef dpnp_ptp_c(DPCTLSyclQueueRef q_ref,
     _DataType* min_arr = reinterpret_cast<_DataType*>(sycl::malloc_shared(result_size * sizeof(_DataType), q));
     _DataType* max_arr = reinterpret_cast<_DataType*>(sycl::malloc_shared(result_size * sizeof(_DataType), q));
 
-    dpnp_min_c<_DataType>(arr, min_arr, result_size, input_shape, input_ndim, axis, naxis);
-    dpnp_max_c<_DataType>(arr, max_arr, result_size, input_shape, input_ndim, axis, naxis);
+    e1_ref = dpnp_min_c<_DataType>(q_ref, arr, min_arr, result_size, input_shape, input_ndim, axis, naxis, NULL);
+    e2_ref = dpnp_max_c<_DataType>(q_ref, arr, max_arr, result_size, input_shape, input_ndim, axis, naxis, NULL);
 
     shape_elem_type* _strides =
         reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(result_ndim * sizeof(shape_elem_type), q));
     get_shape_offsets_inkernel(result_shape, result_ndim, _strides);
 
-    dpnp_subtract_c<_DataType, _DataType, _DataType>(result,
-                                                     result_size,
-                                                     result_ndim,
-                                                     result_shape,
-                                                     result_strides,
-                                                     max_arr,
-                                                     result_size,
-                                                     result_ndim,
-                                                     result_shape,
-                                                     _strides,
-                                                     min_arr,
-                                                     result_size,
-                                                     result_ndim,
-                                                     result_shape,
-                                                     _strides,
-                                                     NULL);
+    e3_ref = dpnp_subtract_c<_DataType, _DataType, _DataType>(q_ref, result,
+							      result_size,
+							      result_ndim,
+							      result_shape,
+							      result_strides,
+							      max_arr,
+							      result_size,
+							      result_ndim,
+							      result_shape,
+							      _strides,
+							      min_arr,
+							      result_size,
+							      result_ndim,
+							      result_shape,
+							      _strides,
+							      NULL, NULL);
+
+    DPCTLEvent_Wait(e1_ref);
+    DPCTLEvent_Wait(e2_ref);
+    DPCTLEvent_Wait(e3_ref);
+    DPCTLEvent_Delete(e1_ref);
+    DPCTLEvent_Delete(e2_ref);
+    DPCTLEvent_Delete(e3_ref);
 
     sycl::free(min_arr, q);
     sycl::free(max_arr, q);
@@ -576,6 +586,7 @@ void dpnp_ptp_c(void* result1_out,
                                                         naxis,
                                                         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>

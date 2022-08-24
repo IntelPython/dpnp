@@ -1377,3 +1377,5 @@ tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentil
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_scalar_q
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_tuple_axis
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_uxpected_interpolation
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_all_nan
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_nan
