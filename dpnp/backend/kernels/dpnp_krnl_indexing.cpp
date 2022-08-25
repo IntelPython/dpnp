@@ -1081,7 +1081,7 @@ void func_map_init_indexing_func(func_map_t& fmap)
 
     // TODO: What types are supported for indices[]:
     //   - only int64?
-    //   - anyone which is allowed to be converted in integer type (e.g. excluding complex type)?
+    //   - any which is allowed to be converted in integer type (e.g. excluding complex type)?
     //   - any including complex type?
     // TODO: Where is type casting to be done (in python, cython or backend code)?
     // TODO: Now tests cover only when both x1[] and indices[] are of the same integer type, needs to extend.

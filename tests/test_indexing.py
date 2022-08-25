@@ -374,6 +374,9 @@ def test_select():
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize("type",
+                         [numpy.int32, numpy.int64],
+                         ids=['int32', 'int64'])
 @pytest.mark.parametrize("indices",
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
@@ -395,9 +398,9 @@ def test_select():
                               '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]',
                               '[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]',
                               '[[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]'])
-def test_take(array, indices):
-    a = numpy.array(array)
-    ind = numpy.array(indices)
+def test_take(array, indices, type):
+    a = numpy.array(array, dtype=type)
+    ind = numpy.array(indices, dtype=type)
     ia = dpnp.array(a)
     iind = dpnp.array(ind)
     expected = numpy.take(a, ind)
