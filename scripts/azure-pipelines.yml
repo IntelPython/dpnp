@@ -67,10 +67,6 @@ jobs:
                                                     -c dppy/label/dev -c intel -c conda-forge
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeCov
-      #echo ======================== setup Intel OneAPI python changed to Intel OneAPI =========================
-      #. /opt/intel/oneapi/setvars.sh
-      #ls -l /opt/intel/oneapi/dpl
-      #ls -l /opt/intel/oneapi/dpl/latest
       echo ============================================ build DPNP ============================================
       ls -l $(System.ArtifactsDirectory)
       ls -l $(System.ArtifactsDirectory)/oneDPL
