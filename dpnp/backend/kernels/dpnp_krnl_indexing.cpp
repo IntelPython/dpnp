@@ -1071,29 +1071,36 @@ void func_map_init_indexing_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS_EXT][eft_DBL][eft_DBL] = {eft_DBL,
                                                                         (void*)dpnp_put_along_axis_ext_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_take_default_c<bool, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_BLN][eft_INT] = {eft_BLN, (void*)dpnp_take_default_c<bool, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_take_default_c<int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_take_default_c<int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_FLT][eft_INT] = {eft_FLT, (void*)dpnp_take_default_c<float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_take_default_c<double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_C128][eft_INT] = {eft_C128,
+                                                           (void*)dpnp_take_default_c<std::complex<double>, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_BLN][eft_LNG] = {eft_BLN, (void*)dpnp_take_default_c<bool, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_INT][eft_LNG] = {eft_INT, (void*)dpnp_take_default_c<int32_t, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_take_default_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_take_default_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_take_default_c<double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_C128][eft_C128] = {eft_C128,
-                                                            (void*)dpnp_take_default_c<std::complex<double>, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_FLT][eft_LNG] = {eft_FLT, (void*)dpnp_take_default_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_take_default_c<double, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_C128][eft_LNG] = {eft_C128,
+                                                           (void*)dpnp_take_default_c<std::complex<double>, int64_t>};
 
-    // TODO: What types are supported for indices[]:
-    //   - only int64?
-    //   - any which is allowed to be converted in integer type (e.g. excluding complex type)?
-    //   - any including complex type?
-    // TODO: Where is type casting to be done (in python, cython or backend code)?
-    // TODO: Now tests cover only when both x1[] and indices[] are of the same integer type, needs to extend.
-    //       Any other supported type pairs (non-integer) lead to a memory corruption.
-    //       Need to support each pair with any suported type of x1[] and any supported type of indices[].
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_take_ext_c<bool, int64_t>};
+    // TODO: add a handling of other indexes types once DPCtl implementation of data copy is ready
+    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_BLN][eft_INT] = {eft_BLN, (void*)dpnp_take_ext_c<bool, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_take_ext_c<int32_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_take_ext_c<int64_t, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_FLT][eft_INT] = {eft_FLT, (void*)dpnp_take_ext_c<float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_take_ext_c<double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_C128][eft_INT] = {eft_C128,
+                                                               (void*)dpnp_take_ext_c<std::complex<double>, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_BLN][eft_LNG] = {eft_BLN, (void*)dpnp_take_ext_c<bool, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_INT][eft_LNG] = {eft_INT, (void*)dpnp_take_ext_c<int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_take_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_take_ext_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_take_ext_c<double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_C128][eft_C128] = {eft_C128,
-                                                                (void*)dpnp_take_ext_c<std::complex<double>, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_FLT][eft_LNG] = {eft_FLT, (void*)dpnp_take_ext_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_take_ext_c<double, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_C128][eft_LNG] = {eft_C128,
+                                                               (void*)dpnp_take_ext_c<std::complex<double>, int64_t>};
 
     return;
 }

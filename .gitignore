@@ -1,7 +1,15 @@
+# CMake build and local install directory
 build
 build_cython
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
+
+# Code project files
+.vscode
+
 *dpnp_backend*
 dpnp/**/*.cpython*.so
 dpnp/**/*.pyd
 *~
+core
