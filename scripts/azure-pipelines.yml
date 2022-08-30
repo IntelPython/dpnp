@@ -67,10 +67,6 @@ jobs:
                                                     -c dppy/label/dev -c intel -c conda-forge
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeCov
-      #echo ============================================== CI ENV ==============================================
-      #git clone --branch release/2021.7 https://github.com/oneapi-src/oneDPL.git
-      #ls -l /opt/intel/oneapi/dpl
-      #. ./scripts/install_system_deps.sh
       #echo ======================== setup Intel OneAPI python changed to Intel OneAPI =========================
       #. /opt/intel/oneapi/setvars.sh
       #ls -l /opt/intel/oneapi/dpl
