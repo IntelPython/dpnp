@@ -60,6 +60,9 @@ jobs:
                                                     -c dppy/label/dev -c intel -c conda-forge
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeCov
+      echo ========================= CI ENV ==========================================
+      ls -l /opt/intel/oneapi/dpl/latest
+      . ./scripts/set_ci_env.sh
       echo ============================================ build DPNP ============================================
       python setup.py build_clib
       CC=dpcpp python setup.py build_ext --inplace
