@@ -54,7 +54,7 @@ jobs:
   steps:
   - task: DownloadGitHubRelease@0
     inputs:
-      connection: 'One DPL'
+      connection: 'Fetch OneDPL'
       userRepository: 'oneapi-src/oneDPL'
       defaultVersionType: 'specificVersion'
       version: oneDPL-2021.7.0-release
