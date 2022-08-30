@@ -52,19 +52,33 @@ jobs:
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
+  - task: DownloadGitHubRelease@0
+    inputs:
+      connection: 'One DPL'
+      userRepository: 'oneapi-src/oneDPL'
+      defaultVersionType: 'specificVersion'
+      version: oneDPL-2021.7.0-release
+      downloadPath: '$(System.ArtifactsDirectory)'
   - bash: |
       echo ============================================ Conda ENV =============================================
-      conda create -q -y -n CondaCodeCov python=3.8 conda-build conda-verify \
+      conda create -q -y -n CondaCodeCov python=3.9 conda-build conda-verify \
                                                     numpy cython pytest pytest-cov pycodestyle autopep8 \
                                                     dpctl mkl-devel-dpcpp tbb-devel dpcpp_linux-64 cmake=3.19 \
                                                     -c dppy/label/dev -c intel -c conda-forge
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeCov
-      echo ========================= CI ENV ==========================================
-      ls -l /opt/intel/oneapi/dpl/latest
-      . ./scripts/set_ci_env.sh
+      #echo ============================================== CI ENV ==============================================
+      #git clone --branch release/2021.7 https://github.com/oneapi-src/oneDPL.git
+      #ls -l /opt/intel/oneapi/dpl
+      #. ./scripts/install_system_deps.sh
+      #echo ======================== setup Intel OneAPI python changed to Intel OneAPI =========================
+      #. /opt/intel/oneapi/setvars.sh
+      #ls -l /opt/intel/oneapi/dpl
+      #ls -l /opt/intel/oneapi/dpl/latest
       echo ============================================ build DPNP ============================================
-      python setup.py build_clib
+      ls -l $(System.ArtifactsDirectory)
+      ls -l $(System.ArtifactsDirectory)/oneDPL
+      DPLROOT=$(System.ArtifactsDirectory)/oneDPL python setup.py build_clib
       CC=dpcpp python setup.py build_ext --inplace
       echo ============================================ run code coverage =====================================
       export OCL_ICD_FILENAMES=libintelocl.so

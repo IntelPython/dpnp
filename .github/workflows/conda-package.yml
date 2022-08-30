@@ -3,7 +3,7 @@ name: Conda package
 on: push
 
 env:
-  PACKAGE_NAME: dpctl
+  PACKAGE_NAME: dpnp
 
 jobs:
   build:
@@ -24,7 +24,7 @@ jobs:
         with:
           repository: oneapi-src/oneDPL
           path: oneDPL
-          ref: oneDPL-2021.6.1-release
+          ref: oneDPL-2021.7.0-release
 
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH

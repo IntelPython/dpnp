@@ -46,7 +46,7 @@ test:
         - setup.cfg
     commands:
       - python -c "import dpnp"
-      - pytest
+      - pytest -s
 
 about:
     home: https://github.com/IntelPython/dpnp
