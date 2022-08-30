@@ -11,7 +11,7 @@ requirements:
       - numpy 1.19
       - cython
       - cmake 3.19
-      - dpctl >=0.12
+      - dpctl >=0.13
       - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2021.1.1') }}
       - tbb-devel
       - wheel
@@ -20,7 +20,7 @@ requirements:
       - dpcpp-cpp-rt {{ environ.get('DPCPP_VER', '>=2021.1.1') }}
     run:
       - python
-      - dpctl >=0.12
+      - dpctl >=0.13
       - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('mkl-dpcpp', min_pin='x.x', max_pin='x') }}
       - numpy >=1.15
