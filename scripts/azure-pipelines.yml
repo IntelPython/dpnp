@@ -52,13 +52,13 @@ jobs:
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
-  - task: DownloadGitHubRelease@0
-    inputs:
-      connection: 'Fetch OneDPL'
-      userRepository: 'oneapi-src/oneDPL'
-      #defaultVersionType: 'specificVersion'
-      #version: oneDPL-2021.7.0-release
-      downloadPath: '$(System.ArtifactsDirectory)'
+  # - task: DownloadGitHubRelease@0
+  #   inputs:
+  #     connection: 'Fetch OneDPL'
+  #     userRepository: 'oneapi-src/oneDPL'
+  #     defaultVersionType: 'specificVersion'
+  #     version: oneDPL-2021.7.0-release
+  #     downloadPath: '$(System.ArtifactsDirectory)'
   - bash: |
       echo ============================================ Conda ENV =============================================
       conda create -q -y -n CondaCodeCov python=3.9 conda-build conda-verify \
@@ -67,9 +67,11 @@ jobs:
                                                     -c dppy/label/dev -c intel -c conda-forge
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeCov
-      echo ============================================ build DPNP ============================================
+      echo =========================================== Fetch OneDPL============================================
+      git clone --branch release/2021.7 https://github.com/IntelPython/dpctl.git $(System.ArtifactsDirectory)
       ls -l $(System.ArtifactsDirectory)
       ls -l $(System.ArtifactsDirectory)/oneDPL
+      echo ============================================ build DPNP ============================================
       DPLROOT=$(System.ArtifactsDirectory)/oneDPL python setup.py build_clib
       CC=dpcpp python setup.py build_ext --inplace
       echo ============================================ run code coverage =====================================
