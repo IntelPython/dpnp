@@ -68,8 +68,6 @@ jobs:
                                                     -c dppy/label/dev -c intel -c conda-forge
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeCov
-      echo =========================================== Enbale debug ===========================================
-      ulimit -C
       echo =========================================== Fetch OneDPL ===========================================
       git clone --branch release/2021.7 https://github.com/oneapi-src/oneDPL.git $(System.ArtifactsDirectory)/oneDPL
       ls -l $(System.ArtifactsDirectory)
@@ -82,14 +80,6 @@ jobs:
       pytest --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
       export CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b"
       bash <(curl -s https://codecov.io/bash) -f coverage.xml
-      echo =========================================== Enbale debug ===========================================
-      ls -la
-      gdb --version
-      python --version
-      echo "bt\nquit\n" >> test.gdb 
-      cat test.gdb
-      gdb --batch --command=test.gdb --arg python core
-
 #- job: ubuntu2004
 #  displayName: Ubuntu 20.04
 #  pool:
@@ -152,7 +142,7 @@ jobs:
   - bash: |
       set -x
       echo ========================= create Conda ENV ===========================
-      conda create -q -y --python $(python.version) -n dpnp$(python.version) conda-build --override-channels -c intel -c conda-forge
+      conda create -q -y -n dpnp$(python.version) python=$(python.version) conda-build --override-channels -c intel -c conda-forge
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate dpnp$(python.version)
       echo =========================================== Fetch OneDPL ===========================================
@@ -162,8 +152,8 @@ jobs:
       echo ========================= build DPNP and run tests ==========================
       # export MKL_VER=$(mkl.version)
       export DPLROOT=$(onedpl.clone.path)
-      export OCL_ICD_FILENAMES=libintelocl.so
-      conda-build --python $(python.version) --override-channels -c intel -c conda-forge -c dppy/label/dev ./conda-recipe/
+      # export OCL_ICD_FILENAMES=libintelocl.so
+      conda-build --c dppy/label/dev -c intel -c defaults --override-channels conda-recipe
 
 #- job: ubuntu2004_tests_external
 #  displayName: Ubuntu 20.04 External Tests
