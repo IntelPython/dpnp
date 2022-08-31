@@ -56,8 +56,8 @@ jobs:
     inputs:
       connection: 'Fetch OneDPL'
       userRepository: 'oneapi-src/oneDPL'
-      defaultVersionType: 'specificVersion'
-      version: oneDPL-2021.7.0-release
+      #defaultVersionType: 'specificVersion'
+      #version: oneDPL-2021.7.0-release
       downloadPath: '$(System.ArtifactsDirectory)'
   - bash: |
       echo ============================================ Conda ENV =============================================
