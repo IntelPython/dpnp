@@ -68,7 +68,7 @@ jobs:
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeCov
       echo =========================================== Fetch OneDPL============================================
-      git clone --branch release/2021.7 https://github.com/IntelPython/dpctl.git $(System.ArtifactsDirectory)
+      git clone --branch release/2021.7 https://github.com/oneapi-src/oneDPL.git $(System.ArtifactsDirectory)/oneDPL
       ls -l $(System.ArtifactsDirectory)
       ls -l $(System.ArtifactsDirectory)/oneDPL
       echo ============================================ build DPNP ============================================
