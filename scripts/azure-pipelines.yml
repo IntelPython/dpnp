@@ -153,7 +153,7 @@ jobs:
       # export MKL_VER=$(mkl.version)
       export DPLROOT=$(onedpl.clone.path)
       # export OCL_ICD_FILENAMES=libintelocl.so
-      conda-build --c dppy/label/dev -c intel -c defaults --override-channels conda-recipe
+      conda-build -c dppy/label/dev -c intel -c defaults --override-channels conda-recipe
 
 #- job: ubuntu2004_tests_external
 #  displayName: Ubuntu 20.04 External Tests
