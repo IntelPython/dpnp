@@ -80,6 +80,8 @@ jobs:
       env
       conda list
       python -c "import dpctl; dpctl.lsplatform(verbosity=2); dpctl.SyclDevice().print_device_info()"
+      sudo apt-get update
+      sudo apt-get -y install clinfo
       clinfo
       clinfo | grep Version
       echo ========================================= Run code coverage ========================================
