@@ -88,8 +88,11 @@ jobs:
       sudo lspci | grep ' VGA ' | cut -d" " -f 1 | xargs -i lspci -v -s {}
       sudo apt-get update
       sudo apt-get -y install clinfo
+      sudo apt-get -y install intel-opencl-icd
       clinfo
       clinfo | grep Version
+      apt list --installed
+      python -c "import dpctl; dpctl.lsplatform(verbosity=2); dpctl.SyclDevice().print_device_info()"
       echo ========================================= Run code coverage ========================================
       export OCL_ICD_FILENAMES=libintelocl.so
       pytest -v --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
