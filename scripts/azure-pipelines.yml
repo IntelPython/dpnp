@@ -67,17 +67,17 @@ jobs:
       sudo apt-get update
       sudo apt-get -y install clinfo
       sudo apt-get -y install intel-opencl-icd 
-      sudo apt-get -y intel-level-zero-gpu
-      sudo apt-get -y level-zero
-      sudo apt-get -y intel-media-va-driver-non-free
-      sudo apt-get -y libmfx1
+      # sudo apt-get -y intel-level-zero-gpu
+      # sudo apt-get -y level-zero
+      # sudo apt-get -y intel-media-va-driver-non-free
+      # sudo apt-get -y libmfx1
       groups
-      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-      echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-      sudo apt install intel-oneapi-runtime-libs
+      # wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      # sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      # rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      # echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+      # sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+      # sudo apt install intel-oneapi-runtime-libs
       echo ============================================ Conda ENV =============================================
       conda create -q -y -n CondaCodeCov python=3.8 conda-build conda-verify \
                                                     numpy cython pytest pytest-cov pycodestyle autopep8 \
@@ -98,15 +98,19 @@ jobs:
       conda list
       python -c "import dpctl; dpctl.lsplatform(verbosity=2); dpctl.SyclDevice().print_device_info()"
       lscpu
-      cat /proc/cpuinfo
+      # cat /proc/cpuinfo
       sudo lshw -C display
-      sudo lshw
-      sudo lspci
+      # sudo lshw
+      # sudo lspci
       sudo lspci | grep ' VGA ' | cut -d" " -f 1 | xargs -i lspci -v -s {}
-      clinfo
+      # clinfo
       clinfo | grep Version
-      apt list --installed
-      python -c "import dpctl; dpctl.lsplatform(verbosity=2); dpctl.SyclDevice().print_device_info()"
+      # apt list --installed
+      python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
+      python -c "import dpctl; dpctl.SyclDevice().print_device_info()"
+      sylc-ls
+      export SYCL_DEVICE_FILTER=cpu
+      sylc-ls
       echo ========================================= Run code coverage ========================================
       export OCL_ICD_FILENAMES=libintelocl.so
       pytest -v --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
