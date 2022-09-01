@@ -80,6 +80,8 @@ jobs:
       env
       conda list
       python -c "import dpctl; dpctl.lsplatform(verbosity=2); dpctl.SyclDevice().print_device_info()"
+      clinfo
+      clinfo | grep Version
       echo ========================================= Run code coverage ========================================
       export OCL_ICD_FILENAMES=libintelocl.so
       pytest -v --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
