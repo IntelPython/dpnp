@@ -61,6 +61,20 @@ jobs:
   #     downloadPath: '$(System.ArtifactsDirectory)'
   - bash: |
       set -x
+      echo =========================================== Required s/w ===========================================
+      wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | sudo apt-key add -
+      sudo apt-add-repository 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main'
+      sudo apt-get update
+      sudo apt-get -y install clinfo
+      sudo apt-get -y install intel-opencl-icd 
+      sudo apt-get -y intel-level-zero-gpu
+      sudo apt-get -y level-zero
+      sudo apt-get -y intel-media-va-driver-non-free
+      sudo apt-get -y libmfx1
+      groups
+      echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+      sudo apt install intel-oneapi-runtime-libs
       echo ============================================ Conda ENV =============================================
       conda create -q -y -n CondaCodeCov python=3.8 conda-build conda-verify \
                                                     numpy cython pytest pytest-cov pycodestyle autopep8 \
@@ -86,9 +100,6 @@ jobs:
       sudo lshw
       sudo lspci
       sudo lspci | grep ' VGA ' | cut -d" " -f 1 | xargs -i lspci -v -s {}
-      sudo apt-get update
-      sudo apt-get -y install clinfo
-      sudo apt-get -y install intel-opencl-icd
       clinfo
       clinfo | grep Version
       apt list --installed
