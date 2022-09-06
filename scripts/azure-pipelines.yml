@@ -75,6 +75,7 @@ jobs:
       # echo ========================= build DPNP ======================================
       # ./0.build.sh
       echo ========================= run valgrind ====================================
+      pip3 install pytest-valgrind
       valgrind --version
       which valgrind
       export PYTHONMALLOC=malloc
