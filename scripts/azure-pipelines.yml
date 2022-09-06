@@ -33,14 +33,46 @@ jobs:
   steps:
 
   - bash: |
-      echo ========================= Conda ENV =======================================
-      conda create -q -y -n dpnp
+      set -x
+      echo =========================================== Required s/w ===========================================
+      wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | sudo apt-key add -
+      sudo apt-add-repository 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main'
+      sudo apt-get update
+      sudo apt-get -y install clinfo
+      sudo apt-get -y install intel-opencl-icd 
+      # sudo apt-get -y intel-level-zero-gpu
+      # sudo apt-get -y level-zero
+      # sudo apt-get -y intel-media-va-driver-non-free
+      # sudo apt-get -y libmfx1
+      groups
+      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+      sudo apt install intel-oneapi-runtime-libs
+      echo ============================================ Conda ENV =============================================
+      conda create -q -y -n CondaValgrind python=3.9 conda-build conda-verify \
+                                                    numpy cython pytest pytest-cov pycodestyle autopep8 \
+                                                    dpctl mkl-devel-dpcpp tbb-devel dpcpp_linux-64 cmake=3.19 \
+                                                    -c dppy/label/dev -c intel -c conda-forge
       . /usr/share/miniconda/etc/profile.d/conda.sh
-      conda activate dpnp
-      echo ========================= CI ENV ==========================================
-      . ./scripts/set_ci_env.sh
-      echo ========================= build DPNP ======================================
-      ./0.build.sh
+      conda activate CondaValgrind
+      echo =========================================== Fetch OneDPL ===========================================
+      git clone --branch release/2021.7 https://github.com/oneapi-src/oneDPL.git $(System.ArtifactsDirectory)/oneDPL
+      ls -l $(System.ArtifactsDirectory)
+      ls -l $(System.ArtifactsDirectory)/oneDPL
+      echo ============================================ Build DPNP ============================================
+      DPLROOT=$(System.ArtifactsDirectory)/oneDPL python setup.py build_clib
+      CC=dpcpp python setup.py build_ext --inplace
+      # echo ========================= Conda ENV =======================================
+      # conda create -q -y -n dpnp
+      # . /usr/share/miniconda/etc/profile.d/conda.sh
+      # conda activate dpnp
+      # echo ========================= CI ENV ==========================================
+      # . ./scripts/set_ci_env.sh
+      # echo ========================= build DPNP ======================================
+      # ./0.build.sh
       echo ========================= run valgrind ====================================
       export PYTHONMALLOC=malloc
       valgrind --show-leak-kinds=definite --log-file=/tmp/valgrind-output            \
@@ -112,7 +144,7 @@ jobs:
       export SYCL_DEVICE_FILTER=cpu
       python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
       python -c "import dpctl; dpctl.SyclDevice().print_device_info()"
-      sylc-ls
+      sycl-ls
       echo ========================================= Run code coverage ========================================
       export OCL_ICD_FILENAMES=libintelocl.so
       pytest -v --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
