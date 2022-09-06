@@ -82,6 +82,7 @@ jobs:
       valgrind --show-leak-kinds=definite --log-file=/tmp/valgrind-output            \
                python -m pytest tests/third_party/cupy/math_tests/test_arithmetic.py \
                                 -vv --valgrind --valgrind-log=/tmp/valgrind-output
+      cat /tmp/valgrind-output
 
 - job: mycodecoverage
   displayName: Code coverage
@@ -152,8 +153,10 @@ jobs:
       echo ========================================= Run code coverage ========================================
       export OCL_ICD_FILENAMES=libintelocl.so
       pytest -v --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
-      export CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b"
-      bash <(curl -s https://codecov.io/bash) -f coverage.xml
+      echo "run for failing suite"
+      pytest -v --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp tests/test_statistics.py
+      # export CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b"
+      # bash <(curl -s https://codecov.io/bash) -f coverage.xml
 #- job: ubuntu2004
 #  displayName: Ubuntu 20.04
 #  pool:
@@ -215,6 +218,24 @@ jobs:
     displayName: 'Use Python $(python.version)'
   - bash: |
       set -x
+      echo =========================================== Required s/w ===========================================
+      wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | sudo apt-key add -
+      sudo apt-add-repository 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main'
+      sudo apt-get update
+      sudo apt-get -y install clinfo
+      sudo apt-get -y install valgrind
+      sudo apt-get -y install intel-opencl-icd 
+      # sudo apt-get -y intel-level-zero-gpu
+      # sudo apt-get -y level-zero
+      # sudo apt-get -y intel-media-va-driver-non-free
+      # sudo apt-get -y libmfx1
+      groups
+      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+      echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+      sudo apt install intel-oneapi-runtime-libs
       echo ========================= create Conda ENV ===========================
       conda create -q -y -n dpnp$(python.version) python=$(python.version) conda-build --override-channels -c intel -c conda-forge
       . /usr/share/miniconda/etc/profile.d/conda.sh
