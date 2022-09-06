@@ -39,6 +39,7 @@ jobs:
       sudo apt-add-repository 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main'
       sudo apt-get update
       sudo apt-get -y install clinfo
+      sudo apt-get -y install valgrind
       sudo apt-get -y install intel-opencl-icd 
       # sudo apt-get -y intel-level-zero-gpu
       # sudo apt-get -y level-zero
@@ -74,6 +75,8 @@ jobs:
       # echo ========================= build DPNP ======================================
       # ./0.build.sh
       echo ========================= run valgrind ====================================
+      valgrind --version
+      which valgrind
       export PYTHONMALLOC=malloc
       valgrind --show-leak-kinds=definite --log-file=/tmp/valgrind-output            \
                python -m pytest tests/third_party/cupy/math_tests/test_arithmetic.py \
