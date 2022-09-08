@@ -162,13 +162,12 @@ jobs:
           miniconda-version: 'latest'
           activate-environment: 'upload'
 
-      - name: Install anaconda-client
-        run: conda install anaconda-client
-
-      - name: Upload
+      - name: Install client and Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+        run: |
+          conda install anaconda-client
+          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   upload_windows:
     needs: build_windows
@@ -194,10 +193,9 @@ jobs:
           miniconda-version: 'latest'
           activate-environment: 'upload'
 
-      - name: Install anaconda-client
-        run: conda install anaconda-client
-
-      - name: Upload
+      - name: Install client and Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+        run: |
+          conda install anaconda-client
+          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
