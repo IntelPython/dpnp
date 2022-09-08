@@ -24,6 +24,10 @@ jobs:
       matrix:
         python: ['3.8', '3.9']
 
+    env:
+      conda-pkgs: "/home/runner/conda_pkgs_dir"
+      conda-bld: "/usr/share/miniconda3/envs/build/conda-bld/linux-64/"
+
     steps:
       - name: Checkout DPNP repo
         uses: actions/checkout@v3
@@ -42,7 +46,7 @@ jobs:
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
-          path: ~/conda_pkgs_dir
+          path: ${{ env.conda-pkgs }}
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
           restore-keys: |
@@ -68,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-          path: /usr/share/miniconda/conda-bld/linux-64/${{ env.PACKAGE_NAME }}-*.tar.bz2
+          path: ${{ env.conda-bld }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   build_windows:
     runs-on: windows-latest
@@ -82,7 +86,8 @@ jobs:
         python: ['3.8', '3.9']
 
     env:
-      conda-bld: C:\Miniconda\conda-bld\win-64\
+      conda-pkgs: "C:\Users\runneradmin\conda_pkgs_dir"
+      conda-bld: "C:\Miniconda3\envs\build\conda-bld\win-64"
 
     steps:
       - name: Checkout DPNP repo
@@ -102,7 +107,7 @@ jobs:
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
-          path: /home/runner/conda_pkgs_dir
+          path: ${{ env.conda-pkgs }}
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
           restore-keys: |
@@ -122,11 +127,9 @@ jobs:
         run: conda install conda-build
 
       - name: Build conda package
+        run: conda build --no-test --python ${{ matrix.python }} -c dppy/label/dev -c intel -c defaults --override-channels conda-recipe
         env:
           DPLROOT: "%GITHUB_WORKSPACE%/oneDPL"
-        run: |
-          set "DPLROOT=${{ env.DPLROOT }}"
-          conda build --no-test --python ${{ matrix.python }} -c dppy/label/dev -c intel -c defaults --override-channels conda-recipe
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
