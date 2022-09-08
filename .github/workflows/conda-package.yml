@@ -110,7 +110,7 @@ jobs:
 
       - name: Build conda package
         env:
-          DPLROOT: %GITHUB_WORKSPACE%/oneDPL
+          DPLROOT: "%GITHUB_WORKSPACE%/oneDPL"
         shell: cmd
         run: |
           set "DPLROOT=${{ env.DPLROOT }}"
