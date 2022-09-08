@@ -25,8 +25,8 @@ jobs:
         python: ['3.8', '3.9']
 
     env:
-      conda-pkgs: "/home/runner/conda_pkgs_dir"
-      conda-bld: "/usr/share/miniconda3/envs/build/conda-bld/linux-64/"
+      conda-pkgs: '/home/runner/conda_pkgs_dir'
+      conda-bld: '/usr/share/miniconda3/envs/build/conda-bld/linux-64/'
 
     steps:
       - name: Checkout DPNP repo
@@ -58,8 +58,8 @@ jobs:
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
-          miniconda-version: "latest"
-          activate-environment: "build"
+          miniconda-version: 'latest'
+          activate-environment: 'build'
           use-only-tar-bz2: true
 
       - name: Install conda-build
@@ -86,8 +86,8 @@ jobs:
         python: ['3.8', '3.9']
 
     env:
-      conda-pkgs: "C:\Users\runneradmin\conda_pkgs_dir"
-      conda-bld: "C:\Miniconda3\envs\build\conda-bld\win-64"
+      conda-pkgs: 'C:\Users\runneradmin\conda_pkgs_dir'
+      conda-bld: 'C:\Miniconda3\envs\build\conda-bld\win-64'
 
     steps:
       - name: Checkout DPNP repo
@@ -119,8 +119,8 @@ jobs:
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
-          miniconda-version: "latest"
-          activate-environment: "build"
+          miniconda-version: 'latest'
+          activate-environment: 'build'
           use-only-tar-bz2: true
 
       - name: Install conda-build
@@ -129,7 +129,7 @@ jobs:
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} -c dppy/label/dev -c intel -c defaults --override-channels conda-recipe
         env:
-          DPLROOT: "%GITHUB_WORKSPACE%/oneDPL"
+          DPLROOT: '%GITHUB_WORKSPACE%/oneDPL'
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -154,18 +154,21 @@ jobs:
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python }}
+          miniconda-version: 'latest'
+          activate-environment: 'upload'
+
       - name: Install anaconda-client
         run: conda install anaconda-client
-
-      - name: Add conda to system path
-        run: echo $CONDA/bin >> $GITHUB_PATH
 
       - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: |
-          conda install anaconda-client
-          anaconda --token $ANACONDA_TOKEN upload --user dppy --label dev ${PACKAGE_NAME}-*.tar.bz2
+        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   upload_windows:
     needs: build_windows
@@ -186,8 +189,10 @@ jobs:
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          auto-activate-base: true
-          activate-environment: ""
+          auto-update-conda: true
+          python-version: ${{ matrix.python }}
+          miniconda-version: 'latest'
+          activate-environment: 'upload'
 
       - name: Install anaconda-client
         run: conda install anaconda-client
@@ -195,6 +200,4 @@ jobs:
       - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: |
-          conda install anaconda-client
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
