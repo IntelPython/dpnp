@@ -8,16 +8,16 @@ requirements:
     host:
       - python
       - setuptools
-      - numpy 1.19
+      - numpy >=1.19
       - cython
-      - cmake 3.19
+      - cmake >=3.19
       - dpctl >=0.13
       - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2021.1.1') }}
       - tbb-devel
       - wheel
     build:
-      - {{ compiler('dpcpp') }}
-      - dpcpp-cpp-rt {{ environ.get('DPCPP_VER', '>=2021.1.1') }}
+      - {{ compiler('cxx') }}
+      - {{ compiler('dpcpp') }}  >=2022.1  # [not osx]
     run:
       - python
       - dpctl >=0.13

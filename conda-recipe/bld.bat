@@ -1,4 +1,5 @@
 REM A workaround for activate-dpcpp.bat issue to be addressed in 2021.4
+set "LIB=%BUILD_PREFIX%\Library\lib;%BUILD_PREFIX%\compiler\lib;%LIB%"
 SET "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
 
 IF DEFINED DPLROOT (
