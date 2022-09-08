@@ -49,8 +49,14 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
-      - name: Add conda to system path
-        run: echo $CONDA/bin >> $GITHUB_PATH
+      # - name: Add conda to system path
+      #   run: echo $CONDA/bin >> $GITHUB_PATH
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-activate-base: true
+          activate-environment: ""
 
       - name: Install conda-build
         run: conda install conda-build
