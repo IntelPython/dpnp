@@ -1,20 +1,27 @@
 name: Conda package
 
-on: push
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 env:
-  PACKAGE_NAME: dpctl
+  PACKAGE_NAME: dpnp
+  MODULE_NAME: dpnp
+  VER_SCRIPT1: "import json; f = open('ver.json', 'r'); j = json.load(f); f.close(); "
+  VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
+  build_linux:
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        python: [3.8, 3.9]
+        python: ['3.8', '3.9']
 
     steps:
-      - name: Checkout repo
+      - name: Checkout DPNP repo
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -24,38 +31,112 @@ jobs:
         with:
           repository: oneapi-src/oneDPL
           path: oneDPL
-          ref: oneDPL-2021.6.1-release
+          ref: oneDPL-2021.7.0-release
+
+      - name: Set pkgs_dirs
+        run: |
+          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+
+      - name: Cache conda packages
+        uses: actions/cache@v3
+        env:
+          CACHE_NUMBER: 1  # Increase to reset cache
+        with:
+          path: ~/.conda/pkgs
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
+
       - name: Install conda-build
         run: conda install conda-build
+
       - name: Build conda package
         run: ./scripts/build_conda_package.sh ${{ matrix.python }} $GITHUB_WORKSPACE/oneDPL
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: dpnp ${{ runner.os }} ${{ matrix.python }}
-          path: /usr/share/miniconda/conda-bld/linux-64/dpnp-*.tar.bz2
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: /usr/share/miniconda/conda-bld/linux-64/${{ env.PACKAGE_NAME }}-*.tar.bz2
 
-  upload:
-    needs: build
-    if: ${{ github.ref == 'refs/heads/master' }}
+  build_windows:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        python: ['3.8', '3.9']
+
+    env:
+      conda-bld: C:\Miniconda\conda-bld\win-64\
+
+    steps:
+      - name: Checkout DPNP repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Checkout oneDPL
+        uses: actions/checkout@v3
+        with:
+          repository: oneapi-src/oneDPL
+          path: oneDPL
+          ref: oneDPL-2021.7.0-release
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-activate-base: true
+          activate-environment: ""
+
+      - name: Cache conda packages
+        uses: actions/cache@v3
+        env:
+          CACHE_NUMBER: 1  # Increase to reset cache
+        with:
+          path: /home/runner/conda_pkgs_dir
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+
+      - name: Install conda-build
+        run: conda install conda-build
+
+      - name: Build conda package
+        run: ./scripts/build_conda_package.sh ${{ matrix.python }} $GITHUB_WORKSPACE/oneDPL
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: ${{ env.conda-bld }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+
+  upload_linux:
+    needs: build_linux
+
+    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
+
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        python: [3.8, 3.9]
+        python: ['3.8', '3.9']
 
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: dpnp ${{ runner.os }} ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Install anaconda-client
         run: conda install anaconda-client
+
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
 
@@ -64,4 +145,36 @@ jobs:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
           conda install anaconda-client
-          anaconda --token $ANACONDA_TOKEN upload --user dppy --label dev dpnp-*.tar.bz2
+          anaconda --token $ANACONDA_TOKEN upload --user dppy --label dev ${PACKAGE_NAME}-*.tar.bz2
+
+  upload_windows:
+    needs: test_windows
+
+    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
+
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        python: ['3.8', '3.9']
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-activate-base: true
+          activate-environment: ""
+
+      - name: Install anaconda-client
+        run: conda install anaconda-client
+
+      - name: Upload
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        run: |
+          conda install anaconda-client
+          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
