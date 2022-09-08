@@ -16,10 +16,8 @@ requirements:
       - tbb-devel
       - wheel
     build:
-      - {{ compiler('c') }}
       - {{ compiler('cxx') }}
-      - {{ compiler('dpcpp') }}
-      - dpcpp-cpp-rt {{ environ.get('DPCPP_VER', '>=2021.1.1') }}
+      - {{ compiler('dpcpp') }}  >=2022.1  # [not osx]
     run:
       - python
       - dpctl >=0.13

@@ -110,10 +110,10 @@ jobs:
 
       - name: Build conda package
         env:
-          DPLROOT: $GITHUB_WORKSPACE/oneDPL
+          DPLROOT: %GITHUB_WORKSPACE%/oneDPL
         shell: cmd
         run: |
-          set DPLROOT=${{ env.DPLROOT }}
+          set "DPLROOT=${{ env.DPLROOT }}"
           conda build --no-test --python ${{ matrix.python }} -c dppy/label/dev -c intel -c defaults --override-channels conda-recipe
 
       - name: Upload artifact
