@@ -33,6 +33,14 @@ jobs:
           path: oneDPL
           ref: oneDPL-2021.7.0-release
 
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python }}
+          miniconda-version: "latest"
+          activate-environment: "build"
+
       - name: Set pkgs_dirs
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
@@ -51,12 +59,6 @@ jobs:
 
       # - name: Add conda to system path
       #   run: echo $CONDA/bin >> $GITHUB_PATH
-
-      - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-activate-base: true
-          activate-environment: ""
 
       - name: Install conda-build
         run: conda install conda-build
