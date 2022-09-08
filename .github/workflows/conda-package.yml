@@ -25,7 +25,7 @@ jobs:
         python: ['3.8', '3.9']
 
     env:
-      conda-pkgs: '/home/runner/conda_pkgs_dir'
+      conda-pkgs: '/home/runner/conda_pkgs_dir/'
       conda-bld: '/usr/share/miniconda3/envs/build/conda-bld/linux-64/'
 
     steps:
@@ -86,8 +86,8 @@ jobs:
         python: ['3.8', '3.9']
 
     env:
-      conda-pkgs: 'C:\Users\runneradmin\conda_pkgs_dir'
-      conda-bld: 'C:\Miniconda3\envs\build\conda-bld\win-64'
+      conda-pkgs: 'C:\Users\runneradmin\conda_pkgs_dir\'
+      conda-bld: 'C:\Miniconda3\envs\build\conda-bld\win-64\'
 
     steps:
       - name: Checkout DPNP repo
