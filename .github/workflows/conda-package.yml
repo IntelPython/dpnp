@@ -16,6 +16,10 @@ jobs:
   build_linux:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        shell: bash -l {0}
+
     strategy:
       matrix:
         python: ['3.8', '3.9']
@@ -33,6 +37,18 @@ jobs:
           path: oneDPL
           ref: oneDPL-2021.7.0-release
 
+      - name: Cache conda packages
+        uses: actions/cache@v3
+        env:
+          CACHE_NUMBER: 1  # Increase to reset cache
+        with:
+          path: ~/conda_pkgs_dir
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -40,25 +56,7 @@ jobs:
           python-version: ${{ matrix.python }}
           miniconda-version: "latest"
           activate-environment: "build"
-
-      - name: Set pkgs_dirs
-        run: |
-          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
-
-      - name: Cache conda packages
-        uses: actions/cache@v3
-        env:
-          CACHE_NUMBER: 1  # Increase to reset cache
-        with:
-          path: ~/.conda/pkgs
-          key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
-
-      # - name: Add conda to system path
-      #   run: echo $CONDA/bin >> $GITHUB_PATH
+          use-only-tar-bz2: true
 
       - name: Install conda-build
         run: conda install conda-build
@@ -74,6 +72,10 @@ jobs:
 
   build_windows:
     runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
 
     strategy:
       matrix:
@@ -119,7 +121,6 @@ jobs:
       - name: Build conda package
         env:
           DPLROOT: "%GITHUB_WORKSPACE%/oneDPL"
-        shell: cmd
         run: |
           set "DPLROOT=${{ env.DPLROOT }}"
           conda build --no-test --python ${{ matrix.python }} -c dppy/label/dev -c intel -c defaults --override-channels conda-recipe
@@ -188,7 +189,6 @@ jobs:
       - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        shell: cmd
         run: |
           conda install anaconda-client
           anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
