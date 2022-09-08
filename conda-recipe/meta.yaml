@@ -6,7 +6,7 @@ source:
 
 requirements:
     host:
-      - python 3.7.*|>=3.8.13
+      - python
       - setuptools
       - numpy >=1.19
       - cython
