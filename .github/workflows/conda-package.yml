@@ -14,6 +14,8 @@ env:
 
 jobs:
   build_linux:
+    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
+
     runs-on: ubuntu-latest
 
     defaults:
@@ -155,10 +157,10 @@ jobs:
         python: ['3.8', '3.9']
 
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+      # - name: Download artifact
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@v2
@@ -175,10 +177,10 @@ jobs:
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
-        conda info
-        conda list
-        anaconda --help
-        # run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+          conda info
+          conda list
+          anaconda --help
+          # run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   upload_windows:
     # needs: build_windows
@@ -195,10 +197,10 @@ jobs:
       matrix:
         python: ['3.8', '3.9']
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+      # - name: Download artifact
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@v2
