@@ -14,8 +14,6 @@ env:
 
 jobs:
   build_linux:
-    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
-
     runs-on: ubuntu-latest
 
     defaults:
