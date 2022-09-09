@@ -9,8 +9,7 @@ on:
 env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
-  VER_SCRIPT1: "import json; f = open('ver.json', 'r'); j = json.load(f); f.close(); "
-  VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
+  CHANNELS: '-c dppy/label/dev -c intel -c defaults --override-channels'
 
 jobs:
   build_linux:
@@ -127,7 +126,7 @@ jobs:
         run: conda install conda-build
 
       - name: Build conda package
-        run: conda build --no-test --python ${{ matrix.python }} -c dppy/label/dev -c intel -c defaults --override-channels conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
         env:
           DPLROOT: '%GITHUB_WORKSPACE%\oneDPL'
 
