@@ -168,18 +168,20 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          auto-activate-base: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
           activate-environment: 'upload'
 
-      - name: Install client and Upload
+      - name: Install anaconda-client
+        run: conda install anaconda-client
+
+      - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
           conda info
           conda list
-          anaconda --help
+          anaconda -h
           # run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   upload_windows:
@@ -206,10 +208,12 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          auto-activate-base: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
           activate-environment: 'upload'
+
+      - name: Show active conda env
+        run: conda info
 
       - name: Install anaconda-client
         run: conda install anaconda-client
@@ -220,5 +224,5 @@ jobs:
       - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: anaconda --help
+        run: anaconda -h
         # run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
