@@ -8,7 +8,7 @@ requirements:
     host:
       - python
       - setuptools
-      - numpy >=1.19
+      - numpy >=1.19,<1.22a0
       - cython
       - cmake >=3.19
       - dpctl >=0.13
@@ -23,7 +23,7 @@ requirements:
       - dpctl >=0.13
       - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('mkl-dpcpp', min_pin='x.x', max_pin='x') }}
-      - numpy >=1.15
+      - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
 
 build:
     number: {{ GIT_DESCRIBE_NUMBER }}
