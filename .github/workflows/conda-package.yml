@@ -150,10 +150,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        shell: bash -l {0}
-
     strategy:
       matrix:
         python: ['3.8', '3.9']
