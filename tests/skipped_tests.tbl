@@ -341,7 +341,7 @@ tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOf
 tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_7_{copy=True, ndmin=3, xp=dpnp}::test_cupy_array
 tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_8_{copy=False, ndmin=0, xp=numpy}::test_cupy_array
 tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_9_{copy=False, ndmin=0, xp=dpnp}::test_cupy_array
-tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_is_copied 
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_is_copied
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_list_of_cupy_with_dtype
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_list_of_cupy_with_dtype_char
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_list_of_numpy_with_dtype

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,12 +26,13 @@
 
 import os
 import sys
-import dpnp
+
 import numpy
 import pytest
 
+import dpnp
 
-skip_mark = pytest.mark.skip(reason='Skipping test.')
+skip_mark = pytest.mark.skip(reason="Skipping test.")
 
 
 def get_excluded_tests(test_exclude_file):
@@ -46,10 +47,10 @@ def pytest_collection_modifyitems(config, items):
     test_path = os.path.split(__file__)[0]
     excluded_tests = []
     # global skip file
-    test_exclude_file = os.path.join(test_path, 'skipped_tests.tbl')
+    test_exclude_file = os.path.join(test_path, "skipped_tests.tbl")
 
     # global skip file, where gpu device is not supported
-    test_exclude_file_gpu = os.path.join(test_path, 'skipped_tests_gpu.tbl')
+    test_exclude_file_gpu = os.path.join(test_path, "skipped_tests_gpu.tbl")
 
     current_queue_is_cpu = dpnp.dpnp_queue_is_cpu()
     print("")
@@ -58,14 +59,14 @@ def pytest_collection_modifyitems(config, items):
     print(f"NumPy version: {numpy.__version__}, location: {numpy}")
     print(f"Python version: {sys.version}")
     print("")
-    if not current_queue_is_cpu or os.getenv('DPNP_QUEUE_GPU') == '1':
+    if not current_queue_is_cpu or os.getenv("DPNP_QUEUE_GPU") == "1":
         excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
     else:
         excluded_tests.extend(get_excluded_tests(test_exclude_file))
 
     for item in items:
         # some test name contains '\n' in the parameters
-        test_name = item.nodeid.replace('\n', '').strip()
+        test_name = item.nodeid.replace("\n", "").strip()
 
         for item_tbl in excluded_tests:
             # remove end-of-line character

@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,13 +33,15 @@ and the rest of the library
 """
 
 import numpy
+
 from dpnp.dpnp_algo cimport *
-import dpnp.dpnp_utils as utils_py
+
 import dpnp
-cimport dpnp.dpnp_utils as utils
+import dpnp.dpnp_utils as utils_py
 
 cimport numpy
 
+cimport dpnp.dpnp_utils as utils
 
 __all__ = [
     "dpnp_cholesky",

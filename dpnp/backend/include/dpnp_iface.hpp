@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -260,11 +260,8 @@ INP_DLLEXPORT void dpnp_full_c(void* array_in, void* result, const size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_full_like_c(DPCTLSyclQueueRef q_ref,
-                                                 void* array_in,
-                                                 void* result,
-                                                 size_t size,
-                                                 const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef dpnp_full_like_c(
+    DPCTLSyclQueueRef q_ref, void* array_in, void* result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
@@ -517,11 +514,8 @@ INP_DLLEXPORT void dpnp_cross_c(void* result_out,
  *
  */
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_cumprod_c(DPCTLSyclQueueRef q_ref,
-                                               void* array1_in,
-                                               void* result1,
-                                               size_t size,
-                                               const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef dpnp_cumprod_c(
+    DPCTLSyclQueueRef q_ref, void* array1_in, void* result1, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType_input, typename _DataType_output>
 INP_DLLEXPORT void dpnp_cumprod_c(void* array1_in, void* result1, size_t size);
@@ -538,11 +532,8 @@ INP_DLLEXPORT void dpnp_cumprod_c(void* array1_in, void* result1, size_t size);
  *
  */
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_cumsum_c(DPCTLSyclQueueRef q_ref,
-                                              void* array1_in,
-                                              void* result1,
-                                              size_t size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef dpnp_cumsum_c(
+    DPCTLSyclQueueRef q_ref, void* array1_in, void* result1, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType_input, typename _DataType_output>
 INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
@@ -935,11 +926,8 @@ INP_DLLEXPORT void dpnp_eye_c(void* result, int k, const shape_elem_type* res_sh
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_argsort_c(DPCTLSyclQueueRef q_ref,
-                                               void* array,
-                                               void* result,
-                                               size_t size,
-                                               const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef dpnp_argsort_c(
+    DPCTLSyclQueueRef q_ref, void* array, void* result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _idx_DataType>
 INP_DLLEXPORT void dpnp_argsort_c(void* array, void* result, size_t size);
@@ -982,11 +970,8 @@ INP_DLLEXPORT void dpnp_searchsorted_c(
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_sort_c(DPCTLSyclQueueRef q_ref,
-                                            void* array,
-                                            void* result,
-                                            size_t size,
-                                            const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef dpnp_sort_c(
+    DPCTLSyclQueueRef q_ref, void* array, void* result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_sort_c(void* array, void* result, size_t size);
@@ -1242,11 +1227,8 @@ INP_DLLEXPORT void dpnp_identity_c(void* result1, const size_t n);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_initval_c(DPCTLSyclQueueRef q_ref,
-                                               void* result1,
-                                               void* value,
-                                               size_t size,
-                                               const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef dpnp_initval_c(
+    DPCTLSyclQueueRef q_ref, void* result1, void* value, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_initval_c(void* result1, void* value, size_t size);
@@ -1428,11 +1410,8 @@ INP_DLLEXPORT void dpnp_min_c(void* array,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_argmax_c(DPCTLSyclQueueRef q_ref,
-                                              void* array,
-                                              void* result,
-                                              size_t size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef dpnp_argmax_c(
+    DPCTLSyclQueueRef q_ref, void* array, void* result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _idx_DataType>
 INP_DLLEXPORT void dpnp_argmax_c(void* array, void* result, size_t size);
@@ -1448,11 +1427,8 @@ INP_DLLEXPORT void dpnp_argmax_c(void* array, void* result, size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_argmin_c(DPCTLSyclQueueRef q_ref,
-                                              void* array,
-                                              void* result,
-                                              size_t size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef dpnp_argmin_c(
+    DPCTLSyclQueueRef q_ref, void* array, void* result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _idx_DataType>
 INP_DLLEXPORT void dpnp_argmin_c(void* array, void* result, size_t size);
@@ -1694,11 +1670,8 @@ INP_DLLEXPORT void dpnp_var_c(void* array,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_invert_c(DPCTLSyclQueueRef q_ref,
-                                              void* array1_in,
-                                              void* result,
-                                              size_t size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef dpnp_invert_c(
+    DPCTLSyclQueueRef q_ref, void* array1_in, void* result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
@@ -1944,10 +1917,8 @@ INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_ones_c(DPCTLSyclQueueRef q_ref,
-                                            void* result,
-                                            size_t size,
-                                            const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_ones_c(DPCTLSyclQueueRef q_ref, void* result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_ones_c(void* result, size_t size);
@@ -1962,10 +1933,8 @@ INP_DLLEXPORT void dpnp_ones_c(void* result, size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_ones_like_c(DPCTLSyclQueueRef q_ref,
-                                                 void* result,
-                                                 size_t size,
-                                                 const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_ones_like_c(DPCTLSyclQueueRef q_ref, void* result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_ones_like_c(void* result, size_t size);
@@ -2133,10 +2102,8 @@ INP_DLLEXPORT void
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_zeros_c(DPCTLSyclQueueRef q_ref,
-                                             void* result,
-                                             size_t size,
-                                             const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_zeros_c(DPCTLSyclQueueRef q_ref, void* result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_zeros_c(void* result, size_t size);
@@ -2151,10 +2118,8 @@ INP_DLLEXPORT void dpnp_zeros_c(void* result, size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_zeros_like_c(DPCTLSyclQueueRef q_ref,
-                                                  void* result,
-                                                  size_t size,
-                                                  const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_zeros_like_c(DPCTLSyclQueueRef q_ref, void* result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_zeros_like_c(void* result, size_t size);

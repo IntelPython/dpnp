@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,13 +40,12 @@ it contains:
 """
 
 
-import dpnp
 import numpy
 
-from dpnp.dpnp_utils import *
+import dpnp
 from dpnp.dpnp_algo import *
+from dpnp.dpnp_utils import *
 from dpnp.linalg.dpnp_algo_linalg import *
-
 
 __all__ = [
     "cholesky",
@@ -67,6 +66,7 @@ __all__ = [
 def cholesky(input):
     """
     Cholesky decomposition.
+
     Return the Cholesky decomposition, `L * L.H`, of the square matrix `input`,
     where `L` is lower-triangular and .H is the conjugate transpose operator
     (which is the ordinary transpose if `input` is real-valued).  `input` must be
@@ -95,7 +95,9 @@ def cholesky(input):
         else:
             if input.dtype == dpnp.int32 or input.dtype == dpnp.int64:
                 # TODO memory copy. needs to move into DPNPC
-                input_ = dpnp.get_dpnp_descriptor(dpnp.astype(input, dpnp.float64))
+                input_ = dpnp.get_dpnp_descriptor(
+                    dpnp.astype(input, dpnp.float64)
+                )
             else:
                 input_ = x1_desc
             return dpnp_cholesky(input_).get_pyobj()
@@ -106,6 +108,7 @@ def cholesky(input):
 def cond(input, p=None):
     """
     Compute the condition number of a matrix.
+
     For full documentation refer to :obj:`numpy.linalg.cond`.
 
     Limitations
@@ -118,8 +121,8 @@ def cond(input, p=None):
     :obj:`dpnp.norm` : Matrix or vector norm.
     """
 
-    if (not use_origin_backend(input)):
-        if p in [None, 1, -1, 2, -2, numpy.inf, -numpy.inf, 'fro']:
+    if not use_origin_backend(input):
+        if p in [None, 1, -1, 2, -2, numpy.inf, -numpy.inf, "fro"]:
             result_obj = dpnp_cond(input, p)
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
@@ -166,7 +169,7 @@ def eig(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        if (x1_desc.size > 0):
+        if x1_desc.size > 0:
             return dpnp_eig(x1_desc)
 
     return call_origin(numpy.linalg.eig, x1)
@@ -175,6 +178,7 @@ def eig(x1):
 def eigvals(input):
     """
     Compute the eigenvalues of a general matrix.
+
     Main difference between `eigvals` and `eig`: the eigenvectors aren't
     returned.
 
@@ -215,7 +219,11 @@ def inv(input):
 
     x1_desc = dpnp.get_dpnp_descriptor(input)
     if x1_desc:
-        if x1_desc.ndim == 2 and x1_desc.shape[0] == x1_desc.shape[1] and x1_desc.shape[0] >= 2:
+        if (
+            x1_desc.ndim == 2
+            and x1_desc.shape[0] == x1_desc.shape[1]
+            and x1_desc.shape[0] >= 2
+        ):
             return dpnp_inv(x1_desc).get_pyobj()
 
     return call_origin(numpy.linalg.inv, input)
@@ -242,7 +250,7 @@ def matrix_power(input, count):
 
     if not use_origin_backend() and count > 0:
         result = input
-        for id in range(count - 1):
+        for _ in range(count - 1):
             result = dpnp.matmul(result, input)
 
         return result
@@ -252,7 +260,8 @@ def matrix_power(input, count):
 
 def matrix_rank(input, tol=None, hermitian=False):
     """
-    Return matrix rank of array
+    Return matrix rank of array.
+
     Rank of the array is the number of singular values of the array that are
     greater than `tol`.
 
@@ -331,6 +340,7 @@ def multi_dot(arrays, out=None):
 def norm(x1, ord=None, axis=None, keepdims=False):
     """
     Matrix or vector norm.
+
     This function is able to return one of eight different matrix norms,
     or one of an infinite number of vector norms (described below), depending
     on the value of the ``ord`` parameter.
@@ -364,11 +374,15 @@ def norm(x1, ord=None, axis=None, keepdims=False):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        if not isinstance(axis, int) and not isinstance(axis, tuple) and axis is not None:
+        if (
+            not isinstance(axis, int)
+            and not isinstance(axis, tuple)
+            and axis is not None
+        ):
             pass
         elif keepdims is not False:
             pass
-        elif ord not in [None, 0, 3, 'fro', 'f']:
+        elif ord not in [None, 0, 3, "fro", "f"]:
             pass
         else:
             result_obj = dpnp_norm(x1, ord=ord, axis=axis)
@@ -379,7 +393,7 @@ def norm(x1, ord=None, axis=None, keepdims=False):
     return call_origin(numpy.linalg.norm, x1, ord, axis, keepdims)
 
 
-def qr(x1, mode='reduced'):
+def qr(x1, mode="reduced"):
     """
     Compute the qr factorization of a matrix.
 
@@ -397,7 +411,7 @@ def qr(x1, mode='reduced'):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        if mode != 'reduced':
+        if mode != "reduced":
             pass
         else:
             result_tup = dpnp_qr(x1_desc, mode)
@@ -468,15 +482,17 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     if x1_desc:
         if not x1_desc.ndim == 2:
             pass
-        elif not full_matrices == True:
+        elif not full_matrices:
             pass
-        elif not compute_uv == True:
+        elif not compute_uv:
             pass
-        elif not hermitian == False:
+        elif hermitian:
             pass
         else:
             result_tup = dpnp_svd(x1_desc, full_matrices, compute_uv, hermitian)
 
             return result_tup
 
-    return call_origin(numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian)
+    return call_origin(
+        numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian
+    )

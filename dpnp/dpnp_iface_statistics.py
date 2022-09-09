@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,26 +42,25 @@ it contains:
 
 import numpy
 
+import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-import dpnp
-
 
 __all__ = [
-    'amax',
-    'amin',
-    'average',
-    'bincount',
-    'correlate',
-    'cov',
-    'histogram',
-    'max',
-    'mean',
-    'median',
-    'min',
-    'nanvar',
-    'std',
-    'var',
+    "amax",
+    "amin",
+    "average",
+    "bincount",
+    "correlate",
+    "cov",
+    "histogram",
+    "max",
+    "mean",
+    "median",
+    "min",
+    "nanvar",
+    "std",
+    "var",
 ]
 
 
@@ -193,7 +192,7 @@ def bincount(x1, weights=None, minlength=0):
     return call_origin(numpy.bincount, x1, weights=weights, minlength=minlength)
 
 
-def correlate(x1, x2, mode='valid'):
+def correlate(x1, x2, mode="valid"):
     """
     Cross-correlation of two 1-dimensional sequences.
 
@@ -228,7 +227,7 @@ def correlate(x1, x2, mode='valid'):
             pass
         elif x1_desc.shape != x2_desc.shape:
             pass
-        elif mode != 'valid':
+        elif mode != "valid":
             pass
         else:
             return dpnp_correlate(x1_desc, x2_desc).get_pyobj()
@@ -236,7 +235,9 @@ def correlate(x1, x2, mode='valid'):
     return call_origin(numpy.correlate, x1, x2, mode=mode)
 
 
-def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
+def cov(
+    x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None
+):
     """
     Estimate a covariance matrix, given data and weights.
 
@@ -292,7 +293,10 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
             pass
         else:
             if x1_desc.dtype != dpnp.float64:
-                x1_desc = dpnp.get_dpnp_descriptor(dpnp.astype(x1, dpnp.float64), copy_when_nondefault_queue=False)
+                x1_desc = dpnp.get_dpnp_descriptor(
+                    dpnp.astype(x1, dpnp.float64),
+                    copy_when_nondefault_queue=False,
+                )
 
             return dpnp_cov(x1_desc).get_pyobj()
 
@@ -302,7 +306,9 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
 def histogram(a, bins=10, range=None, normed=None, weights=None, density=None):
     """
     Compute the histogram of a dataset.
+
     For full documentation refer to :obj:`numpy.histogram`.
+
     Examples
     --------
     >>> import dpnp
@@ -323,7 +329,15 @@ def histogram(a, bins=10, range=None, normed=None, weights=None, density=None):
     1.0
     """
 
-    return call_origin(numpy.histogram, a=a, bins=bins, range=range, normed=normed, weights=weights, density=density)
+    return call_origin(
+        numpy.histogram,
+        a=a,
+        bins=bins,
+        range=range,
+        normed=normed,
+        weights=weights,
+        density=density,
+    )
 
 
 def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
@@ -569,7 +583,15 @@ def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
 
             return result
 
-    return call_origin(numpy.nanvar, x1, axis=axis, dtype=dtype, out=out, ddof=ddof, keepdims=keepdims)
+    return call_origin(
+        numpy.nanvar,
+        x1,
+        axis=axis,
+        dtype=dtype,
+        out=out,
+        ddof=ddof,
+        keepdims=keepdims,
+    )
 
 
 def std(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):

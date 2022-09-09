@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -91,11 +91,8 @@ void dpnp_all_c(const void* array1_in, void* result1, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_all_c<_DataType, _ResultType>(q_ref,
-                                                                     array1_in,
-                                                                     result1,
-                                                                     size,
-                                                                     dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_all_c<_DataType, _ResultType>(q_ref, array1_in, result1, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -103,11 +100,8 @@ template <typename _DataType, typename _ResultType>
 void (*dpnp_all_default_c)(const void*, void*, const size_t) = dpnp_all_c<_DataType, _ResultType>;
 
 template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef (*dpnp_all_ext_c)(DPCTLSyclQueueRef,
-                                    const void*,
-                                    void*,
-                                    const size_t,
-                                    const DPCTLEventVectorRef) = dpnp_all_c<_DataType, _ResultType>;
+DPCTLSyclEventRef (*dpnp_all_ext_c)(DPCTLSyclQueueRef, const void*, void*, const size_t, const DPCTLEventVectorRef) =
+    dpnp_all_c<_DataType, _ResultType>;
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
 class dpnp_allclose_c_kernel;
@@ -177,35 +171,19 @@ void dpnp_allclose_c(
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_allclose_c<_DataType1, _DataType2, _ResultType>(q_ref,
-                                                                                       array1_in,
-                                                                                       array2_in,
-                                                                                       result1,
-                                                                                       size,
-                                                                                       rtol_val,
-                                                                                       atol_val,
-                                                                                       dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_allclose_c<_DataType1, _DataType2, _ResultType>(
+        q_ref, array1_in, array2_in, result1, size, rtol_val, atol_val, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
-void (*dpnp_allclose_default_c)(const void*,
-                                const void*,
-                                void*,
-                                const size_t,
-                                double,
-                                double) = dpnp_allclose_c<_DataType1, _DataType2, _ResultType>;
+void (*dpnp_allclose_default_c)(const void*, const void*, void*, const size_t, double, double) =
+    dpnp_allclose_c<_DataType1, _DataType2, _ResultType>;
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
 DPCTLSyclEventRef (*dpnp_allclose_ext_c)(
-    DPCTLSyclQueueRef,
-    const void*,
-    const void*,
-    void*,
-    const size_t,
-    double,
-    double,
-    const DPCTLEventVectorRef) = dpnp_allclose_c<_DataType1, _DataType2, _ResultType>;
+    DPCTLSyclQueueRef, const void*, const void*, void*, const size_t, double, double, const DPCTLEventVectorRef) =
+    dpnp_allclose_c<_DataType1, _DataType2, _ResultType>;
 
 template <typename _DataType, typename _ResultType>
 class dpnp_any_c_kernel;
@@ -268,11 +246,8 @@ void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_any_c<_DataType, _ResultType>(q_ref,
-                                                                     array1_in,
-                                                                     result1,
-                                                                     size,
-                                                                     dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_any_c<_DataType, _ResultType>(q_ref, array1_in, result1, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -280,11 +255,8 @@ template <typename _DataType, typename _ResultType>
 void (*dpnp_any_default_c)(const void*, void*, const size_t) = dpnp_any_c<_DataType, _ResultType>;
 
 template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
-                                    const void*,
-                                    void*,
-                                    const size_t,
-                                    const DPCTLEventVectorRef) = dpnp_any_c<_DataType, _ResultType>;
+DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef, const void*, void*, const size_t, const DPCTLEventVectorRef) =
+    dpnp_any_c<_DataType, _ResultType>;
 
 void func_map_init_logic(func_map_t& fmap)
 {

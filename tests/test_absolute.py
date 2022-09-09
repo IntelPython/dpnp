@@ -1,13 +1,10 @@
+import numpy
 import pytest
 
 import dpnp as inp
 
-import numpy
 
-
-@pytest.mark.parametrize("type",
-                         [numpy.int64],
-                         ids=['int64'])
+@pytest.mark.parametrize("type", [numpy.int64], ids=["int64"])
 def test_abs_int(type):
     a = numpy.array([1, 0, 2, -3, -1, 2, 21, -9])
     ia = inp.array(a)
@@ -17,9 +14,7 @@ def test_abs_int(type):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.int64],
-                         ids=['int64'])
+@pytest.mark.parametrize("type", [numpy.int64], ids=["int64"])
 def test_absolute_int(type):
     a = numpy.array([1, 0, 2, -3, -1, 2, 21, -9])
     ia = inp.array(a)
@@ -29,11 +24,9 @@ def test_absolute_int(type):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64],
-                         ids=['float64'])
+@pytest.mark.parametrize("type", [numpy.float64], ids=["float64"])
 def test_absolute_float(type):
-    a = numpy.array([[-2., 3., 9.1], [-2., 5.0, -2], [1.0, -2., 5.0]])
+    a = numpy.array([[-2.0, 3.0, 9.1], [-2.0, 5.0, -2], [1.0, -2.0, 5.0]])
     ia = inp.array(a)
 
     result = inp.absolute(ia)
@@ -41,11 +34,15 @@ def test_absolute_float(type):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64],
-                         ids=['float64'])
+@pytest.mark.parametrize("type", [numpy.float64], ids=["float64"])
 def test_absolute_float_3(type):
-    a = numpy.array([[[-2., 3.], [9.1, 0.2]], [[-2., 5.0], [-2, -1.2]], [[1.0, -2.], [5.0, -1.1]]])
+    a = numpy.array(
+        [
+            [[-2.0, 3.0], [9.1, 0.2]],
+            [[-2.0, 5.0], [-2, -1.2]],
+            [[1.0, -2.0], [5.0, -1.1]],
+        ]
+    )
     ia = inp.array(a)
 
     result = inp.absolute(ia)

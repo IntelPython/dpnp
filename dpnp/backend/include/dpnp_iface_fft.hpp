@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -87,7 +87,6 @@ INP_DLLEXPORT void dpnp_fft_fft_c(const void* array1_in,
                                   long input_boundarie,
                                   size_t inverse,
                                   const size_t norm);
-
 
 /**
  * @ingroup BACKEND_FFT_API

@@ -9,7 +9,6 @@ from tests.third_party.cupy import testing
 
 @testing.gpu
 class TestTranspose(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_moveaxis1(self, xp):
         a = testing.shaped_arange((2, 3, 4), xp)

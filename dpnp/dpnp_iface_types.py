@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ __all__ = [
     "longcomplex",
     "nan",
     "newaxis",
-    "void"
+    "void",
 ]
 
 bool = numpy.bool
@@ -95,11 +95,14 @@ void = numpy.void
 
 
 def is_type_supported(obj_type):
-    """
-    Return True if type is supported by DPNP python level.
-    """
+    """Return True if type is supported by DPNP python level."""
 
-    if obj_type == float64 or obj_type == float32 or obj_type == int64 or obj_type == int32:
+    if (
+        obj_type == float64
+        or obj_type == float32
+        or obj_type == int64
+        or obj_type == int32
+    ):
         return True
 
     return False

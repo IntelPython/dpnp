@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -102,8 +102,6 @@ MACRO_1ARG_1TYPE_OP(dpnp_recip_c,
 MACRO_1ARG_1TYPE_OP(dpnp_sign_c,
                     sycl::sign((double)input_elem),
                     q.submit(kernel_func)) // no sycl::sign for int and long
-MACRO_1ARG_1TYPE_OP(dpnp_square_c,
-                    input_elem* input_elem,
-                    oneapi::mkl::vm::sqr(q, input1_size, input1_data, result))
+MACRO_1ARG_1TYPE_OP(dpnp_square_c, input_elem* input_elem, oneapi::mkl::vm::sqr(q, input1_size, input1_data, result))
 
 #undef MACRO_1ARG_1TYPE_OP

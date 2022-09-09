@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -43,8 +43,8 @@
 template <typename _DataType>
 class DPNPC_ptr_adapter final
 {
-    DPCTLSyclQueueRef queue_ref;      /**< reference to SYCL queue */
-    sycl::queue queue;                /**< SYCL queue */
+    DPCTLSyclQueueRef queue_ref;  /**< reference to SYCL queue */
+    sycl::queue queue;            /**< SYCL queue */
     void* aux_ptr = nullptr;      /**< pointer to allocated memory by this adapter */
     void* orig_ptr = nullptr;     /**< original pointer to memory given by parameters */
     size_t size_in_bytes = 0;     /**< size of bytes of the memory */
@@ -163,16 +163,17 @@ public:
         dpnp_memory_memcpy_c(queue_ref, orig_ptr, aux_ptr, size_in_bytes);
     }
 
-    void depends_on(const std::vector<sycl::event> &new_deps) {
-	assert(allocated);
+    void depends_on(const std::vector<sycl::event>& new_deps)
+    {
+        assert(allocated);
         deps.insert(std::end(deps), std::begin(new_deps), std::end(new_deps));
     }
 
-    void depends_on(const sycl::event &new_dep) {
-	assert(allocated);
+    void depends_on(const sycl::event& new_dep)
+    {
+        assert(allocated);
         deps.push_back(new_dep);
     }
-
 };
 
 #endif // DPNP_MEMORY_ADAPTER_H

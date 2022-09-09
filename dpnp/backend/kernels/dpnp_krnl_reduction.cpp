@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -123,8 +123,7 @@ DPCTLSyclEventRef dpnp_sum_c(DPCTLSyclQueueRef q_ref,
     input_it.set_axes(axes, axes_ndim);
 
     const size_t output_size = input_it.get_output_size();
-    auto policy =
-        oneapi::dpl::execution::make_device_policy<dpnp_sum_c_kernel<_DataType_output, _DataType_input>>(q);
+    auto policy = oneapi::dpl::execution::make_device_policy<dpnp_sum_c_kernel<_DataType_output, _DataType_input>>(q);
     for (size_t output_id = 0; output_id < output_size; ++output_id)
     {
         // type of "init" determine internal algorithm accumulator type
@@ -132,8 +131,7 @@ DPCTLSyclEventRef dpnp_sum_c(DPCTLSyclQueueRef q_ref,
             policy, input_it.begin(output_id), input_it.end(output_id), init, std::plus<_DataType_output>());
         policy.queue().wait(); // TODO move out of the loop
 
-        q.memcpy(
-            result + output_id, &accumulator, sizeof(_DataType_output)).wait(); // result[output_id] = accumulator;
+        q.memcpy(result + output_id, &accumulator, sizeof(_DataType_output)).wait(); // result[output_id] = accumulator;
     }
 
     return event_ref;
@@ -151,16 +149,8 @@ void dpnp_sum_c(void* result_out,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_sum_c<_DataType_output, _DataType_input>(q_ref,
-                                                                                result_out,
-                                                                                input_in,
-                                                                                input_shape,
-                                                                                input_shape_ndim,
-                                                                                axes,
-                                                                                axes_ndim,
-                                                                                initial,
-                                                                                where,
-                                                                                dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_sum_c<_DataType_output, _DataType_input>(
+        q_ref, result_out, input_in, input_shape, input_shape_ndim, axes, axes_ndim, initial, where, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
@@ -240,8 +230,7 @@ DPCTLSyclEventRef dpnp_prod_c(DPCTLSyclQueueRef q_ref,
     input_it.set_axes(axes, axes_ndim);
 
     const size_t output_size = input_it.get_output_size();
-    auto policy =
-        oneapi::dpl::execution::make_device_policy<dpnp_prod_c_kernel<_DataType_output, _DataType_input>>(q);
+    auto policy = oneapi::dpl::execution::make_device_policy<dpnp_prod_c_kernel<_DataType_output, _DataType_input>>(q);
     for (size_t output_id = 0; output_id < output_size; ++output_id)
     {
         // type of "init" determine internal algorithm accumulator type
@@ -249,8 +238,7 @@ DPCTLSyclEventRef dpnp_prod_c(DPCTLSyclQueueRef q_ref,
             policy, input_it.begin(output_id), input_it.end(output_id), init, std::multiplies<_DataType_output>());
         policy.queue().wait(); // TODO move out of the loop
 
-        q.memcpy(
-            result + output_id, &accumulator, sizeof(_DataType_output)).wait(); // result[output_id] = accumulator;
+        q.memcpy(result + output_id, &accumulator, sizeof(_DataType_output)).wait(); // result[output_id] = accumulator;
     }
 
     return event_ref;
@@ -268,16 +256,8 @@ void dpnp_prod_c(void* result_out,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_prod_c<_DataType_output, _DataType_input>(q_ref,
-                                                                                 result_out,
-                                                                                 input_in,
-                                                                                 input_shape,
-                                                                                 input_shape_ndim,
-                                                                                 axes,
-                                                                                 axes_ndim,
-                                                                                 initial,
-                                                                                 where,
-                                                                                 dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_prod_c<_DataType_output, _DataType_input>(
+        q_ref, result_out, input_in, input_shape, input_shape_ndim, axes, axes_ndim, initial, where, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }

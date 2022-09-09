@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,10 +25,11 @@
 # *****************************************************************************
 
 import os
-from setuptools import Command
+from distutils import log
 from fnmatch import fnmatch
 from shutil import rmtree
-from distutils import log
+
+from setuptools import Command
 
 
 class source_clean(Command):
@@ -41,9 +42,16 @@ class source_clean(Command):
 
     description = "Clean up the project source tree"
 
-    CLEAN_ROOTDIRS = ['build', 'build_cython', 'cython_debug', 'Intel_NumPy.egg-info', 'doc/_build', 'CMakeFiles']
-    CLEAN_DIRS = ['__pycache__']
-    CLEAN_FILES = ['*.so', '*.pyc', '*.pyd', '*.dll', '*.lib', 'CMakeCache.txt']
+    CLEAN_ROOTDIRS = [
+        "build",
+        "build_cython",
+        "cython_debug",
+        "Intel_NumPy.egg-info",
+        "doc/_build",
+        "CMakeFiles",
+    ]
+    CLEAN_DIRS = ["__pycache__"]
+    CLEAN_FILES = ["*.so", "*.pyc", "*.pyd", "*.dll", "*.lib", "CMakeCache.txt"]
 
     user_options = []
 
@@ -54,7 +62,9 @@ class source_clean(Command):
         pass
 
     def run(self):
-        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        root_dir = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..")
+        )
         log.info(f"DPNP: cleaning in {root_dir}")
 
         # removing dirs from root_dir
@@ -81,4 +91,4 @@ class source_clean(Command):
                         log.info(f"rm {rfile}")
                         os.remove(rfile)
 
-        log.info(f"DPNP: cleaning finished")
+        log.info("DPNP: cleaning finished")

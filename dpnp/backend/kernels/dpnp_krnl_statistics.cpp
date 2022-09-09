@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -87,50 +87,50 @@ void dpnp_correlate_c(void* result_out,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_correlate_c<_DataType_output, _DataType_input1, _DataType_input2>(
-        q_ref,
-        result_out,
-        input1_in,
-        input1_size,
-        input1_shape,
-        input1_shape_ndim,
-        input2_in,
-        input2_size,
-        input2_shape,
-        input2_shape_ndim,
-        where,
-        dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_correlate_c<_DataType_output, _DataType_input1, _DataType_input2>(q_ref,
+                                                                               result_out,
+                                                                               input1_in,
+                                                                               input1_size,
+                                                                               input1_shape,
+                                                                               input1_shape_ndim,
+                                                                               input2_in,
+                                                                               input2_size,
+                                                                               input2_shape,
+                                                                               input2_shape_ndim,
+                                                                               where,
+                                                                               dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-void (*dpnp_correlate_default_c)(
-    void*,
-    const void*,
-    const size_t,
-    const shape_elem_type*,
-    const size_t,
-    const void*,
-    const size_t,
-    const shape_elem_type*,
-    const size_t,
-    const size_t*) = dpnp_correlate_c<_DataType_output, _DataType_input1, _DataType_input2>;
+void (*dpnp_correlate_default_c)(void*,
+                                 const void*,
+                                 const size_t,
+                                 const shape_elem_type*,
+                                 const size_t,
+                                 const void*,
+                                 const size_t,
+                                 const shape_elem_type*,
+                                 const size_t,
+                                 const size_t*) =
+    dpnp_correlate_c<_DataType_output, _DataType_input1, _DataType_input2>;
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-DPCTLSyclEventRef (*dpnp_correlate_ext_c)(
-    DPCTLSyclQueueRef,
-    void*,
-    const void*,
-    const size_t,
-    const shape_elem_type*,
-    const size_t,
-    const void*,
-    const size_t,
-    const shape_elem_type*,
-    const size_t,
-    const size_t*,
-    const DPCTLEventVectorRef) = dpnp_correlate_c<_DataType_output, _DataType_input1, _DataType_input2>;
+DPCTLSyclEventRef (*dpnp_correlate_ext_c)(DPCTLSyclQueueRef,
+                                          void*,
+                                          const void*,
+                                          const size_t,
+                                          const shape_elem_type*,
+                                          const size_t,
+                                          const void*,
+                                          const size_t,
+                                          const shape_elem_type*,
+                                          const size_t,
+                                          const size_t*,
+                                          const DPCTLEventVectorRef) =
+    dpnp_correlate_c<_DataType_output, _DataType_input1, _DataType_input2>;
 
 template <typename _DataType>
 class dpnp_cov_c_kernel1;
@@ -186,7 +186,7 @@ DPCTLSyclEventRef dpnp_cov_c(DPCTLSyclQueueRef q_ref,
     const _DataType alpha = _DataType(1) / (ncols - 1);
     const _DataType beta = _DataType(0);
 
-    event_syrk = mkl_blas::syrk(q,                       // queue &exec_queue,
+    event_syrk = mkl_blas::syrk(q,                                // queue &exec_queue,
                                 oneapi::mkl::uplo::upper,         // uplo upper_lower,
                                 oneapi::mkl::transpose::nontrans, // transpose trans,
                                 nrows,                            // std::int64_t n,
@@ -231,12 +231,7 @@ void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_cov_c<_DataType>(q_ref,
-                                                        array1_in,
-                                                        result1,
-                                                        nrows,
-                                                        ncols,
-                                                        dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_cov_c<_DataType>(q_ref, array1_in, result1, nrows, ncols, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -244,12 +239,8 @@ template <typename _DataType>
 void (*dpnp_cov_default_c)(void*, void*, size_t, size_t) = dpnp_cov_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_cov_ext_c)(DPCTLSyclQueueRef,
-                                    void*,
-                                    void*,
-                                    size_t,
-                                    size_t,
-                                    const DPCTLEventVectorRef) = dpnp_cov_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_cov_ext_c)(DPCTLSyclQueueRef, void*, void*, size_t, size_t, const DPCTLEventVectorRef) =
+    dpnp_cov_c<_DataType>;
 
 template <typename _DataType_input, typename _DataType_output>
 DPCTLSyclEventRef dpnp_count_nonzero_c(DPCTLSyclQueueRef q_ref,
@@ -293,11 +284,8 @@ void dpnp_count_nonzero_c(void* array1_in, void* result1_out, size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_count_nonzero_c<_DataType_input, _DataType_output>(q_ref,
-                                                                                          array1_in,
-                                                                                          result1_out,
-                                                                                          size,
-                                                                                          dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_count_nonzero_c<_DataType_input, _DataType_output>(q_ref, array1_in, result1_out, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
@@ -306,12 +294,8 @@ template <typename _DataType_input, typename _DataType_output>
 void (*dpnp_count_nonzero_default_c)(void*, void*, size_t) = dpnp_count_nonzero_c<_DataType_input, _DataType_output>;
 
 template <typename _DataType_input, typename _DataType_output>
-DPCTLSyclEventRef (*dpnp_count_nonzero_ext_c)(
-    DPCTLSyclQueueRef,
-    void*,
-    void*,
-    size_t,
-    const DPCTLEventVectorRef) = dpnp_count_nonzero_c<_DataType_input, _DataType_output>;
+DPCTLSyclEventRef (*dpnp_count_nonzero_ext_c)(DPCTLSyclQueueRef, void*, void*, size_t, const DPCTLEventVectorRef) =
+    dpnp_count_nonzero_c<_DataType_input, _DataType_output>;
 
 template <typename _DataType>
 class dpnp_max_c_kernel;
@@ -531,27 +515,15 @@ void dpnp_max_c(void* array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_max_c<_DataType>(q_ref,
-                                                        array1_in,
-                                                        result1,
-                                                        result_size,
-                                                        shape,
-                                                        ndim,
-                                                        axis,
-                                                        naxis,
-                                                        dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_max_c<_DataType>(q_ref, array1_in, result1, result_size, shape, ndim, axis, naxis, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_max_default_c)(void*,
-                           void*,
-                           const size_t,
-                           const shape_elem_type*,
-                           size_t,
-                           const shape_elem_type*,
-                           size_t) = dpnp_max_c<_DataType>;
+void (*dpnp_max_default_c)(void*, void*, const size_t, const shape_elem_type*, size_t, const shape_elem_type*, size_t) =
+    dpnp_max_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_max_ext_c)(DPCTLSyclQueueRef,
@@ -630,25 +602,15 @@ void dpnp_mean_c(void* array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_mean_c<_DataType, _ResultType>(q_ref,
-                                                                      array1_in,
-                                                                      result1,
-                                                                      shape,
-                                                                      ndim,
-                                                                      axis,
-                                                                      naxis,
-                                                                      dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_mean_c<_DataType, _ResultType>(q_ref, array1_in, result1, shape, ndim, axis, naxis, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
-void (*dpnp_mean_default_c)(void*,
-                            void*,
-                            const shape_elem_type*,
-                            size_t,
-                            const shape_elem_type*,
-                            size_t) = dpnp_mean_c<_DataType, _ResultType>;
+void (*dpnp_mean_default_c)(void*, void*, const shape_elem_type*, size_t, const shape_elem_type*, size_t) =
+    dpnp_mean_c<_DataType, _ResultType>;
 
 template <typename _DataType, typename _ResultType>
 DPCTLSyclEventRef (*dpnp_mean_ext_c)(DPCTLSyclQueueRef,
@@ -716,25 +678,15 @@ void dpnp_median_c(void* array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_median_c<_DataType, _ResultType>(q_ref,
-                                                                        array1_in,
-                                                                        result1,
-                                                                        shape,
-                                                                        ndim,
-                                                                        axis,
-                                                                        naxis,
-                                                                        dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_median_c<_DataType, _ResultType>(q_ref, array1_in, result1, shape, ndim, axis, naxis, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
-void (*dpnp_median_default_c)(void*,
-                              void*,
-                              const shape_elem_type*,
-                              size_t,
-                              const shape_elem_type*,
-                              size_t) = dpnp_median_c<_DataType, _ResultType>;
+void (*dpnp_median_default_c)(void*, void*, const shape_elem_type*, size_t, const shape_elem_type*, size_t) =
+    dpnp_median_c<_DataType, _ResultType>;
 
 template <typename _DataType, typename _ResultType>
 DPCTLSyclEventRef (*dpnp_median_ext_c)(DPCTLSyclQueueRef,
@@ -958,27 +910,15 @@ void dpnp_min_c(void* array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_min_c<_DataType>(q_ref,
-                                                        array1_in,
-                                                        result1,
-                                                        result_size,
-                                                        shape,
-                                                        ndim,
-                                                        axis,
-                                                        naxis,
-                                                        dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_min_c<_DataType>(q_ref, array1_in, result1, result_size, shape, ndim, axis, naxis, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_min_default_c)(void*,
-                           void*,
-                           const size_t,
-                           const shape_elem_type*,
-                           size_t,
-                           const shape_elem_type*,
-                           size_t) = dpnp_min_c<_DataType>;
+void (*dpnp_min_default_c)(void*, void*, const size_t, const shape_elem_type*, size_t, const shape_elem_type*, size_t) =
+    dpnp_min_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_min_ext_c)(DPCTLSyclQueueRef,
@@ -1042,13 +982,8 @@ void dpnp_nanvar_c(void* array1_in, void* mask_arr1, void* result1, const size_t
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_nanvar_c<_DataType>(q_ref,
-                                                           array1_in,
-                                                           mask_arr1,
-                                                           result1,
-                                                           result_size,
-                                                           arr_size,
-                                                           dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_nanvar_c<_DataType>(q_ref, array1_in, mask_arr1, result1, result_size, arr_size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
@@ -1057,13 +992,8 @@ template <typename _DataType>
 void (*dpnp_nanvar_default_c)(void*, void*, void*, const size_t, size_t) = dpnp_nanvar_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_nanvar_ext_c)(DPCTLSyclQueueRef,
-                                       void*,
-                                       void*,
-                                       void*,
-                                       const size_t,
-                                       size_t,
-                                       const DPCTLEventVectorRef) = dpnp_nanvar_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_nanvar_ext_c)(
+    DPCTLSyclQueueRef, void*, void*, void*, const size_t, size_t, const DPCTLEventVectorRef) = dpnp_nanvar_c<_DataType>;
 
 template <typename _DataType, typename _ResultType>
 DPCTLSyclEventRef dpnp_std_c(DPCTLSyclQueueRef q_ref,
@@ -1103,22 +1033,23 @@ DPCTLSyclEventRef dpnp_std_c(DPCTLSyclQueueRef q_ref,
     const size_t var_strides_size_in_bytes = var_ndim * sizeof(shape_elem_type);
     shape_elem_type* var_shape = reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(var_shape_size_in_bytes, q));
     *var_shape = 1;
-    shape_elem_type* var_strides = reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(var_strides_size_in_bytes,
-                                                                      q));
+    shape_elem_type* var_strides =
+        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(var_strides_size_in_bytes, q));
     *var_strides = 1;
 
-    DPCTLSyclEventRef e_sqrt_ref =
-	dpnp_sqrt_c<_ResultType, _ResultType>(q_ref, result1,
-					      result1_size,
-					      result1_ndim,
-					      result1_shape,
-					      result1_strides,
-					      var,
-					      var_size,
-					      var_ndim,
-					      var_shape,
-					      var_strides,
-					      NULL, NULL);
+    DPCTLSyclEventRef e_sqrt_ref = dpnp_sqrt_c<_ResultType, _ResultType>(q_ref,
+                                                                         result1,
+                                                                         result1_size,
+                                                                         result1_ndim,
+                                                                         result1_shape,
+                                                                         result1_strides,
+                                                                         var,
+                                                                         var_size,
+                                                                         var_ndim,
+                                                                         var_shape,
+                                                                         var_strides,
+                                                                         NULL,
+                                                                         NULL);
     DPCTLEvent_WaitAndThrow(e_sqrt_ref);
     DPCTLEvent_Delete(e_sqrt_ref);
 
@@ -1142,27 +1073,15 @@ void dpnp_std_c(void* array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_std_c<_DataType, _ResultType>(q_ref,
-                                                                     array1_in,
-                                                                     result1,
-                                                                     shape,
-                                                                     ndim,
-                                                                     axis,
-                                                                     naxis,
-                                                                     ddof,
-                                                                     dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_std_c<_DataType, _ResultType>(
+        q_ref, array1_in, result1, shape, ndim, axis, naxis, ddof, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
-void (*dpnp_std_default_c)(void*,
-                           void*,
-                           const shape_elem_type*,
-                           size_t,
-                           const shape_elem_type*,
-                           size_t,
-                           size_t) = dpnp_std_c<_DataType, _ResultType>;
+void (*dpnp_std_default_c)(void*, void*, const shape_elem_type*, size_t, const shape_elem_type*, size_t, size_t) =
+    dpnp_std_c<_DataType, _ResultType>;
 
 template <typename _DataType, typename _ResultType>
 DPCTLSyclEventRef (*dpnp_std_ext_c)(DPCTLSyclQueueRef,
@@ -1212,8 +1131,8 @@ DPCTLSyclEventRef dpnp_var_c(DPCTLSyclQueueRef q_ref,
     dpnp_mean_c<_DataType, _ResultType>(array1, mean, shape, ndim, axis, naxis);
     _ResultType mean_val = mean[0];
 
-    _ResultType* squared_deviations = reinterpret_cast<_ResultType*>(sycl::malloc_shared(size * sizeof(_ResultType),
-                                                                     q));
+    _ResultType* squared_deviations =
+        reinterpret_cast<_ResultType*>(sycl::malloc_shared(size * sizeof(_ResultType), q));
 
     sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
@@ -1254,27 +1173,15 @@ void dpnp_var_c(void* array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_var_c<_DataType, _ResultType>(q_ref,
-                                                                     array1_in,
-                                                                     result1,
-                                                                     shape,
-                                                                     ndim,
-                                                                     axis,
-                                                                     naxis,
-                                                                     ddof,
-                                                                     dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_var_c<_DataType, _ResultType>(
+        q_ref, array1_in, result1, shape, ndim, axis, naxis, ddof, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
-void (*dpnp_var_default_c)(void*,
-                           void*,
-                           const shape_elem_type*,
-                           size_t,
-                           const shape_elem_type*,
-                           size_t,
-                           size_t) = dpnp_var_c<_DataType, _ResultType>;
+void (*dpnp_var_default_c)(void*, void*, const shape_elem_type*, size_t, const shape_elem_type*, size_t, size_t) =
+    dpnp_var_c<_DataType, _ResultType>;
 
 template <typename _DataType, typename _ResultType>
 DPCTLSyclEventRef (*dpnp_var_ext_c)(DPCTLSyclQueueRef,
@@ -1293,87 +1200,87 @@ void func_map_init_statistics(func_map_t& fmap)
         eft_INT, (void*)dpnp_correlate_default_c<int32_t, int32_t, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_LNG] = {
         eft_LNG, (void*)dpnp_correlate_default_c<int64_t, int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_FLT] = {
-        eft_DBL, (void*)dpnp_correlate_default_c<double, int32_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_FLT] = {eft_DBL,
+                                                               (void*)dpnp_correlate_default_c<double, int32_t, float>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_DBL] = {
         eft_DBL, (void*)dpnp_correlate_default_c<double, int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_INT] = {
         eft_LNG, (void*)dpnp_correlate_default_c<int64_t, int64_t, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_LNG] = {
         eft_LNG, (void*)dpnp_correlate_default_c<int64_t, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_FLT] = {
-        eft_DBL, (void*)dpnp_correlate_default_c<double, int64_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_FLT] = {eft_DBL,
+                                                               (void*)dpnp_correlate_default_c<double, int64_t, float>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_DBL] = {
         eft_DBL, (void*)dpnp_correlate_default_c<double, int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_INT] = {
-        eft_DBL, (void*)dpnp_correlate_default_c<double, float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_LNG] = {
-        eft_DBL, (void*)dpnp_correlate_default_c<double, float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_FLT] = {
-        eft_FLT, (void*)dpnp_correlate_default_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_DBL] = {
-        eft_DBL, (void*)dpnp_correlate_default_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_INT] = {eft_DBL,
+                                                               (void*)dpnp_correlate_default_c<double, float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_LNG] = {eft_DBL,
+                                                               (void*)dpnp_correlate_default_c<double, float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_FLT] = {eft_FLT,
+                                                               (void*)dpnp_correlate_default_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_correlate_default_c<double, float, double>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_INT] = {
         eft_DBL, (void*)dpnp_correlate_default_c<double, double, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_LNG] = {
         eft_DBL, (void*)dpnp_correlate_default_c<double, double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_FLT] = {
-        eft_DBL, (void*)dpnp_correlate_default_c<double, double, float>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_correlate_default_c<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_FLT] = {eft_DBL,
+                                                               (void*)dpnp_correlate_default_c<double, double, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_correlate_default_c<double, double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_INT][eft_INT] = {
         eft_INT, (void*)dpnp_correlate_ext_c<int32_t, int32_t, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_INT][eft_LNG] = {
         eft_LNG, (void*)dpnp_correlate_ext_c<int64_t, int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_INT][eft_FLT] = {
-        eft_DBL, (void*)dpnp_correlate_ext_c<double, int32_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_INT][eft_FLT] = {eft_DBL,
+                                                                   (void*)dpnp_correlate_ext_c<double, int32_t, float>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_INT][eft_DBL] = {
         eft_DBL, (void*)dpnp_correlate_ext_c<double, int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_LNG][eft_INT] = {
         eft_LNG, (void*)dpnp_correlate_ext_c<int64_t, int64_t, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_LNG][eft_LNG] = {
         eft_LNG, (void*)dpnp_correlate_ext_c<int64_t, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_LNG][eft_FLT] = {
-        eft_DBL, (void*)dpnp_correlate_ext_c<double, int64_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_LNG][eft_FLT] = {eft_DBL,
+                                                                   (void*)dpnp_correlate_ext_c<double, int64_t, float>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_LNG][eft_DBL] = {
         eft_DBL, (void*)dpnp_correlate_ext_c<double, int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_FLT][eft_INT] = {
-        eft_DBL, (void*)dpnp_correlate_ext_c<double, float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_FLT][eft_LNG] = {
-        eft_DBL, (void*)dpnp_correlate_ext_c<double, float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void*)dpnp_correlate_ext_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_FLT][eft_DBL] = {
-        eft_DBL, (void*)dpnp_correlate_ext_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_FLT][eft_INT] = {eft_DBL,
+                                                                   (void*)dpnp_correlate_ext_c<double, float, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_FLT][eft_LNG] = {eft_DBL,
+                                                                   (void*)dpnp_correlate_ext_c<double, float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_FLT][eft_FLT] = {eft_FLT,
+                                                                   (void*)dpnp_correlate_ext_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_FLT][eft_DBL] = {eft_DBL,
+                                                                   (void*)dpnp_correlate_ext_c<double, float, double>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_DBL][eft_INT] = {
         eft_DBL, (void*)dpnp_correlate_ext_c<double, double, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_DBL][eft_LNG] = {
         eft_DBL, (void*)dpnp_correlate_ext_c<double, double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_DBL][eft_FLT] = {
-        eft_DBL, (void*)dpnp_correlate_ext_c<double, double, float>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_correlate_ext_c<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_DBL][eft_FLT] = {eft_DBL,
+                                                                   (void*)dpnp_correlate_ext_c<double, double, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                   (void*)dpnp_correlate_ext_c<double, double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_BLN][eft_BLN] = {
-        eft_LNG, (void*)dpnp_count_nonzero_default_c<bool, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_BLN][eft_BLN] = {eft_LNG,
+                                                                   (void*)dpnp_count_nonzero_default_c<bool, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_INT][eft_INT] = {
         eft_LNG, (void*)dpnp_count_nonzero_default_c<int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_LNG][eft_LNG] = {
         eft_LNG, (void*)dpnp_count_nonzero_default_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_FLT][eft_FLT] = {
-        eft_LNG, (void*)dpnp_count_nonzero_default_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_FLT][eft_FLT] = {eft_LNG,
+                                                                   (void*)dpnp_count_nonzero_default_c<float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_DBL][eft_DBL] = {
         eft_LNG, (void*)dpnp_count_nonzero_default_c<double, int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO_EXT][eft_BLN][eft_BLN] = {
-        eft_LNG, (void*)dpnp_count_nonzero_ext_c<bool, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO_EXT][eft_BLN][eft_BLN] = {eft_LNG,
+                                                                       (void*)dpnp_count_nonzero_ext_c<bool, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO_EXT][eft_INT][eft_INT] = {
         eft_LNG, (void*)dpnp_count_nonzero_ext_c<int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO_EXT][eft_LNG][eft_LNG] = {
         eft_LNG, (void*)dpnp_count_nonzero_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO_EXT][eft_FLT][eft_FLT] = {
-        eft_LNG, (void*)dpnp_count_nonzero_ext_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO_EXT][eft_FLT][eft_FLT] = {eft_LNG,
+                                                                       (void*)dpnp_count_nonzero_ext_c<float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO_EXT][eft_DBL][eft_DBL] = {
         eft_LNG, (void*)dpnp_count_nonzero_ext_c<double, int64_t>};
 

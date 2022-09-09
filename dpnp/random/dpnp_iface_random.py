@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,65 +35,64 @@ Set of functions to implement NumPy random module API
 """
 
 
-import dpnp
+import operator
+
 import numpy
 
+import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.random.dpnp_algo_random import *
 
-import operator
-
-
 __all__ = [
-    'beta',
-    'binomial',
-    'bytes',
-    'chisquare',
-    'choice',
-    'dirichlet',
-    'exponential',
-    'f',
-    'gamma',
-    'geometric',
-    'gumbel',
-    'hypergeometric',
-    'laplace',
-    'logistic',
-    'lognormal',
-    'logseries',
-    'multinomial',
-    'multivariate_normal',
-    'negative_binomial',
-    'normal',
-    'noncentral_chisquare',
-    'noncentral_f',
-    'pareto',
-    'permutation',
-    'poisson',
-    'power',
-    'rand',
-    'randint',
-    'randn',
-    'random',
-    'random_integers',
-    'random_sample',
-    'ranf',
-    'rayleigh',
-    'sample',
-    'shuffle',
-    'seed',
-    'standard_cauchy',
-    'standard_exponential',
-    'standard_gamma',
-    'standard_normal',
-    'standard_t',
-    'triangular',
-    'uniform',
-    'vonmises',
-    'wald',
-    'weibull',
-    'zipf'
+    "beta",
+    "binomial",
+    "bytes",
+    "chisquare",
+    "choice",
+    "dirichlet",
+    "exponential",
+    "f",
+    "gamma",
+    "geometric",
+    "gumbel",
+    "hypergeometric",
+    "laplace",
+    "logistic",
+    "lognormal",
+    "logseries",
+    "multinomial",
+    "multivariate_normal",
+    "negative_binomial",
+    "normal",
+    "noncentral_chisquare",
+    "noncentral_f",
+    "pareto",
+    "permutation",
+    "poisson",
+    "power",
+    "rand",
+    "randint",
+    "randn",
+    "random",
+    "random_integers",
+    "random_sample",
+    "ranf",
+    "rayleigh",
+    "sample",
+    "shuffle",
+    "seed",
+    "standard_cauchy",
+    "standard_exponential",
+    "standard_gamma",
+    "standard_normal",
+    "standard_t",
+    "triangular",
+    "uniform",
+    "vonmises",
+    "wald",
+    "weibull",
+    "zipf",
 ]
 
 
@@ -495,9 +494,9 @@ def hypergeometric(ngood, nbad, nsample, size=None):
             pass
         else:
             m = int(ngood)
-            l = int(ngood) + int(nbad)
+            p = int(ngood) + int(nbad)
             s = int(nsample)
-            return dpnp_rng_hypergeometric(l, s, m, size).get_pyobj()
+            return dpnp_rng_hypergeometric(p, s, m, size).get_pyobj()
 
     return call_origin(numpy.random.hypergeometric, ngood, nbad, nsample, size)
 
@@ -569,7 +568,7 @@ def logistic(loc=0.0, scale=1.0, size=None):
             pass
         else:
             result = dpnp_rng_logistic(loc, scale, size).get_pyobj()
-            if size == None or size == 1:
+            if size is None or size == 1:
                 return result[0]
             else:
                 return result
@@ -680,7 +679,7 @@ def multinomial(n, pvals, size=None):
     return call_origin(numpy.random.multinomial, n, pvals, size)
 
 
-def multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8):
+def multivariate_normal(mean, cov, size=None, check_valid="warn", tol=1e-8):
     """Multivariate normal distributions.
 
     Draw random samples from a multivariate normal distribution.
@@ -721,9 +720,13 @@ def multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8):
         else:
             final_shape = list(shape[:])
             final_shape.append(mean_.shape[0])
-            return dpnp_rng_multivariate_normal(mean_, cov_, final_shape).get_pyobj()
+            return dpnp_rng_multivariate_normal(
+                mean_, cov_, final_shape
+            ).get_pyobj()
 
-    return call_origin(numpy.random.multivariate_normal, mean, cov, size, check_valid, tol)
+    return call_origin(
+        numpy.random.multivariate_normal, mean, cov, size, check_valid, tol
+    )
 
 
 def negative_binomial(n, p, size=None):
@@ -994,8 +997,7 @@ def power(a, size=None):
 
 def rand(d0, *dn):
     """
-    Create an array of the given shape and populate it
-    with random samples from a uniform distribution over [0, 1).
+    Create an array of the given shape and populate it with random samples from a uniform distribution over [0, 1).
 
     For full documentation refer to :obj:`numpy.random.rand`.
 
@@ -1118,8 +1120,8 @@ def randn(d0, *dn):
 def random(size):
     """
     Return random floats in the half-open interval [0.0, 1.0).
-    Alias for random_sample.
 
+    Alias for random_sample.
     For full documentation refer to :obj:`numpy.random.random`.
 
     Limitations
@@ -1205,8 +1207,8 @@ def random_sample(size):
 def ranf(size):
     """
     Return random floats in the half-open interval [0.0, 1.0).
-    This is an alias of random_sample.
 
+    This is an alias of random_sample.
     For full documentation refer to :obj:`numpy.random.ranf`.
 
     Limitations
@@ -1266,8 +1268,8 @@ def rayleigh(scale=1.0, size=None):
 def sample(size):
     """
     Return random floats in the half-open interval [0.0, 1.0).
-    This is an alias of random_sample.
 
+    This is an alias of random_sample.
     For full documentation refer to :obj:`numpy.random.sample`.
 
     Limitations
@@ -1567,13 +1569,15 @@ def uniform(low=0.0, high=1.0, size=None):
         else:
             if low > high:
                 low, high = high, low
-            return dpnp_rng_uniform(low, high, size, dtype=numpy.float64).get_pyobj()
+            return dpnp_rng_uniform(
+                low, high, size, dtype=numpy.float64
+            ).get_pyobj()
 
     return call_origin(numpy.random.uniform, low, high, size)
 
 
 def vonmises(mu, kappa, size=None):
-    """von Mises distribution.
+    """
 
     Draw samples from a von Mises distribution.
 

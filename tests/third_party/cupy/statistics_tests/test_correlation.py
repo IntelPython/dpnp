@@ -9,7 +9,6 @@ from tests.third_party.cupy import testing
 
 @testing.gpu
 class TestCorrcoef(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_corrcoef(self, xp, dtype):
@@ -39,7 +38,6 @@ class TestCorrcoef(unittest.TestCase):
 
 @testing.gpu
 class TestCov(unittest.TestCase):
-
     def generate_input(self, a_shape, y_shape, xp, dtype):
         a = testing.shaped_arange(a_shape, xp, dtype)
         y = None
@@ -49,22 +47,45 @@ class TestCov(unittest.TestCase):
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
-    def check(self, a_shape, y_shape=None, rowvar=True, bias=False,
-              ddof=None, xp=None, dtype=None):
+    def check(
+        self,
+        a_shape,
+        y_shape=None,
+        rowvar=True,
+        bias=False,
+        ddof=None,
+        xp=None,
+        dtype=None,
+    ):
         a, y = self.generate_input(a_shape, y_shape, xp, dtype)
         return xp.cov(a, y, rowvar, bias, ddof)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
-    def check_warns(self, a_shape, y_shape=None, rowvar=True, bias=False,
-                    ddof=None, xp=None, dtype=None):
+    def check_warns(
+        self,
+        a_shape,
+        y_shape=None,
+        rowvar=True,
+        bias=False,
+        ddof=None,
+        xp=None,
+        dtype=None,
+    ):
         with testing.assert_warns(RuntimeWarning):
             a, y = self.generate_input(a_shape, y_shape, xp, dtype)
             return xp.cov(a, y, rowvar, bias, ddof)
 
     @testing.for_all_dtypes()
-    def check_raises(self, a_shape, y_shape=None, rowvar=True, bias=False,
-                     ddof=None, dtype=None):
+    def check_raises(
+        self,
+        a_shape,
+        y_shape=None,
+        rowvar=True,
+        bias=False,
+        ddof=None,
+        dtype=None,
+    ):
         for xp in (numpy, cupy):
             a, y = self.generate_input(a_shape, y_shape, xp, dtype)
             with pytest.raises(ValueError):
@@ -92,13 +113,16 @@ class TestCov(unittest.TestCase):
 
 
 @testing.gpu
-@testing.parameterize(*testing.product({
-    'mode': ['valid', 'same', 'full'],
-    'shape1': [(5,), (6,), (20,), (21,)],
-    'shape2': [(5,), (6,), (20,), (21,)],
-}))
+@testing.parameterize(
+    *testing.product(
+        {
+            "mode": ["valid", "same", "full"],
+            "shape1": [(5,), (6,), (20,), (21,)],
+            "shape2": [(5,), (6,), (20,), (21,)],
+        }
+    )
+)
 class TestCorrelateShapeCombination(unittest.TestCase):
-
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_correlate(self, xp, dtype):
@@ -108,11 +132,8 @@ class TestCorrelateShapeCombination(unittest.TestCase):
 
 
 @testing.gpu
-@testing.parameterize(*testing.product({
-    'mode': ['valid', 'full', 'same']
-}))
+@testing.parameterize(*testing.product({"mode": ["valid", "full", "same"]}))
 class TestCorrelate(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-5)
     def test_correlate_non_contiguous(self, xp, dtype):
@@ -127,7 +148,7 @@ class TestCorrelate(unittest.TestCase):
         b = testing.shaped_arange((1000,), xp, dtype)
         return xp.correlate(a[200::], b[10::700], mode=self.mode)
 
-    @testing.for_all_dtypes_combination(names=['dtype1', 'dtype2'])
+    @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_allclose(rtol=1e-2)
     def test_correlate_diff_types(self, xp, dtype1, dtype2):
         a = testing.shaped_random((200,), xp, dtype1)
@@ -136,12 +157,9 @@ class TestCorrelate(unittest.TestCase):
 
 
 @testing.gpu
-@testing.parameterize(*testing.product({
-    'mode': ['valid', 'same', 'full']
-}))
+@testing.parameterize(*testing.product({"mode": ["valid", "same", "full"]}))
 class TestCorrelateInvalid(unittest.TestCase):
-
-    @testing.with_requires('numpy>=1.18')
+    @testing.with_requires("numpy>=1.18")
     @testing.for_all_dtypes()
     def test_correlate_empty(self, dtype):
         for xp in (numpy, cupy):

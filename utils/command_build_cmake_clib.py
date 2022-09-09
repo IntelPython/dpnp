@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,16 +24,14 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-Module to call cmake based procedure by build_cmake_clib command
-"""
+"""Module to call cmake based procedure by build_cmake_clib command."""
 
 import os
-import sys
 import pathlib
-from setuptools.command import build_clib
+import sys
 from distutils import log
 
+from setuptools.command import build_clib
 
 """
 Detect platform
@@ -42,14 +40,16 @@ IS_WIN = False
 IS_MAC = False
 IS_LIN = False
 
-if 'linux' in sys.platform:
+if "linux" in sys.platform:
     IS_LIN = True
-elif sys.platform == 'darwin':
+elif sys.platform == "darwin":
     IS_MAC = True
-elif sys.platform in ['win32', 'cygwin']:
+elif sys.platform in ["win32", "cygwin"]:
     IS_WIN = True
 else:
-    raise EnvironmentError("DPNP cmake builder: " + sys.platform + " not supported")
+    raise EnvironmentError(
+        "DPNP cmake builder: " + sys.platform + " not supported"
+    )
 
 
 """
@@ -65,7 +65,9 @@ try:
     import dpctl
 
     _dpctrl_include_dir = str(os.path.abspath(dpctl.get_include()))
-    _dpctrl_library_dir = str(os.path.abspath(os.path.join(dpctl.get_include(), "..")))
+    _dpctrl_library_dir = str(
+        os.path.abspath(os.path.join(dpctl.get_include(), ".."))
+    )
     _dpctrl_exists = "ON"
 except ImportError:
     """
@@ -76,7 +78,7 @@ except ImportError:
 """
 Detect enabling DPNP backend tests
 """
-_dpnp_backend_tests_enable = os.environ.get('DPNP_BACKEND_TESTS_ENABLE', None)
+_dpnp_backend_tests_enable = os.environ.get("DPNP_BACKEND_TESTS_ENABLE", None)
 
 
 """
@@ -86,7 +88,9 @@ CmakeList.txt based build_clib
 
 class custom_build_cmake_clib(build_clib.build_clib):
     def run(self):
-        root_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
+        root_dir = os.path.normpath(
+            os.path.join(os.path.dirname(__file__), "..")
+        )
         log.info(f"Project directory is: {root_dir}")
 
         backend_directory = os.path.join(root_dir, "dpnp", "backend")
@@ -112,18 +116,22 @@ class custom_build_cmake_clib(build_clib.build_clib):
             "-S" + backend_directory,
             "-B" + abs_build_temp_path,
             "-DCMAKE_BUILD_TYPE=" + config,
-            "-DDPNP_INSTALL_PREFIX=" + install_directory.replace(os.sep, "/"),  # adjust to cmake requirenments
+            "-DDPNP_INSTALL_PREFIX="
+            + install_directory.replace(
+                os.sep, "/"
+            ),  # adjust to cmake requirenments
             "-DDPNP_INSTALL_STRUCTURED=OFF",
             # "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + install_directory,
             "-DDPNP_SYCL_QUEUE_MGR_ENABLE:BOOL=" + _dpctrl_exists,
             "-DDPNP_QUEUEMGR_INCLUDE_DIR=" + _dpctrl_include_dir,
             "-DDPNP_QUEUEMGR_LIB_DIR=" + _dpctrl_library_dir,
             "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
-            "-DDPNP_BACKEND_TESTS:BOOL=" + enable_tests
+            "-DDPNP_BACKEND_TESTS:BOOL=" + enable_tests,
         ]
 
         # didn't find how to add it inside cmake, that is why this is here
         import multiprocessing
+
         cpu_count = multiprocessing.cpu_count()
         # possible that jobs count must be +-1 against CPUs count
         jobs = "-j" + str(cpu_count)

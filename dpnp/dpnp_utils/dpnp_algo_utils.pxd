@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,8 @@
 
 from libcpp cimport bool as cpp_bool
 
-from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncType, DPNPFuncName
 from dpnp.dpnp_algo cimport shape_type_c
+from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncName, DPNPFuncType
 
 
 cpdef checker_throw_runtime_error(function_name, message)

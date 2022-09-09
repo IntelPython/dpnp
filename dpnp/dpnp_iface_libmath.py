@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -41,13 +41,11 @@ it contains:
 
 import math
 
+import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-import dpnp
 
-__all__ = [
-    "erf"
-]
+__all__ = ["erf"]
 
 
 def erf(in_array1):
@@ -66,7 +64,6 @@ def erf(in_array1):
 
     Examples
     --------
-
     >>> import dpnp as np
     >>> x = np.linspace(2.0, 3.0, num=5)
     >>> [i for i in x]
@@ -81,7 +78,9 @@ def erf(in_array1):
     if x1_desc:
         return dpnp_erf(x1_desc).get_pyobj()
 
-    result = create_output_descriptor_py(in_array1.shape, in_array1.dtype, None).get_pyobj()
+    result = create_output_descriptor_py(
+        in_array1.shape, in_array1.dtype, None
+    ).get_pyobj()
     for i in range(result.size):
         result[i] = math.erf(in_array1[i])
 

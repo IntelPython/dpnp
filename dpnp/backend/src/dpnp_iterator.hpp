@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -319,15 +319,14 @@ public:
 
             broadcast_axes_size = valid_axes.size();
             const size_type broadcast_axes_size_in_bytes = broadcast_axes_size * sizeof(size_type);
-            broadcast_axes = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref,
-                                                                              broadcast_axes_size_in_bytes));
+            broadcast_axes = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref, broadcast_axes_size_in_bytes));
             std::copy(valid_axes.begin(), valid_axes.end(), broadcast_axes);
 
             output_size = std::accumulate(
                 output_shape, output_shape + output_shape_size, size_type(1), std::multiplies<size_type>());
 
-            output_shape_strides = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref,
-                                                                                    output_shape_size_in_bytes));
+            output_shape_strides =
+                reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref, output_shape_size_in_bytes));
             get_shape_offsets_inkernel<size_type>(output_shape, output_shape_size, output_shape_strides);
 
             iteration_size = 1;
@@ -416,8 +415,8 @@ public:
             output_size = std::accumulate(
                 output_shape, output_shape + output_shape_size, size_type(1), std::multiplies<size_type>());
 
-            output_shape_strides = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref,
-                                                                                    output_shape_size_in_bytes));
+            output_shape_strides =
+                reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref, output_shape_size_in_bytes));
             get_shape_offsets_inkernel<size_type>(output_shape, output_shape_size, output_shape_strides);
 
             iteration_size = 1;
@@ -429,13 +428,13 @@ public:
                 iteration_size *= axis_dim;
             }
 
-            iteration_shape_strides = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref,
-                                                                                       iteration_shape_size_in_bytes));
+            iteration_shape_strides =
+                reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref, iteration_shape_size_in_bytes));
             get_shape_offsets_inkernel<size_type>(
                 iteration_shape.data(), iteration_shape.size(), iteration_shape_strides);
 
-            axes_shape_strides = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref,
-                                                                                  iteration_shape_size_in_bytes));
+            axes_shape_strides =
+                reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref, iteration_shape_size_in_bytes));
             for (size_t i = 0; i < static_cast<size_t>(iteration_shape_size); ++i)
             {
                 axes_shape_strides[i] = input_shape_strides[axes[i]];
@@ -503,8 +502,8 @@ private:
             }
 
             input_shape_size = __shape.size();
-            input_shape = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref,
-                                                                           input_shape_size * sizeof(size_type)));
+            input_shape =
+                reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref, input_shape_size * sizeof(size_type)));
             std::copy(__shape.begin(), __shape.end(), input_shape);
 
             input_shape_strides =
@@ -539,8 +538,8 @@ private:
             }
 
             input_shape_size = __shape.size();
-            input_shape = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref,
-                                                                           input_shape_size * sizeof(size_type)));
+            input_shape =
+                reinterpret_cast<size_type*>(dpnp_memory_alloc_c(queue_ref, input_shape_size * sizeof(size_type)));
             std::copy(__shape.begin(), __shape.end(), input_shape);
 
             input_shape_strides =
@@ -646,7 +645,7 @@ private:
         free_output_memory();
     }
 
-    DPCTLSyclQueueRef queue_ref = nullptr;    /**< reference to SYCL queue */
+    DPCTLSyclQueueRef queue_ref = nullptr; /**< reference to SYCL queue */
 
     pointer data = nullptr;                   /**< input array begin pointer */
     size_type input_size = size_type{};       /**< input array size */

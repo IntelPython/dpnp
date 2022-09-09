@@ -2,8 +2,58 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
 -   repo: https://github.com/PyCQA/bandit
-    rev: '1.7.0'
+    rev: '1.7.4'
     hooks:
     -   id: bandit
         pass_filenames: false
         args: ["-r", "dpnp", "-lll"]
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+    -   id: check-case-conflict
+    -   id: check-toml
+    -   id: end-of-file-fixer
+    -   id: fix-byte-order-marker
+    -   id: trailing-whitespace
+-   repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.9.0
+    hooks:
+      - id: python-check-blanket-type-ignore
+      - id: python-check-mock-methods
+      - id: python-no-eval
+      - id: python-no-log-warn
+      - id: python-use-type-annotations
+      - id: rst-backticks
+      - id: rst-directive-colons
+      - id: rst-inline-touching-normal
+-   repo: https://github.com/psf/black
+    rev: 22.8.0
+    hooks:
+    -   id: black
+        args: ["--check", "--diff", "--color"]
+        language_version: python3.9
+-   repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+    -   id: isort
+        name: isort (python)
+        args: ["--check-only", "--diff"]
+        additional_dependencies: [colorama]
+    -   id: isort
+        name: isort (cython)
+        types: [cython]
+        args: ["--check-only", "--diff"]
+        additional_dependencies: [colorama]
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: 5.0.4
+    hooks:
+    -   id: flake8
+        args: ["--config=.flake8"]
+        additional_dependencies:
+            - flake8-docstrings==1.6.0
+            - flake8-bugbear==22.8.23
+-   repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+    -   id: clang-format
+        args: ["-i"]

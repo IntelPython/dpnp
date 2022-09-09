@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,10 @@ import statistics
 import time
 import warnings
 
-import dpnp
 import numpy
 import pytest
+
+import dpnp
 
 # def pytest_generate_tests(metafunc):
 #     metafunc.parametrize("lib", [numpy, dpnp], ids=["base", "DPNP"])
@@ -70,7 +71,9 @@ class DPNPTestPerfBase:
 
         self.results_data[name][dtype][lib][size] = result
 
-    def dpnp_benchmark(self, name, lib, dtype, size, *args, custom_fptr=None, **kwargs):
+    def dpnp_benchmark(
+        self, name, lib, dtype, size, *args, custom_fptr=None, **kwargs
+    ):
         """
         Test performance of specified function.
 
@@ -89,15 +92,15 @@ class DPNPTestPerfBase:
         kwargs : dict
             key word parameters of the function
         """
-        if (custom_fptr is None):
+        if custom_fptr is None:
             examine_function = getattr(lib, name)
         else:
             examine_function = custom_fptr
 
         exec_times = []
-        for iteration in range(self.repeat):
+        for _ in range(self.repeat):
             start_time = time.perf_counter()
-            result = examine_function(*args, **kwargs)
+            examine_function(*args, **kwargs)
             end_time = time.perf_counter()
 
             exec_times.append(end_time - start_time)
@@ -108,13 +111,13 @@ class DPNPTestPerfBase:
         print()
         pw = self.print_width
         pwn = self.print_num_width
-        print(f"Function".center(pw[0]), end=self.sep)
-        print(f"type".center(pw[1]), end=self.sep)
-        print(f"lib".center(pw[2]), end=self.sep)
-        print(f"size".center(pw[3]), end=self.sep)
-        print(f"median".center(pwn), end=self.sep)
-        print(f"min".center(pwn), end=self.sep)
-        print(f"max".center(pwn), end=self.sep)
+        print("Function".center(pw[0]), end=self.sep)
+        print("type".center(pw[1]), end=self.sep)
+        print("lib".center(pw[2]), end=self.sep)
+        print("size".center(pw[3]), end=self.sep)
+        print("median".center(pwn), end=self.sep)
+        print("min".center(pwn), end=self.sep)
+        print("max".center(pwn), end=self.sep)
         print()
 
     def print_csv(self):
@@ -151,7 +154,13 @@ class DPNPTestPerfBase:
                         graph_data[lib_id_prn]["x"].append(size)
                         graph_data[lib_id_prn]["y"].append(val_median)
 
-                self.plot_graph_2lines(self, graph_data, func_name=func_name, lib=lib_id_prn, type=dtype_id_prn)
+                self.plot_graph_2lines(
+                    self,
+                    graph_data,
+                    func_name=func_name,
+                    lib=lib_id_prn,
+                    type=dtype_id_prn,
+                )
             self.plot_graph_ratio(self, func_name, func_results)
 
     def plot_graph_2lines(self, graph_data, func_name, lib, type):
@@ -165,7 +174,7 @@ class DPNPTestPerfBase:
         plt.grid(True)
 
         for lib_id, axis in graph_data.items():
-            plt.plot(axis["x"], axis["y"], label=lib_id, marker='.')
+            plt.plot(axis["x"], axis["y"], label=lib_id, marker=".")
 
         plt.legend()
         plt.tight_layout()
@@ -181,14 +190,18 @@ class DPNPTestPerfBase:
         plt.suptitle(f"Ratio for '{func_name}' time in (s)")
         plt.xlabel("number of elements")
         plt.ylabel("ratio")
-        ax.spines['bottom'].set_position(('data', 1))
+        ax.spines["bottom"].set_position(("data", 1))
         ax.grid(True)
 
         for dtype_id, dtype_results in func_results.items():
             dtype_id_prn = dtype_id.__name__
 
-            if (len(dtype_results.keys()) != 2):
-                warnings.warn(UserWarning("DPNP Performance test: expected two libraries only for this type of graph"))
+            if len(dtype_results.keys()) != 2:
+                warnings.warn(
+                    UserWarning(
+                        "DPNP Performance test: expected two libraries only for this type of graph"
+                    )
+                )
                 plt.close()
                 return
 
@@ -207,7 +220,7 @@ class DPNPTestPerfBase:
                 val_ratio_x.append(size)
                 val_ratio_y.append(lib_results_0_median / lib_results_1_median)
 
-            plt.plot(val_ratio_x, val_ratio_y, label=dtype_id_prn, marker='.')
+            plt.plot(val_ratio_x, val_ratio_y, label=dtype_id_prn, marker=".")
 
         ax.legend()
         plt.tight_layout()

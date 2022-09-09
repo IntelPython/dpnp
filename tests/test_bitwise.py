@@ -1,15 +1,27 @@
+import numpy
 import pytest
 
 import dpnp as inp
 
-import numpy
 
-
-@pytest.mark.parametrize("lhs", [[[-7, -6, -5, -4, -3, -2, -1], [0, 1, 2, 3, 4, 5, 6]], [-3, -2, -1, 0, 1, 2, 3], 0])
-@pytest.mark.parametrize("rhs", [[[0, 1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12, 13]], [0, 1, 2, 3, 4, 5, 6], 3])
+@pytest.mark.parametrize(
+    "lhs",
+    [
+        [[-7, -6, -5, -4, -3, -2, -1], [0, 1, 2, 3, 4, 5, 6]],
+        [-3, -2, -1, 0, 1, 2, 3],
+        0,
+    ],
+)
+@pytest.mark.parametrize(
+    "rhs",
+    [
+        [[0, 1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12, 13]],
+        [0, 1, 2, 3, 4, 5, 6],
+        3,
+    ],
+)
 @pytest.mark.parametrize("dtype", [numpy.int32, numpy.int64])
 class TestBitwise:
-
     @staticmethod
     def array_or_scalar(xp, data, dtype=None):
         if numpy.isscalar(data):
@@ -38,19 +50,19 @@ class TestBitwise:
         numpy.testing.assert_array_equal(result, expected)
 
     def test_bitwise_and(self, lhs, rhs, dtype):
-        self._test_binary_int('bitwise_and', lhs, rhs, dtype)
+        self._test_binary_int("bitwise_and", lhs, rhs, dtype)
 
     def test_bitwise_or(self, lhs, rhs, dtype):
-        self._test_binary_int('bitwise_or', lhs, rhs, dtype)
+        self._test_binary_int("bitwise_or", lhs, rhs, dtype)
 
     def test_bitwise_xor(self, lhs, rhs, dtype):
-        self._test_binary_int('bitwise_xor', lhs, rhs, dtype)
+        self._test_binary_int("bitwise_xor", lhs, rhs, dtype)
 
     def test_invert(self, lhs, rhs, dtype):
-        self._test_unary_int('invert', lhs, dtype)
+        self._test_unary_int("invert", lhs, dtype)
 
     def test_left_shift(self, lhs, rhs, dtype):
-        self._test_binary_int('left_shift', lhs, rhs, dtype)
+        self._test_binary_int("left_shift", lhs, rhs, dtype)
 
     def test_right_shift(self, lhs, rhs, dtype):
-        self._test_binary_int('right_shift', lhs, rhs, dtype)
+        self._test_binary_int("right_shift", lhs, rhs, dtype)

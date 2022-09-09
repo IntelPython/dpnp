@@ -9,7 +9,6 @@ from tests.third_party.cupy import testing
 
 @testing.gpu
 class TestIndexing(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_take_by_scalar(self, xp):
         a = testing.shaped_arange((2, 4, 3), xp)
@@ -50,14 +49,14 @@ class TestIndexing(unittest.TestCase):
 
     @testing.numpy_cupy_array_equal()
     def test_take_along_axis(self, xp):
-        a = testing.shaped_random((2, 4, 3), xp, dtype='float32')
-        b = testing.shaped_random((2, 6, 3), xp, dtype='int64', scale=4)
+        a = testing.shaped_random((2, 4, 3), xp, dtype="float32")
+        b = testing.shaped_random((2, 6, 3), xp, dtype="int64", scale=4)
         return xp.take_along_axis(a, b, axis=-2)
 
     @testing.numpy_cupy_array_equal()
     def test_take_along_axis_none_axis(self, xp):
-        a = testing.shaped_random((2, 4, 3), xp, dtype='float32')
-        b = testing.shaped_random((30,), xp, dtype='int64', scale=24)
+        a = testing.shaped_random((2, 4, 3), xp, dtype="float32")
+        b = testing.shaped_random((30,), xp, dtype="int64", scale=24)
         return xp.take_along_axis(a, b, axis=None)
 
     @testing.numpy_cupy_array_equal()
@@ -148,9 +147,9 @@ class TestIndexing(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_extract(self, xp):
         a = testing.shaped_arange((3, 3), xp)
-        b = xp.array([[True, False, True],
-                      [False, True, False],
-                      [True, False, True]])
+        b = xp.array(
+            [[True, False, True], [False, True, False], [True, False, True]]
+        )
         return xp.extract(b, a)
 
     @testing.for_all_dtypes()
@@ -163,23 +162,19 @@ class TestIndexing(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_extract_shape_mismatch(self, xp):
         a = testing.shaped_arange((2, 3), xp)
-        b = xp.array([[True, False],
-                      [True, False],
-                      [True, False]])
+        b = xp.array([[True, False], [True, False], [True, False]])
         return xp.extract(b, a)
 
     @testing.numpy_cupy_array_equal()
     def test_extract_size_mismatch(self, xp):
         a = testing.shaped_arange((3, 3), xp)
-        b = xp.array([[True, False, True],
-                      [False, True, False]])
+        b = xp.array([[True, False, True], [False, True, False]])
         return xp.extract(b, a)
 
     @testing.numpy_cupy_array_equal()
     def test_extract_size_mismatch2(self, xp):
         a = testing.shaped_arange((3, 3), xp)
-        b = xp.array([[True, False, True, False],
-                      [False, True, False, True]])
+        b = xp.array([[True, False, True, False], [False, True, False, True]])
         return xp.extract(b, a)
 
     @testing.numpy_cupy_array_equal()
@@ -191,7 +186,6 @@ class TestIndexing(unittest.TestCase):
 
 @testing.gpu
 class TestChoose(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose(self, xp, dtype):
@@ -218,22 +212,22 @@ class TestChoose(unittest.TestCase):
     def test_choose_wrap(self, xp, dtype):
         a = xp.array([0, 3, -1, 5])
         c = testing.shaped_arange((3, 4), xp, dtype)
-        return a.choose(c, mode='wrap')
+        return a.choose(c, mode="wrap")
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose_clip(self, xp, dtype):
         a = xp.array([0, 3, -1, 5])
         c = testing.shaped_arange((3, 4), xp, dtype)
-        return a.choose(c, mode='clip')
+        return a.choose(c, mode="clip")
 
-    @testing.with_requires('numpy>=1.19')
+    @testing.with_requires("numpy>=1.19")
     def test_unknown_clip(self):
         for xp in (numpy, cupy):
             a = xp.array([0, 3, -1, 5])
             c = testing.shaped_arange((3, 4), xp, numpy.float32)
             with pytest.raises(ValueError):
-                a.choose(c, mode='unknow')
+                a.choose(c, mode="unknow")
 
     def test_raise(self):
         a = cupy.array([2])
@@ -252,7 +246,6 @@ class TestChoose(unittest.TestCase):
 
 @testing.gpu
 class TestSelect(unittest.TestCase):
-
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_select(self, xp, dtype):

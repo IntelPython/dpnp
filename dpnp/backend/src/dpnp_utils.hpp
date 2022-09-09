@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -240,8 +240,7 @@ static inline bool
  */
 namespace
 {
-    [[maybe_unused]]
-    std::vector<sycl::event> cast_event_vector(const DPCTLEventVectorRef event_vec_ref)
+    [[maybe_unused]] std::vector<sycl::event> cast_event_vector(const DPCTLEventVectorRef event_vec_ref)
     {
         const size_t event_vec_size = DPCTLEventVector_Size(event_vec_ref);
 
@@ -255,7 +254,7 @@ namespace
         }
         return event_vec;
     }
-}
+} // namespace
 
 /**
  * @ingroup BACKEND_UTILS

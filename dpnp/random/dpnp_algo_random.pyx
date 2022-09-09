@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,13 +34,13 @@ and the rest of the library
 
 
 import numpy
-import dpnp.config as config
-from dpnp.dpnp_algo cimport *
 
-cimport dpnp.dpnp_utils as utils
+import dpnp.config as config
 
 cimport numpy
 
+cimport dpnp.dpnp_utils as utils
+from dpnp.dpnp_algo cimport *
 
 __all__ = [
     "dpnp_rng_beta",
@@ -144,7 +144,7 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_laplace_c_1out_t)(c_dpctl.DPCT
                                                                     const double,
                                                                     const size_t,
                                                                     const c_dpctl.DPCTLEventVectorRef) except +
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_logistic_c_1out_t)(c_dpctl.DPCTLSyclQueueRef, void * , 
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_logistic_c_1out_t)(c_dpctl.DPCTLSyclQueueRef, void * ,
                                                                      const double,
                                                                      const double,
                                                                      const size_t,
@@ -339,7 +339,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_binomial(int ntrial, double p, size):
 
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
-    
+
     return result
 
 
@@ -656,7 +656,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_logistic(double loc, double scale, size):
     cdef fptr_dpnp_rng_logistic_c_1out_t func = < fptr_dpnp_rng_logistic_c_1out_t > kernel_data.ptr
     # call FPTR function
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), loc, scale, result.size, NULL)
-    
+
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
@@ -840,7 +840,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_negative_binomial(double a, double p, size)
         func = <fptr_dpnp_rng_negative_binomial_c_1out_t > kernel_data.ptr
         # call FPTR function
         event_ref = func(q_ref, result.get_data(), a, p, result.size, NULL)
-        
+
         with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
         c_dpctl.DPCTLEvent_Delete(event_ref)
 
@@ -1144,7 +1144,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_rayleigh(double scale, size):
 
         q = <c_dpctl.SyclQueue> result_sycl_queue
         q_ref = q.get_queue_ref()
-        
+
         func = <fptr_dpnp_rng_rayleigh_c_1out_t > kernel_data.ptr
         # call FPTR function
         event_ref = func(q_ref, result.get_data(), scale, result.size, NULL)

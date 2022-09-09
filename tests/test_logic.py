@@ -1,22 +1,32 @@
+import numpy
 import pytest
 
 import dpnp
 
-import numpy
 
-
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool, numpy.bool_],
-                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'bool_'])
-@pytest.mark.parametrize("shape",
-                         [(0,), (4,), (2, 3), (2, 2, 2)],
-                         ids=['(0,)', '(4,)', '(2,3)', '(2,2,2)'])
+@pytest.mark.parametrize(
+    "type",
+    [
+        numpy.float64,
+        numpy.float32,
+        numpy.int64,
+        numpy.int32,
+        numpy.bool,
+        numpy.bool_,
+    ],
+    ids=["float64", "float32", "int64", "int32", "bool", "bool_"],
+)
+@pytest.mark.parametrize(
+    "shape",
+    [(0,), (4,), (2, 3), (2, 2, 2)],
+    ids=["(0,)", "(4,)", "(2,3)", "(2,2,2)"],
+)
 def test_all(type, shape):
     size = 1
     for i in range(len(shape)):
         size *= shape[i]
 
-    for i in range(2 ** size):
+    for i in range(2**size):
         t = i
 
         a = numpy.empty(size, dtype=type)
@@ -38,9 +48,11 @@ def test_all(type, shape):
         numpy.testing.assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize(
+    "type",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
 def test_allclose(type):
 
     a = numpy.random.rand(10)
@@ -62,18 +74,29 @@ def test_allclose(type):
     numpy.testing.assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool, numpy.bool_],
-                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'bool_'])
-@pytest.mark.parametrize("shape",
-                         [(0,), (4,), (2, 3), (2, 2, 2)],
-                         ids=['(0,)', '(4,)', '(2,3)', '(2,2,2)'])
+@pytest.mark.parametrize(
+    "type",
+    [
+        numpy.float64,
+        numpy.float32,
+        numpy.int64,
+        numpy.int32,
+        numpy.bool,
+        numpy.bool_,
+    ],
+    ids=["float64", "float32", "int64", "int32", "bool", "bool_"],
+)
+@pytest.mark.parametrize(
+    "shape",
+    [(0,), (4,), (2, 3), (2, 2, 2)],
+    ids=["(0,)", "(4,)", "(2,3)", "(2,2,2)"],
+)
 def test_any(type, shape):
     size = 1
     for i in range(len(shape)):
         size *= shape[i]
 
-    for i in range(2 ** size):
+    for i in range(2**size):
         t = i
 
         a = numpy.empty(size, dtype=type)
@@ -99,8 +122,8 @@ def test_greater():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
     for i in range(len(a) + 1):
-        np_res = (a > i)
-        dpnp_res = (ia > i)
+        np_res = a > i
+        dpnp_res = ia > i
         numpy.testing.assert_equal(dpnp_res, np_res)
 
 
@@ -108,8 +131,8 @@ def test_greater_equal():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
     for i in range(len(a) + 1):
-        np_res = (a >= i)
-        dpnp_res = (ia >= i)
+        np_res = a >= i
+        dpnp_res = ia >= i
         numpy.testing.assert_equal(dpnp_res, np_res)
 
 
@@ -117,8 +140,8 @@ def test_less():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
     for i in range(len(a) + 1):
-        np_res = (a < i)
-        dpnp_res = (ia < i)
+        np_res = a < i
+        dpnp_res = ia < i
         numpy.testing.assert_equal(dpnp_res, np_res)
 
 
@@ -126,8 +149,8 @@ def test_less_equal():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
     for i in range(len(a) + 1):
-        np_res = (a <= i)
-        dpnp_res = (ia <= i)
+        np_res = a <= i
+        dpnp_res = ia <= i
         numpy.testing.assert_equal(dpnp_res, np_res)
 
 
@@ -135,6 +158,6 @@ def test_not_equal():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
     for i in range(len(a)):
-        np_res = (a != i)
-        dpnp_res = (ia != i)
+        np_res = a != i
+        dpnp_res = ia != i
         numpy.testing.assert_equal(dpnp_res, np_res)

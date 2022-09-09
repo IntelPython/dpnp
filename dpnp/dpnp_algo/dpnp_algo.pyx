@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,20 +34,21 @@ and the rest of the library
 
 from libc.time cimport time, time_t
 from libcpp.vector cimport vector
+
+import dpctl
+
 import dpnp
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
 import dpnp.dpnp_utils as utils_py
 from dpnp.dpnp_array import dpnp_array
 
-import dpctl
-
 cimport cpython
+cimport numpy
+
 cimport dpnp.dpnp_utils as utils
 
-cimport numpy
 import numpy
-
 
 __all__ = [
     "dpnp_arange",

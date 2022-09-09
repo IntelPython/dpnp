@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,18 +36,23 @@ using USB interface for an Intel GPU device.
 
 from libcpp cimport bool as cpp_bool
 
-from dpnp.dpnp_iface_types import *
-from dpnp.dpnp_iface import *
-
 # to avoid interference with Python internal functions
-from dpnp.dpnp_iface import sum as iface_sum
-from dpnp.dpnp_iface import prod as iface_prod
+from dpnp.dpnp_iface import *
 from dpnp.dpnp_iface import get_dpnp_descriptor as iface_get_dpnp_descriptor
+from dpnp.dpnp_iface import prod as iface_prod
+from dpnp.dpnp_iface import sum as iface_sum
+from dpnp.dpnp_iface_types import *
 
 from dpnp.dpnp_algo cimport *
-from dpnp.dpnp_iface_statistics import min, max  # TODO do the same as for iface_sum
-from dpnp.dpnp_iface_logic import all, any  # TODO do the same as for iface_sum
+
 import numpy
+
+from dpnp.dpnp_iface_logic import all, any  # TODO do the same as for iface_sum
+from dpnp.dpnp_iface_statistics import (  # TODO do the same as for iface_sum
+    max,
+    min,
+)
+
 cimport numpy
 
 cimport dpnp.dpnp_utils as utils

@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -350,8 +350,8 @@ INP_DLLEXPORT DPCTLSyclEventRef dpnp_rng_multinomial_c(DPCTLSyclQueueRef q_ref,
                                                        const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_multinomial_c(
-    void* result, const int ntrial, const double* p_in, const size_t p_size, const size_t size);
+INP_DLLEXPORT void
+    dpnp_rng_multinomial_c(void* result, const int ntrial, const double* p_in, const size_t p_size, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API

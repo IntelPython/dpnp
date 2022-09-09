@@ -170,7 +170,7 @@ class TestSort(unittest.TestCase):
 
     # Test NaN ordering
 
-    @testing.for_dtypes('efdFD')
+    @testing.for_dtypes("efdFD")
     @testing.numpy_cupy_array_equal()
     def test_nan1(self, xp, dtype):
         a = testing.shaped_random((10,), xp, dtype)
@@ -178,7 +178,7 @@ class TestSort(unittest.TestCase):
         out = xp.sort(a)
         return out
 
-    @testing.for_dtypes('efdFD')
+    @testing.for_dtypes("efdFD")
     @testing.numpy_cupy_array_equal()
     def test_nan2(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
@@ -186,7 +186,7 @@ class TestSort(unittest.TestCase):
         out = xp.sort(a, axis=0)
         return out
 
-    @testing.for_dtypes('efdFD')
+    @testing.for_dtypes("efdFD")
     @testing.numpy_cupy_array_equal()
     def test_nan3(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
@@ -194,7 +194,7 @@ class TestSort(unittest.TestCase):
         out = xp.sort(a, axis=1)
         return out
 
-    @testing.for_dtypes('efdFD')
+    @testing.for_dtypes("efdFD")
     @testing.numpy_cupy_array_equal()
     def test_nan4(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
@@ -209,7 +209,7 @@ class TestLexsort(unittest.TestCase):
     # Test ranks
 
     # TODO(niboshi): Fix xfail
-    @pytest.mark.xfail(reason='Explicit error types required')
+    @pytest.mark.xfail(reason="Explicit error types required")
     def test_lexsort_zero_dim(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
@@ -223,8 +223,9 @@ class TestLexsort(unittest.TestCase):
 
     @testing.numpy_cupy_array_equal
     def test_lexsort_two_dim(self, xp):
-        a = xp.array([[9, 4, 0, 4, 0, 2, 1],
-                      [1, 5, 1, 4, 3, 4, 4]])  # from numpy.lexsort example
+        a = xp.array(
+            [[9, 4, 0, 4, 0, 2, 1], [1, 5, 1, 4, 3, 4, 4]]
+        )  # from numpy.lexsort example
         return xp.lexsort(a)
 
     def test_lexsort_three_or_more_dim(self):
@@ -242,21 +243,21 @@ class TestLexsort(unittest.TestCase):
 
     # Test NaN ordering
 
-    @testing.for_dtypes('efdFD')
+    @testing.for_dtypes("efdFD")
     @testing.numpy_cupy_array_equal()
     def test_nan1(self, xp, dtype):
         a = testing.shaped_random((2, 10), xp, dtype)
         a[0, 2] = a[0, 6] = xp.nan
         return xp.lexsort(a)
 
-    @testing.for_dtypes('efdFD')
+    @testing.for_dtypes("efdFD")
     @testing.numpy_cupy_array_equal()
     def test_nan2(self, xp, dtype):
         a = testing.shaped_random((2, 10), xp, dtype)
         a[1, 2] = a[0, 6] = xp.nan
         return xp.lexsort(a)
 
-    @testing.for_dtypes('efdFD')
+    @testing.for_dtypes("efdFD")
     @testing.numpy_cupy_array_equal()
     def test_nan3(self, xp, dtype):
         a = testing.shaped_random((2, 10), xp, dtype)
@@ -281,12 +282,15 @@ class TestLexsort(unittest.TestCase):
         return xp.lexsort(a)
 
 
-@testing.parameterize(*testing.product({
-    'external': [False, True],
-}))
+@testing.parameterize(
+    *testing.product(
+        {
+            "external": [False, True],
+        }
+    )
+)
 @testing.gpu
 class TestArgsort(unittest.TestCase):
-
     def argsort(self, a, axis=-1):
         if self.external:
             xp = cupy.get_array_module(a)
@@ -385,14 +389,14 @@ class TestArgsort(unittest.TestCase):
 
     # Test NaN ordering
 
-    @testing.for_dtypes('efdFD')
+    @testing.for_dtypes("efdFD")
     @testing.numpy_cupy_array_equal()
     def test_nan1(self, xp, dtype):
         a = testing.shaped_random((10,), xp, dtype)
         a[2] = a[6] = xp.nan
         return self.argsort(a)
 
-    @testing.for_dtypes('efdFD')
+    @testing.for_dtypes("efdFD")
     @testing.numpy_cupy_array_equal()
     def test_nan2(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
@@ -406,7 +410,7 @@ class TestMsort(unittest.TestCase):
     # Test base cases
 
     # TODO(niboshi): Fix xfail
-    @pytest.mark.xfail(reason='Explicit error types required')
+    @pytest.mark.xfail(reason="Explicit error types required")
     def test_msort_zero_dim(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
@@ -428,7 +432,6 @@ class TestMsort(unittest.TestCase):
 
 @testing.gpu
 class TestSort_complex(unittest.TestCase):
-
     def test_sort_complex_zero_dim(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
@@ -447,7 +450,7 @@ class TestSort_complex(unittest.TestCase):
         a = testing.shaped_random((2, 5, 3), xp, dtype)
         return a, xp.sort_complex(a)
 
-    @testing.for_dtypes('efdFD')
+    @testing.for_dtypes("efdFD")
     @testing.numpy_cupy_array_equal()
     def test_sort_complex_nan(self, xp, dtype):
         a = testing.shaped_random((2, 3, 5), xp, dtype)
@@ -455,13 +458,16 @@ class TestSort_complex(unittest.TestCase):
         return a, xp.sort_complex(a)
 
 
-@testing.parameterize(*testing.product({
-    'external': [False, True],
-    'length': [10, 20000],
-}))
+@testing.parameterize(
+    *testing.product(
+        {
+            "external": [False, True],
+            "length": [10, 20000],
+        }
+    )
+)
 @testing.gpu
 class TestPartition(unittest.TestCase):
-
     def partition(self, a, kth, axis=-1):
         if self.external:
             xp = cupy.get_array_module(a)
@@ -485,8 +491,8 @@ class TestPartition(unittest.TestCase):
         a = testing.shaped_random((self.length,), xp, dtype)
         kth = 2
         x = self.partition(a, kth)
-        self.assertTrue(xp.all(x[0:kth] <= x[kth:kth + 1]))
-        self.assertTrue(xp.all(x[kth:kth + 1] <= x[kth + 1:]))
+        self.assertTrue(xp.all(x[0:kth] <= x[kth : kth + 1]))
+        self.assertTrue(xp.all(x[kth : kth + 1] <= x[kth + 1 :]))
         return x[kth]
 
     @testing.for_all_dtypes()
@@ -495,9 +501,9 @@ class TestPartition(unittest.TestCase):
         a = testing.shaped_random((10, 10, self.length), xp, dtype)
         kth = 2
         x = self.partition(a, kth)
-        self.assertTrue(xp.all(x[:, :, 0:kth] <= x[:, :, kth:kth + 1]))
-        self.assertTrue(xp.all(x[:, :, kth:kth + 1] <= x[:, :, kth + 1:]))
-        return x[:, :, kth:kth + 1]
+        self.assertTrue(xp.all(x[:, :, 0:kth] <= x[:, :, kth : kth + 1]))
+        self.assertTrue(xp.all(x[:, :, kth : kth + 1] <= x[:, :, kth + 1 :]))
+        return x[:, :, kth : kth + 1]
 
     # Test non-contiguous array
 
@@ -512,8 +518,8 @@ class TestPartition(unittest.TestCase):
             return 0  # dummy
         else:
             x = self.partition(a, kth)
-            self.assertTrue(xp.all(x[0:kth] <= x[kth:kth + 1]))
-            self.assertTrue(xp.all(x[kth:kth + 1] <= x[kth + 1:]))
+            self.assertTrue(xp.all(x[0:kth] <= x[kth : kth + 1]))
+            self.assertTrue(xp.all(x[kth : kth + 1] <= x[kth + 1 :]))
             return x[kth]
 
     # Test kth
@@ -606,12 +612,15 @@ class TestPartition(unittest.TestCase):
             return self.partition(a, kth, axis=axis)
 
 
-@testing.parameterize(*testing.product({
-    'external': [False, True],
-}))
+@testing.parameterize(
+    *testing.product(
+        {
+            "external": [False, True],
+        }
+    )
+)
 @testing.gpu
 class TestArgpartition(unittest.TestCase):
-
     def argpartition(self, a, kth, axis=-1):
         if self.external:
             xp = cupy.get_array_module(a)
@@ -635,7 +644,7 @@ class TestArgpartition(unittest.TestCase):
         kth = 2
         idx = self.argpartition(a, kth)
         self.assertTrue((a[idx[:kth]] < a[idx[kth]]).all())
-        self.assertTrue((a[idx[kth]] < a[idx[kth + 1:]]).all())
+        self.assertTrue((a[idx[kth]] < a[idx[kth + 1 :]]).all())
         return idx[kth]
 
     # TODO(leofang): test all dtypes -- this workaround needs to be kept,
@@ -648,21 +657,29 @@ class TestArgpartition(unittest.TestCase):
         idx = self.argpartition(a, kth)
         rows = [[[0]], [[1]], [[2]]]
         cols = [[[0], [1], [2]]]
-        self.assertTrue((a[rows, cols, idx[:, :, :kth]] <
-                         a[rows, cols, idx[:, :, kth:kth + 1]]).all())
-        self.assertTrue((a[rows, cols, idx[:, :, kth:kth + 1]] <
-                         a[rows, cols, idx[:, :, kth + 1:]]).all())
-        return idx[:, :, kth:kth + 1]
+        self.assertTrue(
+            (
+                a[rows, cols, idx[:, :, :kth]]
+                < a[rows, cols, idx[:, :, kth : kth + 1]]
+            ).all()
+        )
+        self.assertTrue(
+            (
+                a[rows, cols, idx[:, :, kth : kth + 1]]
+                < a[rows, cols, idx[:, :, kth + 1 :]]
+            ).all()
+        )
+        return idx[:, :, kth : kth + 1]
 
     # Test non-contiguous array
 
     @testing.numpy_cupy_equal()
     def test_argpartition_non_contiguous(self, xp):
-        a = testing.shaped_random((10,), xp, 'i', 100)[::2]
+        a = testing.shaped_random((10,), xp, "i", 100)[::2]
         kth = 2
         idx = self.argpartition(a, kth)
         self.assertTrue((a[idx[:kth]] < a[idx[kth]]).all())
-        self.assertTrue((a[idx[kth]] < a[idx[kth + 1:]]).all())
+        self.assertTrue((a[idx[kth]] < a[idx[kth + 1 :]]).all())
         return idx[kth]
 
     # Test kth
@@ -674,7 +691,7 @@ class TestArgpartition(unittest.TestCase):
         idx = self.argpartition(a, kth)
         for _kth in kth:
             self.assertTrue((a[idx[:_kth]] < a[idx[_kth]]).all())
-            self.assertTrue((a[idx[_kth]] < a[idx[_kth + 1:]]).all())
+            self.assertTrue((a[idx[_kth]] < a[idx[_kth + 1 :]]).all())
         return (idx[2], idx[4])
 
     @testing.numpy_cupy_equal()
@@ -683,7 +700,7 @@ class TestArgpartition(unittest.TestCase):
         kth = -3
         idx = self.argpartition(a, kth)
         self.assertTrue((a[idx[:kth]] < a[idx[kth]]).all())
-        self.assertTrue((a[idx[kth]] < a[idx[kth + 1:]]).all())
+        self.assertTrue((a[idx[kth]] < a[idx[kth + 1 :]]).all())
         return idx[kth]
 
     def test_argpartition_invalid_kth(self):
@@ -710,11 +727,19 @@ class TestArgpartition(unittest.TestCase):
         idx = self.argpartition(a, kth, axis=axis)
         rows = [[[0], [1], [2]]]
         cols = [[[0, 1, 2]]]
-        self.assertTrue((a[idx[:kth, :, :], rows, cols] <
-                         a[idx[kth:kth + 1, :, :], rows, cols]).all())
-        self.assertTrue((a[idx[kth:kth + 1, :, :], rows, cols] <
-                         a[idx[kth + 1:, :, :], rows, cols]).all())
-        return idx[kth:kth + 1, :, :]
+        self.assertTrue(
+            (
+                a[idx[:kth, :, :], rows, cols]
+                < a[idx[kth : kth + 1, :, :], rows, cols]
+            ).all()
+        )
+        self.assertTrue(
+            (
+                a[idx[kth : kth + 1, :, :], rows, cols]
+                < a[idx[kth + 1 :, :, :], rows, cols]
+            ).all()
+        )
+        return idx[kth : kth + 1, :, :]
 
     @testing.numpy_cupy_array_equal()
     def test_argpartition_negative_axis(self, xp):
@@ -724,11 +749,19 @@ class TestArgpartition(unittest.TestCase):
         idx = self.argpartition(a, kth, axis=axis)
         rows = [[[0]], [[1]], [[2]]]
         cols = [[[0], [1], [2]]]
-        self.assertTrue((a[rows, cols, idx[:, :, :kth]] <
-                         a[rows, cols, idx[:, :, kth:kth + 1]]).all())
-        self.assertTrue((a[rows, cols, idx[:, :, kth:kth + 1]] <
-                         a[rows, cols, idx[:, :, kth + 1:]]).all())
-        return idx[:, :, kth:kth + 1]
+        self.assertTrue(
+            (
+                a[rows, cols, idx[:, :, :kth]]
+                < a[rows, cols, idx[:, :, kth : kth + 1]]
+            ).all()
+        )
+        self.assertTrue(
+            (
+                a[rows, cols, idx[:, :, kth : kth + 1]]
+                < a[rows, cols, idx[:, :, kth + 1 :]]
+            ).all()
+        )
+        return idx[:, :, kth : kth + 1]
 
     @testing.numpy_cupy_equal()
     def test_argpartition_none_axis(self, xp):
@@ -738,7 +771,7 @@ class TestArgpartition(unittest.TestCase):
         idx = self.argpartition(a, kth, axis=axis)
         a1 = a.flatten()
         self.assertTrue((a1[idx[:kth]] < a1[idx[kth]]).all())
-        self.assertTrue((a1[idx[kth]] < a1[idx[kth + 1:]]).all())
+        self.assertTrue((a1[idx[kth]] < a1[idx[kth + 1 :]]).all())
         return idx[kth]
 
     def test_argpartition_invalid_axis1(self):

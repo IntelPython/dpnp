@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -41,12 +41,11 @@ it contains:
 
 
 import numpy
-import dpnp
 
+import dpnp
 import dpnp.config as config
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-
 
 __all__ = [
     "all",
@@ -65,7 +64,7 @@ __all__ = [
     "logical_not",
     "logical_or",
     "logical_xor",
-    "not_equal"
+    "not_equal",
 ]
 
 
@@ -125,7 +124,7 @@ def all(x1, axis=None, out=None, keepdims=False):
     return call_origin(numpy.all, x1, axis, out, keepdims)
 
 
-def allclose(x1, x2, rtol=1.e-5, atol=1.e-8, **kwargs):
+def allclose(x1, x2, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     """
     Returns True if two arrays are element-wise equal within a tolerance.
 
@@ -388,7 +387,9 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     #     result_obj = dpnp_isclose(x1_desc, x2_desc, rtol, atol, equal_nan).get_pyobj()
     #     return result_obj
 
-    return call_origin(numpy.isclose, x1, x2, rtol=rtol, atol=atol, equal_nan=equal_nan)
+    return call_origin(
+        numpy.isclose, x1, x2, rtol=rtol, atol=atol, equal_nan=equal_nan
+    )
 
 
 def isfinite(x1, out=None, **kwargs):

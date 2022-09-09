@@ -1,8 +1,9 @@
 import math
+
+import numpy
 import pytest
 
 import dpnp
-import numpy
 
 
 def _getattr(ex, str_):
@@ -13,11 +14,17 @@ def _getattr(ex, str_):
     return res
 
 
-@pytest.mark.parametrize("func_name",
-                         ['abs', ])
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize(
+    "func_name",
+    [
+        "abs",
+    ],
+)
+@pytest.mark.parametrize(
+    "type",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
 def test_strides(func_name, type):
     shape = (4, 4)
     a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
@@ -34,17 +41,49 @@ def test_strides(func_name, type):
     numpy.testing.assert_allclose(expected, result)
 
 
-@pytest.mark.parametrize("func_name",
-                         ["arccos", "arccosh", "arcsin", "arcsinh", "arctan", "arctanh", "cbrt", "ceil", "copy", "cos",
-                          "cosh", "conjugate", "degrees", "ediff1d", "exp", "exp2", "expm1", "fabs", "floor", "log",
-                          "log10", "log1p", "log2", "negative", "radians", "sign", "sin", "sinh", "sqrt", "square",
-                          "tanh", "trunc"])
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
-@pytest.mark.parametrize("shape",
-                         [(10,)],
-                         ids=["(10,)"])
+@pytest.mark.parametrize(
+    "func_name",
+    [
+        "arccos",
+        "arccosh",
+        "arcsin",
+        "arcsinh",
+        "arctan",
+        "arctanh",
+        "cbrt",
+        "ceil",
+        "copy",
+        "cos",
+        "cosh",
+        "conjugate",
+        "degrees",
+        "ediff1d",
+        "exp",
+        "exp2",
+        "expm1",
+        "fabs",
+        "floor",
+        "log",
+        "log10",
+        "log1p",
+        "log2",
+        "negative",
+        "radians",
+        "sign",
+        "sin",
+        "sinh",
+        "sqrt",
+        "square",
+        "tanh",
+        "trunc",
+    ],
+)
+@pytest.mark.parametrize(
+    "dtype",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
+@pytest.mark.parametrize("shape", [(10,)], ids=["(10,)"])
 def test_strides_1arg(func_name, dtype, shape):
     a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
     b = a[::2]
@@ -61,12 +100,12 @@ def test_strides_1arg(func_name, dtype, shape):
     numpy.testing.assert_allclose(result, expected)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
-@pytest.mark.parametrize("shape",
-                         [(10,)],
-                         ids=["(10,)"])
+@pytest.mark.parametrize(
+    "dtype",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
+@pytest.mark.parametrize("shape", [(10,)], ids=["(10,)"])
 def test_strides_erf(dtype, shape):
     a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
     b = a[::2]
@@ -83,12 +122,12 @@ def test_strides_erf(dtype, shape):
     numpy.testing.assert_allclose(result, expected)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
-@pytest.mark.parametrize("shape",
-                         [(10,)],
-                         ids=["(10,)"])
+@pytest.mark.parametrize(
+    "dtype",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
+@pytest.mark.parametrize("shape", [(10,)], ids=["(10,)"])
 def test_strides_reciprocal(dtype, shape):
     start, stop = 1, numpy.prod(shape) + 1
 
@@ -104,12 +143,12 @@ def test_strides_reciprocal(dtype, shape):
     numpy.testing.assert_allclose(result, expected, rtol=1e-06)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
-@pytest.mark.parametrize("shape",
-                         [(10,)],
-                         ids=["(10,)"])
+@pytest.mark.parametrize(
+    "dtype",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
+@pytest.mark.parametrize("shape", [(10,)], ids=["(10,)"])
 def test_strides_tan(dtype, shape):
     a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
     b = a[::2]
@@ -123,14 +162,25 @@ def test_strides_tan(dtype, shape):
     numpy.testing.assert_allclose(result, expected, rtol=1e-06)
 
 
-@pytest.mark.parametrize("func_name",
-                         ["add", "arctan2", "hypot", "maximum", "minimum", "multiply", "power", "subtract"])
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
-@pytest.mark.parametrize("shape",
-                         [(3, 3)],
-                         ids=["(3, 3)"])
+@pytest.mark.parametrize(
+    "func_name",
+    [
+        "add",
+        "arctan2",
+        "hypot",
+        "maximum",
+        "minimum",
+        "multiply",
+        "power",
+        "subtract",
+    ],
+)
+@pytest.mark.parametrize(
+    "dtype",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
+@pytest.mark.parametrize("shape", [(3, 3)], ids=["(3, 3)"])
 def test_strides_2args(func_name, dtype, shape):
     a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
     b = a.T
@@ -147,14 +197,14 @@ def test_strides_2args(func_name, dtype, shape):
     numpy.testing.assert_allclose(result, expected)
 
 
-@pytest.mark.parametrize("func_name",
-                         ["bitwise_and", "bitwise_or", "bitwise_xor", "left_shift", "right_shift"])
-@pytest.mark.parametrize("dtype",
-                         [numpy.int64, numpy.int32],
-                         ids=["int64", "int32"])
-@pytest.mark.parametrize("shape",
-                         [(3, 3)],
-                         ids=["(3, 3)"])
+@pytest.mark.parametrize(
+    "func_name",
+    ["bitwise_and", "bitwise_or", "bitwise_xor", "left_shift", "right_shift"],
+)
+@pytest.mark.parametrize(
+    "dtype", [numpy.int64, numpy.int32], ids=["int64", "int32"]
+)
+@pytest.mark.parametrize("shape", [(3, 3)], ids=["(3, 3)"])
 def test_strides_bitwise(func_name, dtype, shape):
     a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
     b = a.T
@@ -171,12 +221,12 @@ def test_strides_bitwise(func_name, dtype, shape):
     numpy.testing.assert_allclose(result, expected)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
-@pytest.mark.parametrize("shape",
-                         [(3, 3)],
-                         ids=["(3, 3)"])
+@pytest.mark.parametrize(
+    "dtype",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
+@pytest.mark.parametrize("shape", [(3, 3)], ids=["(3, 3)"])
 def test_strides_copysign(dtype, shape):
     a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
     b = -a.T
@@ -190,12 +240,12 @@ def test_strides_copysign(dtype, shape):
     numpy.testing.assert_allclose(result, expected)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
-@pytest.mark.parametrize("shape",
-                         [(3, 3)],
-                         ids=["(3, 3)"])
+@pytest.mark.parametrize(
+    "dtype",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
+@pytest.mark.parametrize("shape", [(3, 3)], ids=["(3, 3)"])
 def test_strides_fmod(dtype, shape):
     a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
     b = a.T + 1
@@ -209,12 +259,12 @@ def test_strides_fmod(dtype, shape):
     numpy.testing.assert_allclose(result, expected)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
-@pytest.mark.parametrize("shape",
-                         [(3, 3)],
-                         ids=["(3, 3)"])
+@pytest.mark.parametrize(
+    "dtype",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
+@pytest.mark.parametrize("shape", [(3, 3)], ids=["(3, 3)"])
 def test_strides_true_devide(dtype, shape):
     a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
     b = a.T + 1

@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,17 +33,22 @@ This module contains differnt helpers and utilities
 
 import dpctl
 import numpy
+
+import dpnp
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
-import dpnp
-from dpnp.dpnp_algo.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
-from libcpp cimport bool as cpp_bool
-from libcpp.complex cimport complex as cpp_complex
 
 cimport cpython
 cimport cython
 cimport numpy
+from libcpp cimport bool as cpp_bool
+from libcpp.complex cimport complex as cpp_complex
 
+from dpnp.dpnp_algo.dpnp_algo cimport (
+    dpnp_DPNPFuncType_to_dtype,
+    dpnp_dtype_to_DPNPFuncType,
+    get_dpnp_function_ptr,
+)
 
 """
 Python import functions

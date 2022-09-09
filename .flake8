@@ -1,0 +1,45 @@
+[flake8]
+extend-ignore =
+    E203, # whitespace before ':' (currently conflicts with black formatting)
+    E501, # line too long
+    F401, # module imported but unused
+    F403, # ‘from module import *’ used; unable to detect undefined names
+    F405, # name may be undefined, or defined from star imports: module
+    F821, # undefined name name
+    W505, # doc line too long (105 > 80 characters)
+    D100, # missing docstring in public module
+    D101, # missing docstring in public class
+    D102, # missing docstring in public method
+    D103, # missing docstring in public function
+    D104, # missing docstring in public package
+    D105, # missing docstring in magic method
+    D107, # missing docstring in __init__
+    D202, # no blank lines allowed after function docstring
+    D400, # first line should end with a period
+    D401, # first line should be in imperative mood
+    D414  # section has no content
+
+per-file-ignores =
+    # module level import not at top of file:
+    __init__.py: E402
+    # do not use bare 'except':
+    dpnp/random/dpnp_iface_random.py: E722, B001
+    # function definition does not bind loop variable
+    tests/third_party/cupy/sorting_tests/test_count.py: B023
+    # 1 blank line required between summary line and description
+    dpnp/dpnp_iface.py: D205
+    tests/tests_perf/math_tests/test_trigonometric.py: D205
+
+filename = *.py, *.pyx
+max_line_length = 80
+max-doc-length = 80
+show-source = True
+
+exclude =
+    .git,
+    __pycache__,
+    version.py
+
+# Print detailed statistic if any issue detected
+count = True
+statistics = True

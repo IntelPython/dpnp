@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,13 +40,12 @@ it contains:
 """
 
 
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
-import dpnp
-import dpnp.config as config
-
 import numpy
 
+import dpnp
+import dpnp.config as config
+from dpnp.dpnp_algo import *
+from dpnp.dpnp_utils import *
 
 __all__ = [
     "dot",
@@ -57,7 +56,7 @@ __all__ = [
     "matmul",
     "outer",
     "tensordot",
-    "vdot"
+    "vdot",
 ]
 
 
@@ -91,16 +90,32 @@ def dot(x1, x2, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
+    x2_desc = dpnp.get_dpnp_descriptor(
+        x2, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc and x2_desc and not kwargs:
         # TODO: remove fallback with scalars when muliply backend func will support strides
-        if(x1_desc.ndim == 0 and x2_desc.strides is not None
-                or x2_desc.ndim == 0 and x1_desc.strides is not None):
+        if (
+            x1_desc.ndim == 0
+            and x2_desc.strides is not None
+            or x2_desc.ndim == 0
+            and x1_desc.strides is not None
+        ):
             pass
-        elif (x1_desc.ndim >= 1 and x2_desc.ndim > 1 and x1_desc.shape[-1] != x2_desc.shape[-2]):
+        elif (
+            x1_desc.ndim >= 1
+            and x2_desc.ndim > 1
+            and x1_desc.shape[-1] != x2_desc.shape[-2]
+        ):
             pass
-        elif (x1_desc.ndim > 0 and x2_desc.ndim == 1 and x1_desc.shape[-1] != x2_desc.shape[0]):
+        elif (
+            x1_desc.ndim > 0
+            and x2_desc.ndim == 1
+            and x1_desc.shape[-1] != x2_desc.shape[0]
+        ):
             pass
         else:
             return dpnp_dot(x1_desc, x2_desc).get_pyobj()
@@ -132,8 +147,7 @@ def einsum(*args, **kwargs):
 
 def einsum_path(*args, **kwargs):
     """
-    Evaluates the lowest cost contraction order for an einsum expression
-    by considering the creation of intermediate arrays.
+    Evaluates the lowest cost contraction order for an einsum expression by considering the creation of intermediate arrays.
 
     For full documentation refer to :obj:`numpy.einsum_path`.
 
@@ -268,7 +282,9 @@ def matmul(x1, x2, out=None, **kwargs):
                 array2_size = x2_desc.size
                 cost_size = 4096  # 2D array shape(64, 64)
 
-                if ((x1_desc.dtype == numpy.float64) or (x1_desc.dtype == numpy.float32)):
+                if (x1_desc.dtype == numpy.float64) or (
+                    x1_desc.dtype == numpy.float32
+                ):
                     """
                     Floating point types are handled via original math library better than SYCL math library
                     """
@@ -277,7 +293,13 @@ def matmul(x1, x2, out=None, **kwargs):
                 if (array1_size > cost_size) and (array2_size > cost_size):
                     return dpnp_matmul(x1_desc, x2_desc, out)
             else:
-                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    if out is not None
+                    else None
+                )
                 return dpnp_matmul(x1_desc, x2_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.matmul, x1, x2, out=out, **kwargs)

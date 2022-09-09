@@ -8,7 +8,6 @@ from tests.third_party.cupy import testing
 
 @testing.gpu
 class TestCount(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_count_nonzero(self, dtype):
         def func(xp):
@@ -19,9 +18,10 @@ class TestCount(unittest.TestCase):
                 # CuPy returns zero-dimensional array instead of
                 # returning a scalar value
                 self.assertIsInstance(c, xp.ndarray)
-                self.assertEqual(c.dtype, 'l')
+                self.assertEqual(c.dtype, "l")
                 self.assertEqual(c.shape, ())
             return int(c)
+
         self.assertEqual(func(numpy), func(cupy))
 
     @testing.for_all_dtypes()
@@ -33,18 +33,21 @@ class TestCount(unittest.TestCase):
                 # CuPy returns zero-dimensional array instead of
                 # returning a scalar value
                 self.assertIsInstance(c, xp.ndarray)
-                self.assertEqual(c.dtype, 'l')
+                self.assertEqual(c.dtype, "l")
                 self.assertEqual(c.shape, ())
             return int(c)
+
         self.assertEqual(func(numpy), func(cupy))
 
     @testing.for_all_dtypes()
     def test_count_nonzero_int_axis(self, dtype):
         for ax in range(3):
+
             def func(xp):
                 m = testing.shaped_random((2, 3, 4), xp, xp.bool_)
                 a = testing.shaped_random((2, 3, 4), xp, dtype) * m
                 return xp.count_nonzero(a, axis=ax)
+
             testing.assert_allclose(func(numpy), func(cupy))
 
     @testing.for_all_dtypes()
@@ -58,4 +61,5 @@ class TestCount(unittest.TestCase):
                     m = testing.shaped_random((2, 3, 4), xp, xp.bool_)
                     a = testing.shaped_random((2, 3, 4), xp, dtype) * m
                     return xp.count_nonzero(a, axis=(ax, ay))
+
                 testing.assert_allclose(func(numpy), func(cupy))

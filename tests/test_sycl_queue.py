@@ -1,9 +1,8 @@
+import dpctl
+import numpy
 import pytest
 
 import dpnp
-import dpctl
-import numpy
-
 
 list_of_backend_str = [
     "host",
@@ -44,53 +43,34 @@ def assert_sycl_queue_equal(result, expected):
 @pytest.mark.parametrize(
     "func,data",
     [
-        pytest.param("abs",
-                     [-1.2, 1.2]),
-        pytest.param("ceil",
-                     [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
-        pytest.param("conjugate",
-                     [[1.+1.j, 0.], [0., 1.+1.j]]),
-        pytest.param("copy",
-                     [1., 2., 3.]),
-        pytest.param("cumprod",
-                     [[1., 2., 3.], [4., 5., 6.]]),
-        pytest.param("cumsum",
-                     [[1., 2., 3.], [4., 5., 6.]]),
-        pytest.param("diff",
-                     [1., 2., 4., 7., 0.]),
-        pytest.param("ediff1d",
-                     [1., 2., 4., 7., 0.]),
-        pytest.param("fabs",
-                     [-1.2, 1.2]),
-        pytest.param("floor",
-                     [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
-        pytest.param("gradient",
-                     [1., 2., 4., 7., 11., 16.]),
-        pytest.param("nancumprod",
-                     [1., dpnp.nan]),
-        pytest.param("nancumsum",
-                     [1., dpnp.nan]),
-        pytest.param("nanprod",
-                     [1., dpnp.nan]),
-        pytest.param("nansum",
-                     [1., dpnp.nan]),
-        pytest.param("negative",
-                     [1., -1.]),
-        pytest.param("prod",
-                     [1., 2.]),
-        pytest.param("sign",
-                     [-5., 4.5]),
-        pytest.param("sum",
-                     [1., 2.]),
-        pytest.param("trapz",
-                     [[0., 1., 2.], [3., 4., 5.]]),
-        pytest.param("trunc",
-                     [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("abs", [-1.2, 1.2]),
+        pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
+        pytest.param("copy", [1.0, 2.0, 3.0]),
+        pytest.param("cumprod", [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
+        pytest.param("cumsum", [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
+        pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
+        pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
+        pytest.param("fabs", [-1.2, 1.2]),
+        pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),
+        pytest.param("nancumprod", [1.0, dpnp.nan]),
+        pytest.param("nancumsum", [1.0, dpnp.nan]),
+        pytest.param("nanprod", [1.0, dpnp.nan]),
+        pytest.param("nansum", [1.0, dpnp.nan]),
+        pytest.param("negative", [1.0, -1.0]),
+        pytest.param("prod", [1.0, 2.0]),
+        pytest.param("sign", [-5.0, 4.5]),
+        pytest.param("sum", [1.0, 2.0]),
+        pytest.param("trapz", [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
+        pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
     ],
 )
-@pytest.mark.parametrize("device",
-                         valid_devices,
-                         ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_1in_1out(func, data, device):
     x_orig = numpy.array(data)
     expected = getattr(numpy, func)(x_orig)
@@ -110,50 +90,56 @@ def test_1in_1out(func, data, device):
 @pytest.mark.parametrize(
     "func,data1,data2",
     [
-        pytest.param("add",
-                     [0., 1., 2., 3., 4., 5., 6., 7., 8.],
-                     [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
-        pytest.param("copysign",
-                     [0., 1., 2.],
-                     [-1., 0., 1.]),
-        pytest.param("cross",
-                     [1., 2., 3.],
-                     [4., 5., 6.]),
-        pytest.param("divide",
-                     [0., 1., 2., 3., 4.],
-                     [4., 4., 4., 4., 4.]),
-        pytest.param("floor_divide",
-                     [1., 2., 3., 4.],
-                     [2.5, 2.5, 2.5, 2.5]),
-        pytest.param("fmod",
-                     [-3., -2., -1., 1., 2., 3.],
-                     [2., 2., 2., 2., 2., 2.]),
-        pytest.param("maximum",
-                     [2., 3., 4.],
-                     [1., 5., 2.]),
-        pytest.param("minimum",
-                     [2., 3., 4.],
-                     [1., 5., 2.]),
-        pytest.param("multiply",
-                     [0., 1., 2., 3., 4., 5., 6., 7., 8.],
-                     [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
-        pytest.param("power",
-                     [0., 1., 2., 3., 4., 5.],
-                     [1., 2., 3., 3., 2., 1.]),
-        pytest.param("remainder",
-                     [0., 1., 2., 3., 4., 5., 6.],
-                     [5., 5., 5., 5., 5., 5., 5.]),
-        pytest.param("subtract",
-                     [0., 1., 2., 3., 4., 5., 6., 7., 8.],
-                     [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
-        pytest.param("matmul",
-                     [[1., 0.], [0., 1.]],
-                     [[4., 1.], [1., 2.]]),
+        pytest.param(
+            "add",
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
+            [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
+        ),
+        pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
+        pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
+        pytest.param(
+            "divide", [0.0, 1.0, 2.0, 3.0, 4.0], [4.0, 4.0, 4.0, 4.0, 4.0]
+        ),
+        pytest.param(
+            "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
+        ),
+        pytest.param(
+            "fmod",
+            [-3.0, -2.0, -1.0, 1.0, 2.0, 3.0],
+            [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
+        ),
+        pytest.param("maximum", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
+        pytest.param("minimum", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
+        pytest.param(
+            "multiply",
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
+            [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
+        ),
+        pytest.param(
+            "power",
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+            [1.0, 2.0, 3.0, 3.0, 2.0, 1.0],
+        ),
+        pytest.param(
+            "remainder",
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+            [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
+        ),
+        pytest.param(
+            "subtract",
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
+            [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
+        ),
+        pytest.param(
+            "matmul", [[1.0, 0.0], [0.0, 1.0]], [[4.0, 1.0], [1.0, 2.0]]
+        ),
     ],
 )
-@pytest.mark.parametrize("device",
-                         valid_devices,
-                         ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_2in_1out(func, data1, data2, device):
     x1_orig = numpy.array(data1)
     x2_orig = numpy.array(data2)
@@ -175,32 +161,32 @@ def test_2in_1out(func, data1, data2, device):
 @pytest.mark.parametrize(
     "func,data1,data2",
     [
-        pytest.param("add",
-                     [[0., 1., 2.], [3., 4., 5.], [6., 7., 8.]],
-                     [0., 1., 2.]),
-        pytest.param("divide",
-                     [0., 1., 2., 3., 4.],
-                     [4.]),
-        pytest.param("floor_divide",
-                     [1., 2., 3., 4.],
-                     [2.5]),
-        pytest.param("fmod",
-                     [-3., -2., -1., 1., 2., 3.],
-                     [2.]),
-        pytest.param("multiply",
-                     [[0., 1., 2.], [3., 4., 5.], [6., 7., 8.]],
-                     [0., 1., 2.]),
-        pytest.param("remainder",
-                     [0., 1., 2., 3., 4., 5., 6.],
-                     [5.]),
-        pytest.param("subtract",
-                     [[0., 1., 2.], [3., 4., 5.], [6., 7., 8.]],
-                     [0., 1., 2.]),
+        pytest.param(
+            "add",
+            [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0], [6.0, 7.0, 8.0]],
+            [0.0, 1.0, 2.0],
+        ),
+        pytest.param("divide", [0.0, 1.0, 2.0, 3.0, 4.0], [4.0]),
+        pytest.param("floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5]),
+        pytest.param("fmod", [-3.0, -2.0, -1.0, 1.0, 2.0, 3.0], [2.0]),
+        pytest.param(
+            "multiply",
+            [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0], [6.0, 7.0, 8.0]],
+            [0.0, 1.0, 2.0],
+        ),
+        pytest.param("remainder", [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0], [5.0]),
+        pytest.param(
+            "subtract",
+            [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0], [6.0, 7.0, 8.0]],
+            [0.0, 1.0, 2.0],
+        ),
     ],
 )
-@pytest.mark.parametrize("device",
-                         valid_devices,
-                         ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_broadcasting(func, data1, data2, device):
     x1_orig = numpy.array(data1)
     x2_orig = numpy.array(data2)
@@ -222,44 +208,52 @@ def test_broadcasting(func, data1, data2, device):
 @pytest.mark.parametrize(
     "func,data1,data2",
     [
-        pytest.param("add",
-                     [0., 1., 2., 3., 4., 5., 6., 7., 8.],
-                     [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
-        pytest.param("copysign",
-                     [0., 1., 2.],
-                     [-1., 0., 1.]),
-        pytest.param("divide",
-                     [0., 1., 2., 3., 4.],
-                     [4., 4., 4., 4., 4.]),
-        pytest.param("floor_divide",
-                     [1., 2., 3., 4.],
-                     [2.5, 2.5, 2.5, 2.5]),
-        pytest.param("fmod",
-                     [-3., -2., -1., 1., 2., 3.],
-                     [2., 2., 2., 2., 2., 2.]),
-        pytest.param("maximum",
-                     [2., 3., 4.],
-                     [1., 5., 2.]),
-        pytest.param("minimum",
-                     [2., 3., 4.],
-                     [1., 5., 2.]),
-        pytest.param("multiply",
-                     [0., 1., 2., 3., 4., 5., 6., 7., 8.],
-                     [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
-        pytest.param("power",
-                     [0., 1., 2., 3., 4., 5.],
-                     [1., 2., 3., 3., 2., 1.]),
-        pytest.param("remainder",
-                     [0., 1., 2., 3., 4., 5., 6.],
-                     [5., 5., 5., 5., 5., 5., 5.]),
-        pytest.param("subtract",
-                     [0., 1., 2., 3., 4., 5., 6., 7., 8.],
-                     [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
+        pytest.param(
+            "add",
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
+            [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
+        ),
+        pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
+        pytest.param(
+            "divide", [0.0, 1.0, 2.0, 3.0, 4.0], [4.0, 4.0, 4.0, 4.0, 4.0]
+        ),
+        pytest.param(
+            "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
+        ),
+        pytest.param(
+            "fmod",
+            [-3.0, -2.0, -1.0, 1.0, 2.0, 3.0],
+            [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
+        ),
+        pytest.param("maximum", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
+        pytest.param("minimum", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
+        pytest.param(
+            "multiply",
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
+            [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
+        ),
+        pytest.param(
+            "power",
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+            [1.0, 2.0, 3.0, 3.0, 2.0, 1.0],
+        ),
+        pytest.param(
+            "remainder",
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+            [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
+        ),
+        pytest.param(
+            "subtract",
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
+            [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
+        ),
     ],
 )
-@pytest.mark.parametrize("device",
-                         valid_devices,
-                         ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_out(func, data1, data2, device):
     x1_orig = numpy.array(data1)
     x2_orig = numpy.array(data2)
@@ -280,9 +274,11 @@ def test_out(func, data1, data2, device):
     assert result_queue.sycl_device == expected_queue.sycl_device
 
 
-@pytest.mark.parametrize("device",
-                         valid_devices,
-                         ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_modf(device):
     data = [0, 3.5]
 
@@ -306,14 +302,18 @@ def test_modf(device):
     assert result2_queue.sycl_device == expected_queue.sycl_device
 
 
-@pytest.mark.parametrize("device_from",
-                         valid_devices,
-                         ids=[device.filter_string for device in valid_devices])
-@pytest.mark.parametrize("device_to",
-                         valid_devices,
-                         ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize(
+    "device_from",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "device_to",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_to_device(device_from, device_to):
-    data = [1., 1., 1., 1., 1.]
+    data = [1.0, 1.0, 1.0, 1.0, 1.0]
 
     x = dpnp.array(data, device=device_from)
     y = x.to_device(device_to)

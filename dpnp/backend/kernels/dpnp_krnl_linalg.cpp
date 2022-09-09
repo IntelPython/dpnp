@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -75,7 +75,8 @@ DPCTLSyclEventRef dpnp_cholesky_c(DPCTLSyclQueueRef q_ref,
         const std::int64_t scratchpad_size =
             mkl_lapack::potrf_scratchpad_size<_DataType>(q, oneapi::mkl::uplo::upper, n, lda);
 
-        _DataType* scratchpad = reinterpret_cast<_DataType*>(sycl::malloc_shared(scratchpad_size * sizeof(_DataType), q));
+        _DataType* scratchpad =
+            reinterpret_cast<_DataType*>(sycl::malloc_shared(scratchpad_size * sizeof(_DataType), q));
 
         event = mkl_lapack::potrf(q, oneapi::mkl::uplo::upper, n, in_a, lda, scratchpad, scratchpad_size);
 
@@ -115,12 +116,8 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_cholesky_c<_DataType>(q_ref,
-                                                             array1_in,
-                                                             result1,
-                                                             size,
-                                                             data_size,
-                                                             dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_cholesky_c<_DataType>(q_ref, array1_in, result1, size, data_size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -256,12 +253,7 @@ void dpnp_det_c(void* array1_in, void* result1, shape_elem_type* shape, size_t n
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_det_c<_DataType>(q_ref,
-                                                        array1_in,
-                                                        result1,
-                                                        shape,
-                                                        ndim,
-                                                        dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_det_c<_DataType>(q_ref, array1_in, result1, shape, ndim, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -269,12 +261,8 @@ template <typename _DataType>
 void (*dpnp_det_default_c)(void*, void*, shape_elem_type*, size_t) = dpnp_det_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_det_ext_c)(DPCTLSyclQueueRef,
-                                    void*,
-                                    void*,
-                                    shape_elem_type*,
-                                    size_t,
-                                    const DPCTLEventVectorRef) = dpnp_det_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_det_ext_c)(
+    DPCTLSyclQueueRef, void*, void*, shape_elem_type*, size_t, const DPCTLEventVectorRef) = dpnp_det_c<_DataType>;
 
 template <typename _DataType, typename _ResultType>
 DPCTLSyclEventRef dpnp_inv_c(DPCTLSyclQueueRef q_ref,
@@ -398,12 +386,8 @@ void dpnp_inv_c(void* array1_in, void* result1, shape_elem_type* shape, size_t n
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_inv_c<_DataType, _ResultType>(q_ref,
-                                                                     array1_in,
-                                                                     result1,
-                                                                     shape,
-                                                                     ndim,
-                                                                     dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_inv_c<_DataType, _ResultType>(q_ref, array1_in, result1, shape, ndim, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -518,26 +502,14 @@ void dpnp_kron_c(void* array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_kron_c<_DataType1, _DataType2, _ResultType>(q_ref,
-                                                                                   array1_in,
-                                                                                   array2_in,
-                                                                                   result1,
-                                                                                   in1_shape,
-                                                                                   in2_shape,
-                                                                                   res_shape,
-                                                                                   ndim,
-                                                                                   dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_kron_c<_DataType1, _DataType2, _ResultType>(
+        q_ref, array1_in, array2_in, result1, in1_shape, in2_shape, res_shape, ndim, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
-void (*dpnp_kron_default_c)(void*,
-                            void*,
-                            void*,
-                            shape_elem_type*,
-                            shape_elem_type*,
-                            shape_elem_type*,
-                            size_t) = dpnp_kron_c<_DataType1, _DataType2, _ResultType>;
+void (*dpnp_kron_default_c)(void*, void*, void*, shape_elem_type*, shape_elem_type*, shape_elem_type*, size_t) =
+    dpnp_kron_c<_DataType1, _DataType2, _ResultType>;
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
 DPCTLSyclEventRef (*dpnp_kron_ext_c)(DPCTLSyclQueueRef,
@@ -609,12 +581,8 @@ void dpnp_matrix_rank_c(void* array1_in, void* result1, shape_elem_type* shape, 
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_matrix_rank_c<_DataType>(q_ref,
-                                                                array1_in,
-                                                                result1,
-                                                                shape,
-                                                                ndim,
-                                                                dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_matrix_rank_c<_DataType>(q_ref, array1_in, result1, shape, ndim, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -683,7 +651,8 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
     event = mkl_lapack::geqrf(q, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size, depends);
     event.wait();
 
-    if (!depends.empty()) {
+    if (!depends.empty())
+    {
         verbose_print("oneapi::mkl::lapack::geqrf", depends.front(), event);
     }
 
@@ -720,7 +689,8 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
         mkl_lapack::orgqr(q, size_m, nrefl, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size, depends);
     event.wait();
 
-    if (!depends.empty()) {
+    if (!depends.empty())
+    {
         verbose_print("oneapi::mkl::lapack::orgqr", depends.front(), event);
     }
 
@@ -744,14 +714,8 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_qr_c<_InputDT, _ComputeDT>(q_ref,
-                                                                  array1_in,
-                                                                  result1,
-                                                                  result2,
-                                                                  result3,
-                                                                  size_m,
-                                                                  size_n,
-                                                                  dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_qr_c<_InputDT, _ComputeDT>(q_ref, array1_in, result1, result2, result3, size_m, size_n, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -759,14 +723,9 @@ template <typename _InputDT, typename _ComputeDT>
 void (*dpnp_qr_default_c)(void*, void*, void*, void*, size_t, size_t) = dpnp_qr_c<_InputDT, _ComputeDT>;
 
 template <typename _InputDT, typename _ComputeDT>
-DPCTLSyclEventRef (*dpnp_qr_ext_c)(DPCTLSyclQueueRef,
-                                   void*,
-                                   void*,
-                                   void*,
-                                   void*,
-                                   size_t,
-                                   size_t,
-                                   const DPCTLEventVectorRef) = dpnp_qr_c<_InputDT, _ComputeDT>;
+DPCTLSyclEventRef (*dpnp_qr_ext_c)(
+    DPCTLSyclQueueRef, void*, void*, void*, void*, size_t, size_t, const DPCTLEventVectorRef) =
+    dpnp_qr_c<_InputDT, _ComputeDT>;
 
 template <typename _InputDT, typename _ComputeDT, typename _SVDT>
 DPCTLSyclEventRef dpnp_svd_c(DPCTLSyclQueueRef q_ref,
@@ -786,7 +745,8 @@ DPCTLSyclEventRef dpnp_svd_c(DPCTLSyclQueueRef q_ref,
 
     sycl::event event;
 
-    DPNPC_ptr_adapter<_InputDT> input1_ptr(q_ref, array1_in, size_m * size_n, true); // TODO no need this if use dpnp_copy_to()
+    DPNPC_ptr_adapter<_InputDT> input1_ptr(
+        q_ref, array1_in, size_m * size_n, true); // TODO no need this if use dpnp_copy_to()
     _InputDT* in_array = input1_ptr.get_ptr();
 
     // math lib gesvd func overrides input
@@ -813,8 +773,8 @@ DPCTLSyclEventRef dpnp_svd_c(DPCTLSyclQueueRef q_ref,
     const std::int64_t scratchpad_size = mkl_lapack::gesvd_scratchpad_size<_ComputeDT>(
         q, oneapi::mkl::jobsvd::vectors, oneapi::mkl::jobsvd::vectors, n, m, lda, ldvt, ldu);
 
-    _ComputeDT* scratchpad = reinterpret_cast<_ComputeDT*>(sycl::malloc_shared(scratchpad_size * sizeof(_ComputeDT),
-                                                                               q));
+    _ComputeDT* scratchpad =
+        reinterpret_cast<_ComputeDT*>(sycl::malloc_shared(scratchpad_size * sizeof(_ComputeDT), q));
 
     event = mkl_lapack::gesvd(q,
                               oneapi::mkl::jobsvd::vectors, // onemkl::job jobu,
@@ -843,14 +803,8 @@ void dpnp_svd_c(void* array1_in, void* result1, void* result2, void* result3, si
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_svd_c<_InputDT, _ComputeDT, _SVDT>(q_ref,
-                                                                          array1_in,
-                                                                          result1,
-                                                                          result2,
-                                                                          result3,
-                                                                          size_m,
-                                                                          size_n,
-                                                                          dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_svd_c<_InputDT, _ComputeDT, _SVDT>(
+        q_ref, array1_in, result1, result2, result3, size_m, size_n, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -858,14 +812,9 @@ template <typename _InputDT, typename _ComputeDT, typename _SVDT>
 void (*dpnp_svd_default_c)(void*, void*, void*, void*, size_t, size_t) = dpnp_svd_c<_InputDT, _ComputeDT, _SVDT>;
 
 template <typename _InputDT, typename _ComputeDT, typename _SVDT>
-DPCTLSyclEventRef (*dpnp_svd_ext_c)(DPCTLSyclQueueRef,
-                                    void*,
-                                    void*,
-                                    void*,
-                                    void*,
-                                    size_t,
-                                    size_t,
-                                    const DPCTLEventVectorRef) = dpnp_svd_c<_InputDT, _ComputeDT, _SVDT>;
+DPCTLSyclEventRef (*dpnp_svd_ext_c)(
+    DPCTLSyclQueueRef, void*, void*, void*, void*, size_t, size_t, const DPCTLEventVectorRef) =
+    dpnp_svd_c<_InputDT, _ComputeDT, _SVDT>;
 
 void func_map_init_linalg_func(func_map_t& fmap)
 {
@@ -886,40 +835,28 @@ void func_map_init_linalg_func(func_map_t& fmap)
                                                           (void*)dpnp_kron_default_c<int32_t, int32_t, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_LNG] = {eft_LNG,
                                                           (void*)dpnp_kron_default_c<int32_t, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_FLT] = {eft_FLT,
-                                                          (void*)dpnp_kron_default_c<int32_t, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_DBL] = {eft_DBL,
-                                                          (void*)dpnp_kron_default_c<int32_t, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_kron_default_c<int32_t, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_kron_default_c<int32_t, double, double>};
     // fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_C128] = {
     // eft_C128, (void*)dpnp_kron_default_c<int32_t, std::complex<double>, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_INT] = {eft_LNG,
                                                           (void*)dpnp_kron_default_c<int64_t, int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_LNG] = {eft_LNG,
                                                           (void*)dpnp_kron_default_c<int64_t, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_FLT] = {eft_FLT,
-                                                          (void*)dpnp_kron_default_c<int64_t, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_DBL] = {eft_DBL,
-                                                          (void*)dpnp_kron_default_c<int64_t, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_FLT] = {eft_FLT, (void*)dpnp_kron_default_c<int64_t, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_kron_default_c<int64_t, double, double>};
     // fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_C128] = {
     // eft_C128, (void*)dpnp_kron_default_c<int64_t, std::complex<double>, std::complex<double>>};
-    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_INT] = {eft_FLT,
-                                                          (void*)dpnp_kron_default_c<float, int32_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_LNG] = {eft_FLT,
-                                                          (void*)dpnp_kron_default_c<float, int64_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_FLT] = {eft_FLT,
-                                                          (void*)dpnp_kron_default_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_DBL] = {eft_DBL,
-                                                          (void*)dpnp_kron_default_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_INT] = {eft_FLT, (void*)dpnp_kron_default_c<float, int32_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_LNG] = {eft_FLT, (void*)dpnp_kron_default_c<float, int64_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_kron_default_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_kron_default_c<float, double, double>};
     // fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_C128] = {
     // eft_C128, (void*)dpnp_kron_default_c<float, std::complex<double>, std::complex<double>>};
-    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_INT] = {eft_DBL,
-                                                          (void*)dpnp_kron_default_c<double, int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_LNG] = {eft_DBL,
-                                                          (void*)dpnp_kron_default_c<double, int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_FLT] = {eft_DBL,
-                                                          (void*)dpnp_kron_default_c<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_DBL] = {eft_DBL,
-                                                          (void*)dpnp_kron_default_c<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_kron_default_c<double, int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_kron_default_c<double, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_kron_default_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_kron_default_c<double, double, double>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_C128] = {
         eft_C128, (void*)dpnp_kron_default_c<double, std::complex<double>, std::complex<double>>};
     // fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_INT] = {
@@ -937,40 +874,28 @@ void func_map_init_linalg_func(func_map_t& fmap)
                                                               (void*)dpnp_kron_ext_c<int32_t, int32_t, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_INT][eft_LNG] = {eft_LNG,
                                                               (void*)dpnp_kron_ext_c<int32_t, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_INT][eft_FLT] = {eft_FLT,
-                                                              (void*)dpnp_kron_ext_c<int32_t, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_INT][eft_DBL] = {eft_DBL,
-                                                              (void*)dpnp_kron_ext_c<int32_t, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_kron_ext_c<int32_t, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_kron_ext_c<int32_t, double, double>};
     // fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_INT][eft_C128] = {
     // eft_C128, (void*)dpnp_kron_ext_c<int32_t, std::complex<double>, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_LNG][eft_INT] = {eft_LNG,
                                                               (void*)dpnp_kron_ext_c<int64_t, int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_LNG][eft_LNG] = {eft_LNG,
                                                               (void*)dpnp_kron_ext_c<int64_t, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_LNG][eft_FLT] = {eft_FLT,
-                                                              (void*)dpnp_kron_ext_c<int64_t, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_LNG][eft_DBL] = {eft_DBL,
-                                                              (void*)dpnp_kron_ext_c<int64_t, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_LNG][eft_FLT] = {eft_FLT, (void*)dpnp_kron_ext_c<int64_t, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_kron_ext_c<int64_t, double, double>};
     // fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_LNG][eft_C128] = {
     // eft_C128, (void*)dpnp_kron_ext_c<int64_t, std::complex<double>, std::complex<double>>};
-    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_FLT][eft_INT] = {eft_FLT,
-                                                              (void*)dpnp_kron_ext_c<float, int32_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_FLT][eft_LNG] = {eft_FLT,
-                                                              (void*)dpnp_kron_ext_c<float, int64_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_FLT][eft_FLT] = {eft_FLT,
-                                                              (void*)dpnp_kron_ext_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_FLT][eft_DBL] = {eft_DBL,
-                                                              (void*)dpnp_kron_ext_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_FLT][eft_INT] = {eft_FLT, (void*)dpnp_kron_ext_c<float, int32_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_FLT][eft_LNG] = {eft_FLT, (void*)dpnp_kron_ext_c<float, int64_t, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_kron_ext_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_kron_ext_c<float, double, double>};
     // fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_FLT][eft_C128] = {
     // eft_C128, (void*)dpnp_kron_ext_c<float, std::complex<double>, std::complex<double>>};
-    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_DBL][eft_INT] = {eft_DBL,
-                                                              (void*)dpnp_kron_ext_c<double, int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_DBL][eft_LNG] = {eft_DBL,
-                                                              (void*)dpnp_kron_ext_c<double, int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_DBL][eft_FLT] = {eft_DBL,
-                                                              (void*)dpnp_kron_ext_c<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_DBL][eft_DBL] = {eft_DBL,
-                                                              (void*)dpnp_kron_ext_c<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_kron_ext_c<double, int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_kron_ext_c<double, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_kron_ext_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_kron_ext_c<double, double, double>};
     fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_DBL][eft_C128] = {
         eft_C128, (void*)dpnp_kron_ext_c<double, std::complex<double>, std::complex<double>>};
     // fmap[DPNPFuncName::DPNP_FN_KRON_EXT][eft_C128][eft_INT] = {

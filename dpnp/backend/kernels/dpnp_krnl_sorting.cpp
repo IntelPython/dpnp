@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -51,11 +51,8 @@ template <typename _DataType, typename _idx_DataType>
 class dpnp_argsort_c_kernel;
 
 template <typename _DataType, typename _idx_DataType>
-DPCTLSyclEventRef dpnp_argsort_c(DPCTLSyclQueueRef q_ref,
-                                 void* array1_in,
-                                 void* result1,
-                                 size_t size,
-                                 const DPCTLEventVectorRef dep_event_vec_ref)
+DPCTLSyclEventRef dpnp_argsort_c(
+    DPCTLSyclQueueRef q_ref, void* array1_in, void* result1, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)
 {
     // avoid warning unused variable
     (void)dep_event_vec_ref;
@@ -70,8 +67,7 @@ DPCTLSyclEventRef dpnp_argsort_c(DPCTLSyclQueueRef q_ref,
 
     std::iota(result, result + size, 0);
 
-    auto policy =
-        oneapi::dpl::execution::make_device_policy<class dpnp_argsort_c_kernel<_DataType, _idx_DataType>>(q);
+    auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_argsort_c_kernel<_DataType, _idx_DataType>>(q);
 
     std::sort(policy, result, result + size, _argsort_less<_DataType, _idx_DataType>(array_1));
 
@@ -85,11 +81,8 @@ void dpnp_argsort_c(void* array1_in, void* result1, size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_argsort_c<_DataType, _idx_DataType>(q_ref,
-                                                                           array1_in,
-                                                                           result1,
-                                                                           size,
-                                                                           dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_argsort_c<_DataType, _idx_DataType>(q_ref, array1_in, result1, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
@@ -98,11 +91,8 @@ template <typename _DataType, typename _idx_DataType>
 void (*dpnp_argsort_default_c)(void*, void*, size_t) = dpnp_argsort_c<_DataType, _idx_DataType>;
 
 template <typename _DataType, typename _idx_DataType>
-DPCTLSyclEventRef (*dpnp_argsort_ext_c)(DPCTLSyclQueueRef,
-                                        void*,
-                                        void*,
-                                        size_t,
-                                        const DPCTLEventVectorRef) = dpnp_argsort_c<_DataType, _idx_DataType>;
+DPCTLSyclEventRef (*dpnp_argsort_ext_c)(DPCTLSyclQueueRef, void*, void*, size_t, const DPCTLEventVectorRef) =
+    dpnp_argsort_c<_DataType, _idx_DataType>;
 
 // template void dpnp_argsort_c<double, long>(void* array1_in, void* result1, size_t size);
 // template void dpnp_argsort_c<float, long>(void* array1_in, void* result1, size_t size);
@@ -189,8 +179,7 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
         }
     }
 
-    shape_elem_type* shape = reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type),
-                                                                                    q));
+    shape_elem_type* shape = reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
     auto memcpy_event = q.memcpy(shape, shape_, ndim * sizeof(shape_elem_type));
 
     memcpy_event.wait();
@@ -234,35 +223,25 @@ void dpnp_partition_c(
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_partition_c<_DataType>(q_ref,
-                                                              array1_in,
-                                                              array2_in,
-                                                              result1,
-                                                              kth,
-                                                              shape_,
-                                                              ndim,
-                                                              dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_partition_c<_DataType>(q_ref, array1_in, array2_in, result1, kth, shape_, ndim, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_partition_default_c)(void*,
-                                 void*,
-                                 void*,
-                                 const size_t,
-                                 const shape_elem_type*,
-                                 const size_t) = dpnp_partition_c<_DataType>;
+void (*dpnp_partition_default_c)(void*, void*, void*, const size_t, const shape_elem_type*, const size_t) =
+    dpnp_partition_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_partition_ext_c)(DPCTLSyclQueueRef,
-                                         void*,
-                                         void*,
-                                         void*,
-                                         const size_t,
-                                         const shape_elem_type*,
-                                         const size_t,
-                                         const DPCTLEventVectorRef) = dpnp_partition_c<_DataType>;
+                                          void*,
+                                          void*,
+                                          void*,
+                                          const size_t,
+                                          const shape_elem_type*,
+                                          const size_t,
+                                          const DPCTLEventVectorRef) = dpnp_partition_c<_DataType>;
 
 template <typename _DataType, typename _IndexingType>
 class dpnp_searchsorted_c_kernel;
@@ -387,45 +366,27 @@ void dpnp_searchsorted_c(
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_searchsorted_c<_DataType, _IndexingType>(q_ref,
-                                                                                result1,
-                                                                                array1_in,
-                                                                                v1_in,
-                                                                                side,
-                                                                                arr_size,
-                                                                                v_size,
-                                                                                dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_searchsorted_c<_DataType, _IndexingType>(
+        q_ref, result1, array1_in, v1_in, side, arr_size, v_size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _IndexingType>
-void (*dpnp_searchsorted_default_c)(void*,
-                                    const void*,
-                                    const void*,
-                                    bool,
-                                    const size_t,
-                                    const size_t) = dpnp_searchsorted_c<_DataType, _IndexingType>;
+void (*dpnp_searchsorted_default_c)(void*, const void*, const void*, bool, const size_t, const size_t) =
+    dpnp_searchsorted_c<_DataType, _IndexingType>;
 
 template <typename _DataType, typename _IndexingType>
-DPCTLSyclEventRef (*dpnp_searchsorted_ext_c)(DPCTLSyclQueueRef,
-                                             void*,
-                                             const void*,
-                                             const void*,
-                                             bool,
-                                             const size_t,
-                                             const size_t,
-                                             const DPCTLEventVectorRef) = dpnp_searchsorted_c<_DataType, _IndexingType>;
+DPCTLSyclEventRef (*dpnp_searchsorted_ext_c)(
+    DPCTLSyclQueueRef, void*, const void*, const void*, bool, const size_t, const size_t, const DPCTLEventVectorRef) =
+    dpnp_searchsorted_c<_DataType, _IndexingType>;
 
 template <typename _DataType>
 class dpnp_sort_c_kernel;
 
 template <typename _DataType>
-DPCTLSyclEventRef dpnp_sort_c(DPCTLSyclQueueRef q_ref,
-                              void* array1_in,
-                              void* result1,
-                              size_t size,
-                              const DPCTLEventVectorRef dep_event_vec_ref)
+DPCTLSyclEventRef dpnp_sort_c(
+    DPCTLSyclQueueRef q_ref, void* array1_in, void* result1, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)
 {
     // avoid warning unused variable
     (void)dep_event_vec_ref;
@@ -456,11 +417,7 @@ void dpnp_sort_c(void* array1_in, void* result1, size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_sort_c<_DataType>(q_ref,
-                                                         array1_in,
-                                                         result1,
-                                                         size,
-                                                         dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_sort_c<_DataType>(q_ref, array1_in, result1, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
@@ -469,11 +426,8 @@ template <typename _DataType>
 void (*dpnp_sort_default_c)(void*, void*, size_t) = dpnp_sort_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_sort_ext_c)(DPCTLSyclQueueRef,
-                                     void*,
-                                     void*,
-                                     size_t,
-                                     const DPCTLEventVectorRef) = dpnp_sort_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_sort_ext_c)(DPCTLSyclQueueRef, void*, void*, size_t, const DPCTLEventVectorRef) =
+    dpnp_sort_c<_DataType>;
 
 void func_map_init_sorting(func_map_t& fmap)
 {
@@ -497,23 +451,23 @@ void func_map_init_sorting(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_PARTITION_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_partition_ext_c<float>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_partition_ext_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_INT][eft_INT] = {
-        eft_INT, (void*)dpnp_searchsorted_default_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_LNG][eft_LNG] = {
-        eft_LNG, (void*)dpnp_searchsorted_default_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_FLT][eft_FLT] = {
-        eft_FLT, (void*)dpnp_searchsorted_default_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_searchsorted_default_c<double, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_INT][eft_INT] = {eft_INT,
+                                                                  (void*)dpnp_searchsorted_default_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_LNG][eft_LNG] = {eft_LNG,
+                                                                  (void*)dpnp_searchsorted_default_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_FLT][eft_FLT] = {eft_FLT,
+                                                                  (void*)dpnp_searchsorted_default_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                  (void*)dpnp_searchsorted_default_c<double, int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void*)dpnp_searchsorted_ext_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void*)dpnp_searchsorted_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void*)dpnp_searchsorted_ext_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_searchsorted_ext_c<double, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED_EXT][eft_INT][eft_INT] = {eft_INT,
+                                                                      (void*)dpnp_searchsorted_ext_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED_EXT][eft_LNG][eft_LNG] = {eft_LNG,
+                                                                      (void*)dpnp_searchsorted_ext_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED_EXT][eft_FLT][eft_FLT] = {eft_FLT,
+                                                                      (void*)dpnp_searchsorted_ext_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED_EXT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                      (void*)dpnp_searchsorted_ext_c<double, int64_t>};
 
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_sort_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_sort_default_c<int64_t>};

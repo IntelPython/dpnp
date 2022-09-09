@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,11 +35,8 @@ template <typename _KernelNameSpecialization>
 class dpnp_invert_c_kernel;
 
 template <typename _DataType>
-DPCTLSyclEventRef dpnp_invert_c(DPCTLSyclQueueRef q_ref,
-                                void* array1_in,
-                                void* result1,
-                                size_t size,
-                                const DPCTLEventVectorRef dep_event_vec_ref)
+DPCTLSyclEventRef dpnp_invert_c(
+    DPCTLSyclQueueRef q_ref, void* array1_in, void* result1, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)
 {
     // avoid warning unused variable
     (void)dep_event_vec_ref;
@@ -78,11 +75,7 @@ void dpnp_invert_c(void* array1_in, void* result1, size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_invert_c<_DataType>(q_ref,
-                                                           array1_in,
-                                                           result1,
-                                                           size,
-                                                           dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_invert_c<_DataType>(q_ref, array1_in, result1, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -90,11 +83,8 @@ template <typename _DataType>
 void (*dpnp_invert_default_c)(void*, void*, size_t) = dpnp_invert_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_invert_ext_c)(DPCTLSyclQueueRef,
-                                       void*,
-                                       void*,
-                                       size_t,
-                                       const DPCTLEventVectorRef) = dpnp_invert_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_invert_ext_c)(DPCTLSyclQueueRef, void*, void*, size_t, const DPCTLEventVectorRef) =
+    dpnp_invert_c<_DataType>;
 
 static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
 {

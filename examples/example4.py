@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,20 +38,48 @@ import numpy
 """
 Unary functions
 """
-for function in [numpy.sqrt, numpy.fabs, numpy.reciprocal, numpy.square, numpy.cbrt, numpy.degrees, numpy.radians]:
+for function in [
+    numpy.sqrt,
+    numpy.fabs,
+    numpy.reciprocal,
+    numpy.square,
+    numpy.cbrt,
+    numpy.degrees,
+    numpy.radians,
+]:
     print()
-    for test_type in [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool]:
+    for test_type in [
+        numpy.float64,
+        numpy.float32,
+        numpy.int64,
+        numpy.int32,
+        numpy.bool,
+    ]:
         data = numpy.array([1, 2, 3, 4], dtype=test_type)
         result = function(data)
-        print(f"input:{data.dtype.name:10}: outout:{result.dtype.name:10}: name:{function.__name__}")
+        print(
+            f"input:{data.dtype.name:10}: outout:{result.dtype.name:10}: name:{function.__name__}"
+        )
 
 """
 Two arguments functions
 """
 for function in [numpy.equal, numpy.arctan2]:
     print()
-    for input1_type in [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool]:
-        for input2_type in [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool]:
+    for input1_type in [
+        numpy.float64,
+        numpy.float32,
+        numpy.int64,
+        numpy.int32,
+        numpy.bool,
+    ]:
+        for input2_type in [
+            numpy.float64,
+            numpy.float32,
+            numpy.int64,
+            numpy.int32,
+            numpy.bool,
+        ]:
             data1 = numpy.array([1, 2, 3, 4], dtype=input1_type)
             data2 = numpy.array([11, 21, 31, 41], dtype=input2_type)
             result = function(data1, data2)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,28 +27,29 @@
 
 import os
 
-
-__DPNP_ORIGIN__ = int(os.getenv('DPNP_ORIGIN', 0))
-'''
+__DPNP_ORIGIN__ = int(os.getenv("DPNP_ORIGIN", 0))
+"""
 Explicitly use original host Python NumPy
-'''
+"""
 
-__DPNP_QUEUE_GPU__ = int(os.getenv('DPNP_QUEUE_GPU', 0))
-'''
+__DPNP_QUEUE_GPU__ = int(os.getenv("DPNP_QUEUE_GPU", 0))
+"""
 Explicitly use GPU for SYCL queue
-'''
+"""
 
-__DPNP_OUTPUT_NUMPY__ = int(os.getenv('DPNP_OUTPUT_NUMPY', 0))
-'''
+__DPNP_OUTPUT_NUMPY__ = int(os.getenv("DPNP_OUTPUT_NUMPY", 0))
+"""
 Explicitly use NumPy.ndarray as return type for creation functions
-'''
+"""
 
-__DPNP_OUTPUT_DPCTL__ = int(os.getenv('DPNP_OUTPUT_DPCTL', 1))
-'''
+__DPNP_OUTPUT_DPCTL__ = int(os.getenv("DPNP_OUTPUT_DPCTL", 1))
+"""
 Explicitly use DPCtl package container as return type for creation functions
-'''
+"""
 
-__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__ = int(os.getenv('DPNP_OUTPUT_DPCTL_DEFAULT_SHARED', 0))
-'''
+__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__ = int(
+    os.getenv("DPNP_OUTPUT_DPCTL_DEFAULT_SHARED", 0)
+)
+"""
 Explicitly use SYCL shared memory parameter in DPCtl array constructor for creation functions
-'''
+"""

@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,31 +42,36 @@ it contains:
 
 import numpy
 
-
+import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-import dpnp
 
 __all__ = [
-    'bitwise_and',
-    'bitwise_or',
-    'bitwise_xor',
-    'invert',
-    'bitwise_not',
-    'left_shift',
-    'right_shift',
+    "bitwise_and",
+    "bitwise_or",
+    "bitwise_xor",
+    "invert",
+    "bitwise_not",
+    "left_shift",
+    "right_shift",
 ]
 
 
-def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=True, **kwargs):
+def _check_nd_call(
+    origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=True, **kwargs
+):
     """Choose function to call based on input and call chosen fucntion."""
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
+    x2_desc = dpnp.get_dpnp_descriptor(
+        x2, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -90,10 +95,18 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
         elif not where:
             pass
         else:
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            return dpnp_func(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
+            out_desc = (
+                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+                if out is not None
+                else None
+            )
+            return dpnp_func(
+                x1_desc, x2_desc, dtype, out_desc, where
+            ).get_pyobj()
 
-    return call_origin(origin_func, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return call_origin(
+        origin_func, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    )
 
 
 def bitwise_and(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -127,7 +140,16 @@ def bitwise_and(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [2, 4, 16]
 
     """
-    return _check_nd_call(numpy.bitwise_and, dpnp_bitwise_and, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return _check_nd_call(
+        numpy.bitwise_and,
+        dpnp_bitwise_and,
+        x1,
+        x2,
+        dtype=dtype,
+        out=out,
+        where=where,
+        **kwargs
+    )
 
 
 def bitwise_or(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -161,7 +183,16 @@ def bitwise_or(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [6, 5, 255]
 
     """
-    return _check_nd_call(numpy.bitwise_or, dpnp_bitwise_or, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return _check_nd_call(
+        numpy.bitwise_or,
+        dpnp_bitwise_or,
+        x1,
+        x2,
+        dtype=dtype,
+        out=out,
+        where=where,
+        **kwargs
+    )
 
 
 def bitwise_xor(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -195,7 +226,16 @@ def bitwise_xor(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [26, 5]
 
     """
-    return _check_nd_call(numpy.bitwise_xor, dpnp_bitwise_xor, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return _check_nd_call(
+        numpy.bitwise_xor,
+        dpnp_bitwise_xor,
+        x1,
+        x2,
+        dtype=dtype,
+        out=out,
+        where=where,
+        **kwargs
+    )
 
 
 def invert(x, **kwargs):
@@ -267,7 +307,16 @@ def left_shift(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [10, 20, 40]
 
     """
-    return _check_nd_call(numpy.left_shift, dpnp_left_shift, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return _check_nd_call(
+        numpy.left_shift,
+        dpnp_left_shift,
+        x1,
+        x2,
+        dtype=dtype,
+        out=out,
+        where=where,
+        **kwargs
+    )
 
 
 def right_shift(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -299,4 +348,13 @@ def right_shift(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [5, 2, 1]
 
     """
-    return _check_nd_call(numpy.right_shift, dpnp_right_shift, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return _check_nd_call(
+        numpy.right_shift,
+        dpnp_right_shift,
+        x1,
+        x2,
+        dtype=dtype,
+        out=out,
+        where=where,
+        **kwargs
+    )

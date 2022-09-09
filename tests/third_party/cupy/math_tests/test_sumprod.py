@@ -9,7 +9,6 @@ from tests.third_party.cupy import testing
 
 @testing.gpu
 class TestSumprod(unittest.TestCase):
-
     def tearDown(self):
         # Free huge memory for slow test
         # cupy.get_default_memory_pool().free_all_blocks()
@@ -61,7 +60,7 @@ class TestSumprod(unittest.TestCase):
     @testing.slow
     @testing.numpy_cupy_allclose()
     def test_sum_axis_huge(self, xp):
-        a = testing.shaped_random((204, 102, 102), xp, 'd')
+        a = testing.shaped_random((204, 102, 102), xp, "d")
         return a.sum(axis=2)
 
     @testing.for_all_dtypes()
@@ -114,13 +113,13 @@ class TestSumprod(unittest.TestCase):
         a = testing.shaped_arange((20, 30, 40, 50), xp, dtype)
         return a.sum(axis=(0, 2, 3))
 
-    @testing.for_all_dtypes_combination(names=['src_dtype', 'dst_dtype'])
+    @testing.for_all_dtypes_combination(names=["src_dtype", "dst_dtype"])
     @testing.numpy_cupy_allclose()
     def test_sum_dtype(self, xp, src_dtype, dst_dtype):
         a = testing.shaped_arange((2, 3, 4), xp, src_dtype)
         return a.sum(dtype=dst_dtype)
 
-    @testing.for_all_dtypes_combination(names=['src_dtype', 'dst_dtype'])
+    @testing.for_all_dtypes_combination(names=["src_dtype", "dst_dtype"])
     @testing.numpy_cupy_allclose()
     def test_sum_keepdims_and_dtype(self, xp, src_dtype, dst_dtype):
         a = testing.shaped_arange((2, 3, 4), xp, src_dtype)
@@ -170,7 +169,7 @@ class TestSumprod(unittest.TestCase):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.prod(a, axis=1)
 
-    @testing.for_all_dtypes_combination(names=['src_dtype', 'dst_dtype'])
+    @testing.for_all_dtypes_combination(names=["src_dtype", "dst_dtype"])
     @testing.numpy_cupy_allclose()
     def test_prod_dtype(self, xp, src_dtype, dst_dtype):
         a = testing.shaped_arange((2, 3), xp, src_dtype)
@@ -178,23 +177,26 @@ class TestSumprod(unittest.TestCase):
 
 
 @testing.parameterize(
-    *testing.product({
-        'shape': [(2, 3, 4), (20, 30, 40)],
-        'axis': [0, 1],
-        'transpose_axes': [True, False],
-        'keepdims': [True, False],
-        'func': ['nansum', 'nanprod']
-    })
+    *testing.product(
+        {
+            "shape": [(2, 3, 4), (20, 30, 40)],
+            "axis": [0, 1],
+            "transpose_axes": [True, False],
+            "keepdims": [True, False],
+            "func": ["nansum", "nanprod"],
+        }
+    )
 )
 @testing.gpu
 class TestNansumNanprodLong(unittest.TestCase):
-
     def _do_transposed_axis_test(self):
         return not self.transpose_axes and self.axis != 1
 
     def _numpy_nanprod_implemented(self):
-        return (self.func == 'nanprod' and
-                numpy.__version__ >= numpy.lib.NumpyVersion('1.10.0'))
+        return (
+            self.func == "nanprod"
+            and numpy.__version__ >= numpy.lib.NumpyVersion("1.10.0")
+        )
 
     def _test(self, xp, dtype):
         a = testing.shaped_arange(self.shape, xp, dtype)
@@ -208,28 +210,33 @@ class TestNansumNanprodLong(unittest.TestCase):
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
     @testing.numpy_cupy_allclose()
     def test_nansum_all(self, xp, dtype):
-        if (not self._numpy_nanprod_implemented() or
-                not self._do_transposed_axis_test()):
+        if (
+            not self._numpy_nanprod_implemented()
+            or not self._do_transposed_axis_test()
+        ):
             return xp.array(())
         return self._test(xp, dtype)
 
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
     @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_nansum_axis_transposed(self, xp, dtype):
-        if (not self._numpy_nanprod_implemented() or
-                not self._do_transposed_axis_test()):
+        if (
+            not self._numpy_nanprod_implemented()
+            or not self._do_transposed_axis_test()
+        ):
             return xp.array(())
         return self._test(xp, dtype)
 
 
 @testing.parameterize(
-    *testing.product({
-        'shape': [(2, 3, 4), (20, 30, 40)],
-    })
+    *testing.product(
+        {
+            "shape": [(2, 3, 4), (20, 30, 40)],
+        }
+    )
 )
 @testing.gpu
 class TestNansumNanprodExtra(unittest.TestCase):
-
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
     @testing.numpy_cupy_allclose()
     def test_nansum_out(self, xp, dtype):
@@ -249,10 +256,12 @@ class TestNansumNanprodExtra(unittest.TestCase):
 
 
 @testing.parameterize(
-    *testing.product({
-        'shape': [(2, 3, 4, 5), (20, 30, 40, 50)],
-        'axis': [(1, 3), (0, 2, 3)],
-    })
+    *testing.product(
+        {
+            "shape": [(2, 3, 4, 5), (20, 30, 40, 50)],
+            "axis": [(1, 3), (0, 2, 3)],
+        }
+    )
 )
 @testing.gpu
 class TestNansumNanprodAxes(unittest.TestCase):
@@ -268,10 +277,9 @@ class TestNansumNanprodAxes(unittest.TestCase):
 axes = [0, 1, 2]
 
 
-@testing.parameterize(*testing.product({'axis': axes}))
+@testing.parameterize(*testing.product({"axis": axes}))
 @testing.gpu
 class TestCumsum(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_cumsum(self, xp, dtype):
@@ -323,7 +331,9 @@ class TestCumsum(unittest.TestCase):
         n = len(axes)
         shape = tuple(range(4, 4 + n))
         a = testing.shaped_arange(shape, xp, dtype)
-        out = xp.zeros((8,) + shape[1:], dtype=dtype)[::2]  # Non contiguous view
+        out = xp.zeros((8,) + shape[1:], dtype=dtype)[
+            ::2
+        ]  # Non contiguous view
         xp.cumsum(a, axis=self.axis, out=out)
         return out
 
@@ -380,7 +390,6 @@ class TestCumsum(unittest.TestCase):
 
 @testing.gpu
 class TestCumprod(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_cumprod_1dim(self, xp, dtype):
@@ -423,11 +432,11 @@ class TestCumprod(unittest.TestCase):
 
     @testing.slow
     def test_cumprod_huge_array(self):
-        size = 2 ** 32
+        size = 2**32
         # Free huge memory for slow test
         cupy.get_default_memory_pool().free_all_blocks()
-        a = cupy.ones(size, 'b')
-        result = cupy.cumprod(a, dtype='b')
+        a = cupy.ones(size, "b")
+        result = cupy.cumprod(a, dtype="b")
         del a
         self.assertTrue((result == 1).all())
         # Free huge memory for slow test
@@ -474,7 +483,6 @@ class TestCumprod(unittest.TestCase):
 
 @testing.gpu
 class TestDiff(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_diff_1dim(self, xp, dtype):
@@ -505,7 +513,7 @@ class TestDiff(unittest.TestCase):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return xp.diff(a, 2, 1)
 
-    @testing.with_requires('numpy>=1.16')
+    @testing.with_requires("numpy>=1.16")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_diff_2dim_with_prepend(self, xp, dtype):
@@ -513,7 +521,7 @@ class TestDiff(unittest.TestCase):
         b = testing.shaped_arange((4, 1), xp, dtype)
         return xp.diff(a, axis=-1, prepend=b)
 
-    @testing.with_requires('numpy>=1.16')
+    @testing.with_requires("numpy>=1.16")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_diff_2dim_with_append(self, xp, dtype):
@@ -521,14 +529,14 @@ class TestDiff(unittest.TestCase):
         b = testing.shaped_arange((1, 5), xp, dtype)
         return xp.diff(a, axis=0, append=b, n=2)
 
-    @testing.with_requires('numpy>=1.16')
+    @testing.with_requires("numpy>=1.16")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_diff_2dim_with_scalar_append(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return xp.diff(a, prepend=1, append=0)
 
-    @testing.with_requires('numpy>=1.16')
+    @testing.with_requires("numpy>=1.16")
     def test_diff_invalid_axis(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3, 4), xp)

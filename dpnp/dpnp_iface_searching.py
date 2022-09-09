@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,19 +40,13 @@ it contains:
 """
 
 
+import numpy
+
+import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
-import dpnp
-import numpy
-
-
-__all__ = [
-    'argmax',
-    'argmin',
-    'searchsorted',
-    'where'
-]
+__all__ = ["argmax", "argmin", "searchsorted", "where"]
 
 
 def argmax(x1, axis=None, out=None):
@@ -165,7 +159,7 @@ def argmin(x1, axis=None, out=None):
     return call_origin(numpy.argmin, x1, axis, out)
 
 
-def searchsorted(a, v, side='left', sorter=None):
+def searchsorted(a, v, side="left", sorter=None):
     """
     Find indices where elements should be inserted to maintain order.
 

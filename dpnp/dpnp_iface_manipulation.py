@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,13 +42,12 @@ it contains:
 
 import collections.abc
 
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
-from dpnp.dpnp_iface_arraycreation import array
-
-import dpnp
 import numpy
 
+import dpnp
+from dpnp.dpnp_algo import *
+from dpnp.dpnp_iface_arraycreation import array
+from dpnp.dpnp_utils import *
 
 __all__ = [
     "asfarray",
@@ -69,7 +68,7 @@ __all__ = [
     "swapaxes",
     "transpose",
     "unique",
-    "vstack"
+    "vstack",
 ]
 
 
@@ -103,6 +102,7 @@ def asfarray(x1, dtype=numpy.float64):
 def atleast_1d(*arys):
     """
     Convert inputs to arrays with at least one dimension.
+
     Scalar inputs are converted to 1-dimensional arrays, whilst
     higher-dimensional inputs are preserved.
 
@@ -131,7 +131,9 @@ def atleast_2d(*arys):
     all_is_array = True
     arys_desc = []
     for ary in arys:
-        ary_desc = dpnp.get_dpnp_descriptor(ary, copy_when_nondefault_queue=False)
+        ary_desc = dpnp.get_dpnp_descriptor(
+            ary, copy_when_nondefault_queue=False
+        )
         if ary_desc:
             arys_desc.append(ary_desc)
         else:
@@ -166,7 +168,9 @@ def atleast_3d(*arys):
     all_is_array = True
     arys_desc = []
     for ary in arys:
-        ary_desc = dpnp.get_dpnp_descriptor(ary, copy_when_nondefault_queue=False)
+        ary_desc = dpnp.get_dpnp_descriptor(
+            ary, copy_when_nondefault_queue=False
+        )
         if ary_desc:
             arys_desc.append(ary_desc)
         else:
@@ -212,10 +216,17 @@ def concatenate(arrs, axis=0, out=None, dtype=None, casting="same_kind"):
     [1 2 3 4 5 6]
 
     """
-    return call_origin(numpy.concatenate, arrs, axis=axis, out=out, dtype=dtype, casting=casting)
+    return call_origin(
+        numpy.concatenate,
+        arrs,
+        axis=axis,
+        out=out,
+        dtype=dtype,
+        casting=casting,
+    )
 
 
-def copyto(dst, src, casting='same_kind', where=True):
+def copyto(dst, src, casting="same_kind", where=True):
     """
     Copies values from one array to another, broadcasting as necessary.
 
@@ -232,18 +243,38 @@ def copyto(dst, src, casting='same_kind', where=True):
 
     """
 
-    dst_desc = dpnp.get_dpnp_descriptor(dst, copy_when_strides=False, copy_when_nondefault_queue=False)
+    dst_desc = dpnp.get_dpnp_descriptor(
+        dst, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     src_desc = dpnp.get_dpnp_descriptor(src, copy_when_nondefault_queue=False)
     if dst_desc and src_desc:
-        if casting != 'same_kind':
+        if casting != "same_kind":
             pass
-        elif (dst_desc.dtype == dpnp.bool and  # due to 'same_kind' casting
-              src_desc.dtype in [dpnp.int32, dpnp.int64, dpnp.float32, dpnp.float64, dpnp.complex128]):
+        elif (
+            dst_desc.dtype == dpnp.bool
+            and src_desc.dtype  # due to 'same_kind' casting
+            in [
+                dpnp.int32,
+                dpnp.int64,
+                dpnp.float32,
+                dpnp.float64,
+                dpnp.complex128,
+            ]
+        ):
             pass
-        elif (dst_desc.dtype in [dpnp.int32, dpnp.int64] and  # due to 'same_kind' casting
-              src_desc.dtype in [dpnp.float32, dpnp.float64, dpnp.complex128]):
+        elif dst_desc.dtype in [
+            dpnp.int32,
+            dpnp.int64,
+        ] and src_desc.dtype in [  # due to 'same_kind' casting
+            dpnp.float32,
+            dpnp.float64,
+            dpnp.complex128,
+        ]:
             pass
-        elif dst_desc.dtype in [dpnp.float32, dpnp.float64] and src_desc.dtype == dpnp.complex128:  # due to 'same_kind' casting
+        elif (
+            dst_desc.dtype in [dpnp.float32, dpnp.float64]
+            and src_desc.dtype == dpnp.complex128
+        ):  # due to 'same_kind' casting
             pass
         elif where is not True:
             pass
@@ -254,7 +285,9 @@ def copyto(dst, src, casting='same_kind', where=True):
         else:
             return dpnp_copyto(dst_desc, src_desc, where=where)
 
-    return call_origin(numpy.copyto, dst, src, casting, where, dpnp_inplace=True)
+    return call_origin(
+        numpy.copyto, dst, src, casting, where, dpnp_inplace=True
+    )
 
 
 def expand_dims(x1, axis):
@@ -385,7 +418,9 @@ def moveaxis(x1, source, destination):
                     input_permute.append(i)
 
             # insert moving axes into proper positions
-            for destination_id, source_id in sorted(zip(destination_norm, source_norm)):
+            for destination_id, source_id in sorted(
+                zip(destination_norm, source_norm)
+            ):
                 # if destination_id in input_permute:
                 # pytest tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_3
                 # checker_throw_value_error("swapaxes", "source_id exists", source_id, input_permute)
@@ -396,7 +431,7 @@ def moveaxis(x1, source, destination):
     return call_origin(numpy.moveaxis, x1, source, destination)
 
 
-def ravel(x1, order='C'):
+def ravel(x1, order="C"):
     """
     Return a contiguous flattened array.
 
@@ -466,7 +501,7 @@ def repeat(x1, repeats, axis=None):
     return call_origin(numpy.repeat, x1, repeats, axis)
 
 
-def reshape(x1, newshape, order='C'):
+def reshape(x1, newshape, order="C"):
     """
     Gives a new shape to an array without changing its data.
 
@@ -480,7 +515,7 @@ def reshape(x1, newshape, order='C'):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
-        if order != 'C':
+        if order != "C":
             pass
         else:
             return dpnp_reshape(x1_desc, newshape, order).get_pyobj()
@@ -624,7 +659,10 @@ def swapaxes(x1, axis1, axis2):
             # 'do nothing' pattern for transpose()
             input_permute = [i for i in range(x1.ndim)]
             # swap axes
-            input_permute[axis1], input_permute[axis2] = input_permute[axis2], input_permute[axis1]
+            input_permute[axis1], input_permute[axis2] = (
+                input_permute[axis2],
+                input_permute[axis1],
+            )
 
             return transpose(x1_desc.get_pyobj(), axes=input_permute)
 

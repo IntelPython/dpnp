@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,8 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-""" NumPy is the fundamental package for array computing with Python.
+"""
+NumPy is the fundamental package for array computing with Python.
 
 It provides:
 
@@ -38,20 +39,26 @@ It provides:
 """
 
 import importlib.machinery as imm  # Python 3 is required
-import sys
 import os
+import sys
+
 import dpctl
 import numpy
-
-from setuptools import setup, Extension
 from Cython.Build import cythonize
 from Cython.Compiler import Options as cython_options
+from setuptools import Extension, setup
 
-from utils.command_style import source_style
-from utils.command_clean import source_clean
-from utils.command_build_clib import custom_build_clib, dpnp_backend_c_description, _project_backend_dir, _sdl_cflags, _project_extra_link_args, IS_WIN
+from utils.command_build_clib import (
+    IS_WIN,
+    _project_backend_dir,
+    _project_extra_link_args,
+    _sdl_cflags,
+    custom_build_clib,
+    dpnp_backend_c_description,
+)
 from utils.command_build_cmake_clib import custom_build_cmake_clib
-
+from utils.command_clean import source_clean
+from utils.command_style import source_style
 
 """
 Python version check
@@ -64,14 +71,16 @@ if sys.version_info[:2] < (3, 6):
 Get the project version
 """
 thefile_path = os.path.abspath(os.path.dirname(__file__))
-version_mod = imm.SourceFileLoader('version', os.path.join(thefile_path, 'dpnp', 'version.py')).load_module()
+version_mod = imm.SourceFileLoader(
+    "version", os.path.join(thefile_path, "dpnp", "version.py")
+).load_module()
 __version__ = version_mod.__version__
 
 
 """
 Set project auxilary data like readme and licence files
 """
-with open('README.md') as f:
+with open("README.md") as f:
     __readme_file__ = f.read()
 
 CLASSIFIERS = """\
@@ -109,118 +118,139 @@ TODO: spell check, valgrind, code coverage
 # TODO: refactor/fix
 # on Win we need a specific build_clib definition to prevent using cmake during build_ext execution
 if IS_WIN:
-    dpnp_build_commands = {'style': source_style,
-                           'build_clib_setuptools': custom_build_clib,
-                           'build_clib': custom_build_clib,
-                           'clean': source_clean
-                           }
+    dpnp_build_commands = {
+        "style": source_style,
+        "build_clib_setuptools": custom_build_clib,
+        "build_clib": custom_build_clib,
+        "clean": source_clean,
+    }
 else:
-    dpnp_build_commands = {'style': source_style,
-                           'build_clib_setuptools': custom_build_clib,
-                           'build_clib': custom_build_cmake_clib,
-                           'clean': source_clean
-                           }
+    dpnp_build_commands = {
+        "style": source_style,
+        "build_clib_setuptools": custom_build_clib,
+        "build_clib": custom_build_cmake_clib,
+        "clean": source_clean,
+    }
 
 if IS_WIN:
-    '''
+    """
     This variable controls setuptools execution on windows
     to avoid automatically search and confirm workability of the compiler
     If not set, error "Microsoft Visual C++ 14.0 or greater is required." appiars
-    '''
+    """
     os.environ["DISTUTILS_USE_SDK"] = "1"
 
 """
 The project modules description
 """
 kwargs_common = {
-    "include_dirs": [numpy.get_include(), dpctl.get_include()] + _project_backend_dir,
-    "library_dirs": [os.path.dirname(dpctl.get_include()),],
+    "include_dirs": [numpy.get_include(), dpctl.get_include()]
+    + _project_backend_dir,
+    "library_dirs": [
+        os.path.dirname(dpctl.get_include()),
+    ],
     "libraries": ["DPCTLSyclInterface"],
     "extra_compile_args": _sdl_cflags,
     "extra_link_args": _project_extra_link_args,
     "define_macros": [("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    "language": "c++"
+    "language": "c++",
 }
 
 dpnp_algo = Extension(
     name="dpnp.dpnp_algo.dpnp_algo",
     sources=[os.path.join("dpnp", "dpnp_algo", "dpnp_algo.pyx")],
-    **kwargs_common)
+    **kwargs_common
+)
 
 dpnp_dparray = Extension(
     name="dpnp.dparray",
     sources=[os.path.join("dpnp", "dparray.pyx")],
-    **kwargs_common)
+    **kwargs_common
+)
 
 dpnp_random = Extension(
     name="dpnp.random.dpnp_algo_random",
     sources=[os.path.join("dpnp", "random", "dpnp_algo_random.pyx")],
-    **kwargs_common)
+    **kwargs_common
+)
 
 dpnp_linalg = Extension(
     name="dpnp.linalg.dpnp_algo_linalg",
     sources=[os.path.join("dpnp", "linalg", "dpnp_algo_linalg.pyx")],
-    **kwargs_common)
+    **kwargs_common
+)
 
 dpnp_fft = Extension(
     name="dpnp.fft.dpnp_algo_fft",
     sources=[os.path.join("dpnp", "fft", "dpnp_algo_fft.pyx")],
-    **kwargs_common)
+    **kwargs_common
+)
 
 dpnp_utils = Extension(
     name="dpnp.dpnp_utils.dpnp_algo_utils",
     sources=[os.path.join("dpnp", "dpnp_utils", "dpnp_algo_utils.pyx")],
-    **kwargs_common)
+    **kwargs_common
+)
 
 cython_options.docstrings = True
 cython_options.warning_errors = True
 
-dpnp_cython_mods = cythonize([dpnp_algo, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg, dpnp_fft],
-                             compiler_directives={"language_level": sys.version_info[0],
-                                                  "warn.unused": False,
-                                                  "warn.unused_result": False,
-                                                  "warn.maybe_uninitialized": False,
-                                                  "warn.undeclared": False,
-                                                  "boundscheck": True,
-                                                  "linetrace": True
-                                                  },
-                             gdb_debug=False,
-                             build_dir="build_cython",
-                             annotate=False,
-                             quiet=False)
+dpnp_cython_mods = cythonize(
+    [dpnp_algo, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg, dpnp_fft],
+    compiler_directives={
+        "language_level": sys.version_info[0],
+        "warn.unused": False,
+        "warn.unused_result": False,
+        "warn.maybe_uninitialized": False,
+        "warn.undeclared": False,
+        "boundscheck": True,
+        "linetrace": True,
+    },
+    gdb_debug=False,
+    build_dir="build_cython",
+    annotate=False,
+    quiet=False,
+)
 
-setup(name="dpnp",
-      version=__version__,
-      description="NumPy-like API accelerated with SYCL",
-      long_description=__readme_file__,
-      long_description_content_type="text/markdown",
-      author="Intel Corporation",
-      maintainer="Intel Corp.",
-      maintainer_email="scripting@intel.com",
-      url="https://intelpython.github.io/dpnp/",
-      download_url="https://github.com/IntelPython/dpnp",
-      license='BSD',
-      classifiers=[_f for _f in CLASSIFIERS.split('\n') if _f],
-      keywords="sycl numpy python3 intel mkl oneapi gpu dpcpp pstl",
-      platforms=["Linux", "Windows"],
-      test_suite="pytest",
-      python_requires=">=3.6",
-      install_requires=["numpy>=1.15"],
-      setup_requires=["numpy>=1.15"],
-      tests_require=["numpy>=1.15"],
-      ext_modules=dpnp_cython_mods,
-      cmdclass=dpnp_build_commands,
-      packages=['dpnp',
-                'dpnp.dpnp_algo',
-                'dpnp.dpnp_utils',
-                'dpnp.fft',
-                'dpnp.linalg',
-                'dpnp.random'
-                ],
-      package_data={'dpnp': ['libdpnp_backend_c.so', 'dpnp_backend_c.lib', 'dpnp_backend_c.dll']},
-      include_package_data=True,
-
-      # this is needed for 'build' command to automatically call 'build_clib'
-      # it attach the library to all extensions (it is not needed)
-      libraries=dpnp_backend_c_description
-      )
+setup(
+    name="dpnp",
+    version=__version__,
+    description="NumPy-like API accelerated with SYCL",
+    long_description=__readme_file__,
+    long_description_content_type="text/markdown",
+    author="Intel Corporation",
+    maintainer="Intel Corp.",
+    maintainer_email="scripting@intel.com",
+    url="https://intelpython.github.io/dpnp/",
+    download_url="https://github.com/IntelPython/dpnp",
+    license="BSD",
+    classifiers=[_f for _f in CLASSIFIERS.split("\n") if _f],
+    keywords="sycl numpy python3 intel mkl oneapi gpu dpcpp pstl",
+    platforms=["Linux", "Windows"],
+    test_suite="pytest",
+    python_requires=">=3.6",
+    install_requires=["numpy>=1.15"],
+    setup_requires=["numpy>=1.15"],
+    tests_require=["numpy>=1.15"],
+    ext_modules=dpnp_cython_mods,
+    cmdclass=dpnp_build_commands,
+    packages=[
+        "dpnp",
+        "dpnp.dpnp_algo",
+        "dpnp.dpnp_utils",
+        "dpnp.fft",
+        "dpnp.linalg",
+        "dpnp.random",
+    ],
+    package_data={
+        "dpnp": [
+            "libdpnp_backend_c.so",
+            "dpnp_backend_c.lib",
+            "dpnp_backend_c.dll",
+        ]
+    },
+    include_package_data=True,
+    # this is needed for 'build' command to automatically call 'build_clib'
+    # it attach the library to all extensions (it is not needed)
+    libraries=dpnp_backend_c_description,
+)

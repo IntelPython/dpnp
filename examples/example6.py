@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,19 +36,19 @@ dpnp.random.randn
 try:
     import dpnp
 except ImportError:
-    import sys
     import os
+    import sys
 
     root_dir = os.path.join(os.path.dirname(__file__), os.pardir)
     sys.path.append(root_dir)
 
     import dpnp
 
-import numpy
 import time
 
+import numpy
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # TODO
     # as is example1.py
     result = dpnp.random.randn(10)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
 # *****************************************************************************
 
 import os
+
 from setuptools import Command
 
 
@@ -38,41 +39,41 @@ class source_style(Command):
 
     """
 
-    user_options = [
-        ('apply', 'a', 'Apply codestyle changes to sources.')
-    ]
+    user_options = [("apply", "a", "Apply codestyle changes to sources.")]
     description = "Code style check and apply (with -a)"
     boolean_options = []
 
     _result_marker = "Result:"
-    _project_directory_excluded = ['build', '.git']
+    _project_directory_excluded = ["build", ".git"]
 
-    _c_formatter = 'clang-format'
-    _c_formatter_install_msg = 'pip install clang'
-    _c_formatter_command_line = [_c_formatter, '-style=file']
-    _c_file_extensions = ['.h', '.c', '.hpp', '.cpp']
+    _c_formatter = "clang-format"
+    _c_formatter_install_msg = "pip install clang"
+    _c_formatter_command_line = [_c_formatter, "-style=file"]
+    _c_file_extensions = [".h", ".c", ".hpp", ".cpp"]
 
-    _py_checker = 'pycodestyle'
-    _py_formatter = 'autopep8'
-    _py_formatter_install_msg = 'pip install --upgrade autopep8\npip install --upgrade pycodestyle'
+    _py_checker = "pycodestyle"
+    _py_formatter = "autopep8"
+    _py_formatter_install_msg = (
+        "pip install --upgrade autopep8\npip install --upgrade pycodestyle"
+    )
     _py_checker_command_line = [_py_checker]
-    _py_formatter_command_line = [
-        _py_formatter,
-        '--in-place']
-    _py_file_extensions = ['.py', '.pyx', '.pxd', '.pxi']
+    _py_formatter_command_line = [_py_formatter, "--in-place"]
+    _py_file_extensions = [".py", ".pyx", ".pxd", ".pxi"]
 
     def _get_file_list(self, path, search_extentions):
-        """ Return file list to be adjusted or checked
+        """Return file list to be adjusted or checked
 
         path - is the project base path
         search_extentions - list of strings with files extension to search recurcivly
         """
         files = []
-        exluded_directories_full_path = [os.path.join(
-            path, excluded_dir) for excluded_dir in self._project_directory_excluded]
+        exluded_directories_full_path = [
+            os.path.join(path, excluded_dir)
+            for excluded_dir in self._project_directory_excluded
+        ]
 
-        # r=root, d=directories, f = files
-        for r, d, f in os.walk(path):
+        # r=root, _=directories, f=files
+        for r, _, f in os.walk(path):
             # match exclude pattern in current directory
             found = False
             for excluded_dir in exluded_directories_full_path:
@@ -83,7 +84,7 @@ class source_style(Command):
                 continue
 
             for file in f:
-                filename, extention = os.path.splitext(file)
+                _, extention = os.path.splitext(file)
                 if extention in search_extentions:
                     files.append(os.path.join(r, file))
 
@@ -100,9 +101,9 @@ class source_style(Command):
         print("Project directory is: %s" % root_dir)
 
         if self.apply:
-            self._c_formatter_command_line += ['-i']
+            self._c_formatter_command_line += ["-i"]
         else:
-            self._c_formatter_command_line += ['-output-replacements-xml']
+            self._c_formatter_command_line += ["-output-replacements-xml"]
 
         import subprocess
 
@@ -113,14 +114,17 @@ class source_style(Command):
         try:
             for f in c_files:
                 command_output = subprocess.Popen(
-                    self._c_formatter_command_line + [f], stdout=subprocess.PIPE)
+                    self._c_formatter_command_line + [f], stdout=subprocess.PIPE
+                )
                 command_cout, command_cerr = command_output.communicate()
                 if not self.apply:
-                    if command_cout.find(b'<replacement ') > 0:
+                    if command_cout.find(b"<replacement ") > 0:
                         bad_style_file_names.append(f)
         except BaseException as original_error:
-            print("%s is not installed.\nPlease use: %s" %
-                  (self._c_formatter, self._c_formatter_install_msg))
+            print(
+                "%s is not installed.\nPlease use: %s"
+                % (self._c_formatter, self._c_formatter_install_msg)
+            )
             print("Original error message is:\n", original_error)
             exit(1)
 
@@ -130,17 +134,21 @@ class source_style(Command):
             for f in py_files:
                 if not self.apply:
                     command_output = subprocess.Popen(
-                        self._py_checker_command_line + [f])
+                        self._py_checker_command_line + [f]
+                    )
                     returncode = command_output.wait()
                     if returncode != 0:
                         bad_style_file_names.append(f)
                 else:
                     command_output = subprocess.Popen(
-                        self._py_formatter_command_line + [f])
+                        self._py_formatter_command_line + [f]
+                    )
                     command_output.wait()
         except BaseException as original_error:
-            print("%s is not installed.\nPlease use: %s" %
-                  (self._py_formatter, self._py_formatter_install_msg))
+            print(
+                "%s is not installed.\nPlease use: %s"
+                % (self._py_formatter, self._py_formatter_install_msg)
+            )
             print("Original error message is:\n", original_error)
             exit(1)
 

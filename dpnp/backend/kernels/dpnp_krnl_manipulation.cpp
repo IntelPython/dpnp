@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ DPCTLSyclEventRef dpnp_repeat_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,array1_in, size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
     const _DataType* array_in = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
@@ -90,12 +90,7 @@ void dpnp_repeat_c(const void* array1_in, void* result1, const size_t repeats, c
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_repeat_c<_DataType>(q_ref,
-                                                           array1_in,
-                                                           result1,
-                                                           repeats,
-                                                           size,
-                                                           dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_repeat_c<_DataType>(q_ref, array1_in, result1, repeats, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -137,7 +132,7 @@ DPCTLSyclEventRef dpnp_elemwise_transpose_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,array1_in, size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
     _DataType* array1 = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
@@ -201,15 +196,8 @@ void dpnp_elemwise_transpose_c(void* array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_elemwise_transpose_c<_DataType>(q_ref,
-                                                                       array1_in,
-                                                                       input_shape,
-                                                                       result_shape,
-                                                                       permute_axes,
-                                                                       ndim,
-                                                                       result1,
-                                                                       size,
-                                                                       dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_elemwise_transpose_c<_DataType>(
+        q_ref, array1_in, input_shape, result_shape, permute_axes, ndim, result1, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 

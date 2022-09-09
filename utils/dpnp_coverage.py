@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,8 +25,8 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import os
 import inspect
+import os
 
 name_dict = {}
 module_names_set = dict()
@@ -41,7 +41,7 @@ col2_width = 60
 def print_header_line():
     print(f"{'='*col0_width}", end=sep)
     print(f"{'='*col1_width}", end=sep)
-    for mod_name in module_names_set.keys():
+    for _ in module_names_set.keys():
         print(f"{'='*col2_width}", end=sep)
     print()
 
@@ -81,17 +81,19 @@ def add_symbol(item_name, module_name, item_val):
             module_names_set[module_name] = 0
         else:
             module_names_set[module_name] += 1
+
+
 #     else:
 #         print(f"item_name={item_name}, {name_dict[item_name][module_name]} replaced with {str(item_val)}")
 
 
 def fill_data(module_name, module_obj, parent_module_name=""):
     for item_name_raw, item_val in inspect.getmembers(module_obj):
-        if (item_name_raw[0] == "_"):
+        if item_name_raw[0] == "_":
             continue
 
         item_name = os.path.join(parent_module_name, item_name_raw)
-        if getattr(item_val, '__call__', False):
+        if callable(item_val):
             str_item = item_val
             try:
                 str_item = inspect.signature(item_val)
@@ -103,6 +105,8 @@ def fill_data(module_name, module_obj, parent_module_name=""):
                 fill_data(module_name, item_val, parent_module_name=item_name)
             else:
                 print(f"IGNORED: {module_name}: module: {item_name}")
+
+
 #         elif isinstance(item_val, (tuple, list, float, int)):
 #             add_symbol(item_name, module_name, item_val)
 #         elif isinstance(item_val, str):
@@ -123,7 +127,7 @@ def print_data():
 
         for mod_name in module_names_set.keys():
             val = symbol_values.get(mod_name, "")
-            val_prn = str(val)[0:col2_width - 1]
+            val_prn = str(val)[0 : col2_width - 1]
             print(f"{val_prn:{col2_width}}", end=sep)
 
         print()
@@ -131,22 +135,25 @@ def print_data():
     print_footer()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     try:
         import dpnp
+
         fill_data("DPNP", dpnp)
     except ImportError:
         print("No DPNP module loaded")
 
     try:
         import numpy
+
         fill_data("NumPy", numpy)
     except ImportError:
         print("No NumPy module loaded")
 
     try:
         import cupy
+
         fill_data("cuPy", cupy)
     except ImportError:
         print("No cuPy module loaded")

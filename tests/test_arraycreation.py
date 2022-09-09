@@ -1,30 +1,37 @@
+import tempfile
+
+import numpy
 import pytest
 
 import dpnp
 
-import numpy
 
-import tempfile
-
-
-@pytest.mark.parametrize("k",
-                         [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
-                         ids=['-6', '-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5', '6'])
-@pytest.mark.parametrize("v",
-                         [[0, 1, 2, 3, 4],
-                          [1, 1, 1, 1, 1],
-                          [[0, 0], [0, 0]],
-                          [[1, 2], [1, 2]],
-                          [[1, 2], [3, 4]],
-                          [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
-                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
-                         ids=['[0, 1, 2, 3, 4]',
-                              '[1, 1, 1, 1, 1]',
-                              '[[0, 0], [0, 0]]',
-                              '[[1, 2], [1, 2]]',
-                              '[[1, 2], [3, 4]]',
-                              '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
-                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
+@pytest.mark.parametrize(
+    "k",
+    [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+    ids=["-6", "-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "6"],
+)
+@pytest.mark.parametrize(
+    "v",
+    [
+        [0, 1, 2, 3, 4],
+        [1, 1, 1, 1, 1],
+        [[0, 0], [0, 0]],
+        [[1, 2], [1, 2]],
+        [[1, 2], [3, 4]],
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+    ],
+    ids=[
+        "[0, 1, 2, 3, 4]",
+        "[1, 1, 1, 1, 1]",
+        "[[0, 0], [0, 0]]",
+        "[[1, 2], [1, 2]]",
+        "[[1, 2], [3, 4]]",
+        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+    ],
+)
 def test_diag(v, k):
     a = numpy.array(v)
     ia = dpnp.array(a)
@@ -33,29 +40,33 @@ def test_diag(v, k):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("N",
-                         [0, 1, 2, 3, 4],
-                         ids=['0', '1', '2', '3', '4'])
-@pytest.mark.parametrize("M",
-                         [None, 0, 1, 2, 3, 4],
-                         ids=['None', '0', '1', '2', '3', '4'])
-@pytest.mark.parametrize("k",
-                         [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
-                         ids=['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5'])
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("N", [0, 1, 2, 3, 4], ids=["0", "1", "2", "3", "4"])
+@pytest.mark.parametrize(
+    "M", [None, 0, 1, 2, 3, 4], ids=["None", "0", "1", "2", "3", "4"]
+)
+@pytest.mark.parametrize(
+    "k",
+    [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+    ids=["-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5"],
+)
+@pytest.mark.parametrize(
+    "dtype",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
 def test_eye(N, M, k, dtype):
     expected = numpy.eye(N, M=M, k=k, dtype=dtype)
     result = dpnp.eye(N, M=M, k=k, dtype=dtype)
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize(
+    "type",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
 def test_frombuffer(type):
-    buffer = b'12345678'
+    buffer = b"12345678"
 
     np_res = numpy.frombuffer(buffer, dtype=type)
     dpnp_res = dpnp.frombuffer(buffer, dtype=type)
@@ -63,9 +74,11 @@ def test_frombuffer(type):
     numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize(
+    "type",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
 def test_fromfile(type):
     with tempfile.TemporaryFile() as fh:
         fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
@@ -79,9 +92,11 @@ def test_fromfile(type):
         numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize(
+    "type",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
 def test_fromfunction(type):
     def func(x, y):
         return x * y
@@ -94,9 +109,11 @@ def test_fromfunction(type):
     numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize(
+    "type",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
 def test_fromiter(type):
     iter = [1, 2, 3, 4]
 
@@ -106,25 +123,27 @@ def test_fromiter(type):
     numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize(
+    "type",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
 def test_fromstring(type):
     string = "1 2 3 4"
 
-    np_res = numpy.fromstring(string, dtype=type, sep=' ')
-    dpnp_res = dpnp.fromstring(string, dtype=type, sep=' ')
+    np_res = numpy.fromstring(string, dtype=type, sep=" ")
+    dpnp_res = dpnp.fromstring(string, dtype=type, sep=" ")
 
     numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
-@pytest.mark.parametrize("num",
-                         [2, 4, 8, 3, 9, 27])
-@pytest.mark.parametrize("endpoint",
-                         [True, False])
+@pytest.mark.parametrize(
+    "type",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
+@pytest.mark.parametrize("num", [2, 4, 8, 3, 9, 27])
+@pytest.mark.parametrize("endpoint", [True, False])
 def test_geomspace(type, num, endpoint):
     start = 2
     stop = 256
@@ -140,22 +159,31 @@ def test_geomspace(type, num, endpoint):
         numpy.testing.assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("n",
-                         [0, 1, 4],
-                         ids=['0', '1', '4'])
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64,
-                          numpy.int32, numpy.bool, numpy.complex128, None],
-                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'complex128', 'None'])
+@pytest.mark.parametrize("n", [0, 1, 4], ids=["0", "1", "4"])
+@pytest.mark.parametrize(
+    "type",
+    [
+        numpy.float64,
+        numpy.float32,
+        numpy.int64,
+        numpy.int32,
+        numpy.bool,
+        numpy.complex128,
+        None,
+    ],
+    ids=["float64", "float32", "int64", "int32", "bool", "complex128", "None"],
+)
 def test_identity(n, type):
     expected = numpy.identity(n, dtype=type)
     result = dpnp.identity(n, dtype=type)
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize(
+    "type",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
 def test_loadtxt(type):
     with tempfile.TemporaryFile() as fh:
         fh.write(b"1 2 3 4")
@@ -169,35 +197,51 @@ def test_loadtxt(type):
         numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
-@pytest.mark.parametrize("offset",
-                         [0, 1],
-                         ids=['0', '1'])
-@pytest.mark.parametrize("array",
-                         [[[0, 0], [0, 0]],
-                          [[1, 2], [1, 2]],
-                          [[1, 2], [3, 4]],
-                          [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
-                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
-                          [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
-                          [[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]],
-                          [[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [
-                              [[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]],
-                          [[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]],
-                         ids=['[[0, 0], [0, 0]]',
-                              '[[1, 2], [1, 2]]',
-                              '[[1, 2], [3, 4]]',
-                              '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
-                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]',
-                              '[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]',
-                              '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]',
-                              '[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]',
-                              '[[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]'])
+@pytest.mark.parametrize(
+    "dtype",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
+@pytest.mark.parametrize(
+    "type",
+    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+    ids=["float64", "float32", "int64", "int32"],
+)
+@pytest.mark.parametrize("offset", [0, 1], ids=["0", "1"])
+@pytest.mark.parametrize(
+    "array",
+    [
+        [[0, 0], [0, 0]],
+        [[1, 2], [1, 2]],
+        [[1, 2], [3, 4]],
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+        [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
+        [
+            [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
+            [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
+        ],
+        [
+            [[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]],
+            [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]],
+        ],
+        [
+            [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]],
+            [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]],
+        ],
+    ],
+    ids=[
+        "[[0, 0], [0, 0]]",
+        "[[1, 2], [1, 2]]",
+        "[[1, 2], [3, 4]]",
+        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+        "[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]",
+        "[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]",
+        "[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]",
+        "[[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]",
+    ],
+)
 def test_trace(array, offset, type, dtype):
     a = numpy.array(array, type)
     ia = dpnp.array(array, type)
@@ -206,18 +250,36 @@ def test_trace(array, offset, type, dtype):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("N",
-                         [0, 1, 2, 3, 4],
-                         ids=['0', '1', '2', '3', '4'])
-@pytest.mark.parametrize("M",
-                         [0, 1, 2, 3, 4],
-                         ids=['0', '1', '2', '3', '4'])
-@pytest.mark.parametrize("k",
-                         [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
-                         ids=['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5'])
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, float, numpy.int64, numpy.int32, numpy.int, numpy.float, int],
-                         ids=['float64', 'float32', 'numpy.float', 'float', 'int64', 'int32', 'numpy.int', 'int'])
+@pytest.mark.parametrize("N", [0, 1, 2, 3, 4], ids=["0", "1", "2", "3", "4"])
+@pytest.mark.parametrize("M", [0, 1, 2, 3, 4], ids=["0", "1", "2", "3", "4"])
+@pytest.mark.parametrize(
+    "k",
+    [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+    ids=["-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5"],
+)
+@pytest.mark.parametrize(
+    "type",
+    [
+        numpy.float64,
+        numpy.float32,
+        float,
+        numpy.int64,
+        numpy.int32,
+        numpy.int,
+        numpy.float,
+        int,
+    ],
+    ids=[
+        "float64",
+        "float32",
+        "numpy.float",
+        "float",
+        "int64",
+        "int32",
+        "numpy.int",
+        "int",
+    ],
+)
 def test_tri(N, M, k, type):
     expected = numpy.tri(N, M, k, dtype=type)
     result = dpnp.tri(N, M, k, dtype=type)
@@ -230,24 +292,32 @@ def test_tri_default_dtype():
     numpy.testing.assert_array_equal(result, expected)
 
 
-@pytest.mark.parametrize("k",
-                         [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
-                         ids=['-6', '-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5', '6'])
-@pytest.mark.parametrize("m",
-                         [[0, 1, 2, 3, 4],
-                          [1, 1, 1, 1, 1],
-                          [[0, 0], [0, 0]],
-                          [[1, 2], [1, 2]],
-                          [[1, 2], [3, 4]],
-                          [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
-                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
-                         ids=['[0, 1, 2, 3, 4]',
-                              '[1, 1, 1, 1, 1]',
-                              '[[0, 0], [0, 0]]',
-                              '[[1, 2], [1, 2]]',
-                              '[[1, 2], [3, 4]]',
-                              '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
-                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
+@pytest.mark.parametrize(
+    "k",
+    [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+    ids=["-6", "-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "6"],
+)
+@pytest.mark.parametrize(
+    "m",
+    [
+        [0, 1, 2, 3, 4],
+        [1, 1, 1, 1, 1],
+        [[0, 0], [0, 0]],
+        [[1, 2], [1, 2]],
+        [[1, 2], [3, 4]],
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+    ],
+    ids=[
+        "[0, 1, 2, 3, 4]",
+        "[1, 1, 1, 1, 1]",
+        "[[0, 0], [0, 0]]",
+        "[[1, 2], [1, 2]]",
+        "[[1, 2], [3, 4]]",
+        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+    ],
+)
 def test_tril(m, k):
     a = numpy.array(m)
     ia = dpnp.array(a)
@@ -256,18 +326,26 @@ def test_tril(m, k):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("k",
-                         [-4, -3, -2, -1, 0, 1, 2, 3, 4],
-                         ids=['-4', '-3', '-2', '-1', '0', '1', '2', '3', '4'])
-@pytest.mark.parametrize("m",
-                         [[0, 1, 2, 3, 4],
-                          [[1, 2], [3, 4]],
-                          [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
-                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
-                         ids=['[0, 1, 2, 3, 4]',
-                              '[[1, 2], [3, 4]]',
-                              '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
-                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
+@pytest.mark.parametrize(
+    "k",
+    [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+    ids=["-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"],
+)
+@pytest.mark.parametrize(
+    "m",
+    [
+        [0, 1, 2, 3, 4],
+        [[1, 2], [3, 4]],
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+    ],
+    ids=[
+        "[0, 1, 2, 3, 4]",
+        "[[1, 2], [3, 4]]",
+        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+    ],
+)
 def test_triu(m, k):
     a = numpy.array(m)
     ia = dpnp.array(a)
@@ -276,9 +354,11 @@ def test_triu(m, k):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("k",
-                         [-4, -3, -2, -1, 0, 1, 2, 3, 4],
-                         ids=['-4', '-3', '-2', '-1', '0', '1', '2', '3', '4'])
+@pytest.mark.parametrize(
+    "k",
+    [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+    ids=["-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"],
+)
 def test_triu_size_null(k):
     a = numpy.ones(shape=(1, 2, 0))
     ia = dpnp.array(a)
@@ -287,23 +367,25 @@ def test_triu_size_null(k):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("array",
-                         [[1, 2, 3, 4],
-                          [],
-                          [0, 3, 5]],
-                         ids=['[1, 2, 3, 4]',
-                              '[]',
-                              '[0, 3, 5]'])
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64,
-                          numpy.int32, numpy.bool, numpy.complex128],
-                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'complex128'])
-@pytest.mark.parametrize("n",
-                         [0, 1, 4, None],
-                         ids=['0', '1', '4', 'None'])
-@pytest.mark.parametrize("increase",
-                         [True, False],
-                         ids=['True', 'False'])
+@pytest.mark.parametrize(
+    "array",
+    [[1, 2, 3, 4], [], [0, 3, 5]],
+    ids=["[1, 2, 3, 4]", "[]", "[0, 3, 5]"],
+)
+@pytest.mark.parametrize(
+    "type",
+    [
+        numpy.float64,
+        numpy.float32,
+        numpy.int64,
+        numpy.int32,
+        numpy.bool,
+        numpy.complex128,
+    ],
+    ids=["float64", "float32", "int64", "int32", "bool", "complex128"],
+)
+@pytest.mark.parametrize("n", [0, 1, 4, None], ids=["0", "1", "4", "None"])
+@pytest.mark.parametrize("increase", [True, False], ids=["True", "False"])
 def test_vander(array, type, n, increase):
     a_np = numpy.array(array, dtype=type)
     a_dpnp = dpnp.array(array, dtype=type)

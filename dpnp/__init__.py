@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,9 +25,11 @@
 # *****************************************************************************
 
 import os
+
 mypath = os.path.dirname(os.path.realpath(__file__))
 
 import dpctl
+
 dpctlpath = os.path.dirname(dpctl.__file__)
 
 os.environ["PATH"] += os.pathsep + mypath + os.pathsep + dpctlpath
@@ -35,11 +37,9 @@ os.environ["PATH"] += os.pathsep + mypath + os.pathsep + dpctlpath
 
 from dpnp.dpnp_array import dpnp_array as ndarray
 from dpnp.dpnp_flatiter import flatiter as flatiter
-
 from dpnp.dpnp_iface import *
 from dpnp.dpnp_iface import __all__ as _iface__all__
 from dpnp.dpnp_iface_types import *
 from dpnp.version import __version__
-
 
 __all__ = _iface__all__

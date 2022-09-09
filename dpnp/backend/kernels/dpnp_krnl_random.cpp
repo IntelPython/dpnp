@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -112,12 +112,7 @@ void dpnp_rng_beta_c(void* result, const _DataType a, const _DataType b, const s
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_beta_c<_DataType>(q_ref,
-                                                             result,
-                                                             a,
-                                                             b,
-                                                             size,
-                                                             dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_beta_c<_DataType>(q_ref, result, a, b, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -177,7 +172,6 @@ DPCTLSyclEventRef dpnp_rng_binomial_c(DPCTLSyclQueueRef q_ref,
         event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
     }
     return DPCTLEvent_Copy(event_ref);
-
 }
 
 template <typename _DataType>
@@ -185,12 +179,7 @@ void dpnp_rng_binomial_c(void* result, const int ntrial, const double p, const s
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_binomial_c<_DataType>(q_ref,
-                                                                 result,
-                                                                 ntrial,
-                                                                 p,
-                                                                 size,
-                                                                 dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_binomial_c<_DataType>(q_ref, result, ntrial, p, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -206,11 +195,8 @@ DPCTLSyclEventRef (*dpnp_rng_binomial_ext_c)(DPCTLSyclQueueRef,
                                              const DPCTLEventVectorRef) = dpnp_rng_binomial_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef dpnp_rng_chisquare_c(DPCTLSyclQueueRef q_ref,
-                                       void* result,
-                                       const int df,
-                                       const size_t size,
-                                       const DPCTLEventVectorRef dep_event_vec_ref)
+DPCTLSyclEventRef dpnp_rng_chisquare_c(
+    DPCTLSyclQueueRef q_ref, void* result, const int df, const size_t size, const DPCTLEventVectorRef dep_event_vec_ref)
 {
     // avoid warning unused variable
     (void)dep_event_vec_ref;
@@ -239,11 +225,7 @@ void dpnp_rng_chisquare_c(void* result, const int df, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_chisquare_c<_DataType>(q_ref,
-                                                                  result,
-                                                                  df,
-                                                                  size,
-                                                                  dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_chisquare_c<_DataType>(q_ref, result, df, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -251,11 +233,8 @@ template <typename _DataType>
 void (*dpnp_rng_chisquare_default_c)(void*, const int, const size_t) = dpnp_rng_chisquare_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_rng_chisquare_ext_c)(DPCTLSyclQueueRef,
-                                              void*,
-                                              const int,
-                                              const size_t,
-                                              const DPCTLEventVectorRef) = dpnp_rng_chisquare_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_rng_chisquare_ext_c)(
+    DPCTLSyclQueueRef, void*, const int, const size_t, const DPCTLEventVectorRef) = dpnp_rng_chisquare_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_exponential_c(DPCTLSyclQueueRef q_ref,
@@ -295,11 +274,7 @@ void dpnp_rng_exponential_c(void* result, const _DataType beta, const size_t siz
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_exponential_c<_DataType>(q_ref,
-                                                                    result,
-                                                                    beta,
-                                                                    size,
-                                                                    dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_exponential_c<_DataType>(q_ref, result, beta, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -308,10 +283,10 @@ void (*dpnp_rng_exponential_default_c)(void*, const _DataType, const size_t) = d
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_exponential_ext_c)(DPCTLSyclQueueRef,
-                                              void*,
-                                              const _DataType,
-                                              const size_t,
-                                              const DPCTLEventVectorRef) = dpnp_rng_exponential_c<_DataType>;
+                                                void*,
+                                                const _DataType,
+                                                const size_t,
+                                                const DPCTLEventVectorRef) = dpnp_rng_exponential_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_f_c(DPCTLSyclQueueRef q_ref,
@@ -352,13 +327,8 @@ DPCTLSyclEventRef dpnp_rng_f_c(DPCTLSyclQueueRef q_ref,
     mkl_rng::gamma<_DataType> gamma_distribution2(shape, d_zero, scale);
     auto event_gamma_distribution2 = mkl_rng::generate(gamma_distribution2, DPNP_RNG_ENGINE, size, den);
 
-    auto event_out = mkl_vm::div(q,
-                                 size,
-                                 result1,
-                                 den,
-                                 result1,
-                                 {event_gamma_distribution1, event_gamma_distribution2},
-                                 mkl_vm::mode::ha);
+    auto event_out = mkl_vm::div(
+        q, size, result1, den, result1, {event_gamma_distribution1, event_gamma_distribution2}, mkl_vm::mode::ha);
     event_out.wait();
 
     sycl::free(den, q);
@@ -371,12 +341,7 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_f_c<_DataType>(q_ref,
-                                                          result,
-                                                          df_num,
-                                                          df_den,
-                                                          size,
-                                                          dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_f_c<_DataType>(q_ref, result, df_num, df_den, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -385,19 +350,19 @@ void (*dpnp_rng_f_default_c)(void*, const _DataType, const _DataType, const size
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_f_ext_c)(DPCTLSyclQueueRef,
-                                              void*,
-                                              const _DataType,
-                                              const _DataType,
-                                              const size_t,
-                                              const DPCTLEventVectorRef) = dpnp_rng_f_c<_DataType>;
+                                      void*,
+                                      const _DataType,
+                                      const _DataType,
+                                      const size_t,
+                                      const DPCTLEventVectorRef) = dpnp_rng_f_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_gamma_c(DPCTLSyclQueueRef q_ref,
-                      void* result,
-                      const _DataType shape,
-                      const _DataType scale,
-                      const size_t size,
-                      const DPCTLEventVectorRef dep_event_vec_ref)
+                                   void* result,
+                                   const _DataType shape,
+                                   const _DataType scale,
+                                   const size_t size,
+                                   const DPCTLEventVectorRef dep_event_vec_ref)
 {
     // avoid warning unused variable
     (void)dep_event_vec_ref;
@@ -434,12 +399,7 @@ void dpnp_rng_gamma_c(void* result, const _DataType shape, const _DataType scale
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_gamma_c<_DataType>(q_ref,
-                                                              result,
-                                                              shape,
-                                                              scale,
-                                                              size,
-                                                              dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_gamma_c<_DataType>(q_ref, result, shape, scale, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -489,20 +449,13 @@ void dpnp_rng_gaussian_c(void* result, const _DataType mean, const _DataType std
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_gaussian_c<_DataType>(q_ref,
-                                                                 result,
-                                                                 mean,
-                                                                 stddev,
-                                                                 size,
-                                                                 dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_gaussian_c<_DataType>(q_ref, result, mean, stddev, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_rng_gaussian_default_c)(void*,
-                                    const _DataType,
-                                    const _DataType,
-                                    const size_t) = dpnp_rng_gaussian_c<_DataType>;
+void (*dpnp_rng_gaussian_default_c)(void*, const _DataType, const _DataType, const size_t) =
+    dpnp_rng_gaussian_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_gaussian_ext_c)(DPCTLSyclQueueRef,
@@ -552,11 +505,7 @@ void dpnp_rng_geometric_c(void* result, const float p, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_geometric_c<_DataType>(q_ref,
-                                                                  result,
-                                                                  p,
-                                                                  size,
-                                                                  dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_geometric_c<_DataType>(q_ref, result, p, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -564,11 +513,8 @@ template <typename _DataType>
 void (*dpnp_rng_geometric_default_c)(void*, const float, const size_t) = dpnp_rng_geometric_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_rng_geometric_ext_c)(DPCTLSyclQueueRef,
-                                              void*,
-                                              const float,
-                                              const size_t,
-                                              const DPCTLEventVectorRef) = dpnp_rng_geometric_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_rng_geometric_ext_c)(
+    DPCTLSyclQueueRef, void*, const float, const size_t, const DPCTLEventVectorRef) = dpnp_rng_geometric_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_gumbel_c(DPCTLSyclQueueRef q_ref,
@@ -621,12 +567,7 @@ void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_gumbel_c<_DataType>(q_ref,
-                                                               result,
-                                                               loc,
-                                                               scale,
-                                                               size,
-                                                               dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_gumbel_c<_DataType>(q_ref, result, loc, scale, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -682,7 +623,6 @@ DPCTLSyclEventRef dpnp_rng_hypergeometric_c(DPCTLSyclQueueRef q_ref,
         mkl_rng::hypergeometric<_DataType> distribution(l, s, m);
         event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
         event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
-
     }
     return DPCTLEvent_Copy(event_ref);
 }
@@ -692,22 +632,13 @@ void dpnp_rng_hypergeometric_c(void* result, const int l, const int s, const int
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_hypergeometric_c<_DataType>(q_ref,
-                                                                       result,
-                                                                       l,
-                                                                       s,
-                                                                       m,
-                                                                       size,
-                                                                       dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_hypergeometric_c<_DataType>(q_ref, result, l, s, m, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_rng_hypergeometric_default_c)(void*,
-                                          const int,
-                                          const int,
-                                          const int,
-                                          const size_t) = dpnp_rng_hypergeometric_c<_DataType>;
+void (*dpnp_rng_hypergeometric_default_c)(void*, const int, const int, const int, const size_t) =
+    dpnp_rng_hypergeometric_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_hypergeometric_ext_c)(DPCTLSyclQueueRef,
@@ -759,12 +690,7 @@ void dpnp_rng_laplace_c(void* result, const double loc, const double scale, cons
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_laplace_c<_DataType>(q_ref,
-                                                                result,
-                                                                loc,
-                                                                scale,
-                                                                size,
-                                                                dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_laplace_c<_DataType>(q_ref, result, loc, scale, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -832,12 +758,7 @@ void dpnp_rng_logistic_c(void* result, const double loc, const double scale, con
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_logistic_c<_DataType>(q_ref,
-                                                                 result,
-                                                                 loc,
-                                                                 scale,
-                                                                 size,
-                                                                 dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_logistic_c<_DataType>(q_ref, result, loc, scale, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -901,20 +822,13 @@ void dpnp_rng_lognormal_c(void* result, const _DataType mean, const _DataType st
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_lognormal_c<_DataType>(q_ref,
-                                                                  result,
-                                                                  mean,
-                                                                  stddev,
-                                                                  size,
-                                                                  dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_lognormal_c<_DataType>(q_ref, result, mean, stddev, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_rng_lognormal_default_c)(void*,
-                                     const _DataType,
-                                     const _DataType,
-                                     const size_t) = dpnp_rng_lognormal_c<_DataType>;
+void (*dpnp_rng_lognormal_default_c)(void*, const _DataType, const _DataType, const size_t) =
+    dpnp_rng_lognormal_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_lognormal_ext_c)(DPCTLSyclQueueRef,
@@ -990,36 +904,27 @@ DPCTLSyclEventRef dpnp_rng_multinomial_c(DPCTLSyclQueueRef q_ref,
 }
 
 template <typename _DataType>
-void dpnp_rng_multinomial_c(
-    void* result, const int ntrial, void* p_in, const size_t p_size, const size_t size)
+void dpnp_rng_multinomial_c(void* result, const int ntrial, void* p_in, const size_t p_size, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_multinomial_c<_DataType>(q_ref,
-                                                                    result,
-                                                                    ntrial,
-                                                                    p_in,
-                                                                    p_size,
-                                                                    size,
-                                                                    dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_rng_multinomial_c<_DataType>(q_ref, result, ntrial, p_in, p_size, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_rng_multinomial_default_c)(void*,
-                                       const int,
-                                       void*,
-                                       const size_t,
-                                       const size_t) = dpnp_rng_multinomial_c<_DataType>;
+void (*dpnp_rng_multinomial_default_c)(void*, const int, void*, const size_t, const size_t) =
+    dpnp_rng_multinomial_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_multinomial_ext_c)(DPCTLSyclQueueRef,
-                                              void*,
-                                              const int,
-                                              void*,
-                                              const size_t,
-                                              const size_t,
-                                              const DPCTLEventVectorRef) = dpnp_rng_multinomial_c<_DataType>;
+                                                void*,
+                                                const int,
+                                                void*,
+                                                const size_t,
+                                                const size_t,
+                                                const DPCTLEventVectorRef) = dpnp_rng_multinomial_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_multivariate_normal_c(DPCTLSyclQueueRef q_ref,
@@ -1077,15 +982,8 @@ void dpnp_rng_multivariate_normal_c(void* result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_multivariate_normal_c<_DataType>(q_ref,
-                                                                            result,
-                                                                            dimen,
-                                                                            mean_in,
-                                                                            mean_size,
-                                                                            cov_in,
-                                                                            cov_size,
-                                                                            size,
-                                                                            dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_multivariate_normal_c<_DataType>(
+        q_ref, result, dimen, mean_in, mean_size, cov_in, cov_size, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -1107,7 +1005,8 @@ DPCTLSyclEventRef (*dpnp_rng_multivariate_normal_ext_c)(DPCTLSyclQueueRef,
                                                         void*,
                                                         const size_t,
                                                         const size_t,
-                                                        const DPCTLEventVectorRef) = dpnp_rng_multivariate_normal_c<_DataType>;
+                                                        const DPCTLEventVectorRef) =
+    dpnp_rng_multivariate_normal_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_negative_binomial_c(DPCTLSyclQueueRef q_ref,
@@ -1142,29 +1041,18 @@ void dpnp_rng_negative_binomial_c(void* result, const double a, const double p, 
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_negative_binomial_c<_DataType>(q_ref,
-                                                                          result,
-                                                                          a,
-                                                                          p,
-                                                                          size,
-                                                                          dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_negative_binomial_c<_DataType>(q_ref, result, a, p, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_rng_negative_binomial_default_c)(void*,
-                                             const double,
-                                             const double,
-                                             const size_t) = dpnp_rng_negative_binomial_c<_DataType>;
+void (*dpnp_rng_negative_binomial_default_c)(void*, const double, const double, const size_t) =
+    dpnp_rng_negative_binomial_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_negative_binomial_ext_c)(
-    DPCTLSyclQueueRef,
-    void*,
-    const double,
-    const double,
-    const size_t,
-    const DPCTLEventVectorRef) = dpnp_rng_negative_binomial_c<_DataType>;
+    DPCTLSyclQueueRef, void*, const double, const double, const size_t, const DPCTLEventVectorRef) =
+    dpnp_rng_negative_binomial_c<_DataType>;
 
 template <typename _KernelNameSpecialization>
 class dpnp_rng_noncentral_chisquare_c_kernel1;
@@ -1323,29 +1211,19 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_noncentral_chisquare_c<_DataType>(q_ref,
-                                                                             result,
-                                                                             df,
-                                                                             nonc,
-                                                                             size,
-                                                                             dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_rng_noncentral_chisquare_c<_DataType>(q_ref, result, df, nonc, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_rng_noncentral_chisquare_default_c)(void*,
-                                                const _DataType,
-                                                const _DataType,
-                                                const size_t) = dpnp_rng_noncentral_chisquare_c<_DataType>;
+void (*dpnp_rng_noncentral_chisquare_default_c)(void*, const _DataType, const _DataType, const size_t) =
+    dpnp_rng_noncentral_chisquare_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_noncentral_chisquare_ext_c)(
-    DPCTLSyclQueueRef,
-    void*,
-    const _DataType,
-    const _DataType,
-    const size_t,
-    const DPCTLEventVectorRef) = dpnp_rng_noncentral_chisquare_c<_DataType>;
+    DPCTLSyclQueueRef, void*, const _DataType, const _DataType, const size_t, const DPCTLEventVectorRef) =
+    dpnp_rng_noncentral_chisquare_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_normal_c(DPCTLSyclQueueRef q_ref,
@@ -1382,20 +1260,12 @@ void dpnp_rng_normal_c(void* result, const _DataType mean, const _DataType stdde
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_normal_c<_DataType>(q_ref,
-                                                               result,
-                                                               mean,
-                                                               stddev,
-                                                               size,
-                                                               dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_normal_c<_DataType>(q_ref, result, mean, stddev, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_rng_normal_default_c)(void*,
-                                  const _DataType,
-                                  const _DataType,
-                                  const size_t) = dpnp_rng_normal_c<_DataType>;
+void (*dpnp_rng_normal_default_c)(void*, const _DataType, const _DataType, const size_t) = dpnp_rng_normal_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_normal_ext_c)(DPCTLSyclQueueRef,
@@ -1446,11 +1316,7 @@ void dpnp_rng_pareto_c(void* result, const double alpha, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_pareto_c<_DataType>(q_ref,
-                                                               result,
-                                                               alpha,
-                                                               size,
-                                                               dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_pareto_c<_DataType>(q_ref, result, alpha, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -1458,11 +1324,8 @@ template <typename _DataType>
 void (*dpnp_rng_pareto_default_c)(void*, const double, const size_t) = dpnp_rng_pareto_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_rng_pareto_ext_c)(DPCTLSyclQueueRef,
-                                           void*,
-                                           const double,
-                                           const size_t,
-                                           const DPCTLEventVectorRef) = dpnp_rng_pareto_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_rng_pareto_ext_c)(
+    DPCTLSyclQueueRef, void*, const double, const size_t, const DPCTLEventVectorRef) = dpnp_rng_pareto_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_poisson_c(DPCTLSyclQueueRef q_ref,
@@ -1498,11 +1361,7 @@ void dpnp_rng_poisson_c(void* result, const double lambda, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_poisson_c<_DataType>(q_ref,
-                                                                result,
-                                                                lambda,
-                                                                size,
-                                                                dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_poisson_c<_DataType>(q_ref, result, lambda, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -1510,11 +1369,8 @@ template <typename _DataType>
 void (*dpnp_rng_poisson_default_c)(void*, const double, const size_t) = dpnp_rng_poisson_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_rng_poisson_ext_c)(DPCTLSyclQueueRef,
-                                            void*,
-                                            const double,
-                                            const size_t,
-                                            const DPCTLEventVectorRef) = dpnp_rng_poisson_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_rng_poisson_ext_c)(
+    DPCTLSyclQueueRef, void*, const double, const size_t, const DPCTLEventVectorRef) = dpnp_rng_poisson_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_power_c(DPCTLSyclQueueRef q_ref,
@@ -1557,11 +1413,7 @@ void dpnp_rng_power_c(void* result, const double alpha, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_power_c<_DataType>(q_ref,
-                                                              result,
-                                                              alpha,
-                                                              size,
-                                                              dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_power_c<_DataType>(q_ref, result, alpha, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -1569,11 +1421,8 @@ template <typename _DataType>
 void (*dpnp_rng_power_default_c)(void*, const double, const size_t) = dpnp_rng_power_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_rng_power_ext_c)(DPCTLSyclQueueRef,
-                                          void*,
-                                          const double,
-                                          const size_t,
-                                          const DPCTLEventVectorRef) = dpnp_rng_power_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_rng_power_ext_c)(
+    DPCTLSyclQueueRef, void*, const double, const size_t, const DPCTLEventVectorRef) = dpnp_rng_power_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_rayleigh_c(DPCTLSyclQueueRef q_ref,
@@ -1616,11 +1465,7 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_rayleigh_c<_DataType>(q_ref,
-                                                                 result,
-                                                                 scale,
-                                                                 size,
-                                                                 dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_rayleigh_c<_DataType>(q_ref, result, scale, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -1716,22 +1561,14 @@ void dpnp_rng_shuffle_c(
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_shuffle_c<_DataType>(q_ref,
-                                                                result,
-                                                                itemsize,
-                                                                ndim,
-                                                                high_dim_size,
-                                                                size,
-                                                                dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_rng_shuffle_c<_DataType>(q_ref, result, itemsize, ndim, high_dim_size, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_rng_shuffle_default_c)(void*,
-                                   const size_t,
-                                   const size_t,
-                                   const size_t,
-                                   const size_t) = dpnp_rng_shuffle_c<_DataType>;
+void (*dpnp_rng_shuffle_default_c)(void*, const size_t, const size_t, const size_t, const size_t) =
+    dpnp_rng_shuffle_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_shuffle_ext_c)(DPCTLSyclQueueRef,
@@ -1779,10 +1616,7 @@ void dpnp_rng_standard_cauchy_c(void* result, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_standard_cauchy_c<_DataType>(q_ref,
-                                                                        result,
-                                                                        size,
-                                                                        dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_standard_cauchy_c<_DataType>(q_ref, result, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -1790,10 +1624,8 @@ template <typename _DataType>
 void (*dpnp_rng_standard_cauchy_default_c)(void*, const size_t) = dpnp_rng_standard_cauchy_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_rng_standard_cauchy_ext_c)(DPCTLSyclQueueRef,
-                                                    void*,
-                                                    const size_t,
-                                                    const DPCTLEventVectorRef) = dpnp_rng_standard_cauchy_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_rng_standard_cauchy_ext_c)(DPCTLSyclQueueRef, void*, const size_t, const DPCTLEventVectorRef) =
+    dpnp_rng_standard_cauchy_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_standard_exponential_c(DPCTLSyclQueueRef q_ref,
@@ -1826,10 +1658,7 @@ void dpnp_rng_standard_exponential_c(void* result, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_standard_exponential_c<_DataType>(q_ref,
-                                                                             result,
-                                                                             size,
-                                                                             dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_standard_exponential_c<_DataType>(q_ref, result, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -1838,10 +1667,7 @@ void (*dpnp_rng_standard_exponential_default_c)(void*, const size_t) = dpnp_rng_
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_standard_exponential_ext_c)(
-    DPCTLSyclQueueRef,
-    void*,
-    const size_t,
-    const DPCTLEventVectorRef) = dpnp_rng_standard_exponential_c<_DataType>;
+    DPCTLSyclQueueRef, void*, const size_t, const DPCTLEventVectorRef) = dpnp_rng_standard_exponential_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_standard_gamma_c(DPCTLSyclQueueRef q_ref,
@@ -1874,11 +1700,7 @@ void dpnp_rng_standard_gamma_c(void* result, const _DataType shape, const size_t
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_standard_gamma_c<_DataType>(q_ref,
-                                                                       result,
-                                                                       shape,
-                                                                       size,
-                                                                       dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_standard_gamma_c<_DataType>(q_ref, result, shape, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -1923,10 +1745,7 @@ void dpnp_rng_standard_normal_c(void* result, size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_standard_normal_c<_DataType>(q_ref,
-                                                                        result,
-                                                                        size,
-                                                                        dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_standard_normal_c<_DataType>(q_ref, result, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -1934,10 +1753,8 @@ template <typename _DataType>
 void (*dpnp_rng_standard_normal_default_c)(void*, const size_t) = dpnp_rng_standard_normal_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_rng_standard_normal_ext_c)(DPCTLSyclQueueRef,
-                                                    void*,
-                                                    const size_t,
-                                                    const DPCTLEventVectorRef) = dpnp_rng_standard_normal_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_rng_standard_normal_ext_c)(DPCTLSyclQueueRef, void*, const size_t, const DPCTLEventVectorRef) =
+    dpnp_rng_standard_normal_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_standard_t_c(DPCTLSyclQueueRef q_ref,
@@ -1987,11 +1804,7 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_standard_t_c<_DataType>(q_ref,
-                                                                   result,
-                                                                   df,
-                                                                   size,
-                                                                   dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_standard_t_c<_DataType>(q_ref, result, df, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -2096,22 +1909,14 @@ void dpnp_rng_triangular_c(
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_triangular_c<_DataType>(q_ref,
-                                                                   result,
-                                                                   x_min,
-                                                                   x_mode,
-                                                                   x_max,
-                                                                   size,
-                                                                   dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_rng_triangular_c<_DataType>(q_ref, result, x_min, x_mode, x_max, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_rng_triangular_default_c)(void*,
-                                      const _DataType,
-                                      const _DataType,
-                                      const _DataType,
-                                      const size_t) = dpnp_rng_triangular_c<_DataType>;
+void (*dpnp_rng_triangular_default_c)(void*, const _DataType, const _DataType, const _DataType, const size_t) =
+    dpnp_rng_triangular_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_triangular_ext_c)(DPCTLSyclQueueRef,
@@ -2162,12 +1967,7 @@ void dpnp_rng_uniform_c(void* result, const long low, const long high, const siz
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_uniform_c<_DataType>(q_ref,
-                                                                result,
-                                                                low,
-                                                                high,
-                                                                size,
-                                                                dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_uniform_c<_DataType>(q_ref, result, low, high, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -2301,29 +2101,19 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_vonmises_large_kappa_c<_DataType>(q_ref,
-                                                                             result,
-                                                                             mu,
-                                                                             kappa,
-                                                                             size,
-                                                                             dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_rng_vonmises_large_kappa_c<_DataType>(q_ref, result, mu, kappa, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_rng_vonmises_large_kappa_default_c)(void*,
-                                                const _DataType,
-                                                const _DataType,
-                                                const size_t) = dpnp_rng_vonmises_large_kappa_c<_DataType>;
+void (*dpnp_rng_vonmises_large_kappa_default_c)(void*, const _DataType, const _DataType, const size_t) =
+    dpnp_rng_vonmises_large_kappa_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_vonmises_large_kappa_ext_c)(
-    DPCTLSyclQueueRef,
-    void*,
-    const _DataType,
-    const _DataType,
-    const size_t,
-    const DPCTLEventVectorRef) = dpnp_rng_vonmises_large_kappa_c<_DataType>;
+    DPCTLSyclQueueRef, void*, const _DataType, const _DataType, const size_t, const DPCTLEventVectorRef) =
+    dpnp_rng_vonmises_large_kappa_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_vonmises_small_kappa_c(DPCTLSyclQueueRef q_ref,
@@ -2423,29 +2213,19 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_vonmises_small_kappa_c<_DataType>(q_ref,
-                                                                             result,
-                                                                             mu,
-                                                                             kappa,
-                                                                             size,
-                                                                             dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref =
+        dpnp_rng_vonmises_small_kappa_c<_DataType>(q_ref, result, mu, kappa, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_rng_vonmises_small_kappa_default_c)(void*,
-                                                const _DataType,
-                                                const _DataType,
-                                                const size_t) = dpnp_rng_vonmises_small_kappa_c<_DataType>;
+void (*dpnp_rng_vonmises_small_kappa_default_c)(void*, const _DataType, const _DataType, const size_t) =
+    dpnp_rng_vonmises_small_kappa_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_vonmises_small_kappa_ext_c)(
-    DPCTLSyclQueueRef,
-    void*,
-    const _DataType,
-    const _DataType,
-    const size_t,
-    const DPCTLEventVectorRef) = dpnp_rng_vonmises_small_kappa_c<_DataType>;
+    DPCTLSyclQueueRef, void*, const _DataType, const _DataType, const size_t, const DPCTLEventVectorRef) =
+    dpnp_rng_vonmises_small_kappa_c<_DataType>;
 
 /* Vonmisses uses the rejection algorithm compared against the wrapped
    Cauchy distribution suggested by Best and Fisher and documented in
@@ -2481,20 +2261,13 @@ void dpnp_rng_vonmises_c(void* result, const _DataType mu, const _DataType kappa
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_vonmises_c<_DataType>(q_ref,
-                                                                 result,
-                                                                 mu,
-                                                                 kappa,
-                                                                 size,
-                                                                 dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_vonmises_c<_DataType>(q_ref, result, mu, kappa, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_rng_vonmises_default_c)(void*,
-                                    const _DataType,
-                                    const _DataType,
-                                    const size_t) = dpnp_rng_vonmises_c<_DataType>;
+void (*dpnp_rng_vonmises_default_c)(void*, const _DataType, const _DataType, const size_t) =
+    dpnp_rng_vonmises_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_vonmises_ext_c)(DPCTLSyclQueueRef,
@@ -2591,15 +2364,9 @@ void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, 
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_wald_c<_DataType>(q_ref,
-                                                             result,
-                                                             mean,
-                                                             scale,
-                                                             size,
-                                                             dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_wald_c<_DataType>(q_ref, result, mean, scale, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
-
 
 template <typename _DataType>
 void (*dpnp_rng_wald_default_c)(void*, const _DataType, const _DataType, const size_t) = dpnp_rng_wald_c<_DataType>;
@@ -2654,11 +2421,7 @@ void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_weibull_c<_DataType>(q_ref,
-                                                                result,
-                                                                alpha,
-                                                                size,
-                                                                dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_weibull_c<_DataType>(q_ref, result, alpha, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -2666,11 +2429,8 @@ template <typename _DataType>
 void (*dpnp_rng_weibull_default_c)(void*, const double, const size_t) = dpnp_rng_weibull_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_rng_weibull_ext_c)(DPCTLSyclQueueRef,
-                                            void*,
-                                            const double,
-                                            const size_t,
-                                            const DPCTLEventVectorRef) = dpnp_rng_weibull_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_rng_weibull_ext_c)(
+    DPCTLSyclQueueRef, void*, const double, const size_t, const DPCTLEventVectorRef) = dpnp_rng_weibull_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_zipf_c(DPCTLSyclQueueRef q_ref,
@@ -2748,11 +2508,7 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_zipf_c<_DataType>(q_ref,
-                                                             result,
-                                                             a,
-                                                             size,
-                                                             dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_rng_zipf_c<_DataType>(q_ref, result, a, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
@@ -2760,11 +2516,8 @@ template <typename _DataType>
 void (*dpnp_rng_zipf_default_c)(void*, const _DataType, const size_t) = dpnp_rng_zipf_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_rng_zipf_ext_c)(DPCTLSyclQueueRef,
-                                         void*,
-                                         const _DataType,
-                                         const size_t,
-                                         const DPCTLEventVectorRef) = dpnp_rng_zipf_c<_DataType>;
+DPCTLSyclEventRef (*dpnp_rng_zipf_ext_c)(
+    DPCTLSyclQueueRef, void*, const _DataType, const size_t, const DPCTLEventVectorRef) = dpnp_rng_zipf_c<_DataType>;
 
 void func_map_init_random(func_map_t& fmap)
 {
@@ -2772,11 +2525,9 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_BETA_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_beta_ext_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL][eft_INT][eft_INT] = {eft_INT,
-                                                                  (void*)dpnp_rng_binomial_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_binomial_default_c<int32_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL_EXT][eft_INT][eft_INT] = {eft_INT,
-                                                                      (void*)dpnp_rng_binomial_ext_c<int32_t>};         
+    fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_binomial_ext_c<int32_t>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL,
                                                                    (void*)dpnp_rng_chisquare_default_c<double>};
@@ -2805,16 +2556,14 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gaussian_default_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_gaussian_default_c<float>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN_EXT][eft_DBL][eft_DBL] = {eft_DBL,
-                                                                      (void*)dpnp_rng_gaussian_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN_EXT][eft_FLT][eft_FLT] = {eft_FLT,
-                                                                      (void*)dpnp_rng_gaussian_ext_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gaussian_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_gaussian_ext_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_GEOMETRIC][eft_INT][eft_INT] = {eft_INT,
                                                                    (void*)dpnp_rng_geometric_default_c<int32_t>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_GEOMETRIC_EXT][eft_INT][eft_INT] = {eft_INT,
-                                                                   (void*)dpnp_rng_geometric_ext_c<int32_t>};
+                                                                       (void*)dpnp_rng_geometric_ext_c<int32_t>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_GUMBEL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gumbel_default_c<double>};
 
@@ -2917,17 +2666,17 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL_EXT][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_standard_normal_ext_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_rng_standard_t_default_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                    (void*)dpnp_rng_standard_t_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_rng_standard_t_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T_EXT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                        (void*)dpnp_rng_standard_t_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_TRIANGULAR][eft_DBL][eft_DBL] = {eft_DBL,
                                                                     (void*)dpnp_rng_triangular_default_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_TRIANGULAR_EXT][eft_DBL][eft_DBL] = {eft_DBL,
-                                                                    (void*)dpnp_rng_triangular_ext_c<double>};
+                                                                        (void*)dpnp_rng_triangular_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_uniform_default_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_uniform_default_c<float>};
