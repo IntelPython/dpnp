@@ -14,9 +14,9 @@ env:
 
 jobs:
   build_linux:
-    runs-on: ubuntu-latest
-
     if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
+
+    runs-on: ubuntu-latest
 
     defaults:
       run:
@@ -77,9 +77,9 @@ jobs:
           path: ${{ env.conda-bld }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   build_windows:
-    runs-on: windows-latest
-
     if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
+
+    runs-on: windows-latest
 
     defaults:
       run:
@@ -176,7 +176,10 @@ jobs:
       - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: anaconda --help
+        run: |
+        conda info
+        conda list
+        anaconda --help
         # run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   upload_windows:
@@ -209,6 +212,9 @@ jobs:
 
       - name: Install anaconda-client
         run: conda install anaconda-client
+
+      - name: Show active conda env
+        run: conda info
 
       - name: Upload
         env:
