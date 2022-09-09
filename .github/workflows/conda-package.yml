@@ -47,6 +47,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
+          auto-activate-base: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
           activate-environment: 'build'
@@ -110,6 +111,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
+          auto-activate-base: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
           activate-environment: 'build'
@@ -166,14 +168,12 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
+          auto-activate-base: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
           activate-environment: 'upload'
 
-      - name: Install anaconda-client
-        run: conda install anaconda-client
-
-      - name: Upload
+      - name: Install client and Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
@@ -206,6 +206,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
+          auto-activate-base: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
           activate-environment: 'upload'
