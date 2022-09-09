@@ -67,7 +67,7 @@ jobs:
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
         env:
-          DPLROOT: '$GITHUB_WORKSPACE/oneDPL'
+          DPLROOT: "$GITHUB_WORKSPACE/oneDPL"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
