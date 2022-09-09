@@ -169,7 +169,10 @@ jobs:
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
+          source $CONDA/etc/profile.d/conda.sh
+          conda info
           conda activate upload
+          ls -lF $CONDA_PREFIX/bin
           conda install anaconda-client
           anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
 
