@@ -45,7 +45,6 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          auto-activate-base: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
           activate-environment: 'build'
@@ -107,7 +106,6 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          auto-activate-base: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
           activate-environment: 'build'
@@ -146,6 +144,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        shell: bash -l {0}
+
     strategy:
       matrix:
         python: ['3.8', '3.9']
@@ -160,21 +162,17 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          auto-activate-base: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
           activate-environment: 'upload'
 
-      - name: Install client and Upload
+      - name: Install anaconda-client
+        run: conda install anaconda-client
+
+      - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: |
-          source $CONDA/etc/profile.d/conda.sh
-          conda info
-          conda activate upload
-          ls -lF $CONDA_PREFIX/bin
-          conda install anaconda-client
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   upload_windows:
     needs: build_windows
@@ -183,6 +181,10 @@ jobs:
 
     runs-on: windows-latest
 
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
+
     strategy:
       matrix:
         python: ['3.8', '3.9']
@@ -196,15 +198,14 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          auto-activate-base: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
           activate-environment: 'upload'
 
-      - name: Install client and Upload
+      - name: Install anaconda-client
+        run: conda install anaconda-client
+
+      - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: |
-          conda activate upload
-          conda install anaconda-client
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
