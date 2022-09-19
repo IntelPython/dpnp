@@ -198,24 +198,47 @@ jobs:
 
 - job: conda_build_ubuntu2004
   displayName: conda-build Ubuntu 20.04
+
   pool:
     vmImage: 'ubuntu-20.04'
+
   variables:
     mkl.version: '>=2021.4'
+    conda.channels: '-c dppy/label/dev -c intel -c defaults --override-channels'
     onedpl.git.branch: 'release/2021.7'
     onedpl.git.repo: 'https://github.com/oneapi-src/oneDPL.git'
     onedpl.clone.path: '$(System.ArtifactsDirectory)/oneDPL'
+
   strategy:
     matrix:
       Python38:
         python.version: '3.8'
       #Python39:
       #  python.version: '3.9'
+
   steps:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
+
+  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+    displayName: Add conda to PATH
+
+  - bash: conda create --yes --quiet --name dpnp$(python.version) python=$(python.version) conda-build $(conda.channels)
+    displayName: Create conda environment
+
+  - bash: |
+      source activate dpnp$(python.version)
+      conda install --yes --quiet --name dpnp$(python.version) conda-build $(conda.channels)
+    displayName: Install Anaconda packages
+
+  - bash: # script path or inline
+    workingDirectory: #
+    displayName: 
+    failOnStderr: #
+    env:  # mapping of environment variables to add
+
   - bash: |
       set -x
       echo =========================================== Required s/w ===========================================
@@ -237,7 +260,7 @@ jobs:
       sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
       sudo apt install intel-oneapi-runtime-libs
       echo ========================= create Conda ENV ===========================
-      conda create -q -y -n dpnp$(python.version) python=$(python.version) conda-build --override-channels -c intel -c conda-forge
+      conda create -q -y -n dpnp$(python.version) python=$(python.version) conda-build $(conda.channels)
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate dpnp$(python.version)
       echo =========================================== Fetch OneDPL ===========================================
