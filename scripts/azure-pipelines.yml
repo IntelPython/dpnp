@@ -204,7 +204,7 @@ jobs:
 
   variables:
     mkl.version: '>=2021.4'
-    conda.channels: '-c dppy/label/dev -c intel -c defaults --override-channels'
+    conda.channels: ' -c dppy/label/dev -c intel -c defaults --override-channels '
     onedpl.git.branch: 'release/2021.7'
     onedpl.git.repo: 'https://github.com/oneapi-src/oneDPL.git'
     onedpl.path: '$(System.WorkFolder)/oneDPL'
@@ -231,13 +231,15 @@ jobs:
   - bash: echo "##vso[task.prependpath]$CONDA/bin"
     displayName: Add conda to PATH
 
-  - bash: conda create --yes --quiet --name dpnp$(python.version) python=$(python.version) conda-build $(conda.channels)
+  - bash: conda create --yes --quiet --name dpnp$(python.version) python=$(python.version) conda-build
     displayName: Create conda environment
 
-  - bash: conda build --no-test --python $(python.version) $(conda.channels) conda-recipe
+  - bash: |
+      source activate dpnp$(python.version)
+      conda build --no-test --python $(python.version) $(conda.channels) conda-recipe
     displayName: Build dpnp
     env:
-      DPLROOT: $(onedpl.path)
+      DPLROOT: '$(onedpl.path)'
 
   # - bash: # script path or inline
   #   workingDirectory: #
