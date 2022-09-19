@@ -197,13 +197,12 @@ jobs:
 #      pytest -s
 
 - job: conda_build_ubuntu2004
-  displayName: conda-build Ubuntu 20.04
+  displayName: Build on Ubuntu 20.04
 
   pool:
     vmImage: 'ubuntu-20.04'
 
   variables:
-    mkl.version: '>=2021.4'
     channels: '-c dppy/label/dev -c intel -c defaults --override-channels'
     onedpl.git.branch: 'release/2021.7'
     onedpl.git.repo: 'https://github.com/oneapi-src/oneDPL.git'
@@ -213,8 +212,8 @@ jobs:
     matrix:
       Python38:
         python.version: '3.8'
-      #Python39:
-      #  python.version: '3.9'
+      Python39:
+       python.version: '3.9'
 
   steps:
   - task: UsePythonVersion@0
@@ -224,12 +223,14 @@ jobs:
 
   - bash: git clone --branch $(onedpl.git.branch) $(onedpl.git.repo) $(onedpl.path)
     displayName: Fetch OneDPL source code
-    env:
-      onedpl.git.branch: 'release/2021.7'
-      onedpl.git.repo: 'https://github.com/oneapi-src/oneDPL.git'
 
   - bash: echo "##vso[task.prependpath]$CONDA/bin"
     displayName: Add conda to PATH
+
+  - bash: |
+      mkdir -p ~/.conda/pkgs
+      echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+    displayName: Set pkgs_dirs
 
   - bash: conda create --yes --quiet --name dpnp$(python.version) python=$(python.version) conda-build
     displayName: Create conda environment
@@ -241,46 +242,125 @@ jobs:
     env:
       DPLROOT: '$(onedpl.path)'
 
-  # - bash: # script path or inline
-  #   workingDirectory: #
-  #   displayName: 
-  #   failOnStderr: #
-  #   env:  # mapping of environment variables to add
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '/usr/share/miniconda/envs/dpnp$(python.version)/conda-bld/linux-64/'
+      contents: 'dpnp-*.tar.bz2'
+      targetFolder: '$(Build.ArtifactStagingDirectory)/dpnp$(python.version)'
+      CleanTargetFolder: true
 
-  # - bash: |
-  #     set -x
-  #     echo =========================================== Required s/w ===========================================
-  #     wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | sudo apt-key add -
-  #     sudo apt-add-repository 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main'
-  #     sudo apt-get update
-  #     sudo apt-get -y install clinfo
-  #     sudo apt-get -y install valgrind
-  #     sudo apt-get -y install intel-opencl-icd 
-  #     # sudo apt-get -y intel-level-zero-gpu
-  #     # sudo apt-get -y level-zero
-  #     # sudo apt-get -y intel-media-va-driver-non-free
-  #     # sudo apt-get -y libmfx1
-  #     groups
-  #     wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-  #     sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-  #     rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-  #     echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-  #     sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-  #     sudo apt install intel-oneapi-runtime-libs
-  #     echo ========================= create Conda ENV ===========================
-  #     conda create -q -y -n dpnp$(python.version) python=$(python.version) conda-build $(conda.channels)
-  #     . /usr/share/miniconda/etc/profile.d/conda.sh
-  #     conda activate dpnp$(python.version)
-  #     echo =========================================== Fetch OneDPL ===========================================
-  #     git clone --branch $(onedpl.git.branch) $(onedpl.git.repo) $(onedpl.clone.path)
-  #     ls -l $(System.ArtifactsDirectory)
-  #     ls -l $(onedpl.clone.path)
-  #     echo ========================= build DPNP and run tests ==========================
-  #     export MKL_VER=$(mkl.version)
-  #     export DPLROOT=$(onedpl.clone.path)
-  #     export OCL_ICD_FILENAMES=libintelocl.so
-  #     export SYCL_DEVICE_FILTER=cpu
-  #     conda-build -c dppy/label/dev -c intel -c defaults --override-channels conda-recipe
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/dpnp$(python.version)'
+      ArtifactName: 'dpnp-linux-python-$(python.version)'
+      publishLocation: 'Container'
+
+- job: conda_test_ubuntu2004
+  displayName: Test on Ubuntu 20.04
+
+  timeoutInMinutes: 360 # how long to run the job before automatically cancelling
+  cancelTimeoutInMinutes: 10 # how much time to give 'run always even if cancelled tasks' before stopping them
+
+  dependsOn: conda_build_ubuntu2004
+
+  pool:
+    vmImage: 'ubuntu-20.04'
+
+  variables:
+    dpctl.version: '0.13.0'
+    channels: '-c dppy/label/dev -c intel -c defaults --override-channels'
+    channel.path: '$(System.WorkFolder)/channel/'
+    pkg.path.in.channel: '$(System.WorkFolder)/channel/linux-64/'
+    extracted.pkg.path: '$(System.WorkFolder)/pkg/'
+    tests.path: '$(System.WorkFolder)/pkg/info/test/'
+    ver.json.path: '$(System.WorkFolder)/version.json'
+
+  strategy:
+    matrix:
+      Python38:
+        python.version: '3.8'
+      Python39:
+       python.version: '3.9'
+
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+    displayName: 'Use Python $(python.version)'
+
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'dpnp-linux-python-$(python.version)'
+      downloadPath: '$(Build.ArtifactStagingDirectory)'
+      cleanDestinationFolder: true
+
+  - task: ExtractFiles@1
+    inputs:
+      archiveFilePatterns: '$(Build.ArtifactStagingDirectory)/dpnp-linux-python-$(python.version)/dpnp-*.tar.bz2'
+      destinationFolder: '$(extracted.pkg.path)'
+
+  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+    displayName: Add conda to PATH
+
+  - bash: |
+      mkdir -p ~/.conda/pkgs
+      echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+    displayName: Set pkgs_dirs
+
+  - bash: conda create --yes --quiet --name dpnp$(python.version) conda-build
+    displayName: Create conda environment
+
+  - bash: |
+      mkdir -p $(pkg.path.in.channel)
+
+      . $CONDA/etc/profile.d/conda.sh
+      conda activate dpnp$(python.version)
+
+      # update conda
+      # conda update -n base -c defaults -vvv conda
+
+      # move dpnp package to channel folder
+      mv $(Build.ArtifactStagingDirectory)/dpnp-linux-python-$(python.version)/dpnp-*.tar.bz2 $(pkg.path.in.channel)
+
+      # indexing the channel
+      conda index $(channel.path)
+
+      # generate a json file with version
+      conda search dpnp -c $(channel.path) --override-channels --info --json > $(ver.json.path)
+
+      echo "Dump content of $(ver.json.path):"
+      cat $(ver.json.path)
+    displayName: Create conda channel
+
+  - bash: |
+      . $CONDA/etc/profile.d/conda.sh
+      conda activate dpnp$(python.version)
+      export PACKAGE_VERSION=$(python -c "import json; f = open('$(ver.json.path)', 'r'); j = json.load(f); f.close(); \
+                                          d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))")
+      echo PACKAGE_VERSION=$PACKAGE_VERSION
+
+      conda install dpnp=$PACKAGE_VERSION dpctl=$(dpctl.version) pytest python=$(python.version) $TEST_CHANNELS
+      conda list
+    displayName: Install dpnp
+    env:
+      TEST_CHANNELS: '-c $(channel.path) $(channels)'
+
+  - bash: python -c "import dpnp, dpctl; dpctl.lsplatform()"
+    displayName: Smoke test
+
+  - bash: |
+      . $CONDA/etc/profile.d/conda.sh
+      conda activate dpnp$(python.version)
+
+      # TODO: run the whole scope once the issues on CPU are resolved
+      python -m pytest -q -ra --disable-warnings -vv $(tests.path)/tests/test_arraycreation.py \
+        $(tests.path)/tests/test_dparray.py \
+        $(tests.path)/tests/test_mathematical.py
+    displayName: Install dpnp
+    env:
+      SYCL_ENABLE_HOST_DEVICE: '1'
 
 #- job: ubuntu2004_tests_external
 #  displayName: Ubuntu 20.04 External Tests
@@ -317,13 +397,26 @@ jobs:
 # test python ./setup.py bdist_wheel command with no dpctl
 - job: bdist_wheel_dpnp_local_lin
   displayName: bdist_wheel_dpnp_local_lin
+
   pool:
     vmImage: 'ubuntu-20.04'
+
+  strategy:
+    matrix:
+      # Python38:
+      #   python.version: '3.8'
+      Python39:
+       python.version: '3.9'
+
   steps:
+  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+    displayName: Add conda to PATH
+
+  - bash: conda create --yes --quiet --name dpnp python=$(python.version) conda-build
+    displayName: Create conda environment
+
   - bash: |
       echo ========================= Conda ENV =======================================
-      conda create -q -y -n dpnp
-      . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate dpnp
 
       echo ========================= CI ENV ==========================================
@@ -336,6 +429,7 @@ jobs:
 
       echo ========================= make DPNP bdist package =========================
       python ./setup.py bdist_wheel
+
   - publish: dist
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
     displayName: bdist_wheel_dpnp_local_lin_package

@@ -45,11 +45,8 @@ test:
         - tests
         - setup.cfg
     commands:
-      - python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
-      - python -c "import dpctl; dpctl.SyclDevice().print_device_info()"
       - python -c "import dpnp"
-      - pytest -v
-      - gdb python core
+      - pytest -s
 
 about:
     home: https://github.com/IntelPython/dpnp

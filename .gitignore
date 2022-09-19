@@ -11,6 +11,9 @@ __pycache__/
 # Files from test of code coverage
 coverage.xml
 
+# Backup files kept after git merge/rebase
+*.orig
+
 *dpnp_backend*
 dpnp/**/*.cpython*.so
 dpnp/**/*.pyd
