@@ -204,7 +204,7 @@ jobs:
 
   variables:
     mkl.version: '>=2021.4'
-    conda.channels: ' -c dppy/label/dev -c intel -c defaults --override-channels '
+    channels: '-c dppy/label/dev -c intel -c defaults --override-channels'
     onedpl.git.branch: 'release/2021.7'
     onedpl.git.repo: 'https://github.com/oneapi-src/oneDPL.git'
     onedpl.path: '$(System.WorkFolder)/oneDPL'
@@ -236,7 +236,7 @@ jobs:
 
   - bash: |
       source activate dpnp$(python.version)
-      conda build --no-test --python $(python.version) $(conda.channels) conda-recipe
+      conda build --no-test --python $(python.version) $(channels) conda-recipe
     displayName: Build dpnp
     env:
       DPLROOT: '$(onedpl.path)'
