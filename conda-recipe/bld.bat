@@ -5,6 +5,8 @@ SET "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
 REM Since the 60.0.0 release, setuptools includes a local, vendored copy
 REM of distutils (from late copies of CPython) that is enabled by default.
 REM It breaks build for Windows, so use distutils from "stdlib" as before.
+REM @TODO: remove the setting, once transition to build backend on Windows
+REM to cmake is complete.
 SET "SETUPTOOLS_USE_DISTUTILS=stdlib"
 
 IF DEFINED DPLROOT (
