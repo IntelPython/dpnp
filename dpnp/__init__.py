@@ -39,7 +39,7 @@ if system() == 'Windows':
     if hasattr(os, "add_dll_directory"):
         os.add_dll_directory(mypath)
         os.add_dll_directory(dpctlpath)
-    os.environ["PATH"] += os.pathsep + mypath + os.pathsep + dpctlpath
+    os.environ["PATH"] = os.pathsep.join([os.getenv("PATH", ""), mypath, dpctlpath])
 
 
 from dpnp.dpnp_array import dpnp_array as ndarray
