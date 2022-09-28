@@ -31,7 +31,7 @@ import dpctl
 dpctlpath = os.path.dirname(dpctl.__file__)
 
 # For Windows OS it is required to explicitly define a path where to search
-# for DLLs towards both DPNP backand and DPCTL Sycl interface, otherwise
+# for DLLs towards both DPNP backend and DPCTL Sycl interface, otherwise
 # DPNP import will be failing. This is because the libraries are not installed
 # under any of default paths where Python is looking for.
 from platform import system
