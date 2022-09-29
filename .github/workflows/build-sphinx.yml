@@ -71,7 +71,7 @@ jobs:
 
       - name: Install dpnp dependencies
         run: |
-          conda install dpctl mkl-devel-dpcpp tbb-devel dpcpp_linux-64 cmake=3.19 cython pytest \
+          conda install dpctl mkl-devel-dpcpp tbb-devel dpcpp_linux-64 cmake cython pytest \
                         -c dppy/label/dev -c intel -c conda-forge
 
       - name: Install cuPy dependencies
