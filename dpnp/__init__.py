@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,16 @@ mypath = os.path.dirname(os.path.realpath(__file__))
 import dpctl
 dpctlpath = os.path.dirname(dpctl.__file__)
 
-os.environ["PATH"] += os.pathsep + mypath + os.pathsep + dpctlpath
+# For Windows OS with Python >= 3.7, it is required to explicitly define a path
+# where to search for DLLs towards both DPNP backend and DPCTL Sycl interface,
+# otherwise DPNP import will be failing. This is because the libraries
+# are not installed under any of default paths where Python is searching.
+from platform import system
+if system() == 'Windows':
+    if hasattr(os, "add_dll_directory"):
+        os.add_dll_directory(mypath)
+        os.add_dll_directory(dpctlpath)
+    os.environ["PATH"] = os.pathsep.join([os.getenv("PATH", ""), mypath, dpctlpath])
 
 
 from dpnp.dpnp_array import dpnp_array as ndarray
