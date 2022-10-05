@@ -406,7 +406,9 @@ jobs:
 
               # Configuration variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
               $cl_cfg="$env:CONDA_LIB_PATH\cl.cfg"
+               Write-Output $cl_cfg
               (Get-Content $cl_cfg) -replace '^CL_CONFIG_TBB_DLL_PATH =', "CL_CONFIG_TBB_DLL_PATH = $env:CONDA_LIB_BIN_PATH" | Set-Content $cl_cfg
+              Get-Content -Tail 5 -Path $cl_cfg
           }
 
       - name: Smoke test
