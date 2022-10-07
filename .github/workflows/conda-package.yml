@@ -169,7 +169,7 @@ jobs:
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
       extracted-pkg-path: '${{ github.workspace }}/pkg/'
-      tests-path: '${{ github.workspace }}/pkg/info/test/'
+      tests-path: '${{ github.workspace }}/pkg/info/test/tests/'
       ver-json-path: '${{ github.workspace }}/version.json'
 
     steps:
@@ -241,7 +241,7 @@ jobs:
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
-        run: python -m pytest -q -ra --disable-warnings -vv tests/test_arraycreation.py tests/test_dparray.py tests/test_mathematical.py
+        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_mathematical.py test_special.py
         env:
           SYCL_ENABLE_HOST_DEVICE: '1'
         working-directory: ${{ env.tests-path }}
@@ -268,7 +268,7 @@ jobs:
       channel-path: '${{ github.workspace }}\channel\'
       pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
       extracted-pkg-path: '${{ github.workspace }}\pkg'
-      tests-path: '${{ github.workspace }}\pkg\info\test\'
+      tests-path: '${{ github.workspace }}\pkg\info\test\tests\'
       ver-json-path: '${{ github.workspace }}\version.json'
       active-env-name: 'test'
 
@@ -416,7 +416,7 @@ jobs:
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
-        run: python -m pytest -q -ra --disable-warnings -vv tests\test_arraycreation.py tests\test_dparray.py tests\test_mathematical.py
+        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_mathematical.py test_special.py
         working-directory: ${{ env.tests-path }}
 
   upload_linux:
