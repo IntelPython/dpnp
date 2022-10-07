@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DPNP – A NumPy-compatible library for SYCL-based devices &mdash; dpnp 0.10.0 documentation</title>
+  <title>DPNP – A NumPy-compatible library for SYCL-based devices &mdash; dpnp 0.10.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -13,7 +13,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -70,7 +72,7 @@
            <div itemprop="articleBody">
              
   <div class="section" id="module-dpnp">
-<span id="dpnp-a-numpy-compatible-library-for-sycl-based-devices"></span><h1>DPNP – A NumPy-compatible library for SYCL-based devices<a class="headerlink" href="#module-dpnp" title="Permalink to this headline"></a></h1>
+<span id="dpnp-a-numpy-compatible-library-for-sycl-based-devices"></span><h1>DPNP – A NumPy-compatible library for SYCL-based devices<a class="headerlink" href="#module-dpnp" title="Permalink to this heading"></a></h1>
 <p><a class="reference external" href="https://github.com/IntelPython/dpnp">DPNP</a> is a NumPy-like library accelerated with SYCL on Intel devices.
 It provides Python interfaces for many NumPy functions, and includes a subset of methods of <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
 Under the hood it is based on native C++ and oneMKL based kernels.</p>
@@ -78,12 +80,12 @@ Under the hood it is based on native C++ and oneMKL based kernels.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 </pre></div>
 </div>
-<p>The <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> class is a compatible alternative of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p>
+<p>The <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> class is a compatible alternative of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">x</span></code> in the above example is an instance of <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> that is created identically to <code class="docutils literal notranslate"><span class="pre">NumPy</span></code>’s one.
-The key difference of <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> from <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> is
+The key difference of <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> from <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> is
 that the memory is allocated on Intel GPU when setting up <code class="docutils literal notranslate"><span class="pre">DPNP_QUEUE_GPU=1</span></code> in the environment.</p>
 <p>Most of the array manipulations are also done in the way similar to NumPy such as:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -128,7 +130,7 @@ along with their limitations.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Intel.</p>
+    <p>&#169; Copyright 2020-2022, Intel.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
