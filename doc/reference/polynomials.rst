@@ -13,8 +13,9 @@ Polynomial Module
    :toctree: generated/
    :nosignatures:
 
-   dpnp.polynomial.polynomial.polyvander
-   dpnp.polynomial.polynomial.polycompanion
+   .. polynomial module is not implemented yet
+   .. dpnp.polynomial.polynomial.polyvander
+   .. dpnp.polynomial.polynomial.polycompanion
 
 
 Polyutils
@@ -24,9 +25,10 @@ Polyutils
    :toctree: generated/
    :nosignatures:
 
-   dpnp.polynomial.polyutils.as_series
-   dpnp.polynomial.polyutils.trimseq
-   dpnp.polynomial.polyutils.trimcoef
+   .. polyutils module is not implemented yet
+   .. dpnp.polynomial.polyutils.as_series
+   .. dpnp.polynomial.polyutils.trimseq
+   .. dpnp.polynomial.polyutils.trimcoef
 
 
 Poly1d

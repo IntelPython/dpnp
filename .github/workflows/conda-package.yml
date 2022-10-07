@@ -30,6 +30,11 @@ jobs:
       conda-pkgs: '/home/runner/conda_pkgs_dir/'
 
     steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.10.0
+        with:
+          access_token: ${{ github.token }}
+
       - name: Checkout DPNP repo
         uses: actions/checkout@v3
         with:
@@ -95,6 +100,11 @@ jobs:
       conda-pkgs: 'C:\Users\runneradmin\conda_pkgs_dir\'
 
     steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.10.0
+        with:
+          access_token: ${{ github.token }}
+
       - name: Checkout DPNP repo
         uses: actions/checkout@v3
         with:
@@ -422,7 +432,9 @@ jobs:
   upload_linux:
     needs: test_linux
 
-    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
+    if: |
+      !github.event.pull_request.head.repo.fork  &&
+      (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
 
     runs-on: ubuntu-latest
 
@@ -452,14 +464,16 @@ jobs:
         run: conda install anaconda-client
 
       - name: Upload
+        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   upload_windows:
     needs: test_windows
 
-    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
+    if: |
+      !github.event.pull_request.head.repo.fork  &&
+      (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
 
     runs-on: windows-latest
 
@@ -488,6 +502,6 @@ jobs:
         run: conda install anaconda-client
 
       - name: Upload
+        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
