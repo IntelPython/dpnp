@@ -28,7 +28,6 @@ jobs:
 
     env:
       conda-pkgs: '/home/runner/conda_pkgs_dir/'
-      conda-bld: '/usr/share/miniconda3/envs/build/conda-bld/linux-64/'
 
     steps:
       - name: Cancel Previous Runs
@@ -56,6 +55,9 @@ jobs:
           miniconda-version: 'latest'
           activate-environment: 'build'
           use-only-tar-bz2: true
+
+      - name: Store conda paths as envs
+        run: echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/linux-64/" >> $GITHUB_ENV
 
       - name: Install conda-build
         run: conda install conda-build
@@ -81,7 +83,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-          path: ${{ env.conda-bld }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   build_windows:
     runs-on: windows-latest
@@ -96,7 +98,6 @@ jobs:
 
     env:
       conda-pkgs: 'C:\Users\runneradmin\conda_pkgs_dir\'
-      conda-bld: 'C:\Miniconda3\envs\build\conda-bld\win-64\'
 
     steps:
       - name: Cancel Previous Runs
@@ -125,6 +126,11 @@ jobs:
           activate-environment: 'build'
           use-only-tar-bz2: true
 
+      - name: Store conda paths as envs
+        run: |
+          @echo on
+          (echo CONDA_BLD=%CONDA_PREFIX%\conda-bld\win-64\) >> %GITHUB_ENV%
+
       - name: Cache conda packages
         uses: actions/cache@v3
         env:
@@ -149,7 +155,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-          path: ${{ env.conda-bld }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   test_linux:
     needs: build_linux
@@ -173,7 +179,7 @@ jobs:
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
       extracted-pkg-path: '${{ github.workspace }}/pkg/'
-      tests-path: '${{ github.workspace }}/pkg/info/test/'
+      tests-path: '${{ github.workspace }}/pkg/info/test/tests/'
       ver-json-path: '${{ github.workspace }}/version.json'
 
     steps:
@@ -211,7 +217,9 @@ jobs:
       - name: Collect dependencies
         run: |
           export PACKAGE_VERSION=$(python -c "${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}")
+
           echo PACKAGE_VERSION=${PACKAGE_VERSION}
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
 
           conda install ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
           cat lockfile
@@ -231,11 +239,7 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Install dpnp
-        run: |
-          export PACKAGE_VERSION=$(python -c "${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}")
-          echo PACKAGE_VERSION=${PACKAGE_VERSION}
-
-          conda install ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} dpctl=${{ matrix.dpctl }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        run: conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} dpctl=${{ matrix.dpctl }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
@@ -247,7 +251,7 @@ jobs:
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
-        run: python -m pytest -q -ra --disable-warnings -vv tests/test_arraycreation.py tests/test_dparray.py tests/test_mathematical.py
+        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_mathematical.py test_special.py
         env:
           SYCL_ENABLE_HOST_DEVICE: '1'
         working-directory: ${{ env.tests-path }}
@@ -274,11 +278,9 @@ jobs:
       channel-path: '${{ github.workspace }}\channel\'
       pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
       extracted-pkg-path: '${{ github.workspace }}\pkg'
-      tests-path: '${{ github.workspace }}\pkg\info\test\'
+      tests-path: '${{ github.workspace }}\pkg\info\test\tests\'
       ver-json-path: '${{ github.workspace }}\version.json'
       active-env-name: 'test'
-      miniconda-lib-path: 'C:\Miniconda3\envs\test\Library\lib\'
-      miniconda-bin-path: 'C:\Miniconda3\envs\test\Library\bin\'
 
     steps:
       - name: Download artifact
@@ -309,6 +311,12 @@ jobs:
           miniconda-version: 'latest'
           activate-environment: ${{ env.active-env-name }}
 
+      - name: Store conda paths as envs
+        run: |
+          @echo on
+          (echo CONDA_LIB_PATH=%CONDA_PREFIX%\Library\lib\) >> %GITHUB_ENV%
+          (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
+
       # Needed to be able to run conda index
       - name: Install conda-build
         run: conda install conda-build
@@ -332,6 +340,7 @@ jobs:
              SET PACKAGE_VERSION=%%F
           )
           echo PACKAGE_VERSION: %PACKAGE_VERSION%
+          (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
 
           conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% dpctl=${{ matrix.dpctl }} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
         env:
@@ -358,13 +367,7 @@ jobs:
       - name: Install dpnp
         run: |
           @echo on
-          set "SCRIPT=${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}"
-          FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
-             SET PACKAGE_VERSION=%%F
-          )
-          echo PACKAGE_VERSION: %PACKAGE_VERSION%
-
-          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% dpctl=${{ matrix.dpctl }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} dpctl=${{ matrix.dpctl }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
@@ -375,10 +378,10 @@ jobs:
         shell: pwsh
         run: |
           # Make sure the below libraries exist
-          Get-Item -Path ${{ env.miniconda-bin-path }}\OpenCL.dll
-          Get-Item -Path ${{ env.miniconda-lib-path }}\intelocl64.dll
+          Get-Item -Path "$env:CONDA_LIB_BIN_PATH\OpenCL.dll"
+          Get-Item -Path "$env:CONDA_LIB_PATH\intelocl64.dll"
 
-          echo "OCL_ICD_FILENAMES=${{ env.miniconda-lib-path }}\intelocl64.dll" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "OCL_ICD_FILENAMES = $env:CONDA_LIB_PATH\intelocl64.dll" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           try {$list = Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors | Select-Object -ExpandProperty Property } catch {$list=@()}
 
           if ($list.count -eq 0) {
@@ -394,13 +397,13 @@ jobs:
                  New-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors
               }
 
-              New-ItemProperty -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors -Name ${{ env.miniconda-lib-path }}\intelocl64.dll -Value 0
+              New-ItemProperty -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors -Name "$env:CONDA_LIB_PATH\intelocl64.dll" -Value 0
               try {$list = Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors | Select-Object -ExpandProperty Property } catch {$list=@()}
               Write-Output $(Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors)
 
               # Now copy OpenCL.dll into system folder
               $system_ocl_icd_loader="C:\Windows\System32\OpenCL.dll"
-              $python_ocl_icd_loader="${{ env.miniconda-bin-path }}\OpenCL.dll"
+              $python_ocl_icd_loader="$env:CONDA_LIB_BIN_PATH\OpenCL.dll"
               Copy-Item -Path $python_ocl_icd_loader -Destination $system_ocl_icd_loader
 
               if (Test-Path -Path $system_ocl_icd_loader) {
@@ -411,8 +414,11 @@ jobs:
                  Write-Output "OCL-ICD-Loader was not copied"
               }
 
-              # Variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
-              echo "TBB_DLL_PATH=${{ env.miniconda-bin-path }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+              # Configuration variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
+              $cl_cfg="$env:CONDA_LIB_PATH\cl.cfg"
+              Write-Output "`n>>> Dump content of $cl_cfg`n" (Get-Content $cl_cfg) "`n<<< end of dump`n"
+              (Get-Content $cl_cfg) -replace '^CL_CONFIG_TBB_DLL_PATH =.*', "CL_CONFIG_TBB_DLL_PATH = $env:CONDA_LIB_BIN_PATH" | Set-Content $cl_cfg
+              Write-Output "`n>>> Dump content of modified $cl_cfg`n" (Get-Content $cl_cfg) "`n<<< end of dump`n"
           }
 
       - name: Smoke test
@@ -420,7 +426,7 @@ jobs:
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
-        run: python -m pytest -q -ra --disable-warnings -vv tests\test_arraycreation.py tests\test_dparray.py tests\test_mathematical.py
+        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_mathematical.py test_special.py
         working-directory: ${{ env.tests-path }}
 
   upload_linux:
