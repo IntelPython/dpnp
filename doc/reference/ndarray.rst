@@ -11,4 +11,4 @@ For the basic concept of ``ndarray``\s, please refer to the `NumPy documentation
    :nosignatures:
 
    dpnp.ndarray
-   dpnp.dparray.dparray
+   dpnp.dpnp_array.dpnp_array
