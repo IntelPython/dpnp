@@ -261,7 +261,7 @@ def get_normalized_queue_device(obj=None,
 
     If both arguments 'device' and 'sycl_queue' have default value `None`
     and 'obj' has `sycl_queue` attribute, it assumes that Compute Follows Data
-    aproach has to be applied and so the resultuing SYCL queue will be normalized
+    approach has to be applied and so the resulting SYCL queue will be normalized
     based on the queue value from 'obj'.
 
     Args:
