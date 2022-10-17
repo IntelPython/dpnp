@@ -75,7 +75,7 @@
 <span class="c1"># distutils: language = c++</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2020, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2022, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -120,6 +120,7 @@
 <span class="kn">import</span> <span class="nn">collections</span>
 
 <span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
@@ -135,7 +136,8 @@
     <span class="s2">&quot;dpnp_queue_initialize&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dpnp_queue_is_cpu&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_dpnp_descriptor&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_include&quot;</span>
+    <span class="s2">&quot;get_include&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_normalized_queue_device&quot;</span>
 <span class="p">]</span>
 
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="o">*</span>
@@ -321,6 +323,53 @@
     <span class="n">dpnp_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;backend&quot;</span><span class="p">,</span> <span class="s2">&quot;include&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_path</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_normalized_queue_device</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility to process complementary keyword arguments &#39;device&#39; and &#39;sycl_queue&#39;</span>
+<span class="sd">    in subsequent calls of functions from `dpctl.tensor` module.</span>
+
+<span class="sd">    If both arguments &#39;device&#39; and &#39;sycl_queue&#39; have default value `None`</span>
+<span class="sd">    and &#39;obj&#39; has `sycl_queue` attribute, it assumes that Compute Follows Data</span>
+<span class="sd">    approach has to be applied and so the resulting SYCL queue will be normalized</span>
+<span class="sd">    based on the queue value from &#39;obj&#39;.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj (optional): A python object. Can be an instance of `dpnp_array`,</span>
+<span class="sd">            `dpctl.tensor.usm_ndarray`, an object representing SYCL USM allocation</span>
+<span class="sd">            and implementing `__sycl_usm_array_interface__` protocol,</span>
+<span class="sd">            an instance of `numpy.ndarray`, an object supporting Python buffer protocol,</span>
+<span class="sd">            a Python scalar, or a (possibly nested) sequence of Python scalars.</span>
+<span class="sd">        sycl_queue (:class:`dpctl.SyclQueue`, optional):</span>
+<span class="sd">            explicitly indicates where USM allocation is done</span>
+<span class="sd">            and the population code (if any) is executed.</span>
+<span class="sd">            Value `None` is interpreted as get the SYCL queue</span>
+<span class="sd">            from `obj` parameter if not None, from `device` keyword,</span>
+<span class="sd">            or use default queue.</span>
+<span class="sd">            Default: None</span>
+<span class="sd">        device (string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,</span>
+<span class="sd">            :class:`dpctl.tensor.Device`, optional):</span>
+<span class="sd">            array-API keyword indicating non-partitioned SYCL device</span>
+<span class="sd">            where array is allocated.</span>
+<span class="sd">    Returns</span>
+<span class="sd">        :class:`dpctl.SyclQueue` object normalized by `normalize_queue_device` call</span>
+<span class="sd">        of `dpctl.tensor` module invoked with &#39;device&#39; and &#39;sycl_queue&#39; values.</span>
+<span class="sd">        If both incoming &#39;device&#39; and &#39;sycl_queue&#39; are None and &#39;obj&#39; has `sycl_queue` attribute,</span>
+<span class="sd">        the normalization will be performed for &#39;obj.sycl_queue&#39; value.</span>
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError: if argument is not of the expected type, or keywords</span>
+<span class="sd">            imply incompatible queues.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;sycl_queue&#39;</span><span class="p">):</span>
+        <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">sycl_queue</span>
+
+    <span class="c1"># TODO: remove check dpt._device has attribute &#39;normalize_queue_device&#39;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="s1">&#39;normalize_queue_device&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">_device</span><span class="o">.</span><span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sycl_queue</span>
 </pre></div>
 
            </div>
