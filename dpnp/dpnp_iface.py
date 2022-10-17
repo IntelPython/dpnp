@@ -256,7 +256,7 @@ def get_normalized_queue_device(obj=None,
                                 device=None,
                                 sycl_queue=None):
     """
-    Utility to process exclusive keyword arguments 'device' and 'sycl_queue'
+    Utility to process complementary keyword arguments 'device' and 'sycl_queue'
     in subsequent calls of functions from `dpctl.tensor` module.
 
     If both arguments 'device' and 'sycl_queue' have default value `None`
