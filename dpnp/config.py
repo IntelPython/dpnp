@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -51,4 +51,9 @@ Explicitly use DPCtl package container as return type for creation functions
 __DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__ = int(os.getenv('DPNP_OUTPUT_DPCTL_DEFAULT_SHARED', 0))
 '''
 Explicitly use SYCL shared memory parameter in DPCtl array constructor for creation functions
+'''
+
+__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ = int(os.getenv('__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__', 1))
+'''
+Trigger non-implemented exception when DPNP fallbacks on NumPy implementation
 '''
