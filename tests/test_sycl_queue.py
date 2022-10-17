@@ -319,3 +319,26 @@ def test_to_device(device_from, device_to):
     y = x.to_device(device_to)
 
     assert y.get_array().sycl_device == device_to
+
+
+@pytest.mark.parametrize("device",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize("func",
+                         ["array", "asarray"])
+@pytest.mark.parametrize("device_param",
+                         ["", "None", "sycl_device"],
+                         ids=['Empty', 'None', "device"])
+@pytest.mark.parametrize("queue_param",
+                         ["", "None", "sycl_queue"],
+                         ids=['Empty', 'None', "queue"])
+def test_array_copy(device, func, device_param, queue_param):
+    data = numpy.ones(100)
+    dpnp_data = getattr(dpnp, func)(data, device=device)
+
+    kwargs_items = {'device': device_param, 'sycl_queue': queue_param}.items()
+    kwargs = {k: getattr(dpnp_data, v, None) for k,v in kwargs_items if v != ""}
+
+    result = dpnp.array(dpnp_data, **kwargs)
+
+    assert_sycl_queue_equal(result.sycl_queue, dpnp_data.sycl_queue)
