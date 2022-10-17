@@ -248,12 +248,14 @@ jobs:
 
       - name: Smoke test
         run: python -c "import dpnp, dpctl; dpctl.lsplatform()"
+        env:
+          OCL_ICD_FILENAMES: 'libintelocl.so'
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
-        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_mathematical.py test_special.py
+        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_special.py
         env:
-          SYCL_ENABLE_HOST_DEVICE: '1'
+          OCL_ICD_FILENAMES: 'libintelocl.so'
         working-directory: ${{ env.tests-path }}
 
   test_windows:
@@ -426,7 +428,7 @@ jobs:
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
-        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_mathematical.py test_special.py
+        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_special.py
         working-directory: ${{ env.tests-path }}
 
   upload_linux:
