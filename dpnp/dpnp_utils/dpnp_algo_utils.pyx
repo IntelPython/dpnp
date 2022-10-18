@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -100,9 +100,8 @@ def convert_list_args(input_list):
 
 def copy_from_origin(dst, src):
     """Copy origin result to output result."""
-    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
+    if hasattr(dst, "__sycl_usm_array_interface__"):
         if src.size:
-            # dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
             dpctl.tensor._copy_utils._copy_from_numpy_into(unwrap_array(dst), src)
     else:
         for i in range(dst.size):

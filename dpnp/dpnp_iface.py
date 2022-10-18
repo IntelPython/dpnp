@@ -49,6 +49,7 @@ import collections
 import dpctl
 import dpctl.tensor as dpt
 
+from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.fft import *
@@ -137,24 +138,22 @@ def asnumpy(input, order='C'):
     This function works exactly the same as :obj:`numpy.asarray`.
 
     """
+    if isinstance(input, dpnp_array):
+        return dpt.to_numpy(input.get_array())
 
-    if isinstance(input, dpctl.tensor.usm_ndarray):
-        return dpctl.tensor.to_numpy(input)
-
-    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
-        return dpctl.tensor.to_numpy(input.get_array())
+    if isinstance(input, dpt.usm_ndarray):
+        return dpt.to_numpy(input)
 
     return numpy.asarray(input, order=order)
 
 
 def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
     """Copy the array with data type casting."""
-    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(x1, "__sycl_usm_array_interface__"):
-        import dpctl.tensor as dpt
-        # TODO: remove check dpctl.tensor has attribute "astype"
-        if hasattr(dpt, "astype"):
-            # return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
-            return dpt.astype(x1.get_array(), dtype, order=order, casting=casting, copy=copy)
+    if isinstance(x1, dpnp_array):
+        return dpt.astype(x1.get_array(), dtype, order=order, casting=casting, copy=copy)
+
+    if isinstance(x1, dpt.usm_ndarray):
+        return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
 
     x1_desc = get_dpnp_descriptor(x1)
     if not x1_desc:
