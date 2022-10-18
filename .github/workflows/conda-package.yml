@@ -253,7 +253,8 @@ jobs:
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
-        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_special.py
+        run: |
+          python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_random_state.py test_special.py
         env:
           OCL_ICD_FILENAMES: 'libintelocl.so'
         working-directory: ${{ env.tests-path }}
@@ -428,7 +429,8 @@ jobs:
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
-        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_special.py
+        run: |
+          python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_random_state.py test_special.py
         working-directory: ${{ env.tests-path }}
 
   upload_linux:

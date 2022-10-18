@@ -278,7 +278,7 @@ def test_rs_uniform(usm_type, seed):
     assert usm_type == res_usm_type
 
     res_sycl_queue = res.get_array().sycl_queue
-    assert sycl_queue == res_sycl_queue
+    assert_sycl_queue_equal(res_sycl_queue, sycl_queue)
 
 
 @pytest.mark.parametrize(

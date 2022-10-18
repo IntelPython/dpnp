@@ -73,6 +73,24 @@ void dpnp_rng_srand_c(size_t seed)
     set_rng_stream(seed);
 }
 
+template <typename _DistrType, typename _EngineType, typename _DataType>
+static inline DPCTLSyclEventRef dpnp_rng_generate(const _DistrType& distr,
+                                                  _EngineType& engine,
+                                                  const int64_t size,
+                                                  _DataType* result) {
+    DPCTLSyclEventRef event_ref = nullptr;
+
+    // perform rng generation
+    try {
+        auto event = mkl_rng::generate<_DistrType, _EngineType>(distr, engine, size, result);
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+    } catch (const std::exception &e) {
+        // TODO: add error reporting
+        return event_ref;
+    }
+    return DPCTLEvent_Copy(event_ref);
+}
+
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_beta_c(DPCTLSyclQueueRef q_ref,
                                   void* result,
@@ -1350,10 +1368,11 @@ DPCTLSyclEventRef (*dpnp_rng_noncentral_chisquare_ext_c)(
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_normal_c(DPCTLSyclQueueRef q_ref,
-                                    void* result,
-                                    const _DataType mean,
-                                    const _DataType stddev,
-                                    const size_t size,
+                                    void* result_out,
+                                    const double mean_in,
+                                    const double stddev_in,
+                                    const int64_t size,
+                                    void* random_state_in,
                                     const DPCTLEventVectorRef dep_event_vec_ref)
 {
     // avoid warning unused variable
@@ -1368,14 +1387,20 @@ DPCTLSyclEventRef dpnp_rng_normal_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    mt19937_struct* random_state = static_cast<mt19937_struct *>(random_state_in);
+    _DataType* result = static_cast<_DataType *>(result_out);
+
+    // set mean of distribution
+    const _DataType mean = static_cast<_DataType>(mean_in);
+    // set standard deviation of distribution
+    const _DataType stddev = static_cast<_DataType>(stddev_in);
 
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
+    mkl_rng::mt19937 *engine = static_cast<mkl_rng::mt19937 *>(random_state->engine);
 
-    return DPCTLEvent_Copy(event_ref);
+    // perform generation
+    return dpnp_rng_generate<mkl_rng::gaussian<_DataType>, mkl_rng::mt19937, _DataType>(
+        distribution, *engine, size, result);
 }
 
 template <typename _DataType>
@@ -1383,13 +1408,19 @@ void dpnp_rng_normal_c(void* result, const _DataType mean, const _DataType stdde
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
+    mt19937_struct* mt19937 = new mt19937_struct();
+    mt19937->engine = &DPNP_RNG_ENGINE;
+
     DPCTLSyclEventRef event_ref = dpnp_rng_normal_c<_DataType>(q_ref,
                                                                result,
                                                                mean,
                                                                stddev,
-                                                               size,
+                                                               static_cast<int64_t>(size),
+                                                               mt19937,
                                                                dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
+    delete mt19937;
 }
 
 template <typename _DataType>
@@ -1401,9 +1432,10 @@ void (*dpnp_rng_normal_default_c)(void*,
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_normal_ext_c)(DPCTLSyclQueueRef,
                                            void*,
-                                           const _DataType,
-                                           const _DataType,
-                                           const size_t,
+                                           const double,
+                                           const double,
+                                           const int64_t,
+                                           void*,
                                            const DPCTLEventVectorRef) = dpnp_rng_normal_c<_DataType>;
 
 template <typename _DataType>
@@ -1894,51 +1926,13 @@ DPCTLSyclEventRef (*dpnp_rng_standard_gamma_ext_c)(DPCTLSyclQueueRef,
                                                    const DPCTLEventVectorRef) = dpnp_rng_standard_gamma_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef dpnp_rng_standard_normal_c(DPCTLSyclQueueRef q_ref,
-                                             void* result,
-                                             size_t size,
-                                             const DPCTLEventVectorRef dep_event_vec_ref)
-{
-    // avoid warning unused variable
-    (void)dep_event_vec_ref;
-
-    DPCTLSyclEventRef event_ref = nullptr;
-
-    if (!size)
-    {
-        return event_ref;
-    }
-
-    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-
-    const _DataType mean = _DataType(0.0);
-    const _DataType stddev = _DataType(1.0);
-
-    event_ref = dpnp_rng_normal_c(q_ref, result, mean, stddev, size, dep_event_vec_ref);
-
-    return DPCTLEvent_Copy(event_ref);
-}
-
-template <typename _DataType>
 void dpnp_rng_standard_normal_c(void* result, size_t size)
 {
-    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
-    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_rng_standard_normal_c<_DataType>(q_ref,
-                                                                        result,
-                                                                        size,
-                                                                        dep_event_vec_ref);
-    DPCTLEvent_WaitAndThrow(event_ref);
+    dpnp_rng_normal_c(result, _DataType(0.0), _DataType(1.0), size);
 }
 
 template <typename _DataType>
 void (*dpnp_rng_standard_normal_default_c)(void*, const size_t) = dpnp_rng_standard_normal_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_rng_standard_normal_ext_c)(DPCTLSyclQueueRef,
-                                                    void*,
-                                                    const size_t,
-                                                    const DPCTLEventVectorRef) = dpnp_rng_standard_normal_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_standard_t_c(DPCTLSyclQueueRef q_ref,
@@ -2125,14 +2119,13 @@ DPCTLSyclEventRef (*dpnp_rng_triangular_ext_c)(DPCTLSyclQueueRef,
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
-                                     void* result,
-                                     const long low,
-                                     const long high,
-                                     const size_t size,
+                                     void* result_out,
+                                     const double low,
+                                     const double high,
+                                     const int64_t size,
                                      void* random_state_in,
                                      const DPCTLEventVectorRef dep_event_vec_ref)
 {
-    // avoid warning unused variable
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
@@ -2142,25 +2135,53 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
         return event_ref;
     }
 
-    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
-    mt19937_struct* random_state = reinterpret_cast<mt19937_struct*>(random_state_in);
-
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    mt19937_struct* random_state = static_cast<mt19937_struct *>(random_state_in);
+    _DataType* result = static_cast<_DataType *>(result_out);
 
     // set left bound of distribution
-    const _DataType a = (_DataType(low));
+    const _DataType a = static_cast<_DataType>(low);
     // set right bound of distribution
-    const _DataType b = (_DataType(high));
+    const _DataType b = static_cast<_DataType>(high);
 
-    mkl_rng::mt19937 *engine = reinterpret_cast<mkl_rng::mt19937 *> (random_state->engine);
-    mkl_rng::uniform<_DataType> distribution(a, b);
+    mkl_rng::mt19937 *engine = static_cast<mkl_rng::mt19937 *>(random_state->engine);
+
+    if constexpr (std::is_same<_DataType, int32_t>::value) {
+        if (q.get_device().has(sycl::aspect::fp64)) {
+            /**
+             * A note from oneMKL for oneapi::mkl::rng::uniform (Discrete):
+             * The oneapi::mkl::rng::uniform_method::standard uses the s BRNG type on GPU devices.
+             * This might cause the produced numbers to have incorrect statistics (due to rounding error)
+             * when abs(b-a) > 2^23 || abs(b) > 2^23 || abs(a) > 2^23. To get proper statistics for this case,
+             * use the oneapi::mkl::rng::uniform_method::accurate method instead.
+             */
+            using method_type = mkl_rng::uniform_method::accurate;
+            mkl_rng::uniform<_DataType, method_type> distribution(a, b);
+
+            // perform generation
+            try {
+                auto event = mkl_rng::generate(distribution, *engine, size, result);
+                event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+                return DPCTLEvent_Copy(event_ref);
+            } catch (const oneapi::mkl::unsupported_device&) {
+                // fall through to try with uniform_method::standard
+            } catch (const oneapi::mkl::unimplemented&) {
+                // fall through to try with uniform_method::standard
+            } catch (const std::exception &e) {
+                // TODO: add error reporting
+                return event_ref;
+            }
+        }
+    }
+
+    // uniform_method::standard is a method used by default
+    using method_type = mkl_rng::uniform_method::standard;
+    mkl_rng::uniform<_DataType, method_type> distribution(a, b);
 
     // perform generation
-    auto event_out = mkl_rng::generate(distribution, *engine, size, result1);
-    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
-
-    return DPCTLEvent_Copy(event_ref);
+    return dpnp_rng_generate<mkl_rng::uniform<_DataType, method_type>, mkl_rng::mt19937, _DataType>(
+        distribution, *engine, size, result);
 }
 
 template <typename _DataType>
@@ -2170,14 +2191,16 @@ void dpnp_rng_uniform_c(void* result, const long low, const long high, const siz
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
     mt19937_struct* mt19937 = new mt19937_struct();
     mt19937->engine = &DPNP_RNG_ENGINE;
+
     DPCTLSyclEventRef event_ref = dpnp_rng_uniform_c<_DataType>(q_ref,
                                                                 result,
-                                                                low,
-                                                                high,
-                                                                size,
+                                                                static_cast<double>(low),
+                                                                static_cast<double>(high),
+                                                                static_cast<int64_t>(size),
                                                                 mt19937,
                                                                 dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
     delete mt19937;
 }
 
@@ -2187,9 +2210,9 @@ void (*dpnp_rng_uniform_default_c)(void*, const long, const long, const size_t) 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_rng_uniform_ext_c)(DPCTLSyclQueueRef,
                                             void*,
-                                            const long,
-                                            const long,
-                                            const size_t,
+                                            const double,
+                                            const double,
+                                            const int64_t,
                                             void*,
                                             const DPCTLEventVectorRef) = dpnp_rng_uniform_c<_DataType>;
 
@@ -2875,6 +2898,7 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_normal_default_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_NORMAL_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_normal_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_NORMAL_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_normal_ext_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_PARETO][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_pareto_default_c<double>};
 
@@ -2924,9 +2948,6 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_standard_normal_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_rng_standard_normal_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_rng_standard_t_default_c<double>};

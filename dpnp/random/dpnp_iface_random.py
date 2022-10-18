@@ -34,19 +34,19 @@ Set of functions to implement NumPy random module API
 
 """
 
+import operator
 
-import dpnp
 import numpy
 
+import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-from dpnp.random.dpnp_algo_random import *
 
-import operator
+from .dpnp_random_state import RandomState
+from .dpnp_algo_random import *
 
 
 __all__ = [
-    'RandomState',
     'beta',
     'binomial',
     'bytes',
@@ -98,56 +98,11 @@ __all__ = [
 ]
 
 
-class RandomState:
-    """
-    A container for the Mersenne Twister pseudo-random number generator.
-
-    For full documentation refer to :obj:`numpy.random.RandomState`.
-    """
-
-    def __init__(self, seed=1, sycl_queue=None):
-        if seed is None:
-            seed = 1
-
-        self.random_state = MT19937(seed, sycl_queue)
-        self.fallback_random_state = call_origin(numpy.random.RandomState, seed)
-
-    def uniform(self, low=0.0, high=1.0, size=None, dtype=numpy.float64, usm_type="device"):
-        """
-        Draw samples from a uniform distribution.
-
-        Samples are uniformly distributed over the half-open interval [low, high) (includes low, but excludes high).
-        In other words, any value within the given interval is equally likely to be drawn by uniform.
-
-        For full documentation refer to :obj:`numpy.random.RandomState.uniform`.
-
-        Limitations
-        -----------
-        Parameters ``low`` and ``high`` are supported as scalar.
-        Otherwise, :obj:`numpy.random.uniform(low, high, size)` samples are drawn.
-        Parameter ``dtype`` is supported only for :obj:`dpnp.int32`, :obj:`dpnp.float32` or :obj:`dpnp.float64`.
-        Output array data type is the same as ``dtype``.
-        """
-
-        if not use_origin_backend(low):
-            if not dpnp.isscalar(low):
-                pass
-            elif not dpnp.isscalar(high):
-                pass
-            else:
-                if low > high:
-                    low, high = high, low
-                if not (dpnp.is_type_supported(dtype) and dtype in {dpnp.int32, dpnp.float32, dpnp.float64}):
-                    raise TypeError(f"{dtype} is unsupported.")
-                return self.random_state.uniform(low, high, size, dtype, usm_type).get_pyobj()
-
-        return call_origin(self.fallback_random_state.uniform, low, high, size)
-
-def _check_dims(dims):
-    for dim in dims:
-        if not isinstance(dim, int):
-            return False
-    return True
+def _get_random_state():
+    global _dpnp_random_state
+    if _dpnp_random_state is None:
+        _dpnp_random_state = RandomState()
+    return  _dpnp_random_state
 
 
 def beta(a, b, size=None):
@@ -819,8 +774,9 @@ def negative_binomial(n, p, size=None):
     return call_origin(numpy.random.negative_binomial, n, p, size)
 
 
-def normal(loc=0.0, scale=1.0, size=None):
-    """Normal distribution.
+def normal(loc=0.0, scale=1.0, size=None, usm_type='device'):
+    """
+    Normal distribution.
 
     Draw random samples from a normal (Gaussian) distribution.
 
@@ -839,20 +795,11 @@ def normal(loc=0.0, scale=1.0, size=None):
     >>> s = dpnp.random.normal(mu, sigma, 1000)
 
     """
-
-    if not use_origin_backend(loc):
-        # TODO:
-        # array_like of floats for `loc` and `scale` params
-        if not dpnp.isscalar(loc):
-            pass
-        elif not dpnp.isscalar(scale):
-            pass
-        elif scale < 0:
-            pass
-        else:
-            return dpnp_rng_normal(loc, scale, size).get_pyobj()
-
-    return call_origin(numpy.random.normal, loc, scale, size)
+    return _get_random_state().normal(loc=loc,
+                                      scale=scale,
+                                      size=size,
+                                      dtype=dpnp.float64,
+                                      usm_type=usm_type)
 
 
 def noncentral_chisquare(df, nonc, size=None):
@@ -1038,13 +985,14 @@ def power(a, size=None):
     return call_origin(numpy.random.power, a, size)
 
 
-def rand(d0, *dn):
+def rand(d0, *dn, usm_type="device"):
     """
-    Create an array of the given shape and populate it
-    with random samples from a uniform distribution over [0, 1).
+    Random values in a given shape.
+
+    Create an array of the given shape and populate it with random samples
+    from a uniform distribution over [0, 1).
 
     For full documentation refer to :obj:`numpy.random.rand`.
-
 
     Limitations
     -----------
@@ -1052,25 +1000,20 @@ def rand(d0, *dn):
 
     Examples
     --------
-    >>> s = dpnp.random.rand(2, 4)
+    >>> s = dpnp.random.rand(3, 2)
 
     See Also
     --------
     :obj:`dpnp.random.random`
+    :obj:`dpnp.random.random_sample`
+    :obj:`dpnp.random.uniform`
 
     """
 
-    if not use_origin_backend(d0):
-        dims = tuple([d0, *dn])
-        if not _check_dims(dims):
-            pass
-        else:
-            return dpnp_rng_random(dims).get_pyobj()
-
-    return call_origin(numpy.random.rand, d0, *dn)
+    return _get_random_state().rand(d0, *dn, usm_type=usm_type)
 
 
-def randint(low, high=None, size=None, dtype=int, usm_type='device'):
+def randint(low, high=None, size=None, dtype=int, usm_type="device"):
     """
     Return random integers from `low` (inclusive) to `high` (exclusive).
 
@@ -1078,10 +1021,9 @@ def randint(low, high=None, size=None, dtype=int, usm_type='device'):
 
     Limitations
     -----------
-    Parameters ``low`` and ``high`` are supported as scalar.
-    Parameter ``dtype`` is supported only for `int` or :obj:`dpnp.float32`.
-    Otherwise, :obj:`numpy.random.randint(low, high, size, dtype)` samples
-    are drawn.
+    Parameters ``low`` and ``high`` are supported only as scalar.
+    Parameter ``dtype`` is supported only as `int`.
+    Otherwise, :obj:`numpy.random.randint(low, high, size, dtype)` samples are drawn.
 
     Examples
     --------
@@ -1097,31 +1039,14 @@ def randint(low, high=None, size=None, dtype=int, usm_type='device'):
 
     """
 
-    if not use_origin_backend(low):
-        # TODO
-        # add to the limitations
-        if dtype is int:
-            _dtype = dpnp.int32
-        else:
-            _dtype = dpnp.dtype(dtype)
-        if high is None:
-            high = low
-            low = 0
-        # TODO:
-        # array_like of floats for `low` and `high` params
-        if int(low) >= int(high):
-            pass
-        elif _dtype is not dpnp.int32:
-            pass
-        else:
-            low = int(low)
-            high = int(high)
-            return dpnp_random_state.uniform(low, high, size, _dtype, usm_type)
-
-    return call_origin(numpy.random.randint, low, high, size, dtype)
+    return _get_random_state().randint(low=low,
+                                       high=high,
+                                       size=size,
+                                       dtype=dtype,
+                                       usm_type=usm_type)
 
 
-def randn(d0, *dn):
+def randn(d0, *dn, usm_type="device"):
     """
     Return a sample (or samples) from the "standard normal" distribution.
 
@@ -1147,17 +1072,10 @@ def randn(d0, *dn):
 
     """
 
-    if not use_origin_backend(d0):
-        dims = tuple([d0, *dn])
-        if not _check_dims(dims):
-            pass
-        else:
-            return dpnp_rng_randn(dims).get_pyobj()
-
-    return call_origin(numpy.random.randn, d0, *dn)
+    return _get_random_state().randn(d0, *dn, usm_type=usm_type)
 
 
-def random(size):
+def random(size=None, usm_type="device"):
     """
     Return random floats in the half-open interval [0.0, 1.0).
     Alias for random_sample.
@@ -1174,17 +1092,16 @@ def random(size):
 
     See Also
     --------
+    :obj:`dpnp.random.rand`
     :obj:`dpnp.random.random_sample`
+    :obj:`dpnp.random.uniform`
 
     """
 
-    if not use_origin_backend(size):
-        return dpnp_rng_random(size).get_pyobj()
-
-    return call_origin(numpy.random.random, size)
+    return random_sample(size=size, usm_type=usm_type)
 
 
-def random_integers(low, high=None, size=None):
+def random_integers(low, high=None, size=None, usm_type="device"):
     """
     Random integers between `low` and `high`, inclusive.
 
@@ -1202,25 +1119,27 @@ def random_integers(low, high=None, size=None):
 
     """
 
-    if not use_origin_backend(low):
-        if high is None:
-            high = low
-            low = 0
-        # TODO:
-        # array_like of floats for `low` and `high` params
-        if not dpnp.isscalar(low):
-            pass
-        elif not dpnp.isscalar(high):
-            pass
-        else:
-            return randint(low, int(high) + 1, size=size)
+    if high is None:
+        high = low
+        low = 0
+
+    # TODO:
+    # array_like of floats for `low` and `high` params
+    if not dpnp.isscalar(low):
+        pass
+    elif not dpnp.isscalar(high):
+        pass
+    else:
+        return randint(low, int(high) + 1, size=size, usm_type=usm_type)
 
     return call_origin(numpy.random.random_integers, low, high, size)
 
 
-def random_sample(size):
+def random_sample(size=None, usm_type="device"):
     """
     Return random floats in the half-open interval [0.0, 1.0).
+
+    Results are from the “continuous uniform” distribution over the interval.
 
     For full documentation refer to :obj:`numpy.random.random_sample`.
 
@@ -1230,21 +1149,21 @@ def random_sample(size):
 
     Examples
     --------
-    >>> s = dpnp.random.random_sample(1000)
+    >>> s = dpnp.random.random_sample((5,))
 
     See Also
     --------
+    :obj:`dpnp.random.rand`
     :obj:`dpnp.random.random`
+    :obj:`dpnp.random.uniform`
 
     """
 
-    if not use_origin_backend(size):
-        return dpnp_rng_random(size).get_pyobj()
-
-    return call_origin(numpy.random.random_sample, size)
+    return _get_random_state().random_sample(size=size,
+                                             usm_type=usm_type)
 
 
-def ranf(size):
+def ranf(size=None, usm_type="device"):
     """
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
@@ -1261,14 +1180,14 @@ def ranf(size):
 
     See Also
     --------
+    :obj:`dpnp.random.rand`
     :obj:`dpnp.random.random`
+    :obj:`dpnp.random.random_sample`
+    :obj:`dpnp.random.uniform`
 
     """
 
-    if not use_origin_backend(size):
-        return dpnp_rng_random(size).get_pyobj()
-
-    return call_origin(numpy.random.ranf, size)
+    return random_sample(size=size, usm_type=usm_type)
 
 
 def rayleigh(scale=1.0, size=None):
@@ -1305,7 +1224,7 @@ def rayleigh(scale=1.0, size=None):
     return call_origin(numpy.random.rayleigh, scale, size)
 
 
-def sample(size):
+def sample(size=None, usm_type="device"):
     """
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
@@ -1322,14 +1241,14 @@ def sample(size):
 
     See Also
     --------
+    :obj:`dpnp.random.rand`
     :obj:`dpnp.random.random`
+    :obj:`dpnp.random.random_sample`
+    :obj:`dpnp.random.uniform`
 
     """
 
-    if not use_origin_backend(size):
-        return dpnp_rng_random(size).get_pyobj()
-
-    return call_origin(numpy.random.sample, size)
+    return random_sample(size=size, usm_type=usm_type)
 
 
 def shuffle(x1):
@@ -1383,8 +1302,8 @@ def seed(seed=None):
             # migrate to a single approach with RandomState class
 
             # update a mt19937 random number for both RandomState and legacy functionality
-            global dpnp_random_state
-            dpnp_random_state = RandomState(seed)
+            global _dpnp_random_state
+            _dpnp_random_state = RandomState(seed)
             dpnp_rng_srand(seed)
 
     # always reseed numpy engine also
@@ -1479,7 +1398,7 @@ def standard_gamma(shape, size=None):
     return call_origin(numpy.random.standard_gamma, shape, size)
 
 
-def standard_normal(size=None):
+def standard_normal(size=None, usm_type="device"):
     """Standard normal distribution.
 
     Draw samples from a standard Normal distribution (mean=0, stdev=1).
@@ -1496,11 +1415,7 @@ def standard_normal(size=None):
     >>> s = dpnp.random.standard_normal(1000)
 
     """
-
-    if not use_origin_backend(size):
-        return dpnp_rng_standard_normal(size).get_pyobj()
-
-    return call_origin(numpy.random.standard_normal, size)
+    return _get_random_state().standard_normal(size=size, usm_type=usm_type)
 
 
 def standard_t(df, size=None):
@@ -1585,7 +1500,6 @@ def triangular(left, mode, right, size=None):
 
 def uniform(low=0.0, high=1.0, size=None, usm_type='device'):
     """
-
     Draw samples from a uniform distribution.
 
     For full documentation refer to :obj:`numpy.random.uniform`.
@@ -1607,7 +1521,11 @@ def uniform(low=0.0, high=1.0, size=None, usm_type='device'):
     :obj:`dpnp.random.random` : Floats uniformly distributed over ``[0, 1)``.
 
     """
-    return dpnp_random_state.uniform(low, high, size, dtype=numpy.float64, usm_type=usm_type)
+    return _get_random_state().uniform(low=low,
+                                       high=high,
+                                       size=size,
+                                       dtype=dpnp.float64,
+                                       usm_type=usm_type)
 
 
 def vonmises(mu, kappa, size=None):
@@ -1752,4 +1670,4 @@ def zipf(a, size=None):
     return call_origin(numpy.random.zipf, a, size)
 
 
-dpnp_random_state = RandomState()
+_dpnp_random_state = None
