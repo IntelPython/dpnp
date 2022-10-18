@@ -1675,23 +1675,15 @@ DPCTLSyclEventRef dpnp_rng_shuffle_c(DPCTLSyclQueueRef q_ref,
         // Fast, statically typed path: shuffle the underlying buffer.
         // Only for non-empty, 1d objects of class ndarray (subclasses such
         // as MaskedArrays may not support this approach).
-        char* buf = reinterpret_cast<char*>(sycl::malloc_shared(itemsize * sizeof(char), q));
+        void* buf = sycl::malloc_device(itemsize, q);
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
             if (i != j)
             {
-                auto memcpy1 =
-                    q.submit([&](sycl::handler& h) { h.memcpy(buf, result1 + j * itemsize, itemsize); });
-                auto memcpy2 = q.submit([&](sycl::handler& h) {
-                    h.depends_on({memcpy1});
-                    h.memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
-                });
-                auto memcpy3 = q.submit([&](sycl::handler& h) {
-                    h.depends_on({memcpy2});
-                    h.memcpy(result1 + i * itemsize, buf, itemsize);
-                });
-                memcpy3.wait();
+                auto memcpy1 = q.memcpy(buf, result1 + j * itemsize, itemsize);
+                auto memcpy2 = q.memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize, memcpy1);
+                q.memcpy(result1 + i * itemsize, buf, itemsize, memcpy2).wait();
             }
         }
         sycl::free(buf, q);
@@ -1700,23 +1692,15 @@ DPCTLSyclEventRef dpnp_rng_shuffle_c(DPCTLSyclQueueRef q_ref,
     {
         // Multidimensional ndarrays require a bounce buffer.
         size_t step_size = (size / high_dim_size) * itemsize; // size in bytes for x[i] element
-        char* buf = reinterpret_cast<char*>(sycl::malloc_shared(step_size * sizeof(char), q));
+        void* buf = sycl::malloc_device(step_size, q);
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
             if (j < i)
             {
-                auto memcpy1 =
-                    q.submit([&](sycl::handler& h) { h.memcpy(buf, result1 + j * step_size, step_size); });
-                auto memcpy2 = q.submit([&](sycl::handler& h) {
-                    h.depends_on({memcpy1});
-                    h.memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
-                });
-                auto memcpy3 = q.submit([&](sycl::handler& h) {
-                    h.depends_on({memcpy2});
-                    h.memcpy(result1 + i * step_size, buf, step_size);
-                });
-                memcpy3.wait();
+                auto memcpy1 = q.memcpy(buf, result1 + j * step_size, step_size);
+                auto memcpy2 = q.memcpy(result1 + j * step_size, result1 + i * step_size, step_size, memcpy1);
+                q.memcpy(result1 + i * step_size, buf, step_size, memcpy2).wait();
             }
         }
         sycl::free(buf, q);

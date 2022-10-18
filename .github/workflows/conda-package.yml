@@ -1,67 +1,509 @@
 name: Conda package
 
-on: push
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 env:
-  PACKAGE_NAME: dpctl
+  PACKAGE_NAME: dpnp
+  MODULE_NAME: dpnp
+  CHANNELS: '-c dppy/label/dev -c intel -c defaults --override-channels'
+  VER_JSON_NAME: 'version.json'
+  VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
+  VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
+  build_linux:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
 
     strategy:
       matrix:
-        python: [3.8, 3.9]
+        python: ['3.8', '3.9']
+
+    env:
+      conda-pkgs: '/home/runner/conda_pkgs_dir/'
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Checkout DPNP repo
+        uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 0
 
       - name: Checkout oneDPL
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
         with:
           repository: oneapi-src/oneDPL
           path: oneDPL
-          ref: oneDPL-2021.6.1-release
+          ref: oneDPL-2021.7.0-release
 
-      - name: Add conda to system path
-        run: echo $CONDA/bin >> $GITHUB_PATH
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python }}
+          miniconda-version: 'latest'
+          activate-environment: 'build'
+          use-only-tar-bz2: true
+
+      - name: Store conda paths as envs
+        run: echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/linux-64/" >> $GITHUB_ENV
+
       - name: Install conda-build
         run: conda install conda-build
+
+      - name: Cache conda packages
+        uses: actions/cache@v3.0.11
+        env:
+          CACHE_NUMBER: 1  # Increase to reset cache
+        with:
+          path: ${{ env.conda-pkgs }}
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+
       - name: Build conda package
-        run: ./scripts/build_conda_package.sh ${{ matrix.python }} $GITHUB_WORKSPACE/oneDPL
+        run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
+        env:
+          DPLROOT: '${{ github.workspace }}/oneDPL'
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.0
         with:
-          name: dpnp ${{ runner.os }} ${{ matrix.python }}
-          path: /usr/share/miniconda/conda-bld/linux-64/dpnp-*.tar.bz2
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
-  upload:
-    needs: build
-    if: ${{ github.ref == 'refs/heads/master' }}
-    runs-on: ubuntu-latest
+  build_windows:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
 
     strategy:
       matrix:
-        python: [3.8, 3.9]
+        python: ['3.8', '3.9']
+
+    env:
+      conda-pkgs: 'C:\Users\runneradmin\conda_pkgs_dir\'
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Checkout DPNP repo
+        uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 0
+
+      - name: Checkout oneDPL
+        uses: actions/checkout@v3.1.0
+        with:
+          repository: oneapi-src/oneDPL
+          path: oneDPL
+          ref: oneDPL-2021.7.0-release
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python }}
+          miniconda-version: 'latest'
+          activate-environment: 'build'
+          use-only-tar-bz2: true
+
+      - name: Store conda paths as envs
+        run: |
+          @echo on
+          (echo CONDA_BLD=%CONDA_PREFIX%\conda-bld\win-64\) >> %GITHUB_ENV%
+
+      - name: Cache conda packages
+        uses: actions/cache@v3.0.11
+        env:
+          CACHE_NUMBER: 1  # Increase to reset cache
+        with:
+          path: ${{ env.conda-pkgs }}
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+
+      - name: Install conda-build
+        run: conda install conda-build
+
+      - name: Build conda package
+        run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
+        env:
+          DPLROOT: '%GITHUB_WORKSPACE%\oneDPL'
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+
+  test_linux:
+    needs: build_linux
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    strategy:
+      matrix:
+        python: ['3.8', '3.9']
+        dpctl: ['0.13.0']
+        experimental: [false]
+
+    continue-on-error: ${{ matrix.experimental }}
+
+    env:
+      conda-pkgs: '/home/runner/conda_pkgs_dir/'
+      channel-path: '${{ github.workspace }}/channel/'
+      pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
+      extracted-pkg-path: '${{ github.workspace }}/pkg/'
+      tests-path: '${{ github.workspace }}/pkg/info/test/tests/'
+      ver-json-path: '${{ github.workspace }}/version.json'
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3.0.0
         with:
-          name: dpnp ${{ runner.os }} ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: ${{ env.pkg-path-in-channel }}
+
+      - name: Extract package archive
+        run: |
+          mkdir -p ${{ env.extracted-pkg-path }}
+          tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python }}
+          miniconda-version: 'latest'
+          activate-environment: 'test'
+
+      # Needed to be able to run conda index
+      - name: Install conda-build
+        run: conda install conda-build
+
+      - name: Create conda channel
+        run: conda index ${{ env.channel-path }}
+
+      - name: Test conda channel
+        run: |
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          cat ${{ env.ver-json-path }}
+
+      - name: Collect dependencies
+        run: |
+          export PACKAGE_VERSION=$(python -c "${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}")
+
+          echo PACKAGE_VERSION=${PACKAGE_VERSION}
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+
+          conda install ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
+          cat lockfile
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+
+      - name: Cache conda packages
+        uses: actions/cache@v3.0.11
+        env:
+          CACHE_NUMBER: 1  # Increase to reset cache
+        with:
+          path: ${{ env.conda-pkgs }}
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+
+      - name: Install dpnp
+        run: conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} dpctl=${{ matrix.dpctl }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+
+      - name: List installed packages
+        run: conda list
+
+      - name: Smoke test
+        run: python -c "import dpnp, dpctl; dpctl.lsplatform()"
+        env:
+          OCL_ICD_FILENAMES: 'libintelocl.so'
+
+      # TODO: run the whole scope once the issues on CPU are resolved
+      - name: Run tests
+        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_special.py
+        env:
+          OCL_ICD_FILENAMES: 'libintelocl.so'
+        working-directory: ${{ env.tests-path }}
+
+  test_windows:
+    needs: build_windows
+
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
+
+    strategy:
+      matrix:
+        python: ['3.8', '3.9']
+        dpctl: ['0.13.0']
+        experimental: [false]
+
+    continue-on-error: ${{ matrix.experimental }}
+
+    env:
+      conda-pkgs: 'C:\Users\runneradmin\conda_pkgs_dir\'
+      channel-path: '${{ github.workspace }}\channel\'
+      pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
+      extracted-pkg-path: '${{ github.workspace }}\pkg'
+      tests-path: '${{ github.workspace }}\pkg\info\test\tests\'
+      ver-json-path: '${{ github.workspace }}\version.json'
+      active-env-name: 'test'
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: ${{ env.pkg-path-in-channel }}
+
+      - name: Extract package archive
+        run: |
+          @echo on
+          mkdir -p ${{ env.extracted-pkg-path }}
+
+          set SEARCH_SCRIPT="DIR ${{ env.pkg-path-in-channel }} /s/b | FINDSTR /r "dpnp-.*\.tar\.bz2""
+          FOR /F "tokens=* USEBACKQ" %%F IN (`%SEARCH_SCRIPT%`) DO (
+            SET FULL_PACKAGE_PATH=%%F
+          )
+          echo FULL_PACKAGE_PATH: %FULL_PACKAGE_PATH%
+
+          python -c "import shutil; shutil.unpack_archive(r\"%FULL_PACKAGE_PATH%\", extract_dir=r\"${{ env.extracted-pkg-path }}\")"
+          dir ${{ env.extracted-pkg-path }}
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python }}
+          miniconda-version: 'latest'
+          activate-environment: ${{ env.active-env-name }}
+
+      - name: Store conda paths as envs
+        run: |
+          @echo on
+          (echo CONDA_LIB_PATH=%CONDA_PREFIX%\Library\lib\) >> %GITHUB_ENV%
+          (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
+
+      # Needed to be able to run conda index
+      - name: Install conda-build
+        run: conda install conda-build
+
+      - name: Create conda channel
+        run: conda index ${{ env.channel-path }}
+
+      - name: Test conda channel
+        run: |
+          @echo on
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+
+      - name: Dump version.json
+        run: more ${{ env.ver-json-path }}
+
+      - name: Collect dependencies
+        run: |
+          @echo on
+          set "SCRIPT=${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}"
+          FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
+             SET PACKAGE_VERSION=%%F
+          )
+          echo PACKAGE_VERSION: %PACKAGE_VERSION%
+          (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
+
+          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% dpctl=${{ matrix.dpctl }} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+
+      - name: Dump lockfile
+        run: more lockfile
+
+      - name: Cache conda packages
+        uses: actions/cache@v3.0.11
+        env:
+          CACHE_NUMBER: 1  # Increase to reset cache
+        with:
+          path: ${{ env.conda-pkgs }}
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+
+      - name: Install opencl_rt
+        run: conda install opencl_rt -c intel --override-channels
+
+      - name: Install dpnp
+        run: |
+          @echo on
+          conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} dpctl=${{ matrix.dpctl }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+
+      - name: List installed packages
+        run: conda list
+
+      - name: Add library
+        shell: pwsh
+        run: |
+          # Make sure the below libraries exist
+          Get-Item -Path "$env:CONDA_LIB_BIN_PATH\OpenCL.dll"
+          Get-Item -Path "$env:CONDA_LIB_PATH\intelocl64.dll"
+
+          echo "OCL_ICD_FILENAMES = $env:CONDA_LIB_PATH\intelocl64.dll" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          try {$list = Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors | Select-Object -ExpandProperty Property } catch {$list=@()}
+
+          if ($list.count -eq 0) {
+              if (-not (Test-Path -Path HKLM:\SOFTWARE\Khronos)) {
+                 New-Item -Path HKLM:\SOFTWARE\Khronos
+              }
+
+              if (-not (Test-Path -Path HKLM:\SOFTWARE\Khronos\OpenCL)) {
+                 New-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL
+              }
+
+              if (-not (Test-Path -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors)) {
+                 New-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors
+              }
+
+              New-ItemProperty -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors -Name "$env:CONDA_LIB_PATH\intelocl64.dll" -Value 0
+              try {$list = Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors | Select-Object -ExpandProperty Property } catch {$list=@()}
+              Write-Output $(Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors)
+
+              # Now copy OpenCL.dll into system folder
+              $system_ocl_icd_loader="C:\Windows\System32\OpenCL.dll"
+              $python_ocl_icd_loader="$env:CONDA_LIB_BIN_PATH\OpenCL.dll"
+              Copy-Item -Path $python_ocl_icd_loader -Destination $system_ocl_icd_loader
+
+              if (Test-Path -Path $system_ocl_icd_loader) {
+                 Write-Output "$system_ocl_icd_loader has been copied"
+                 $acl = Get-Acl $system_ocl_icd_loader
+                 Write-Output $acl
+              } else {
+                 Write-Output "OCL-ICD-Loader was not copied"
+              }
+
+              # Configuration variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
+              $cl_cfg="$env:CONDA_LIB_PATH\cl.cfg"
+              Write-Output "`n>>> Dump content of $cl_cfg`n" (Get-Content $cl_cfg) "`n<<< end of dump`n"
+              (Get-Content $cl_cfg) -replace '^CL_CONFIG_TBB_DLL_PATH =.*', "CL_CONFIG_TBB_DLL_PATH = $env:CONDA_LIB_BIN_PATH" | Set-Content $cl_cfg
+              Write-Output "`n>>> Dump content of modified $cl_cfg`n" (Get-Content $cl_cfg) "`n<<< end of dump`n"
+          }
+
+      - name: Smoke test
+        run: python -c "import dpnp, dpctl; dpctl.lsplatform()"
+
+      # TODO: run the whole scope once the issues on CPU are resolved
+      - name: Run tests
+        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_special.py
+        working-directory: ${{ env.tests-path }}
+
+  upload_linux:
+    needs: test_linux
+
+    if: |
+      !github.event.pull_request.head.repo.fork  &&
+      (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    strategy:
+      matrix:
+        python: ['3.8', '3.9']
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python }}
+          miniconda-version: 'latest'
+          activate-environment: 'upload'
 
       - name: Install anaconda-client
         run: conda install anaconda-client
-      - name: Add conda to system path
-        run: echo $CONDA/bin >> $GITHUB_PATH
 
       - name: Upload
+        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: |
-          conda install anaconda-client
-          anaconda --token $ANACONDA_TOKEN upload --user dppy --label dev dpnp-*.tar.bz2
+
+  upload_windows:
+    needs: test_windows
+
+    if: |
+      !github.event.pull_request.head.repo.fork  &&
+      (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
+
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
+
+    strategy:
+      matrix:
+        python: ['3.8', '3.9']
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python }}
+          miniconda-version: 'latest'
+          activate-environment: 'upload'
+
+      - name: Install anaconda-client
+        run: conda install anaconda-client
+
+      - name: Upload
+        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}

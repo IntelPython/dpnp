@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,7 @@ def erf(in_array1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(in_array1, copy_when_strides=False)
+    x1_desc = dpnp.get_dpnp_descriptor(in_array1, copy_when_strides=False, copy_when_nondefault_queue=False)
     if x1_desc:
         return dpnp_erf(x1_desc).get_pyobj()
 

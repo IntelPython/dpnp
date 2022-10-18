@@ -101,6 +101,7 @@ void dpnp_correlate_c(void* result_out,
         where,
         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
@@ -298,6 +299,7 @@ void dpnp_count_nonzero_c(void* array1_in, void* result1_out, size_t size)
                                                                                           size,
                                                                                           dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType_input, typename _DataType_output>
@@ -539,6 +541,7 @@ void dpnp_max_c(void* array1_in,
                                                         naxis,
                                                         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -636,6 +639,7 @@ void dpnp_mean_c(void* array1_in,
                                                                       naxis,
                                                                       dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -721,6 +725,7 @@ void dpnp_median_c(void* array1_in,
                                                                         naxis,
                                                                         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -963,6 +968,7 @@ void dpnp_min_c(void* array1_in,
                                                         naxis,
                                                         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -1044,6 +1050,7 @@ void dpnp_nanvar_c(void* array1_in, void* mask_arr1, void* result1, const size_t
                                                            arr_size,
                                                            dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -1100,17 +1107,20 @@ DPCTLSyclEventRef dpnp_std_c(DPCTLSyclQueueRef q_ref,
                                                                       q));
     *var_strides = 1;
 
-    dpnp_sqrt_c<_ResultType, _ResultType>(result1,
-                                          result1_size,
-                                          result1_ndim,
-                                          result1_shape,
-                                          result1_strides,
-                                          var,
-                                          var_size,
-                                          var_ndim,
-                                          var_shape,
-                                          var_strides,
-                                          NULL);
+    DPCTLSyclEventRef e_sqrt_ref =
+	dpnp_sqrt_c<_ResultType, _ResultType>(q_ref, result1,
+					      result1_size,
+					      result1_ndim,
+					      result1_shape,
+					      result1_strides,
+					      var,
+					      var_size,
+					      var_ndim,
+					      var_shape,
+					      var_strides,
+					      NULL, NULL);
+    DPCTLEvent_WaitAndThrow(e_sqrt_ref);
+    DPCTLEvent_Delete(e_sqrt_ref);
 
     sycl::free(var, q);
     sycl::free(result1_shape, q);
@@ -1142,6 +1152,7 @@ void dpnp_std_c(void* array1_in,
                                                                      ddof,
                                                                      dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -1253,6 +1264,7 @@ void dpnp_var_c(void* array1_in,
                                                                      ddof,
                                                                      dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>

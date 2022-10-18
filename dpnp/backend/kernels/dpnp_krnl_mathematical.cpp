@@ -170,6 +170,8 @@ DPCTLSyclEventRef dpnp_elemwise_absolute_c(DPCTLSyclQueueRef q_ref,
         event = q.submit(kernel_func);
     }
 
+    input1_ptr.depends_on(event);
+    result1_ptr.depends_on(event);
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
     return DPCTLEvent_Copy(event_ref);
@@ -483,6 +485,8 @@ DPCTLSyclEventRef dpnp_ediff1d_c(DPCTLSyclQueueRef q_ref,
     };
     event = q.submit(kernel_func);
 
+    input1_ptr.depends_on(event);
+    result_ptr.depends_on(event);
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
     return DPCTLEvent_Copy(event_ref);
@@ -676,6 +680,7 @@ void dpnp_floor_divide_c(void* result_out,
         where,
         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
@@ -770,6 +775,7 @@ void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t s
                                                                                  size,
                                                                                  dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType_input, typename _DataType_output>
@@ -911,6 +917,7 @@ void dpnp_remainder_c(void* result_out,
         where,
         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
@@ -1041,6 +1048,7 @@ void dpnp_trapz_c(
                                                                                                      array2_size,
                                                                                                      dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>

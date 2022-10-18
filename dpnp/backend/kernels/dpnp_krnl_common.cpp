@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -97,6 +97,7 @@ void dpnp_astype_c(const void* array1_in, void* result1, const size_t size)
                                                                         size,
                                                                         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -477,6 +478,7 @@ void dpnp_dot_c(void* result_out,
                                                                                                    input2_strides,
                                                                                                    dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
@@ -614,6 +616,7 @@ void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
                                                                      size,
                                                                      dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -707,6 +710,7 @@ void dpnp_eigvals_c(const void* array_in, void* result1, size_t size)
                                                                          size,
                                                                          dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -774,7 +778,7 @@ void dpnp_initval_c(void* result1, void* value, size_t size)
                                                             size,
                                                             dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
-
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -941,6 +945,7 @@ void dpnp_matmul_c(void* result_out,
                                                            input2_strides,
                                                            dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -1112,10 +1117,24 @@ void func_map_init_linalg(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eig_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eig_default_c<double, double>};
 
+    fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_eig_ext_c<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eig_ext_c<int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eig_ext_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eig_ext_c<double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_eigvals_default_c<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eigvals_default_c<int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eigvals_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eigvals_default_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_EIGVALS_EXT][eft_INT][eft_INT] = {eft_DBL,
+                                                                 (void*)dpnp_eigvals_ext_c<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIGVALS_EXT][eft_LNG][eft_LNG] = {eft_DBL,
+                                                                 (void*)dpnp_eigvals_ext_c<int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIGVALS_EXT][eft_FLT][eft_FLT] = {eft_FLT,
+                                                                 (void*)dpnp_eigvals_ext_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_EIGVALS_EXT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                 (void*)dpnp_eigvals_ext_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_initval_default_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_initval_default_c<int32_t>};

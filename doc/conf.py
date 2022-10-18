@@ -27,13 +27,13 @@ with open('reference/comparison_table.rst.inc', 'w') as fd:
 # -- Project information -----------------------------------------------------
 
 project = 'dpnp'
-copyright = '2020, Intel'
+copyright = '2020-2022, Intel'
 author = 'Intel'
 
 # The short X.Y version
 version = '0.10'
 # The full version, including alpha/beta/rc tags
-release = '0.10.1'
+release = '0.10.2'
 
 
 # -- General configuration ---------------------------------------------------
@@ -73,7 +73,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
