@@ -7,6 +7,25 @@ import numpy
 import tempfile
 
 
+@pytest.mark.parametrize("start",
+                         [0, -5, 10, -2.5, 9.7],
+                         ids=['0', '-5', '10', '-2.5', '9.7'])
+@pytest.mark.parametrize("stop",
+                         [None, 10, -2, 20.5, 10**5],
+                         ids=['None', '10', '-2', '20.5', '10**5'])
+@pytest.mark.parametrize("step",
+                         [None, 1, 2.7, -1.6, 100],
+                         ids=['None', '1', '2.5', '-1.5', '100'])
+@pytest.mark.parametrize("dtype",
+                         [numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, numpy.float16, numpy.int64, numpy.int32],
+                         ids=['complex128', 'complex64', 'float64', 'float32', 'float16', 'int64', 'int32'])
+def test_arange(start, stop, step, dtype):
+    numpy_array = numpy.arange(start, stop=stop, step=step, dtype=dtype)
+    dpnp_array = dpnp.arange(start, stop=stop, step=step, dtype=dtype)
+
+    numpy.testing.assert_array_equal(numpy_array, dpnp_array)
+
+
 @pytest.mark.parametrize("k",
                          [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
                          ids=['-6', '-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5', '6'])
