@@ -139,10 +139,10 @@ def asnumpy(input, order='C'):
 
     """
     if isinstance(input, dpnp_array):
-        return dpt.to_numpy(input.get_array())
+        return dpt.asnumpy(input.get_array())
 
     if isinstance(input, dpt.usm_ndarray):
-        return dpt.to_numpy(input)
+        return dpt.asnumpy(input)
 
     return numpy.asarray(input, order=order)
 
@@ -150,12 +150,12 @@ def asnumpy(input, order='C'):
 def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
     """Copy the array with data type casting."""
     if isinstance(x1, dpnp_array):
-        return dpt.astype(x1.get_array(), dtype, order=order, casting=casting, copy=copy)
+        return x1.astype(dtype, order=order, casting=casting, copy=copy)
 
     if isinstance(x1, dpt.usm_ndarray):
         return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
 
-    x1_desc = get_dpnp_descriptor(x1)
+    x1_desc = get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if not x1_desc:
         pass
     elif order != 'K':

@@ -102,7 +102,8 @@ def copy_from_origin(dst, src):
     """Copy origin result to output result."""
     if hasattr(dst, "__sycl_usm_array_interface__"):
         if src.size:
-            dpctl.tensor._copy_utils._copy_from_numpy_into(unwrap_array(dst), src)
+            dst_dpt = unwrap_array(dst)
+            dst_dpt[...] = src
     else:
         for i in range(dst.size):
             dst.flat[i] = src.item(i)
