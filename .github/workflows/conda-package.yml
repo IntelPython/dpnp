@@ -31,24 +31,24 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.10.0
+        uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 0
 
       - name: Checkout oneDPL
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
         with:
           repository: oneapi-src/oneDPL
           path: oneDPL
           ref: oneDPL-2021.7.0-release
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -63,7 +63,7 @@ jobs:
         run: conda install conda-build
 
       - name: Cache conda packages
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -80,7 +80,7 @@ jobs:
           DPLROOT: '${{ github.workspace }}/oneDPL'
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
@@ -101,24 +101,24 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.10.0
+        uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 0
 
       - name: Checkout oneDPL
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
         with:
           repository: oneapi-src/oneDPL
           path: oneDPL
           ref: oneDPL-2021.7.0-release
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -132,7 +132,7 @@ jobs:
           (echo CONDA_BLD=%CONDA_PREFIX%\conda-bld\win-64\) >> %GITHUB_ENV%
 
       - name: Cache conda packages
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -152,7 +152,7 @@ jobs:
           DPLROOT: '%GITHUB_WORKSPACE%\oneDPL'
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
@@ -184,7 +184,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -195,7 +195,7 @@ jobs:
           tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -227,7 +227,7 @@ jobs:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
       - name: Cache conda packages
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -248,12 +248,14 @@ jobs:
 
       - name: Smoke test
         run: python -c "import dpnp, dpctl; dpctl.lsplatform()"
+        env:
+          OCL_ICD_FILENAMES: 'libintelocl.so'
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
-        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_mathematical.py test_special.py
+        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_special.py
         env:
-          SYCL_ENABLE_HOST_DEVICE: '1'
+          OCL_ICD_FILENAMES: 'libintelocl.so'
         working-directory: ${{ env.tests-path }}
 
   test_windows:
@@ -284,7 +286,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -304,7 +306,7 @@ jobs:
           dir ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -350,7 +352,7 @@ jobs:
         run: more lockfile
 
       - name: Cache conda packages
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -426,7 +428,7 @@ jobs:
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
-        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_mathematical.py test_special.py
+        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_special.py
         working-directory: ${{ env.tests-path }}
 
   upload_linux:
@@ -448,12 +450,12 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -486,12 +488,12 @@ jobs:
         python: ['3.8', '3.9']
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}

@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,9 @@ import dpnp.config as config
 import collections
 
 import dpctl
+import dpctl.tensor as dpt
 
+from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.fft import *
@@ -62,7 +64,8 @@ __all__ = [
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu",
     "get_dpnp_descriptor",
-    "get_include"
+    "get_include",
+    "get_normalized_queue_device"
 ]
 
 from dpnp.dpnp_iface_arraycreation import *
@@ -135,26 +138,24 @@ def asnumpy(input, order='C'):
     This function works exactly the same as :obj:`numpy.asarray`.
 
     """
+    if isinstance(input, dpnp_array):
+        return dpt.asnumpy(input.get_array())
 
-    if isinstance(input, dpctl.tensor.usm_ndarray):
-        return dpctl.tensor.to_numpy(input)
-
-    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
-        return dpctl.tensor.to_numpy(input.get_array())
+    if isinstance(input, dpt.usm_ndarray):
+        return dpt.asnumpy(input)
 
     return numpy.asarray(input, order=order)
 
 
 def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
     """Copy the array with data type casting."""
-    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(x1, "__sycl_usm_array_interface__"):
-        import dpctl.tensor as dpt
-        # TODO: remove check dpctl.tensor has attribute "astype"
-        if hasattr(dpt, "astype"):
-            # return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
-            return dpt.astype(x1.get_array(), dtype, order=order, casting=casting, copy=copy)
+    if isinstance(x1, dpnp_array):
+        return x1.astype(dtype, order=order, casting=casting, copy=copy)
 
-    x1_desc = get_dpnp_descriptor(x1)
+    if isinstance(x1, dpt.usm_ndarray):
+        return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
+
+    x1_desc = get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if not x1_desc:
         pass
     elif order != 'K':
@@ -248,3 +249,50 @@ def get_include():
     dpnp_path = os.path.join(os.path.dirname(__file__), "backend", "include")
 
     return dpnp_path
+
+
+def get_normalized_queue_device(obj=None,
+                                device=None,
+                                sycl_queue=None):
+    """
+    Utility to process complementary keyword arguments 'device' and 'sycl_queue'
+    in subsequent calls of functions from `dpctl.tensor` module.
+
+    If both arguments 'device' and 'sycl_queue' have default value `None`
+    and 'obj' has `sycl_queue` attribute, it assumes that Compute Follows Data
+    approach has to be applied and so the resulting SYCL queue will be normalized
+    based on the queue value from 'obj'.
+
+    Args:
+        obj (optional): A python object. Can be an instance of `dpnp_array`,
+            `dpctl.tensor.usm_ndarray`, an object representing SYCL USM allocation
+            and implementing `__sycl_usm_array_interface__` protocol,
+            an instance of `numpy.ndarray`, an object supporting Python buffer protocol,
+            a Python scalar, or a (possibly nested) sequence of Python scalars.
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            explicitly indicates where USM allocation is done
+            and the population code (if any) is executed.
+            Value `None` is interpreted as get the SYCL queue
+            from `obj` parameter if not None, from `device` keyword,
+            or use default queue.
+            Default: None
+        device (string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,
+            :class:`dpctl.tensor.Device`, optional):
+            array-API keyword indicating non-partitioned SYCL device
+            where array is allocated.
+    Returns
+        :class:`dpctl.SyclQueue` object normalized by `normalize_queue_device` call
+        of `dpctl.tensor` module invoked with 'device' and 'sycl_queue' values.
+        If both incoming 'device' and 'sycl_queue' are None and 'obj' has `sycl_queue` attribute,
+        the normalization will be performed for 'obj.sycl_queue' value.
+    Raises:
+        TypeError: if argument is not of the expected type, or keywords
+            imply incompatible queues.
+    """
+    if device is None and sycl_queue is None and obj is not None and hasattr(obj, 'sycl_queue'):
+        sycl_queue = obj.sycl_queue
+
+    # TODO: remove check dpt._device has attribute 'normalize_queue_device'
+    if hasattr(dpt._device, 'normalize_queue_device'):
+        return dpt._device.normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    return sycl_queue
