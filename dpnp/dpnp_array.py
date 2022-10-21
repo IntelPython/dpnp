@@ -443,7 +443,9 @@ class dpnp_array:
 
         """
 
-        return dpnp.astype(self, dtype, order, casting, subok, copy)
+        new_array = self.__new__(dpnp_array)
+        new_array._array_obj = dpt.astype(self._array_obj, dtype, order=order, casting=casting, copy=copy)
+        return new_array
 
  # 'base',
  # 'byteswap',
