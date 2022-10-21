@@ -116,7 +116,7 @@ def call_origin(function, *args, **kwargs):
 
     if config.__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__:
         raise NotImplementedError(f"Requested funtion={function.__name__} with args={args} and kwargs={kwargs} "
-                                  "isn't currently supported, fallback on NumPy implementation.")
+                                  "isn't currently supported and would fall back on NumPy implementation.")
 
     dpnp_inplace = kwargs.pop("dpnp_inplace", False)
     # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}, \n\t dpnp_inplace={dpnp_inplace}")
