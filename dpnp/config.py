@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -41,11 +41,6 @@ Explicitly use GPU for SYCL queue
 __DPNP_OUTPUT_NUMPY__ = int(os.getenv('DPNP_OUTPUT_NUMPY', 0))
 '''
 Explicitly use NumPy.ndarray as return type for creation functions
-'''
-
-__DPNP_OUTPUT_DPCTL__ = int(os.getenv('DPNP_OUTPUT_DPCTL', 1))
-'''
-Explicitly use DPCtl package container as return type for creation functions
 '''
 
 __DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__ = int(os.getenv('DPNP_OUTPUT_DPCTL_DEFAULT_SHARED', 0))
