@@ -140,7 +140,7 @@ def arange(start,
                                      usm_type=usm_type,
                                      sycl_queue=sycl_queue)
 
-    return call_origin(numpy.arange, start, stop=stop, step=step, dtype=dtype)
+    return call_origin(numpy.arange, start, stop=stop, step=step, dtype=dtype, like=like)
 
 
 def array(x1,
