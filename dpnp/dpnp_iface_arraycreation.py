@@ -674,6 +674,7 @@ def fromstring(string, **kwargs):
 
 def full(shape,
          fill_value,
+         *,
          dtype=None,
          order="C",
          like=None,
@@ -688,6 +689,7 @@ def full(shape,
     Limitations
     -----------
     Parameter ``like`` is supported only with default value ``None``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -704,17 +706,17 @@ def full(shape,
     [10, 10, 10, 10]
 
     """
+    if dtype is None:
+        dtype = array(fill_value).dtype.type # TODO simplify
     if like is None:
-        if dtype is None:
-            dtype = numpy.array(fill_value).dtype.type  # TODO simplify
         return dpnp_container.full(shape,
-                                   fill_value,
-                                   dtype=dtype,
-                                   device=device,
-                                   usm_type=usm_type,
-                                   sycl_queue=sycl_queue)
+                                fill_value,
+                                dtype=dtype,
+                                device=device,
+                                usm_type=usm_type,
+                                sycl_queue=sycl_queue)
 
-    return call_origin(numpy.full, shape, fill_value, dtype, order)
+    return call_origin(numpy.full, shape, fill_value, dtype, order, like=like)
 
 
 # numpy.full_like(a, fill_value, dtype=None, order='K', subok=True, shape=None)

@@ -179,7 +179,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FMOD,                         /**< Used in numpy.fmod() impl  */
     DPNP_FN_FMOD_EXT,                     /**< Used in numpy.fmod() impl, requires extra parameters  */
     DPNP_FN_FULL,                         /**< Used in numpy.full() impl  */
-    DPNP_FN_FULL_EXT,                     /**< Used in numpy.full() impl, requires extra parameters  */
     DPNP_FN_FULL_LIKE,                    /**< Used in numpy.full_like() impl  */
     DPNP_FN_FULL_LIKE_EXT,                /**< Used in numpy.full_like() impl, requires extra parameters  */
     DPNP_FN_HYPOT,                        /**< Used in numpy.hypot() impl  */

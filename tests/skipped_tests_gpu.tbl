@@ -529,8 +529,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_int
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_contiguity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_scalar
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_default_dtype_cpu_input
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_like
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_scalar
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape
@@ -603,7 +601,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_K_strides
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_zero_sized_array_strides
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_default_dtype
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_like_subok

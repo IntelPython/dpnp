@@ -819,9 +819,9 @@ cpdef utils.dpnp_descriptor dpnp_rng_negative_binomial(double a, double p, size)
 
     if p == 0.0:
         filled_val = numpy.iinfo(dtype).min
-        return utils.dpnp_descriptor(dpnp.full(size, filled_val, dtype))
+        return utils.dpnp_descriptor(dpnp.full(size, filled_val, dtype=dtype))
     elif p == 1.0:
-        return utils.dpnp_descriptor(dpnp.full(size, 0, dtype))
+        return utils.dpnp_descriptor(dpnp.full(size, 0, dtype=dtype))
     else:
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -900,7 +900,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_normal(double loc, double scale, size):
     cdef c_dpctl.DPCTLSyclEventRef event_ref
 
     if scale == 0.0:
-        return utils.dpnp_descriptor(dpnp.full(size, loc, dtype))
+        return utils.dpnp_descriptor(dpnp.full(size, loc, dtype=dtype))
     else:
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -981,7 +981,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_poisson(double lam, size):
     cdef c_dpctl.DPCTLSyclEventRef event_ref
 
     if lam == 0:
-        return utils.dpnp_descriptor(dpnp.full(size, 0, dtype))
+        return utils.dpnp_descriptor(dpnp.full(size, 0, dtype=dtype))
     else:
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -1129,7 +1129,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_rayleigh(double scale, size):
     cdef c_dpctl.DPCTLSyclEventRef event_ref
 
     if scale == 0.0:
-        return utils.dpnp_descriptor(dpnp.full(size, 0.0, dtype))
+        return utils.dpnp_descriptor(dpnp.full(size, 0.0, dtype=dtype))
     else:
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -1290,7 +1290,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_gamma(double shape, size):
     cdef c_dpctl.DPCTLSyclEventRef event_ref
 
     if shape == 0.0:
-        return utils.dpnp_descriptor(dpnp.full(size, 0.0, dtype))
+        return utils.dpnp_descriptor(dpnp.full(size, 0.0, dtype=dtype))
     else:
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -1435,7 +1435,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_uniform(long low, long high, size, dtype):
     cdef c_dpctl.DPCTLSyclEventRef event_ref
 
     if low == high:
-        return utils.dpnp_descriptor(dpnp.full(size, low, dtype))
+        return utils.dpnp_descriptor(dpnp.full(size, low, dtype=dtype))
     else:
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)

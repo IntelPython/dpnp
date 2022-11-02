@@ -34,6 +34,7 @@ This module contains code and dependency on diffrent containers used in DPNP
 """
 
 
+import dpctl.utils as dpu
 import dpctl.tensor as dpt
 
 from dpnp.dpnp_array import dpnp_array
@@ -91,11 +92,14 @@ def empty(shape,
 
 def full(shape,
          fill_value,
-         dtype="f8",
+         *,
+         dtype=None,
          order="C",
          device=None,
          usm_type="device",
          sycl_queue=None):
+    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    dpu.validate_usm_type(usm_type, allow_none=True)
     sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
 
     """Creates `dpnp_array` where every element is equal to fill_value."""
