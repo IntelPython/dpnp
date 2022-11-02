@@ -169,7 +169,6 @@ jobs:
     strategy:
       matrix:
         python: ['3.8', '3.9']
-        dpctl: ['0.13.0']
         experimental: [false]
 
     continue-on-error: ${{ matrix.experimental }}
@@ -239,7 +238,7 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Install dpnp
-        run: conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} dpctl=${{ matrix.dpctl }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        run: conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
@@ -270,7 +269,6 @@ jobs:
     strategy:
       matrix:
         python: ['3.8', '3.9']
-        dpctl: ['0.13.0']
         experimental: [false]
 
     continue-on-error: ${{ matrix.experimental }}
@@ -344,7 +342,7 @@ jobs:
           echo PACKAGE_VERSION: %PACKAGE_VERSION%
           (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
 
-          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% dpctl=${{ matrix.dpctl }} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
+          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
@@ -369,7 +367,7 @@ jobs:
       - name: Install dpnp
         run: |
           @echo on
-          conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} dpctl=${{ matrix.dpctl }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 

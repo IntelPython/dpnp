@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,6 @@ import numpy
 
 
 __all__ = [
-    "dpnp_arange",
     "dpnp_astype",
     "dpnp_flatten",
     "dpnp_init_val",
@@ -74,9 +73,6 @@ include "dpnp_algo_statistics.pyx"
 include "dpnp_algo_trigonometric.pyx"
 
 
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_arange_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                        size_t, size_t, void *, size_t,
-                                                        const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_astype_t)(c_dpctl.DPCTLSyclQueueRef,
                                                         const void *, void * , const size_t,
                                                         const c_dpctl.DPCTLEventVectorRef)
@@ -90,39 +86,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_flatten_t)(c_dpctl.DPCTLSyclQueueR
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_initval_t)(c_dpctl.DPCTLSyclQueueRef,
                                                          void *, void * , size_t,
                                                          const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef utils.dpnp_descriptor dpnp_arange(start, stop, step, dtype):
-    obj_len = int(numpy.ceil((stop - start) / step))
-    if obj_len < 0:
-        raise ValueError(f"DPNP dpnp_arange(): Negative array size (start={start},stop={stop},step={step})")
-
-    cdef tuple obj_shape = utils._object_to_tuple(obj_len)
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ARANGE_EXT, param1_type, param1_type)
-
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(obj_shape, kernel_data.return_type, None)
-
-    # for i in range(result.size):
-    #     result[i] = start + i
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_dpnp_arange_t func = <fptr_dpnp_arange_t > kernel_data.ptr
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    start,
-                                                    step,
-                                                    result.get_data(),
-                                                    result.size,
-                                                    NULL)  # dep_events_ref)
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_astype(utils.dpnp_descriptor x1, dtype):

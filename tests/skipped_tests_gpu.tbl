@@ -97,7 +97,7 @@ tests/test_indexing.py::test_nonzero[[[0, 1, 2], [3, 0, 5], [6, 7, 0]]]
 tests/test_indexing.py::test_nonzero[[[0, 1, 0, 3, 0], [5, 0, 7, 0, 9]]]
 tests/test_indexing.py::test_nonzero[[[[1, 2], [0, 4]], [[0, 2], [0, 1]], [[0, 0], [3, 1]]]]
 tests/test_indexing.py::test_nonzero[[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]]
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_no_dtype_int
+
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_no_axis
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_3_{n_vals=1, shape=(7,)}::test_place
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_4_{n_vals=1, shape=(2, 3)}::test_place
