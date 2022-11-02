@@ -18,7 +18,6 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNPFuncName::DPNP_FN_ANY", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ada04013c85000b51cddcc23424c26bd0", null ],
       [ "DPNPFuncName::DPNP_FN_ANY_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a5b028528479b87838d4b44e8917dfe45", null ],
       [ "DPNPFuncName::DPNP_FN_ARANGE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558af468d39e59aa5024cfe419e07121aa24", null ],
-      [ "DPNPFuncName::DPNP_FN_ARANGE_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a4193b3542cab81a22915ba07d8655e9a", null ],
       [ "DPNPFuncName::DPNP_FN_ARCCOS", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aca6137beb9cccaff4b2b3d389f279f53", null ],
       [ "DPNPFuncName::DPNP_FN_ARCCOS_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a77e67858e89b2e9664e63ccfdf629a17", null ],
       [ "DPNPFuncName::DPNP_FN_ARCCOSH", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a6f3ebcd92c5f694ad0653a84c51bff57", null ],
