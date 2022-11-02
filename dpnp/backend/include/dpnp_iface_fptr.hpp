@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -69,7 +69,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ANY,                          /**< Used in numpy.any() impl  */
     DPNP_FN_ANY_EXT,                      /**< Used in numpy.any() impl, requires extra parameters */
     DPNP_FN_ARANGE,                       /**< Used in numpy.arange() impl  */
-    DPNP_FN_ARANGE_EXT,                   /**< Used in numpy.arange() impl, requires extra parameters */
     DPNP_FN_ARCCOS,                       /**< Used in numpy.arccos() impl  */
     DPNP_FN_ARCCOS_EXT,                   /**< Used in numpy.arccos() impl, requires extra parameters */
     DPNP_FN_ARCCOSH,                      /**< Used in numpy.arccosh() impl  */

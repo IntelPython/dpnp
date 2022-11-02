@@ -34,6 +34,7 @@ This module contains code and dependency on diffrent containers used in DPNP
 """
 
 
+import dpctl.utils as dpu
 import dpctl.tensor as dpt
 
 from dpnp.dpnp_array import dpnp_array
@@ -41,9 +42,33 @@ import dpnp
 
 
 __all__ = [
+    "arange",
     "asarray",
     "empty",
 ]
+
+
+def arange(start,
+           /,
+           stop=None,
+           step=1,
+           *,
+           dtype=None,
+           device=None,
+           usm_type="device",
+           sycl_queue=None):
+    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    dpu.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+
+    array_obj = dpt.arange(start,
+                           stop=stop,
+                           step=step,
+                           dtype=dtype,
+                           usm_type=usm_type,
+                           sycl_queue=sycl_queue_normalized)
+
+    return dpnp_array(array_obj.shape, buffer=array_obj)
 
 
 def asarray(x1,

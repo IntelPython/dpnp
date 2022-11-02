@@ -12,6 +12,7 @@ requirements:
       - cython
       - cmake >=3.19
       - dpctl >=0.13
+      - dpcpp-cpp-rt 2022.2.0
       - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2021.1.1') }}
       - tbb-devel
       - wheel

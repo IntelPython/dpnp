@@ -27,7 +27,7 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.10.2)
+# set(DPNP_VERSION 0.10.3)
 # set(DPNP_API_VERSION 0.10)
 
 # set directory where the custom finders live
