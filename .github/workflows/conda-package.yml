@@ -40,13 +40,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Checkout oneDPL
-        uses: actions/checkout@v3.1.0
-        with:
-          repository: oneapi-src/oneDPL
-          path: oneDPL
-          ref: oneDPL-2021.7.0-release
-
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@v2.1.1
         with:
@@ -76,8 +69,6 @@ jobs:
 
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
-        env:
-          DPLROOT: '${{ github.workspace }}/oneDPL'
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3.1.0
@@ -110,13 +101,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Checkout oneDPL
-        uses: actions/checkout@v3.1.0
-        with:
-          repository: oneapi-src/oneDPL
-          path: oneDPL
-          ref: oneDPL-2021.7.0-release
-
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@v2.1.1
         with:
@@ -148,8 +132,6 @@ jobs:
 
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
-        env:
-          DPLROOT: '%GITHUB_WORKSPACE%\oneDPL'
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3.1.0

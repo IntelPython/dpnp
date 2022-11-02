@@ -7,7 +7,7 @@ cd ${THEDIR}
 export DPNP_DEBUG=1
 
 python setup.py clean
-DPLROOT=/opt/intel/oneapi/dpl/latest python setup.py build_clib
+python setup.py build_clib
 
 # inplace build
 CC=dpcpp python setup.py build_ext --inplace
