@@ -43,6 +43,7 @@ import dpnp
 __all__ = [
     "asarray",
     "empty",
+    "full",
 ]
 
 
@@ -85,4 +86,23 @@ def empty(shape,
                           order=order,
                           usm_type=usm_type,
                           sycl_queue=sycl_queue_normalized)
+    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+
+
+def full(shape,
+         fill_value,
+         dtype="f8",
+         order="C",
+         device=None,
+         usm_type="device",
+         sycl_queue=None):
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+
+    """Creates `dpnp_array` where every element is equal to fill_value."""
+    array_obj = dpt.full(shape,
+                         fill_value,
+                         dtype=dtype,
+                         order=order,
+                         usm_type=usm_type,
+                         sycl_queue=sycl_queue_normalized)
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)

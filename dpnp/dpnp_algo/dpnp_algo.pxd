@@ -155,7 +155,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FMOD
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
-        DPNP_FN_FULL_EXT
         DPNP_FN_FULL_LIKE
         DPNP_FN_FULL_LIKE_EXT
         DPNP_FN_HYPOT
@@ -521,7 +520,6 @@ Array creation routines
 """
 cpdef dpnp_descriptor dpnp_arange(start, stop, step, dtype)
 cpdef dpnp_descriptor dpnp_init_val(shape, dtype, value)
-cpdef dpnp_descriptor dpnp_full(result_shape, value_in, result_dtype)  # same as dpnp_init_val
 cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 
 """

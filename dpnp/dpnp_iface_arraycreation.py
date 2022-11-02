@@ -672,7 +672,14 @@ def fromstring(string, **kwargs):
     return call_origin(numpy.fromstring, string, **kwargs)
 
 
-def full(shape, fill_value, dtype=None, order='C'):
+def full(shape,
+         fill_value,
+         dtype=None,
+         order="C",
+         like=None,
+         device=None,
+         usm_type="device",
+         sycl_queue=None):
     """
     Return a new array of given shape and type, filled with `fill_value`.
 
@@ -680,7 +687,7 @@ def full(shape, fill_value, dtype=None, order='C'):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``like`` is supported only with default value ``None``.
 
     See Also
     --------
@@ -697,14 +704,15 @@ def full(shape, fill_value, dtype=None, order='C'):
     [10, 10, 10, 10]
 
     """
-    if not use_origin_backend():
-        if order not in ('C', 'c', None):
-            pass
-        else:
-            if dtype is None:
-                dtype = numpy.array(fill_value).dtype.type  # TODO simplify
-
-            return dpnp_full(shape, fill_value, dtype).get_pyobj()
+    if like is None:
+        if dtype is None:
+            dtype = numpy.array(fill_value).dtype.type  # TODO simplify
+        return dpnp_container.full(shape,
+                                   fill_value,
+                                   dtype=dtype,
+                                   device=device,
+                                   usm_type=usm_type,
+                                   sycl_queue=sycl_queue)
 
     return call_origin(numpy.full, shape, fill_value, dtype, order)
 
