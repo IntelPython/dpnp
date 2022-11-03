@@ -20,6 +20,35 @@ DPNP_QUEUE_GPU=1 python examples/example1.py
 ```
 
 ## Build from source:
+ Ensure you have the following prerequisite packages installed:
+
+- `mkl-devel-dpcpp`
+- `dpcpp_linux-64` or `dpcpp_win-64` (depending on your OS)
+- `tbb-devel`
+- `dpctl`
+
+In addition, you need oneDPL installed on your system. There are two ways to do
+so:
+
+1. Install oneAPI and run the oneDPL activation script. E.g., on linux:
+
+   ```bash
+   source /opt/intel/oneapi/dpl/latest/env/vars.sh
+   ```
+
+2. Clone dpl from https://github.com/oneapi-src/oneDPL and set the `DPL_ROOT`
+   environment variable to point to the `include` directory in the repository.
+
+   E.g., on linux
+
+   ```bash
+   git clone https://github.com/oneapi-src/oneDPL
+   export DPL_ROOT=$(pwd)/oneDPL/include
+   ```
+
+After these steps, `dpnp` can be built in debug mode as follows:
+
+
 ```bash
 git clone https://github.com/IntelPython/dpnp
 cd dpnp

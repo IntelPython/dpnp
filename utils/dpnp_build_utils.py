@@ -126,7 +126,7 @@ def find_cmplr(verbose=False):
                                                     verbose=verbose)
 
     # try to find in Python environment
-    if not cmplr_include or not mathlib_path:
+    if not cmplr_include or not cmplr_libpath:
         if sys.platform in ['linux']:
             rel_include_path = os.path.join('include')
             rel_libdir_path = os.path.join('lib')

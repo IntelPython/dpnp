@@ -1,7 +1,21 @@
+# CMake build and local install directory
 build
 build_cython
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
+
+# Code project files
+.vscode
+
+# Files from test of code coverage
+coverage.xml
+
+# Backup files kept after git merge/rebase
+*.orig
+
 *dpnp_backend*
 dpnp/**/*.cpython*.so
 dpnp/**/*.pyd
 *~
+core

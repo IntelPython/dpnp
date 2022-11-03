@@ -3,16 +3,27 @@ on:
   push:
     branches:
       - master
+  pull_request:
 
 jobs:
   build-and-deploy:
     name: Build and Deploy Docs
+
     runs-on: ubuntu-20.04
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    env:
+      python-ver: '3.9'
+
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.6.0
+        uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
+
       - name: Install Intel repository
         run: |
           wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
@@ -20,17 +31,20 @@ jobs:
           rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
           sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
           sudo apt-get update
+
       - name: Update libstdc++-dev
         run: |
           sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
           sudo apt remove -y libstdc++-10-dev
           sudo apt autoremove
           sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
+
       - name: Install Intel OneAPI
         run: |
           sudo apt-get install intel-oneapi-mkl                \
                                intel-oneapi-mkl-devel          \
                                intel-oneapi-dpcpp-cpp-compiler
+
       # https://github.com/marketplace/actions/checkout
       - name: Install nvidia-cuda support drivers
         run: |
@@ -38,55 +52,61 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libnvidia-gl-450
           sudo apt-get install -y nvidia-cuda-toolkit clinfo
+
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.1.0
+
       # https://github.com/marketplace/actions/setup-miniconda
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: dpnp
-          python-version: 3.8
-          channels: intel,conda-forge
-          auto-activate-base: false
+          auto-update-conda: true
+          python-version: ${{ env.python-ver }}
+          miniconda-version: 'latest'
+          activate-environment: 'docs'
+          channels: intel, conda-forge
+
+      - name: Install sphinx dependencies
+        run: conda install sphinx sphinx_rtd_theme
+
+      - name: Install dpnp dependencies
+        run: |
+          conda install dpctl mkl-devel-dpcpp tbb-devel dpcpp_linux-64 cmake cython pytest \
+                        -c dppy/label/dev -c intel -c conda-forge
+
+      - name: Install cuPy dependencies
+        run: conda install -c conda-forge cupy cudatoolkit=10.0
+
       - name: Conda info
-        shell: bash -l {0}
         run: |
           conda info
           conda list
-      - name: Install sphinx dependencies
-        shell: bash -l {0}
-        run: |
-          conda install sphinx sphinx_rtd_theme
-      - name: Install dpnp dependencies
-        shell: bash -l {0}
-        run: |
-          conda install dpctl mkl-devel-dpcpp tbb-devel dpcpp_linux-64 cmake=3.19 cython pytest \
-                        -c dppy/label/dev -c intel -c conda-forge
-      - name: Install cuPy dependencies
-        shell: bash -l {0}
-        run: |
-          conda install -c conda-forge cupy cudatoolkit=10.0
+
       - name: Build library
-        shell: bash -l {0}
         run: |
           DPLROOT=/opt/intel/oneapi/dpl/latest python setup.py build_clib
           CC=dpcpp python setup.py build_ext --inplace
           python setup.py develop
+
       - name: Build docs
-        shell: bash -l {0}
-        run: |
-          make html
+        run: make html
         working-directory: doc
+
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
-        uses: mattnotmitt/doxygen-action@v1
+        uses: mattnotmitt/doxygen-action@v1.9.4
         with:
             working-directory: 'dpnp/backend/doc'
+
       - name: Copy backend docs
         run: cp -r dpnp/backend/doc/html doc/_build/html/backend_doc
+
       # https://github.com/marketplace/actions/github-pages-action
       - name: Deploy docs
-        uses: peaceiris/actions-gh-pages@v3
+        if: |
+          !github.event.pull_request.head.repo.fork  &&
+          (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
+        uses: peaceiris/actions-gh-pages@v3.8.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: doc/_build/html/

@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.10.0)
+# set(DPNP_VERSION 0.10.3)
 # set(DPNP_API_VERSION 0.10)
 
 # set directory where the custom finders live

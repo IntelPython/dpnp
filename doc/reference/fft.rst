@@ -57,7 +57,9 @@ Helper routines
    dpnp.fft.rfftfreq
    dpnp.fft.fftshift
    dpnp.fft.ifftshift
-   dpnp.fft.config.set_cufft_callbacks
-   dpnp.fft.config.set_cufft_gpus
-   dpnp.fft.config.get_plan_cache
-   dpnp.fft.config.show_plan_cache_info
+
+   .. fft.config module is not implemented yet
+   .. dpnp.fft.config.set_cufft_callbacks
+   .. dpnp.fft.config.set_cufft_gpus
+   .. dpnp.fft.config.get_plan_cache
+   .. dpnp.fft.config.show_plan_cache_info
