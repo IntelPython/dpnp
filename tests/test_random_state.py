@@ -4,11 +4,6 @@ from unittest import mock
 import dpnp
 import numpy
 
-from dpctl import (
-    device_type,
-    get_current_device_type 
-)
-
 from dpnp.random import RandomState
 from numpy.testing import (
     assert_allclose,
@@ -21,17 +16,23 @@ from numpy.testing import (
 
 class TestNormal:
     @pytest.mark.parametrize("dtype",
-                             [dpnp.float32, dpnp.float64],
-                             ids=['float32', 'float64'])
+                             [dpnp.float32, dpnp.float64, None],
+                             ids=['float32', 'float64', 'None'])
     @pytest.mark.parametrize("usm_type",
                              ["host", "device", "shared"],
                              ids=['host', 'device', 'shared'])
     def test_distr(self, dtype, usm_type):
-        actual = dpnp.asnumpy(RandomState(1234567).normal(loc=.12345,
-                                                          scale=2.71,
-                                                          size=(3, 2),
-                                                          dtype=dtype,
-                                                          usm_type=usm_type))
+        data = RandomState(1234567).normal(loc=.12345,
+                                           scale=2.71,
+                                           size=(3, 2),
+                                           dtype=dtype,
+                                           usm_type=usm_type)
+
+        if dtype is None:
+            # dtype depends on fp64 support by the device
+            dtype = dpnp.float64 if data.sycl_device.has_aspect_fp64 else dpnp.float32
+
+        actual = dpnp.asnumpy(data)
         desired = numpy.array([[0.428205496031286, -0.55383273779227 ],
                                [2.027017795643378,  4.318888073163015],
                                [2.69080893259102,  -1.047967253719708]], dtype=dtype)
@@ -44,15 +45,15 @@ class TestNormal:
 
 
     @pytest.mark.parametrize("dtype",
-                             [dpnp.float32, dpnp.float64],
-                             ids=['float32', 'float64'])
+                             [dpnp.float32, dpnp.float64, None],
+                             ids=['float32', 'float64', 'None'])
     @pytest.mark.parametrize("usm_type",
                              ["host", "device", "shared"],
                              ids=['host', 'device', 'shared'])
     def test_scale(self, dtype, usm_type):
         rs = RandomState(39567)
 
-        # zero scale means full ndarrya of mean values
+        # zero scale means full ndarray of mean values
         assert_equal(rs.normal(loc=7, scale=0, dtype=dtype, usm_type=usm_type), 7)
 
         # scale must be non-negative ('-0.0' is negative value)
@@ -70,9 +71,9 @@ class TestNormal:
 
 
     def test_inf_scale(self):
-        a = RandomState().normal(0, numpy.inf, size=1000)
-        assert_equal(dpnp.isnan(a).any(), False)
-        assert_equal(dpnp.isinf(a).all(), True)
+        a = dpnp.asnumpy(RandomState().normal(0, numpy.inf, size=1000))
+        assert_equal(numpy.isnan(a).any(), False)
+        assert_equal(numpy.isinf(a).all(), True)
         assert_equal(a.max(), numpy.inf)
         assert_equal(a.min(), -numpy.inf)
 
@@ -81,8 +82,8 @@ class TestNormal:
                              [numpy.inf, -numpy.inf],
                              ids=['numpy.inf', '-numpy.inf'])
     def test_inf_loc_scale(self, loc):
-        a = RandomState().normal(loc=loc, scale=numpy.inf, size=1000)
-        assert_equal(dpnp.isnan(a).all(), False)
+        a = dpnp.asnumpy(RandomState().normal(loc=loc, scale=numpy.inf, size=1000))
+        assert_equal(numpy.isnan(a).all(), False)
         assert_equal(numpy.nanmin(a), loc)
         assert_equal(numpy.nanmax(a), loc)
 
@@ -187,7 +188,7 @@ class TestRand:
             m.assert_called_once_with(low=0.0,
                                       high=1.0,
                                       size=size,
-                                      dtype=dpnp.float64,
+                                      dtype=None,
                                       usm_type="device")
 
 
@@ -356,6 +357,9 @@ class TestRandInt:
         high = 37 if not dtype in {dpnp.bool_, bool} else 2
         size = (3, 2, 5)
 
+        if dtype == dpnp.integer and dtype == dpnp.dtype('int32'):
+            pytest.skip("dpnp.integer is alias on dpnp.int32 on the target OS, so no fallback here")
+
         # dtype must be int or dpnp.int32, in other cases it will be a fallback to numpy
         actual = dpnp.asnumpy(RandomState(seed).randint(low=low, high=high, size=size, dtype=dtype))
         desired = numpy.random.RandomState(seed).randint(low=low, high=high, size=size, dtype=dtype)
@@ -416,7 +420,7 @@ class TestRandN:
             m.assert_called_once_with(loc=0.0,
                                       scale=1.0,
                                       size=size,
-                                      dtype=dpnp.float64,
+                                      dtype=None,
                                       usm_type="device")
 
 
@@ -549,7 +553,7 @@ class TestStandardNormal:
             m.assert_called_once_with(loc=0.0,
                                       scale=1.0,
                                       size=(4, 2),
-                                      dtype=dpnp.float64,
+                                      dtype=None,
                                       usm_type=usm_type)
 
 
@@ -562,7 +566,7 @@ class TestStandardNormal:
             m.assert_called_once_with(loc=0.0,
                                       scale=1.0,
                                       size=size,
-                                      dtype=dpnp.float64,
+                                      dtype=None,
                                       usm_type="device")
 
 
@@ -600,7 +604,7 @@ class TestRandSample:
             m.assert_called_once_with(low=0.0,
                                       high=1.0,
                                       size=(4, 2),
-                                      dtype=dpnp.float64,
+                                      dtype=None,
                                       usm_type=usm_type)
 
 
@@ -613,7 +617,7 @@ class TestRandSample:
             m.assert_called_once_with(low=0.0,
                                       high=1.0,
                                       size=size,
-                                      dtype=dpnp.float64,
+                                      dtype=None,
                                       usm_type="device")
 
 
@@ -630,8 +634,8 @@ class TestUniform:
                              [[1.23, 10.54], [10.54, 1.23]],
                              ids=['(low, high)=[1.23, 10.54]', '(low, high)=[10.54, 1.23]'])
     @pytest.mark.parametrize("dtype",
-                             [dpnp.float32, dpnp.float64, dpnp.int32],
-                             ids=['float32', 'float64', 'int32'])
+                             [dpnp.float32, dpnp.float64, dpnp.int32, None],
+                             ids=['float32', 'float64', 'int32', 'None'])
     @pytest.mark.parametrize("usm_type",
                              ["host", "device", "shared"],
                              ids=['host', 'device', 'shared'])
@@ -640,7 +644,13 @@ class TestUniform:
         low = bounds[0]
         high = bounds[1]
 
-        actual = dpnp.asnumpy(RandomState(seed).uniform(low=low, high=high, size=(3, 2), dtype=dtype, usm_type=usm_type))
+        data = RandomState(seed).uniform(low=low, high=high, size=(3, 2), dtype=dtype, usm_type=usm_type)
+        actual = dpnp.asnumpy(data)
+
+        if dtype is None:
+            # dtype depends on fp64 support by the device
+            dtype = dpnp.float64 if data.sycl_device.has_aspect_fp64 else dpnp.float32
+
         if dtype != dpnp.int32:
             desired = numpy.array([[4.023770128630567, 8.87456423597643 ],
                                    [2.888630247435067, 4.823004481580574],
@@ -654,8 +664,8 @@ class TestUniform:
 
 
     @pytest.mark.parametrize("dtype",
-                             [dpnp.float32, dpnp.float64, dpnp.int32],
-                             ids=['float32', 'float64', 'int32'])
+                             [dpnp.float32, dpnp.float64, dpnp.int32, None],
+                             ids=['float32', 'float64', 'int32', 'None'])
     @pytest.mark.parametrize("usm_type",
                              ["host", "device", "shared"],
                              ids=['host', 'device', 'shared'])
@@ -664,7 +674,13 @@ class TestUniform:
         low = high = 3.75
         shape = (7, 6, 20)
 
-        actual = dpnp.asnumpy(RandomState(seed).uniform(low=low, high=high, size=shape, dtype=dtype, usm_type=usm_type))
+        data = RandomState(seed).uniform(low=low, high=high, size=shape, dtype=dtype, usm_type=usm_type)
+
+        if dtype is None:
+            # dtype depends on fp64 support by the device
+            dtype = dpnp.float64 if data.sycl_device.has_aspect_fp64 else dpnp.float32
+
+        actual = dpnp.asnumpy(data)
         desired = numpy.full(shape=shape, fill_value=low, dtype=dtype)
 
         if dtype == dpnp.int32:

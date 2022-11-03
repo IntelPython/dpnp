@@ -30,28 +30,25 @@ namespace mkl_rng = oneapi::mkl::rng;
 
 void MT19937_InitScalarSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, uint32_t seed)
 {
-    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
-    mt19937->engine = new mkl_rng::mt19937(q, seed);
-    return;
+    sycl::queue *q = reinterpret_cast<sycl::queue *>(q_ref);
+    mt19937->engine = new mkl_rng::mt19937(*q, seed);
 }
 
 void MT19937_InitVectorSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, uint32_t *seed, unsigned int n) {
-    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
+    sycl::queue *q = reinterpret_cast<sycl::queue *>(q_ref);
     
     switch (n) {
-        case 1: mt19937->engine = new mkl_rng::mt19937(q, {seed[0]}); break;
-        case 2: mt19937->engine = new mkl_rng::mt19937(q, {seed[0], seed[1]}); break;
-        case 3: mt19937->engine = new mkl_rng::mt19937(q, {seed[0], seed[1], seed[2]}); break;
+        case 1: mt19937->engine = new mkl_rng::mt19937(*q, {seed[0]}); break;
+        case 2: mt19937->engine = new mkl_rng::mt19937(*q, {seed[0], seed[1]}); break;
+        case 3: mt19937->engine = new mkl_rng::mt19937(*q, {seed[0], seed[1], seed[2]}); break;
         default:
         // TODO need to get rid of the limitation for seed vector length
         throw std::runtime_error("Too long seed vector");
     }
-    return;
 }
 
 void MT19937_Delete(mt19937_struct *mt19937) {
-    mkl_rng::mt19937 *engine = reinterpret_cast<mkl_rng::mt19937 *>(mt19937->engine);
+    mkl_rng::mt19937 *engine = static_cast<mkl_rng::mt19937 *>(mt19937->engine);
     mt19937->engine = nullptr;
     delete engine;
-    return;
 }

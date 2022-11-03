@@ -786,7 +786,8 @@ def normal(loc=0.0, scale=1.0, size=None, usm_type='device'):
     -----------
     Parameters ``loc`` and ``scale`` are supported as scalar.
     Otherwise, :obj:`numpy.random.normal(loc, scale, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Output array data type is :obj:`dpnp.float64` if device supports it
+    or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -798,7 +799,7 @@ def normal(loc=0.0, scale=1.0, size=None, usm_type='device'):
     return _get_random_state().normal(loc=loc,
                                       scale=scale,
                                       size=size,
-                                      dtype=dpnp.float64,
+                                      dtype=None,
                                       usm_type=usm_type)
 
 
@@ -996,7 +997,8 @@ def rand(d0, *dn, usm_type="device"):
 
     Limitations
     -----------
-    Output array data type is :obj:`dpnp.float64`.
+    Output array data type is :obj:`dpnp.float64` if device supports it
+    or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1054,7 +1056,8 @@ def randn(d0, *dn, usm_type="device"):
 
     Limitations
     -----------
-    Output array data type is :obj:`dpnp.float64`.
+    Output array data type is :obj:`dpnp.float64` if device supports it
+    or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1084,7 +1087,8 @@ def random(size=None, usm_type="device"):
 
     Limitations
     -----------
-    Output array data type is :obj:`dpnp.float64`.
+    Output array data type is :obj:`dpnp.float64` if device supports it
+    or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1145,7 +1149,8 @@ def random_sample(size=None, usm_type="device"):
 
     Limitations
     -----------
-    Output array data type is :obj:`dpnp.float64`.
+    Output array data type is :obj:`dpnp.float64` if device supports it
+    or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1172,7 +1177,8 @@ def ranf(size=None, usm_type="device"):
 
     Limitations
     -----------
-    Output array data type is :obj:`dpnp.float64`.
+    Output array data type is :obj:`dpnp.float64` if device supports it
+    or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1233,7 +1239,8 @@ def sample(size=None, usm_type="device"):
 
     Limitations
     -----------
-    Output array data type is :obj:`dpnp.float64`.
+    Output array data type is :obj:`dpnp.float64` if device supports it
+    or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1407,7 +1414,8 @@ def standard_normal(size=None, usm_type="device"):
 
     Limitations
     -----------
-    Output array data type is :obj:`dpnp.float64`.
+    Output array data type is :obj:`dpnp.float64` if device supports it
+    or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1508,7 +1516,8 @@ def uniform(low=0.0, high=1.0, size=None, usm_type='device'):
     -----------
     Parameters ``low`` and ``high`` are supported as scalar.
     Otherwise, :obj:`numpy.random.uniform(low, high, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Output array data type is :obj:`dpnp.float64` if device supports it
+    or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1524,7 +1533,7 @@ def uniform(low=0.0, high=1.0, size=None, usm_type='device'):
     return _get_random_state().uniform(low=low,
                                        high=high,
                                        size=size,
-                                       dtype=dpnp.float64,
+                                       dtype=None,
                                        usm_type=usm_type)
 
 

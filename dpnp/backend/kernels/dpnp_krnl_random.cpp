@@ -79,10 +79,11 @@ static inline DPCTLSyclEventRef dpnp_rng_generate(const _DistrType& distr,
                                                   const int64_t size,
                                                   _DataType* result) {
     DPCTLSyclEventRef event_ref = nullptr;
+    sycl::event event;
 
     // perform rng generation
     try {
-        auto event = mkl_rng::generate<_DistrType, _EngineType>(distr, engine, size, result);
+        event = mkl_rng::generate<_DistrType, _EngineType>(distr, engine, size, result);
         event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
     } catch (const std::exception &e) {
         // TODO: add error reporting
@@ -1377,6 +1378,7 @@ DPCTLSyclEventRef dpnp_rng_normal_c(DPCTLSyclQueueRef q_ref,
 {
     // avoid warning unused variable
     (void)dep_event_vec_ref;
+    (void)q_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
 
@@ -1384,8 +1386,6 @@ DPCTLSyclEventRef dpnp_rng_normal_c(DPCTLSyclQueueRef q_ref,
     {
         return event_ref;
     }
-
-    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     mt19937_struct* random_state = static_cast<mt19937_struct *>(random_state_in);
     _DataType* result = static_cast<_DataType *>(result_out);
@@ -2135,7 +2135,7 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
         return event_ref;
     }
 
-    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
+    sycl::queue *q = reinterpret_cast<sycl::queue *>(q_ref);
 
     mt19937_struct* random_state = static_cast<mt19937_struct *>(random_state_in);
     _DataType* result = static_cast<_DataType *>(result_out);
@@ -2148,7 +2148,7 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
     mkl_rng::mt19937 *engine = static_cast<mkl_rng::mt19937 *>(random_state->engine);
 
     if constexpr (std::is_same<_DataType, int32_t>::value) {
-        if (q.get_device().has(sycl::aspect::fp64)) {
+        if (q->get_device().has(sycl::aspect::fp64)) {
             /**
              * A note from oneMKL for oneapi::mkl::rng::uniform (Discrete):
              * The oneapi::mkl::rng::uniform_method::standard uses the s BRNG type on GPU devices.
@@ -2161,7 +2161,8 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
 
             // perform generation
             try {
-                auto event = mkl_rng::generate(distribution, *engine, size, result);
+                auto event = mkl_rng::generate<mkl_rng::uniform<_DataType, method_type>, mkl_rng::mt19937>(
+                    distribution, *engine, size, result);
                 event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
                 return DPCTLEvent_Copy(event_ref);
             } catch (const oneapi::mkl::unsupported_device&) {

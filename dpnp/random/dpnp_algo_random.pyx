@@ -404,9 +404,9 @@ cdef class MT19937:
         # call FPTR function
         event_ref = func(self.get_queue_ref(), result.get_data(), loc, scale, result.size, self.get_mt19937(), NULL)
 
-        with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-        c_dpctl.DPCTLEvent_Delete(event_ref)
-
+        if event_ref != NULL:
+            with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+            c_dpctl.DPCTLEvent_Delete(event_ref)
         return result
 
 
@@ -440,9 +440,9 @@ cdef class MT19937:
         # call FPTR function
         event_ref = func(self.get_queue_ref(), result.get_data(), low, high, result.size, self.get_mt19937(), NULL)
 
-        with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-        c_dpctl.DPCTLEvent_Delete(event_ref)
-
+        if event_ref != NULL:
+            with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+            c_dpctl.DPCTLEvent_Delete(event_ref)
         return result
 
 

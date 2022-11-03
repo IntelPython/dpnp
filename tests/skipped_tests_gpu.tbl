@@ -1,3 +1,19 @@
+tests/test_random.py::TestDistributionsMultinomial::test_extreme_value
+tests/test_random.py::TestDistributionsMultinomial::test_seed1
+tests/test_random.py::TestDistributionsMultivariateNormal::test_moments
+tests/test_random.py::TestDistributionsMultivariateNormal::test_output_shape_check
+tests/test_random.py::TestDistributionsMultivariateNormal::test_seed
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle[float32]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle[float64]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle[int32]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle[int64]
+tests/test_random.py::TestPermutationsTestShuffle::test_no_miss_numbers[float32]
+tests/test_random.py::TestPermutationsTestShuffle::test_no_miss_numbers[float64]
+tests/test_random.py::TestPermutationsTestShuffle::test_no_miss_numbers[int32]
+tests/test_random.py::TestPermutationsTestShuffle::test_no_miss_numbers[int64]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.array([])]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32)]
+
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-abs-data0]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-ceil-data1]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-conjugate-data2]
@@ -335,7 +351,6 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{extern
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov_empty
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_mean_axis
 
-tests/test_random.py::test_randn_normal_distribution
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_outer
 
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_axis

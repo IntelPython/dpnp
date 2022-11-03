@@ -59,10 +59,15 @@ class RandomState:
     """
 
     def __init__(self, seed=None, device=None, sycl_queue=None):
-        self.seed = 1 if seed is None else seed
-        self.sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
-        self.random_state = MT19937(self.seed, self.sycl_queue)
-        self.fallback_random_state = call_origin(numpy.random.RandomState, seed)
+        self._seed = 1 if seed is None else seed
+        self._sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
+
+        self._def_float_type = dpnp.float32
+        if self._sycl_queue.get_sycl_device().has_aspect_fp64:
+            self._def_float_type = dpnp.float64
+
+        self._random_state = MT19937(self._seed, self._sycl_queue)
+        self._fallback_random_state = call_origin(numpy.random.RandomState, seed)
 
 
     def get_state(self):
@@ -71,17 +76,17 @@ class RandomState:
 
         For full documentation refer to :obj:`numpy.random.RandomState.get_state`.
         """
-        return self.random_state
+        return self._random_state
 
 
     def get_sycl_queue(self):
         """
         Return a sycl queue used from the container.
         """
-        return self.sycl_queue
+        return self._sycl_queue
 
 
-    def normal(self, loc=0.0, scale=1.0, size=None, dtype=dpnp.float64, usm_type="device"):
+    def normal(self, loc=0.0, scale=1.0, size=None, dtype=None, usm_type="device"):
         """
         Draw random samples from a normal (Gaussian) distribution.
 
@@ -92,7 +97,9 @@ class RandomState:
         Parameters ``loc`` and ``scale`` are supported as scalar.
         Otherwise, :obj:`numpy.random.RandomState.normal(loc, scale, size)` samples are drawn.
 
-        Parameter ``dtype`` is supported only for :obj:`dpnp.float32` or :obj:`dpnp.float64`.
+        Parameter ``dtype`` is supported only for :obj:`dpnp.float32`, :obj:`dpnp.float64` or `None`.
+        If ``dtype`` is None (default), :obj:`dpnp.float64` type will be used if device supports it
+        or :obj:`dpnp.float32` otherwise.
         Output array data type is the same as ``dtype``.
 
         Examples
@@ -127,17 +134,19 @@ class RandomState:
                 elif scale < 0 or scale == 0 and numpy.signbit(scale):
                     raise ValueError(f"scale={scale}, but must be non-negative.")
 
-                if not dtype in (dpnp.float32, dpnp.float64):
+                if dtype is None:
+                    dtype = self._def_float_type
+                elif not dtype in (dpnp.float32, dpnp.float64):
                     raise TypeError(f"dtype={dtype} is unsupported.")
 
                 dpu.validate_usm_type(usm_type=usm_type, allow_none=False)
-                return self.random_state.normal(loc=loc,
-                                                scale=scale,
-                                                size=size,
-                                                dtype=dtype,
-                                                usm_type=usm_type).get_pyobj()
+                return self._random_state.normal(loc=loc,
+                                                 scale=scale,
+                                                 size=size,
+                                                 dtype=dtype,
+                                                 usm_type=usm_type).get_pyobj()
 
-        return call_origin(self.fallback_random_state.normal, loc=loc, scale=scale, size=size)
+        return call_origin(self._fallback_random_state.normal, loc=loc, scale=scale, size=size)
 
 
     def rand(self, *args, usm_type="device"):
@@ -236,7 +245,7 @@ class RandomState:
                                         dtype=_dtype,
                                         usm_type=usm_type)
 
-        return call_origin(self.fallback_random_state.randint,
+        return call_origin(self._fallback_random_state.randint,
                            low=low, high=high, size=size, dtype=dtype)
 
 
@@ -248,7 +257,8 @@ class RandomState:
 
         Limitations
         -----------
-        Output array data type is :obj:`dpnp.float64`.
+        Output array data type is :obj:`dpnp.float64` if device supports it
+        or :obj:`dpnp.float32` otherwise.
 
         Examples
         --------
@@ -287,7 +297,8 @@ class RandomState:
 
         Limitations
         -----------
-        Output array data type is :obj:`dpnp.float64`.
+        Output array data type is :obj:`dpnp.float64` if device supports it
+        or :obj:`dpnp.float32` otherwise.
 
         Examples
         --------
@@ -305,7 +316,7 @@ class RandomState:
         return self.uniform(low=0.0,
                             high=1.0,
                             size=size,
-                            dtype=dpnp.float64,
+                            dtype=None,
                             usm_type=usm_type)
 
 
@@ -317,8 +328,8 @@ class RandomState:
 
         Limitations
         -----------
-        Parameter ``dtype`` is supported only for :obj:`dpnp.float32` or :obj:`dpnp.float64`.
-        Output array data type is the same as ``dtype``.
+        Output array data type is :obj:`dpnp.float64` if device supports it
+        or :obj:`dpnp.float32` otherwise.
 
         Examples
         --------
@@ -339,11 +350,11 @@ class RandomState:
         return self.normal(loc=0.0,
                            scale=1.0,
                            size=size,
-                           dtype=dpnp.float64,
+                           dtype=None,
                            usm_type=usm_type)
 
 
-    def uniform(self, low=0.0, high=1.0, size=None, dtype=dpnp.float64, usm_type="device"):
+    def uniform(self, low=0.0, high=1.0, size=None, dtype=None, usm_type="device"):
         """
         Draw samples from a uniform distribution.
 
@@ -356,7 +367,9 @@ class RandomState:
         -----------
         Parameters ``low`` and ``high`` are supported as scalar.
         Otherwise, :obj:`numpy.random.uniform(low, high, size)` samples are drawn.
-        Parameter ``dtype`` is supported only for :obj:`dpnp.int32`, :obj:`dpnp.float32` or :obj:`dpnp.float64`.
+        Parameter ``dtype`` is supported only for :obj:`dpnp.int32`, :obj:`dpnp.float32`, :obj:`dpnp.float64` or `None`.
+        If ``dtype`` is None (default), :obj:`dpnp.float64` type will be used if device supports it
+        or :obj:`dpnp.float32` otherwise.
         Output array data type is the same as ``dtype``.
 
         Examples
@@ -394,14 +407,16 @@ class RandomState:
                 if low > high:
                     low, high = high, low
 
-                if not dtype in (dpnp.int32, dpnp.float32, dpnp.float64):
+                if dtype is None:
+                    dtype = self._def_float_type
+                elif not dtype in (dpnp.int32, dpnp.float32, dpnp.float64):
                     raise TypeError(f"dtype={dtype} is unsupported.")
 
                 dpu.validate_usm_type(usm_type, allow_none=False)
-                return self.random_state.uniform(low=low,
-                                                 high=high,
-                                                 size=size,
-                                                 dtype=dtype,
-                                                 usm_type=usm_type).get_pyobj()
+                return self._random_state.uniform(low=low,
+                                                  high=high,
+                                                  size=size,
+                                                  dtype=dtype,
+                                                  usm_type=usm_type).get_pyobj()
 
-        return call_origin(self.fallback_random_state.uniform, low=low, high=high, size=size)
+        return call_origin(self._fallback_random_state.uniform, low=low, high=high, size=size)
