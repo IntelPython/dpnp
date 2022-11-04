@@ -71,8 +71,8 @@ jobs:
 
       - name: Install dpnp dependencies
         run: |
-          conda install dpctl mkl-devel-dpcpp tbb-devel dpcpp_linux-64 cmake cython pytest \
-                        -c dppy/label/dev -c intel -c conda-forge
+          conda install dpctl mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
+              cmake cython pytest -c dppy/label/dev -c intel -c conda-forge
 
       - name: Install cuPy dependencies
         run: conda install -c conda-forge cupy cudatoolkit=10.0
@@ -84,7 +84,7 @@ jobs:
 
       - name: Build library
         run: |
-          DPLROOT=/opt/intel/oneapi/dpl/latest python setup.py build_clib
+          python setup.py build_clib
           CC=dpcpp python setup.py build_ext --inplace
           python setup.py develop
 
