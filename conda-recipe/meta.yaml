@@ -13,6 +13,7 @@ requirements:
       - cmake >=3.19
       - dpctl >=0.13
       - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2021.1.1') }}
+      - onedpl-devel
       - tbb-devel
       - wheel
     build:
