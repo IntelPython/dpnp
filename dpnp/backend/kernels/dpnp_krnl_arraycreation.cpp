@@ -1262,16 +1262,11 @@ void dpnp_zeros_c(void* result, size_t size)
                                                           size,
                                                           dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
 void (*dpnp_zeros_default_c)(void*, size_t) = dpnp_zeros_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_zeros_ext_c)(DPCTLSyclQueueRef,
-                                      void*,
-                                      size_t,
-                                      const DPCTLEventVectorRef) = dpnp_zeros_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_zeros_like_c(DPCTLSyclQueueRef q_ref,
@@ -1292,16 +1287,11 @@ void dpnp_zeros_like_c(void* result, size_t size)
                                                                size,
                                                                dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
 void (*dpnp_zeros_like_default_c)(void*, size_t) = dpnp_zeros_like_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_zeros_like_ext_c)(DPCTLSyclQueueRef,
-                                           void*,
-                                           size_t,
-                                           const DPCTLEventVectorRef) = dpnp_zeros_like_c<_DataType>;
 
 void func_map_init_arraycreation(func_map_t& fmap)
 {
@@ -1508,14 +1498,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_C128][eft_C128] = {eft_C128,
                                                              (void*)dpnp_zeros_default_c<std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_zeros_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_zeros_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_zeros_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_zeros_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_zeros_ext_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_EXT][eft_C128][eft_C128] = {eft_C128,
-                                                                 (void*)dpnp_zeros_ext_c<std::complex<double>>};
-
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_zeros_like_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_zeros_like_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_zeros_like_default_c<float>};
@@ -1523,14 +1505,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_zeros_like_default_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_zeros_like_default_c<std::complex<double>>};
-
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_zeros_like_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_zeros_like_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_zeros_like_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_zeros_like_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_zeros_like_ext_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void*)dpnp_zeros_like_ext_c<std::complex<double>>};
 
     return;
 }

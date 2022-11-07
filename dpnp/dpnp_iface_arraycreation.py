@@ -1341,7 +1341,14 @@ def vander(x1, N=None, increasing=False):
     return call_origin(numpy.vander, x1, N=N, increasing=increasing)
 
 
-def zeros(shape, dtype=None, order='C'):
+def zeros(shape,
+          *,
+          dtype=None,
+          order="C",
+          like=None,
+          device=None,
+          usm_type="device",
+          sycl_queue=None):
     """
     Return a new array of given shape and type, filled with zeros.
 
@@ -1349,7 +1356,8 @@ def zeros(shape, dtype=None, order='C'):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``like`` is supported only with default value ``None``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -1370,21 +1378,28 @@ def zeros(shape, dtype=None, order='C'):
     [0.0, 0.0]
 
     """
+    if like is None:
+        _dtype = dtype if dtype is not None else dpnp.float64
+        return dpnp_container.zeros(shape,
+                                    dtype=_dtype,
+                                    order=order,
+                                    device=device,
+                                    usm_type=usm_type,
+                                    sycl_queue=sycl_queue)
 
-    if (not use_origin_backend()):
-        if order not in ('C', 'c', None):
-            pass
-        else:
-            _dtype = dtype if dtype is not None else dpnp.float64
-            result = dpnp_zeros(shape, _dtype).get_pyobj()
-
-            return result
-
-    return call_origin(numpy.zeros, shape, dtype=dtype, order=order)
+    return call_origin(numpy.zeros, shape, dtype=dtype, order=order, like=like)
 
 
 # numpy.zeros_like(a, dtype=None, order='K', subok=True, shape=None)
-def zeros_like(x1, dtype=None, order='C', subok=False, shape=None):
+def zeros_like(x1,
+               *,
+               dtype=None,
+               order="C",
+               subok=False,
+               shape=None,
+               device=None,
+               usm_type="device",
+               sycl_queue=None):
     """
     Return an array of zeros with the same shape and type as a given array.
 
@@ -1392,7 +1407,6 @@ def zeros_like(x1, dtype=None, order='C', subok=False, shape=None):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
     Parameter ``subok`` is supported only with default value ``False``.
 
     See Also
@@ -1415,15 +1429,16 @@ def zeros_like(x1, dtype=None, order='C', subok=False, shape=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
-        if order not in ('C', 'c', None):
-            pass
-        elif subok is not False:
+        if subok is not False:
             pass
         else:
             _shape = shape if shape is not None else x1_desc.shape
             _dtype = dtype if dtype is not None else x1_desc.dtype
-            result = dpnp_zeros_like(_shape, _dtype).get_pyobj()
-
-            return result
+            return zeros(_shape,
+                         dtype=_dtype,
+                         order=order,
+                         device=device,
+                         usm_type=usm_type,
+                         sycl_queue=sycl_queue)
 
     return call_origin(numpy.zeros_like, x1, dtype, order, subok, shape)

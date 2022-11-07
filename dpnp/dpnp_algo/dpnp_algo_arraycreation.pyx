@@ -52,9 +52,7 @@ __all__ += [
     "dpnp_tri",
     "dpnp_tril",
     "dpnp_triu",
-    "dpnp_vander",
-    "dpnp_zeros",
-    "dpnp_zeros_like"
+    "dpnp_vander"
 ]
 
 
@@ -672,11 +670,3 @@ cpdef utils.dpnp_descriptor dpnp_vander(utils.dpnp_descriptor x1, int N, int inc
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_zeros(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ZEROS_EXT, utils._object_to_tuple(result_shape), result_dtype)
-
-
-cpdef utils.dpnp_descriptor dpnp_zeros_like(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ZEROS_LIKE_EXT, utils._object_to_tuple(result_shape), result_dtype)

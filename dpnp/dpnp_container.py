@@ -45,6 +45,7 @@ __all__ = [
     "arange",
     "asarray",
     "empty",
+    "zeros",
 ]
 
 
@@ -106,6 +107,26 @@ def empty(shape,
 
     """Creates `dpnp_array` from uninitialized USM allocation."""
     array_obj = dpt.empty(shape,
+                          dtype=dtype,
+                          order=order,
+                          usm_type=usm_type,
+                          sycl_queue=sycl_queue_normalized)
+    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+
+
+def zeros(shape,
+          *,
+          dtype=None,
+          order="C",
+          device=None,
+          usm_type="device",
+          sycl_queue=None):
+    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    dpu.validate_usm_type(usm_type, allow_none=True)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+
+    """Creates `dpnp_array` with zero elements."""
+    array_obj = dpt.zeros(shape,
                           dtype=dtype,
                           order=order,
                           usm_type=usm_type,
