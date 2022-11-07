@@ -706,7 +706,7 @@ def full(shape,
     [10, 10, 10, 10]
 
     """
-    if dtype is None:
+    if dtype is None and isinstance(fill_value, dpnp.ndarray):
         dtype = array(fill_value).dtype.type # TODO simplify
     if like is None:
         return dpnp_container.full(shape,
