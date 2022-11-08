@@ -146,7 +146,8 @@ class RandomState:
                                                  dtype=dtype,
                                                  usm_type=usm_type).get_pyobj()
 
-        return call_origin(self._fallback_random_state.normal, loc=loc, scale=scale, size=size)
+        return call_origin(self._fallback_random_state.normal,
+                           loc=loc, scale=scale, size=size, sycl_queue=self._sycl_queue)
 
 
     def rand(self, *args, usm_type="device"):
@@ -246,7 +247,7 @@ class RandomState:
                                         usm_type=usm_type)
 
         return call_origin(self._fallback_random_state.randint,
-                           low=low, high=high, size=size, dtype=dtype)
+                           low=low, high=high, size=size, dtype=dtype, sycl_queue=self._sycl_queue)
 
 
     def randn(self, *args, usm_type="device"):
@@ -419,4 +420,5 @@ class RandomState:
                                                   dtype=dtype,
                                                   usm_type=usm_type).get_pyobj()
 
-        return call_origin(self._fallback_random_state.uniform, low=low, high=high, size=size)
+        return call_origin(self._fallback_random_state.uniform,
+                           low=low, high=high, size=size, sycl_queue=self._sycl_queue)

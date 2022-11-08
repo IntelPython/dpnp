@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -115,10 +115,11 @@ def call_origin(function, *args, **kwargs):
     """
 
     dpnp_inplace = kwargs.pop("dpnp_inplace", False)
+    sycl_queue = kwargs.pop("sycl_queue", None)
     # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}, \n\t dpnp_inplace={dpnp_inplace}")
 
     kwargs_out = kwargs.get("out", None)
-    alloc_queues = []
+    alloc_queues = [sycl_queue] if sycl_queue else []
     if (kwargs_out is not None):
         if isinstance(kwargs_out, numpy.ndarray):
             kwargs["out"] = kwargs_out
@@ -143,6 +144,8 @@ def call_origin(function, *args, **kwargs):
         kwargs_new[key] = kwargx
 
     exec_q = dpctl.utils.get_execution_queue(alloc_queues)
+    if exec_q is None:
+        exec_q = sycl_queue
     # print(f"DPNP call_origin(): bakend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     # TODO need to put array memory into NumPy call
     result_origin = function(*args_new, **kwargs_new)
