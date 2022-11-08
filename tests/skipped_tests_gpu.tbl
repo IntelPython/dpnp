@@ -113,7 +113,7 @@ tests/test_indexing.py::test_nonzero[[[0, 1, 2], [3, 0, 5], [6, 7, 0]]]
 tests/test_indexing.py::test_nonzero[[[0, 1, 0, 3, 0], [5, 0, 7, 0, 9]]]
 tests/test_indexing.py::test_nonzero[[[[1, 2], [0, 4]], [[0, 2], [0, 1]], [[0, 0], [3, 1]]]]
 tests/test_indexing.py::test_nonzero[[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]]
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_no_dtype_int
+
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_no_axis
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_3_{n_vals=1, shape=(7,)}::test_place
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_4_{n_vals=1, shape=(2, 3)}::test_place
@@ -248,7 +248,7 @@ tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_cons
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_tuple
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_list
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_tuple
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_logspace_zero_num
+
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_1darray
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_fill_diagonal
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_5_{shape=(3, 3), val=(2,), wrap=False}::test_1darray
@@ -658,6 +658,7 @@ tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asco
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asfortranarray_cuda_array_zero_dim
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asfortranarray_cuda_array_zero_dim_dtype
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_fromfile
+
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid0
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid2
@@ -693,12 +694,18 @@ tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid5
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid3
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid4
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid5
+
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_array_start_stop
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_array_start_stop_axis1
+tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_negative_size
+tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_no_dtype_int
+
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_float_underflow
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_mixed_start_stop
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_mixed_start_stop2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_start_stop_list
+
+tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_logspace_zero_num
 
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_1_{axes=None, norm=None, s=(1, None), shape=(3, 4)}::test_fft2
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_7_{axes=(), norm=None, s=None, shape=(3, 4)}::test_fft2

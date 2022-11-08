@@ -100,10 +100,10 @@ def convert_list_args(input_list):
 
 def copy_from_origin(dst, src):
     """Copy origin result to output result."""
-    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
+    if hasattr(dst, "__sycl_usm_array_interface__"):
         if src.size:
-            # dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
-            dpctl.tensor._copy_utils._copy_from_numpy_into(unwrap_array(dst), src)
+            dst_dpt = unwrap_array(dst)
+            dst_dpt[...] = src
     else:
         for i in range(dst.size):
             dst.flat[i] = src.item(i)

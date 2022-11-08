@@ -8,11 +8,12 @@ requirements:
     host:
       - python
       - setuptools
-      - numpy >=1.19,<1.22a0
+      - numpy >=1.19,<1.23a0
       - cython
       - cmake >=3.19
       - dpctl >=0.13
       - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2021.1.1') }}
+      - onedpl-devel
       - tbb-devel
       - wheel
     build:

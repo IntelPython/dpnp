@@ -73,6 +73,27 @@ def vvsort(val, vec, size, xp):
 
 
 @pytest.mark.parametrize(
+    "func, arg, kwargs",
+    [
+        pytest.param("arange",
+                     -25.7,
+                     {'stop': 10**8, 'step': 15})
+    ])
+@pytest.mark.parametrize("device",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+def test_array_creation(func, arg, kwargs, device):
+    numpy_array = getattr(numpy, func)(arg, **kwargs)
+
+    dpnp_kwargs = dict(kwargs)
+    dpnp_kwargs['device'] = device
+    dpnp_array = getattr(dpnp, func)(arg, **dpnp_kwargs)
+
+    numpy.testing.assert_array_equal(numpy_array, dpnp_array)
+    assert dpnp_array.sycl_device == device
+
+
+@pytest.mark.parametrize(
     "func,data",
     [
         pytest.param("abs",
