@@ -1343,7 +1343,7 @@ def vander(x1, N=None, increasing=False):
 
 def zeros(shape,
           *,
-          dtype=None,
+          dtype=dpnp.float64,
           order="C",
           like=None,
           device=None,
@@ -1379,9 +1379,8 @@ def zeros(shape,
 
     """
     if like is None:
-        _dtype = dtype if dtype is not None else dpnp.float64
         return dpnp_container.zeros(shape,
-                                    dtype=_dtype,
+                                    dtype=dtype,
                                     order=order,
                                     device=device,
                                     usm_type=usm_type,
@@ -1390,7 +1389,6 @@ def zeros(shape,
     return call_origin(numpy.zeros, shape, dtype=dtype, order=order, like=like)
 
 
-# numpy.zeros_like(a, dtype=None, order='K', subok=True, shape=None)
 def zeros_like(x1,
                *,
                dtype=None,
@@ -1407,6 +1405,7 @@ def zeros_like(x1,
 
     Limitations
     -----------
+    Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
 
     See Also
@@ -1425,13 +1424,10 @@ def zeros_like(x1,
     >>> [i for i in np.zeros_like(x)]
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if subok is not False:
-            pass
-        else:
+"""
+    if subok is False:
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+        if x1_desc:
             _shape = shape if shape is not None else x1_desc.shape
             _dtype = dtype if dtype is not None else x1_desc.dtype
             return zeros(_shape,
