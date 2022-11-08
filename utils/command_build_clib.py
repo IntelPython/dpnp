@@ -36,6 +36,7 @@ This modification add:
 import os
 import sys
 
+from ctypes.util import find_library as find_shared_lib
 from setuptools.command import build_clib
 from distutils import log
 from distutils.dep_util import newer_group
@@ -151,7 +152,14 @@ if IS_LIN:
     _mathlibs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
                  "mkl_core", "sycl", "OpenCL", "pthread", "m", "dl"]
 elif IS_WIN:
-    _mathlibs = ["mkl_sycl_dll", "mkl_intel_ilp64_dll", "mkl_tbb_thread_dll", "mkl_core_dll", "sycl", "OpenCL", "tbb"]
+    _sycl_lib = None
+    for lib in {"sycl", "sycl6", "sycl7"}:
+        if find_shared_lib(lib):
+            _sycl_lib = lib
+    if not _sycl_lib:
+        raise EnvironmentError("DPNP: sycl library is not found")
+
+    _mathlibs = ["mkl_sycl_dll", "mkl_intel_ilp64_dll", "mkl_tbb_thread_dll", "mkl_core_dll", _sycl_lib, "OpenCL", "tbb"]
 
 """
 Final set of arguments for extentions
@@ -187,6 +195,7 @@ dpnp_backend_c_description = [
                 "dpnp/backend/src/constants.cpp",
                 "dpnp/backend/src/queue_sycl.cpp",
                 "dpnp/backend/src/verbose.cpp",
+                "dpnp/backend/src/dpnp_random_state.cpp"
             ],
         }
      ]

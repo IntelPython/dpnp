@@ -5,7 +5,7 @@ from tests.third_party.cupy.testing import parameterized
 from tests.third_party.cupy.testing import random
 #
 from tests.third_party.cupy.testing.array import assert_allclose
-# from tests.third_party.cupy.testing.array import assert_array_almost_equal
+from tests.third_party.cupy.testing.array import assert_array_almost_equal
 # from tests.third_party.cupy.testing.array import assert_array_almost_equal_nulp
 # from tests.third_party.cupy.testing.array import assert_array_equal
 # from tests.third_party.cupy.testing.array import assert_array_less
