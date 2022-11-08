@@ -1343,7 +1343,7 @@ def vander(x1, N=None, increasing=False):
 
 def zeros(shape,
           *,
-          dtype=dpnp.float64,
+          dtype=numpy.float64,
           order="C",
           like=None,
           device=None,
