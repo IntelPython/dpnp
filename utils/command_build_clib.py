@@ -195,6 +195,7 @@ dpnp_backend_c_description = [
                 "dpnp/backend/src/constants.cpp",
                 "dpnp/backend/src/queue_sycl.cpp",
                 "dpnp/backend/src/verbose.cpp",
+                "dpnp/backend/src/dpnp_random_state.cpp"
             ],
         }
      ]
