@@ -100,10 +100,10 @@ def convert_list_args(input_list):
 
 def copy_from_origin(dst, src):
     """Copy origin result to output result."""
-    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
+    if hasattr(dst, "__sycl_usm_array_interface__"):
         if src.size:
-            # dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
-            dpctl.tensor._copy_utils._copy_from_numpy_into(unwrap_array(dst), src)
+            dst_dpt = unwrap_array(dst)
+            dst_dpt[...] = src
     else:
         for i in range(dst.size):
             dst.flat[i] = src.item(i)
@@ -119,10 +119,11 @@ def call_origin(function, *args, **kwargs):
                                   "isn't currently supported and would fall back on NumPy implementation.")
 
     dpnp_inplace = kwargs.pop("dpnp_inplace", False)
+    sycl_queue = kwargs.pop("sycl_queue", None)
     # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}, \n\t dpnp_inplace={dpnp_inplace}")
 
     kwargs_out = kwargs.get("out", None)
-    alloc_queues = []
+    alloc_queues = [sycl_queue] if sycl_queue else []
     if (kwargs_out is not None):
         if isinstance(kwargs_out, numpy.ndarray):
             kwargs["out"] = kwargs_out
@@ -147,6 +148,8 @@ def call_origin(function, *args, **kwargs):
         kwargs_new[key] = kwargx
 
     exec_q = dpctl.utils.get_execution_queue(alloc_queues)
+    if exec_q is None:
+        exec_q = sycl_queue
     # print(f"DPNP call_origin(): bakend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     # TODO need to put array memory into NumPy call
     result_origin = function(*args_new, **kwargs_new)

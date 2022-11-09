@@ -10,9 +10,6 @@ import numpy
 def test_fft(type, norm):
     # 1 dim array
     data = numpy.arange(100, dtype=numpy.dtype(type))
-    # TODO:
-    # doesn't work correct with `complex64` (not supported)
-    # dpnp_data = dpnp.arange(100, dtype=dpnp.dtype(type))
     dpnp_data = dpnp.array(data)
 
     np_res = numpy.fft.fft(data, norm=norm)

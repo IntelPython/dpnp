@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,34 +34,41 @@ This module contains code and dependency on diffrent containers used in DPNP
 """
 
 
-import dpnp.config as config
-# from dpnp.dparray import dparray
-from dpnp.dpnp_array import dpnp_array
-
-import numpy
-
+import dpctl.utils as dpu
 import dpctl.tensor as dpt
-from dpctl.tensor._device import normalize_queue_device
 
-
-if config.__DPNP_OUTPUT_DPCTL__:
-    try:
-        """
-        Detect DPCtl availability to use data container
-        """
-        import dpctl.tensor as dpctl
-
-    except ImportError:
-        """
-        No DPCtl data container available
-        """
-        config.__DPNP_OUTPUT_DPCTL__ = 0
+from dpnp.dpnp_array import dpnp_array
+import dpnp
 
 
 __all__ = [
+    "arange",
     "asarray",
     "empty",
 ]
+
+
+def arange(start,
+           /,
+           stop=None,
+           step=1,
+           *,
+           dtype=None,
+           device=None,
+           usm_type="device",
+           sycl_queue=None):
+    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    dpu.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+
+    array_obj = dpt.arange(start,
+                           stop=stop,
+                           step=step,
+                           dtype=dtype,
+                           usm_type=usm_type,
+                           sycl_queue=sycl_queue_normalized)
+
+    return dpnp_array(array_obj.shape, buffer=array_obj)
 
 
 def asarray(x1,
@@ -77,14 +84,15 @@ def asarray(x1,
     else:
         x1_obj = x1
 
-    sycl_queue_normalized = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(x1_obj, device=device, sycl_queue=sycl_queue)
+
+    """Converts incoming 'x1' object to 'dpnp_array'."""
     array_obj = dpt.asarray(x1_obj,
                             dtype=dtype,
                             copy=copy,
                             order=order,
                             usm_type=usm_type,
                             sycl_queue=sycl_queue_normalized)
-
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
 
@@ -94,13 +102,12 @@ def empty(shape,
           device=None,
           usm_type="device",
           sycl_queue=None):
-    """Creates `dpnp_array` from uninitialized USM allocation."""
-    sycl_queue_normalized = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
 
+    """Creates `dpnp_array` from uninitialized USM allocation."""
     array_obj = dpt.empty(shape,
                           dtype=dtype,
                           order=order,
                           usm_type=usm_type,
                           sycl_queue=sycl_queue_normalized)
-
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,10 +25,9 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
-from dpctl.tensor._device import normalize_queue_device
-import dpnp
 import numpy
 
+import dpnp
 
 class dpnp_array:
     """
@@ -64,7 +63,7 @@ class dpnp_array:
                                           copy=False,
                                           order=order)
         else:
-            sycl_queue_normalized = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+            sycl_queue_normalized = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
             self._array_obj = dpt.usm_ndarray(shape,
                                               dtype=dtype,
                                               strides=strides,
@@ -444,7 +443,9 @@ class dpnp_array:
 
         """
 
-        return dpnp.astype(self, dtype, order, casting, subok, copy)
+        new_array = self.__new__(dpnp_array)
+        new_array._array_obj = dpt.astype(self._array_obj, dtype, order=order, casting=casting, copy=copy)
+        return new_array
 
  # 'base',
  # 'byteswap',

@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,6 @@
 # *****************************************************************************
 cimport dpctl as c_dpctl
 
-cimport dpctl as c_dpctl
-
 from libcpp cimport bool as cpp_bool
 
 from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
@@ -47,7 +45,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ANY
         DPNP_FN_ANY_EXT
         DPNP_FN_ARANGE
-        DPNP_FN_ARANGE_EXT
         DPNP_FN_ARCCOS
         DPNP_FN_ARCCOS_EXT
         DPNP_FN_ARCCOSH
@@ -145,6 +142,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FFT_FFT
         DPNP_FN_FFT_FFT_EXT
         DPNP_FN_FFT_RFFT
+        DPNP_FN_FFT_RFFT_EXT
         DPNP_FN_FILL_DIAGONAL
         DPNP_FN_FILL_DIAGONAL_EXT
         DPNP_FN_FLATTEN
@@ -292,7 +290,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_STANDARD_GAMMA
         DPNP_FN_RNG_STANDARD_GAMMA_EXT
         DPNP_FN_RNG_STANDARD_NORMAL
-        DPNP_FN_RNG_STANDARD_NORMAL_EXT
         DPNP_FN_RNG_STANDARD_T
         DPNP_FN_RNG_STANDARD_T_EXT
         DPNP_FN_RNG_TRIANGULAR
@@ -520,7 +517,6 @@ cpdef dpnp_descriptor dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_
 """
 Array creation routines
 """
-cpdef dpnp_descriptor dpnp_arange(start, stop, step, dtype)
 cpdef dpnp_descriptor dpnp_init_val(shape, dtype, value)
 cpdef dpnp_descriptor dpnp_full(result_shape, value_in, result_dtype)  # same as dpnp_init_val
 cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
