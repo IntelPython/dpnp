@@ -74,7 +74,7 @@
 <span></span><span class="c1"># cython: language_level=3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2020, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2022, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -107,15 +107,16 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">operator</span>
 
-<span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
+<span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.random.dpnp_algo_random</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">from</span> <span class="nn">.dpnp_random_state</span> <span class="kn">import</span> <span class="n">RandomState</span>
+<span class="kn">from</span> <span class="nn">.dpnp_algo_random</span> <span class="kn">import</span> <span class="o">*</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -170,11 +171,11 @@
 <span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_check_dims</span><span class="p">(</span><span class="n">dims</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">dims</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="kc">True</span>
+<span class="k">def</span> <span class="nf">_get_random_state</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">_dpnp_random_state</span>
+    <span class="k">if</span> <span class="n">_dpnp_random_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_dpnp_random_state</span> <span class="o">=</span> <span class="n">RandomState</span><span class="p">()</span>
+    <span class="k">return</span>  <span class="n">_dpnp_random_state</span>
 
 
 <div class="viewcode-block" id="beta"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.beta.html#dpnp.random.beta">[docs]</a><span class="k">def</span> <span class="nf">beta</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -846,8 +847,9 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">negative_binomial</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.normal.html#dpnp.random.normal">[docs]</a><span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Normal distribution.</span>
+<div class="viewcode-block" id="normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.normal.html#dpnp.random.normal">[docs]</a><span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s1">&#39;device&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Normal distribution.</span>
 
 <span class="sd">    Draw random samples from a normal (Gaussian) distribution.</span>
 
@@ -857,7 +859,8 @@
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters ``loc`` and ``scale`` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.normal(loc, scale, size)` samples are drawn.</span>
-<span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
+<span class="sd">    Output array data type is :obj:`dpnp.float64` if device supports it</span>
+<span class="sd">    or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -866,20 +869,11 @@
 <span class="sd">    &gt;&gt;&gt; s = dpnp.random.normal(mu, sigma, 1000)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">loc</span><span class="p">):</span>
-        <span class="c1"># TODO:</span>
-        <span class="c1"># array_like of floats for `loc` and `scale` params</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">loc</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_rng_normal</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_get_random_state</span><span class="p">()</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span>
+                                      <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+                                      <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                                      <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                      <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="noncentral_chisquare"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.noncentral_chisquare.html#dpnp.random.noncentral_chisquare">[docs]</a><span class="k">def</span> <span class="nf">noncentral_chisquare</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">nonc</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1065,39 +1059,36 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">power</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="rand"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.rand.html#dpnp.random.rand">[docs]</a><span class="k">def</span> <span class="nf">rand</span><span class="p">(</span><span class="n">d0</span><span class="p">,</span> <span class="o">*</span><span class="n">dn</span><span class="p">):</span>
+<div class="viewcode-block" id="rand"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.rand.html#dpnp.random.rand">[docs]</a><span class="k">def</span> <span class="nf">rand</span><span class="p">(</span><span class="n">d0</span><span class="p">,</span> <span class="o">*</span><span class="n">dn</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create an array of the given shape and populate it</span>
-<span class="sd">    with random samples from a uniform distribution over [0, 1).</span>
+<span class="sd">    Random values in a given shape.</span>
+
+<span class="sd">    Create an array of the given shape and populate it with random samples</span>
+<span class="sd">    from a uniform distribution over [0, 1).</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.random.rand`.</span>
 
-
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
+<span class="sd">    Output array data type is :obj:`dpnp.float64` if device supports it</span>
+<span class="sd">    or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; s = dpnp.random.rand(2, 4)</span>
+<span class="sd">    &gt;&gt;&gt; s = dpnp.random.rand(3, 2)</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.random.random`</span>
+<span class="sd">    :obj:`dpnp.random.random_sample`</span>
+<span class="sd">    :obj:`dpnp.random.uniform`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">d0</span><span class="p">):</span>
-        <span class="n">dims</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">d0</span><span class="p">,</span> <span class="o">*</span><span class="n">dn</span><span class="p">])</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_check_dims</span><span class="p">(</span><span class="n">dims</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_rng_random</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">,</span> <span class="n">d0</span><span class="p">,</span> <span class="o">*</span><span class="n">dn</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_get_random_state</span><span class="p">()</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">d0</span><span class="p">,</span> <span class="o">*</span><span class="n">dn</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="randint"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.randint.html#dpnp.random.randint">[docs]</a><span class="k">def</span> <span class="nf">randint</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="randint"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.randint.html#dpnp.random.randint">[docs]</a><span class="k">def</span> <span class="nf">randint</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return random integers from `low` (inclusive) to `high` (exclusive).</span>
 
@@ -1105,10 +1096,9 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``low`` and ``high`` are supported as scalar.</span>
-<span class="sd">    Parameter ``dtype`` is supported only for `int` or :obj:`dpnp.float32`.</span>
-<span class="sd">    Otherwise, :obj:`numpy.random.randint(low, high, size, dtype)` samples</span>
-<span class="sd">    are drawn.</span>
+<span class="sd">    Parameters ``low`` and ``high`` are supported only as scalar.</span>
+<span class="sd">    Parameter ``dtype`` is supported only as `int`.</span>
+<span class="sd">    Otherwise, :obj:`numpy.random.randint(low, high, size, dtype)` samples are drawn.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1124,35 +1114,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
-        <span class="c1"># TODO</span>
-        <span class="c1"># add to the limitations</span>
-        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
-            <span class="n">_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int32</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">high</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">high</span> <span class="o">=</span> <span class="n">low</span>
-            <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="c1"># TODO:</span>
-        <span class="c1"># array_like of floats for `low` and `high` params</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">high</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">low</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">high</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">_dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int32</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">low</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">low</span><span class="p">)</span>
-            <span class="n">high</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">high</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">dpnp_rng_uniform</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">_dtype</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_get_random_state</span><span class="p">()</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span>
+                                       <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span>
+                                       <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                                       <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                                       <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="randn"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.randn.html#dpnp.random.randn">[docs]</a><span class="k">def</span> <span class="nf">randn</span><span class="p">(</span><span class="n">d0</span><span class="p">,</span> <span class="o">*</span><span class="n">dn</span><span class="p">):</span>
+<div class="viewcode-block" id="randn"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.randn.html#dpnp.random.randn">[docs]</a><span class="k">def</span> <span class="nf">randn</span><span class="p">(</span><span class="n">d0</span><span class="p">,</span> <span class="o">*</span><span class="n">dn</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a sample (or samples) from the &quot;standard normal&quot; distribution.</span>
 
@@ -1160,7 +1129,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
+<span class="sd">    Output array data type is :obj:`dpnp.float64` if device supports it</span>
+<span class="sd">    or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1178,17 +1148,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">d0</span><span class="p">):</span>
-        <span class="n">dims</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">d0</span><span class="p">,</span> <span class="o">*</span><span class="n">dn</span><span class="p">])</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_check_dims</span><span class="p">(</span><span class="n">dims</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_rng_randn</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">,</span> <span class="n">d0</span><span class="p">,</span> <span class="o">*</span><span class="n">dn</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_get_random_state</span><span class="p">()</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">d0</span><span class="p">,</span> <span class="o">*</span><span class="n">dn</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="random"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.random.html#dpnp.random.random">[docs]</a><span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+<div class="viewcode-block" id="random"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.random.html#dpnp.random.random">[docs]</a><span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return random floats in the half-open interval [0.0, 1.0).</span>
 <span class="sd">    Alias for random_sample.</span>
@@ -1197,7 +1160,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
+<span class="sd">    Output array data type is :obj:`dpnp.float64` if device supports it</span>
+<span class="sd">    or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1205,17 +1169,16 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.random.rand`</span>
 <span class="sd">    :obj:`dpnp.random.random_sample`</span>
+<span class="sd">    :obj:`dpnp.random.uniform`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_rng_random</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">random_sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="random_integers"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.random_integers.html#dpnp.random.random_integers">[docs]</a><span class="k">def</span> <span class="nf">random_integers</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="random_integers"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.random_integers.html#dpnp.random.random_integers">[docs]</a><span class="k">def</span> <span class="nf">random_integers</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Random integers between `low` and `high`, inclusive.</span>
 
@@ -1233,49 +1196,52 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">high</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">high</span> <span class="o">=</span> <span class="n">low</span>
-            <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="c1"># TODO:</span>
-        <span class="c1"># array_like of floats for `low` and `high` params</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">high</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">high</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">high</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">high</span> <span class="o">=</span> <span class="n">low</span>
+        <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># TODO:</span>
+    <span class="c1"># array_like of floats for `low` and `high` params</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">high</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">high</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="random_sample"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.random_sample.html#dpnp.random.random_sample">[docs]</a><span class="k">def</span> <span class="nf">random_sample</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+<div class="viewcode-block" id="random_sample"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.random_sample.html#dpnp.random.random_sample">[docs]</a><span class="k">def</span> <span class="nf">random_sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return random floats in the half-open interval [0.0, 1.0).</span>
+
+<span class="sd">    Results are from the “continuous uniform” distribution over the interval.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.random.random_sample`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
+<span class="sd">    Output array data type is :obj:`dpnp.float64` if device supports it</span>
+<span class="sd">    or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; s = dpnp.random.random_sample(1000)</span>
+<span class="sd">    &gt;&gt;&gt; s = dpnp.random.random_sample((5,))</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.random.rand`</span>
 <span class="sd">    :obj:`dpnp.random.random`</span>
+<span class="sd">    :obj:`dpnp.random.uniform`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_rng_random</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_sample</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_get_random_state</span><span class="p">()</span><span class="o">.</span><span class="n">random_sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                                             <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ranf"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.ranf.html#dpnp.random.ranf">[docs]</a><span class="k">def</span> <span class="nf">ranf</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+<div class="viewcode-block" id="ranf"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.ranf.html#dpnp.random.ranf">[docs]</a><span class="k">def</span> <span class="nf">ranf</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return random floats in the half-open interval [0.0, 1.0).</span>
 <span class="sd">    This is an alias of random_sample.</span>
@@ -1284,7 +1250,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
+<span class="sd">    Output array data type is :obj:`dpnp.float64` if device supports it</span>
+<span class="sd">    or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1292,14 +1259,14 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.random.rand`</span>
 <span class="sd">    :obj:`dpnp.random.random`</span>
+<span class="sd">    :obj:`dpnp.random.random_sample`</span>
+<span class="sd">    :obj:`dpnp.random.uniform`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_rng_random</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">ranf</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">random_sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="rayleigh"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.rayleigh.html#dpnp.random.rayleigh">[docs]</a><span class="k">def</span> <span class="nf">rayleigh</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1336,7 +1303,7 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rayleigh</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="sample"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.sample.html#dpnp.random.sample">[docs]</a><span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+<div class="viewcode-block" id="sample"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.sample.html#dpnp.random.sample">[docs]</a><span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return random floats in the half-open interval [0.0, 1.0).</span>
 <span class="sd">    This is an alias of random_sample.</span>
@@ -1345,7 +1312,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
+<span class="sd">    Output array data type is :obj:`dpnp.float64` if device supports it</span>
+<span class="sd">    or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1353,14 +1321,14 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.random.rand`</span>
 <span class="sd">    :obj:`dpnp.random.random`</span>
+<span class="sd">    :obj:`dpnp.random.random_sample`</span>
+<span class="sd">    :obj:`dpnp.random.uniform`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_rng_random</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">random_sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="shuffle"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.shuffle.html#dpnp.random.shuffle">[docs]</a><span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -1410,8 +1378,15 @@
         <span class="k">elif</span> <span class="n">seed</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TODO:</span>
+            <span class="c1"># migrate to a single approach with RandomState class</span>
+
+            <span class="c1"># update a mt19937 random number for both RandomState and legacy functionality</span>
+            <span class="k">global</span> <span class="n">_dpnp_random_state</span>
+            <span class="n">_dpnp_random_state</span> <span class="o">=</span> <span class="n">RandomState</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
             <span class="n">dpnp_rng_srand</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
+    <span class="c1"># always reseed numpy engine also</span>
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span></div>
 
 
@@ -1503,7 +1478,7 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="standard_normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.standard_normal.html#dpnp.random.standard_normal">[docs]</a><span class="k">def</span> <span class="nf">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="standard_normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.standard_normal.html#dpnp.random.standard_normal">[docs]</a><span class="k">def</span> <span class="nf">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Standard normal distribution.</span>
 
 <span class="sd">    Draw samples from a standard Normal distribution (mean=0, stdev=1).</span>
@@ -1512,7 +1487,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
+<span class="sd">    Output array data type is :obj:`dpnp.float64` if device supports it</span>
+<span class="sd">    or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1520,11 +1496,7 @@
 <span class="sd">    &gt;&gt;&gt; s = dpnp.random.standard_normal(1000)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_rng_standard_normal</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_get_random_state</span><span class="p">()</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="standard_t"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.standard_t.html#dpnp.random.standard_t">[docs]</a><span class="k">def</span> <span class="nf">standard_t</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1607,9 +1579,8 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">triangular</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="uniform"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.uniform.html#dpnp.random.uniform">[docs]</a><span class="k">def</span> <span class="nf">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="uniform"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.uniform.html#dpnp.random.uniform">[docs]</a><span class="k">def</span> <span class="nf">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s1">&#39;device&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-
 <span class="sd">    Draw samples from a uniform distribution.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.random.uniform`.</span>
@@ -1618,7 +1589,8 @@
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters ``low`` and ``high`` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.uniform(low, high, size)` samples are drawn.</span>
-<span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
+<span class="sd">    Output array data type is :obj:`dpnp.float64` if device supports it</span>
+<span class="sd">    or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1631,18 +1603,11 @@
 <span class="sd">    :obj:`dpnp.random.random` : Floats uniformly distributed over ``[0, 1)``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">high</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">low</span> <span class="o">&gt;</span> <span class="n">high</span><span class="p">:</span>
-                <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">high</span><span class="p">,</span> <span class="n">low</span>
-            <span class="k">return</span> <span class="n">dpnp_rng_uniform</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_get_random_state</span><span class="p">()</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span>
+                                       <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span>
+                                       <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                                       <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                       <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="vonmises"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.vonmises.html#dpnp.random.vonmises">[docs]</a><span class="k">def</span> <span class="nf">vonmises</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">kappa</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1785,6 +1750,9 @@
             <span class="k">return</span> <span class="n">dpnp_rng_zipf</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">zipf</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+
+
+<span class="n">_dpnp_random_state</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 
            </div>

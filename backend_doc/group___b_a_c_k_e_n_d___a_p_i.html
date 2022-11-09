@@ -650,6 +650,15 @@ Functions</h2></td></tr>
 <tr class="memitem:ga96eabd32a2b65f49e715ccdbc33c45d4"><td class="memItemLeft" align="right" valign="top">INP_DLLEXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga96eabd32a2b65f49e715ccdbc33c45d4">dpnp_python_constants_initialize_c</a> (void *py_none, void *py_nan)</td></tr>
 <tr class="memdesc:ga96eabd32a2b65f49e715ccdbc33c45d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Python constants initialization in the backend.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga96eabd32a2b65f49e715ccdbc33c45d4">More...</a><br /></td></tr>
 <tr class="separator:ga96eabd32a2b65f49e715ccdbc33c45d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga27e7a066bbe9e7bb42ea0bb4aa80fa5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga27e7a066bbe9e7bb42ea0bb4aa80fa5a">MT19937_InitScalarSeed</a> (<a class="el" href="structmt19937__struct.html">mt19937_struct</a> *mt19937, DPCTLSyclQueueRef q_ref, uint32_t seed=1)</td></tr>
+<tr class="memdesc:ga27e7a066bbe9e7bb42ea0bb4aa80fa5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a MKL engine from scalar seed.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga27e7a066bbe9e7bb42ea0bb4aa80fa5a">More...</a><br /></td></tr>
+<tr class="separator:ga27e7a066bbe9e7bb42ea0bb4aa80fa5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5aa43f73b2b057034fd5f29cd86ea246"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5aa43f73b2b057034fd5f29cd86ea246">MT19937_InitVectorSeed</a> (<a class="el" href="structmt19937__struct.html">mt19937_struct</a> *mt19937, DPCTLSyclQueueRef q_ref, uint32_t *seed, unsigned int n)</td></tr>
+<tr class="memdesc:ga5aa43f73b2b057034fd5f29cd86ea246"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a MKL engine from seed vector.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga5aa43f73b2b057034fd5f29cd86ea246">More...</a><br /></td></tr>
+<tr class="separator:ga5aa43f73b2b057034fd5f29cd86ea246"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaff33ecfcdcc418196d3361d37c53f5f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaff33ecfcdcc418196d3361d37c53f5f0">MT19937_Delete</a> (<a class="el" href="structmt19937__struct.html">mt19937_struct</a> *mt19937)</td></tr>
+<tr class="memdesc:gaff33ecfcdcc418196d3361d37c53f5f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release a MKL engine.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaff33ecfcdcc418196d3361d37c53f5f0">More...</a><br /></td></tr>
+<tr class="separator:gaff33ecfcdcc418196d3361d37c53f5f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p >This section describes Backend API. </p>
@@ -13391,6 +13400,130 @@ template&lt;typename _DataType &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>pointer to the backend API function. </dd></dl>
+
+</div>
+</div>
+<a id="gaff33ecfcdcc418196d3361d37c53f5f0" name="gaff33ecfcdcc418196d3361d37c53f5f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaff33ecfcdcc418196d3361d37c53f5f0">&#9670;&nbsp;</a></span>MT19937_Delete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MT19937_Delete </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmt19937__struct.html">mt19937_struct</a> *&#160;</td>
+          <td class="paramname"><em>mt19937</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Release a MKL engine. </p>
+<p >Release all resource required for storing of the MKL engine.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mt19937</td><td>A structure with the MKL engine. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga27e7a066bbe9e7bb42ea0bb4aa80fa5a" name="ga27e7a066bbe9e7bb42ea0bb4aa80fa5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga27e7a066bbe9e7bb42ea0bb4aa80fa5a">&#9670;&nbsp;</a></span>MT19937_InitScalarSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MT19937_InitScalarSeed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmt19937__struct.html">mt19937_struct</a> *&#160;</td>
+          <td class="paramname"><em>mt19937</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
+          <td class="paramname"><em>q_ref</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a MKL engine from scalar seed. </p>
+<p >Invoke a common seed initialization of the engine for MT199374x32x10 algorithm.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mt19937</td><td>A structure with MKL engine which will be filled with generated value by MKL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>A refference on SYCL queue which will be used to obtain random numbers. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">seed</td><td>An initial condition of the generator state. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga5aa43f73b2b057034fd5f29cd86ea246" name="ga5aa43f73b2b057034fd5f29cd86ea246"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5aa43f73b2b057034fd5f29cd86ea246">&#9670;&nbsp;</a></span>MT19937_InitVectorSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MT19937_InitVectorSeed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmt19937__struct.html">mt19937_struct</a> *&#160;</td>
+          <td class="paramname"><em>mt19937</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
+          <td class="paramname"><em>q_ref</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramname"><em>seed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a MKL engine from seed vector. </p>
+<p >Invoke an extended seed initialization of the engine for MT199374x32x10 algorithm..</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mt19937</td><td>A structure with MKL engine which will be filled with generated value by MKL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>A refference on SYCL queue which will be used to obtain random numbers. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">seed</td><td>A vector with the initial conditions of the generator state. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Length of the vector. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

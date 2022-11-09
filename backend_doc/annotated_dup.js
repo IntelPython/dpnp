@@ -5,5 +5,6 @@ var annotated_dup =
     [ "DPNPC_id", "class_d_p_n_p_c__id.html", "class_d_p_n_p_c__id" ],
     [ "DPNPC_ptr_adapter", "class_d_p_n_p_c__ptr__adapter.html", null ],
     [ "DPNPFuncData", "struct_d_p_n_p_func_data.html", "struct_d_p_n_p_func_data" ],
+    [ "mt19937_struct", "structmt19937__struct.html", null ],
     [ "python_constants", "structpython__constants.html", null ]
 ];
