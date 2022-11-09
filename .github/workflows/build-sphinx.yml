@@ -85,7 +85,7 @@ jobs:
       - name: Build library
         run: |
           python setup.py build_clib
-          CC=dpcpp python setup.py build_ext --inplace
+          CC=icpx python setup.py build_ext --inplace
           python setup.py develop
 
       - name: Build docs
