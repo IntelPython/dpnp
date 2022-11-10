@@ -15,6 +15,12 @@ from numpy.testing import (
 )
 
 
+def assert_cfd(data, exp_sycl_queue, exp_usm_type=None):
+    assert exp_sycl_queue == data.sycl_queue
+    if exp_usm_type:
+        assert exp_usm_type == data.usm_type
+
+
 class TestNormal:
     @pytest.mark.parametrize("dtype",
                              [dpnp.float32, dpnp.float64, None],
@@ -47,7 +53,7 @@ class TestNormal:
         assert_array_almost_equal(dpnp.asnumpy(data), desired, decimal=precision)
 
         # check if compute follows data isn't broken
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
 
     @pytest.mark.parametrize("dtype",
@@ -138,7 +144,7 @@ class TestNormal:
         assert_array_almost_equal(actual, desired, decimal=precision)
 
         # check if compute follows data isn't broken
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue)
 
 
     @pytest.mark.parametrize("dtype",
@@ -174,17 +180,17 @@ class TestRand:
 
         precision = numpy.finfo(dtype=numpy.float64).precision
         assert_array_almost_equal(dpnp.asnumpy(data), desired, decimal=precision)
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
         # call with the same seed has to draw the same values
         data = RandomState(seed, sycl_queue=sycl_queue).rand(3, 2, usm_type=usm_type)
         assert_array_almost_equal(dpnp.asnumpy(data), desired, decimal=precision)
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
         # call with omitted dimensions has to draw the first element from desired
         data = RandomState(seed, sycl_queue=sycl_queue).rand(usm_type=usm_type)
         assert_array_almost_equal(dpnp.asnumpy(data), desired[0, 0], decimal=precision)
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
         # rand() is an alias on random_sample(), map arguments
         with mock.patch('dpnp.random.RandomState.random_sample') as m:
@@ -245,7 +251,7 @@ class TestRandInt:
                                [5, 3],
                                [5, 7]], dtype=numpy.int32)
         assert_array_equal(dpnp.asnumpy(data), desired)
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
         # call with the same seed has to draw the same values
         data = RandomState(seed, sycl_queue=sycl_queue).randint(low=low,
@@ -254,7 +260,7 @@ class TestRandInt:
                                                                 dtype=dtype,
                                                                 usm_type=usm_type)
         assert_array_equal(dpnp.asnumpy(data), desired)
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
         # call with omitted dimensions has to draw the first element from desired
         data = RandomState(seed, sycl_queue=sycl_queue).randint(low=low,
@@ -262,7 +268,7 @@ class TestRandInt:
                                                                 dtype=dtype,
                                                                 usm_type=usm_type)
         assert_array_equal(dpnp.asnumpy(data), desired[0, 0])
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
         # rand() is an alias on random_sample(), map arguments
         with mock.patch('dpnp.random.RandomState.uniform') as m:
@@ -701,7 +707,7 @@ class TestUniform:
             assert_array_equal(dpnp.asnumpy(data), desired)
 
         # check if compute follows data isn't broken
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
 
     @pytest.mark.parametrize("dtype",
@@ -766,7 +772,7 @@ class TestUniform:
         assert_array_almost_equal(actual, desired, decimal=precision)
 
         # check if compute follows data isn't broken
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue)
 
 
     @pytest.mark.parametrize("dtype",
