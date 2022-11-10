@@ -162,4 +162,5 @@
    .. autoattribute:: sycl_context
    .. autoattribute:: sycl_device
    .. autoattribute:: sycl_queue
+   .. autoattribute:: usm_type
  
