@@ -12,7 +12,7 @@ import tempfile
                          [0, -5, 10, -2.5, 9.7],
                          ids=['0', '-5', '10', '-2.5', '9.7'])
 @pytest.mark.parametrize("stop",
-                         [None, 10, -2, 20.5, 10**5],
+                         [None, 10, -2, 20.5, 1000],
                          ids=['None', '10', '-2', '20.5', '10**5'])
 @pytest.mark.parametrize("step",
                          [None, 1, 2.7, -1.6, 100],
@@ -25,17 +25,6 @@ def test_arange(start, stop, step, dtype):
     if numpy.issubdtype(dtype, numpy.float16):
         # numpy casts to float32 type when computes float16 data
         rtol_mult = 4
-
-        # secure there is no 'inf' elements in resulting array
-        max = numpy.finfo(dtype).max
-        if stop is not None and stop > max:
-            # consider comulative accuracy while generating array
-            # to calculate maximum allowed 'stop' value for dtype=float16
-            arr_len = (max - start) / (step if step is not None else 1)
-            arr_ilen = int(arr_len)
-            arr_len = (arr_ilen + 1) if float(arr_ilen) < arr_len else arr_ilen
-            acc = rtol_mult * numpy.finfo(dtype).eps
-            stop = max - acc * arr_len
 
     exp_array = numpy.arange(start, stop=stop, step=step, dtype=dtype)
 
