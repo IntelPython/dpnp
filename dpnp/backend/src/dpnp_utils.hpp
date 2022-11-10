@@ -41,10 +41,12 @@
         (__LIBSYCL_MAJOR_VERSION == major and __LIBSYCL_MINOR_VERSION == minor and __LIBSYCL_PATCH_VERSION >= patch)
 
 /**
- * Version of SYCL DPC++ 2023 compiler at which transition to SYCL 2020 occurs
+ * Version of SYCL DPC++ 2023 compiler at which transition to SYCL 2020 occurs.
+ * Intel(R) oneAPI DPC++ 2022.2.1 compiler has version 20221020L on Linux and
+ * 20221101L on Windows.
  */
 #ifndef __SYCL_COMPILER_2023_SWITCHOVER
-#define __SYCL_COMPILER_2023_SWITCHOVER 20221020L
+#define __SYCL_COMPILER_2023_SWITCHOVER 20221102L
 #endif
 
 /**
