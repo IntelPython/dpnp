@@ -278,8 +278,7 @@ def test_uniform(usm_type, size):
     high = 2.0
     res = dpnp.random.uniform(low, high, size=size, usm_type=usm_type)
 
-    res_usm_type = res.get_array().usm_type
-    assert usm_type == res_usm_type
+    assert usm_type == res.usm_type
 
 
 @pytest.mark.parametrize("usm_type",
@@ -295,8 +294,7 @@ def test_rs_uniform(usm_type, seed):
     rs = dpnp.random.RandomState(seed, sycl_queue=sycl_queue)
     res = rs.uniform(low, high, usm_type=usm_type)
 
-    res_usm_type = res.get_array().usm_type
-    assert usm_type == res_usm_type
+    assert usm_type == res.usm_type
 
     res_sycl_queue = res.get_array().sycl_queue
     assert_sycl_queue_equal(res_sycl_queue, sycl_queue)
