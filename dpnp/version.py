@@ -29,6 +29,6 @@
 DPNP version module
 """
 
-__version__: str = '0.10.3'
+__version__: str = '0.11.0'
 
 version: str = __version__
