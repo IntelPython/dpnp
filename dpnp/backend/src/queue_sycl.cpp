@@ -29,6 +29,7 @@
 
 #include <dpnp_iface.hpp>
 #include "queue_sycl.hpp"
+#include "dpnp_utils.hpp"
 
 #if defined(DPNP_LOCAL_QUEUE)
 sycl::queue* backend_sycl::queue = nullptr;
@@ -211,10 +212,14 @@ bool backend_sycl::backend_sycl_is_cpu()
 {
     sycl::queue& qptr = get_queue();
 
-    if (qptr.is_host() || qptr.get_device().is_cpu() || qptr.get_device().is_host())
-    {
+    if (qptr.get_device().is_cpu()) {
         return true;
     }
+#if (__SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER)
+    else if (qptr.is_host() || qptr.get_device().is_host()) {
+        return true;
+    }
+#endif
 
     return false;
 }
