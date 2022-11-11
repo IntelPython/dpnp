@@ -456,7 +456,7 @@ jobs:
     needs: test_windows
 
     if: |
-      !github.event.pull_request.head.repo.fork  &&
+      !github.event.pull_request.head.repo.fork  && !github.event.push.repository.fork &&
       (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
 
     runs-on: windows-latest
