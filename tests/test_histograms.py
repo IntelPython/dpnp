@@ -13,6 +13,7 @@ class TestHistogram:
     def teardown(self):
         pass
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_simple(self):
         n = 100
         v = dpnp.random.rand(n)
@@ -24,6 +25,7 @@ class TestHistogram:
         (a, b) = dpnp.histogram(numpy.linspace(0, 10, 100))
         numpy.testing.assert_array_equal(a, 10)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_one_bin(self):
         # Ticket 632
         hist, edges = dpnp.histogram([1, 2, 3, 4], [1, 2])
@@ -66,6 +68,8 @@ class TestHistogram:
             [1, 2, 3, 4], [0.5, 1.5, numpy.inf], density=True)
         numpy.testing.assert_equal(counts, [.25, 0])
 
+
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_arr_weights_mismatch(self):
         a = dpnp.arange(10) + .5
         w = dpnp.arange(11) + .5

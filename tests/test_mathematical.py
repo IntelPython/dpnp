@@ -5,6 +5,7 @@ import dpnp
 import numpy
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestConvolve:
     def test_object(self):
         d = [1.] * 100
@@ -33,6 +34,7 @@ class TestConvolve:
             dpnp.convolve(d, k, mode=None)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("array",
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
@@ -54,6 +56,7 @@ def test_diff(array):
     numpy.testing.assert_allclose(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype1",
                          [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.complex64, numpy.complex128],
                          ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32', 'numpy.complex64', 'numpy.complex128'])
@@ -98,46 +101,60 @@ class TestMathematical:
 
         numpy.testing.assert_allclose(result, expected, atol=1e-4)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_add(self, dtype, lhs, rhs):
         self._test_mathematical('add', dtype, lhs, rhs)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_arctan2(self, dtype, lhs, rhs):
         self._test_mathematical('arctan2', dtype, lhs, rhs)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_copysign(self, dtype, lhs, rhs):
         self._test_mathematical('copysign', dtype, lhs, rhs)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_divide(self, dtype, lhs, rhs):
         self._test_mathematical('divide', dtype, lhs, rhs)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_fmod(self, dtype, lhs, rhs):
         self._test_mathematical('fmod', dtype, lhs, rhs)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_floor_divide(self, dtype, lhs, rhs):
         self._test_mathematical('floor_divide', dtype, lhs, rhs)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_hypot(self, dtype, lhs, rhs):
         self._test_mathematical('hypot', dtype, lhs, rhs)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_maximum(self, dtype, lhs, rhs):
         self._test_mathematical('maximum', dtype, lhs, rhs)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_minimum(self, dtype, lhs, rhs):
         self._test_mathematical('minimum', dtype, lhs, rhs)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_multiply(self, dtype, lhs, rhs):
         self._test_mathematical('multiply', dtype, lhs, rhs)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_remainder(self, dtype, lhs, rhs):
         self._test_mathematical('remainder', dtype, lhs, rhs)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_power(self, dtype, lhs, rhs):
         self._test_mathematical('power', dtype, lhs, rhs)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_subtract(self, dtype, lhs, rhs):
         self._test_mathematical('subtract', dtype, lhs, rhs)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("val_type",
                          [bool, int, float],
                          ids=['bool', 'int', 'float'])
@@ -172,6 +189,7 @@ def test_multiply_scalar(array, val, data_type, val_type):
     numpy.testing.assert_array_equal(result, expected)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("shape",
                          [(), (3, 2)],
                          ids=['()', '(3, 2)'])
@@ -187,6 +205,7 @@ def test_multiply_scalar2(shape, dtype):
     numpy.testing.assert_array_equal(result, expected)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("array", [[1, 2, 3, 4, 5],
                                    [1, 2, numpy.nan, 4, 5],
                                    [[1, 2, numpy.nan], [3, -4, -5]]])
@@ -199,6 +218,7 @@ def test_nancumprod(array):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("array", [[1, 2, 3, 4, 5],
                                    [1, 2, numpy.nan, 4, 5],
                                    [[1, 2, numpy.nan], [3, -4, -5]]])
@@ -226,6 +246,7 @@ def test_negative(data, dtype):
     numpy.testing.assert_array_equal(result, expected)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("val_type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
@@ -270,6 +291,8 @@ class TestEdiff1d:
         expected = numpy.ediff1d(np_a)
         numpy.testing.assert_array_equal(expected, result)
 
+    
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_ediff1d_args(self):
         np_a = numpy.array([1, 2, 4, 7, 0])
 
@@ -281,6 +304,7 @@ class TestEdiff1d:
         numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestTrapz:
     @pytest.mark.parametrize("data_type",
                              [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
@@ -336,6 +360,7 @@ class TestTrapz:
         numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestCross:
 
     @pytest.mark.parametrize("axis", [None, 0],
@@ -370,32 +395,7 @@ class TestCross:
         numpy.testing.assert_array_equal(expected, result)
 
 
-class TestGradient:
-
-    @pytest.mark.parametrize("array", [[2, 3, 6, 8, 4, 9],
-                                       [3., 4., 7.5, 9.],
-                                       [2, 6, 8, 10]])
-    def test_gradient_y1(self, array):
-        np_y = numpy.array(array)
-        dpnp_y = dpnp.array(array)
-
-        result = dpnp.gradient(dpnp_y)
-        expected = numpy.gradient(np_y)
-        numpy.testing.assert_array_equal(expected, result)
-
-    @pytest.mark.parametrize("array", [[2, 3, 6, 8, 4, 9],
-                                       [3., 4., 7.5, 9.],
-                                       [2, 6, 8, 10]])
-    @pytest.mark.parametrize("dx", [2, 3.5])
-    def test_gradient_y1_dx(self, array, dx):
-        np_y = numpy.array(array)
-        dpnp_y = dpnp.array(array)
-
-        result = dpnp.gradient(dpnp_y, dx)
-        expected = numpy.gradient(np_y, dx)
-        numpy.testing.assert_array_equal(expected, result)
-
-
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestGradient:
 
     @pytest.mark.parametrize("array", [[2, 3, 6, 8, 4, 9],

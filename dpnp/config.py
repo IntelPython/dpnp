@@ -48,7 +48,7 @@ __DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__ = int(os.getenv('DPNP_OUTPUT_DPCTL_DEFAULT_
 Explicitly use SYCL shared memory parameter in DPCtl array constructor for creation functions
 '''
 
-__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ = int(os.getenv('__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__', 1))
+__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ = int(os.getenv('DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK', 1))
 '''
 Trigger non-implemented exception when DPNP fallbacks on NumPy implementation
 '''

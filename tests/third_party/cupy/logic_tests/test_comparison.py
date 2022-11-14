@@ -1,5 +1,6 @@
 import operator
 import unittest
+import pytest
 
 import numpy
 
@@ -7,6 +8,7 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestComparison(unittest.TestCase):
 
@@ -36,6 +38,7 @@ class TestComparison(unittest.TestCase):
         self.check_binary('equal')
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestComparisonOperator(unittest.TestCase):
 
@@ -160,6 +163,7 @@ class TestAllclose(unittest.TestCase):
         return xp.allclose(a, b)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestIsclose(unittest.TestCase):
 
     @testing.for_all_dtypes(no_complex=True)

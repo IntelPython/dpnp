@@ -67,7 +67,7 @@ class RandomState:
             self._def_float_type = dpnp.float64
 
         self._random_state = MT19937(self._seed, self._sycl_queue)
-        self._fallback_random_state = call_origin(numpy.random.RandomState, seed)
+        self._fallback_random_state = call_origin(numpy.random.RandomState, seed, allow_fallback=True)
 
 
     def get_state(self):
@@ -125,12 +125,15 @@ class RandomState:
             else:
                 min_double = numpy.finfo('double').min
                 max_double = numpy.finfo('double').max
-                if (loc >= max_double or loc <= min_double) and dpnp.isfinite(loc):
+
+                # TODO: switch to dpnp.isfinite() and dpnp.signbit() once functions are available,
+                # but for now use direct numpy calls without call_origin() wrapper, since data is a scalar
+                if (loc >= max_double or loc <= min_double) and numpy.isfinite(loc):
                     raise OverflowError(f"Range of loc={loc} exceeds valid bounds")
 
-                if (scale >= max_double) and dpnp.isfinite(scale):
+                if (scale >= max_double) and numpy.isfinite(scale):
                     raise OverflowError(f"Range of scale={scale} exceeds valid bounds")
-                # # scale = -0.0 is cosidered as negative
+                # scale = -0.0 is cosidered as negative
                 elif scale < 0 or scale == 0 and numpy.signbit(scale):
                     raise ValueError(f"scale={scale}, but must be non-negative.")
 
@@ -230,9 +233,12 @@ class RandomState:
 
                     min_int = numpy.iinfo('int32').min
                     max_int = numpy.iinfo('int32').max
-                    if not dpnp.isfinite(low) or low > max_int or low < min_int:
+
+                    # TODO: switch to dpnp.isfinite() once function is available,
+                    # but for now use direct numpy calls without call_origin() wrapper, since data is a scalar
+                    if not numpy.isfinite(low) or low > max_int or low < min_int:
                         raise OverflowError(f"Range of low={low} exceeds valid bounds")
-                    elif not dpnp.isfinite(high) or high > max_int or high < min_int:
+                    elif not numpy.isfinite(high) or high > max_int or high < min_int:
                         raise OverflowError(f"Range of high={high} exceeds valid bounds")
 
                     low = int(low)
@@ -400,9 +406,12 @@ class RandomState:
             else:
                 min_double = numpy.finfo('double').min
                 max_double = numpy.finfo('double').max
-                if not dpnp.isfinite(low) or low >= max_double or low <= min_double:
+
+                # TODO: switch to dpnp.isfinite() once function is available,
+                # but for now use direct numpy calls without call_origin() wrapper, since data is a scalar
+                if not numpy.isfinite(low) or low >= max_double or low <= min_double:
                     raise OverflowError(f"Range of low={low} exceeds valid bounds")
-                elif not dpnp.isfinite(high) or high >= max_double or high <= min_double:
+                elif not numpy.isfinite(high) or high >= max_double or high <= min_double:
                     raise OverflowError(f"Range of high={high} exceeds valid bounds")
 
                 if low > high:

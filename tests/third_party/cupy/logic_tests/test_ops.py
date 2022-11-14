@@ -1,4 +1,5 @@
 import unittest
+import pytest
 
 from tests.third_party.cupy import testing
 
@@ -19,14 +20,18 @@ class TestOps(unittest.TestCase):
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
         return getattr(xp, name)(a, b)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_logical_and(self):
         self.check_binary('logical_and')
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_logical_or(self):
         self.check_binary('logical_or')
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_logical_xor(self):
         self.check_binary('logical_xor')
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_logical_not(self):
         self.check_unary('logical_not')
