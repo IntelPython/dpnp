@@ -973,13 +973,13 @@ DPCTLSyclEventRef dpnp_rng_multinomial_c(DPCTLSyclQueueRef q_ref,
     else
     {
         DPNPC_ptr_adapter<double> p_ptr(q_ref, p_in, p_size, true);
-        const double* p = p_ptr.get_ptr();
-        std::vector<double> p_vec(p, p + p_size);
+        double* p = p_ptr.get_ptr();
+
         // size = size
         // `result` is a array for random numbers
         // `size` is a `result`'s len. `size = n * p.size()`
         // `n` is a number of random values to be generated.
-        size_t n = size / p_vec.size();
+        size_t n = size / p_size;
 
         size_t is_cpu_queue = dpnp_queue_is_cpu_c();
 
@@ -987,17 +987,23 @@ DPCTLSyclEventRef dpnp_rng_multinomial_c(DPCTLSyclQueueRef q_ref,
         // which follow the condition
         if (is_cpu_queue || (!is_cpu_queue && (p_size >= ((size_t)ntrial * 16)) && (ntrial <= 16)))
         {
-            DPNPC_ptr_adapter<std::int32_t> result_ptr(q_ref, result, size, false, true);
-            std::int32_t* result1 = result_ptr.get_ptr();
-            mkl_rng::multinomial<std::int32_t> distribution(ntrial, p_vec);
+            DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result, size, true, true);
+            _DataType* result1 = result_ptr.get_ptr();
+
+            auto p_span = sycl::span<double>{p, p_size};
+            mkl_rng::multinomial<_DataType> distribution(ntrial, p_span);
+
             // perform generation
             event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
             event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
+
+            p_ptr.depends_on(event_out);
+            result_ptr.depends_on(event_out);
         }
         else
         {
-            DPNPC_ptr_adapter<std::int32_t> result_ptr(q_ref, result, size, true, true);
-            std::int32_t* result1 = result_ptr.get_ptr();
+            DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result, size, true, true);
+            _DataType* result1 = result_ptr.get_ptr();
             int errcode = viRngMultinomial(
                 VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_size, p);
             if (errcode != VSL_STATUS_OK)
@@ -1023,6 +1029,7 @@ void dpnp_rng_multinomial_c(
                                                                     size,
                                                                     dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -1065,23 +1072,26 @@ DPCTLSyclEventRef dpnp_rng_multivariate_normal_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
     DPNPC_ptr_adapter<double> mean_ptr(q_ref, mean_in, mean_size, true);
-    const double* mean = mean_ptr.get_ptr();
+    double* mean = mean_ptr.get_ptr();
     DPNPC_ptr_adapter<double> cov_ptr(q_ref, cov_in, cov_size, true);
-    const double* cov = cov_ptr.get_ptr();
+    double* cov = cov_ptr.get_ptr();
 
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    _DataType* result1 = static_cast<_DataType *>(result);
 
-    std::vector<double> mean_vec(mean, mean + mean_size);
-    std::vector<double> cov_vec(cov, cov + cov_size);
+    auto mean_span = sycl::span<double>{mean, mean_size};
+    auto cov_span = sycl::span<double>{cov, cov_size};
 
     // `result` is a array for random numbers
     // `size` is a `result`'s len.
     // `size1` is a number of random values to be generated for each dimension.
     size_t size1 = size / dimen;
 
-    mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean_vec, cov_vec);
+    mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean_span, cov_span);
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size1, result1);
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
+
+    mean_ptr.depends_on(event_out);
+    cov_ptr.depends_on(event_out);
 
     return DPCTLEvent_Copy(event_ref);
 }
@@ -1107,6 +1117,7 @@ void dpnp_rng_multivariate_normal_c(void* result,
                                                                             size,
                                                                             dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>

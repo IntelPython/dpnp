@@ -1,5 +1,3 @@
-tests/test_random.py::TestDistributionsMultinomial::test_extreme_value
-tests/test_random.py::TestDistributionsMultinomial::test_seed1
 tests/test_random.py::TestDistributionsMultivariateNormal::test_moments
 tests/test_random.py::TestDistributionsMultivariateNormal::test_output_shape_check
 tests/test_random.py::TestDistributionsMultivariateNormal::test_seed
@@ -219,9 +217,7 @@ tests/test_mathematical.py::TestGradient::test_gradient_y1[array2]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array0]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array1]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array2]
-tests/test_random.py::TestDistributionsMultinomial::test_check_sum
-tests/test_random.py::TestDistributionsMultinomial::test_moments
-tests/test_random.py::TestDistributionsMultinomial::test_seed
+
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), object)]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.vstack([x, x]).T]
