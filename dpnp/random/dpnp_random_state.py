@@ -70,6 +70,44 @@ class RandomState:
         self._fallback_random_state = call_origin(numpy.random.RandomState, seed, allow_fallback=True)
 
 
+    def _is_finite_scalar(self, x):
+        """
+        Test a scalar for finiteness (not infinity and not Not a Number).
+
+        Parameters
+        -----------
+            x : input value for test, must be a scalar.
+
+        Returns
+        -------
+            True where ``x`` is not positive infinity, negative infinity, or NaN;
+            false otherwise.
+        """
+
+        # TODO: replace with dpnp.isfinite() once function is available in DPNP,
+        # but for now use direct numpy calls without call_origin() wrapper, since data is a scalar
+        return numpy.isfinite(x)
+
+
+    def _is_signbit_scalar(self, x):
+        """
+        Test a scalar if sign bit is set for it (less than zero).
+
+        Parameters
+        -----------
+            x : input value for test, must be a scalar.
+
+        Returns
+        -------
+            True where sign bit is set for ``x`` (that is ``x`` is less than zero);
+            false otherwise.
+        """
+
+        # TODO: replace with dpnp.signbit() once function is available in DPNP,
+        # but for now use direct numpy calls without call_origin() wrapper, since data is a scalar
+        return numpy.signbit(x)
+
+
     def get_state(self):
         """
         Return an internal state of the generator.
@@ -126,15 +164,13 @@ class RandomState:
                 min_double = numpy.finfo('double').min
                 max_double = numpy.finfo('double').max
 
-                # TODO: switch to dpnp.isfinite() and dpnp.signbit() once functions are available,
-                # but for now use direct numpy calls without call_origin() wrapper, since data is a scalar
-                if (loc >= max_double or loc <= min_double) and numpy.isfinite(loc):
+                if (loc >= max_double or loc <= min_double) and self._is_finite_scalar(loc):
                     raise OverflowError(f"Range of loc={loc} exceeds valid bounds")
 
-                if (scale >= max_double) and numpy.isfinite(scale):
+                if (scale >= max_double) and self._is_finite_scalar(scale):
                     raise OverflowError(f"Range of scale={scale} exceeds valid bounds")
                 # scale = -0.0 is cosidered as negative
-                elif scale < 0 or scale == 0 and numpy.signbit(scale):
+                elif scale < 0 or scale == 0 and self._is_signbit_scalar(scale):
                     raise ValueError(f"scale={scale}, but must be non-negative.")
 
                 if dtype is None:
@@ -201,7 +237,8 @@ class RandomState:
         Limitations
         -----------
         Parameters ``low`` and ``high`` are supported only as scalar.
-        Parameter ``dtype`` is supported only as `int`.
+        Parameter ``dtype`` is supported only as :obj:`dpnp.int32` or `int`,
+        but `int` value is considered to be exactly equivalent to :obj:`dpnp.int32`.
         Otherwise, :obj:`numpy.random.randint(low, high, size, dtype)` samples are drawn.
 
         Examples
@@ -234,11 +271,9 @@ class RandomState:
                     min_int = numpy.iinfo('int32').min
                     max_int = numpy.iinfo('int32').max
 
-                    # TODO: switch to dpnp.isfinite() once function is available,
-                    # but for now use direct numpy calls without call_origin() wrapper, since data is a scalar
-                    if not numpy.isfinite(low) or low > max_int or low < min_int:
+                    if not self._is_finite_scalar(low) or low > max_int or low < min_int:
                         raise OverflowError(f"Range of low={low} exceeds valid bounds")
-                    elif not numpy.isfinite(high) or high > max_int or high < min_int:
+                    elif not self._is_finite_scalar(high) or high > max_int or high < min_int:
                         raise OverflowError(f"Range of high={high} exceeds valid bounds")
 
                     low = int(low)
@@ -407,11 +442,9 @@ class RandomState:
                 min_double = numpy.finfo('double').min
                 max_double = numpy.finfo('double').max
 
-                # TODO: switch to dpnp.isfinite() once function is available,
-                # but for now use direct numpy calls without call_origin() wrapper, since data is a scalar
-                if not numpy.isfinite(low) or low >= max_double or low <= min_double:
+                if not self._is_finite_scalar(low) or low >= max_double or low <= min_double:
                     raise OverflowError(f"Range of low={low} exceeds valid bounds")
-                elif not numpy.isfinite(high) or high >= max_double or high <= min_double:
+                elif not self._is_finite_scalar(high) or high >= max_double or high <= min_double:
                     raise OverflowError(f"Range of high={high} exceeds valid bounds")
 
                 if low > high:
