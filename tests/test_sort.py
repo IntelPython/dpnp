@@ -32,6 +32,7 @@ def test_partition(array, dtype, kth):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("side",
                          ["left", "right"],
                          ids=['"left"', '"right"'])

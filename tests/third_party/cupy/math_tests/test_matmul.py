@@ -54,6 +54,7 @@ from tests.third_party.cupy import testing
             ((1, 3, 3), (10, 1, 3, 1)),
         ],
     }))
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestMatmul(unittest.TestCase):
 
@@ -88,6 +89,7 @@ class TestMatmul(unittest.TestCase):
             ((6, 5, 3, 2), (2,)),
         ],
     }))
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestMatmulLarge(unittest.TestCase):
 
@@ -138,6 +140,7 @@ class TestMatmulLarge(unittest.TestCase):
             ((0, 1, 1), (2, 1, 1)),
         ],
     }))
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestMatmulInvalidShape(unittest.TestCase):
 

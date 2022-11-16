@@ -77,6 +77,7 @@ class TestRounding(unittest.TestCase):
 @testing.parameterize(*testing.product({
     'decimals': [-2, -1, 0, 1, 2],
 }))
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRound(unittest.TestCase):
 
     shape = (20,)
@@ -136,6 +137,7 @@ class TestRoundExtreme(unittest.TestCase):
         (1.6, 0),
     ]
 }))
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRoundBorder(unittest.TestCase):
 
     @testing.numpy_cupy_allclose(atol=1e-5)

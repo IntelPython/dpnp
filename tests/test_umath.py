@@ -58,6 +58,7 @@ def get_id(val):
     return val.__str__()
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize('test_cases', test_cases, ids=get_id)
 def test_umaths(test_cases):
     umath, args_str = test_cases

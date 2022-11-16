@@ -1,5 +1,6 @@
 import unittest
 from unittest import mock
+import pytest
 
 import numpy
 
@@ -32,6 +33,7 @@ class TestRandint(unittest.TestCase):
         a = random.randint(-1.1, -0.9, size=(2, 2))
         numpy.testing.assert_array_equal(a, cupy.full((2, 2), -1))
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_zero_sizes(self):
         a = random.randint(10, size=(0,))
         numpy.testing.assert_array_equal(a, cupy.array(()))
@@ -44,6 +46,7 @@ class TestRandint(unittest.TestCase):
 @testing.gpu
 class TestRandint2(unittest.TestCase):
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @condition.repeat(3, 10)
     def test_bound_1(self):
         vals = [random.randint(0, 10, (2, 3)) for _ in range(10)]
@@ -52,6 +55,7 @@ class TestRandint2(unittest.TestCase):
         self.assertEqual(min(_.min() for _ in vals), 0)
         self.assertEqual(max(_.max() for _ in vals), 9)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @condition.repeat(3, 10)
     def test_bound_2(self):
         vals = [random.randint(0, 2) for _ in range(20)]
@@ -60,6 +64,7 @@ class TestRandint2(unittest.TestCase):
         self.assertEqual(min(_.min() for _ in vals), 0)
         self.assertEqual(max(_.max() for _ in vals), 1)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @condition.repeat(3, 10)
     def test_bound_overflow(self):
         # 100 - (-100) exceeds the range of int8
@@ -68,6 +73,7 @@ class TestRandint2(unittest.TestCase):
         self.assertGreaterEqual(val.min(), -100)
         self.assertLess(val.max(), 100)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @condition.repeat(3, 10)
     def test_bound_float1(self):
         # generate floats s.t. int(low) < int(high)
@@ -80,6 +86,7 @@ class TestRandint2(unittest.TestCase):
         self.assertEqual(min(_.min() for _ in vals), int(low))
         self.assertEqual(max(_.max() for _ in vals), int(high) - 1)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_bound_float2(self):
         vals = [random.randint(-1.0, 1.0, (2, 3)) for _ in range(10)]
         for val in vals:
@@ -105,6 +112,7 @@ class TestRandint2(unittest.TestCase):
         self.assertTrue(hypothesis.chi_square_test(counts, expected))
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestRandintDtype(unittest.TestCase):
 

@@ -114,6 +114,14 @@ def call_origin(function, *args, **kwargs):
     Call fallback function for unsupported cases
     """
 
+    allow_fallback = kwargs.pop("allow_fallback", False)
+
+    if not allow_fallback and config.__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ == 1:
+        raise NotImplementedError(f"Requested funtion={function.__name__} with args={args} and kwargs={kwargs} "
+                                   "isn't currently supported and would fall back on NumPy implementation. "
+                                   "Define enviroment variable `DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK` to `0` "
+                                   "if the fall back is required to be supported without rasing an exception.")
+
     dpnp_inplace = kwargs.pop("dpnp_inplace", False)
     sycl_queue = kwargs.pop("sycl_queue", None)
     # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}, \n\t dpnp_inplace={dpnp_inplace}")
