@@ -50,6 +50,13 @@
 #endif
 
 /**
+ * Version of Intel MKL at which transition to OneMKL release 2023.0.0 occurs.
+ */
+#ifndef __INTEL_MKL_2023_SWITCHOVER
+#define __INTEL_MKL_2023_SWITCHOVER 20230000
+#endif
+
+/**
  * @defgroup BACKEND_UTILS Backend C++ library utilities
  * @{
  * This section describes utilities used in Backend API.
