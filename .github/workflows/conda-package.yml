@@ -9,7 +9,7 @@ on:
 env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
-  CHANNELS: '-c dppy/label/dev -c intel -c defaults --override-channels'
+  CHANNELS: '-c dppy/label/dev -c intel -c main --override-channels'
   TEST_SCOPE: >-
       test_arraycreation.py
       test_dparray.py
