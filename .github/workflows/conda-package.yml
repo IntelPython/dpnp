@@ -9,7 +9,16 @@ on:
 env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
-  CHANNELS: '-c dppy/label/dev -c intel -c defaults --override-channels'
+  CHANNELS: '-c dppy/label/dev -c intel -c main --override-channels'
+  TEST_SCOPE: >-
+      test_arraycreation.py
+      test_dparray.py
+      test_fft.py
+      test_linalg.py
+      test_mathematical.py
+      test_random_state.py
+      test_special.py
+      test_usm_type.py
   VER_JSON_NAME: 'version.json'
   VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
@@ -235,7 +244,7 @@ jobs:
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
         run: |
-          python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_random_state.py test_special.py
+          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
         env:
           OCL_ICD_FILENAMES: 'libintelocl.so'
         working-directory: ${{ env.tests-path }}
@@ -410,7 +419,7 @@ jobs:
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
         run: |
-          python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_random_state.py test_special.py
+          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
         working-directory: ${{ env.tests-path }}
 
   upload_linux:
