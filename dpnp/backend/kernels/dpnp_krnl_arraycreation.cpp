@@ -340,6 +340,7 @@ void dpnp_full_like_c(void* array_in, void* result, const size_t size)
                                                               size,
                                                               dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>

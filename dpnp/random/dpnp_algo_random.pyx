@@ -35,6 +35,7 @@ and the rest of the library
 
 import numpy
 import dpctl
+import dpnp
 import numbers
 import dpnp.config as config
 from dpnp.dpnp_array import dpnp_array
@@ -382,7 +383,7 @@ cdef class MT19937:
         cdef c_dpctl.DPCTLSyclEventRef event_ref
 
         if scale == 0.0:
-            return dpnp_full(size, loc, dtype)
+            return utils.dpnp_descriptor(dpnp.full(size, loc, dtype=dtype))
 
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -418,7 +419,7 @@ cdef class MT19937:
         cdef c_dpctl.DPCTLSyclEventRef event_ref
 
         if low == high:
-            return dpnp_full(size, low, dtype)
+            return utils.dpnp_descriptor(dpnp.full(size, low, dtype=dtype))
 
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
