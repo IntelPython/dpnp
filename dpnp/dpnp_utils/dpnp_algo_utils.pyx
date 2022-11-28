@@ -114,6 +114,14 @@ def call_origin(function, *args, **kwargs):
     Call fallback function for unsupported cases
     """
 
+    allow_fallback = kwargs.pop("allow_fallback", False)
+
+    if not allow_fallback and config.__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ == 1:
+        raise NotImplementedError(f"Requested funtion={function.__name__} with args={args} and kwargs={kwargs} "
+                                   "isn't currently supported and would fall back on NumPy implementation. "
+                                   "Define enviroment variable `DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK` to `0` "
+                                   "if the fall back is required to be supported without rasing an exception.")
+
     dpnp_inplace = kwargs.pop("dpnp_inplace", False)
     sycl_queue = kwargs.pop("sycl_queue", None)
     # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}, \n\t dpnp_inplace={dpnp_inplace}")
@@ -532,22 +540,7 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
     array1_obj = x1.get_array()
     array2_obj = x2.get_array()
 
-    def get_usm_type(usm_types):
-        if not isinstance(usm_types, (list, tuple)):
-            raise TypeError(
-                "Expected a list or a tuple, got {}".format(type(usm_types))
-            )
-        if len(usm_types) == 0:
-            return None
-        elif len(usm_types) == 1:
-            return usm_types[0]
-        for usm_type1, usm_type2 in zip(usm_types, usm_types[1:]):
-            if usm_type1 != usm_type2:
-                return None
-        return usm_types[0]
-
-    # TODO: use similar function from dpctl.utils instead of get_usm_type
-    common_usm_type = get_usm_type((array1_obj.usm_type, array2_obj.usm_type))
+    common_usm_type = dpctl.utils.get_coerced_usm_type((array1_obj.usm_type, array2_obj.usm_type))
     if common_usm_type is None:
         raise ValueError(
             "could not recognize common USM type for inputs of USM types {} and {}"

@@ -15,6 +15,12 @@ from numpy.testing import (
 )
 
 
+def assert_cfd(data, exp_sycl_queue, exp_usm_type=None):
+    assert exp_sycl_queue == data.sycl_queue
+    if exp_usm_type:
+        assert exp_usm_type == data.usm_type
+
+
 class TestNormal:
     @pytest.mark.parametrize("dtype",
                              [dpnp.float32, dpnp.float64, None],
@@ -47,7 +53,7 @@ class TestNormal:
         assert_array_almost_equal(dpnp.asnumpy(data), desired, decimal=precision)
 
         # check if compute follows data isn't broken
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
 
     @pytest.mark.parametrize("dtype",
@@ -117,6 +123,7 @@ class TestNormal:
                                  "with the following message:\n\n%s" % str(e))
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("scale",
                              [dpnp.array([3]), numpy.array([3])],
                              ids=['dpnp.array([3])', 'numpy.array([3])'])
@@ -138,7 +145,7 @@ class TestNormal:
         assert_array_almost_equal(actual, desired, decimal=precision)
 
         # check if compute follows data isn't broken
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue)
 
 
     @pytest.mark.parametrize("dtype",
@@ -174,17 +181,17 @@ class TestRand:
 
         precision = numpy.finfo(dtype=numpy.float64).precision
         assert_array_almost_equal(dpnp.asnumpy(data), desired, decimal=precision)
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
         # call with the same seed has to draw the same values
         data = RandomState(seed, sycl_queue=sycl_queue).rand(3, 2, usm_type=usm_type)
         assert_array_almost_equal(dpnp.asnumpy(data), desired, decimal=precision)
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
         # call with omitted dimensions has to draw the first element from desired
         data = RandomState(seed, sycl_queue=sycl_queue).rand(usm_type=usm_type)
         assert_array_almost_equal(dpnp.asnumpy(data), desired[0, 0], decimal=precision)
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
         # rand() is an alias on random_sample(), map arguments
         with mock.patch('dpnp.random.RandomState.random_sample') as m:
@@ -245,7 +252,7 @@ class TestRandInt:
                                [5, 3],
                                [5, 7]], dtype=numpy.int32)
         assert_array_equal(dpnp.asnumpy(data), desired)
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
         # call with the same seed has to draw the same values
         data = RandomState(seed, sycl_queue=sycl_queue).randint(low=low,
@@ -254,7 +261,7 @@ class TestRandInt:
                                                                 dtype=dtype,
                                                                 usm_type=usm_type)
         assert_array_equal(dpnp.asnumpy(data), desired)
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
         # call with omitted dimensions has to draw the first element from desired
         data = RandomState(seed, sycl_queue=sycl_queue).randint(low=low,
@@ -262,7 +269,7 @@ class TestRandInt:
                                                                 dtype=dtype,
                                                                 usm_type=usm_type)
         assert_array_equal(dpnp.asnumpy(data), desired[0, 0])
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
         # rand() is an alias on random_sample(), map arguments
         with mock.patch('dpnp.random.RandomState.uniform') as m:
@@ -287,6 +294,7 @@ class TestRandInt:
         assert_array_equal(actual, desired)
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_negative_interval(self):
         rs = RandomState(3567)
 
@@ -348,6 +356,7 @@ class TestRandInt:
                                  "with the following message:\n\n%s" % str(e))
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_in_bounds_fuzz(self):
         for high in [4, 8, 16]:
             vals = RandomState().randint(2, high, size=2**16)
@@ -363,6 +372,7 @@ class TestRandInt:
         assert_equal(RandomState().randint(0, 10, size=zero_size).shape, exp_shape)
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("high",
                              [dpnp.array([3]), numpy.array([3])],
                              ids=['dpnp.array([3])', 'numpy.array([3])'])
@@ -379,6 +389,7 @@ class TestRandInt:
         assert_equal(actual, desired)
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("dtype",
                              [dpnp.int64, dpnp.integer, dpnp.bool, dpnp.bool_, bool],
                              ids=['dpnp.int64', 'dpnp.integer', 'dpnp.bool', 'dpnp.bool_', 'bool'])
@@ -489,6 +500,7 @@ class TestSeed:
         assert_array_almost_equal(a1, a2, decimal=precision)
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("seed",
                              [range(3),
                               numpy.arange(3, dtype=numpy.int32),
@@ -521,6 +533,7 @@ class TestSeed:
         assert_raises(TypeError, RandomState, seed)
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("seed",
                              [-1, [-3, 7], (17, 3, -5), [4, 3, 2, 1], (7, 6, 5, 1),
                               range(-1, -11, -1),
@@ -701,7 +714,7 @@ class TestUniform:
             assert_array_equal(dpnp.asnumpy(data), desired)
 
         # check if compute follows data isn't broken
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue, usm_type)
 
 
     @pytest.mark.parametrize("dtype",
@@ -730,6 +743,7 @@ class TestUniform:
             assert_array_almost_equal(actual, desired, decimal=numpy.finfo(dtype=dtype).precision)
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_range_bounds(self):
         fmin = numpy.finfo('double').min
         fmax = numpy.finfo('double').max
@@ -745,6 +759,7 @@ class TestUniform:
         func(low=numpy.nextafter(fmin, 0), high=numpy.nextafter(fmax, 0))
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("high",
                              [dpnp.array([3]), numpy.array([3])],
                              ids=['dpnp.array([3])', 'numpy.array([3])'])
@@ -766,7 +781,7 @@ class TestUniform:
         assert_array_almost_equal(actual, desired, decimal=precision)
 
         # check if compute follows data isn't broken
-        assert sycl_queue == data.sycl_queue
+        assert_cfd(data, sycl_queue)
 
 
     @pytest.mark.parametrize("dtype",

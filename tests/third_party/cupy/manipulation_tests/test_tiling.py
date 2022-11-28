@@ -16,6 +16,7 @@ from tests.third_party.cupy import testing
     {'repeats': [1, 2, 3], 'axis': 1},
     {'repeats': [1, 2, 3], 'axis': -2},
 )
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestRepeat(unittest.TestCase):
 
@@ -44,6 +45,7 @@ class TestRepeatRepeatsNdarray(unittest.TestCase):
     {'repeats': [2], 'axis': None},
     {'repeats': [2], 'axis': 1},
 )
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestRepeatListBroadcast(unittest.TestCase):
 
@@ -65,6 +67,7 @@ class TestRepeatListBroadcast(unittest.TestCase):
     {'repeats': [1, 2, 3, 4], 'axis': None},
     {'repeats': [1, 2, 3, 4], 'axis': 0},
 )
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestRepeat1D(unittest.TestCase):
 
@@ -97,6 +100,7 @@ class TestRepeat1DListBroadcast(unittest.TestCase):
     {'repeats': 2, 'axis': -4},
     {'repeats': 2, 'axis': 3},
 )
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestRepeatFailure(unittest.TestCase):
 

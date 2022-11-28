@@ -1314,7 +1314,7 @@ def seed(seed=None):
             dpnp_rng_srand(seed)
 
     # always reseed numpy engine also
-    return call_origin(numpy.random.seed, seed)
+    return call_origin(numpy.random.seed, seed, allow_fallback=True)
 
 
 def standard_cauchy(size=None):

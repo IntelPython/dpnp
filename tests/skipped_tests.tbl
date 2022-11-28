@@ -199,9 +199,12 @@ tests/test_linalg.py::test_svd[(5,3)-float64]
 tests/test_linalg.py::test_svd[(16,16)-float64]
 
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array1]
+
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([[i, i] for i in x])]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: (dpnp.asarray([(i, i) for i in x], [("a", int), ("b", int)]).view(dpnp.recarray))]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray(x).astype(dpnp.int8)]
+
 tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-float32-1]
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_or

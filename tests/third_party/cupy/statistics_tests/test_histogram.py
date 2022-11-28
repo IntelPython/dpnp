@@ -138,6 +138,7 @@ class TestHistogram(unittest.TestCase):
         assert xp.issubdtype(h.dtype, xp.floating)
         return h
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_histogram_weights_basic(self):
         v = cupy.random.rand(100)
         w = cupy.ones(100) * 5

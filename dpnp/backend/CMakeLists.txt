@@ -27,8 +27,8 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.10.3)
-# set(DPNP_API_VERSION 0.10)
+# set(DPNP_VERSION 0.11.0)
+# set(DPNP_API_VERSION 0.11)
 
 # set directory where the custom finders live
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
