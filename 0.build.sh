@@ -10,14 +10,14 @@ python setup.py clean
 python setup.py build_clib
 
 # inplace build
-CC=dpcpp python setup.py build_ext --inplace
+CC=icpx python setup.py build_ext --inplace
 
 # development build. Root privileges needed
 # python setup.py develop
 
 echo
 echo =========example3==============
-dpcpp -g -fPIC dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
+icpx -fsycl -g -fPIC dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
 # LD_DEBUG=libs,bindings,symbols ./example3
 ./example3
 
