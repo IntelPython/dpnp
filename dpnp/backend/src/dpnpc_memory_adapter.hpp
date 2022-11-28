@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
 #define DPNP_MEMORY_ADAPTER_H
 
 #include "queue_sycl.hpp"
+#include "dpnp_utils.hpp"
 
 /**
  * @ingroup BACKEND_UTILS
@@ -84,8 +85,10 @@ public:
             std::cerr << "\n\t size_in_bytes=" << size_in_bytes;
             std::cerr << "\n\t pointer type=" << (long)src_ptr_type;
             std::cerr << "\n\t queue inorder=" << queue.is_in_order();
+#if (__SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER)
             std::cerr << "\n\t queue is_host=" << queue.is_host();
             std::cerr << "\n\t queue device is_host=" << queue.get_device().is_host();
+#endif
             std::cerr << "\n\t queue device is_cpu=" << queue.get_device().is_cpu();
             std::cerr << "\n\t queue device is_gpu=" << queue.get_device().is_gpu();
             std::cerr << "\n\t queue device is_accelerator=" << queue.get_device().is_accelerator();

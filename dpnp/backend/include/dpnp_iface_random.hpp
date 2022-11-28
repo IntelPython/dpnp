@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -438,18 +438,20 @@ INP_DLLEXPORT void
  * @brief math library implementation of random number generator (normal continious distribution)
  *
  * @param [in]  q_ref               Reference to SYCL queue.
- * @param [out] result              Output array.
+ * @param [out] result_out          Output array.
  * @param [in]  mean                Mean value.
  * @param [in]  stddev              Standard deviation.
  * @param [in]  size                Number of elements in `result` arrays.
+ * @param [in]  random_state_in     Pointer on random state.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
 INP_DLLEXPORT DPCTLSyclEventRef dpnp_rng_normal_c(DPCTLSyclQueueRef q_ref,
-                                                  void* result,
-                                                  const _DataType mean,
-                                                  const _DataType stddev,
-                                                  const size_t size,
+                                                  void* result_out,
+                                                  const double mean,
+                                                  const double stddev,
+                                                  const int64_t size,
+                                                  void* random_state_in,
                                                   const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
@@ -629,16 +631,10 @@ INP_DLLEXPORT void dpnp_rng_standard_gamma_c(void* result, const _DataType shape
  * @brief math library implementation of random number generator (standard normal distribution)
  *
  * @param [in]  q_ref               Reference to SYCL queue.
- * @param [out] result              Output array.
+ * @param [out] result_out          Output array.
  * @param [in]  size                Number of elements in `result` arrays.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_rng_standard_normal_c(DPCTLSyclQueueRef q_ref,
-                                                           void* result,
-                                                           const size_t size,
-                                                           const DPCTLEventVectorRef dep_event_vec_ref);
-
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_rng_standard_normal_c(void* result, const size_t size);
 
@@ -692,18 +688,20 @@ INP_DLLEXPORT void dpnp_rng_triangular_c(
  * @brief math library implementation of random number generator (uniform distribution)
  *
  * @param [in]  q_ref               Reference to SYCL queue.
- * @param [out] result              Output array.
+ * @param [out] result_out          Output array.
  * @param [in]  low                 Left bound of array values.
  * @param [in]  high                Right bound of array values.
  * @param [in]  size                Number of elements in `result` array.
+ * @param [in]  random_state_in     Pointer on random state.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
 INP_DLLEXPORT DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
-                                                   void* result,
-                                                   const long low,
-                                                   const long high,
-                                                   const size_t size,
+                                                   void* result_out,
+                                                   const double low,
+                                                   const double high,
+                                                   const int64_t size,
+                                                   void* random_state_in,
                                                    const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>

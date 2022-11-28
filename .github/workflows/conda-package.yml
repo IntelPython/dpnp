@@ -9,7 +9,16 @@ on:
 env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
-  CHANNELS: '-c dppy/label/dev -c intel -c defaults --override-channels'
+  CHANNELS: '-c dppy/label/dev -c intel -c main --override-channels'
+  TEST_SCOPE: >-
+      test_arraycreation.py
+      test_dparray.py
+      test_fft.py
+      test_linalg.py
+      test_mathematical.py
+      test_random_state.py
+      test_special.py
+      test_usm_type.py
   VER_JSON_NAME: 'version.json'
   VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
@@ -40,15 +49,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Checkout oneDPL
-        uses: actions/checkout@v3.1.0
-        with:
-          repository: oneapi-src/oneDPL
-          path: oneDPL
-          ref: oneDPL-2021.7.0-release
-
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.1.1
+        uses: conda-incubator/setup-miniconda@v2.2.0
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -76,11 +78,9 @@ jobs:
 
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
-        env:
-          DPLROOT: '${{ github.workspace }}/oneDPL'
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v3.1.1
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
@@ -110,15 +110,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Checkout oneDPL
-        uses: actions/checkout@v3.1.0
-        with:
-          repository: oneapi-src/oneDPL
-          path: oneDPL
-          ref: oneDPL-2021.7.0-release
-
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.1.1
+        uses: conda-incubator/setup-miniconda@v2.2.0
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -148,11 +141,9 @@ jobs:
 
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
-        env:
-          DPLROOT: '%GITHUB_WORKSPACE%\oneDPL'
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v3.1.1
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
@@ -169,7 +160,6 @@ jobs:
     strategy:
       matrix:
         python: ['3.8', '3.9']
-        dpctl: ['0.13.0']
         experimental: [false]
 
     continue-on-error: ${{ matrix.experimental }}
@@ -184,7 +174,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.0
+        uses: actions/download-artifact@v3.0.1
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -195,7 +185,7 @@ jobs:
           tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.1.1
+        uses: conda-incubator/setup-miniconda@v2.2.0
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -239,7 +229,7 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Install dpnp
-        run: conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} dpctl=${{ matrix.dpctl }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        run: conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
@@ -253,7 +243,8 @@ jobs:
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
-        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_special.py
+        run: |
+          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
         env:
           OCL_ICD_FILENAMES: 'libintelocl.so'
         working-directory: ${{ env.tests-path }}
@@ -270,7 +261,6 @@ jobs:
     strategy:
       matrix:
         python: ['3.8', '3.9']
-        dpctl: ['0.13.0']
         experimental: [false]
 
     continue-on-error: ${{ matrix.experimental }}
@@ -286,7 +276,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.0
+        uses: actions/download-artifact@v3.0.1
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -306,7 +296,7 @@ jobs:
           dir ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.1.1
+        uses: conda-incubator/setup-miniconda@v2.2.0
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -344,7 +334,7 @@ jobs:
           echo PACKAGE_VERSION: %PACKAGE_VERSION%
           (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
 
-          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% dpctl=${{ matrix.dpctl }} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
+          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
@@ -369,7 +359,7 @@ jobs:
       - name: Install dpnp
         run: |
           @echo on
-          conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} dpctl=${{ matrix.dpctl }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
@@ -428,14 +418,15 @@ jobs:
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
-        run: python -m pytest -q -ra --disable-warnings -vv test_arraycreation.py test_dparray.py test_fft.py test_linalg.py test_mathematical.py test_special.py
+        run: |
+          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
         working-directory: ${{ env.tests-path }}
 
   upload_linux:
     needs: test_linux
 
     if: |
-      !github.event.pull_request.head.repo.fork  &&
+      (github.repository == 'IntelPython/dpnp') &&
       (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
 
     runs-on: ubuntu-latest
@@ -450,12 +441,12 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.0
+        uses: actions/download-artifact@v3.0.1
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.1.1
+        uses: conda-incubator/setup-miniconda@v2.2.0
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -474,7 +465,7 @@ jobs:
     needs: test_windows
 
     if: |
-      !github.event.pull_request.head.repo.fork  &&
+      (github.repository == 'IntelPython/dpnp') &&
       (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
 
     runs-on: windows-latest
@@ -488,12 +479,12 @@ jobs:
         python: ['3.8', '3.9']
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.0
+        uses: actions/download-artifact@v3.0.1
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.1.1
+        uses: conda-incubator/setup-miniconda@v2.2.0
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}

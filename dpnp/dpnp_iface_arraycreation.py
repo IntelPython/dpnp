@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -90,7 +90,16 @@ __all__ = [
 ]
 
 
-def arange(start, stop=None, step=1, dtype=None):
+def arange(start,
+           /,
+           stop=None,
+           step=1,
+           *,
+           dtype=None,
+           like=None,
+           device=None,
+           usm_type="device",
+           sycl_queue=None):
     """
     Returns an array with evenly spaced values within a given interval.
 
@@ -99,12 +108,11 @@ def arange(start, stop=None, step=1, dtype=None):
     Returns
     -------
     arange : :obj:`dpnp.ndarray`
-        The 1-D array of range values.
+        The 1-D array containing evenly spaced values.
 
     Limitations
     -----------
-    Parameter ``start`` is supported as integer only.
-    Parameters ``stop`` and ``step`` are supported as either integer or ``None``.
+    Parameter ``like`` is supported only with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -113,7 +121,6 @@ def arange(start, stop=None, step=1, dtype=None):
 
     Examples
     --------
-
     >>> import dpnp as np
     >>> [i for i in np.arange(3)]
     [0, 1, 2]
@@ -123,36 +130,17 @@ def arange(start, stop=None, step=1, dtype=None):
     [3, 5]
 
     """
-    if not use_origin_backend():
-        if not isinstance(start, int):
-            pass
-        elif (stop is not None) and (not isinstance(stop, int)):
-            pass
-        elif (step is not None) and (not isinstance(step, int)):
-            pass
-        # TODO: modify native implementation to accept negative values
-        elif (step is not None) and (step < 0):
-            pass
-        elif (start is not None) and (start < 0):
-            pass
-        elif (start is not None) and (stop is not None) and (start > stop):
-            pass
-        elif (dtype is not None) and (dtype not in [dpnp.int32, dpnp.int64, dpnp.float32, dpnp.float64]):
-            pass
-        else:
-            if dtype is None:
-                dtype = numpy.int64
 
-            if stop is None:
-                stop = start
-                start = 0
+    if like is None:
+        return dpnp_container.arange(start,
+                                     stop=stop,
+                                     step=step,
+                                     dtype=dtype,
+                                     device=device,
+                                     usm_type=usm_type,
+                                     sycl_queue=sycl_queue)
 
-            if step is None:
-                step = 1
-
-            return dpnp_arange(start, stop, step, dtype).get_pyobj()
-
-    return call_origin(numpy.arange, start, stop=stop, step=step, dtype=dtype)
+    return call_origin(numpy.arange, start, stop=stop, step=step, dtype=dtype, like=like)
 
 
 def array(x1,

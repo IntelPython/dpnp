@@ -190,6 +190,7 @@ def test_strides_copysign(dtype, shape):
     numpy.testing.assert_allclose(result, expected)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=["float64", "float32", "int64", "int32"])
@@ -209,6 +210,7 @@ def test_strides_fmod(dtype, shape):
     numpy.testing.assert_allclose(result, expected)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=["float64", "float32", "int64", "int32"])

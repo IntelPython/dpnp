@@ -73,3 +73,7 @@ def pytest_collection_modifyitems(config, items):
             # exact match of the test name with items from excluded_list
             if test_name == item_tbl_str:
                 item.add_marker(skip_mark)
+
+@pytest.fixture
+def allow_fall_back_on_numpy(monkeypatch):
+    monkeypatch.setattr(dpnp.config, '__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__', 0)

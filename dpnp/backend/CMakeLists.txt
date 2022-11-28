@@ -27,8 +27,8 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.10.2)
-# set(DPNP_API_VERSION 0.10)
+# set(DPNP_VERSION 0.11.0)
+# set(DPNP_API_VERSION 0.11)
 
 # set directory where the custom finders live
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
@@ -99,10 +99,10 @@ string(CONCAT COMMON_LINK_FLAGS
   "-fsycl-device-code-split=per_kernel "
 )
 if(UNIX)
-  set(CMAKE_CXX_COMPILER "dpcpp")
+  set(CMAKE_CXX_COMPILER "icpx")
   # add_compile_options(-fPIC)
 elseif(WIN32)
-  set(CMAKE_CXX_COMPILER "dpcpp")
+  set(CMAKE_CXX_COMPILER "icx")
   # set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld-link")
   # set(CMAKE_LINKER "lld-link")
   # include (Platform/Windows-Clang)
@@ -218,6 +218,7 @@ set(DPNP_SRC
     src/memory_sycl.cpp
     src/queue_sycl.cpp
     src/verbose.cpp
+    src/dpnp_random_state.cpp
     )
 
 if(DPNP_STATIC_LIB_ENABLE)

@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -90,18 +90,41 @@ void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
                                                            size,
                                                            dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
 void (*dpnp_arange_default_c)(size_t, size_t, void*, size_t) = dpnp_arange_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_arange_ext_c)(DPCTLSyclQueueRef,
-                                       size_t,
-                                       size_t,
-                                       void*,
-                                       size_t,
-                                       const DPCTLEventVectorRef) = dpnp_arange_c<_DataType>;
+// Explicit instantiation of the function, since dpnp_arange_c() is used by other template functions,
+// but implicit instantiation is not applied anymore.
+template DPCTLSyclEventRef dpnp_arange_c<int32_t>(DPCTLSyclQueueRef,
+                                                  size_t,
+                                                  size_t,
+                                                  void*,
+                                                  size_t,
+                                                  const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_arange_c<int64_t>(DPCTLSyclQueueRef,
+                                                  size_t,
+                                                  size_t,
+                                                  void*,
+                                                  size_t,
+                                                  const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_arange_c<float>(DPCTLSyclQueueRef,
+                                                size_t,
+                                                size_t,
+                                                void*,
+                                                size_t,
+                                                const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_arange_c<double>(DPCTLSyclQueueRef,
+                                                 size_t,
+                                                 size_t,
+                                                 void*,
+                                                 size_t,
+                                                 const DPCTLEventVectorRef);
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_diag_c(DPCTLSyclQueueRef q_ref,
@@ -1280,11 +1303,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_arange_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_arange_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_arange_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_ARANGE_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_arange_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARANGE_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_arange_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARANGE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_arange_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_ARANGE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_arange_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_DIAG][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_diag_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_DIAG][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diag_default_c<int64_t>};

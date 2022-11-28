@@ -63,7 +63,7 @@ class dpnp_array:
                                           copy=False,
                                           order=order)
         else:
-            sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+            sycl_queue_normalized = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
             self._array_obj = dpt.usm_ndarray(shape,
                                               dtype=dtype,
                                               strides=strides,

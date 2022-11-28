@@ -1,10 +1,40 @@
 import pytest
 
 import dpnp
+import dpctl.tensor as dpt
 
 import numpy
 
 import tempfile
+
+
+@pytest.mark.parametrize("start",
+                         [0, -5, 10, -2.5, 9.7],
+                         ids=['0', '-5', '10', '-2.5', '9.7'])
+@pytest.mark.parametrize("stop",
+                         [None, 10, -2, 20.5, 1000],
+                         ids=['None', '10', '-2', '20.5', '10**5'])
+@pytest.mark.parametrize("step",
+                         [None, 1, 2.7, -1.6, 100],
+                         ids=['None', '1', '2.7', '-1.6', '100'])
+@pytest.mark.parametrize("dtype",
+                         [numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, numpy.float16, numpy.int64, numpy.int32],
+                         ids=['complex128', 'complex64', 'float64', 'float32', 'float16', 'int64', 'int32'])
+def test_arange(start, stop, step, dtype):
+    rtol_mult = 2
+    if numpy.issubdtype(dtype, numpy.float16):
+        # numpy casts to float32 type when computes float16 data
+        rtol_mult = 4
+
+    exp_array = numpy.arange(start, stop=stop, step=step, dtype=dtype)
+
+    dpnp_array = dpnp.arange(start, stop=stop, step=step, dtype=dtype)
+    res_array = dpnp.asnumpy(dpnp_array)
+
+    if numpy.issubdtype(dtype, numpy.floating) or numpy.issubdtype(dtype, numpy.complexfloating):
+        numpy.testing.assert_allclose(exp_array, res_array, rtol=rtol_mult*numpy.finfo(dtype).eps)
+    else:
+        numpy.testing.assert_array_equal(exp_array, res_array)
 
 
 @pytest.mark.parametrize("k",
@@ -51,6 +81,7 @@ def test_eye(N, M, k, dtype):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
@@ -63,6 +94,7 @@ def test_frombuffer(type):
     numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
@@ -79,6 +111,7 @@ def test_fromfile(type):
         numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
@@ -94,6 +127,7 @@ def test_fromfunction(type):
     numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
@@ -106,6 +140,7 @@ def test_fromiter(type):
     numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
@@ -118,6 +153,7 @@ def test_fromstring(type):
     numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
@@ -153,6 +189,7 @@ def test_identity(n, type):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
