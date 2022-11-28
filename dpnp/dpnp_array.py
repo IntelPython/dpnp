@@ -115,6 +115,10 @@ class dpnp_array:
     def device(self):
         return self._array_obj.device
 
+    @property
+    def usm_type(self):
+        return self._array_obj.usm_type
+
     def __abs__(self):
         return dpnp.abs(self)
 

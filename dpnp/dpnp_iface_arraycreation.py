@@ -679,7 +679,7 @@ def full(shape,
          order="C",
          like=None,
          device=None,
-         usm_type="device",
+         usm_type=None,
          sycl_queue=None):
     """
     Return a new array of given shape and type, filled with `fill_value`.
@@ -688,6 +688,7 @@ def full(shape,
 
     Limitations
     -----------
+    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
     Parameter ``like`` is supported only with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -706,21 +707,31 @@ def full(shape,
     [10, 10, 10, 10]
 
     """
-    if dtype is None and isinstance(fill_value, dpnp.ndarray):
-        dtype = fill_value.dtype
-    if like is None:
+    if like is not None:
+        pass
+    elif order not in "cCfF":
+        pass
+    else:
         return dpnp_container.full(shape,
-                                fill_value,
-                                dtype=dtype,
-                                device=device,
-                                usm_type=usm_type,
-                                sycl_queue=sycl_queue)
+                                   fill_value,
+                                   dtype=dtype,
+                                   device=device,
+                                   usm_type=usm_type,
+                                   sycl_queue=sycl_queue)
 
     return call_origin(numpy.full, shape, fill_value, dtype, order, like=like)
 
 
-# numpy.full_like(a, fill_value, dtype=None, order='K', subok=True, shape=None)
-def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
+def full_like(x1,
+              fill_value,
+              *,
+              dtype=None,
+              order='C',
+              subok=False,
+              shape=None,
+              device=None,
+              usm_type=None,
+              sycl_queue=None):
     """
     Return a full array with the same shape and type as a given array.
 
@@ -728,7 +739,7 @@ def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
 
     See Also
@@ -747,18 +758,20 @@ def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
     [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
     """
-
-    if not use_origin_backend():
-        if order not in ('C', 'c', None):
-            pass
-        elif subok is not False:
-            pass
+    if order not in "cCfF":
+        pass
+    elif subok is True:
+        pass
+    else:
+        _shape = shape if shape is not None else x1.shape
+        _dtype = dtype if dtype is not None else x1.dtype
+        _usm_type = usm_type if usm_type is not None else x1.usm_type
+        if sycl_queue is None and device is None:
+            _sycl_queue = x1.sycl_queue
         else:
-            _shape = shape if shape is not None else x1.shape
-            _dtype = dtype if dtype is not None else x1.dtype
+            _sycl_queue = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
 
-            return dpnp_full_like(_shape, fill_value, _dtype).get_pyobj()
-
+        return full(_shape, fill_value, dtype=_dtype, usm_type=_usm_type, sycl_queue=_sycl_queue)
     return numpy.full_like(x1, fill_value, dtype, order, subok, shape)
 
 

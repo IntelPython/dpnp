@@ -311,3 +311,62 @@ def test_vander(array, type, n, increase):
     expected = numpy.vander(a_np, N=n, increasing=increase)
     result = dpnp.vander(a_dpnp, N=n, increasing=increase)
     numpy.testing.assert_array_equal(expected, result)
+
+
+def test_full_compute_follows_data():
+    q1 = dpnp.dpnp_queue_initialize()
+    q2 = dpnp.dpnp_queue_initialize()
+
+    X = dpnp.full(10, 3, dtype="i4", sycl_queue=q1, usm_type="shared")
+    Y = dpnp.full(10, X[3])
+
+    assert Y.dtype == X.dtype
+    assert Y.usm_type == X.usm_type
+    assert Y.sycl_queue.__eq__(X.sycl_queue)
+    assert numpy.array_equal(dpnp.asnumpy(Y), numpy.full(10, 3, dtype="i4"))
+
+    Y = dpnp.full(10, X[3], dtype="f4", sycl_queue=q2, usm_type="host")
+
+    assert Y.dtype == dpnp.dtype("f4")
+    assert Y.usm_type == "host"
+    assert Y.sycl_queue.__eq__(dpnp.empty(0, sycl_queue=q2).sycl_queue)
+    assert numpy.array_equal(dpnp.asnumpy(Y), numpy.full(10, 3, dtype="f4"))
+
+
+@pytest.mark.skip(reason="dpnp.ndarray.flags are not implemented")
+@pytest.mark.parametrize("order1",
+                         ["F", "C"],
+                         ids=['F', 'C'])
+@pytest.mark.parametrize("order2",
+                         ["F", "C"],
+                         ids=['F', 'C'])
+def test_full_order(order1, order2):
+    Xnp = numpy.array([1, 2, 3], order=order1)
+    Ynp = numpy.full((3, 3), Xnp, order=order2)
+    Y = dpnp.full((3, 3), Xnp, order=order2)
+
+    assert Y.flags.c_contiguous == Ynp.flags.c_contiguous
+    assert Y.flags.f_contiguous == Ynp.flags.f_contiguous
+    assert numpy.array_equal(dpnp.asnumpy(Y), Ynp)
+
+
+def test_full_strides():
+    X = dpnp.full((3, 3), dpnp.arange(3, dtype="i4"))
+    Xnp = numpy.full((3, 3), numpy.arange(3, dtype="i4"))
+    assert X.strides == tuple(el // Xnp.itemsize for el in Xnp.strides)
+    assert numpy.array_equal(dpnp.asnumpy(X), Xnp)
+
+    X = dpnp.full((3, 3), dpnp.arange(6, dtype="i4")[::2])
+    Xnp = numpy.full((3, 3), numpy.arange(6, dtype="i4")[::2])
+    assert X.strides == tuple(el // Xnp.itemsize for el in Xnp.strides)
+    assert numpy.array_equal(dpnp.asnumpy(X), Xnp)
+
+
+def test_full_like_compute_follows_data():
+    X = dpnp.full(10, 3, dtype="i4", usm_type="shared")
+    Y = dpnp.full_like(X, 4, shape=(8))
+
+    assert Y.dtype == X.dtype
+    assert Y.usm_type == X.usm_type
+    assert Y.sycl_queue.__eq__(X.sycl_queue)
+    assert numpy.array_equal(dpnp.asnumpy(Y), numpy.full(8, 4, dtype="i4"))
