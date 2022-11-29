@@ -84,7 +84,7 @@ def asarray(x1,
     else:
         x1_obj = x1
 
-    sycl_queue_normalized = dpnp.get_normalized_queue_device(x1_obj, sycl_queue=sycl_queue, device=device)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(x1_obj, device=device, sycl_queue=sycl_queue)
 
     """Converts incoming 'x1' object to 'dpnp_array'."""
     array_obj = dpt.asarray(x1_obj,
@@ -102,7 +102,7 @@ def empty(shape,
           device=None,
           usm_type="device",
           sycl_queue=None):
-    sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
 
     """Creates `dpnp_array` from uninitialized USM allocation."""
     array_obj = dpt.empty(shape,

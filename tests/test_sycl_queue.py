@@ -23,7 +23,7 @@ valid_devices = []
 for device in available_devices:
     if device.default_selector_score < 0:
         pass
-    if device.backend.name not in list_of_backend_str:
+    elif device.backend.name not in list_of_backend_str:
         pass
     elif device.device_type.name not in list_of_device_type_str:
         pass
@@ -93,6 +93,7 @@ def test_array_creation(func, arg, kwargs, device):
     assert dpnp_array.sycl_device == device
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "func,data",
     [
@@ -268,6 +269,39 @@ def test_broadcasting(func, data1, data2, device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
+@pytest.mark.parametrize("usm_type",
+                         ["host", "device", "shared"])
+@pytest.mark.parametrize("size",
+                         [None, (), 3, (2, 1), (4, 2, 5)],
+                         ids=['None', '()', '3', '(2,1)', '(4,2,5)'])
+def test_uniform(usm_type, size):
+    low = 1.0
+    high = 2.0
+    res = dpnp.random.uniform(low, high, size=size, usm_type=usm_type)
+
+    assert usm_type == res.usm_type
+
+
+@pytest.mark.parametrize("usm_type",
+                         ["host", "device", "shared"])
+@pytest.mark.parametrize("seed",
+                         [None, (), 123, (12, 58), (147, 56, 896), [1, 654, 78]],
+                         ids=['None', '()', '123', '(12,58)', '(147,56,896)', '[1,654,78]'])
+def test_rs_uniform(usm_type, seed):
+    seed = 123
+    sycl_queue = dpctl.SyclQueue()
+    low = 1.0
+    high = 2.0
+    rs = dpnp.random.RandomState(seed, sycl_queue=sycl_queue)
+    res = rs.uniform(low, high, usm_type=usm_type)
+
+    assert usm_type == res.usm_type
+
+    res_sycl_queue = res.get_array().sycl_queue
+    assert_sycl_queue_equal(res_sycl_queue, sycl_queue)
+
+
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "func,data1,data2",
     [
@@ -428,6 +462,7 @@ def test_det(device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("device",
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
@@ -554,6 +589,7 @@ def test_qr(device):
     assert_sycl_queue_equal(dpnp_r_queue, expected_queue)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("device",
                         valid_devices,
                         ids=[device.filter_string for device in valid_devices])

@@ -58,7 +58,7 @@ jobs:
 
       # https://github.com/marketplace/actions/setup-miniconda
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.1.1
+        uses: conda-incubator/setup-miniconda@v2.2.0
         with:
           auto-update-conda: true
           python-version: ${{ env.python-ver }}
@@ -71,8 +71,8 @@ jobs:
 
       - name: Install dpnp dependencies
         run: |
-          conda install dpctl mkl-devel-dpcpp tbb-devel dpcpp_linux-64 cmake cython pytest \
-                        -c dppy/label/dev -c intel -c conda-forge
+          conda install dpctl mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
+              cmake cython pytest -c dppy/label/dev -c intel -c conda-forge
 
       - name: Install cuPy dependencies
         run: conda install -c conda-forge cupy cudatoolkit=10.0
@@ -84,8 +84,8 @@ jobs:
 
       - name: Build library
         run: |
-          DPLROOT=/opt/intel/oneapi/dpl/latest python setup.py build_clib
-          CC=dpcpp python setup.py build_ext --inplace
+          python setup.py build_clib
+          CC=icpx python setup.py build_ext --inplace
           python setup.py develop
 
       - name: Build docs
@@ -106,7 +106,7 @@ jobs:
         if: |
           !github.event.pull_request.head.repo.fork  &&
           (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
-        uses: peaceiris/actions-gh-pages@v3.8.0
+        uses: peaceiris/actions-gh-pages@v3.9.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: doc/_build/html/

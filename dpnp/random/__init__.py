@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,11 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-from dpnp.random.dpnp_iface_random import *
-from dpnp.random.dpnp_iface_random import __all__ as __all__random
+from .dpnp_iface_random import *
+from .dpnp_random_state import *
 
-__all__ = __all__random
+from .dpnp_iface_random import __all__ as __all__random
+from .dpnp_random_state import __all__ as __all__random_state
+
+__all__  = __all__random
+__all__ += __all__random_state

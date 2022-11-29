@@ -1,5 +1,6 @@
 import unittest
 from unittest import mock
+import pytest
 
 import numpy
 
@@ -32,6 +33,7 @@ class TestRandint(unittest.TestCase):
         a = random.randint(-1.1, -0.9, size=(2, 2))
         numpy.testing.assert_array_equal(a, cupy.full((2, 2), -1))
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_zero_sizes(self):
         a = random.randint(10, size=(0,))
         numpy.testing.assert_array_equal(a, cupy.array(()))
@@ -44,6 +46,7 @@ class TestRandint(unittest.TestCase):
 @testing.gpu
 class TestRandint2(unittest.TestCase):
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @condition.repeat(3, 10)
     def test_bound_1(self):
         vals = [random.randint(0, 10, (2, 3)) for _ in range(10)]
@@ -52,6 +55,7 @@ class TestRandint2(unittest.TestCase):
         self.assertEqual(min(_.min() for _ in vals), 0)
         self.assertEqual(max(_.max() for _ in vals), 9)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @condition.repeat(3, 10)
     def test_bound_2(self):
         vals = [random.randint(0, 2) for _ in range(20)]
@@ -60,6 +64,7 @@ class TestRandint2(unittest.TestCase):
         self.assertEqual(min(_.min() for _ in vals), 0)
         self.assertEqual(max(_.max() for _ in vals), 1)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @condition.repeat(3, 10)
     def test_bound_overflow(self):
         # 100 - (-100) exceeds the range of int8
@@ -68,6 +73,7 @@ class TestRandint2(unittest.TestCase):
         self.assertGreaterEqual(val.min(), -100)
         self.assertLess(val.max(), 100)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @condition.repeat(3, 10)
     def test_bound_float1(self):
         # generate floats s.t. int(low) < int(high)
@@ -80,6 +86,7 @@ class TestRandint2(unittest.TestCase):
         self.assertEqual(min(_.min() for _ in vals), int(low))
         self.assertEqual(max(_.max() for _ in vals), int(high) - 1)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_bound_float2(self):
         vals = [random.randint(-1.0, 1.0, (2, 3)) for _ in range(10)]
         for val in vals:
@@ -91,24 +98,21 @@ class TestRandint2(unittest.TestCase):
     def test_goodness_of_fit(self):
         mx = 5
         trial = 100
-        # vals = [random.randint(mx).get() for _ in range(trial)]
-        # counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
-        vals = [random.randint(mx) for _ in range(trial)]
-        counts = numpy.histogram([i[0] for i in vals], bins=numpy.arange(mx + 1))[0]
+        vals = [numpy.random.randint(mx) for _ in range(trial)]
+        counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
         expected = numpy.array([float(trial) / mx] * mx)
         self.assertTrue(hypothesis.chi_square_test(counts, expected))
 
     @condition.repeat(3, 10)
     def test_goodness_of_fit_2(self):
         mx = 5
-        # vals = random.randint(mx, size=(5, 20)).get()
-        # counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
-        vals = random.randint(mx, size=(5, 20)).reshape(5 * 20)
-        counts = numpy.histogram(numpy.asarray(vals), bins=numpy.arange(mx + 1))[0]
+        vals = random.randint(mx, size=(5, 20))
+        counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
         expected = numpy.array([float(vals.size) / mx] * mx)
         self.assertTrue(hypothesis.chi_square_test(counts, expected))
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestRandintDtype(unittest.TestCase):
 
@@ -117,7 +121,7 @@ class TestRandintDtype(unittest.TestCase):
     def test_dtype(self, dtype):
         size = (1000,)
         low = numpy.iinfo(dtype).min
-        high = numpy.iinfo(dtype).max + 1
+        high = numpy.iinfo(dtype).max
         x = random.randint(low, high, size, dtype)
         self.assertLessEqual(low, min(x))
         self.assertLessEqual(max(x), high)
@@ -127,24 +131,20 @@ class TestRandintDtype(unittest.TestCase):
     def test_dtype2(self, dtype):
         dtype = numpy.dtype(dtype)
 
-        # randint does not support 64 bit integers
-        # if dtype in (numpy.int64, numpy.uint64):
-        #     return
-
         iinfo = numpy.iinfo(dtype)
         size = (10000,)
 
-        x = random.randint(iinfo.min, iinfo.max + 1, size, dtype)
+        x = random.randint(iinfo.min, iinfo.max, size, dtype)
         self.assertEqual(x.dtype, dtype)
         self.assertLessEqual(iinfo.min, min(x))
         self.assertLessEqual(max(x), iinfo.max)
 
         # Lower bound check
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OverflowError):
             random.randint(iinfo.min - 1, iinfo.min + 10, size, dtype)
 
         # Upper bound check
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OverflowError):
             random.randint(iinfo.max - 10, iinfo.max + 2, size, dtype)
 
 
@@ -152,19 +152,19 @@ class TestRandintDtype(unittest.TestCase):
 class TestRandomIntegers(unittest.TestCase):
 
     def test_normal(self):
-        with mock.patch('dpnp.random.sample_.randint') as m:
+        with mock.patch('dpnp.random.RandomState.randint') as m:
             random.random_integers(3, 5)
-        m.assert_called_with(3, 6, None)
+        m.assert_called_with(low=3, high=6, size=None, dtype=int, usm_type="device")
 
     def test_high_is_none(self):
-        with mock.patch('dpnp.random.sample_.randint') as m:
+        with mock.patch('dpnp.random.RandomState.randint') as m:
             random.random_integers(3, None)
-        m.assert_called_with(1, 4, None)
+        m.assert_called_with(low=0, high=4, size=None, dtype=int, usm_type="device")
 
     def test_size_is_not_none(self):
-        with mock.patch('dpnp.random.sample_.randint') as m:
+        with mock.patch('dpnp.random.RandomState.randint') as m:
             random.random_integers(3, 5, (1, 2, 3))
-        m.assert_called_with(3, 6, (1, 2, 3))
+        m.assert_called_with(low=3, high=6, size=(1, 2, 3), dtype=int, usm_type="device")
 
 
 @testing.fix_random()
@@ -255,30 +255,29 @@ class TestChoice(unittest.TestCase):
 class TestRandomSample(unittest.TestCase):
 
     def test_rand(self):
-        with mock.patch('dpnp.random.sample_.random_sample') as m:
+        # no keyword argument 'dtype' in dpnp
+        with self.assertRaises(TypeError):
             random.rand(1, 2, 3, dtype=numpy.float32)
-        m.assert_called_once_with(
-            size=(1, 2, 3), dtype=numpy.float32)
 
     def test_rand_default_dtype(self):
-        with mock.patch('dpnp.random.sample_.random_sample') as m:
+        with mock.patch('dpnp.random.RandomState.random_sample') as m:
             random.rand(1, 2, 3)
         m.assert_called_once_with(
-            size=(1, 2, 3), dtype=float)
+            size=(1, 2, 3), usm_type="device")
 
     def test_rand_invalid_argument(self):
         with self.assertRaises(TypeError):
             random.rand(1, 2, 3, unnecessary='unnecessary_argument')
 
     def test_randn(self):
-        with mock.patch('dpnp.random.normal') as m:
+        with mock.patch('dpnp.random.RandomState.standard_normal') as m:
             random.randn(1, 2, 3)
-        m.assert_called_once_with(size=(1, 2, 3))
+        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
 
     def test_randn_default_dtype(self):
-        with mock.patch('dpnp.random.normal') as m:
+        with mock.patch('dpnp.random.RandomState.standard_normal') as m:
             random.randn(1, 2, 3)
-        m.assert_called_once_with(size=(1, 2, 3))
+        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
 
     def test_randn_invalid_argument(self):
         with self.assertRaises(TypeError):

@@ -4,6 +4,7 @@ import dpnp
 import numpy
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=["float64", "float32", "int64", "int32"])
@@ -30,6 +31,7 @@ def test_asfarray2(dtype, data):
     numpy.testing.assert_array_equal(result, expected)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestConcatenate:
     def test_returns_copy(self):
         a = dpnp.array(numpy.eye(3))
@@ -91,9 +93,11 @@ class TestHstack:
     def test_non_iterable(self):
         numpy.testing.assert_raises(TypeError, dpnp.hstack, 1)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_empty_input(self):
         numpy.testing.assert_raises(ValueError, dpnp.hstack, ())
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_0D_array(self):
         b = dpnp.array(2)
         a = dpnp.array(1)
@@ -101,6 +105,7 @@ class TestHstack:
         desired = dpnp.array([1, 2])
         numpy.testing.assert_array_equal(res, desired)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_1D_array(self):
         a = dpnp.array([1])
         b = dpnp.array([2])
@@ -108,6 +113,7 @@ class TestHstack:
         desired = dpnp.array([1, 2])
         numpy.testing.assert_array_equal(res, desired)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_2D_array(self):
         a = dpnp.array([[1], [2]])
         b = dpnp.array([[1], [2]])
@@ -126,9 +132,11 @@ class TestVstack:
     def test_non_iterable(self):
         numpy.testing.assert_raises(TypeError, dpnp.vstack, 1)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_empty_input(self):
         numpy.testing.assert_raises(ValueError, dpnp.vstack, ())
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_0D_array(self):
         a = dpnp.array(1)
         b = dpnp.array(2)
@@ -136,6 +144,7 @@ class TestVstack:
         desired = dpnp.array([[1], [2]])
         numpy.testing.assert_array_equal(res, desired)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_1D_array(self):
         a = dpnp.array([1])
         b = dpnp.array([2])
@@ -143,6 +152,7 @@ class TestVstack:
         desired = dpnp.array([[1], [2]])
         numpy.testing.assert_array_equal(res, desired)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_2D_array(self):
         a = dpnp.array([[1], [2]])
         b = dpnp.array([[1], [2]])
@@ -150,6 +160,7 @@ class TestVstack:
         desired = dpnp.array([[1], [2], [1], [2]])
         numpy.testing.assert_array_equal(res, desired)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_2D_array2(self):
         a = dpnp.array([1, 2])
         b = dpnp.array([1, 2])

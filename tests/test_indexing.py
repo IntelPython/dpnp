@@ -5,6 +5,7 @@ import dpnp
 import numpy
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_choose():
     a = numpy.r_[:4]
     ia = dpnp.array(a)
@@ -109,6 +110,7 @@ def test_nonzero(array):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("vals",
                          [[100, 200],
                           (100, 200)],
@@ -138,6 +140,7 @@ def test_place1(arr, mask, vals):
     numpy.testing.assert_array_equal(a, ia)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("vals",
                          [[100, 200],
                           [100, 200, 300, 400, 500, 600],
@@ -161,6 +164,7 @@ def test_place2(arr, mask, vals):
     numpy.testing.assert_array_equal(a, ia)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("vals",
                          [[100, 200],
                           [100, 200, 300, 400, 500, 600],
@@ -243,6 +247,7 @@ def test_put3():
     numpy.testing.assert_array_equal(a, ia)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_put_along_axis_val_int():
     a = numpy.arange(16).reshape(4, 4)
     ai = dpnp.array(a)
@@ -254,6 +259,7 @@ def test_put_along_axis_val_int():
         numpy.testing.assert_array_equal(a, ai)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_put_along_axis1():
     a = numpy.arange(64).reshape(4, 4, 4)
     ai = dpnp.array(a)
@@ -265,6 +271,7 @@ def test_put_along_axis1():
         numpy.testing.assert_array_equal(a, ai)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_put_along_axis2():
     a = numpy.arange(64).reshape(4, 4, 4)
     ai = dpnp.array(a)
@@ -411,6 +418,7 @@ def test_take(array, indices, array_type, indices_type):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_take_along_axis():
     a = numpy.arange(16).reshape(4, 4)
     ai = dpnp.array(a)
@@ -422,6 +430,7 @@ def test_take_along_axis():
         numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_take_along_axis1():
     a = numpy.arange(64).reshape(4, 4, 4)
     ai = dpnp.array(a)

@@ -23,6 +23,7 @@ def test_copyto_dtype(in_obj, out_dtype):
     numpy.testing.assert_array_equal(result, expected)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("arr",
                          [[], [1, 2, 3, 4], [[1, 2], [3, 4]], [[[1], [2]], [[3], [4]]]],
                          ids=['[]', '[1, 2, 3, 4]', '[[1, 2], [3, 4]]', '[[[1], [2]], [[3], [4]]]'])
@@ -34,6 +35,7 @@ def test_repeat(arr):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("array",
                          [[1, 2, 3],
                           [1, 2, 2, 1, 2, 4],
