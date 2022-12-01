@@ -286,7 +286,7 @@ tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumError::test_too_fe
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumError::test_too_many_dimension3
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_dim_mismatch3
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_too_many_dims3
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_outer
+
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_outer
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_vdot
 tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_7_{dst_shape=(0,), src=3.2}::test_copyto_where
@@ -346,8 +346,6 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{extern
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_axis
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov_empty
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_mean_axis
-
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_outer
 
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_negative_axis
