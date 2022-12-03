@@ -2,25 +2,15 @@
 [![codecov](https://codecov.io/gh/IntelPython/dpnp/branch/master/graph/badge.svg)](https://codecov.io/gh/IntelPython/dpnp)
 [![Build Sphinx](https://github.com/IntelPython/dpnp/workflows/Build%20Sphinx/badge.svg)](https://intelpython.github.io/dpnp)
 
-# DPNP: NumPy Drop-In Replacement for Intel(R) XPU
+# DPNP - Data Parallel Extension for NumPy*
 [API coverage summary](https://intelpython.github.io/dpnp/reference/comparison.html#summary)
 
 [Full documentation](https://intelpython.github.io/dpnp/)
 
 [DPNP C++ backend documentation](https://intelpython.github.io/dpnp/backend_doc/)
 
-The project contains:
-- Python interface with NumPy-like API
-- C++ library with SYCL based kernels
-
-## How to run
-By default main CPU SYCL queue is used. To use Intel GPU please use:
-```bash
-DPNP_QUEUE_GPU=1 python examples/example1.py
-```
-
 ## Build from source:
- Ensure you have the following prerequisite packages installed:
+Ensure you have the following prerequisite packages installed:
 
 - `mkl-devel-dpcpp`
 - `dpcpp_linux-64` or `dpcpp_win-64` (depending on your OS)
