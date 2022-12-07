@@ -213,6 +213,9 @@ def test_1in_1out(func, data, device):
         pytest.param("fmod",
                      [-3., -2., -1., 1., 2., 3.],
                      [2., 2., 2., 2., 2., 2.]),
+        pytest.param("matmul",
+                     [[1., 0.], [0., 1.]],
+                     [[4., 1.], [1., 2.]]),
         pytest.param("maximum",
                      [2., 3., 4.],
                      [1., 5., 2.]),
@@ -222,6 +225,9 @@ def test_1in_1out(func, data, device):
         pytest.param("multiply",
                      [0., 1., 2., 3., 4., 5., 6., 7., 8.],
                      [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
+        pytest.param("outer",
+                     [0., 1., 2., 3., 4., 5.],
+                     [0., 1., 2., 0.]),
         pytest.param("power",
                      [0., 1., 2., 3., 4., 5.],
                      [1., 2., 3., 3., 2., 1.]),
@@ -231,9 +237,6 @@ def test_1in_1out(func, data, device):
         pytest.param("subtract",
                      [0., 1., 2., 3., 4., 5., 6., 7., 8.],
                      [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
-        pytest.param("matmul",
-                     [[1., 0.], [0., 1.]],
-                     [[4., 1.], [1., 2.]]),
     ],
 )
 @pytest.mark.parametrize("device",
@@ -250,10 +253,8 @@ def test_2in_1out(func, data1, data2, device):
 
     numpy.testing.assert_array_equal(result, expected)
 
-    expected_queue = x1.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
-
-    assert_sycl_queue_equal(result_queue, expected_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
 
 @pytest.mark.parametrize(
