@@ -155,7 +155,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
         DPNP_FN_FULL_LIKE
-        DPNP_FN_FULL_LIKE_EXT
         DPNP_FN_HYPOT
         DPNP_FN_HYPOT_EXT
         DPNP_FN_IDENTITY

@@ -697,12 +697,13 @@ def full(shape,
     """
     if like is not None:
         pass
-    elif order not in "cCfF":
+    elif not isinstance(order, str) or len(order) != 1 or order not in "CcFf":
         pass
     else:
         return dpnp_container.full(shape,
                                    fill_value,
                                    dtype=dtype,
+                                   order=order,
                                    device=device,
                                    usm_type=usm_type,
                                    sycl_queue=sycl_queue)
@@ -711,6 +712,7 @@ def full(shape,
 
 
 def full_like(x1,
+              /,
               fill_value,
               *,
               dtype=None,
@@ -729,6 +731,7 @@ def full_like(x1,
     -----------
     Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -746,20 +749,24 @@ def full_like(x1,
     [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
     """
-    if order not in "cCfF":
+    if not isinstance(x1, dpnp.ndarray):
         pass
-    elif subok is True:
+    elif not isinstance(order, str) or len(order) != 1 or order not in "CcFf":
+        pass
+    elif subok is not False:
         pass
     else:
         _shape = shape if shape is not None else x1.shape
         _dtype = dtype if dtype is not None else x1.dtype
         _usm_type = usm_type if usm_type is not None else x1.usm_type
-        if sycl_queue is None and device is None:
-            _sycl_queue = x1.sycl_queue
-        else:
-            _sycl_queue = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+        _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
 
-        return full(_shape, fill_value, dtype=_dtype, usm_type=_usm_type, sycl_queue=_sycl_queue)
+        return dpnp_container.full(_shape,
+                                   fill_value,
+                                   dtype=_dtype,
+                                   order=order,
+                                   usm_type=_usm_type,
+                                   sycl_queue=_sycl_queue)
     return numpy.full_like(x1, fill_value, dtype, order, subok, shape)
 
 

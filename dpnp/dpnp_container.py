@@ -124,12 +124,9 @@ def full(shape,
          sycl_queue=None):
     """Validate input parameters before passing them into `dpctl.tensor` module"""
     dpu.validate_usm_type(usm_type, allow_none=True)
-    if sycl_queue is None and device is None:
-        sycl_queue_normalized = None
-    else:
-        sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(fill_value, sycl_queue=sycl_queue, device=device)
 
-    if isinstance(fill_value, dpnp.ndarray):
+    if isinstance(fill_value, dpnp_array):
         fill_value = fill_value.get_array()
 
     """Creates `dpnp_array` where every element is equal to fill_value."""

@@ -77,7 +77,10 @@ def vvsort(val, vec, size, xp):
     [
         pytest.param("arange",
                      -25.7,
-                     {'stop': 10**8, 'step': 15})
+                     {'stop': 10**8, 'step': 15}),
+        pytest.param("full",
+                     (2,2),
+                     {'fill_value': 5})
     ])
 @pytest.mark.parametrize("device",
                           valid_devices,
@@ -91,6 +94,36 @@ def test_array_creation(func, arg, kwargs, device):
 
     numpy.testing.assert_array_equal(numpy_array, dpnp_array)
     assert dpnp_array.sycl_device == device
+
+
+@pytest.mark.parametrize(
+    "func, kwargs",
+    [
+        pytest.param("full_like",
+                     {'fill_value': 5})
+    ])
+@pytest.mark.parametrize("device_x",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize("device_y",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+def test_array_creation_like(func, kwargs, device_x, device_y):
+    x_orig = numpy.ndarray([1, 2, 3])
+    y_orig = getattr(numpy, func)(x_orig, **kwargs)
+
+    x = dpnp.ndarray([1, 2, 3], device=device_x)
+
+    y = getattr(dpnp, func)(x, **kwargs)
+    numpy.testing.assert_array_equal(y_orig, y)
+    assert y.sycl_device == device_x
+
+    dpnp_kwargs = dict(kwargs)
+    dpnp_kwargs['device'] = device_y
+    
+    y = getattr(dpnp, func)(x, **dpnp_kwargs)
+    numpy.testing.assert_array_equal(y_orig, y)
+    assert y.sycl_device == device_y
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")

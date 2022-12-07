@@ -350,24 +350,42 @@ def test_vander(array, type, n, increase):
     numpy.testing.assert_array_equal(expected, result)
 
 
-def test_full_compute_follows_data():
-    q1 = dpnp.dpnp_queue_initialize()
-    q2 = dpnp.dpnp_queue_initialize()
+@pytest.mark.parametrize("shape",
+                         [(), 0, (0,), (2, 0, 3), (3, 2)],
+                         ids=['()', '0', '(0,)', '(2, 0, 3)', '(1, 2)'])
+@pytest.mark.parametrize("fill_value",
+                         [1.5, 2, 1.5+0.j],
+                         ids=['1.5', '2', '1.5+0.j'])
+@pytest.mark.parametrize("dtype",
+                         [numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, numpy.float16, numpy.int64, numpy.int32],
+                         ids=['complex128', 'complex64', 'float64', 'float32', 'float16', 'int64', 'int32'])
+def test_full(shape, fill_value, dtype):
+    expected = numpy.full(shape, fill_value, dtype=dtype)
+    result = dpnp.full(shape, fill_value, dtype=dtype)
 
-    X = dpnp.full(10, 3, dtype="i4", sycl_queue=q1, usm_type="shared")
-    Y = dpnp.full(10, X[3])
+    assert expected.dtype == result.dtype
+    numpy.testing.assert_array_equal(expected, result)
 
-    assert Y.dtype == X.dtype
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue.__eq__(X.sycl_queue)
-    assert numpy.array_equal(dpnp.asnumpy(Y), numpy.full(10, 3, dtype="i4"))
 
-    Y = dpnp.full(10, X[3], dtype="f4", sycl_queue=q2, usm_type="host")
+@pytest.mark.parametrize("array",
+                         [[], 0,  [1, 2, 3], [[1, 2], [3, 4]]],
+                         ids=['[]', '0',  '[1, 2, 3]', '[[1, 2], [3, 4]]'])
+@pytest.mark.parametrize("fill_value",
+                         [1.5, 2, 1.5+0.j],
+                         ids=['1.5', '2', '1.5+0.j'])
+@pytest.mark.parametrize("dtype",
+                         [numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, numpy.float16, numpy.int64, numpy.int32],
+                         ids=['complex128', 'complex64', 'float64', 'float32', 'float16', 'int64', 'int32'])
+def test_full_like(array, fill_value, dtype):
+    a = numpy.array(array)
+    ia = dpnp.array(array)
 
-    assert Y.dtype == dpnp.dtype("f4")
-    assert Y.usm_type == "host"
-    assert Y.sycl_queue.__eq__(dpnp.empty(0, sycl_queue=q2).sycl_queue)
-    assert numpy.array_equal(dpnp.asnumpy(Y), numpy.full(10, 3, dtype="f4"))
+    expected = numpy.full_like(a, fill_value, dtype=dtype)
+    result = dpnp.full_like(ia, fill_value, dtype=dtype)
+
+    assert expected.shape == result.shape
+    assert expected.dtype == result.dtype
+    numpy.testing.assert_array_equal(expected, result)
 
 
 @pytest.mark.skip(reason="dpnp.ndarray.flags are not implemented")
@@ -378,32 +396,29 @@ def test_full_compute_follows_data():
                          ["F", "C"],
                          ids=['F', 'C'])
 def test_full_order(order1, order2):
-    Xnp = numpy.array([1, 2, 3], order=order1)
-    Ynp = numpy.full((3, 3), Xnp, order=order2)
-    Y = dpnp.full((3, 3), Xnp, order=order2)
+    array = numpy.array([1, 2, 3], order=order1)
+    a = numpy.full((3, 3), array, order=order2)
+    ia = dpnp.full((3, 3), array, order=order2)
 
-    assert Y.flags.c_contiguous == Ynp.flags.c_contiguous
-    assert Y.flags.f_contiguous == Ynp.flags.f_contiguous
-    assert numpy.array_equal(dpnp.asnumpy(Y), Ynp)
+    assert ia.flags.c_contiguous == a.flags.c_contiguous
+    assert ia.flags.f_contiguous == a.flags.f_contiguous
+    assert numpy.array_equal(dpnp.asnumpy(ia), a)
 
 
 def test_full_strides():
-    X = dpnp.full((3, 3), dpnp.arange(3, dtype="i4"))
-    Xnp = numpy.full((3, 3), numpy.arange(3, dtype="i4"))
-    assert X.strides == tuple(el // Xnp.itemsize for el in Xnp.strides)
-    assert numpy.array_equal(dpnp.asnumpy(X), Xnp)
+    a = numpy.full((3, 3), numpy.arange(3, dtype="i4"))
+    ia = dpnp.full((3, 3), dpnp.arange(3, dtype="i4"))
+    assert ia.strides == tuple(el // a.itemsize for el in a.strides)
+    assert numpy.array_equal(dpnp.asnumpy(ia), a)
 
-    X = dpnp.full((3, 3), dpnp.arange(6, dtype="i4")[::2])
-    Xnp = numpy.full((3, 3), numpy.arange(6, dtype="i4")[::2])
-    assert X.strides == tuple(el // Xnp.itemsize for el in Xnp.strides)
-    assert numpy.array_equal(dpnp.asnumpy(X), Xnp)
+    a = numpy.full((3, 3), numpy.arange(6, dtype="i4")[::2])
+    ia = dpnp.full((3, 3), dpnp.arange(6, dtype="i4")[::2])
+    assert ia.strides == tuple(el // a.itemsize for el in a.strides)
+    assert numpy.array_equal(dpnp.asnumpy(ia), a)
 
 
-def test_full_like_compute_follows_data():
-    X = dpnp.full(10, 3, dtype="i4", usm_type="shared")
-    Y = dpnp.full_like(X, 4, shape=(8))
-
-    assert Y.dtype == X.dtype
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue.__eq__(X.sycl_queue)
-    assert numpy.array_equal(dpnp.asnumpy(Y), numpy.full(8, 4, dtype="i4"))
+def test_full_invalid_fill_value():
+    with pytest.raises(ValueError):
+        dpnp.full(10, [])
+    with pytest.raises(ValueError):
+        dpnp.full(10, dpnp.full(0, 0))
