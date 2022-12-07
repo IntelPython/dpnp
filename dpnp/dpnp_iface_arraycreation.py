@@ -729,6 +729,7 @@ def full_like(x1,
 
     Limitations
     -----------
+    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
     Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.

@@ -382,9 +382,6 @@ def test_full_like(array, fill_value, dtype):
 
     expected = numpy.full_like(a, fill_value, dtype=dtype)
     result = dpnp.full_like(ia, fill_value, dtype=dtype)
-
-    assert expected.shape == result.shape
-    assert expected.dtype == result.dtype
     numpy.testing.assert_array_equal(expected, result)
 
 
@@ -409,16 +406,15 @@ def test_full_strides():
     a = numpy.full((3, 3), numpy.arange(3, dtype="i4"))
     ia = dpnp.full((3, 3), dpnp.arange(3, dtype="i4"))
     assert ia.strides == tuple(el // a.itemsize for el in a.strides)
-    assert numpy.array_equal(dpnp.asnumpy(ia), a)
+    numpy.testing.assert_array_equal(dpnp.asnumpy(ia), a)
 
     a = numpy.full((3, 3), numpy.arange(6, dtype="i4")[::2])
     ia = dpnp.full((3, 3), dpnp.arange(6, dtype="i4")[::2])
     assert ia.strides == tuple(el // a.itemsize for el in a.strides)
-    assert numpy.array_equal(dpnp.asnumpy(ia), a)
+    numpy.testing.assert_array_equal(dpnp.asnumpy(ia), a)
 
 
-def test_full_invalid_fill_value():
+@pytest.mark.parametrize("fill_value", [[], (), dpnp.full(0, 0)], ids=['[]', '()', 'dpnp.full(0, 0)'])
+def test_full_invalid_fill_value(fill_value):
     with pytest.raises(ValueError):
-        dpnp.full(10, [])
-    with pytest.raises(ValueError):
-        dpnp.full(10, dpnp.full(0, 0))
+        dpnp.full(10, fill_value=fill_value)
