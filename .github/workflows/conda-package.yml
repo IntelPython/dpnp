@@ -30,10 +30,10 @@ jobs:
     strategy:
       matrix:
         python: ['3.8', '3.9']
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-20.04, windows-latest]
         include:
           - python: '3.10'
-            os: ubuntu-latest
+            os: ubuntu-20.04
 
     runs-on: ${{ matrix.os }}
 
@@ -63,7 +63,7 @@ jobs:
           activate-environment: 'build'
           use-only-tar-bz2: true
 
-      - if: matrix.os == 'ubuntu-latest'
+      - if: matrix.os == 'ubuntu-20.04'
         name: Store conda paths as envs on Linux
         run: echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/linux-64/" >> $GITHUB_ENV
 
@@ -98,11 +98,11 @@ jobs:
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   test_linux:
-    name: Test ['ubuntu-latest', python='${{ matrix.python }}']
+    name: Test ['${{ matrix.os }}', python='${{ matrix.python }}']
 
     needs: build
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     defaults:
       run:
@@ -111,6 +111,8 @@ jobs:
     strategy:
       matrix:
         python: ['3.8', '3.9']
+        os: [ubuntu-20.04, ubuntu-latest]
+
         experimental: [false]
 
     continue-on-error: ${{ matrix.experimental }}
@@ -383,7 +385,7 @@ jobs:
     strategy:
       matrix:
         python: ['3.8', '3.9']
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
