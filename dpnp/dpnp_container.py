@@ -129,7 +129,7 @@ def full(shape,
     if isinstance(fill_value, dpnp_array):
         fill_value = fill_value.get_array()
 
-    """Creates `dpnp_array` where every element is equal to fill_value."""
+    """Creates `dpnp_array` having a specified shape, filled with fill_value."""
     array_obj = dpt.full(shape,
                          fill_value,
                          dtype=dtype,
