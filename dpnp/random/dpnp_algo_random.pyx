@@ -35,8 +35,8 @@ and the rest of the library
 
 import numpy
 import dpctl
+import dpnp
 import numbers
-
 import dpnp.config as config
 from dpnp.dpnp_array import dpnp_array
 
@@ -382,8 +382,9 @@ cdef class MT19937:
         cdef fptr_dpnp_rng_normal_c_1out_t func
         cdef c_dpctl.DPCTLSyclEventRef event_ref
 
+        result_shape = utils._object_to_tuple(size)
         if scale == 0.0:
-            return dpnp_full(size, loc, dtype)
+            return utils.dpnp_descriptor(dpnp.full(result_shape, loc, dtype=dtype))
 
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -392,7 +393,6 @@ cdef class MT19937:
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NORMAL_EXT, param1_type, param1_type)
 
         # ceate result array with type given by FPTR data
-        result_shape = utils._object_to_tuple(size)
         result = utils.create_output_descriptor(result_shape,
                                                 kernel_data.return_type,
                                                 None,
@@ -418,8 +418,9 @@ cdef class MT19937:
         cdef fptr_dpnp_rng_uniform_c_1out_t func
         cdef c_dpctl.DPCTLSyclEventRef event_ref
 
+        result_shape = utils._object_to_tuple(size)
         if low == high:
-            return dpnp_full(size, low, dtype)
+            return utils.dpnp_descriptor(dpnp.full(result_shape, low, dtype=dtype))
 
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -428,7 +429,6 @@ cdef class MT19937:
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM_EXT, param1_type, param1_type)
 
         # ceate result array with type given by FPTR data
-        result_shape = utils._object_to_tuple(size)
         result = utils.create_output_descriptor(result_shape,
                                                 kernel_data.return_type,
                                                 None,
@@ -991,11 +991,12 @@ cpdef utils.dpnp_descriptor dpnp_rng_negative_binomial(double a, double p, size)
     cdef c_dpctl.DPCTLSyclQueueRef q_ref
     cdef c_dpctl.DPCTLSyclEventRef event_ref
 
+    result_shape = utils._object_to_tuple(size)
     if p == 0.0:
         filled_val = numpy.iinfo(dtype).min
-        return dpnp_full(size, filled_val, dtype)
+        return utils.dpnp_descriptor(dpnp.full(result_shape, filled_val, dtype=dtype))
     elif p == 1.0:
-        return dpnp_full(size, 0, dtype)
+        return utils.dpnp_descriptor(dpnp.full(result_shape, 0, dtype=dtype))
     else:
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -1004,7 +1005,6 @@ cpdef utils.dpnp_descriptor dpnp_rng_negative_binomial(double a, double p, size)
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NEGATIVE_BINOMIAL_EXT, param1_type, param1_type)
 
         # ceate result array with type given by FPTR data
-        result_shape = utils._object_to_tuple(size)
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         result_sycl_queue = result.get_array().sycl_queue
@@ -1108,8 +1108,9 @@ cpdef utils.dpnp_descriptor dpnp_rng_poisson(double lam, size):
     cdef c_dpctl.DPCTLSyclQueueRef q_ref
     cdef c_dpctl.DPCTLSyclEventRef event_ref
 
+    result_shape = utils._object_to_tuple(size)
     if lam == 0:
-        return dpnp_full(size, 0, dtype)
+        return utils.dpnp_descriptor(dpnp.full(result_shape, 0, dtype=dtype))
     else:
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -1118,7 +1119,6 @@ cpdef utils.dpnp_descriptor dpnp_rng_poisson(double lam, size):
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_POISSON_EXT, param1_type, param1_type)
 
         # ceate result array with type given by FPTR data
-        result_shape = utils._object_to_tuple(size)
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         result_sycl_queue = result.get_array().sycl_queue
@@ -1187,8 +1187,9 @@ cpdef utils.dpnp_descriptor dpnp_rng_rayleigh(double scale, size):
     cdef c_dpctl.DPCTLSyclQueueRef q_ref
     cdef c_dpctl.DPCTLSyclEventRef event_ref
 
+    result_shape = utils._object_to_tuple(size)
     if scale == 0.0:
-        return dpnp_full(size, 0.0, dtype)
+        return utils.dpnp_descriptor(dpnp.full(result_shape, 0.0, dtype=dtype))
     else:
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -1197,7 +1198,6 @@ cpdef utils.dpnp_descriptor dpnp_rng_rayleigh(double scale, size):
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_RAYLEIGH_EXT, param1_type, param1_type)
 
         # ceate result array with type given by FPTR data
-        result_shape = utils._object_to_tuple(size)
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         result_sycl_queue = result.get_array().sycl_queue
@@ -1348,8 +1348,9 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_gamma(double shape, size):
     cdef c_dpctl.DPCTLSyclQueueRef q_ref
     cdef c_dpctl.DPCTLSyclEventRef event_ref
 
+    result_shape = utils._object_to_tuple(size)
     if shape == 0.0:
-        return dpnp_full(size, 0.0, dtype)
+        return utils.dpnp_descriptor(dpnp.full(result_shape, 0.0, dtype=dtype))
     else:
         # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -1358,7 +1359,6 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_gamma(double shape, size):
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_GAMMA_EXT, param1_type, param1_type)
 
         # ceate result array with type given by FPTR data
-        result_shape = utils._object_to_tuple(size)
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         result_sycl_queue = result.get_array().sycl_queue

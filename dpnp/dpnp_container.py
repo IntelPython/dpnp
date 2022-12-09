@@ -45,6 +45,7 @@ __all__ = [
     "arange",
     "asarray",
     "empty",
+    "full",
 ]
 
 
@@ -110,4 +111,29 @@ def empty(shape,
                           order=order,
                           usm_type=usm_type,
                           sycl_queue=sycl_queue_normalized)
+    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+
+
+def full(shape,
+         fill_value,
+         *,
+         dtype=None,
+         order="C",
+         device=None,
+         usm_type=None,
+         sycl_queue=None):
+    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    dpu.validate_usm_type(usm_type, allow_none=True)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(fill_value, sycl_queue=sycl_queue, device=device)
+
+    if isinstance(fill_value, dpnp_array):
+        fill_value = fill_value.get_array()
+
+    """Creates `dpnp_array` having a specified shape, filled with fill_value."""
+    array_obj = dpt.full(shape,
+                         fill_value,
+                         dtype=dtype,
+                         order=order,
+                         usm_type=usm_type,
+                         sycl_queue=sycl_queue_normalized)
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
