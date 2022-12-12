@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -850,9 +850,9 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_desc and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x2_desc and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
         elif dtype is not None:
             pass
@@ -1075,7 +1075,15 @@ def modf(x1, **kwargs):
     return call_origin(numpy.modf, x1, **kwargs)
 
 
-def multiply(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def multiply(x1,
+             x2,
+             /,
+             out=None,
+             *,
+             where=True,
+             dtype=None,
+             subok=True,
+             **kwargs):
     """
     Multiply arguments element-wise.
 
@@ -1083,43 +1091,37 @@ def multiply(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Parameters ``x1`` and ``x2`` are supported as either :class:`dpnp.dpnp_array` or scalar.
+    Parameters ``out``, ``where``, ``dtype`` and ``subok`` are supported with their default values.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the functions will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> a = np.array([1, 2, 3, 4, 5])
-    >>> result = np.multiply(a, a)
-    >>> [x for x in result]
+    >>> import dpnp as dp
+    >>> a = dp.array([1, 2, 3, 4, 5])
+    >>> result = dp.multiply(a, a)
+    >>> print(result)
     [1, 4, 9, 16, 25]
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
+    if out is not None:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    else:
+        # get a common queue to copy data from the host into a device if any input is scalar
+        queue = get_common_allocation_queue([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else None
 
-    if x1_desc and x2_desc and not kwargs:
-        if not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        else:
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        if x1_desc and x2_desc:
             return dpnp_multiply(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.multiply, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
