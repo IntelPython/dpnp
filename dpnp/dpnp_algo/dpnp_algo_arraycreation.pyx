@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,8 +38,6 @@ __all__ += [
     "dpnp_copy",
     "dpnp_diag",
     "dpnp_eye",
-    "dpnp_full",
-    "dpnp_full_like",
     "dpnp_geomspace",
     "dpnp_identity",
     "dpnp_linspace",
@@ -176,79 +174,6 @@ cpdef utils.dpnp_descriptor dpnp_eye(N, M=None, k=0, dtype=None):
     cdef shape_type_c result_shape = result.shape
 
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), k, result_shape.data(), NULL)
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_full(result_shape, value_in, result_dtype):
-    # Convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
-
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FULL_EXT, dtype_in, DPNP_FT_NONE)
-
-    # ceate result array with type given by FPTR data
-    cdef shape_type_c result_shape_c = utils._object_to_tuple(result_shape)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape_c, kernel_data.return_type, None)
-
-    result_obj = result.get_array()
-
-    # Create single-element input fill array with type given by FPTR data
-    cdef shape_type_c shape_in = (1,)
-    cdef utils.dpnp_descriptor array_fill = utils.create_output_descriptor(shape_in,
-                                                                           kernel_data.return_type,
-                                                                           None,
-                                                                           device=result_obj.sycl_device,
-                                                                           usm_type=result_obj.usm_type,
-                                                                           sycl_queue=result_obj.sycl_queue)
-    array_fill.get_pyobj()[0] = value_in
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_obj.sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
-    # Call FPTR function
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, array_fill.get_data(), result.get_data(), result.size, NULL)
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_full_like(result_shape, value_in, result_dtype):
-    # Convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
-
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FULL_LIKE_EXT, dtype_in, DPNP_FT_NONE)
-
-    # ceate result array with type given by FPTR data
-    cdef shape_type_c result_shape_c = utils._object_to_tuple(result_shape)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape_c, kernel_data.return_type, None)
-
-    result_obj = result.get_array()
-
-    # Create single-element input fill array with type given by FPTR data
-    cdef shape_type_c shape_in = (1,)
-    cdef utils.dpnp_descriptor array_fill = utils.create_output_descriptor(shape_in,
-                                                                           kernel_data.return_type,
-                                                                           None,
-                                                                           device=result_obj.sycl_device,
-                                                                           usm_type=result_obj.usm_type,
-                                                                           sycl_queue=result_obj.sycl_queue)
-    array_fill.get_pyobj()[0] = value_in
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_obj.sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
-    # Call FPTR function
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, array_fill.get_data(), result.get_data(), result.size, NULL)
 
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)

@@ -348,3 +348,73 @@ def test_vander(array, type, n, increase):
     expected = numpy.vander(a_np, N=n, increasing=increase)
     result = dpnp.vander(a_dpnp, N=n, increasing=increase)
     numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("shape",
+                         [(), 0, (0,), (2, 0, 3), (3, 2)],
+                         ids=['()', '0', '(0,)', '(2, 0, 3)', '(1, 2)'])
+@pytest.mark.parametrize("fill_value",
+                         [1.5, 2, 1.5+0.j],
+                         ids=['1.5', '2', '1.5+0.j'])
+@pytest.mark.parametrize("dtype",
+                         [numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, numpy.float16, numpy.int64, numpy.int32],
+                         ids=['complex128', 'complex64', 'float64', 'float32', 'float16', 'int64', 'int32'])
+def test_full(shape, fill_value, dtype):
+    expected = numpy.full(shape, fill_value, dtype=dtype)
+    result = dpnp.full(shape, fill_value, dtype=dtype)
+
+    assert expected.dtype == result.dtype
+    numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("array",
+                         [[], 0,  [1, 2, 3], [[1, 2], [3, 4]]],
+                         ids=['[]', '0',  '[1, 2, 3]', '[[1, 2], [3, 4]]'])
+@pytest.mark.parametrize("fill_value",
+                         [1.5, 2, 1.5+0.j],
+                         ids=['1.5', '2', '1.5+0.j'])
+@pytest.mark.parametrize("dtype",
+                         [numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, numpy.float16, numpy.int64, numpy.int32],
+                         ids=['complex128', 'complex64', 'float64', 'float32', 'float16', 'int64', 'int32'])
+def test_full_like(array, fill_value, dtype):
+    a = numpy.array(array)
+    ia = dpnp.array(array)
+
+    expected = numpy.full_like(a, fill_value, dtype=dtype)
+    result = dpnp.full_like(ia, fill_value, dtype=dtype)
+    numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.skip(reason="dpnp.ndarray.flags are not implemented")
+@pytest.mark.parametrize("order1",
+                         ["F", "C"],
+                         ids=['F', 'C'])
+@pytest.mark.parametrize("order2",
+                         ["F", "C"],
+                         ids=['F', 'C'])
+def test_full_order(order1, order2):
+    array = numpy.array([1, 2, 3], order=order1)
+    a = numpy.full((3, 3), array, order=order2)
+    ia = dpnp.full((3, 3), array, order=order2)
+
+    assert ia.flags.c_contiguous == a.flags.c_contiguous
+    assert ia.flags.f_contiguous == a.flags.f_contiguous
+    assert numpy.array_equal(dpnp.asnumpy(ia), a)
+
+
+def test_full_strides():
+    a = numpy.full((3, 3), numpy.arange(3, dtype="i4"))
+    ia = dpnp.full((3, 3), dpnp.arange(3, dtype="i4"))
+    assert ia.strides == tuple(el // a.itemsize for el in a.strides)
+    numpy.testing.assert_array_equal(dpnp.asnumpy(ia), a)
+
+    a = numpy.full((3, 3), numpy.arange(6, dtype="i4")[::2])
+    ia = dpnp.full((3, 3), dpnp.arange(6, dtype="i4")[::2])
+    assert ia.strides == tuple(el // a.itemsize for el in a.strides)
+    numpy.testing.assert_array_equal(dpnp.asnumpy(ia), a)
+
+
+@pytest.mark.parametrize("fill_value", [[], (), dpnp.full(0, 0)], ids=['[]', '()', 'dpnp.full(0, 0)'])
+def test_full_invalid_fill_value(fill_value):
+    with pytest.raises(ValueError):
+        dpnp.full(10, fill_value=fill_value)
