@@ -143,7 +143,7 @@ def asnumpy(input, order='C'):
 
     """
     if isinstance(input, dpnp_array):
-        return dpt.asnumpy(input.get_array())
+        return input.asnumpy()
 
     if isinstance(input, dpt.usm_ndarray):
         return dpt.asnumpy(input)
