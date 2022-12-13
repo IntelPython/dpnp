@@ -49,6 +49,9 @@
    .. automethod:: argsort
 
 
+   .. automethod:: asnumpy
+
+
    .. automethod:: astype
 
 
