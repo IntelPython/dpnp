@@ -221,7 +221,7 @@ def unwrap_array(x1):
 def get_common_allocation_queue(objects):
     """
     Given a list of objects returns the queue which can be used for a memory allocation
-    to keep compute follows data paradigm, or returns `None` if the default queue can be used.
+    to follow compute follows data paradigm, or returns `None` if the default queue can be used.
     An exception will be raised, if the paradigm is broked for the given list of objects.
     """
     if not isinstance(objects, (list, tuple)):

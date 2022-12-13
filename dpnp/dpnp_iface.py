@@ -214,7 +214,7 @@ def get_dpnp_descriptor(ext_obj,
         return False
 
     # If input object is a scalar, it means it was allocated on host memory.
-    # We need to copy it to device memory according compute follows data paradigm.
+    # We need to copy it to device memory according to compute follows data paradigm.
     if isscalar(ext_obj):
         ext_obj = array(ext_obj, sycl_queue=alloc_queue)
 

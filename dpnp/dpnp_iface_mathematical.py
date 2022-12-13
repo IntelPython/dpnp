@@ -1089,9 +1089,14 @@ def multiply(x1,
 
     For full documentation refer to :obj:`numpy.multiply`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        The product of `x1` and `x2`, element-wise.
+
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :class:`dpnp.dpnp_array` or scalar.
+    Parameters ``x1`` and ``x2`` are supported as either :class:`dpnp.ndarray` or scalar.
     Parameters ``out``, ``where``, ``dtype`` and ``subok`` are supported with their default values.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the functions will be executed sequentially on CPU.
