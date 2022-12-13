@@ -181,7 +181,7 @@ class TestBasic(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_zeros_scalar(self, xp, dtype, order):
-        return xp.zeros(None, dtype=dtype, order=order)
+        return xp.zeros((), dtype=dtype, order=order)
 
     @testing.for_CF_orders()
     @testing.for_all_dtypes()

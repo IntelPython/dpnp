@@ -80,7 +80,10 @@ def vvsort(val, vec, size, xp):
                      {'stop': 10**8, 'step': 15}),
         pytest.param("full",
                      (2,2),
-                     {'fill_value': 5})
+                     {'fill_value': 5}),
+        pytest.param("zeros",
+                     (2,2),
+                     {})
     ])
 @pytest.mark.parametrize("device",
                           valid_devices,
@@ -100,7 +103,9 @@ def test_array_creation(func, arg, kwargs, device):
     "func, kwargs",
     [
         pytest.param("full_like",
-                     {'fill_value': 5})
+                     {'fill_value': 5}),
+        pytest.param("zeros_like",
+                     {})
     ])
 @pytest.mark.parametrize("device_x",
                           valid_devices,
