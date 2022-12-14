@@ -697,7 +697,7 @@ def full(shape,
     """
     if like is not None:
         pass
-    elif not isinstance(order, str) or len(order) != 1 or order not in "CcFf":
+    elif order not in ('C', 'c', 'F', 'f', None):
         pass
     else:
         return dpnp_container.full(shape,
@@ -752,14 +752,14 @@ def full_like(x1,
     """
     if not isinstance(x1, dpnp.ndarray):
         pass
-    elif not isinstance(order, str) or len(order) != 1 or order not in "CcFf":
+    elif order not in ('C', 'c', 'F', 'f', None):
         pass
     elif subok is not False:
         pass
     else:
-        _shape = shape if shape is not None else x1.shape
-        _dtype = dtype if dtype is not None else x1.dtype
-        _usm_type = usm_type if usm_type is not None else x1.usm_type
+        _shape = x1.shape if shape is None else shape
+        _dtype = x1.dtype if dtype is None else dtype
+        _usm_type = x1.usm_type if usm_type is None else usm_type
         _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
 
         return dpnp_container.full(_shape,
@@ -1374,7 +1374,7 @@ def vander(x1, N=None, increasing=False):
 
 def zeros(shape,
           *,
-          dtype=numpy.float64,
+          dtype=None,
           order="C",
           like=None,
           device=None,
@@ -1463,16 +1463,16 @@ def zeros_like(x1,
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 """
-    if subok is not False:
-        pass
-    elif not isinstance(x1, dpnp.ndarray):
+    if not isinstance(x1, dpnp.ndarray):
         pass
     elif order not in ('C', 'c', 'F', 'f', None):
         pass
+    elif subok is not False:
+        pass
     else:
-        _shape = shape if shape is not None else x1.shape
-        _dtype = dtype if dtype is not None else x1.dtype
-        _usm_type = usm_type if usm_type is not None else x1.usm_type
+        _shape = x1.shape if shape is None else shape
+        _dtype = x1.dtype if dtype is None else dtype
+        _usm_type = x1.usm_type if usm_type is None else usm_type
         _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
         return dpnp_container.zeros(_shape,
                                     dtype=_dtype,

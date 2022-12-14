@@ -87,6 +87,8 @@ def asarray(x1,
         x1_obj = x1
 
     sycl_queue_normalized = dpnp.get_normalized_queue_device(x1_obj, device=device, sycl_queue=sycl_queue)
+    if order is None:
+        order = 'C'
 
     """Converts incoming 'x1' object to 'dpnp_array'."""
     array_obj = dpt.asarray(x1_obj,
@@ -126,6 +128,8 @@ def full(shape,
     """Validate input parameters before passing them into `dpctl.tensor` module"""
     dpu.validate_usm_type(usm_type, allow_none=True)
     sycl_queue_normalized = dpnp.get_normalized_queue_device(fill_value, sycl_queue=sycl_queue, device=device)
+    if order is None:
+        order = 'C'
 
     if isinstance(fill_value, dpnp_array):
         fill_value = fill_value.get_array()
@@ -153,7 +157,7 @@ def zeros(shape,
     if order is None:
         order = 'C'
 
-    """Creates `dpnp_array` with zero elements."""
+    """Creates `dpnp_array` of zeros with the given shape, dtype, and order."""
     array_obj = dpt.zeros(shape,
                           dtype=dtype,
                           order=order,
