@@ -770,7 +770,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span>
@@ -825,14 +825,14 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">pass</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">_shape</span> <span class="o">=</span> <span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span>
-        <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span>
+        <span class="n">_shape</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
+        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
+        <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
         <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">_shape</span><span class="p">,</span>
@@ -1445,7 +1445,14 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">vander</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">increasing</span><span class="o">=</span><span class="n">increasing</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="zeros"><a class="viewcode-back" href="../../reference/generated/dpnp.zeros.html#dpnp.zeros">[docs]</a><span class="k">def</span> <span class="nf">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="zeros"><a class="viewcode-back" href="../../reference/generated/dpnp.zeros.html#dpnp.zeros">[docs]</a><span class="k">def</span> <span class="nf">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span>
+          <span class="o">*</span><span class="p">,</span>
+          <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+          <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
+          <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a new array of given shape and type, filled with zeros.</span>
 
@@ -1453,7 +1460,9 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``order`` is supported only with default value ``&quot;C&quot;``.</span>
+<span class="sd">    Parameter ``order`` is supported only with values ``&quot;C&quot;`` and ``&quot;F&quot;``.</span>
+<span class="sd">    Parameter ``like`` is supported only with default value ``None``.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1474,21 +1483,30 @@
 <span class="sd">    [0.0, 0.0]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span>
+                                    <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                                    <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                    <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">()):</span>
-        <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">_dtype</span> <span class="o">=</span> <span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">_dtype</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-            <span class="k">return</span> <span class="n">result</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span></div>
 
 
-<span class="c1"># numpy.zeros_like(a, dtype=None, order=&#39;K&#39;, subok=True, shape=None)</span>
-<div class="viewcode-block" id="zeros_like"><a class="viewcode-back" href="../../reference/generated/dpnp.zeros_like.html#dpnp.zeros_like">[docs]</a><span class="k">def</span> <span class="nf">zeros_like</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="zeros_like"><a class="viewcode-back" href="../../reference/generated/dpnp.zeros_like.html#dpnp.zeros_like">[docs]</a><span class="k">def</span> <span class="nf">zeros_like</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span>
+               <span class="o">*</span><span class="p">,</span>
+               <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+               <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array of zeros with the same shape and type as a given array.</span>
 
@@ -1496,8 +1514,10 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``order`` is supported only with default value ``&quot;C&quot;``.</span>
+<span class="sd">    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.</span>
+<span class="sd">    Parameter ``order`` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter ``subok`` is supported only with default value ``False``.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1515,20 +1535,23 @@
 <span class="sd">    &gt;&gt;&gt; [i for i in np.zeros_like(x)]</span>
 <span class="sd">    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">_shape</span> <span class="o">=</span> <span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span>
-            <span class="n">_dtype</span> <span class="o">=</span> <span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_zeros_like</span><span class="p">(</span><span class="n">_shape</span><span class="p">,</span> <span class="n">_dtype</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-            <span class="k">return</span> <span class="n">result</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_shape</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
+        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
+        <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
+        <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">_shape</span><span class="p">,</span>
+                                    <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span>
+                                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                                    <span class="n">usm_type</span><span class="o">=</span><span class="n">_usm_type</span><span class="p">,</span>
+                                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
 </pre></div>
