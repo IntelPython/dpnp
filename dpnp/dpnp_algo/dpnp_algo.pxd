@@ -349,9 +349,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_VAR
         DPNP_FN_VAR_EXT
         DPNP_FN_ZEROS
-        DPNP_FN_ZEROS_EXT
         DPNP_FN_ZEROS_LIKE
-        DPNP_FN_ZEROS_LIKE_EXT
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
