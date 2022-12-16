@@ -55,3 +55,8 @@ def test_array_creation(usm_type_x, usm_type_y):
     y = dp.zeros_like(x0, usm_type=usm_type_y)
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
+
+    x = dp.ones_like(x0)
+    y = dp.ones_like(x0, usm_type=usm_type_y)
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y

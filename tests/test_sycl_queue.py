@@ -81,6 +81,9 @@ def vvsort(val, vec, size, xp):
         pytest.param("full",
                      (2,2),
                      {'fill_value': 5}),
+        pytest.param("ones",
+                     (2,2),
+                     {}),
         pytest.param("zeros",
                      (2,2),
                      {})
@@ -104,6 +107,8 @@ def test_array_creation(func, arg, kwargs, device):
     [
         pytest.param("full_like",
                      {'fill_value': 5}),
+        pytest.param("ones_like",
+                     {}),
         pytest.param("zeros_like",
                      {})
     ])
