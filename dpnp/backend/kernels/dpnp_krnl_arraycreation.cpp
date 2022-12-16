@@ -441,6 +441,7 @@ void dpnp_ones_c(void* result, size_t size)
                                                          size,
                                                          dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -465,6 +466,7 @@ void dpnp_ones_like_c(void* result, size_t size)
                                                               size,
                                                               dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
