@@ -51,8 +51,6 @@ __all__ += [
     "dpnp_tril",
     "dpnp_triu",
     "dpnp_vander",
-    "dpnp_zeros",
-    "dpnp_zeros_like"
 ]
 
 
@@ -120,8 +118,7 @@ cpdef utils.dpnp_descriptor dpnp_diag(utils.dpnp_descriptor v, int k):
 
     v_obj = v.get_array()
 
-    # TODO need to call dpnp_container.zeros instead
-    result_obj = dpnp.zeros(result_shape, dtype=v.dtype).to_device(v_obj.sycl_device)
+    result_obj = dpnp_container.zeros(result_shape, dtype=v.dtype, device=v_obj.sycl_device)
     cdef utils.dpnp_descriptor result = dpnp_descriptor(result_obj)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(v.dtype)
@@ -597,11 +594,3 @@ cpdef utils.dpnp_descriptor dpnp_vander(utils.dpnp_descriptor x1, int N, int inc
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_zeros(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ZEROS_EXT, utils._object_to_tuple(result_shape), result_dtype)
-
-
-cpdef utils.dpnp_descriptor dpnp_zeros_like(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ZEROS_LIKE_EXT, utils._object_to_tuple(result_shape), result_dtype)
