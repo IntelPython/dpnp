@@ -552,13 +552,13 @@ class TestSeed:
                              [0.5, -1.5, [-0.3], (1.7, 3),
                               'text',
                               numpy.arange(0, 1, 0.5),
-                              dpnp.arange(3),
-                              dpnp.arange(3, dtype=numpy.float32)],
+                              dpnp.arange(3, dtype=numpy.float32),
+                              dpnp.arange(3, dtype=numpy.complex64)],
                              ids=['0.5', '-1.5', '[-0.3]', '(1.7, 3)',
                                   'text',
                                   'numpy.arange(0, 1, 0.5)',
-                                  'dpnp.arange(3)',
-                                  'dpnp.arange(3, dtype=numpy.float32)'])
+                                  'dpnp.arange(3, dtype=numpy.float32)',
+                                  'dpnp.arange(3, dtype=numpy.complex64)'])
     def test_invalid_type(self, seed):
         # seed must be an unsigned 32-bit integer
         assert_raises(TypeError, RandomState, seed)

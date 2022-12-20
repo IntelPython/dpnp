@@ -400,7 +400,7 @@ err:
  * @exception std::runtime_error    type T is out of suppport by the queue.
  */
 template <typename T>
-void validate_type_for_device(const sycl::device &d)
+static inline void validate_type_for_device(const sycl::device &d)
 {
     if constexpr (std::is_same_v<T, double>) {
         if (!d.has(sycl::aspect::fp64)) {
@@ -436,7 +436,7 @@ void validate_type_for_device(const sycl::device &d)
  * @exception std::runtime_error    type T is out of suppport by the queue.
  */
 template <typename T>
-void validate_type_for_device(const sycl::queue &q)
+static inline void validate_type_for_device(const sycl::queue &q)
 {
     validate_type_for_device<T>(q.get_device());
 }
