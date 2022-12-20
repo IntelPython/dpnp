@@ -101,7 +101,7 @@ def asarray(x1,
 
 
 def empty(shape,
-          dtype="f8",
+          dtype="f4",
           order="C",
           device=None,
           usm_type="device",

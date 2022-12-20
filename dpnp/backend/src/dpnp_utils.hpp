@@ -391,6 +391,58 @@ err:
 
 /**
  * @ingroup BACKEND_UTILS
+ * @brief check support of type T by SYCL device.
+ *
+ * To check if sycl::device may use templated type T.
+ *
+ * @param [in]  q  sycl::device which is examined for type support.
+ *
+ * @exception std::runtime_error    type T is out of suppport by the queue.
+ */
+template <typename T>
+void validate_type_for_device(const sycl::device &d)
+{
+    if constexpr (std::is_same_v<T, double>) {
+        if (!d.has(sycl::aspect::fp64)) {
+            throw std::runtime_error("Device " +
+                                     d.get_info<sycl::info::device::name>() +
+                                     " does not support type 'double'");
+        }
+    }
+    else if constexpr (std::is_same_v<T, std::complex<double>>) {
+        if (!d.has(sycl::aspect::fp64)) {
+            throw std::runtime_error("Device " +
+                                     d.get_info<sycl::info::device::name>() +
+                                     " does not support type 'complex<double>'");
+        }
+    }
+    else if constexpr (std::is_same_v<T, sycl::half>) {
+        if (!d.has(sycl::aspect::fp16)) {
+            throw std::runtime_error("Device " +
+                                     d.get_info<sycl::info::device::name>() +
+                                     " does not support type 'half'");
+        }
+    }
+}
+
+/**
+ * @ingroup BACKEND_UTILS
+ * @brief check support of type T by SYCL queue.
+ *
+ * To check if sycl::queue assigned to a device may use templated type T.
+ *
+ * @param [in]  q  sycl::queue which is examined for type support.
+ *
+ * @exception std::runtime_error    type T is out of suppport by the queue.
+ */
+template <typename T>
+void validate_type_for_device(const sycl::queue &q)
+{
+    validate_type_for_device<T>(q.get_device());
+}
+
+/**
+ * @ingroup BACKEND_UTILS
  * @brief print std::vector to std::ostream.
  *
  * To print std::vector with POD types to std::out.
