@@ -463,3 +463,39 @@ def test_zeros_like(array, dtype, order):
 
     assert expected.dtype == result.dtype
     numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("shape",
+                         [(), 0, (0,), (2, 0, 3), (3, 2)],
+                         ids=['()', '0', '(0,)', '(2, 0, 3)', '(3, 2)'])
+@pytest.mark.parametrize("dtype",
+                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, numpy.float16, numpy.int64, numpy.int32],
+                         ids=['None', 'complex128', 'complex64', 'float64', 'float32', 'float16', 'int64', 'int32'])
+@pytest.mark.parametrize("order",
+                         [None, "C", "F"],
+                         ids=['None', 'C', 'F'])
+def test_empty(shape, dtype, order):
+    expected = numpy.empty(shape, dtype=dtype, order=order)
+    result = dpnp.empty(shape, dtype=dtype, order=order)
+
+    assert expected.dtype == result.dtype
+
+
+@pytest.mark.parametrize("array",
+                         [[], 0,  [1, 2, 3], [[1, 2], [3, 4]]],
+                         ids=['[]', '0',  '[1, 2, 3]', '[[1, 2], [3, 4]]'])
+@pytest.mark.parametrize("dtype",
+                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, numpy.float16, numpy.int64, numpy.int32],
+                         ids=['None', 'complex128', 'complex64', 'float64', 'float32', 'float16', 'int64', 'int32'])
+@pytest.mark.parametrize("order",
+                         [None, "C", "F"],
+                         ids=['None', 'C', 'F'])
+def test_empty_like(array, dtype, order):
+    a = numpy.array(array)
+    ia = dpnp.array(array)
+
+    expected = numpy.empty_like(a, dtype=dtype, order=order)
+    result = dpnp.empty_like(ia, dtype=dtype, order=order)
+
+    assert expected.shape == result.shape
+    assert expected.dtype == result.dtype

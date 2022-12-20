@@ -99,6 +99,28 @@ def test_array_creation(func, arg, kwargs, device):
     assert dpnp_array.sycl_device == device
 
 
+@pytest.mark.parametrize("device",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+def test_empty(device):
+    dpnp_array = dpnp.empty((2, 2), device=device)
+    assert dpnp_array.sycl_device == device
+
+
+@pytest.mark.parametrize("device_x",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize("device_y",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+def test_empty_like(device_x, device_y):
+    x = dpnp.ndarray([1, 2, 3], device=device_x)
+    y = dpnp.empty_like(x)
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+    y = dpnp.empty_like(x, device=device_y)
+    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+
+
 @pytest.mark.parametrize(
     "func, kwargs",
     [
