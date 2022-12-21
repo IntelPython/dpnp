@@ -114,18 +114,18 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>array_like}</em><em>, </em><em>optional</em>) – A random seed to initialize the pseudo-random number generator.
+The <cite>seed</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), an integer scalar, or
+an array_like of maximumum three integer scalars.</p></li>
 <li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – An array API concept of device where the output array is created.
-<cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), a oneAPI filter selector string,
+The <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), an OneAPI filter selector string,
 an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> corresponding to a non-partitioned SYCL device,
 an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code>, or a <cite>Device</cite> object returned by
 <a class="reference internal" href="dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.device" title="dpnp.dpnp_array.dpnp_array.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dpnp_array.dpnp_array.device</span></code></a> property.</p></li>
-<li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – The SYCL queue to use for output array allocation and copying.</p></li>
+<li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – A SYCL queue to use for output array allocation and copying.</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Limitations</p>
-<p>Parameter <cite>seed</cite> is supported as either a integer scalar or array_like
-of maximumum three integer scalars.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.random.RandomState.get_state">
@@ -189,7 +189,7 @@ Output array data type is the same as input <cite>dtype</cite>. If <cite>dtype</
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
-<p>Parameters <cite>loc</cite> and <cite>scale</cite> are supported as scalar. Otherwise,
+<p>Parameters <cite>loc</cite> and <cite>scale</cite> are supported as a scalar. Otherwise,
 <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.normal(loc,</span> <span class="pre">scale,</span> <span class="pre">size)</span></code> samples are drawn.
 Parameter <cite>dtype</cite> is supported only as <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <p class="rubric">Examples</p>
@@ -264,7 +264,7 @@ Output array data type is the same as input <cite>dtype</cite>.</p>
 <p>Parameters <cite>low</cite> and <cite>high</cite> are supported only as a scalar.
 Parameter <cite>dtype</cite> is supported only as <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int32</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>,
 but <code class="docutils literal notranslate"><span class="pre">int</span></code> value is considered to be exactly equivalent to <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int32</span></code>.
-Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.randint(low,</span> <span class="pre">high,</span> <span class="pre">size,</span> <span class="pre">dtype)</span></code> samples are drawn.</p>
+Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.randint(low,</span> <span class="pre">high,</span> <span class="pre">size,</span> <span class="pre">dtype)</span></code> samples are drawn.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">()</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
@@ -406,8 +406,8 @@ Output array data type is the same as input <cite>dtype</cite>. If <cite>dtype</
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
-<p>Parameters <cite>low</cite> and <cite>high</cite> are supported as scalar. Otherwise,
-<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.uniform(low,</span> <span class="pre">high,</span> <span class="pre">size)</span></code> samples are drawn.
+<p>Parameters <cite>low</cite> and <cite>high</cite> are supported as a scalar. Otherwise,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.uniform(low,</span> <span class="pre">high,</span> <span class="pre">size)</span></code> samples are drawn.
 Parameter <cite>dtype</cite> is supported only as <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int32</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="mf">1.23</span><span class="p">,</span> <span class="mf">10.54</span>    <span class="c1"># low and high</span>

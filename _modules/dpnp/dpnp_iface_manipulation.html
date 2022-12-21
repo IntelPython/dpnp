@@ -75,7 +75,7 @@
 <span class="c1"># distutils: language = c++</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2020, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2022, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -204,12 +204,13 @@
     <span class="n">all_is_array</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">arys_desc</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">ary</span> <span class="ow">in</span> <span class="n">arys</span><span class="p">:</span>
-        <span class="n">ary_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">ary_desc</span><span class="p">:</span>
-            <span class="n">arys_desc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ary_desc</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">all_is_array</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">ary</span><span class="p">):</span>
+            <span class="n">ary_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ary_desc</span><span class="p">:</span>
+                <span class="n">arys_desc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ary_desc</span><span class="p">)</span>
+                <span class="k">continue</span>
+        <span class="n">all_is_array</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">break</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">arys</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="n">all_is_array</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
@@ -239,12 +240,13 @@
     <span class="n">all_is_array</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">arys_desc</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">ary</span> <span class="ow">in</span> <span class="n">arys</span><span class="p">:</span>
-        <span class="n">ary_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">ary_desc</span><span class="p">:</span>
-            <span class="n">arys_desc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ary_desc</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">all_is_array</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">ary</span><span class="p">):</span>
+            <span class="n">ary_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ary_desc</span><span class="p">:</span>
+                <span class="n">arys_desc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ary_desc</span><span class="p">)</span>
+                <span class="k">continue</span>
+        <span class="n">all_is_array</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">break</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">arys</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="n">all_is_array</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>

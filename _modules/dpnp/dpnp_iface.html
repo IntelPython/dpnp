@@ -141,6 +141,10 @@
     <span class="s2">&quot;get_normalized_queue_device&quot;</span>
 <span class="p">]</span>
 
+<span class="kn">from</span> <span class="nn">dpnp</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">isscalar</span>
+<span class="p">)</span>
+
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_bitwise</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_counting</span> <span class="kn">import</span> <span class="o">*</span>
@@ -260,7 +264,10 @@
     <span class="k">return</span> <span class="n">obj</span>
 
 
-<span class="k">def</span> <span class="nf">get_dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span>
+                        <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">alloc_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return True:</span>
 <span class="sd">      never</span>
@@ -278,6 +285,11 @@
 
     <span class="k">if</span> <span class="n">use_origin_backend</span><span class="p">():</span>
         <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># If input object is a scalar, it means it was allocated on host memory.</span>
+    <span class="c1"># We need to copy it to device memory according to compute follows data paradigm.</span>
+    <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">):</span>
+        <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">alloc_queue</span><span class="p">)</span>
 
     <span class="c1"># while dpnp functions have no implementation with strides support</span>
     <span class="c1"># we need to create a non-strided copy</span>
@@ -299,13 +311,12 @@
     <span class="c1"># we need to create a copy on device associated with DPNP_QUEUE</span>
     <span class="c1"># if function get implementation for different queue</span>
     <span class="c1"># then this behavior can be disabled with setting &quot;copy_when_nondefault_queue&quot;</span>
-    <span class="n">arr_obj</span> <span class="o">=</span> <span class="n">unwrap_array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
-    <span class="n">queue</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">arr_obj</span><span class="p">,</span> <span class="s2">&quot;sycl_queue&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="s2">&quot;sycl_queue&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">queue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">copy_when_nondefault_queue</span><span class="p">:</span>
         <span class="n">default_queue</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">()</span>
         <span class="n">queue_is_default</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">([</span><span class="n">queue</span><span class="p">,</span> <span class="n">default_queue</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">queue_is_default</span><span class="p">:</span>
-            <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">arr_obj</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">default_queue</span><span class="p">)</span>
+            <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">default_queue</span><span class="p">)</span>
 
     <span class="n">dpnp_desc</span> <span class="o">=</span> <span class="n">dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp_desc</span><span class="o">.</span><span class="n">is_valid</span><span class="p">:</span>
