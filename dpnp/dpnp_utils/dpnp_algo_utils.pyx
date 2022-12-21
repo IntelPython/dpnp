@@ -72,6 +72,7 @@ __all__ = [
     "get_axis_offsets",
     "get_common_allocation_queue",
     "_get_linear_index",
+    "map_dtype_to_device",
     "normalize_axis",
     "_object_to_tuple",
     "unwrap_array",
@@ -181,11 +182,12 @@ def call_origin(function, *args, **kwargs):
                     arg[i] = val
 
     elif isinstance(result, numpy.ndarray):
-        if (kwargs_out is None):
-            result_dtype = result_origin.dtype
-            kwargs_dtype = kwargs.get("dtype", None)
-            if (kwargs_dtype is not None):
-                result_dtype = kwargs_dtype
+        if kwargs_out is None:
+            # use dtype from input arguments if present or from the result otherwise
+            result_dtype = kwargs.get("dtype", None) or result_origin.dtype
+
+            if exec_q is not None:
+                result_dtype = map_dtype_to_device(result_origin.dtype, exec_q.sycl_device)
 
             result = dpnp_container.empty(result_origin.shape, dtype=result_dtype, sycl_queue=exec_q)
         else:
@@ -240,6 +242,50 @@ def get_common_allocation_queue(objects):
     if common_queue is None:
         raise ValueError("Input arrays must be allocated on the same SYCL queue")
     return common_queue
+
+
+def map_dtype_to_device(dtype, device):
+    """
+    Map an input ``dtype`` with type ``device`` may use
+    """
+
+    dtype = numpy.dtype(dtype)
+    if not hasattr(dtype, 'char'):
+        raise TypeError(f"Invalid type of input dtype={dtype}")
+    elif not isinstance(device, dpctl.SyclDevice):
+        raise TypeError(f"Invalid type of input device={device}")
+
+    dtc = dtype.char
+    if dtc == "?" or numpy.issubdtype(dtype, numpy.integer):
+        # bool or integer type
+        return dtype
+
+    if numpy.issubdtype(dtype, numpy.floating):
+        if dtc == "f":
+            # float32 type
+            return dtype
+        elif dtc == "d":
+            # float64 type
+            if device.has_aspect_fp64:
+                return dtype
+        elif dtc == "e":
+            # float16 type
+            if device.has_aspect_fp16:
+                return dtype
+        # float32 is default floating type
+        return dpnp.dtype("f4")
+
+    if numpy.issubdtype(dtype, numpy.complexfloating):
+        if dtc == "F":
+            # complex64 type
+            return dtype
+        elif dtc == "D":
+            # complex128 type
+            if device.has_aspect_fp64:
+                return dtype
+        # complex64 is default complex type
+        return dpnp.dtype("c8")
+    raise RuntimeError(f"Unrecognized type of input dtype={dtype}")
 
 
 cpdef checker_throw_axis_error(function_name, param_name, param, expected):

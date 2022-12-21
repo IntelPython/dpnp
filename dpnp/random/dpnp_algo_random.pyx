@@ -353,9 +353,9 @@ cdef class MT19937:
 
     cdef bint is_integer(self, value):
         if isinstance(value, numbers.Number):
-            return isinstance(value, int) or isinstance(value, (numpy.int32, numpy.uint32))
+            return isinstance(value, int) or isinstance(value, numpy.integer)
         # cover an element of dpnp array:
-        return numpy.ndim(value) == 0 and hasattr(value, "dtype") and numpy.issubdtype(value, (numpy.int32, numpy.uint32))
+        return numpy.ndim(value) == 0 and hasattr(value, "dtype") and numpy.issubdtype(value, numpy.integer)
 
 
     cdef bint is_uint_range(self, value):
