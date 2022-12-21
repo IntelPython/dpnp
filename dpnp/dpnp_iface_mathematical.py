@@ -1091,12 +1091,13 @@ def multiply(x1,
 
     Returns
     -------
-    y : dpnp.ndarray
+    y : {dpnp.ndarray, scalar}
         The product of `x1` and `x2`, element-wise.
+        The result is a scalar if both x1 and x2 are scalars.
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :class:`dpnp.ndarray` or scalar.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar.
     Parameters ``out``, ``where``, ``dtype`` and ``subok`` are supported with their default values.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the functions will be executed sequentially on CPU.
@@ -1120,6 +1121,9 @@ def multiply(x1,
         pass
     elif subok is not True:
         pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # keep the result in host memory, if both inputs are scalars
+        return x1 * x2
     else:
         # get a common queue to copy data from the host into a device if any input is scalar
         queue = get_common_allocation_queue([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else None
