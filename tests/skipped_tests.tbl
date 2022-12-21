@@ -287,7 +287,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_int
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_contiguity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_scalar
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_scalar
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape_contiguity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_reshape

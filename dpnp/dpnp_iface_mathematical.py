@@ -1098,7 +1098,7 @@ def multiply(x1,
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar.
-    Parameters ``out``, ``where``, ``dtype`` and ``subok`` are supported with their default values.
+    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the functions will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
