@@ -111,6 +111,21 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.random.</span></span><span class="sig-name descname"><span class="pre">RandomState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_random_state.html#RandomState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.RandomState" title="Permalink to this definition"></a></dt>
 <dd><p>A container for the Mersenne Twister pseudo-random number generator.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – An array API concept of device where the output array is created.
+<cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), a oneAPI filter selector string,
+an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> corresponding to a non-partitioned SYCL device,
+an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code>, or a <cite>Device</cite> object returned by
+<a class="reference internal" href="dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.device" title="dpnp.dpnp_array.dpnp_array.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dpnp_array.dpnp_array.device</span></code></a> property.</p></li>
+<li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – The SYCL queue to use for output array allocation and copying.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Limitations</p>
+<p>Parameter <cite>seed</cite> is supported as either a integer scalar or array_like
+of maximumum three integer scalars.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.random.RandomState.get_state">
@@ -130,7 +145,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.random.RandomState.get_sycl_device">
 <span class="sig-name descname"><span class="pre">get_sycl_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_random_state.html#RandomState.get_sycl_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.RandomState.get_sycl_device" title="Permalink to this definition"></a></dt>
-<dd><p>Return an instance of of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> used within the generator to allocate data on.</p>
+<dd><p>Return an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> used within the generator to allocate data on.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>device</strong> – A SYCL device used to allocate data on.</p>
@@ -144,7 +159,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.random.RandomState.get_sycl_queue">
 <span class="sig-name descname"><span class="pre">get_sycl_queue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_random_state.html#RandomState.get_sycl_queue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.RandomState.get_sycl_queue" title="Permalink to this definition"></a></dt>
-<dd><p>Return an instance of of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code> used within the generator for data allocation.</p>
+<dd><p>Return an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code> used within the generator for data allocation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>queue</strong> – A SYCL queue used for data allocation.</p>
@@ -162,29 +177,28 @@
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.normal.html#numpy.random.RandomState.normal" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.normal</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>usm_type</strong> (<em>(</em><em>&quot;device&quot;</em><em> | </em><em>&quot;shared&quot;</em><em> | </em><em>&quot;host&quot;</em><em>)</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
+<dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized normal distribution.
-Output array data type is the same as input <code class="docutils literal notranslate"><span class="pre">dtype</span></code>. If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is None (default),
-<code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> type will be used if device supports it or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code> otherwise.</p>
+Output array data type is the same as input <cite>dtype</cite>. If <cite>dtype</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default),
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> type will be used if device supports it, or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code> otherwise.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
-<p>Parameters <code class="docutils literal notranslate"><span class="pre">loc</span></code> and <code class="docutils literal notranslate"><span class="pre">scale</span></code> are supported as scalar. Otherwise,
+<p>Parameters <cite>loc</cite> and <cite>scale</cite> are supported as scalar. Otherwise,
 <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.normal(loc,</span> <span class="pre">scale,</span> <span class="pre">size)</span></code> samples are drawn.
-Parameter <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is supported only for <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> or <cite>None</cite>.</p>
+Parameter <cite>dtype</cite> is supported only as <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <p class="rubric">Examples</p>
-<p>Draw samples from the distribution:
-&gt;&gt;&gt; s = dpnp.random.RandomState().normal(loc=3.7, scale=2.5, size=(2, 4))
-&gt;&gt;&gt; print(s)
-[[ 1.58997253 -0.84288406  2.33836967  4.16394577]</p>
-<blockquote>
-<div><p>[ 4.40882036  5.39295758  6.48927254  6.74921661]]</p>
-</div></blockquote>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">()</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">3.7</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="go">[[ 1.58997253 -0.84288406  2.33836967  4.16394577]</span>
+<span class="go"> [ 4.40882036  5.39295758  6.48927254  6.74921661]]</span>
+</pre></div>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#dpnp.random.RandomState.randn" title="dpnp.random.RandomState.randn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.RandomState.randn</span></code></a>, <a class="reference internal" href="#dpnp.random.RandomState.standard_normal" title="dpnp.random.RandomState.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.RandomState.standard_normal</span></code></a></p>
@@ -200,11 +214,11 @@ from a uniform distribution over [0, 1).</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.rand.html#numpy.random.RandomState.rand" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.rand</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>usm_type</strong> (<em>(</em><em>&quot;device&quot;</em><em> | </em><em>&quot;shared&quot;</em><em> | </em><em>&quot;host&quot;</em><em>)</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
+<dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>out</strong> – Random values in a given shape.
-Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> if device supports it or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code> otherwise.</p>
+Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> if device supports it, or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code> otherwise.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
@@ -235,21 +249,21 @@ in the “half-open” interval [low, high).</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.randint.html#numpy.random.RandomState.randint" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.randint</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>usm_type</strong> (<em>(</em><em>&quot;device&quot;</em><em> | </em><em>&quot;shared&quot;</em><em> | </em><em>&quot;host&quot;</em><em>)</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
+<dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>out</strong> – <cite>size</cite>-shaped array of random integers from the appropriate distribution,
-or a single such random int if <cite>size</cite> not provided.
-Output array data type is the same as input <code class="docutils literal notranslate"><span class="pre">dtype</span></code>.</p>
+or a single such random int if <cite>size</cite> is not provided.
+Output array data type is the same as input <cite>dtype</cite>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
-<p>Parameters <code class="docutils literal notranslate"><span class="pre">low</span></code> and <code class="docutils literal notranslate"><span class="pre">high</span></code> are supported only as scalar.
-Parameter <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is supported only as <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int32</span></code> or <cite>int</cite>,
-but <cite>int</cite> value is considered to be exactly equivalent to <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int32</span></code>.
+<p>Parameters <cite>low</cite> and <cite>high</cite> are supported only as a scalar.
+Parameter <cite>dtype</cite> is supported only as <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int32</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>,
+but <code class="docutils literal notranslate"><span class="pre">int</span></code> value is considered to be exactly equivalent to <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int32</span></code>.
 Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.randint(low,</span> <span class="pre">high,</span> <span class="pre">size,</span> <span class="pre">dtype)</span></code> samples are drawn.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">()</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
@@ -273,13 +287,13 @@ Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.randn.html#numpy.random.RandomState.randn" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.randn</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>usm_type</strong> (<em>(</em><em>&quot;device&quot;</em><em> | </em><em>&quot;shared&quot;</em><em> | </em><em>&quot;host&quot;</em><em>)</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
+<dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>Z</strong> – A <code class="docutils literal notranslate"><span class="pre">(d0,</span> <span class="pre">d1,</span> <span class="pre">...,</span> <span class="pre">dn)</span></code>-shaped array of floating-point samples from
+<dd class="field-even"><p><strong>out</strong> – A <code class="docutils literal notranslate"><span class="pre">(d0,</span> <span class="pre">d1,</span> <span class="pre">...,</span> <span class="pre">dn)</span></code>-shaped array of floating-point samples from
 the standard normal distribution, or a single such float if
 no parameters were supplied.
-Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> if device supports it
+Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> if device supports it,
 or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code> otherwise.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
@@ -314,12 +328,12 @@ mean 3 and standard deviation 2.5:</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.random_sample.html#numpy.random.RandomState.random_sample" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.random_sample</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>usm_type</strong> (<em>(</em><em>&quot;device&quot;</em><em> | </em><em>&quot;shared&quot;</em><em> | </em><em>&quot;host&quot;</em><em>)</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
+<dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>out</strong> – Array of random floats of shape <cite>size</cite> (if <code class="docutils literal notranslate"><span class="pre">size=None</span></code>,
 zero dimension array with a single float is returned).
-Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> if device supports it
+Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> if device supports it,
 or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code> otherwise.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
@@ -345,12 +359,12 @@ or <code class="xref py py-obj docutils literal notranslate"><span class="pre">d
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.standard_normal.html#numpy.random.RandomState.standard_normal" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.standard_normal</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>usm_type</strong> (<em>(</em><em>&quot;device&quot;</em><em> | </em><em>&quot;shared&quot;</em><em> | </em><em>&quot;host&quot;</em><em>)</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
+<dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – A floating-point array of shape <code class="docutils literal notranslate"><span class="pre">size</span></code> of drawn samples, or a
-single sample if <code class="docutils literal notranslate"><span class="pre">size</span></code> was not specified.
-Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> if device supports it
+<dd class="field-even"><p><strong>out</strong> – A floating-point array of shape <cite>size</cite> of drawn samples, or a
+single sample if <cite>size</cite> was not specified.
+Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> if device supports it,
 or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code> otherwise.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
@@ -358,14 +372,13 @@ or <code class="xref py py-obj docutils literal notranslate"><span class="pre">d
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>Draw samples from the distribution:
-&gt;&gt;&gt; s = dpnp.random.RandomState().standard_normal(size=(3, 5))
-&gt;&gt;&gt; print(s)
-[[-0.84401099 -1.81715362 -0.54465213  0.18557831  0.28352814]</p>
-<blockquote>
-<div><p>[ 0.67718303  1.11570901  1.21968665 -1.18236388  0.08156915]
-[ 0.21941987 -1.24544512  0.63522211 -0.673174    0.        ]]</p>
-</div></blockquote>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">()</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="go">[[-0.84401099 -1.81715362 -0.54465213  0.18557831  0.28352814]</span>
+<span class="go"> [ 0.67718303  1.11570901  1.21968665 -1.18236388  0.08156915]</span>
+<span class="go"> [ 0.21941987 -1.24544512  0.63522211 -0.673174    0.        ]]</span>
+</pre></div>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#dpnp.random.RandomState.normal" title="dpnp.random.RandomState.normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.RandomState.normal</span></code></a>, <a class="reference internal" href="#dpnp.random.RandomState.randn" title="dpnp.random.RandomState.randn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.RandomState.randn</span></code></a></p>
@@ -381,27 +394,28 @@ In other words, any value within the given interval is equally likely to be draw
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.uniform.html#numpy.random.RandomState.uniform" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.uniform</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>usm_type</strong> (<em>(</em><em>&quot;device&quot;</em><em> | </em><em>&quot;shared&quot;</em><em> | </em><em>&quot;host&quot;</em><em>)</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
+<dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized uniform distribution.
-Output array data type is the same as input <code class="docutils literal notranslate"><span class="pre">dtype</span></code>. If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is None (default),
-<code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> type will be used if device supports it or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code> otherwise.</p>
+Output array data type is the same as input <cite>dtype</cite>. If <cite>dtype</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default),
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> type will be used if device supports it, or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code> otherwise.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
-<p>Parameters <code class="docutils literal notranslate"><span class="pre">low</span></code> and <code class="docutils literal notranslate"><span class="pre">high</span></code> are supported as scalar. Otherwise,
+<p>Parameters <cite>low</cite> and <cite>high</cite> are supported as scalar. Otherwise,
 <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.uniform(low,</span> <span class="pre">high,</span> <span class="pre">size)</span></code> samples are drawn.
-Parameter <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is supported only for <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int32</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> or <cite>None</cite>.</p>
+Parameter <cite>dtype</cite> is supported only as <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int32</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <p class="rubric">Examples</p>
-<p>Draw samples from the distribution:
-&gt;&gt;&gt; low, high = 1.23, 10.54    # low and high
-&gt;&gt;&gt; s = dpnp.random.RandomState().uniform(low, high, 5)
-&gt;&gt;&gt; print(s)
-[2.48093112 6.52928804 9.1196081  8.6990877  8.34074171]</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="mf">1.23</span><span class="p">,</span> <span class="mf">10.54</span>    <span class="c1"># low and high</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">()</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="go">[2.48093112 6.52928804 9.1196081  8.6990877  8.34074171]</span>
+</pre></div>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
