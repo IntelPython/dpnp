@@ -578,7 +578,14 @@ class dpnp_array:
         for i in range(self.size):
             self.flat[i] = value
 
- # 'flags',
+    @property
+    def flags(self):
+        """
+        Return information about the memory layout of the array.
+
+        """
+
+        return self._array_obj.flags
 
     @property
     def flat(self):

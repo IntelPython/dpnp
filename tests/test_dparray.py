@@ -1,6 +1,7 @@
 import dpnp
 import numpy
 import pytest
+import dpctl.tensor as dpt
 
 
 @pytest.mark.parametrize("res_dtype",
@@ -32,3 +33,15 @@ def test_flatten(arr, arr_dtype):
     expected = numpy_array.flatten()
     result = dpnp_array.flatten()
     numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("shape",
+                         [(), 0, (0,), (2), (5, 2), (5, 0, 2), (5, 3, 2)],
+                         ids=['()', '0', '(0,)', '(2)', '(5, 2)', '(5, 0, 2)', '(5, 3, 2)'])
+@pytest.mark.parametrize("order",
+                         ["C", "F"],
+                         ids=['C', 'F'])
+def test_flags(shape, order):
+    expected = dpt.usm_ndarray(shape, order=order)
+    result = dpnp.ndarray(shape, order=order)
+    assert expected.flags == result.flags
