@@ -31,12 +31,22 @@ This module contains differnt helpers and utilities
 
 """
 
-import dpctl
 import numpy
+
+import dpctl
+import dpctl.tensor as dpt
+
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
 import dpnp
-from dpnp.dpnp_algo.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
+
+from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_algo.dpnp_algo cimport (
+    dpnp_DPNPFuncType_to_dtype,
+    dpnp_dtype_to_DPNPFuncType,
+    get_dpnp_function_ptr
+)
+
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
@@ -60,6 +70,7 @@ __all__ = [
     "dpnp_descriptor",
     "get_axis_indeces",
     "get_axis_offsets",
+    "get_common_allocation_queue",
     "_get_linear_index",
     "map_dtype_to_device",
     "normalize_axis",
@@ -200,11 +211,37 @@ def call_origin(function, *args, **kwargs):
 
 
 def unwrap_array(x1):
-    """Get array from input object."""
-    if isinstance(x1, dpnp.dpnp_array.dpnp_array):
+    """
+    Get array from input object.
+    """
+    if isinstance(x1, dpnp_array):
         return x1.get_array()
 
     return x1
+
+
+def get_common_allocation_queue(objects):
+    """
+    Given a list of objects returns the queue which can be used for a memory allocation
+    to follow compute follows data paradigm, or returns `None` if the default queue can be used.
+    An exception will be raised, if the paradigm is broked for the given list of objects.
+    """
+    if not isinstance(objects, (list, tuple)):
+        raise TypeError("Expected a list or a tuple, got {}".format(type(objects)))
+    
+    if len(objects) == 0:
+        return None
+
+    queues_in_use = [obj.sycl_queue for obj in objects if hasattr(obj, "sycl_queue")]
+    if len(queues_in_use) == 0:
+        return None
+    elif len(queues_in_use) == 1:
+        return queues_in_use[0]
+
+    common_queue = dpt.get_execution_queue(queues_in_use)
+    if common_queue is None:
+        raise ValueError("Input arrays must be allocated on the same SYCL queue")
+    return common_queue
 
 
 def map_dtype_to_device(dtype, device):
@@ -676,6 +713,12 @@ cdef class dpnp_descriptor:
         return None
 
     @property
+    def offset(self):
+        if self.is_valid:
+            return self.descriptor.get('offset', 0)
+        return 0
+
+    @property
     def is_scalar(self):
         return self.dpnp_descriptor_is_scalar
 
@@ -716,7 +759,7 @@ cdef class dpnp_descriptor:
     def get_array(self):
         if isinstance(self.origin_pyobj, dpctl.tensor.usm_ndarray):
             return self.origin_pyobj
-        if isinstance(self.origin_pyobj, dpnp.dpnp_array.dpnp_array):
+        if isinstance(self.origin_pyobj, dpnp_array):
             return self.origin_pyobj.get_array()
 
         raise TypeError(
@@ -724,7 +767,17 @@ cdef class dpnp_descriptor:
             "".format(type(self.origin_pyobj)))
 
     cdef void * get_data(self):
+        cdef Py_ssize_t item_size = 0
+        cdef Py_ssize_t elem_offset = 0
+        cdef char *data_ptr = NULL
         cdef size_t val = self.data
+
+        if self.offset > 0:
+            item_size = self.origin_pyobj.itemsize
+            elem_offset = self.offset
+            data_ptr = <char *>(val) + item_size * elem_offset
+            return < void * > data_ptr
+
         return < void * > val
 
     def __bool__(self):

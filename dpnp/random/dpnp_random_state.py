@@ -60,19 +60,19 @@ class RandomState:
 
     Parameters
     ----------
+    seed : {None, int, array_like}, optional
+        A random seed to initialize the pseudo-random number generator.
+        The `seed` can be ``None`` (the default), an integer scalar, or
+        an array_like of maximumum three integer scalars.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
-        `device` can be ``None`` (the default), a oneAPI filter selector string,
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     sycl_queue : {None, SyclQueue}, optional
-        The SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying.
 
-    Limitations
-    -----------
-    Parameter `seed` is supported as either a integer scalar or array_like
-    of maximumum three integer scalars.
     """
 
     def __init__(self, seed=None, device=None, sycl_queue=None):
@@ -197,7 +197,7 @@ class RandomState:
 
         Limitations
         -----------
-        Parameters `loc` and `scale` are supported as scalar. Otherwise,
+        Parameters `loc` and `scale` are supported as a scalar. Otherwise,
         :obj:`numpy.random.RandomState.normal(loc, scale, size)` samples are drawn.
         Parameter `dtype` is supported only as :obj:`dpnp.float32`, :obj:`dpnp.float64` or ``None``.
 
@@ -314,7 +314,7 @@ class RandomState:
         Parameters `low` and `high` are supported only as a scalar.
         Parameter `dtype` is supported only as :obj:`dpnp.int32` or ``int``,
         but ``int`` value is considered to be exactly equivalent to :obj:`dpnp.int32`.
-        Otherwise, :obj:`numpy.random.randint(low, high, size, dtype)` samples are drawn.
+        Otherwise, :obj:`numpy.random.RandomState.randint(low, high, size, dtype)` samples are drawn.
 
         Examples
         --------
@@ -518,8 +518,8 @@ class RandomState:
 
         Limitations
         -----------
-        Parameters `low` and `high` are supported as scalar. Otherwise,
-        :obj:`numpy.random.uniform(low, high, size)` samples are drawn.
+        Parameters `low` and `high` are supported as a scalar. Otherwise,
+        :obj:`numpy.random.RandomState.uniform(low, high, size)` samples are drawn.
         Parameter `dtype` is supported only as :obj:`dpnp.int32`, :obj:`dpnp.float32`, :obj:`dpnp.float64` or ``None``.
 
         Examples
