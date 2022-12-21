@@ -31,6 +31,9 @@
    .. automethod:: get_state
 
 
+   .. automethod:: get_sycl_device
+
+
    .. automethod:: get_sycl_queue
 
 

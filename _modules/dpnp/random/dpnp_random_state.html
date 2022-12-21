@@ -114,6 +114,7 @@
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils.dpnp_algo_utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">call_origin</span><span class="p">,</span>
+    <span class="n">map_dtype_to_device</span><span class="p">,</span>
     <span class="n">use_origin_backend</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">dpnp.random.dpnp_algo_random</span> <span class="kn">import</span> <span class="n">MT19937</span>
@@ -134,27 +135,32 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">seed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_def_float_type</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="o">.</span><span class="n">get_sycl_device</span><span class="p">()</span><span class="o">.</span><span class="n">has_aspect_fp64</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_def_float_type</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span>
+        <span class="c1"># &#39;float32&#39; is default floating data type if device doesn&#39;t support &#39;float64&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_def_float_type</span> <span class="o">=</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">MT19937</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_random_state</span> <span class="o">=</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">allow_fallback</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39; at 0x</span><span class="si">{:X}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">_str</span> <span class="o">+=</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+        <span class="k">return</span> <span class="n">_str</span>
+
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+
+
     <span class="k">def</span> <span class="nf">_is_finite_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test a scalar for finiteness (not infinity and not Not a Number).</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        -----------</span>
-<span class="sd">            x : input value for test, must be a scalar.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">            True where ``x`` is not positive infinity, negative infinity, or NaN;</span>
-<span class="sd">            false otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># TODO: replace with dpnp.isfinite() once function is available in DPNP,</span>
@@ -165,15 +171,6 @@
     <span class="k">def</span> <span class="nf">_is_signbit_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test a scalar if sign bit is set for it (less than zero).</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        -----------</span>
-<span class="sd">            x : input value for test, must be a scalar.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">            True where sign bit is set for ``x`` (that is ``x`` is less than zero);</span>
-<span class="sd">            false otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># TODO: replace with dpnp.signbit() once function is available in DPNP,</span>
@@ -181,20 +178,60 @@
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">signbit</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 
+    <span class="k">def</span> <span class="nf">_validate_float_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test an input floating type if it is listed in ``supported_types`` and</span>
+<span class="sd">        if it is supported by the used SYCL device.</span>
+<span class="sd">        If ``dtype`` is None, default floating type will be validating.</span>
+<span class="sd">        Return the examined floating type if it follows all validation checks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_def_float_type</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dtype=</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is unsupported.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dtype=</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is not supported by SYCL device &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dtype</span>
+
+
 <div class="viewcode-block" id="RandomState.get_state"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an internal state of the generator.</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.get_state`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : object</span>
+<span class="sd">            An object representing the internal state of the generator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span></div>
 
 
 <div class="viewcode-block" id="RandomState.get_sycl_queue"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_sycl_queue">[docs]</a>    <span class="k">def</span> <span class="nf">get_sycl_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a sycl queue used from the container.</span>
+<span class="sd">        Return an instance of of :class:`dpctl.SyclQueue` used within the generator for data allocation.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        queue : dpctl.SyclQueue</span>
+<span class="sd">            A SYCL queue used for data allocation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span></div>
+
+
+<div class="viewcode-block" id="RandomState.get_sycl_device"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_sycl_device">[docs]</a>    <span class="k">def</span> <span class="nf">get_sycl_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an instance of of :class:`dpctl.SyclDevice` used within the generator to allocate data on.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        device : dpctl.SyclDevice</span>
+<span class="sd">            A SYCL device used to allocate data on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span></div>
 
 
 <div class="viewcode-block" id="RandomState.normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.normal">[docs]</a>    <span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
@@ -203,15 +240,23 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.normal`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        usm_type : (&quot;device&quot; | &quot;shared&quot; | &quot;host&quot;), optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            Drawn samples from the parameterized normal distribution.</span>
+<span class="sd">            Output array data type is the same as input ``dtype``. If ``dtype`` is None (default),</span>
+<span class="sd">            :obj:`dpnp.float64` type will be used if device supports it or :obj:`dpnp.float32` otherwise.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
-<span class="sd">        Parameters ``loc`` and ``scale`` are supported as scalar.</span>
-<span class="sd">        Otherwise, :obj:`numpy.random.RandomState.normal(loc, scale, size)` samples are drawn.</span>
-
+<span class="sd">        Parameters ``loc`` and ``scale`` are supported as scalar. Otherwise,</span>
+<span class="sd">        :obj:`numpy.random.RandomState.normal(loc, scale, size)` samples are drawn.</span>
 <span class="sd">        Parameter ``dtype`` is supported only for :obj:`dpnp.float32`, :obj:`dpnp.float64` or `None`.</span>
-<span class="sd">        If ``dtype`` is None (default), :obj:`dpnp.float64` type will be used if device supports it</span>
-<span class="sd">        or :obj:`dpnp.float32` otherwise.</span>
-<span class="sd">        Output array data type is the same as ``dtype``.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -234,22 +279,18 @@
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">min_double</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">min</span>
-                <span class="n">max_double</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_float_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+                <span class="n">min_floating</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">min</span>
+                <span class="n">max_floating</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
 
-                <span class="k">if</span> <span class="p">(</span><span class="n">loc</span> <span class="o">&gt;=</span> <span class="n">max_double</span> <span class="ow">or</span> <span class="n">loc</span> <span class="o">&lt;=</span> <span class="n">min_double</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">loc</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">loc</span> <span class="o">&gt;=</span> <span class="n">max_floating</span> <span class="ow">or</span> <span class="n">loc</span> <span class="o">&lt;=</span> <span class="n">min_floating</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">loc</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Range of loc=</span><span class="si">{</span><span class="n">loc</span><span class="si">}</span><span class="s2"> exceeds valid bounds&quot;</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="p">(</span><span class="n">scale</span> <span class="o">&gt;=</span> <span class="n">max_double</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">scale</span> <span class="o">&gt;=</span> <span class="n">max_floating</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Range of scale=</span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s2"> exceeds valid bounds&quot;</span><span class="p">)</span>
                 <span class="c1"># scale = -0.0 is cosidered as negative</span>
                 <span class="k">elif</span> <span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">scale</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_signbit_scalar</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scale=</span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s2">, but must be non-negative.&quot;</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_def_float_type</span>
-                <span class="k">elif</span> <span class="ow">not</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dtype=</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is unsupported.&quot;</span><span class="p">)</span>
 
                 <span class="n">dpu</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span>
@@ -271,9 +312,16 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.rand`.</span>
 
-<span class="sd">        Limitations</span>
-<span class="sd">        -----------</span>
-<span class="sd">        Output array data type is :obj:`dpnp.float64`.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        usm_type : (&quot;device&quot; | &quot;shared&quot; | &quot;host&quot;), optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            Random values in a given shape.</span>
+<span class="sd">            Output array data type is :obj:`dpnp.float64` if device supports it or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -306,6 +354,18 @@
 <span class="sd">        in the “half-open” interval [low, high).</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.randint`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        usm_type : (&quot;device&quot; | &quot;shared&quot; | &quot;host&quot;), optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            `size`-shaped array of random integers from the appropriate distribution,</span>
+<span class="sd">            or a single such random int if `size` not provided.</span>
+<span class="sd">            Output array data type is the same as input ``dtype``.</span>
 
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
@@ -370,10 +430,19 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.randn`.</span>
 
-<span class="sd">        Limitations</span>
-<span class="sd">        -----------</span>
-<span class="sd">        Output array data type is :obj:`dpnp.float64` if device supports it</span>
-<span class="sd">        or :obj:`dpnp.float32` otherwise.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        usm_type : (&quot;device&quot; | &quot;shared&quot; | &quot;host&quot;), optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Z : dpnp.ndarray</span>
+<span class="sd">            A ``(d0, d1, ..., dn)``-shaped array of floating-point samples from</span>
+<span class="sd">            the standard normal distribution, or a single such float if</span>
+<span class="sd">            no parameters were supplied.</span>
+<span class="sd">            Output array data type is :obj:`dpnp.float64` if device supports it</span>
+<span class="sd">            or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -410,10 +479,18 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.random_sample`.</span>
 
-<span class="sd">        Limitations</span>
-<span class="sd">        -----------</span>
-<span class="sd">        Output array data type is :obj:`dpnp.float64` if device supports it</span>
-<span class="sd">        or :obj:`dpnp.float32` otherwise.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        usm_type : (&quot;device&quot; | &quot;shared&quot; | &quot;host&quot;), optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            Array of random floats of shape `size` (if ``size=None``,</span>
+<span class="sd">            zero dimension array with a single float is returned).</span>
+<span class="sd">            Output array data type is :obj:`dpnp.float64` if device supports it</span>
+<span class="sd">            or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -441,10 +518,18 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.standard_normal`.</span>
 
-<span class="sd">        Limitations</span>
-<span class="sd">        -----------</span>
-<span class="sd">        Output array data type is :obj:`dpnp.float64` if device supports it</span>
-<span class="sd">        or :obj:`dpnp.float32` otherwise.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        usm_type : (&quot;device&quot; | &quot;shared&quot; | &quot;host&quot;), optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            A floating-point array of shape ``size`` of drawn samples, or a</span>
+<span class="sd">            single sample if ``size`` was not specified.</span>
+<span class="sd">            Output array data type is :obj:`dpnp.float64` if device supports it</span>
+<span class="sd">            or :obj:`dpnp.float32` otherwise.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -478,14 +563,23 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.uniform`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        usm_type : (&quot;device&quot; | &quot;shared&quot; | &quot;host&quot;), optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            Drawn samples from the parameterized uniform distribution.</span>
+<span class="sd">            Output array data type is the same as input ``dtype``. If ``dtype`` is None (default),</span>
+<span class="sd">            :obj:`dpnp.float64` type will be used if device supports it or :obj:`dpnp.float32` otherwise.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
-<span class="sd">        Parameters ``low`` and ``high`` are supported as scalar.</span>
-<span class="sd">        Otherwise, :obj:`numpy.random.uniform(low, high, size)` samples are drawn.</span>
+<span class="sd">        Parameters ``low`` and ``high`` are supported as scalar. Otherwise,</span>
+<span class="sd">        :obj:`numpy.random.uniform(low, high, size)` samples are drawn.</span>
 <span class="sd">        Parameter ``dtype`` is supported only for :obj:`dpnp.int32`, :obj:`dpnp.float32`, :obj:`dpnp.float64` or `None`.</span>
-<span class="sd">        If ``dtype`` is None (default), :obj:`dpnp.float64` type will be used if device supports it</span>
-<span class="sd">        or :obj:`dpnp.float32` otherwise.</span>
-<span class="sd">        Output array data type is the same as ``dtype``.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -523,12 +617,9 @@
                 <span class="k">if</span> <span class="n">low</span> <span class="o">&gt;</span> <span class="n">high</span><span class="p">:</span>
                     <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">high</span><span class="p">,</span> <span class="n">low</span>
 
-                <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_def_float_type</span>
-                <span class="k">elif</span> <span class="ow">not</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dtype=</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is unsupported.&quot;</span><span class="p">)</span>
-
+                <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_float_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
                 <span class="n">dpu</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span>
                                                   <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span>
                                                   <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
