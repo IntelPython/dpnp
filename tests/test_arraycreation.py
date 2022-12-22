@@ -592,10 +592,13 @@ def test_zeros_like(array, dtype, order):
                          [None, "C", "F"],
                          ids=['None', 'C', 'F'])
 def test_ones(shape, dtype, order):
-    expected = numpy.ones(shape, dtype=dtype, order=order)
-    result = dpnp.ones(shape, dtype=dtype, order=order)
+    func = lambda xp: xp.ones(shape, dtype=dtype, order=order)
 
-    assert_array_equal(expected, result)
+    if shape != 0 and not 0 in shape and not is_dtype_supported(dtype, no_complex_check=True):
+        assert_raises(RuntimeError, func, dpnp)
+        return
+
+    assert_array_equal(func(numpy), func(dpnp))
 
 
 @pytest.mark.parametrize("array",
@@ -612,8 +615,10 @@ def test_ones(shape, dtype, order):
 def test_ones_like(array, dtype, order):
     a = numpy.array(array)
     ia = dpnp.array(array)
+    func = lambda xp, x: xp.ones_like(x, dtype=dtype, order=order)
 
-    expected = numpy.ones_like(a, dtype=dtype, order=order)
-    result = dpnp.ones_like(ia, dtype=dtype, order=order)
+    if ia.size and not is_dtype_supported(dtype, no_complex_check=True):
+        assert_raises(RuntimeError, func, dpnp, ia)
+        return
 
-    assert_array_equal(expected, result)
+    assert_array_equal(func(numpy, a), func(dpnp, ia))
