@@ -1,4 +1,5 @@
-[![Build Status](https://dev.azure.com/IntelPython/dpnp/_apis/build/status/IntelPython.dpnp?branchName=master)](https://dev.azure.com/IntelPython/dpnp/_build/latest?definitionId=6&branchName=master)
+[![Pre-commit](https://github.com/IntelPython/dpnp/actions/workflows/pre-commit.yml/badge.svg?branch=master&event=push)](https://github.com/IntelPython/dpnp/actions/workflows/pre-commit.yml)
+[![Conda package](https://github.com/IntelPython/dpnp/actions/workflows/conda-package.yml/badge.svg?branch=master&event=push)](https://github.com/IntelPython/dpnp/actions/workflows/conda-package.yml)
 [![codecov](https://codecov.io/gh/IntelPython/dpnp/branch/master/graph/badge.svg)](https://codecov.io/gh/IntelPython/dpnp)
 [![Build Sphinx](https://github.com/IntelPython/dpnp/workflows/Build%20Sphinx/badge.svg)](https://intelpython.github.io/dpnp)
 
@@ -14,30 +15,11 @@ Ensure you have the following prerequisite packages installed:
 
 - `mkl-devel-dpcpp`
 - `dpcpp_linux-64` or `dpcpp_win-64` (depending on your OS)
+- `onedpl-devel`
 - `tbb-devel`
 - `dpctl`
 
-In addition, you need oneDPL installed on your system. There are two ways to do
-so:
-
-1. Install oneAPI and run the oneDPL activation script. E.g., on linux:
-
-   ```bash
-   source /opt/intel/oneapi/dpl/latest/env/vars.sh
-   ```
-
-2. Clone dpl from https://github.com/oneapi-src/oneDPL and set the `DPL_ROOT`
-   environment variable to point to the `include` directory in the repository.
-
-   E.g., on linux
-
-   ```bash
-   git clone https://github.com/oneapi-src/oneDPL
-   export DPL_ROOT=$(pwd)/oneDPL/include
-   ```
-
 After these steps, `dpnp` can be built in debug mode as follows:
-
 
 ```bash
 git clone https://github.com/IntelPython/dpnp

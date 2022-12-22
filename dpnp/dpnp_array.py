@@ -437,6 +437,7 @@ class dpnp_array:
 
         Returns
         -------
+        numpy.ndarray
             An instance of :class:`numpy.ndarray` populated with the array content.
 
         """

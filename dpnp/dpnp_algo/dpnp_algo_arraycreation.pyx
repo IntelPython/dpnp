@@ -63,7 +63,7 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_1in_1out_func_ptr_t)(c_dpctl.DPCTLSyc
                                                                 const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*ftpr_custom_vander_1in_1out_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                    void * , void * , size_t, size_t, int,
-                                                                   const c_dpctl.DPCTLEventVectorRef)
+                                                                   const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_arraycreation_1in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                               void *,
                                                                               const size_t,
@@ -83,7 +83,7 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_1out_func_ptr_t)(c_dpctl.DPC
                                                                      const size_t ,
                                                                      const size_t ,
                                                                      const int,
-                                                                     const c_dpctl.DPCTLEventVectorRef)
+                                                                     const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_eye_t)(c_dpctl.DPCTLSyclQueueRef,
                                                      void *, int , const shape_elem_type * ,
                                                      const c_dpctl.DPCTLEventVectorRef)
@@ -92,7 +92,7 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_trace_t)(c_dpctl.DPCTLSyclQueueRef
                                                        void * ,
                                                        const shape_elem_type * ,
                                                        const size_t,
-                                                       const c_dpctl.DPCTLEventVectorRef)
+                                                       const c_dpctl.DPCTLEventVectorRef) except +
 
 
 cpdef utils.dpnp_descriptor dpnp_copy(utils.dpnp_descriptor x1):
@@ -437,9 +437,6 @@ cpdef utils.dpnp_descriptor dpnp_trace(utils.dpnp_descriptor arr, offset=0, axis
 cpdef utils.dpnp_descriptor dpnp_tri(N, M=None, k=0, dtype=numpy.float):
     if M is None:
         M = N
-
-    if dtype == numpy.float:
-        dtype = numpy.float64
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 

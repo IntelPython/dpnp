@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -183,6 +183,7 @@
                                                                                   where,                               \
                                                                                   dep_event_vec_ref);                  \
         DPCTLEvent_WaitAndThrow(event_ref);                                                                            \
+        DPCTLEvent_Delete(event_ref);                                                                                  \
     }                                                                                                                  \
                                                                                                                        \
     template <typename _DataType_input, typename _DataType_output>                                                     \
@@ -690,6 +691,7 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
                                                           where,                                                       \
                                                           dep_event_vec_ref);                                          \
         DPCTLEvent_WaitAndThrow(event_ref);                                                                            \
+        DPCTLEvent_Delete(event_ref);                                                                                  \
     }                                                                                                                  \
                                                                                                                        \
     template <typename _DataType>                                                                                      \
@@ -1067,6 +1069,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
             dep_event_vec_ref                                                                                          \
         );                                                                                                             \
         DPCTLEvent_WaitAndThrow(event_ref);                                                                            \
+        DPCTLEvent_Delete(event_ref);                                                                                  \
     }                                                                                                                  \
                                                                                                                        \
     template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>                         \
@@ -1732,6 +1735,11 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
         eft_FLT, (void*)dpnp_multiply_c_ext<float, bool, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_BLN][eft_DBL] = {
         eft_DBL,  (void*)dpnp_multiply_c_ext<double, bool, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_BLN][eft_C64] = {
+        eft_C64, (void*)dpnp_multiply_c_ext<std::complex<float>, bool, std::complex<float>>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_BLN][eft_C128] = {
+        eft_C128,  (void*)dpnp_multiply_c_ext<std::complex<double>, bool, std::complex<double>>};
+
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_INT][eft_BLN] = {
         eft_INT, (void*)dpnp_multiply_c_ext<int32_t, int32_t, bool>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_INT][eft_INT] = {
@@ -1739,9 +1747,14 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_INT][eft_LNG] = {
         eft_LNG, (void*)dpnp_multiply_c_ext<int64_t, int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_INT][eft_FLT] = {
-        eft_DBL, (void*)dpnp_multiply_c_ext<double, int32_t, float>};
+        eft_FLT, (void*)dpnp_multiply_c_ext<float, int32_t, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_INT][eft_DBL] = {
         eft_DBL, (void*)dpnp_multiply_c_ext<double, int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_INT][eft_C64] = {
+        eft_C64, (void*)dpnp_multiply_c_ext<std::complex<float>, int32_t, std::complex<float>>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_INT][eft_C128] = {
+        eft_C128,  (void*)dpnp_multiply_c_ext<std::complex<double>, int32_t, std::complex<double>>};
+
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_LNG][eft_BLN] = {
         eft_LNG, (void*)dpnp_multiply_c_ext<int64_t, int64_t, bool>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_LNG][eft_INT] = {
@@ -1749,19 +1762,29 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_LNG][eft_LNG] = {
         eft_LNG, (void*)dpnp_multiply_c_ext<int64_t, int64_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_LNG][eft_FLT] = {
-        eft_DBL, (void*)dpnp_multiply_c_ext<double, int64_t, float>};
+        eft_FLT, (void*)dpnp_multiply_c_ext<float, int64_t, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_LNG][eft_DBL] = {
         eft_DBL, (void*)dpnp_multiply_c_ext<double, int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_LNG][eft_C64] = {
+        eft_C64, (void*)dpnp_multiply_c_ext<std::complex<float>, int64_t, std::complex<float>>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_LNG][eft_C128] = {
+        eft_C128,  (void*)dpnp_multiply_c_ext<std::complex<double>, int64_t, std::complex<double>>};
+
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_FLT][eft_BLN] = {
         eft_FLT, (void*)dpnp_multiply_c_ext<float, float, bool>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_FLT][eft_INT] = {
-        eft_DBL, (void*)dpnp_multiply_c_ext<double, float, int32_t>};
+        eft_FLT, (void*)dpnp_multiply_c_ext<float, float, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_FLT][eft_LNG] = {
-        eft_DBL, (void*)dpnp_multiply_c_ext<double, float, int64_t>};
+        eft_FLT, (void*)dpnp_multiply_c_ext<float, float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_FLT][eft_FLT] = {
         eft_FLT, (void*)dpnp_multiply_c_ext<float, float, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_FLT][eft_DBL] = {
         eft_DBL, (void*)dpnp_multiply_c_ext<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_FLT][eft_C64] = {
+        eft_C64, (void*)dpnp_multiply_c_ext<std::complex<float>, float, std::complex<float>>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_FLT][eft_C128] = {
+        eft_C128,  (void*)dpnp_multiply_c_ext<std::complex<double>, float, std::complex<double>>};
+
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_DBL][eft_BLN] = {
         eft_DBL, (void*)dpnp_multiply_c_ext<double, double, bool>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_DBL][eft_INT] = {
@@ -1772,6 +1795,10 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
         eft_DBL, (void*)dpnp_multiply_c_ext<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_multiply_c_ext<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_DBL][eft_C64] = {
+        eft_C64, (void*)dpnp_multiply_c_ext<std::complex<float>, double, std::complex<float>>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_DBL][eft_C128] = {
+        eft_C128,  (void*)dpnp_multiply_c_ext<std::complex<double>, double, std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_C64][eft_BLN] = {
         eft_C64, (void*)dpnp_multiply_c_ext<std::complex<float>, std::complex<float>, bool>};
@@ -1782,7 +1809,7 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_C64][eft_FLT] = {
         eft_C64, (void*)dpnp_multiply_c_ext<std::complex<float>, std::complex<float>, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_C64][eft_DBL] = {
-        eft_C128, (void*)dpnp_multiply_c_ext<std::complex<double>, std::complex<float>, double>};
+        eft_C64, (void*)dpnp_multiply_c_ext<std::complex<float>, std::complex<float>, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_C64][eft_C64] = {
         eft_C64, (void*)dpnp_multiply_c_ext<std::complex<float>, std::complex<float>, std::complex<float>>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][eft_C64][eft_C128] = {

@@ -390,7 +390,7 @@ cdef extern from "dpnp_iface.hpp":
 # C function pointer to the C library template functions
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1out_t)(c_dpctl.DPCTLSyclQueueRef,
                                                  void * , size_t,
-                                                 const c_dpctl.DPCTLEventVectorRef)
+                                                 const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_1out_t)(c_dpctl.DPCTLSyclQueueRef,
                                                      void *, void * , size_t,
                                                      const c_dpctl.DPCTLEventVectorRef)
