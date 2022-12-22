@@ -178,9 +178,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FMOD,                         /**< Used in numpy.fmod() impl  */
     DPNP_FN_FMOD_EXT,                     /**< Used in numpy.fmod() impl, requires extra parameters  */
     DPNP_FN_FULL,                         /**< Used in numpy.full() impl  */
-    DPNP_FN_FULL_EXT,                     /**< Used in numpy.full() impl, requires extra parameters  */
     DPNP_FN_FULL_LIKE,                    /**< Used in numpy.full_like() impl  */
-    DPNP_FN_FULL_LIKE_EXT,                /**< Used in numpy.full_like() impl, requires extra parameters  */
     DPNP_FN_HYPOT,                        /**< Used in numpy.hypot() impl  */
     DPNP_FN_HYPOT_EXT,                    /**< Used in numpy.hypot() impl, requires extra parameters  */
     DPNP_FN_IDENTITY,                     /**< Used in numpy.identity() impl  */
@@ -375,9 +373,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_VAR,                          /**< Used in numpy.var() impl  */
     DPNP_FN_VAR_EXT,                      /**< Used in numpy.var() impl, requires extra parameters */
     DPNP_FN_ZEROS,                        /**< Used in numpy.zeros() impl */
-    DPNP_FN_ZEROS_EXT,                    /**< Used in numpy.zeros() impl, requires extra parameters */
     DPNP_FN_ZEROS_LIKE,                   /**< Used in numpy.zeros_like() impl */
-    DPNP_FN_ZEROS_LIKE_EXT,               /**< Used in numpy.zeros_like() impl, requires extra parameters */
     DPNP_FN_LAST,                         /**< The latest element of the enumeration */
 };
 

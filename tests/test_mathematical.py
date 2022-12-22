@@ -56,7 +56,6 @@ def test_diff(array):
     numpy.testing.assert_allclose(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype1",
                          [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.complex64, numpy.complex128],
                          ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32', 'numpy.complex64', 'numpy.complex128'])
@@ -73,7 +72,7 @@ def test_multiply_dtype(dtype1, dtype2, data):
     np_b = numpy.array(data, dtype=dtype2)
     dpnp_b = dpnp.array(data, dtype=dtype2)
 
-    result = numpy.multiply(dpnp_a, dpnp_b)
+    result = dpnp.multiply(dpnp_a, dpnp_b)
     expected = numpy.multiply(np_a, np_b)
     numpy.testing.assert_array_equal(result, expected)
 
@@ -137,7 +136,6 @@ class TestMathematical:
     def test_minimum(self, dtype, lhs, rhs):
         self._test_mathematical('minimum', dtype, lhs, rhs)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_multiply(self, dtype, lhs, rhs):
         self._test_mathematical('multiply', dtype, lhs, rhs)
 
@@ -154,7 +152,6 @@ class TestMathematical:
         self._test_mathematical('subtract', dtype, lhs, rhs)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("val_type",
                          [bool, int, float],
                          ids=['bool', 'int', 'float'])
@@ -180,16 +177,15 @@ def test_multiply_scalar(array, val, data_type, val_type):
     dpnp_a = dpnp.array(array, dtype=data_type)
     val_ = val_type(val)
 
-    result = dpnp.multiply(np_a, val_)
-    expected = numpy.multiply(dpnp_a, val_)
+    result = dpnp.multiply(dpnp_a, val_)
+    expected = numpy.multiply(np_a, val_)
     numpy.testing.assert_array_equal(result, expected)
 
-    result = dpnp.multiply(val_, np_a)
-    expected = numpy.multiply(val_, dpnp_a)
+    result = dpnp.multiply(val_, dpnp_a)
+    expected = numpy.multiply(val_, np_a)
     numpy.testing.assert_array_equal(result, expected)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("shape",
                          [(), (3, 2)],
                          ids=['()', '(3, 2)'])

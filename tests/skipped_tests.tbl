@@ -198,8 +198,6 @@ tests/test_linalg.py::test_svd[(3,4)-float64]
 tests/test_linalg.py::test_svd[(5,3)-float64]
 tests/test_linalg.py::test_svd[(16,16)-float64]
 
-tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array1]
-
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([[i, i] for i in x])]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: (dpnp.asarray([(i, i) for i in x], [("a", int), ("b", int)]).view(dpnp.recarray))]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
@@ -289,10 +287,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_int
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_contiguity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_scalar
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_default_dtype_cpu_input
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_like
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_scalar
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape_contiguity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_reshape
@@ -364,7 +358,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_zero_sized_array_strides
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_eye
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_default_dtype
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_like_subok
@@ -805,7 +798,6 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNu
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_11_{name='mod', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_1_{name='angle', nargs=1}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_2_{name='add', nargs=2}::test_raises_with_numpy_input
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_3_{name='multiply', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_4_{name='divide', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_5_{name='power', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_6_{name='subtract', nargs=2}::test_raises_with_numpy_input
