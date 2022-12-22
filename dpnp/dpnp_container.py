@@ -146,12 +146,12 @@ def full(shape,
 
 
 def ones(shape,
-          *,
-          dtype=None,
-          order="C",
-          device=None,
-          usm_type="device",
-          sycl_queue=None):
+         *,
+         dtype=None,
+         order="C",
+         device=None,
+         usm_type="device",
+         sycl_queue=None):
     """Validate input parameters before passing them into `dpctl.tensor` module"""
     dpu.validate_usm_type(usm_type, allow_none=False)
     sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)

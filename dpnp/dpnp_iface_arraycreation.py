@@ -1142,6 +1142,7 @@ def ones(shape,
 
 
 def ones_like(x1,
+              /,
               *,
               dtype=None,
               order="C",
@@ -1456,6 +1457,7 @@ def zeros(shape,
 
 
 def zeros_like(x1,
+               /,
                *,
                dtype=None,
                order="C",
