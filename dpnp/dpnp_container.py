@@ -46,6 +46,7 @@ __all__ = [
     "asarray",
     "empty",
     "full",
+    "ones"
     "zeros",
 ]
 
@@ -137,6 +138,28 @@ def full(shape,
     """Creates `dpnp_array` having a specified shape, filled with fill_value."""
     array_obj = dpt.full(shape,
                          fill_value,
+                         dtype=dtype,
+                         order=order,
+                         usm_type=usm_type,
+                         sycl_queue=sycl_queue_normalized)
+    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+
+
+def ones(shape,
+         *,
+         dtype=None,
+         order="C",
+         device=None,
+         usm_type="device",
+         sycl_queue=None):
+    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    dpu.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+    if order is None:
+        order = 'C'
+
+    """Creates `dpnp_array` of ones with the given shape, dtype, and order."""
+    array_obj = dpt.ones(shape,
                          dtype=dtype,
                          order=order,
                          usm_type=usm_type,
