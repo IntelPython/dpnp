@@ -617,3 +617,47 @@ def test_empty_like(array, dtype, order):
     result = dpnp.empty_like(ia, dtype=dtype, order=order)
 
     assert expected.shape == result.shape
+
+
+@pytest.mark.parametrize("shape",
+                         [(), 0, (0,), (2, 0, 3), (3, 2)],
+                         ids=['()', '0', '(0,)', '(2, 0, 3)', '(3, 2)'])
+@pytest.mark.parametrize("dtype",
+                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, 
+                          numpy.float16, numpy.int64, numpy.int32, numpy.bool],
+                         ids=['None', 'complex128', 'complex64', 'float64', 'float32',
+                         'float16', 'int64', 'int32', 'bool'])
+@pytest.mark.parametrize("order",
+                         [None, "C", "F"],
+                         ids=['None', 'C', 'F'])
+def test_ones(shape, dtype, order):
+    func = lambda xp: xp.ones(shape, dtype=dtype, order=order)
+
+    if shape != 0 and not 0 in shape and not is_dtype_supported(dtype, no_complex_check=True):
+        assert_raises(RuntimeError, func, dpnp)
+        return
+
+    assert_array_equal(func(numpy), func(dpnp))
+
+
+@pytest.mark.parametrize("array",
+                         [[], 0,  [1, 2, 3], [[1, 2], [3, 4]]],
+                         ids=['[]', '0',  '[1, 2, 3]', '[[1, 2], [3, 4]]'])
+@pytest.mark.parametrize("dtype",
+                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, 
+                          numpy.float16, numpy.int64, numpy.int32, numpy.bool],
+                         ids=['None', 'complex128', 'complex64', 'float64', 'float32',
+                         'float16', 'int64', 'int32', 'bool'])
+@pytest.mark.parametrize("order",
+                         [None, "C", "F"],
+                         ids=['None', 'C', 'F'])
+def test_ones_like(array, dtype, order):
+    a = numpy.array(array)
+    ia = dpnp.array(array)
+    func = lambda xp, x: xp.ones_like(x, dtype=dtype, order=order)
+
+    if ia.size and not is_dtype_supported(dtype, no_complex_check=True):
+        assert_raises(RuntimeError, func, dpnp, ia)
+        return
+
+    assert_array_equal(func(numpy, a), func(dpnp, ia))

@@ -43,8 +43,6 @@ __all__ += [
     "dpnp_linspace",
     "dpnp_logspace",
     "dpnp_meshgrid",
-    "dpnp_ones",
-    "dpnp_ones_like",
     "dpnp_ptp",
     "dpnp_trace",
     "dpnp_tri",
@@ -305,14 +303,6 @@ cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
         result.append(res_item.get_pyobj())
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_ones(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ONES_EXT, utils._object_to_tuple(result_shape), result_dtype)
-
-
-cpdef utils.dpnp_descriptor dpnp_ones_like(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ONES_LIKE_EXT, utils._object_to_tuple(result_shape), result_dtype)
 
 
 cpdef dpnp_ptp(utils.dpnp_descriptor arr, axis=None):

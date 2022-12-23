@@ -1108,7 +1108,14 @@ class OGridClass:
 ogrid = OGridClass()
 
 
-def ones(shape, dtype=None, order='C'):
+def ones(shape,
+         *,
+         dtype=None,
+         order="C",
+         like=None,
+         device=None,
+         usm_type="device",
+         sycl_queue=None):
     """
     Return a new array of given shape and type, filled with ones.
 
@@ -1116,7 +1123,9 @@ def ones(shape, dtype=None, order='C'):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
+    Parameter ``like`` is supported only with default value ``None``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -1138,19 +1147,31 @@ def ones(shape, dtype=None, order='C'):
 
     """
 
-    if (not use_origin_backend()):
-        if order not in ('C', 'c', None):
-            pass
-        else:
-            _dtype = dtype if dtype is not None else dpnp.float64
+    if like is not None:
+        pass
+    elif order not in ('C', 'c', 'F', 'f', None):
+        pass
+    else:
+        return dpnp_container.ones(shape,
+                                   dtype=dtype,
+                                   order=order,
+                                   device=device,
+                                   usm_type=usm_type,
+                                   sycl_queue=sycl_queue)
 
-            return dpnp_ones(shape, _dtype).get_pyobj()
-
-    return call_origin(numpy.ones, shape, dtype=dtype, order=order)
+    return call_origin(numpy.ones, shape, dtype=dtype, order=order, like=like)
 
 
-# numpy.ones_like(a, dtype=None, order='K', subok=True, shape=None)
-def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
+def ones_like(x1,
+              /,
+              *,
+              dtype=None,
+              order="C",
+              subok=False,
+              shape=None,
+              device=None,
+              usm_type=None,
+              sycl_queue=None):
     """
     Return an array of ones with the same shape and type as a given array.
 
@@ -1158,8 +1179,10 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -1178,18 +1201,22 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
     [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
     """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if order not in ('C', 'c', None):
-            pass
-        elif subok is not False:
-            pass
-        else:
-            _shape = shape if shape is not None else x1_desc.shape
-            _dtype = dtype if dtype is not None else x1_desc.dtype
-
-            return dpnp_ones_like(_shape, _dtype).get_pyobj()
+    if not isinstance(x1, dpnp.ndarray):
+        pass
+    elif order not in ('C', 'c', 'F', 'f', None):
+        pass
+    elif subok is not False:
+        pass
+    else:
+        _shape = x1.shape if shape is None else shape
+        _dtype = x1.dtype if dtype is None else dtype
+        _usm_type = x1.usm_type if usm_type is None else usm_type
+        _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
+        return dpnp_container.ones(_shape,
+                                   dtype=_dtype,
+                                   order=order,
+                                   usm_type=_usm_type,
+                                   sycl_queue=_sycl_queue)
 
     return call_origin(numpy.ones_like, x1, dtype, order, subok, shape)
 
@@ -1451,6 +1478,7 @@ def zeros(shape,
 
 
 def zeros_like(x1,
+               /,
                *,
                dtype=None,
                order="C",
