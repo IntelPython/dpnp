@@ -302,6 +302,7 @@ def get_normalized_queue_device(obj=None,
     """
     if device is None and sycl_queue is None and obj is not None and hasattr(obj, 'sycl_queue'):
         sycl_queue = obj.sycl_queue
+
     # TODO: remove check dpt._device has attribute 'normalize_queue_device'
     if hasattr(dpt._device, 'normalize_queue_device'):
         return dpt._device.normalize_queue_device(sycl_queue=sycl_queue, device=device)

@@ -514,6 +514,7 @@ def empty(shape,
 
 
 def empty_like(x1,
+               /,
                *,
                dtype=None,
                order="C",
