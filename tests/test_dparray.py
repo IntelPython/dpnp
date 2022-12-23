@@ -42,6 +42,27 @@ def test_flatten(arr, arr_dtype):
                          ["C", "F"],
                          ids=['C', 'F'])
 def test_flags(shape, order):
-    expected = dpt.usm_ndarray(shape, order=order)
-    result = dpnp.ndarray(shape, order=order)
-    assert expected.flags == result.flags
+    usm_array = dpt.usm_ndarray(shape, order=order)
+    numpy_array = numpy.ndarray(shape, order=order)
+    dpnp_array = dpnp.ndarray(shape, order=order)
+    assert usm_array.flags == dpnp_array.flags
+    assert numpy_array.flags.c_contiguous == dpnp_array.flags.c_contiguous
+    assert numpy_array.flags.f_contiguous == dpnp_array.flags.f_contiguous
+
+
+@pytest.mark.parametrize("strides",
+                         [(1, 4) , (4, 1)],
+                         ids=['(1, 4)', '(4, 1)'])
+@pytest.mark.parametrize("order",
+                         ["C", "F"],
+                         ids=['C', 'F'])
+def test_flags_strides(order, strides):
+    dtype = numpy.int64
+    itemsize = numpy.dtype(dtype).itemsize
+    numpy_strides = tuple([el * itemsize for el in strides])
+    usm_array = dpt.usm_ndarray((4, 4), order=order, strides=strides)
+    numpy_array = numpy.ndarray((4, 4), order=order, strides=numpy_strides)
+    dpnp_array = dpnp.ndarray((4, 4), order=order, strides=strides)
+    assert usm_array.flags == dpnp_array.flags
+    assert numpy_array.flags.c_contiguous == dpnp_array.flags.c_contiguous
+    assert numpy_array.flags.f_contiguous == dpnp_array.flags.f_contiguous
