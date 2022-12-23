@@ -50,19 +50,21 @@ def test_flags(shape, order):
     assert numpy_array.flags.f_contiguous == dpnp_array.flags.f_contiguous
 
 
+@pytest.mark.parametrize("dtype",
+                         [numpy.complex64, numpy.float32, numpy.int64, numpy.int32, numpy.bool],
+                         ids=['complex64', 'float32', 'int64', 'int32', 'bool'])
 @pytest.mark.parametrize("strides",
                          [(1, 4) , (4, 1)],
                          ids=['(1, 4)', '(4, 1)'])
 @pytest.mark.parametrize("order",
                          ["C", "F"],
                          ids=['C', 'F'])
-def test_flags_strides(order, strides):
-    dtype = numpy.int64
+def test_flags_strides(dtype, order, strides):
     itemsize = numpy.dtype(dtype).itemsize
     numpy_strides = tuple([el * itemsize for el in strides])
-    usm_array = dpt.usm_ndarray((4, 4), order=order, strides=strides)
-    numpy_array = numpy.ndarray((4, 4), order=order, strides=numpy_strides)
-    dpnp_array = dpnp.ndarray((4, 4), order=order, strides=strides)
+    usm_array = dpt.usm_ndarray((4, 4), dtype=dtype, order=order, strides=strides)
+    numpy_array = numpy.ndarray((4, 4), dtype=dtype, order=order, strides=numpy_strides)
+    dpnp_array = dpnp.ndarray((4, 4), dtype=dtype, order=order, strides=strides)
     assert usm_array.flags == dpnp_array.flags
     assert numpy_array.flags.c_contiguous == dpnp_array.flags.c_contiguous
     assert numpy_array.flags.f_contiguous == dpnp_array.flags.f_contiguous
