@@ -102,12 +102,17 @@ def asarray(x1,
 
 
 def empty(shape,
-          dtype="f4",
+          *,
+          dtype=None,
           order="C",
           device=None,
           usm_type="device",
           sycl_queue=None):
-    sycl_queue_normalized = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
+    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    dpu.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+    if order is None:
+        order = 'C'
 
     """Creates `dpnp_array` from uninitialized USM allocation."""
     array_obj = dpt.empty(shape,

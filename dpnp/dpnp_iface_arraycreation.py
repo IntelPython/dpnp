@@ -464,7 +464,8 @@ def diagflat(x1, k=0):
 
 
 def empty(shape,
-          dtype="f8",
+          *,
+          dtype=None,
           order="C",
           like=None,
           device=None,
@@ -477,7 +478,9 @@ def empty(shape,
 
     Limitations
     -----------
+    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
     Parameter ``like`` is supported only with default value ``None``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -497,6 +500,8 @@ def empty(shape,
 
     if like is not None:
         pass
+    elif order not in ('C', 'c', 'F', 'f', None):
+        pass
     else:
         return dpnp_container.empty(shape,
                                     dtype=dtype,
@@ -508,7 +513,16 @@ def empty(shape,
     return call_origin(numpy.empty, shape, dtype=dtype, order=order, like=like)
 
 
-def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
+def empty_like(x1,
+               /,
+               *,
+               dtype=None,
+               order="C",
+               subok=False,
+               shape=None,
+               device=None,
+               usm_type=None,
+               sycl_queue=None):
     """
     Return a new array with the same shape and type as a given array.
 
@@ -516,8 +530,10 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -529,26 +545,31 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
     Examples
     --------
     >>> import dpnp as np
-    >>> prototype = np.array([1, 2, 3])
-    >>> x = np.empty_like(prototype)
+    >>> a = np.array([1, 2, 3])
+    >>> x = np.empty_like(a)
     >>> [i for i in x]
     [0, 0, 0]
 
     """
 
-    if (not use_origin_backend()):
-        if order not in ('C', 'c', None):
-            pass
-        elif subok is not False:
-            pass
-        else:
-            _shape = shape if shape is not None else prototype.shape
-            _dtype = dtype if dtype is not None else prototype.dtype.type
+    if not isinstance(x1, dpnp.ndarray):
+        pass
+    elif order not in ('C', 'c', 'F', 'f', None):
+        pass
+    elif subok is not False:
+        pass
+    else:
+        _shape = x1.shape if shape is None else shape
+        _dtype = x1.dtype if dtype is None else dtype
+        _usm_type = x1.usm_type if usm_type is None else usm_type
+        _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
+        return dpnp_container.empty(_shape,
+                                    dtype=_dtype,
+                                    order=order,
+                                    usm_type=_usm_type,
+                                    sycl_queue=_sycl_queue)
 
-            result = create_output_descriptor_py(_object_to_tuple(_shape), _dtype, None).get_pyobj()
-            return result
-
-    return call_origin(numpy.empty_like, prototype, dtype, order, subok, shape)
+    return call_origin(numpy.empty_like, x1, dtype, order, subok, shape)
 
 
 def eye(N, M=None, k=0, dtype=None, order='C', **kwargs):

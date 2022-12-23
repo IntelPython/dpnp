@@ -47,6 +47,8 @@ def test_coerced_usm_types_mul(usm_type_x, usm_type_y):
                      ['x0']),
         pytest.param("ones_like",
                      ['x0']),
+        pytest.param("empty_like",
+                     ['x0']),
     ])
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
