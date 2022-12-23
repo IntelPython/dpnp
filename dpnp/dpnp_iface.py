@@ -68,6 +68,10 @@ __all__ = [
     "get_normalized_queue_device"
 ]
 
+from dpnp import (
+    isscalar
+)
+
 from dpnp.dpnp_iface_arraycreation import *
 from dpnp.dpnp_iface_bitwise import *
 from dpnp.dpnp_iface_counting import *
@@ -187,7 +191,10 @@ def convert_single_elem_array_to_scalar(obj, keepdims=False):
     return obj
 
 
-def get_dpnp_descriptor(ext_obj, copy_when_strides=True, copy_when_nondefault_queue=True):
+def get_dpnp_descriptor(ext_obj,
+                        copy_when_strides=True,
+                        copy_when_nondefault_queue=True,
+                        alloc_queue=None):
     """
     Return True:
       never
@@ -205,6 +212,11 @@ def get_dpnp_descriptor(ext_obj, copy_when_strides=True, copy_when_nondefault_qu
 
     if use_origin_backend():
         return False
+
+    # If input object is a scalar, it means it was allocated on host memory.
+    # We need to copy it to device memory according to compute follows data paradigm.
+    if isscalar(ext_obj):
+        ext_obj = array(ext_obj, sycl_queue=alloc_queue)
 
     # while dpnp functions have no implementation with strides support
     # we need to create a non-strided copy
@@ -226,13 +238,12 @@ def get_dpnp_descriptor(ext_obj, copy_when_strides=True, copy_when_nondefault_qu
     # we need to create a copy on device associated with DPNP_QUEUE
     # if function get implementation for different queue
     # then this behavior can be disabled with setting "copy_when_nondefault_queue"
-    arr_obj = unwrap_array(ext_obj)
-    queue = getattr(arr_obj, "sycl_queue", None)
+    queue = getattr(ext_obj, "sycl_queue", None)
     if queue is not None and copy_when_nondefault_queue:
         default_queue = dpctl.SyclQueue()
         queue_is_default = dpctl.utils.get_execution_queue([queue, default_queue]) is not None
         if not queue_is_default:
-            ext_obj = array(arr_obj, sycl_queue=default_queue)
+            ext_obj = array(ext_obj, sycl_queue=default_queue)
 
     dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:
