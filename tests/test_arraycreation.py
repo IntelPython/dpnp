@@ -506,7 +506,6 @@ def test_full_like(array, fill_value, dtype, order):
     assert_array_equal(func(numpy, a), func(dpnp, ia))
 
 
-@pytest.mark.skip(reason="dpnp.ndarray.flags are not implemented")
 @pytest.mark.parametrize("order1",
                          ["F", "C"],
                          ids=['F', 'C'])
