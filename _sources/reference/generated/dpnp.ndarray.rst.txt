@@ -156,6 +156,7 @@
    .. autoattribute:: T
    .. autoattribute:: device
    .. autoattribute:: dtype
+   .. autoattribute:: flags
    .. autoattribute:: flat
    .. autoattribute:: itemsize
    .. autoattribute:: ndim
