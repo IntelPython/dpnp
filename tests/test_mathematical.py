@@ -70,7 +70,7 @@ def test_multiply_dtype(dtype1, dtype2, data):
     np_b = numpy.array(data, dtype=dtype2)
     dpnp_b = dpnp.array(data, dtype=dtype2)
 
-    result = numpy.multiply(dpnp_a, dpnp_b)
+    result = dpnp.multiply(dpnp_a, dpnp_b)
     expected = numpy.multiply(np_a, np_b)
     numpy.testing.assert_array_equal(result, expected)
 
@@ -163,12 +163,12 @@ def test_multiply_scalar(array, val, data_type, val_type):
     dpnp_a = dpnp.array(array, dtype=data_type)
     val_ = val_type(val)
 
-    result = dpnp.multiply(np_a, val_)
-    expected = numpy.multiply(dpnp_a, val_)
+    result = dpnp.multiply(dpnp_a, val_)
+    expected = numpy.multiply(np_a, val_)
     numpy.testing.assert_array_equal(result, expected)
 
-    result = dpnp.multiply(val_, np_a)
-    expected = numpy.multiply(val_, dpnp_a)
+    result = dpnp.multiply(val_, dpnp_a)
+    expected = numpy.multiply(val_, np_a)
     numpy.testing.assert_array_equal(result, expected)
 
 

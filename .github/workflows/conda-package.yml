@@ -9,7 +9,7 @@ on:
 env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
-  CHANNELS: '-c dppy/label/dev -c intel -c defaults --override-channels'
+  CHANNELS: '-c dppy/label/dev -c intel -c main --override-channels'
   TEST_SCOPE: >-
       test_arraycreation.py
       test_dparray.py
@@ -24,19 +24,24 @@ env:
   VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
 
 jobs:
-  build_linux:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash -l {0}
+  build:
+    name: Build ['${{ matrix.os }}', python='${{ matrix.python }}']
 
     strategy:
       matrix:
         python: ['3.8', '3.9']
+        os: [ubuntu-20.04, windows-latest]
+        include:
+          - python: '3.10'
+            os: ubuntu-20.04
 
-    env:
-      conda-pkgs: '/home/runner/conda_pkgs_dir/'
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: ${{ matrix.os == 'windows-latest' && 'cmd /C CALL {0}' || 'bash -l {0}' }}
+
+    continue-on-error: false
 
     steps:
       - name: Cancel Previous Runs
@@ -58,86 +63,30 @@ jobs:
           activate-environment: 'build'
           use-only-tar-bz2: true
 
-      - name: Store conda paths as envs
+      - if: matrix.os == 'ubuntu-20.04'
+        name: Store conda paths as envs on Linux
         run: echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/linux-64/" >> $GITHUB_ENV
 
-      - name: Install conda-build
-        run: conda install conda-build
-
-      - name: Cache conda packages
-        uses: actions/cache@v3.0.11
-        env:
-          CACHE_NUMBER: 1  # Increase to reset cache
-        with:
-          path: ${{ env.conda-pkgs }}
-          key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
-
-      - name: Build conda package
-        run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3.1.1
-        with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
-
-  build_windows:
-    runs-on: windows-latest
-
-    defaults:
-      run:
-        shell: cmd /C CALL {0}
-
-    strategy:
-      matrix:
-        python: ['3.8', '3.9']
-
-    env:
-      conda-pkgs: 'C:\Users\runneradmin\conda_pkgs_dir\'
-
-    steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
-        with:
-          access_token: ${{ github.token }}
-
-      - name: Checkout DPNP repo
-        uses: actions/checkout@v3.1.0
-        with:
-          fetch-depth: 0
-
-      - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.2.0
-        with:
-          auto-update-conda: true
-          python-version: ${{ matrix.python }}
-          miniconda-version: 'latest'
-          activate-environment: 'build'
-          use-only-tar-bz2: true
-
-      - name: Store conda paths as envs
+      - if: matrix.os == 'windows-latest'
+        name: Store conda paths as envs on Win
         run: |
           @echo on
           (echo CONDA_BLD=%CONDA_PREFIX%\conda-bld\win-64\) >> %GITHUB_ENV%
 
+      - name: Install conda-build
+        run: conda install conda-build
+
       - name: Cache conda packages
         uses: actions/cache@v3.0.11
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
-          path: ${{ env.conda-pkgs }}
+          path: ${{ env.CONDA_PKGS_DIR }}
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
           restore-keys: |
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
-
-      - name: Install conda-build
-        run: conda install conda-build
 
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
@@ -149,9 +98,11 @@ jobs:
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   test_linux:
-    needs: build_linux
+    name: Test ['${{ matrix.os }}', python='${{ matrix.python }}']
 
-    runs-on: ubuntu-latest
+    needs: build
+
+    runs-on: ${{ matrix.os }}
 
     defaults:
       run:
@@ -160,6 +111,8 @@ jobs:
     strategy:
       matrix:
         python: ['3.8', '3.9']
+        os: [ubuntu-20.04, ubuntu-latest]
+
         experimental: [false]
 
     continue-on-error: ${{ matrix.experimental }}
@@ -250,7 +203,9 @@ jobs:
         working-directory: ${{ env.tests-path }}
 
   test_windows:
-    needs: build_windows
+    name: Test ['windows-latest', python='${{ matrix.python }}']
+
+    needs: build
 
     runs-on: windows-latest
 
@@ -422,61 +377,28 @@ jobs:
           python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
         working-directory: ${{ env.tests-path }}
 
-  upload_linux:
-    needs: test_linux
+  upload:
+    name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
+
+    needs: [test_linux, test_windows]
+
+    strategy:
+      matrix:
+        python: ['3.8', '3.9']
+        os: [ubuntu-20.04, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: ${{ matrix.os == 'windows-latest' && 'cmd /C CALL {0}' || 'bash -l {0}' }}
+
+    continue-on-error: false
 
     if: |
       (github.repository == 'IntelPython/dpnp') &&
       (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
 
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    strategy:
-      matrix:
-        python: ['3.8', '3.9']
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v3.0.1
-        with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-
-      - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.2.0
-        with:
-          auto-update-conda: true
-          python-version: ${{ matrix.python }}
-          miniconda-version: 'latest'
-          activate-environment: 'upload'
-
-      - name: Install anaconda-client
-        run: conda install anaconda-client
-
-      - name: Upload
-        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
-        env:
-          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-
-  upload_windows:
-    needs: test_windows
-
-    if: |
-      (github.repository == 'IntelPython/dpnp') &&
-      (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
-
-    runs-on: windows-latest
-
-    defaults:
-      run:
-        shell: cmd /C CALL {0}
-
-    strategy:
-      matrix:
-        python: ['3.8', '3.9']
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v3.0.1

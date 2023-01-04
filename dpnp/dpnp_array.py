@@ -278,17 +278,22 @@ class dpnp_array:
  # '__setstate__',
  # '__sizeof__',
 
-    def __str__(self):
-        """ Output values from the array to standard output
 
-        Example:
-          [[ 136.  136.  136.]
-           [ 272.  272.  272.]
-           [ 408.  408.  408.]]
+    def __str__(self):
+        """
+        Output values from the array to standard output.
+
+        Examples
+        --------
+        >>> print(a)
+        [[ 136.  136.  136.]
+         [ 272.  272.  272.]
+         [ 408.  408.  408.]]
 
         """
 
-        return str(dpnp.asnumpy(self._array_obj))
+        return str(self.asnumpy())
+
 
     def __sub__(self, other):
         return dpnp.subtract(self, other)
@@ -425,6 +430,21 @@ class dpnp_array:
         """
         return dpnp.argsort(self, axis, kind, order)
 
+
+    def asnumpy(self):
+        """
+        Copy content of the array into :class:`numpy.ndarray` instance of the same shape and data type.
+
+        Returns
+        -------
+        numpy.ndarray
+            An instance of :class:`numpy.ndarray` populated with the array content.
+
+        """
+
+        return dpt.asnumpy(self._array_obj)
+
+
     def astype(self, dtype, order='K', casting='unsafe', subok=True, copy=True):
         """Copy the array with data type casting.
 
@@ -558,7 +578,14 @@ class dpnp_array:
         for i in range(self.size):
             self.flat[i] = value
 
- # 'flags',
+    @property
+    def flags(self):
+        """
+        Return information about the memory layout of the array.
+
+        """
+
+        return self._array_obj.flags
 
     @property
     def flat(self):

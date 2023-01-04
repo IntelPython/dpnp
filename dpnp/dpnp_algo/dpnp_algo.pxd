@@ -154,9 +154,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FMOD
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
-        DPNP_FN_FULL_EXT
         DPNP_FN_FULL_LIKE
-        DPNP_FN_FULL_LIKE_EXT
         DPNP_FN_HYPOT
         DPNP_FN_HYPOT_EXT
         DPNP_FN_IDENTITY
@@ -206,9 +204,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_NONZERO
         DPNP_FN_NONZERO_EXT
         DPNP_FN_ONES
-        DPNP_FN_ONES_EXT
         DPNP_FN_ONES_LIKE
-        DPNP_FN_ONES_LIKE_EXT
         DPNP_FN_PARTITION
         DPNP_FN_PARTITION_EXT
         DPNP_FN_PLACE
@@ -351,9 +347,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_VAR
         DPNP_FN_VAR_EXT
         DPNP_FN_ZEROS
-        DPNP_FN_ZEROS_EXT
         DPNP_FN_ZEROS_LIKE
-        DPNP_FN_ZEROS_LIKE_EXT
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
@@ -396,7 +390,7 @@ cdef extern from "dpnp_iface.hpp":
 # C function pointer to the C library template functions
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1out_t)(c_dpctl.DPCTLSyclQueueRef,
                                                  void * , size_t,
-                                                 const c_dpctl.DPCTLEventVectorRef)
+                                                 const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_1out_t)(c_dpctl.DPCTLSyclQueueRef,
                                                      void *, void * , size_t,
                                                      const c_dpctl.DPCTLEventVectorRef)
@@ -518,7 +512,6 @@ cpdef dpnp_descriptor dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_
 Array creation routines
 """
 cpdef dpnp_descriptor dpnp_init_val(shape, dtype, value)
-cpdef dpnp_descriptor dpnp_full(result_shape, value_in, result_dtype)  # same as dpnp_init_val
 cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 
 """

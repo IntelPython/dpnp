@@ -40,6 +40,7 @@ it contains:
 """
 
 
+from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 import dpnp
@@ -312,10 +313,15 @@ def outer(x1, x2, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-    if x1_desc and x2_desc and not kwargs:
-        return dpnp_outer(x1_desc, x2_desc).get_pyobj()
+    if not kwargs:
+        if isinstance(x1, dpnp_array) and isinstance(x2, dpnp_array):
+            ravel = lambda x: x.flatten() if x.ndim > 1 else x
+            return ravel(x1)[:, None] * ravel(x2)[None, :]
+
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
+        if x1_desc and x2_desc:
+            return dpnp_outer(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.outer, x1, x2, **kwargs)
 

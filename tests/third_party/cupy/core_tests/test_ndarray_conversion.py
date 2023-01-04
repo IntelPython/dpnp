@@ -17,7 +17,7 @@ class TestNdarrayItem(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_item(self, xp, dtype):
-        a = xp.full(self.shape, 3, dtype)
+        a = xp.full(self.shape, 3, dtype=dtype)
         return a.item()
 
 

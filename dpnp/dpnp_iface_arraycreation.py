@@ -464,7 +464,8 @@ def diagflat(x1, k=0):
 
 
 def empty(shape,
-          dtype="f8",
+          *,
+          dtype=None,
           order="C",
           like=None,
           device=None,
@@ -477,7 +478,9 @@ def empty(shape,
 
     Limitations
     -----------
+    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
     Parameter ``like`` is supported only with default value ``None``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -497,6 +500,8 @@ def empty(shape,
 
     if like is not None:
         pass
+    elif order not in ('C', 'c', 'F', 'f', None):
+        pass
     else:
         return dpnp_container.empty(shape,
                                     dtype=dtype,
@@ -508,7 +513,16 @@ def empty(shape,
     return call_origin(numpy.empty, shape, dtype=dtype, order=order, like=like)
 
 
-def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
+def empty_like(x1,
+               /,
+               *,
+               dtype=None,
+               order="C",
+               subok=False,
+               shape=None,
+               device=None,
+               usm_type=None,
+               sycl_queue=None):
     """
     Return a new array with the same shape and type as a given array.
 
@@ -516,8 +530,10 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -529,26 +545,31 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
     Examples
     --------
     >>> import dpnp as np
-    >>> prototype = np.array([1, 2, 3])
-    >>> x = np.empty_like(prototype)
+    >>> a = np.array([1, 2, 3])
+    >>> x = np.empty_like(a)
     >>> [i for i in x]
     [0, 0, 0]
 
     """
 
-    if (not use_origin_backend()):
-        if order not in ('C', 'c', None):
-            pass
-        elif subok is not False:
-            pass
-        else:
-            _shape = shape if shape is not None else prototype.shape
-            _dtype = dtype if dtype is not None else prototype.dtype.type
+    if not isinstance(x1, dpnp.ndarray):
+        pass
+    elif order not in ('C', 'c', 'F', 'f', None):
+        pass
+    elif subok is not False:
+        pass
+    else:
+        _shape = x1.shape if shape is None else shape
+        _dtype = x1.dtype if dtype is None else dtype
+        _usm_type = x1.usm_type if usm_type is None else usm_type
+        _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
+        return dpnp_container.empty(_shape,
+                                    dtype=_dtype,
+                                    order=order,
+                                    usm_type=_usm_type,
+                                    sycl_queue=_sycl_queue)
 
-            result = create_output_descriptor_py(_object_to_tuple(_shape), _dtype, None).get_pyobj()
-            return result
-
-    return call_origin(numpy.empty_like, prototype, dtype, order, subok, shape)
+    return call_origin(numpy.empty_like, x1, dtype, order, subok, shape)
 
 
 def eye(N, M=None, k=0, dtype=None, order='C', **kwargs):
@@ -660,7 +681,15 @@ def fromstring(string, **kwargs):
     return call_origin(numpy.fromstring, string, **kwargs)
 
 
-def full(shape, fill_value, dtype=None, order='C'):
+def full(shape,
+         fill_value,
+         *,
+         dtype=None,
+         order="C",
+         like=None,
+         device=None,
+         usm_type=None,
+         sycl_queue=None):
     """
     Return a new array of given shape and type, filled with `fill_value`.
 
@@ -668,7 +697,9 @@ def full(shape, fill_value, dtype=None, order='C'):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
+    Parameter ``like`` is supported only with default value ``None``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -685,20 +716,33 @@ def full(shape, fill_value, dtype=None, order='C'):
     [10, 10, 10, 10]
 
     """
-    if not use_origin_backend():
-        if order not in ('C', 'c', None):
-            pass
-        else:
-            if dtype is None:
-                dtype = numpy.array(fill_value).dtype.type  # TODO simplify
+    if like is not None:
+        pass
+    elif order not in ('C', 'c', 'F', 'f', None):
+        pass
+    else:
+        return dpnp_container.full(shape,
+                                   fill_value,
+                                   dtype=dtype,
+                                   order=order,
+                                   device=device,
+                                   usm_type=usm_type,
+                                   sycl_queue=sycl_queue)
 
-            return dpnp_full(shape, fill_value, dtype).get_pyobj()
-
-    return call_origin(numpy.full, shape, fill_value, dtype, order)
+    return call_origin(numpy.full, shape, fill_value, dtype, order, like=like)
 
 
-# numpy.full_like(a, fill_value, dtype=None, order='K', subok=True, shape=None)
-def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
+def full_like(x1,
+              /,
+              fill_value,
+              *,
+              dtype=None,
+              order='C',
+              subok=False,
+              shape=None,
+              device=None,
+              usm_type=None,
+              sycl_queue=None):
     """
     Return a full array with the same shape and type as a given array.
 
@@ -706,8 +750,10 @@ def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -725,18 +771,24 @@ def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
     [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
     """
+    if not isinstance(x1, dpnp.ndarray):
+        pass
+    elif order not in ('C', 'c', 'F', 'f', None):
+        pass
+    elif subok is not False:
+        pass
+    else:
+        _shape = x1.shape if shape is None else shape
+        _dtype = x1.dtype if dtype is None else dtype
+        _usm_type = x1.usm_type if usm_type is None else usm_type
+        _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
 
-    if not use_origin_backend():
-        if order not in ('C', 'c', None):
-            pass
-        elif subok is not False:
-            pass
-        else:
-            _shape = shape if shape is not None else x1.shape
-            _dtype = dtype if dtype is not None else x1.dtype
-
-            return dpnp_full_like(_shape, fill_value, _dtype).get_pyobj()
-
+        return dpnp_container.full(_shape,
+                                   fill_value,
+                                   dtype=_dtype,
+                                   order=order,
+                                   usm_type=_usm_type,
+                                   sycl_queue=_sycl_queue)
     return numpy.full_like(x1, fill_value, dtype, order, subok, shape)
 
 
@@ -808,7 +860,8 @@ def identity(n, dtype=None, *, like=None):
             pass
         else:
             if dtype is None:
-                dtype = dpnp.float64
+                sycl_queue = dpnp.get_normalized_queue_device(sycl_queue=None, device=None)
+                dtype = map_dtype_to_device(dpnp.float64, sycl_queue.sycl_device)
             return dpnp_identity(n, dtype).get_pyobj()
 
     return call_origin(numpy.identity, n, dtype=dtype, like=like)
@@ -1055,7 +1108,14 @@ class OGridClass:
 ogrid = OGridClass()
 
 
-def ones(shape, dtype=None, order='C'):
+def ones(shape,
+         *,
+         dtype=None,
+         order="C",
+         like=None,
+         device=None,
+         usm_type="device",
+         sycl_queue=None):
     """
     Return a new array of given shape and type, filled with ones.
 
@@ -1063,7 +1123,9 @@ def ones(shape, dtype=None, order='C'):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
+    Parameter ``like`` is supported only with default value ``None``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -1085,19 +1147,31 @@ def ones(shape, dtype=None, order='C'):
 
     """
 
-    if (not use_origin_backend()):
-        if order not in ('C', 'c', None):
-            pass
-        else:
-            _dtype = dtype if dtype is not None else dpnp.float64
+    if like is not None:
+        pass
+    elif order not in ('C', 'c', 'F', 'f', None):
+        pass
+    else:
+        return dpnp_container.ones(shape,
+                                   dtype=dtype,
+                                   order=order,
+                                   device=device,
+                                   usm_type=usm_type,
+                                   sycl_queue=sycl_queue)
 
-            return dpnp_ones(shape, _dtype).get_pyobj()
-
-    return call_origin(numpy.ones, shape, dtype=dtype, order=order)
+    return call_origin(numpy.ones, shape, dtype=dtype, order=order, like=like)
 
 
-# numpy.ones_like(a, dtype=None, order='K', subok=True, shape=None)
-def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
+def ones_like(x1,
+              /,
+              *,
+              dtype=None,
+              order="C",
+              subok=False,
+              shape=None,
+              device=None,
+              usm_type=None,
+              sycl_queue=None):
     """
     Return an array of ones with the same shape and type as a given array.
 
@@ -1105,8 +1179,10 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -1125,18 +1201,22 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
     [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
     """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if order not in ('C', 'c', None):
-            pass
-        elif subok is not False:
-            pass
-        else:
-            _shape = shape if shape is not None else x1_desc.shape
-            _dtype = dtype if dtype is not None else x1_desc.dtype
-
-            return dpnp_ones_like(_shape, _dtype).get_pyobj()
+    if not isinstance(x1, dpnp.ndarray):
+        pass
+    elif order not in ('C', 'c', 'F', 'f', None):
+        pass
+    elif subok is not False:
+        pass
+    else:
+        _shape = x1.shape if shape is None else shape
+        _dtype = x1.dtype if dtype is None else dtype
+        _usm_type = x1.usm_type if usm_type is None else usm_type
+        _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
+        return dpnp_container.ones(_shape,
+                                   dtype=_dtype,
+                                   order=order,
+                                   usm_type=_usm_type,
+                                   sycl_queue=_sycl_queue)
 
     return call_origin(numpy.ones_like, x1, dtype, order, subok, shape)
 
@@ -1235,6 +1315,9 @@ def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
         elif not isinstance(k, int):
             pass
         else:
+            if dtype is numpy.float:
+                sycl_queue = dpnp.get_normalized_queue_device(sycl_queue=None, device=None)
+                dtype = map_dtype_to_device(dpnp.float64, sycl_queue.sycl_device)
             return dpnp_tri(N, M, k, dtype).get_pyobj()
 
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
@@ -1341,7 +1424,14 @@ def vander(x1, N=None, increasing=False):
     return call_origin(numpy.vander, x1, N=N, increasing=increasing)
 
 
-def zeros(shape, dtype=None, order='C'):
+def zeros(shape,
+          *,
+          dtype=None,
+          order="C",
+          like=None,
+          device=None,
+          usm_type="device",
+          sycl_queue=None):
     """
     Return a new array of given shape and type, filled with zeros.
 
@@ -1349,7 +1439,9 @@ def zeros(shape, dtype=None, order='C'):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
+    Parameter ``like`` is supported only with default value ``None``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -1370,21 +1462,31 @@ def zeros(shape, dtype=None, order='C'):
     [0.0, 0.0]
 
     """
+    if like is not None:
+        pass
+    elif order not in ('C', 'c', 'F', 'f', None):
+        pass
+    else:
+        return dpnp_container.zeros(shape,
+                                    dtype=dtype,
+                                    order=order,
+                                    device=device,
+                                    usm_type=usm_type,
+                                    sycl_queue=sycl_queue)
 
-    if (not use_origin_backend()):
-        if order not in ('C', 'c', None):
-            pass
-        else:
-            _dtype = dtype if dtype is not None else dpnp.float64
-            result = dpnp_zeros(shape, _dtype).get_pyobj()
-
-            return result
-
-    return call_origin(numpy.zeros, shape, dtype=dtype, order=order)
+    return call_origin(numpy.zeros, shape, dtype=dtype, order=order, like=like)
 
 
-# numpy.zeros_like(a, dtype=None, order='K', subok=True, shape=None)
-def zeros_like(x1, dtype=None, order='C', subok=False, shape=None):
+def zeros_like(x1,
+               /,
+               *,
+               dtype=None,
+               order="C",
+               subok=False,
+               shape=None,
+               device=None,
+               usm_type=None,
+               sycl_queue=None):
     """
     Return an array of zeros with the same shape and type as a given array.
 
@@ -1392,8 +1494,10 @@ def zeros_like(x1, dtype=None, order='C', subok=False, shape=None):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -1411,19 +1515,22 @@ def zeros_like(x1, dtype=None, order='C', subok=False, shape=None):
     >>> [i for i in np.zeros_like(x)]
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if order not in ('C', 'c', None):
-            pass
-        elif subok is not False:
-            pass
-        else:
-            _shape = shape if shape is not None else x1_desc.shape
-            _dtype = dtype if dtype is not None else x1_desc.dtype
-            result = dpnp_zeros_like(_shape, _dtype).get_pyobj()
-
-            return result
+"""
+    if not isinstance(x1, dpnp.ndarray):
+        pass
+    elif order not in ('C', 'c', 'F', 'f', None):
+        pass
+    elif subok is not False:
+        pass
+    else:
+        _shape = x1.shape if shape is None else shape
+        _dtype = x1.dtype if dtype is None else dtype
+        _usm_type = x1.usm_type if usm_type is None else usm_type
+        _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
+        return dpnp_container.zeros(_shape,
+                                    dtype=_dtype,
+                                    order=order,
+                                    usm_type=_usm_type,
+                                    sycl_queue=_sycl_queue)
 
     return call_origin(numpy.zeros_like, x1, dtype, order, subok, shape)

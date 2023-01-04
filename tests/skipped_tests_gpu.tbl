@@ -23,27 +23,6 @@ tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-ediff1d-data7]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-fabs-data8]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-floor-data9]
 
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-add-data10-data20]
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-copysign-data11-data21]
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-cross-data12-data22]
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-divide-data13-data23]
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-floor_divide-data14-data24]
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-fmod-data15-data25]
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-maximum-data16-data26]
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-minimum-data17-data27]
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-multiply-data18-data28]
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-power-data19-data29]
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-remainder-data110-data210]
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-subtract-data111-data211]
-tests/test_sycl_queue.py::test_2in_1out[opencl:gpu:0-matmul-data112-data212]
-tests/test_sycl_queue.py::test_broadcasting[opencl:gpu:0-add-data10-data20]
-tests/test_sycl_queue.py::test_broadcasting[opencl:gpu:0-divide-data11-data21]
-tests/test_sycl_queue.py::test_broadcasting[opencl:gpu:0-floor_divide-data12-data22]
-tests/test_sycl_queue.py::test_broadcasting[opencl:gpu:0-fmod-data13-data23]
-tests/test_sycl_queue.py::test_broadcasting[opencl:gpu:0-multiply-data14-data24]
-tests/test_sycl_queue.py::test_broadcasting[opencl:gpu:0-remainder-data15-data25]
-tests/test_sycl_queue.py::test_broadcasting[opencl:gpu:0-subtract-data16-data26]
-
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-abs-data0]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-ceil-data1]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-conjugate-data2]
@@ -65,45 +44,18 @@ tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-sign-data17]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-sum-data18]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-trapz-data19]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-trunc-data20]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-add-data10-data20]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-copysign-data11-data21]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-cross-data12-data22]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-divide-data13-data23]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-floor_divide-data14-data24]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-fmod-data15-data25]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-maximum-data16-data26]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-minimum-data17-data27]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-multiply-data18-data28]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-power-data19-data29]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-remainder-data110-data210]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-subtract-data111-data211]
-tests/test_sycl_queue.py::test_2in_1out[level_zero:gpu:0-matmul-data112-data212]
-tests/test_sycl_queue.py::test_broadcasting[level_zero:gpu:0-add-data10-data20]
-tests/test_sycl_queue.py::test_broadcasting[level_zero:gpu:0-divide-data11-data21]
-tests/test_sycl_queue.py::test_broadcasting[level_zero:gpu:0-floor_divide-data12-data22]
-tests/test_sycl_queue.py::test_broadcasting[level_zero:gpu:0-fmod-data13-data23]
-tests/test_sycl_queue.py::test_broadcasting[level_zero:gpu:0-multiply-data14-data24]
-tests/test_sycl_queue.py::test_broadcasting[level_zero:gpu:0-remainder-data15-data25]
-tests/test_sycl_queue.py::test_broadcasting[level_zero:gpu:0-subtract-data16-data26]
-tests/test_sycl_queue.py::test_out[level_zero:gpu:0-add-data10-data20]
-tests/test_sycl_queue.py::test_out[level_zero:gpu:0-copysign-data11-data21]
-tests/test_sycl_queue.py::test_out[level_zero:gpu:0-divide-data12-data22]
-tests/test_sycl_queue.py::test_out[level_zero:gpu:0-floor_divide-data13-data23]
-tests/test_sycl_queue.py::test_out[level_zero:gpu:0-fmod-data14-data24]
-tests/test_sycl_queue.py::test_out[level_zero:gpu:0-maximum-data15-data25]
-tests/test_sycl_queue.py::test_out[level_zero:gpu:0-minimum-data16-data26]
-tests/test_sycl_queue.py::test_out[level_zero:gpu:0-multiply-data17-data27]
-tests/test_sycl_queue.py::test_out[level_zero:gpu:0-power-data18-data28]
-tests/test_sycl_queue.py::test_out[level_zero:gpu:0-remainder-data19-data29]
-tests/test_sycl_queue.py::test_out[level_zero:gpu:0-subtract-data110-data210]
-tests/test_sycl_queue.py::test_modf[level_zero:gpu:0]
 
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-trapz-data19]
-tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-trapz-data19]
+tests/test_sycl_queue.py::test_broadcasting[level_zero:gpu:0-floor_divide-data12-data22]
+tests/test_sycl_queue.py::test_broadcasting[level_zero:gpu:0-remainder-data15-data25]
 tests/test_sycl_queue.py::test_broadcasting[opencl:gpu:0-floor_divide-data12-data22]
 tests/test_sycl_queue.py::test_broadcasting[opencl:gpu:0-remainder-data15-data25]
 tests/test_sycl_queue.py::test_broadcasting[opencl:cpu:0-floor_divide-data12-data22]
 tests/test_sycl_queue.py::test_broadcasting[opencl:cpu:0-remainder-data15-data25]
+
+tests/test_sycl_queue.py::test_modf[level_zero:gpu:0]
+
+tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-trapz-data19]
+tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-trapz-data19]
 
 tests/test_indexing.py::test_nonzero[[[1, 0], [1, 0]]]
 tests/test_indexing.py::test_nonzero[[[1, 2], [3, 4]]]
@@ -211,12 +163,6 @@ tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.
 
 tests/test_arraymanipulation.py::TestConcatenate::test_concatenate
 tests/test_histograms.py::TestHistogram::test_density
-tests/test_mathematical.py::TestGradient::test_gradient_y1[array0]
-tests/test_mathematical.py::TestGradient::test_gradient_y1[array1]
-tests/test_mathematical.py::TestGradient::test_gradient_y1[array2]
-tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array0]
-tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array1]
-tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array2]
 
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), object)]
@@ -286,7 +232,7 @@ tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumError::test_too_fe
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumError::test_too_many_dimension3
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_dim_mismatch3
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_too_many_dims3
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_outer
+
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_outer
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_vdot
 tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_7_{dst_shape=(0,), src=3.2}::test_copyto_where
@@ -346,8 +292,6 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{extern
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_axis
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov_empty
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_mean_axis
-
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_outer
 
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_negative_axis
@@ -514,25 +458,6 @@ tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_pa
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_6_{order='F', shape=(10, 20, 30)}::test_cub_min
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_max
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_min
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_int
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_contiguity
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_scalar
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_default_dtype_cpu_input
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_like
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_scalar
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape_contiguity
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_reshape
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_reshape_contiguity
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_reshape
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_reshape_contiguity
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_empty_like_reshape
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_empty_like_reshape_contiguity
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_empty_like_reshape
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_empty_like_reshape_contiguity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_K_strides_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape_contiguity2
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape_contiguity2_cupy_only
@@ -593,7 +518,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_K_strides
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_zero_sized_array_strides
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_default_dtype
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_like_subok
@@ -1079,7 +1003,6 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNu
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_11_{name='mod', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_1_{name='angle', nargs=1}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_2_{name='add', nargs=2}::test_raises_with_numpy_input
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_3_{name='multiply', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_4_{name='divide', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_5_{name='power', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_6_{name='subtract', nargs=2}::test_raises_with_numpy_input

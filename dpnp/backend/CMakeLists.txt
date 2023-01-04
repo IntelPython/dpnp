@@ -99,10 +99,10 @@ string(CONCAT COMMON_LINK_FLAGS
   "-fsycl-device-code-split=per_kernel "
 )
 if(UNIX)
-  set(CMAKE_CXX_COMPILER "dpcpp")
+  set(CMAKE_CXX_COMPILER "icpx")
   # add_compile_options(-fPIC)
 elseif(WIN32)
-  set(CMAKE_CXX_COMPILER "dpcpp")
+  set(CMAKE_CXX_COMPILER "icx")
   # set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld-link")
   # set(CMAKE_LINKER "lld-link")
   # include (Platform/Windows-Clang)
