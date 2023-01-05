@@ -20,6 +20,7 @@ def test_median(type, size):
     numpy.testing.assert_allclose(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("axis",
                          [0, 1, -1, 2, -2, (1, 2), (0, -2)])
 def test_max(axis):
@@ -32,6 +33,7 @@ def test_max(axis):
     numpy.testing.assert_allclose(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("array",
                          [[2, 0, 6, 2],
                           [2, 0, 6, 2, 5, 6, 7, 8],
@@ -74,6 +76,7 @@ def test_nanvar(array):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestBincount:
 
     @pytest.mark.parametrize("array",

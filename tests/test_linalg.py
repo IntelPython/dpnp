@@ -85,6 +85,7 @@ def test_det(array):
     numpy.testing.assert_allclose(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
@@ -179,6 +180,7 @@ def test_matrix_rank(type, tol, array):
     numpy.testing.assert_allclose(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("array",
                          [[7], [1, 2], [1, 0]],
                          ids=['[7]', '[1, 2]', '[1, 0]'])
@@ -196,6 +198,7 @@ def test_norm1(array, ord, axis):
     numpy.testing.assert_allclose(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("array",
                          [[[1, 0]], [[1, 2]], [[1, 0], [3, 0]], [[1, 2], [3, 4]]],
                          ids=['[[1, 0]]', '[[1, 2]]', '[[1, 0], [3, 0]]', '[[1, 2], [3, 4]]'])
@@ -213,6 +216,7 @@ def test_norm2(array, ord, axis):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("array",
                          [[[[1, 2], [3, 4]], [[5, 6], [7, 8]]], [[[1, 0], [3, 0]], [[5, 0], [7, 0]]]],
                          ids=['[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]', '[[[1, 0], [3, 0]], [[5, 0], [7, 0]]]'])
@@ -230,6 +234,7 @@ def test_norm3(array, ord, axis):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
@@ -273,6 +278,7 @@ def test_qr(type, shape, mode):
     numpy.testing.assert_allclose(dpnp_r, np_r, rtol=tol, atol=tol)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])

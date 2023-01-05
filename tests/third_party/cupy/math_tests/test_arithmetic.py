@@ -57,6 +57,7 @@ class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
         'name': ['reciprocal'],
     })
 ))
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestArithmeticUnary(unittest.TestCase):
 
     @testing.numpy_cupy_allclose(atol=1e-5)
@@ -204,6 +205,7 @@ class ArithmeticBinaryBase:
         'name': ['divide', 'true_divide', 'subtract'],
     })
 ))
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestArithmeticBinary(ArithmeticBinaryBase, unittest.TestCase):
 
     def test_binary(self):
@@ -253,6 +255,7 @@ class TestArithmeticBinary(ArithmeticBinaryBase, unittest.TestCase):
         'use_dtype': [True, False],
     })
 ))
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestArithmeticBinary2(ArithmeticBinaryBase, unittest.TestCase):
 
     def test_binary(self):
@@ -279,6 +282,7 @@ class TestArithmeticModf(unittest.TestCase):
     'xp': [numpy, cupy],
     'shape': [(3, 2), (), (3, 0, 2)]
 }))
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestBoolSubtract(unittest.TestCase):
 

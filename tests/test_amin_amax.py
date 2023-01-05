@@ -67,6 +67,7 @@ def _get_min_max_input(type, shape):
     return a.reshape(shape)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
@@ -87,6 +88,7 @@ def test_amax(type, shape):
     numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])

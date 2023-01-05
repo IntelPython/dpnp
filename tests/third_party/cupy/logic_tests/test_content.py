@@ -1,4 +1,5 @@
 import unittest
+import pytest
 
 import numpy
 
@@ -23,11 +24,14 @@ class TestContent(unittest.TestCase):
             dtype=dtype)
         return getattr(xp, name)(a)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_isfinite(self):
         self.check_unary_inf('isfinite')
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_isinf(self):
         self.check_unary_inf('isinf')
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_isnan(self):
         self.check_unary_nan('isnan')
