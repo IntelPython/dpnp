@@ -258,8 +258,6 @@ def test_identity(n, dtype):
 
     assert_array_equal(func(numpy), func(dpnp))
 
-    assert_array_equal(func(numpy), func(dpnp))
-
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype",

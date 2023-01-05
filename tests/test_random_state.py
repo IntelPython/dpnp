@@ -146,6 +146,7 @@ class TestNormal:
                                  "with the following message:\n\n%s" % str(e))
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("scale",
                              [dpnp.array([3]), numpy.array([3])],
                              ids=['dpnp.array([3])', 'numpy.array([3])'])
@@ -318,6 +319,7 @@ class TestRandInt:
         assert_array_equal(actual, desired)
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_negative_interval(self):
         rs = RandomState(3567)
 
@@ -384,6 +386,7 @@ class TestRandInt:
                                  "with the following message:\n\n%s" % str(e))
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_in_bounds_fuzz(self):
         for high in [4, 8, 16]:
             vals = RandomState().randint(2, high, size=2**16)
@@ -399,6 +402,7 @@ class TestRandInt:
         assert_equal(RandomState().randint(0, 10, size=zero_size).shape, exp_shape)
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("high",
                              [dpnp.array([3]), numpy.array([3])],
                              ids=['dpnp.array([3])', 'numpy.array([3])'])
@@ -415,6 +419,7 @@ class TestRandInt:
         assert_equal(actual, desired)
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("dtype",
                              [dpnp.int64, dpnp.integer, dpnp.bool, dpnp.bool_, bool],
                              ids=['dpnp.int64', 'dpnp.integer', 'dpnp.bool', 'dpnp.bool_', 'bool'])
@@ -526,6 +531,7 @@ class TestSeed:
         assert_array_almost_equal(a1, a2, decimal=precision)
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("seed",
                              [range(3),
                               numpy.arange(3, dtype=numpy.int32),
@@ -558,6 +564,7 @@ class TestSeed:
         assert_raises(TypeError, RandomState, seed)
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("seed",
                              [-1, [-3, 7], (17, 3, -5), [4, 3, 2, 1], (7, 6, 5, 1),
                               range(-1, -11, -1),
@@ -781,6 +788,7 @@ class TestUniform:
             assert_array_almost_equal(actual, desired, decimal=numpy.finfo(dtype=dtype).precision)
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_range_bounds(self):
         fmin = numpy.finfo('double').min
         fmax = numpy.finfo('double').max
@@ -796,6 +804,7 @@ class TestUniform:
         func(low=numpy.nextafter(fmin, 0), high=numpy.nextafter(fmax, 0))
 
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("high",
                              [dpnp.array([3]), numpy.array([3])],
                              ids=['dpnp.array([3])', 'numpy.array([3])'])

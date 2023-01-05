@@ -414,6 +414,7 @@ class TestFromData(unittest.TestCase):
         return xp.ascontiguousarray(a, dtype=numpy.int64)
 
     # @testing.for_CF_orders()
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_orders('C')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()

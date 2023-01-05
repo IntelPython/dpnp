@@ -37,20 +37,26 @@ class TestBitwise:
 
         numpy.testing.assert_array_equal(result, expected)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_bitwise_and(self, lhs, rhs, dtype):
         self._test_binary_int('bitwise_and', lhs, rhs, dtype)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_bitwise_or(self, lhs, rhs, dtype):
         self._test_binary_int('bitwise_or', lhs, rhs, dtype)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_bitwise_xor(self, lhs, rhs, dtype):
         self._test_binary_int('bitwise_xor', lhs, rhs, dtype)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_invert(self, lhs, rhs, dtype):
         self._test_unary_int('invert', lhs, dtype)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_left_shift(self, lhs, rhs, dtype):
         self._test_binary_int('left_shift', lhs, rhs, dtype)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_right_shift(self, lhs, rhs, dtype):
         self._test_binary_int('right_shift', lhs, rhs, dtype)

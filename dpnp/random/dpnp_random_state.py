@@ -345,9 +345,10 @@ class RandomState:
 
                     min_int = numpy.iinfo('int32').min
                     max_int = numpy.iinfo('int32').max
-                    if not dpnp.isfinite(low) or low > max_int or low < min_int:
+
+                    if not self._is_finite_scalar(low) or low > max_int or low < min_int:
                         raise OverflowError(f"Range of low={low} exceeds valid bounds")
-                    elif not dpnp.isfinite(high) or high > max_int or high < min_int:
+                    elif not self._is_finite_scalar(high) or high > max_int or high < min_int:
                         raise OverflowError(f"Range of high={high} exceeds valid bounds")
 
                     low = int(low)
@@ -547,9 +548,10 @@ class RandomState:
             else:
                 min_double = numpy.finfo('double').min
                 max_double = numpy.finfo('double').max
-                if not dpnp.isfinite(low) or low >= max_double or low <= min_double:
+
+                if not self._is_finite_scalar(low) or low >= max_double or low <= min_double:
                     raise OverflowError(f"Range of low={low} exceeds valid bounds")
-                elif not dpnp.isfinite(high) or high >= max_double or high <= min_double:
+                elif not self._is_finite_scalar(high) or high >= max_double or high <= min_double:
                     raise OverflowError(f"Range of high={high} exceeds valid bounds")
 
                 if low > high:

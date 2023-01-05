@@ -95,6 +95,7 @@ def test_any(type, shape):
         numpy.testing.assert_allclose(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_greater():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
@@ -104,6 +105,7 @@ def test_greater():
         numpy.testing.assert_equal(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_greater_equal():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
@@ -113,6 +115,7 @@ def test_greater_equal():
         numpy.testing.assert_equal(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_less():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
@@ -122,6 +125,7 @@ def test_less():
         numpy.testing.assert_equal(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_less_equal():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
@@ -131,6 +135,7 @@ def test_less_equal():
         numpy.testing.assert_equal(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_not_equal():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
