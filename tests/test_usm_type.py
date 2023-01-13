@@ -36,22 +36,28 @@ def test_coerced_usm_types_mul(usm_type_x, usm_type_y):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("full",
+                     ['10', 'x0[3]']),
+        pytest.param("full_like",
+                     ['x0', '4']),
+        pytest.param("zeros_like",
+                     ['x0']),
+        pytest.param("ones_like",
+                     ['x0']),
+        pytest.param("empty_like",
+                     ['x0']),
+    ])
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-def test_array_creation(usm_type_x, usm_type_y):
+def test_array_creation(func, args, usm_type_x, usm_type_y):
     x0 = dp.full(10, 3, usm_type=usm_type_x)
+    new_args = [eval(val, {'x0' : x0}) for val in args]
 
-    x = dp.full(10, x0[3])
-    y = dp.full(10, x0[3], usm_type=usm_type_y)
-    assert x.usm_type == usm_type_x
-    assert y.usm_type == usm_type_y
+    x = getattr(dp, func)(*new_args)
+    y = getattr(dp, func)(*new_args, usm_type=usm_type_y)
 
-    x = dp.full_like(x0, 4)
-    y = dp.full_like(x0, 4, usm_type=usm_type_y)
-    assert x.usm_type == usm_type_x
-    assert y.usm_type == usm_type_y
-
-    x = dp.zeros_like(x0)
-    y = dp.zeros_like(x0, usm_type=usm_type_y)
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y

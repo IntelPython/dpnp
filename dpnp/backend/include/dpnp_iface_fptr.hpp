@@ -228,9 +228,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NONZERO,                      /**< Used in numpy.nonzero() impl  */
     DPNP_FN_NONZERO_EXT,                  /**< Used in numpy.nonzero() impl, requires extra parameters */
     DPNP_FN_ONES,                         /**< Used in numpy.ones() impl */
-    DPNP_FN_ONES_EXT,                     /**< Used in numpy.ones() impl, requires extra parameters */
     DPNP_FN_ONES_LIKE,                    /**< Used in numpy.ones_like() impl */
-    DPNP_FN_ONES_LIKE_EXT,                /**< Used in numpy.ones_like() impl, requires extra parameters */
     DPNP_FN_PARTITION,                    /**< Used in numpy.partition() impl */
     DPNP_FN_PARTITION_EXT,                /**< Used in numpy.partition() impl, requires extra parameters */
     DPNP_FN_PLACE,                        /**< Used in numpy.place() impl  */

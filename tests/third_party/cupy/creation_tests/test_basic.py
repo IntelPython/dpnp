@@ -39,7 +39,7 @@ class TestBasic(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_scalar(self, xp, dtype, order):
-        a = xp.empty(None, dtype=dtype, order=order)
+        a = xp.empty((), dtype=dtype, order=order)
         a.fill(0)
         return a
 
