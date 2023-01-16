@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2022, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -182,7 +182,10 @@ static void dpnp_fft_fft_mathlib_cmplx_to_cmplx_c(DPCTLSyclQueueRef q_ref,
                                                   size_t inverse,
                                                   const size_t norm)
 {
+    // avoid warning unused variable
     (void)result_shape;
+    (void)input_size;
+    (void)result_size;
 
     if (!shape_size) {
         return;
@@ -253,6 +256,9 @@ static DPCTLSyclEventRef dpnp_fft_fft_mathlib_real_to_cmplx_c(DPCTLSyclQueueRef 
                                                               const size_t norm,
                                                               const size_t real)
 {
+    // avoid warning unused variable
+    (void)input_size;
+
     DPCTLSyclEventRef event_ref = nullptr;
     if (!shape_size) {
         return event_ref;

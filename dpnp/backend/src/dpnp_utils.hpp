@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2022, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -45,15 +45,15 @@
  * Intel(R) oneAPI DPC++ 2022.2.1 compiler has version 20221020L on Linux and
  * 20221101L on Windows.
  */
-#ifndef __SYCL_COMPILER_2023_SWITCHOVER
-#define __SYCL_COMPILER_2023_SWITCHOVER 20221102L
+#ifndef __SYCL_COMPILER_VERSION_REQUIRED
+#define __SYCL_COMPILER_VERSION_REQUIRED 20221102L
 #endif
 
 /**
  * Version of Intel MKL at which transition to OneMKL release 2023.0.0 occurs.
  */
-#ifndef __INTEL_MKL_2023_SWITCHOVER
-#define __INTEL_MKL_2023_SWITCHOVER 20230000
+#ifndef __INTEL_MKL_2023_VERSION_REQUIRED
+#define __INTEL_MKL_2023_VERSION_REQUIRED 20230000
 #endif
 
 /**

@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -111,7 +111,7 @@ elseif(WIN32)
   # set(CMAKE_RANLIB "llvm-ranlib")
   # set(CMAKE_CXX_FLAGS "/EHsc")
 
-  string(APPEND COMMON_COMPILER_FLAGS
+  string(APPEND COMMON_COMPILE_FLAGS
     "/EHsc "
 #    "/Ox "
 #    "/W3 "
@@ -133,23 +133,29 @@ string(CONCAT DPNP_WARNING_FLAGS
   "-Wextra "
   "-Wshadow "
   "-Wall "
-  "-Wstring-prototypes "
+  "-Wstrict-prototypes "
   "-Wformat "
   "-Wformat-security "
 )
-string(APPEND COMMON_COMPILER_FLAGS
+string(APPEND COMMON_COMPILE_FLAGS
   "${DPNP_WARNING_FLAGS}"
 )
 
 # debug/release compile definitions
 if(DPNP_DEBUG_ENABLE)
   set(CMAKE_BUILD_TYPE "Debug")
-  string(APPEND COMMON_COMPILER_FLAGS
+  string(APPEND COMMON_COMPILE_FLAGS
     "-O0 "
+    "-ggdb3 "
+  )
+  string(APPEND COMMON_LINK_FLAGS
+    "-O0 "
+    "-ggdb3 "
+    "-fsycl-link-huge-device-code "
   )
 else()
   set(CMAKE_BUILD_TYPE "Release")
-  string(APPEND COMMON_COMPILER_FLAGS
+  string(APPEND COMMON_COMPILE_FLAGS
     "-O3 "
   )
 endif()
@@ -162,7 +168,7 @@ string(CONCAT DPNP_DEFS
   "-D_FORTIFY_SOURCE=2 "
 )
 if(NOT WIN32)
-  string(APPEND COMMON_COMPILER_FLAGS
+  string(APPEND COMMON_COMPILE_FLAGS
     "-fno-delete-null-pointer-checks "
     "-fstack-protector-strong "
     "-fno-strict-overflow "
