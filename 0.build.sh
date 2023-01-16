@@ -4,7 +4,7 @@ THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 # . ${THEDIR}/0.env.sh
 cd ${THEDIR}
 
-# Assign $TMP env varibale to a directory where the script locates.
+# Assign $TMP env variable to a directory where the script locates.
 # The env variable is used by compiler as a path to temporary folder,
 # where it can store a temporary files generated during compilation and linkage phases.
 # By default the compiler uses /tmp folder, but it is limited by the size and
