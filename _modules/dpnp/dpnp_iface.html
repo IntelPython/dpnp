@@ -189,7 +189,7 @@
 
 
 <div class="viewcode-block" id="array_equal"><a class="viewcode-back" href="../../reference/generated/dpnp.array_equal.html#dpnp.array_equal">[docs]</a><span class="k">def</span> <span class="nf">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    True if two arrays have the same shape and elements, False otherwise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.array_equal`.</span>
@@ -207,7 +207,7 @@
 
 
 <div class="viewcode-block" id="asnumpy"><a class="viewcode-back" href="../../reference/generated/dpnp.asnumpy.html#dpnp.asnumpy">[docs]</a><span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the NumPy array with input data.</span>
 
 <span class="sd">    Notes</span>
@@ -225,7 +225,7 @@
 
 
 <span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s1">&#39;unsafe&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Copy the array with data type casting.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy the array with data type casting.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x1</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span>
 
@@ -254,7 +254,7 @@
 
 
 <span class="k">def</span> <span class="nf">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert array with single element to scalar</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -268,7 +268,7 @@
                         <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="n">alloc_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return True:</span>
 <span class="sd">      never</span>
 <span class="sd">    Return DPNP internal data discriptor object if:</span>
@@ -326,7 +326,7 @@
 
 
 <div class="viewcode-block" id="get_include"><a class="viewcode-back" href="../../reference/generated/dpnp.get_include.html#dpnp.get_include">[docs]</a><span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the directory that contains the DPNP C++ backend \\*.h header files.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -338,7 +338,7 @@
 <span class="k">def</span> <span class="nf">get_normalized_queue_device</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                 <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                 <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Utility to process complementary keyword arguments &#39;device&#39; and &#39;sycl_queue&#39;</span>
 <span class="sd">    in subsequent calls of functions from `dpctl.tensor` module.</span>
 

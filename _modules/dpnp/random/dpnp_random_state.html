@@ -126,7 +126,7 @@
 
 
 <div class="viewcode-block" id="RandomState"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState">[docs]</a><span class="k">class</span> <span class="nc">RandomState</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A container for the Mersenne Twister pseudo-random number generator.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.random.RandomState`.</span>
@@ -175,7 +175,7 @@
 
 
     <span class="k">def</span> <span class="nf">_is_finite_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test a scalar for finiteness (not infinity and not Not a Number).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -185,7 +185,7 @@
 
 
     <span class="k">def</span> <span class="nf">_is_signbit_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test a scalar if sign bit is set for it (less than zero).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -195,7 +195,7 @@
 
 
     <span class="k">def</span> <span class="nf">_validate_float_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test an input floating type if it is listed in `supported_types` and</span>
 <span class="sd">        if it is supported by the used SYCL device.</span>
 <span class="sd">        If `dtype` is ``None``, default floating type will be validating.</span>
@@ -213,7 +213,7 @@
 
 
 <div class="viewcode-block" id="RandomState.get_state"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an internal state of the generator.</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.get_state`.</span>
@@ -227,7 +227,7 @@
 
 
 <div class="viewcode-block" id="RandomState.get_sycl_queue"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_sycl_queue">[docs]</a>    <span class="k">def</span> <span class="nf">get_sycl_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an instance of :class:`dpctl.SyclQueue` used within the generator for data allocation.</span>
 
 <span class="sd">        Returns</span>
@@ -239,7 +239,7 @@
 
 
 <div class="viewcode-block" id="RandomState.get_sycl_device"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_sycl_device">[docs]</a>    <span class="k">def</span> <span class="nf">get_sycl_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an instance of :class:`dpctl.SyclDevice` used within the generator to allocate data on.</span>
 
 <span class="sd">        Returns</span>
@@ -251,7 +251,7 @@
 
 
 <div class="viewcode-block" id="RandomState.normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.normal">[docs]</a>    <span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw random samples from a normal (Gaussian) distribution.</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.normal`.</span>
@@ -319,7 +319,7 @@
 
 
 <div class="viewcode-block" id="RandomState.rand"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.rand">[docs]</a>    <span class="k">def</span> <span class="nf">rand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw random values in a given shape.</span>
 
 <span class="sd">        Create an array of the given shape and populate it with random samples</span>
@@ -362,7 +362,7 @@
 
 
 <div class="viewcode-block" id="RandomState.randint"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.randint">[docs]</a>    <span class="k">def</span> <span class="nf">randint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw random integers from low (inclusive) to high (exclusive).</span>
 
 <span class="sd">        Return random integers from the “discrete uniform” distribution of the specified type</span>
@@ -440,7 +440,7 @@
 
 
 <div class="viewcode-block" id="RandomState.randn"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.randn">[docs]</a>    <span class="k">def</span> <span class="nf">randn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a sample (or samples) from the &quot;standard normal&quot; distribution.</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.randn`.</span>
@@ -487,7 +487,7 @@
 
 
 <div class="viewcode-block" id="RandomState.random_sample"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.random_sample">[docs]</a>    <span class="k">def</span> <span class="nf">random_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw random floats in the half-open interval [0.0, 1.0).</span>
 
 <span class="sd">        Results are from the “continuous uniform” distribution over the interval.</span>
@@ -528,7 +528,7 @@
 
 
 <div class="viewcode-block" id="RandomState.standard_normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.standard_normal">[docs]</a>    <span class="k">def</span> <span class="nf">standard_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a standard Normal distribution (mean=0, stdev=1).</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.standard_normal`.</span>
@@ -569,7 +569,7 @@
 
 
 <div class="viewcode-block" id="RandomState.uniform"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.uniform">[docs]</a>    <span class="k">def</span> <span class="nf">uniform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a uniform distribution.</span>
 
 <span class="sd">        Samples are uniformly distributed over the half-open interval [low, high) (includes low, but excludes high).</span>
