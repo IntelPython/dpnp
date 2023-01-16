@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2022, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,9 @@
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 #include "dpnp_random_state.hpp"
+
+static_assert(INTEL_MKL_VERSION >= __INTEL_MKL_2023_VERSION_REQUIRED,
+              "MKL does not meet minimum version requirement");
 
 namespace mkl_blas = oneapi::mkl::blas;
 namespace mkl_rng = oneapi::mkl::rng;
@@ -990,11 +993,7 @@ DPCTLSyclEventRef dpnp_rng_multinomial_c(DPCTLSyclQueueRef q_ref,
             DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result, size, true, true);
             _DataType* result1 = result_ptr.get_ptr();
 
-#if (INTEL_MKL_VERSION < __INTEL_MKL_2023_SWITCHOVER)
-            std::vector<double> p(p_data, p_data + p_size);
-#else
             auto p = sycl::span<double>{p_data, p_size};
-#endif
             mkl_rng::multinomial<_DataType> distribution(ntrial, p);
 
             // perform generation
@@ -1082,13 +1081,8 @@ DPCTLSyclEventRef dpnp_rng_multivariate_normal_c(DPCTLSyclQueueRef q_ref,
 
     _DataType* result1 = static_cast<_DataType *>(result);
 
-#if (INTEL_MKL_VERSION < __INTEL_MKL_2023_SWITCHOVER)
-    std::vector<double> mean(mean_data, mean_data + mean_size);
-    std::vector<double> cov(cov_data, cov_data + cov_size);
-#else
     auto mean = sycl::span<double>{mean_data, mean_size};
     auto cov = sycl::span<double>{cov_data, cov_size};
-#endif
 
     // `result` is a array for random numbers
     // `size` is a `result`'s len.

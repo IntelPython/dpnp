@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -95,7 +95,7 @@ INP_DLLEXPORT void dpnp_queue_initialize_c(QueueOptions selector = QueueOptions:
  * @ingroup BACKEND_API
  * @brief SYCL queue device status.
  *
- * Return 1 if current @ref queue is related to cpu or host device. return 0 otherwise.
+ * Return 1 if current @ref queue is related to cpu device. return 0 otherwise.
  */
 INP_DLLEXPORT size_t dpnp_queue_is_cpu_c();
 

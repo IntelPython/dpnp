@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -113,7 +113,7 @@ public:
     static void backend_sycl_queue_init(QueueOptions selector = QueueOptions::CPU_SELECTOR);
 
     /**
-     * Return True if current @ref queue is related to cpu or host device
+     * Return True if current @ref queue is related to cpu device
      */
     static bool backend_sycl_is_cpu();
 
