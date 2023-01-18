@@ -572,29 +572,40 @@ def empty_like(x1,
     return call_origin(numpy.empty_like, x1, dtype, order, subok, shape)
 
 
-def eye(N, M=None, k=0, dtype=None, order='C', **kwargs):
+def eye(N,
+        M=None,
+        /,
+        *,
+        k=0,
+        dtype=None,
+        order="C",
+        device=None,
+        usm_type="device",
+        sycl_queue=None,
+        **kwargs):
     """
     Return a 2-D array with ones on the diagonal and zeros elsewhere.
     For full documentation refer to :obj:`numpy.eye`.
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameters ``order`` is supported only with default value.
+    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
+    Otherwise the function will be executed sequentially on CPU.
+
     """
-    if (not use_origin_backend()):
-        if not isinstance(N, (int, dpnp.int, dpnp.int32, dpnp.int64)):
-            pass
-        elif M is not None and not isinstance(M, (int, dpnp.int, dpnp.int32, dpnp.int64)):
-            pass
-        elif not isinstance(k, (int, dpnp.int, dpnp.int32, dpnp.int64)):
-            pass
-        elif order != 'C':
-            pass
-        elif len(kwargs) != 0:
-            pass
-        else:
-            return dpnp_eye(N, M=M, k=k, dtype=dtype).get_pyobj()
+    if order not in ('C', 'c', 'F', 'f', None):
+        pass
+    elif len(kwargs) != 0:
+        pass
+    else:
+        return dpnp_container.eye(N,
+                                  M,
+                                  k=k,
+                                  dtype=dtype,
+                                  order=order,
+                                  device=device,
+                                  usm_type=usm_type,
+                                  sycl_queue=sycl_queue)
 
     return call_origin(numpy.eye, N, M=M, k=k, dtype=dtype, order=order, **kwargs)
 
