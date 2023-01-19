@@ -115,9 +115,10 @@ def test_diag(v, k):
                          [None, "C", "F"],
                          ids=['None', 'C', 'F'])
 def test_eye(N, M, dtype, order):
-    func = lambda xp: xp.eye(N, M, dtype=dtype)
+    func = lambda xp: xp.eye(N, M, dtype=dtype, order=order)
     if not is_dtype_supported(dtype, no_complex_check=True):
         assert_raises(RuntimeError, func, dpnp)
+        return
 
     assert_array_equal(func(numpy), func(dpnp))
 
