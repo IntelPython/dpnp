@@ -17,7 +17,7 @@ list_of_device_type_str = [
     "cpu",
 ]
 
-available_devices = [d for d in dpctl.get_devices() if not d.has_aspect_host]
+available_devices = [d for d in dpctl.get_devices() if hasattr(d, 'has_aspect_host') and not d.has_aspect_host]
 
 valid_devices = []
 for device in available_devices:
