@@ -176,3 +176,20 @@ def test_elemwise_comparison(op, x1, x2):
     np_res = getattr(numpy, op)(np_x1[::-1], np_x2)
     dpnp_res = getattr(dpnp, op)(dp_x1[::-1], dp_x2)
     assert_equal(dpnp_res, np_res)
+
+@pytest.mark.parametrize("op",
+                         ['less_equal'],
+                         ids=['less_equal'])
+@pytest.mark.parametrize("sh1",
+                         [[10], [8, 4], [4, 1, 2]],
+                         ids=['(10,)', '(8, 4)', '(4, 1, 2)'])
+@pytest.mark.parametrize("sh2",
+                         [[12], [4, 8], [1, 8, 6]],
+                         ids=['(12,)', '(4, 8)', '(1, 8, 6)'])
+def test_comparison_no_broadcast_with_shapes(op, sh1, sh2):
+    x1, x2 = dpnp.random.randn(*sh1), dpnp.random.randn(*sh2)
+
+    # x1 OP x2
+    with pytest.raises(ValueError):
+        getattr(dpnp, op)(x1, x2)
+        getattr(numpy, op)(x1.asnumpy(), x2.asnumpy())
