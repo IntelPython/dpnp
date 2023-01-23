@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -462,7 +462,7 @@ cdef class dparray:
             return ( < long * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.int32:
             return ( < int * > self._dparray_data)[lin_idx]
-        elif self.dtype == numpy.bool:
+        elif self.dtype == numpy.bool_:
             return ( < cpp_bool * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.complex128:
             return ( < double complex * > self._dparray_data)[lin_idx]
@@ -489,7 +489,7 @@ cdef class dparray:
             ( < long * > self._dparray_data)[lin_idx] = <long > value
         elif self.dtype == numpy.int32:
             ( < int * > self._dparray_data)[lin_idx] = <int > value
-        elif self.dtype == numpy.bool:
+        elif self.dtype == numpy.bool_:
             ( < cpp_bool * > self._dparray_data)[lin_idx] = < cpp_bool > value
         elif self.dtype == numpy.complex64:
             ( < float complex * > self._dparray_data)[lin_idx] = <float complex > value
@@ -876,7 +876,7 @@ cdef class dparray:
 
         """
 
-        if not numpy.issubsctype(self.dtype, numpy.complex):
+        if not numpy.issubsctype(self.dtype, numpy.complex_):
             return self
         else:
             return conjugate(self)
@@ -889,7 +889,7 @@ cdef class dparray:
 
         """
 
-        if not numpy.issubsctype(self.dtype, numpy.complex):
+        if not numpy.issubsctype(self.dtype, numpy.complex_):
             return self
         else:
             return conjugate(self)

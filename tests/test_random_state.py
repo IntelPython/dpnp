@@ -34,8 +34,8 @@ def get_default_floating():
 
 class TestNormal:
     @pytest.mark.parametrize("dtype",
-                             [dpnp.float32, dpnp.float64, None],
-                             ids=['float32', 'float64', 'None'])
+                             [dpnp.float32, dpnp.float64, dpnp.float, None],
+                             ids=['float32', 'float64', 'float', 'None'])
     @pytest.mark.parametrize("usm_type",
                              ["host", "device", "shared"],
                              ids=['host', 'device', 'shared'])
@@ -173,9 +173,9 @@ class TestNormal:
 
 
     @pytest.mark.parametrize("dtype",
-                             [dpnp.float16, dpnp.float, float, dpnp.integer, dpnp.int64, dpnp.int32, dpnp.int, int,
+                             [dpnp.float16, float, dpnp.integer, dpnp.int64, dpnp.int32, dpnp.int, int,
                               dpnp.longcomplex, dpnp.complex128, dpnp.complex64, dpnp.bool, dpnp.bool_],
-                             ids=['dpnp.float16', 'dpnp.float', 'float', 'dpnp.integer', 'dpnp.int64', 'dpnp.int32', 'dpnp.int', 'int',
+                             ids=['dpnp.float16', 'float', 'dpnp.integer', 'dpnp.int64', 'dpnp.int32', 'dpnp.int', 'int',
                                   'dpnp.longcomplex', 'dpnp.complex128', 'dpnp.complex64', 'dpnp.bool', 'dpnp.bool_'])
     def test_invalid_dtype(self, dtype):
         # dtype must be float32 or float64
@@ -257,8 +257,8 @@ class TestRand:
 
 class TestRandInt:
     @pytest.mark.parametrize("dtype",
-                             [int, dpnp.int32, dpnp.int],
-                             ids=['int', 'dpnp.int32', 'dpnp.int'])
+                             [int, dpnp.int32, dpnp.int, dpnp.integer],
+                             ids=['int', 'dpnp.int32', 'dpnp.int', 'dpnp.integer'])
     @pytest.mark.parametrize("usm_type",
                              ["host", "device", "shared"],
                              ids=['host', 'device', 'shared'])
@@ -266,6 +266,9 @@ class TestRandInt:
         seed = 9864
         low = 1
         high = 10
+
+        if dtype in (dpnp.int, dpnp.integer) and dtype != dpnp.dtype('int32'):
+            pytest.skip("dtype isn't alias on dpnp.int32 on the target OS, so there will be a fallback")
 
         sycl_queue = dpctl.SyclQueue()
         data = RandomState(seed, sycl_queue=sycl_queue).randint(low=low,
@@ -421,16 +424,16 @@ class TestRandInt:
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("dtype",
-                             [dpnp.int64, dpnp.integer, dpnp.bool, dpnp.bool_, bool],
-                             ids=['dpnp.int64', 'dpnp.integer', 'dpnp.bool', 'dpnp.bool_', 'bool'])
+                             [dpnp.int64, dpnp.int, dpnp.integer, dpnp.bool, dpnp.bool_, bool],
+                             ids=['dpnp.int64', 'dpnp.int', 'dpnp.integer', 'dpnp.bool', 'dpnp.bool_', 'bool'])
     def test_dtype_fallback(self, dtype):
         seed = 157
         low = -3 if not dtype in {dpnp.bool_, bool} else 0
         high = 37 if not dtype in {dpnp.bool_, bool} else 2
         size = (3, 2, 5)
 
-        if dtype == dpnp.integer and dtype == dpnp.dtype('int32'):
-            pytest.skip("dpnp.integer is alias on dpnp.int32 on the target OS, so no fallback here")
+        if dtype in (dpnp.int, dpnp.integer) and dtype == dpnp.dtype('int32'):
+            pytest.skip("dtype is alias on dpnp.int32 on the target OS, so no fallback here")
 
         # dtype must be int or dpnp.int32, in other cases it will be a fallback to numpy
         actual = RandomState(seed).randint(low=low, high=high, size=size, dtype=dtype).asnumpy()
@@ -714,8 +717,8 @@ class TestUniform:
                              [[1.23, 10.54], [10.54, 1.23]],
                              ids=['(low, high)=[1.23, 10.54]', '(low, high)=[10.54, 1.23]'])
     @pytest.mark.parametrize("dtype",
-                             [dpnp.float32, dpnp.float64, dpnp.int32, None],
-                             ids=['float32', 'float64', 'int32', 'None'])
+                             [dpnp.float32, dpnp.float64, dpnp.float, dpnp.int32, None],
+                             ids=['float32', 'float64', 'float', 'int32', 'None'])
     @pytest.mark.parametrize("usm_type",
                              ["host", "device", "shared"],
                              ids=['host', 'device', 'shared'])
@@ -831,12 +834,15 @@ class TestUniform:
 
 
     @pytest.mark.parametrize("dtype",
-                             [dpnp.float16, dpnp.float, float, dpnp.integer, dpnp.int64, dpnp.int, int,
+                             [dpnp.float16, float, dpnp.integer, dpnp.int64, dpnp.int, int,
                               dpnp.longcomplex, dpnp.complex128, dpnp.complex64, dpnp.bool, dpnp.bool_],
-                             ids=['dpnp.float16', 'dpnp.float', 'float', 'dpnp.integer', 'dpnp.int64', 'dpnp.int', 'int',
+                             ids=['dpnp.float16', 'float', 'dpnp.integer', 'dpnp.int64', 'dpnp.int', 'int',
                                   'dpnp.longcomplex', 'dpnp.complex128', 'dpnp.complex64', 'dpnp.bool', 'dpnp.bool_'])
     def test_invalid_dtype(self, dtype):
-        # dtype must be float32 or float64
+        if dtype in (dpnp.int, dpnp.integer) and dtype == dpnp.dtype('int32'):
+            pytest.skip("dtype is alias on dpnp.int32 on the target OS, so no error here")
+
+        # dtype must be int32, float32 or float64
         assert_raises(TypeError, RandomState().uniform, dtype=dtype)
 
 

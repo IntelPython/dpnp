@@ -276,7 +276,7 @@ cdef dpnp_DPNPFuncType_to_dtype(size_t type):
     elif type == <size_t > DPNP_FT_CMPLX128:
         return numpy.complex128
     elif type == <size_t > DPNP_FT_BOOL:
-        return numpy.bool
+        return numpy.bool_
     else:
         utils.checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
 
