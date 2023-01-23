@@ -5,11 +5,11 @@ import dpctl.tensor as dpt
 
 
 @pytest.mark.parametrize("res_dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool, numpy.bool_, numpy.complex],
-                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'bool_', 'complex'])
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool_, numpy.complex_],
+                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'complex'])
 @pytest.mark.parametrize("arr_dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool, numpy.bool_, numpy.complex],
-                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'bool_', 'complex'])
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool_, numpy.complex_],
+                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'complex'])
 @pytest.mark.parametrize("arr",
                          [[-2, -1, 0, 1, 2], [[-2, -1], [1, 2]], []],
                          ids=['[-2, -1, 0, 1, 2]', '[[-2, -1], [1, 2]]', '[]'])
@@ -22,8 +22,8 @@ def test_astype(arr, arr_dtype, res_dtype):
 
 
 @pytest.mark.parametrize("arr_dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool, numpy.bool_, numpy.complex],
-                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'bool_', 'complex'])
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool_, numpy.complex_],
+                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'complex'])
 @pytest.mark.parametrize("arr",
                          [[-2, -1, 0, 1, 2], [[-2, -1], [1, 2]], []],
                          ids=['[-2, -1, 0, 1, 2]', '[[-2, -1], [1, 2]]', '[]'])
@@ -51,7 +51,7 @@ def test_flags(shape, order):
 
 
 @pytest.mark.parametrize("dtype",
-                         [numpy.complex64, numpy.float32, numpy.int64, numpy.int32, numpy.bool],
+                         [numpy.complex64, numpy.float32, numpy.int64, numpy.int32, numpy.bool_],
                          ids=['complex64', 'float32', 'int64', 'int32', 'bool'])
 @pytest.mark.parametrize("strides",
                          [(1, 4) , (4, 1)],

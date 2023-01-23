@@ -10,8 +10,8 @@ from numpy.testing import (
 
 
 @pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool, numpy.bool_],
-                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'bool_'])
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool_],
+                         ids=['float64', 'float32', 'int64', 'int32', 'bool'])
 @pytest.mark.parametrize("shape",
                          [(0,), (4,), (2, 3), (2, 2, 2)],
                          ids=['(0,)', '(4,)', '(2,3)', '(2,2,2)'])
@@ -67,8 +67,8 @@ def test_allclose(type):
 
 
 @pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool, numpy.bool_],
-                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'bool_'])
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool_],
+                         ids=['float64', 'float32', 'int64', 'int32', 'bool'])
 @pytest.mark.parametrize("shape",
                          [(0,), (4,), (2, 3), (2, 2, 2)],
                          ids=['(0,)', '(4,)', '(2,3)', '(2,2,2)'])
