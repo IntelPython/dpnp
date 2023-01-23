@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ __all__ = [
     "void"
 ]
 
-bool = numpy.bool
+bool = numpy.bool_
 bool_ = numpy.bool_
 complex128 = numpy.complex128
 complex64 = numpy.complex64
@@ -67,11 +67,11 @@ dtype = numpy.dtype
 float16 = numpy.float16
 float32 = numpy.float32
 float64 = numpy.float64
-float = numpy.float
+float = numpy.float_
 int32 = numpy.int32
 int64 = numpy.int64
 integer = numpy.integer
-int = numpy.int
+int = numpy.int_
 longcomplex = numpy.longcomplex
 
 

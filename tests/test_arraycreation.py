@@ -246,7 +246,7 @@ def test_geomspace(dtype, num, endpoint):
                          ids=['0', '1', '4'])
 @pytest.mark.parametrize("dtype",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32,
-                          numpy.bool, numpy.complex64, numpy.complex128, None],
+                          numpy.bool_, numpy.complex64, numpy.complex128, None],
                          ids=['float64', 'float32', 'int64', 'int32',
                               'bool', 'complex64', 'complex128', 'None'])
 def test_identity(n, dtype):
@@ -344,8 +344,8 @@ def test_trace(array, offset, type, dtype):
                          [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
                          ids=['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5'])
 @pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, float, numpy.int64, numpy.int32, numpy.int, numpy.float, int],
-                         ids=['float64', 'float32', 'numpy.float', 'float', 'int64', 'int32', 'numpy.int', 'int'])
+                         [numpy.float64, numpy.float32, float, numpy.int64, numpy.int32, numpy.int_, numpy.float_, int],
+                         ids=['numpy.float64', 'numpy.float32', 'float', 'numpy.int64', 'numpy.int32', 'numpy.int', 'numpy.float', 'int'])
 def test_tri(N, M, k, dtype):
     func = lambda xp: xp.tri(N, M, k, dtype=dtype)
 
@@ -428,7 +428,7 @@ def test_triu_size_null(k):
                               '[0, 3, 5]'])
 @pytest.mark.parametrize("dtype",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32,
-                          numpy.bool, numpy.complex64, numpy.complex128],
+                          numpy.bool_, numpy.complex64, numpy.complex128],
                          ids=['float64', 'float32', 'int64', 'int32',
                               'bool', 'complex64', 'complex128'])
 @pytest.mark.parametrize("n",
@@ -464,7 +464,7 @@ def test_vander(array, dtype, n, increase):
                          ids=['1.5', '2', '1.5+0.j'])
 @pytest.mark.parametrize("dtype",
                          [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool],
+                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
                          ids=['None', 'complex128', 'complex64', 'float64', 'float32',
                               'float16', 'int64', 'int32', 'bool'])
 @pytest.mark.parametrize("order",
@@ -488,7 +488,7 @@ def test_full(shape, fill_value, dtype, order):
                          ids=['1.5', '2', '1.5+0.j'])
 @pytest.mark.parametrize("dtype",
                          [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool],
+                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
                          ids=['None', 'complex128', 'complex64', 'float64', 'float32',
                               'float16', 'int64', 'int32', 'bool'])
 @pytest.mark.parametrize("order",
@@ -545,7 +545,7 @@ def test_full_invalid_fill_value(fill_value):
                          ids=['()', '0', '(0,)', '(2, 0, 3)', '(3, 2)'])
 @pytest.mark.parametrize("dtype",
                          [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool],
+                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
                          ids=['None', 'complex128', 'complex64', 'float64', 'float32',
                               'float16', 'int64', 'int32', 'bool'])
 @pytest.mark.parametrize("order",
@@ -563,7 +563,7 @@ def test_zeros(shape, dtype, order):
                          ids=['[]', '0',  '[1, 2, 3]', '[[1, 2], [3, 4]]'])
 @pytest.mark.parametrize("dtype",
                          [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool],
+                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
                          ids=['None', 'complex128', 'complex64', 'float64', 'float32',
                               'float16', 'int64', 'int32', 'bool'])
 @pytest.mark.parametrize("order",
@@ -584,7 +584,7 @@ def test_zeros_like(array, dtype, order):
                          ids=['()', '0', '(0,)', '(2, 0, 3)', '(3, 2)'])
 @pytest.mark.parametrize("dtype",
                          [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool],
+                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
                          ids=['None', 'complex128', 'complex64', 'float64', 'float32',
                               'float16', 'int64', 'int32', 'bool'])
 @pytest.mark.parametrize("order",
@@ -602,7 +602,7 @@ def test_empty(shape, dtype, order):
                          ids=['[]', '0',  '[1, 2, 3]', '[[1, 2], [3, 4]]'])
 @pytest.mark.parametrize("dtype",
                          [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool],
+                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
                          ids=['None', 'complex128', 'complex64', 'float64', 'float32',
                               'float16', 'int64', 'int32', 'bool'])
 @pytest.mark.parametrize("order",
@@ -623,7 +623,7 @@ def test_empty_like(array, dtype, order):
                          ids=['()', '0', '(0,)', '(2, 0, 3)', '(3, 2)'])
 @pytest.mark.parametrize("dtype",
                          [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, 
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool],
+                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
                          ids=['None', 'complex128', 'complex64', 'float64', 'float32',
                          'float16', 'int64', 'int32', 'bool'])
 @pytest.mark.parametrize("order",
@@ -644,7 +644,7 @@ def test_ones(shape, dtype, order):
                          ids=['[]', '0',  '[1, 2, 3]', '[[1, 2], [3, 4]]'])
 @pytest.mark.parametrize("dtype",
                          [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, 
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool],
+                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
                          ids=['None', 'complex128', 'complex64', 'float64', 'float32',
                          'float16', 'int64', 'int32', 'bool'])
 @pytest.mark.parametrize("order",

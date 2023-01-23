@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -399,7 +399,7 @@ cdef tuple get_shape_dtype(object input_obj):
 
             # shape and dtype does not match with siblings.
             if ((return_shape != elem_shape) or (return_dtype != elem_dtype)):
-                return (elem_shape, numpy.dtype(numpy.object))
+                return (elem_shape, numpy.dtype(numpy.object_))
 
         list_shape.push_back(len(input_obj))
         list_shape.insert(list_shape.end(), return_shape.begin(), return_shape.end())
