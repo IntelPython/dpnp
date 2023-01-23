@@ -30,9 +30,6 @@
 #include "queue_sycl.hpp"
 #include "dpnp_utils.hpp"
 
-static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
-              "The compiler does not meet minimum version requirement");
-
 /**
  * @ingroup BACKEND_UTILS
  * @brief Adapter for the memory given by parameters in the DPNPC functions

@@ -31,9 +31,6 @@
 #include "queue_sycl.hpp"
 #include "dpnp_utils.hpp"
 
-static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
-              "The compiler does not meet minimum version requirement");
-
 #if defined(DPNP_LOCAL_QUEUE)
 sycl::queue* backend_sycl::queue = nullptr;
 #endif
