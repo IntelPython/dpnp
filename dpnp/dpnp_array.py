@@ -294,6 +294,8 @@ class dpnp_array:
 
         return str(self.asnumpy())
 
+    def __repr__(self):
+        return self._array_obj.__repr__()
 
     def __sub__(self, other):
         return dpnp.subtract(self, other)
