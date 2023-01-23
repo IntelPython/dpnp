@@ -1,5 +1,6 @@
 import itertools
 import unittest
+import warnings
 
 import numpy
 import pytest
@@ -130,8 +131,8 @@ class ArithmeticBinaryBase:
 
         func = getattr(xp, self.name)
         with testing.NumpyError(divide='ignore'):
-            with numpy.warnings.catch_warnings():
-                numpy.warnings.filterwarnings('ignore')
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore')
                 if self.use_dtype:
                     y = func(arg1, arg2, dtype=self.dtype)
                 else:
