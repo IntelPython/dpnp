@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -98,11 +98,18 @@ __all__ = [
 ]
 
 
-def _get_random_state():
-    global _dpnp_random_state
-    if _dpnp_random_state is None:
-        _dpnp_random_state = RandomState()
-    return  _dpnp_random_state
+def _get_random_state(device=None, sycl_queue=None):
+    global _dpnp_random_states
+
+    sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
+    if sycl_queue not in _dpnp_random_states:
+        rs = RandomState(device=device, sycl_queue=sycl_queue)
+        if sycl_queue == rs.get_sycl_queue():
+            _dpnp_random_states[sycl_queue] = rs
+        else:
+            raise RuntimeError("Normalized SYCL queue {} mismatched with one returned by RandmoState {}"
+                               .format(sycl_queue, rs.get_sycl_queue()))
+    return _dpnp_random_states[sycl_queue]
 
 
 def beta(a, b, size=None):
@@ -774,20 +781,42 @@ def negative_binomial(n, p, size=None):
     return call_origin(numpy.random.negative_binomial, n, p, size)
 
 
-def normal(loc=0.0, scale=1.0, size=None, usm_type='device'):
+def normal(loc=0.0,
+           scale=1.0,
+           size=None,
+           device=None,
+           usm_type="device",
+           sycl_queue=None):
     """
-    Normal distribution.
-
     Draw random samples from a normal (Gaussian) distribution.
 
     For full documentation refer to :obj:`numpy.random.normal`.
 
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Drawn samples from the parameterized normal distribution.
+        Output array data type is the same as input `dtype`. If `dtype` is ``None`` (the default),
+        :obj:`dpnp.float64` type will be used if device supports it, or :obj:`dpnp.float32` otherwise.
+
     Limitations
     -----------
-    Parameters ``loc`` and ``scale`` are supported as scalar.
+    Parameters `loc` and `scale` are supported as scalar.
     Otherwise, :obj:`numpy.random.normal(loc, scale, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64` if device supports it
-    or :obj:`dpnp.float32` otherwise.
+    Parameter `dtype` is supported only as :obj:`dpnp.float32`, :obj:`dpnp.float64` or ``None``.
 
     Examples
     --------
@@ -796,11 +825,9 @@ def normal(loc=0.0, scale=1.0, size=None, usm_type='device'):
     >>> s = dpnp.random.normal(mu, sigma, 1000)
 
     """
-    return _get_random_state().normal(loc=loc,
-                                      scale=scale,
-                                      size=size,
-                                      dtype=None,
-                                      usm_type=usm_type)
+
+    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
+    return rs.normal(loc=loc, scale=scale, size=size, dtype=None, usm_type=usm_type)
 
 
 def noncentral_chisquare(df, nonc, size=None):
@@ -986,7 +1013,11 @@ def power(a, size=None):
     return call_origin(numpy.random.power, a, size)
 
 
-def rand(d0, *dn, usm_type="device"):
+def rand(d0,
+         *dn,
+         device=None,
+         usm_type="device",
+         sycl_queue=None):
     """
     Random values in a given shape.
 
@@ -995,10 +1026,24 @@ def rand(d0, *dn, usm_type="device"):
 
     For full documentation refer to :obj:`numpy.random.rand`.
 
-    Limitations
-    -----------
-    Output array data type is :obj:`dpnp.float64` if device supports it
-    or :obj:`dpnp.float32` otherwise.
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Random values in a given shape.
+        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1012,20 +1057,48 @@ def rand(d0, *dn, usm_type="device"):
 
     """
 
-    return _get_random_state().rand(d0, *dn, usm_type=usm_type)
+    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
+    return rs.rand(d0, *dn, usm_type=usm_type)
 
 
-def randint(low, high=None, size=None, dtype=int, usm_type="device"):
+def randint(low,
+            high=None,
+            size=None,
+            dtype=int,
+            device=None,
+            usm_type="device",
+            sycl_queue=None):
     """
     Return random integers from `low` (inclusive) to `high` (exclusive).
 
     For full documentation refer to :obj:`numpy.random.randint`.
 
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        `size`-shaped array of random integers from the appropriate distribution,
+        or a single such random int if `size` is not provided.
+        Output array data type is the same as input `dtype`.
+
     Limitations
     -----------
-    Parameters ``low`` and ``high`` are supported only as scalar.
-    Parameter ``dtype`` is supported only as `int`.
-    Otherwise, :obj:`numpy.random.randint(low, high, size, dtype)` samples are drawn.
+    Parameters `low` and `high` are supported only as a scalar.
+    Parameter `dtype` is supported only as :obj:`dpnp.int32` or ``int``,
+    but ``int`` value is considered to be exactly equivalent to :obj:`dpnp.int32`.
+    Otherwise, :obj:`numpy.random.RandomState.randint(low, high, size, dtype)` samples are drawn.
 
     Examples
     --------
@@ -1041,23 +1114,39 @@ def randint(low, high=None, size=None, dtype=int, usm_type="device"):
 
     """
 
-    return _get_random_state().randint(low=low,
-                                       high=high,
-                                       size=size,
-                                       dtype=dtype,
-                                       usm_type=usm_type)
+    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
+    return rs.randint(low=low, high=high, size=size, dtype=dtype, usm_type=usm_type)
 
 
-def randn(d0, *dn, usm_type="device"):
+def randn(d0,
+          *dn,
+          device=None,
+          usm_type="device",
+          sycl_queue=None):
     """
     Return a sample (or samples) from the "standard normal" distribution.
 
     For full documentation refer to :obj:`numpy.random.randn`.
 
-    Limitations
-    -----------
-    Output array data type is :obj:`dpnp.float64` if device supports it
-    or :obj:`dpnp.float32` otherwise.
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A ``(d0, d1, ..., dn)``-shaped array of floating-point samples from
+        the standard normal distribution, or a single such float if no parameters were supplied.
+        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1075,20 +1164,38 @@ def randn(d0, *dn, usm_type="device"):
 
     """
 
-    return _get_random_state().randn(d0, *dn, usm_type=usm_type)
+    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
+    return rs.randn(d0, *dn, usm_type=usm_type)
 
 
-def random(size=None, usm_type="device"):
+def random(size=None,
+           device=None,
+           usm_type="device",
+           sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
     Alias for random_sample.
 
     For full documentation refer to :obj:`numpy.random.random`.
 
-    Limitations
-    -----------
-    Output array data type is :obj:`dpnp.float64` if device supports it
-    or :obj:`dpnp.float32` otherwise.
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of random floats of shape `size` (if ``size=None``, zero dimension array with a single float is returned).
+        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1102,20 +1209,43 @@ def random(size=None, usm_type="device"):
 
     """
 
-    return random_sample(size=size, usm_type=usm_type)
+    return random_sample(size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
 
 
-def random_integers(low, high=None, size=None, usm_type="device"):
+def random_integers(low,
+                    high=None,
+                    size=None,
+                    device=None,
+                    usm_type="device",
+                    sycl_queue=None):
     """
     Random integers between `low` and `high`, inclusive.
 
     For full documentation refer to :obj:`numpy.random.random_integers`.
 
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        `size`-shaped array of random integers from the appropriate distribution,
+        or a single such random int if `size` is not provided.
+
     Limitations
     -----------
-    Parameters ``low`` and ``high`` are supported as scalar.
-    Otherwise, :obj:`numpy.random.random_integers(low, high, size)` samples
-    are drawn.
+    Parameters `low` and `high` are supported as scalar.
+    Otherwise, :obj:`numpy.random.random_integers(low, high, size)` samples are drawn.
 
     See Also
     --------
@@ -1134,12 +1264,15 @@ def random_integers(low, high=None, size=None, usm_type="device"):
     elif not dpnp.isscalar(high):
         pass
     else:
-        return randint(low, int(high) + 1, size=size, usm_type=usm_type)
+        return randint(low, int(high) + 1, size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
 
     return call_origin(numpy.random.random_integers, low, high, size)
 
 
-def random_sample(size=None, usm_type="device"):
+def random_sample(size=None,
+                  device=None,
+                  usm_type="device",
+                  sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
 
@@ -1147,10 +1280,24 @@ def random_sample(size=None, usm_type="device"):
 
     For full documentation refer to :obj:`numpy.random.random_sample`.
 
-    Limitations
-    -----------
-    Output array data type is :obj:`dpnp.float64` if device supports it
-    or :obj:`dpnp.float32` otherwise.
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of random floats of shape `size` (if ``size=None``, zero dimension array with a single float is returned).
+        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1164,21 +1311,38 @@ def random_sample(size=None, usm_type="device"):
 
     """
 
-    return _get_random_state().random_sample(size=size,
-                                             usm_type=usm_type)
+    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
+    return rs.random_sample(size=size, usm_type=usm_type)
 
 
-def ranf(size=None, usm_type="device"):
+def ranf(size=None,
+         device=None,
+         usm_type="device",
+         sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
 
     For full documentation refer to :obj:`numpy.random.ranf`.
 
-    Limitations
-    -----------
-    Output array data type is :obj:`dpnp.float64` if device supports it
-    or :obj:`dpnp.float32` otherwise.
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of random floats of shape `size` (if ``size=None``, zero dimension array with a single float is returned).
+        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1193,7 +1357,7 @@ def ranf(size=None, usm_type="device"):
 
     """
 
-    return random_sample(size=size, usm_type=usm_type)
+    return random_sample(size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
 
 
 def rayleigh(scale=1.0, size=None):
@@ -1230,17 +1394,34 @@ def rayleigh(scale=1.0, size=None):
     return call_origin(numpy.random.rayleigh, scale, size)
 
 
-def sample(size=None, usm_type="device"):
+def sample(size=None,
+           device=None,
+           usm_type="device",
+           sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
 
     For full documentation refer to :obj:`numpy.random.sample`.
 
-    Limitations
-    -----------
-    Output array data type is :obj:`dpnp.float64` if device supports it
-    or :obj:`dpnp.float32` otherwise.
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of random floats of shape `size` (if ``size=None``, zero dimension array with a single float is returned).
+        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1255,7 +1436,7 @@ def sample(size=None, usm_type="device"):
 
     """
 
-    return random_sample(size=size, usm_type=usm_type)
+    return random_sample(size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
 
 
 def shuffle(x1):
@@ -1309,8 +1490,10 @@ def seed(seed=None):
             # migrate to a single approach with RandomState class
 
             # update a mt19937 random number for both RandomState and legacy functionality
-            global _dpnp_random_state
-            _dpnp_random_state = RandomState(seed)
+            global _dpnp_random_states
+            for sycl_queue in _dpnp_random_states.keys():
+                _dpnp_random_states[sycl_queue] = RandomState(seed=seed, sycl_queue=sycl_queue)
+
             dpnp_rng_srand(seed)
 
     # always reseed numpy engine also
@@ -1405,17 +1588,34 @@ def standard_gamma(shape, size=None):
     return call_origin(numpy.random.standard_gamma, shape, size)
 
 
-def standard_normal(size=None, usm_type="device"):
-    """Standard normal distribution.
-
+def standard_normal(size=None,
+                    device=None,
+                    usm_type="device",
+                    sycl_queue=None):
+    """
     Draw samples from a standard Normal distribution (mean=0, stdev=1).
 
     For full documentation refer to :obj:`numpy.random.standard_normal`.
 
-    Limitations
-    -----------
-    Output array data type is :obj:`dpnp.float64` if device supports it
-    or :obj:`dpnp.float32` otherwise.
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A floating-point array of shape `size` of drawn samples, or a
+        single sample if `size` was not specified.
+        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
 
     Examples
     --------
@@ -1423,7 +1623,9 @@ def standard_normal(size=None, usm_type="device"):
     >>> s = dpnp.random.standard_normal(1000)
 
     """
-    return _get_random_state().standard_normal(size=size, usm_type=usm_type)
+
+    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
+    return rs.standard_normal(size=size, usm_type=usm_type)
 
 
 def standard_t(df, size=None):
@@ -1506,18 +1708,45 @@ def triangular(left, mode, right, size=None):
     return call_origin(numpy.random.triangular, left, mode, right, size)
 
 
-def uniform(low=0.0, high=1.0, size=None, usm_type='device'):
+def uniform(low=0.0,
+            high=1.0,
+            size=None,
+            device=None,
+            usm_type="device",
+            sycl_queue=None):
     """
     Draw samples from a uniform distribution.
 
+    Samples are uniformly distributed over the half-open interval [low, high) (includes low, but excludes high).
+    In other words, any value within the given interval is equally likely to be drawn by uniform.
+
     For full documentation refer to :obj:`numpy.random.uniform`.
+
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Drawn samples from the parameterized uniform distribution.
+        Output array data type is the same as input `dtype`. If `dtype` is ``None`` (the default),
+        :obj:`dpnp.float64` type will be used if device supports it, or :obj:`dpnp.float32` otherwise.
 
     Limitations
     -----------
-    Parameters ``low`` and ``high`` are supported as scalar.
-    Otherwise, :obj:`numpy.random.uniform(low, high, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64` if device supports it
-    or :obj:`dpnp.float32` otherwise.
+    Parameters `low` and `high` are supported as a scalar. Otherwise,
+    :obj:`numpy.random.uniform(low, high, size)` samples are drawn.
+    Parameter `dtype` is supported only as :obj:`dpnp.int32`, :obj:`dpnp.float32`, :obj:`dpnp.float64` or ``None``.
 
     Examples
     --------
@@ -1530,11 +1759,9 @@ def uniform(low=0.0, high=1.0, size=None, usm_type='device'):
     :obj:`dpnp.random.random` : Floats uniformly distributed over ``[0, 1)``.
 
     """
-    return _get_random_state().uniform(low=low,
-                                       high=high,
-                                       size=size,
-                                       dtype=None,
-                                       usm_type=usm_type)
+
+    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
+    return rs.uniform(low=low, high=high, size=size, dtype=None, usm_type=usm_type)
 
 
 def vonmises(mu, kappa, size=None):
@@ -1679,4 +1906,4 @@ def zipf(a, size=None):
     return call_origin(numpy.random.zipf, a, size)
 
 
-_dpnp_random_state = None
+_dpnp_random_states = {}

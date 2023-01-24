@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -290,7 +290,7 @@ class RandomState:
 
     def randint(self, low, high=None, size=None, dtype=int, usm_type="device"):
         """
-        Draw random integers from low (inclusive) to high (exclusive).
+        Draw random integers from `low` (inclusive) to `high` (exclusive).
 
         Return random integers from the “discrete uniform” distribution of the specified type
         in the “half-open” interval [low, high).
