@@ -292,7 +292,7 @@ class dpnp_array:
 
         """
 
-        return str(self.asnumpy())
+        return self._array_obj.__str__()
 
     def __repr__(self):
         return self._array_obj.__repr__()
