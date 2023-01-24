@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 #define BACKEND_FPTR_H
 
 #include <map>
+#include <complex>
 
 #include <dpnp_iface_fptr.hpp>
 
@@ -63,6 +64,40 @@ const DPNPFuncType eft_DBL = DPNPFuncType::DPNP_FT_DOUBLE;
 const DPNPFuncType eft_C64 = DPNPFuncType::DPNP_FT_CMPLX64;
 const DPNPFuncType eft_C128 = DPNPFuncType::DPNP_FT_CMPLX128;
 const DPNPFuncType eft_BLN = DPNPFuncType::DPNP_FT_BOOL;
+
+/**
+ * An internal structure to build a pair of Data type enum value with C++ type
+ */
+template <DPNPFuncType FuncType, typename T>
+struct func_type_pair_t
+{
+   using type = T;
+
+   static func_type_pair_t get_pair(std::integral_constant<DPNPFuncType, FuncType>) { return {}; }
+};
+
+/**
+ * An internal structure to create a map of Data type enum value associated with C++ type
+ */
+template <typename ... Ps>
+struct func_type_map_factory_t : public Ps...
+{
+   using Ps::get_pair...;
+
+   template <DPNPFuncType FuncType>
+   using find_type = typename decltype(get_pair(std::integral_constant<DPNPFuncType, FuncType>{}))::type;
+};
+
+/**
+ * A map of the FPTR interface to link Data type enum value with accociated C++ type
+ */
+typedef func_type_map_factory_t<func_type_pair_t<eft_BLN, bool>,
+                                func_type_pair_t<eft_INT, std::int32_t>,
+                                func_type_pair_t<eft_LNG, std::int64_t>,
+                                func_type_pair_t<eft_FLT, float>,
+                                func_type_pair_t<eft_DBL, double>,
+                                func_type_pair_t<eft_C64, std::complex<float>>,
+                                func_type_pair_t<eft_C128, std::complex<double>>> func_type_map_t;
 
 /**
  * FPTR interface initialization functions

@@ -429,7 +429,9 @@ cpdef find_common_type(object x1_obj, object x2_obj):
     return numpy.find_common_type(array_types, scalar_types)
 
 
-cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input2_shape):
+cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input2_shape) except *:
+    cdef shape_type_c input1_shape_orig = input1_shape
+    cdef shape_type_c input2_shape_orig = input2_shape
     cdef shape_type_c result_shape
 
     # ex (8, 1, 6, 1) and (7, 1, 5) -> (8, 1, 6, 1) and (1, 7, 1, 5)
@@ -446,9 +448,9 @@ cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input
         elif input2_shape[it] == 1:
             result_shape.push_back(input1_shape[it])
         else:
-            err_msg = f"{ERROR_PREFIX} in function get_common_shape()"
-            err_msg += f"operands could not be broadcast together with shapes {input1_shape} {input2_shape}"
-            ValueError(err_msg)
+            err_msg = f"{ERROR_PREFIX} in function get_common_shape(): "
+            err_msg += f"operands could not be broadcast together with shapes {input1_shape_orig} {input2_shape_orig}"
+            raise ValueError(err_msg)
 
     return result_shape
 
