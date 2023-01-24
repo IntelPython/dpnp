@@ -301,6 +301,11 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga452c7c3254af03a10e554390181a54c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Element wise operation function dpnp_right_shift_c <br  />
   <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga452c7c3254af03a10e554390181a54c3">More...</a><br /></td></tr>
 <tr class="separator:ga452c7c3254af03a10e554390181a54c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadb9acae4d2b430e7db8e3a1f4e3d1331"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_output , typename _DataType_input1 , typename _DataType_input2 &gt; </td></tr>
+<tr class="memitem:gadb9acae4d2b430e7db8e3a1f4e3d1331"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gadb9acae4d2b430e7db8e3a1f4e3d1331">dpnp_less_equal_c</a> (DPCTLSyclQueueRef q_ref, void *result_out, const size_t result_size, const size_t result_ndim, const shape_elem_type *result_shape, const shape_elem_type *result_strides, const void *input1_in, const size_t input1_size, const size_t input1_ndim, const shape_elem_type *input1_shape, const shape_elem_type *input1_strides, const void *input2_in, const size_t input2_size, const size_t input2_ndim, const shape_elem_type *input2_shape, const shape_elem_type *input2_strides, const size_t *where, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
+<tr class="memdesc:gadb9acae4d2b430e7db8e3a1f4e3d1331"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per element operation function dpnp_less_equal_c <br  />
+  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gadb9acae4d2b430e7db8e3a1f4e3d1331">More...</a><br /></td></tr>
+<tr class="separator:gadb9acae4d2b430e7db8e3a1f4e3d1331"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0aa4fab91e27e82e51588ac19e7250d9"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _DataType_output &gt; </td></tr>
 <tr class="memitem:ga0aa4fab91e27e82e51588ac19e7250d9"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga0aa4fab91e27e82e51588ac19e7250d9">dpnp_add_c</a> (DPCTLSyclQueueRef q_ref, void *result_out, const size_t result_size, const size_t result_ndim, const shape_elem_type *result_shape, const shape_elem_type *result_strides, const void *input1_in, const size_t input1_size, const size_t input1_ndim, const shape_elem_type *input1_shape, const shape_elem_type *input1_strides, const void *input2_in, const size_t input2_size, const size_t input2_ndim, const shape_elem_type *input2_shape, const shape_elem_type *input2_strides, const size_t *where, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:ga0aa4fab91e27e82e51588ac19e7250d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per element operation function dpnp_add_c <br  />
@@ -7700,6 +7705,177 @@ template&lt;typename _DataType &gt; </div>
 <p>Element wise operation function dpnp_left_shift_c <br  />
  </p>
 <p >&lt;&gt; Function "dpnp_left_shift_c" executes operator "input1_elem &lt;&lt; input2_elem" over corresponding elements of input arrays <br  />
+ </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result_out</td><td>Output array. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">result_size</td><td>Output array size. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">result_ndim</td><td>Number of output array dimensions. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">result_shape</td><td>Output array shape. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">result_strides</td><td>Output array strides. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input1_in</td><td>Input array 1. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input1_size</td><td>Input array 1 size. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input1_ndim</td><td>Number of input array 1 dimensions. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input1_shape</td><td>Input array 1 shape. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input1_strides</td><td>Input array 1 strides. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input2_in</td><td>Input array 2. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input2_size</td><td>Input array 2 size. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input2_ndim</td><td>Number of input array 2 dimensions. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input2_shape</td><td>Input array 2 shape. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input2_strides</td><td>Input array 2 strides. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">where</td><td>Where condition. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. <br  />
+ </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gadb9acae4d2b430e7db8e3a1f4e3d1331" name="gadb9acae4d2b430e7db8e3a1f4e3d1331"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadb9acae4d2b430e7db8e3a1f4e3d1331">&#9670;&nbsp;</a></span>dpnp_less_equal_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType_output , typename _DataType_input1 , typename _DataType_input2 &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">DPCTLSyclEventRef dpnp_less_equal_c </td>
+          <td>(</td>
+          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
+          <td class="paramname"><em>q_ref</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>result_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>result_ndim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
+          <td class="paramname"><em>result_shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
+          <td class="paramname"><em>result_strides</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>input1_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>input1_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>input1_ndim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
+          <td class="paramname"><em>input1_shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
+          <td class="paramname"><em>input1_strides</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>input2_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>input2_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>input2_ndim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
+          <td class="paramname"><em>input2_shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
+          <td class="paramname"><em>input2_strides</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramname"><em>where</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const DPCTLEventVectorRef&#160;</td>
+          <td class="paramname"><em>dep_event_vec_ref</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per element operation function dpnp_less_equal_c <br  />
+ </p>
+<p >&lt;&gt; Function "dpnp_less_equal_c" executes operator "input1_elem &lt;= input2_elem" over corresponding elements of input arrays <br  />
  </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. <br  />

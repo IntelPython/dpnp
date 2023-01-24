@@ -1,5 +1,8 @@
 var NAVTREEINDEX2 =
 {
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a4dd2e447249c9f1ed5b4a01263bd8d06":[0,2,3,0],
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a599b693823273a797188b9beb8018052":[0,2,3,6],
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a8160fd9c1c7bd64515ffa60b8140f208":[0,2,3,2],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15ac84f19e1412dd40492153e4cb0e27739":[0,2,3,4],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15aea1ca4f8f623afaaf6072b0b6eb56c76":[0,2,3,3],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15af186d251dc2c1d64ce7c7c03a7c6e2d5":[0,2,3,5],
@@ -51,6 +54,7 @@ var NAVTREEINDEX2 =
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gad37eb9ce0ad29590cc931a9b6cd538e2":[0,4,9],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae4294907d97ba7d7a630d5097b435d0a":[0,4,13],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae67edf544bf0edce8e1cd74d68d8dc76":[0,4,5],
+"hierarchy.html":[1,2],
 "index.html":[],
 "modules.html":[0],
 "pages.html":[],
@@ -58,7 +62,9 @@ var NAVTREEINDEX2 =
 "struct_d_p_n_p_func_data.html":[0,2,0],
 "struct_d_p_n_p_func_data.html#a59c07232bc3830e89d5abe5447a24816":[0,2,0,1],
 "struct_d_p_n_p_func_data.html#af40fd22f5954384788121f817fb02f0d":[0,2,0,0],
-"structmt19937__struct.html":[1,0,5],
-"structpython__constants.html":[1,0,6],
+"structfunc__type__map__factory__t.html":[1,0,5],
+"structfunc__type__pair__t.html":[1,0,6],
+"structmt19937__struct.html":[1,0,7],
+"structpython__constants.html":[1,0,8],
 "verbose_8hpp_source.html":[2,0,1,8]
 };
