@@ -1464,17 +1464,34 @@ def shuffle(x1):
     return
 
 
-def seed(seed=None):
+def seed(seed=None,
+         device=None,
+         sycl_queue=None):
     """
-    Reseed a legacy mt19937 random number generator engine.
+    Reseed a legacy MT19937 random number generator engine.
+
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where an array with generated numbers will be created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for an array with generated numbers.
 
     Limitations
     -----------
-    Parameter ``seed`` is supported as a scalar.
-    Otherwise, the function will use :obj:`numpy.random.seed` on the backend
-    and will be executed on fallback backend.
+    Parameter `seed` is supported as either a scalar or an array of maximumum three integer scalars.
 
     """
+
+    # update a mt19937 random number for both RandomState and legacy functionality
+    global _dpnp_random_states
+
+    sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
+    _dpnp_random_states[sycl_queue] = RandomState(seed=seed, sycl_queue=sycl_queue)
 
     if not use_origin_backend(seed):
         # TODO:
@@ -1488,12 +1505,6 @@ def seed(seed=None):
         else:
             # TODO:
             # migrate to a single approach with RandomState class
-
-            # update a mt19937 random number for both RandomState and legacy functionality
-            global _dpnp_random_states
-            for sycl_queue in _dpnp_random_states.keys():
-                _dpnp_random_states[sycl_queue] = RandomState(seed=seed, sycl_queue=sycl_queue)
-
             dpnp_rng_srand(seed)
 
     # always reseed numpy engine also

@@ -76,7 +76,12 @@ class RandomState:
     """
 
     def __init__(self, seed=None, device=None, sycl_queue=None):
-        self._seed = 1 if seed is None else seed
+        if seed is None:
+            # ask NumPy to generate an array of three random integers as default seed value
+            self._seed = numpy.random.randint(low=0, high=numpy.iinfo(numpy.uint32).max + 1, size=3)
+        else:
+            self._seed = seed
+
         self._sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
         self._sycl_device = self._sycl_queue.sycl_device
 
