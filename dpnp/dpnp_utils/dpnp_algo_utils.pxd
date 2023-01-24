@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -123,7 +123,7 @@ cdef class dpnp_descriptor:
     cdef void * get_data(self)
 
 
-cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input2_shape)
+cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input2_shape) except *
 """
 Calculate common shape from input shapes
 """
