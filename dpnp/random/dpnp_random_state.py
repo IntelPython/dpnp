@@ -78,7 +78,7 @@ class RandomState:
     def __init__(self, seed=None, device=None, sycl_queue=None):
         if seed is None:
             # ask NumPy to generate an array of three random integers as default seed value
-            self._seed = numpy.random.randint(low=0, high=numpy.iinfo(numpy.uint32).max + 1, size=3)
+            self._seed = numpy.random.randint(low=0, high=numpy.iinfo(numpy.int32).max + 1, size=3)
         else:
             self._seed = seed
 

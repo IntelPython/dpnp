@@ -8,10 +8,10 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestComparison(unittest.TestCase):
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_binary(self, name, xp, dtype):
@@ -19,21 +19,26 @@ class TestComparison(unittest.TestCase):
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
         return getattr(xp, name)(a, b)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_greater(self):
         self.check_binary('greater')
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_greater_equal(self):
         self.check_binary('greater_equal')
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_less(self):
         self.check_binary('less')
 
     def test_less_equal(self):
         self.check_binary('less_equal')
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_not_equal(self):
         self.check_binary('not_equal')
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_equal(self):
         self.check_binary('equal')
 

@@ -193,6 +193,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_KRON_EXT,                     /**< Used in numpy.kron() impl, requires extra parameters  */
     DPNP_FN_LEFT_SHIFT,                   /**< Used in numpy.left_shift() impl  */
     DPNP_FN_LEFT_SHIFT_EXT,               /**< Used in numpy.left_shift() impl, requires extra parameters  */
+    DPNP_FN_LESS_EQUAL_EXT,               /**< Used in numpy.less_equal() impl, requires extra parameters */
     DPNP_FN_LOG,                          /**< Used in numpy.log() impl  */
     DPNP_FN_LOG_EXT,                      /**< Used in numpy.log() impl, requires extra parameters  */
     DPNP_FN_LOG10,                        /**< Used in numpy.log10() impl  */
