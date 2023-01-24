@@ -536,8 +536,18 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
 template <DPNPFuncType FT1, DPNPFuncType ... FTs>
 static void func_map_logic_2arg_2type_core(func_map_t& fmap)
 {
+    ((fmap[DPNPFuncName::DPNP_FN_EQUAL_EXT][FT1][FTs] =
+        {eft_BLN, (void*)dpnp_equal_c_ext<func_type_map_t::find_type<FT1>, func_type_map_t::find_type<FTs>>}), ...);
+    ((fmap[DPNPFuncName::DPNP_FN_GREATER_EXT][FT1][FTs] =
+        {eft_BLN, (void*)dpnp_greater_c_ext<func_type_map_t::find_type<FT1>, func_type_map_t::find_type<FTs>>}), ...);
+    ((fmap[DPNPFuncName::DPNP_FN_GREATER_EQUAL_EXT][FT1][FTs] =
+        {eft_BLN, (void*)dpnp_greater_equal_c_ext<func_type_map_t::find_type<FT1>, func_type_map_t::find_type<FTs>>}), ...);
+    ((fmap[DPNPFuncName::DPNP_FN_LESS_EXT][FT1][FTs] =
+        {eft_BLN, (void*)dpnp_less_c_ext<func_type_map_t::find_type<FT1>, func_type_map_t::find_type<FTs>>}), ...);
     ((fmap[DPNPFuncName::DPNP_FN_LESS_EQUAL_EXT][FT1][FTs] =
         {eft_BLN, (void*)dpnp_less_equal_c_ext<func_type_map_t::find_type<FT1>, func_type_map_t::find_type<FTs>>}), ...);
+    ((fmap[DPNPFuncName::DPNP_FN_NOT_EQUAL_EXT][FT1][FTs] =
+        {eft_BLN, (void*)dpnp_not_equal_c_ext<func_type_map_t::find_type<FT1>, func_type_map_t::find_type<FTs>>}), ...);
 }
 
 template <DPNPFuncType ... FTs>
