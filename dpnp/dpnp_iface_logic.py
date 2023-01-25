@@ -219,18 +219,32 @@ def any(x1, axis=None, out=None, keepdims=False):
     return call_origin(numpy.any, x1, axis, out, keepdims)
 
 
-def equal(x1, x2):
+def equal(x1,
+          x2,
+          /,
+          out=None,
+          *,
+          where=True,
+          dtype=None,
+          subok=True):
     """
-    Return (x1 == x2) element-wise.
+    Return the truth value of (x1 == x2) element-wise.
 
     For full documentation refer to :obj:`numpy.equal`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array of bool type, element-wise comparison of `x1` and `x2`.
+
     Limitations
     -----------
-    Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
-    Parameter ``x2`` is supported as either :obj:`dpnp.ndarray` or int.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Sizes, shapes and data types of input arrays ``x1`` and ``x2`` are supported to be equal.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
+    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`,
+    excluding `dpnp.complex64` and `dpnp.complex128`.
 
     See Also
     --------
@@ -250,33 +264,55 @@ def equal(x1, x2):
     [True, True, False]
 
     """
+    
+    if out is not None:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get a common queue to copy data from the host into a device if any input is scalar
+        queue = get_common_allocation_queue([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else None
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # x2_desc = dpnp.get_dpnp_descriptor(x2)
-    # if x1_desc and x2_desc:
-    #     if x1_desc.size != x2_desc.size:
-    #         pass
-    #     elif x1_desc.dtype != x2_desc.dtype:
-    #         pass
-    #     elif x1_desc.shape != x2_desc.shape:
-    #         pass
-    #     else:
-    #         return dpnp_equal(x1_desc, x2_desc).get_pyobj()
-
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        if x1_desc and x2_desc:
+            return dpnp_equal(x1_desc, x2_desc).get_pyobj()
     return call_origin(numpy.equal, x1, x2)
 
 
-def greater(x1, x2):
+def greater(x1,
+            x2,
+            /,
+            out=None,
+            *,
+            where=True,
+            dtype=None,
+            subok=True):
     """
-    Return (x1 > x2) element-wise.
+    Return the truth value of (x1 > x2) element-wise.
 
     For full documentation refer to :obj:`numpy.greater`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array of bool type, element-wise comparison of `x1` and `x2`.
+
     Limitations
     -----------
-    At least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
+    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Input array data types are limited by supported DPNP :ref:`Data types`,
+    excluding `dpnp.complex64` and `dpnp.complex128`.
 
     See Also
     --------
@@ -297,30 +333,54 @@ def greater(x1, x2):
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # x2_desc = dpnp.get_dpnp_descriptor(x2)
-    # if x1_desc and x2_desc:
-    #     if x1_desc.size < 2:
-    #         pass
-    #     elif x2_desc.size < 2:
-    #         pass
-    #     else:
-    #         return dpnp_greater(x1_desc, x2_desc).get_pyobj()
+    if out is not None:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get a common queue to copy data from the host into a device if any input is scalar
+        queue = get_common_allocation_queue([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else None
 
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        if x1_desc and x2_desc:
+            return dpnp_greater(x1_desc, x2_desc).get_pyobj()
     return call_origin(numpy.greater, x1, x2)
 
 
-def greater_equal(x1, x2):
+def greater_equal(x1,
+                  x2,
+                  /,
+                  out=None,
+                  *,
+                  where=True,
+                  dtype=None,
+                  subok=True):
     """
-    Return (x1 >= x2) element-wise.
+    Return the truth value of (x1 >= x2) element-wise.
 
     For full documentation refer to :obj:`numpy.greater_equal`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array of bool type, element-wise comparison of `x1` and `x2`.
+
     Limitations
     -----------
-    At least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
+    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Input array data types are limited by supported DPNP :ref:`Data types`,
+    excluding `dpnp.complex64` and `dpnp.complex128`.
 
     See Also
     --------
@@ -341,16 +401,25 @@ def greater_equal(x1, x2):
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # x2_desc = dpnp.get_dpnp_descriptor(x2)
-    # if x1_desc and x2_desc:
-    #     if x1_desc.size < 2:
-    #         pass
-    #     elif x2_desc.size < 2:
-    #         pass
-    #     else:
-    #         return dpnp_greater_equal(x1_desc, x2_desc).get_pyobj()
+    if out is not None:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get a common queue to copy data from the host into a device if any input is scalar
+        queue = get_common_allocation_queue([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else None
 
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        if x1_desc and x2_desc:
+            return dpnp_greater_equal(x1_desc, x2_desc).get_pyobj()
     return call_origin(numpy.greater_equal, x1, x2)
 
 
@@ -532,17 +601,32 @@ def isnan(x1, out=None, **kwargs):
     return call_origin(numpy.isnan, x1, out, **kwargs)
 
 
-def less(x1, x2):
+def less(x1,
+         x2,
+         /,
+         out=None,
+         *,
+         where=True,
+         dtype=None,
+         subok=True):
     """
-    Return (x1 < x2) element-wise.
+    Return the truth value of (x1 < x2) element-wise.
 
     For full documentation refer to :obj:`numpy.less`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array of bool type, element-wise comparison of `x1` and `x2`.
+
     Limitations
     -----------
-    At least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
+    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Input array data types are limited by supported DPNP :ref:`Data types`,
+    excluding `dpnp.complex64` and `dpnp.complex128`.
 
     See Also
     --------
@@ -563,16 +647,25 @@ def less(x1, x2):
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # x2_desc = dpnp.get_dpnp_descriptor(x2)
-    # if x1_desc and x2_desc:
-    #     if x1_desc.size < 2:
-    #         pass
-    #     elif x2_desc.size < 2:
-    #         pass
-    #     else:
-    #         return dpnp_less(x1_desc, x2_desc).get_pyobj()
+    if out is not None:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get a common queue to copy data from the host into a device if any input is scalar
+        queue = get_common_allocation_queue([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else None
 
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        if x1_desc and x2_desc:
+            return dpnp_less(x1_desc, x2_desc).get_pyobj()
     return call_origin(numpy.less, x1, x2)
 
 
@@ -813,18 +906,32 @@ def logical_xor(x1, x2, out=None, **kwargs):
     return call_origin(numpy.logical_xor, x1, x2, out, **kwargs)
 
 
-def not_equal(x1, x2):
+def not_equal(x1,
+              x2,
+              /,
+              out=None,
+              *,
+              where=True,
+              dtype=None,
+              subok=True):
     """
-    Return (x1 != x2) element-wise.
+    Return the truth value of (x1 != x2) element-wise.
 
     For full documentation refer to :obj:`numpy.not_equal`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array of bool type, element-wise comparison of `x1` and `x2`.
+
     Limitations
     -----------
-    At least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
-    If either ``x1`` or ``x2`` is scalar then other one should be :obj:`dpnp.ndarray`.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
+    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Input array data types are limited by supported DPNP :ref:`Data types`,
+    excluding `dpnp.complex64` and `dpnp.complex128`.
 
     See Also
     --------
@@ -845,16 +952,23 @@ def not_equal(x1, x2):
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # x2_desc = dpnp.get_dpnp_descriptor(x2)
-    # if x1_desc and x2_desc:
-    #     if x1_desc.size < 2:
-    #         pass
-    #     elif x2_desc.size < 2:
-    #         pass
-    #     else:
-    #         result = dpnp_not_equal(x1_desc, x2_desc).get_pyobj()
+    if out is not None:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get a common queue to copy data from the host into a device if any input is scalar
+        queue = get_common_allocation_queue([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else None
 
-    #         return result
-
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        if x1_desc and x2_desc:
+            return dpnp_not_equal(x1_desc, x2_desc).get_pyobj()
     return call_origin(numpy.not_equal, x1, x2)

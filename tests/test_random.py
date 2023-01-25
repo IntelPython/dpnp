@@ -75,7 +75,6 @@ def test_input_shape(func):
     assert shape == res.shape
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("func",
                          [dpnp.random.random,
                           dpnp.random.random_sample,

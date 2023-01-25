@@ -322,7 +322,6 @@ class TestRandInt:
         assert_array_equal(actual, desired)
 
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_negative_interval(self):
         rs = RandomState(3567)
 

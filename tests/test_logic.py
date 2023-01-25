@@ -99,7 +99,15 @@ def test_any(type, shape):
         assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+def test_equal():
+    a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
+    ia = dpnp.array(a)
+    for i in range(len(a)):
+        np_res = (a == i)
+        dpnp_res = (ia == i)
+        assert_equal(dpnp_res, np_res)
+
+
 def test_greater():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
@@ -109,7 +117,6 @@ def test_greater():
         assert_equal(dpnp_res, np_res)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_greater_equal():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
@@ -119,7 +126,6 @@ def test_greater_equal():
         assert_equal(dpnp_res, np_res)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_less():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
@@ -138,7 +144,6 @@ def test_less_equal():
         assert_equal(dpnp_res, np_res)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_not_equal():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
@@ -147,9 +152,10 @@ def test_not_equal():
         dpnp_res = (ia != i)
         assert_equal(dpnp_res, np_res)
 
+
 @pytest.mark.parametrize("op",
-                         ['less_equal'],
-                         ids=['less_equal'])
+                         ['equal', 'greater', 'greater_equal', 'less', 'less_equal', 'not_equal'],
+                         ids=['equal', 'greater', 'greater_equal', 'less', 'less_equal', 'not_equal'])
 @pytest.mark.parametrize("x1",
                          [[3, 4, 5, 6], [[1, 2, 3, 4], [5, 6, 7, 8]], [[1, 2, 5, 6], [3, 4, 7, 8], [1, 2, 7, 8]]],
                          ids=['[3, 4, 5, 6]', '[[1, 2, 3, 4], [5, 6, 7, 8]]', '[[1, 2, 5, 6], [3, 4, 7, 8], [1, 2, 7, 8]]'])
@@ -177,9 +183,10 @@ def test_elemwise_comparison(op, x1, x2):
     dpnp_res = getattr(dpnp, op)(dp_x1[::-1], dp_x2)
     assert_equal(dpnp_res, np_res)
 
+
 @pytest.mark.parametrize("op",
-                         ['less_equal'],
-                         ids=['less_equal'])
+                         ['equal', 'greater', 'greater_equal', 'less', 'less_equal', 'not_equal'],
+                         ids=['equal', 'greater', 'greater_equal', 'less', 'less_equal', 'not_equal'])
 @pytest.mark.parametrize("sh1",
                          [[10], [8, 4], [4, 1, 2]],
                          ids=['(10,)', '(8, 4)', '(4, 1, 2)'])
