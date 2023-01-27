@@ -206,6 +206,10 @@ enum class DPNPFuncName : size_t
     DPNP_FN_LOG2_EXT,                     /**< Used in numpy.log2() impl, requires extra parameters  */
     DPNP_FN_LOG1P,                        /**< Used in numpy.log1p() impl  */
     DPNP_FN_LOG1P_EXT,                    /**< Used in numpy.log1p() impl, requires extra parameters  */
+    DPNP_FN_LOGICAL_AND_EXT,              /**< Used in numpy.logical_and() impl, requires extra parameters */
+    DPNP_FN_LOGICAL_NOT_EXT,              /**< Used in numpy.logical_not() impl, requires extra parameters */
+    DPNP_FN_LOGICAL_OR_EXT,               /**< Used in numpy.logical_or() impl, requires extra parameters */
+    DPNP_FN_LOGICAL_XOR_EXT,              /**< Used in numpy.logical_xor() impl, requires extra parameters */
     DPNP_FN_MATMUL,                       /**< Used in numpy.matmul() impl  */
     DPNP_FN_MATMUL_EXT,                   /**< Used in numpy.matmul() impl, requires extra parameters */
     DPNP_FN_MATRIX_RANK,                  /**< Used in numpy.linalg.matrix_rank() impl  */

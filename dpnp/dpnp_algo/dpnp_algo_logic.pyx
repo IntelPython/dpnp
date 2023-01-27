@@ -270,65 +270,35 @@ cpdef utils.dpnp_descriptor dpnp_less_equal(utils.dpnp_descriptor x1_obj,
     return call_fptr_2in_1out_strides(DPNP_FN_LESS_EQUAL_EXT, x1_obj, x2_obj, dtype, out, where, func_name="less_equal")
 
 
-
-cpdef utils.dpnp_descriptor dpnp_logical_and(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=result_sycl_device,
-                                                                             usm_type=result_usm_type,
-                                                                             sycl_queue=result_sycl_queue)
-
-    for i in range(result.size):
-        result.get_pyobj()[i] = numpy.logical_and(input1.get_pyobj()[i], input2.get_pyobj()[i])
-
-    return result
+cpdef utils.dpnp_descriptor dpnp_logical_and(utils.dpnp_descriptor x1_obj,
+                                             utils.dpnp_descriptor x2_obj,
+                                             object dtype=None,
+                                             utils.dpnp_descriptor out=None,
+                                             object where=True):
+    return call_fptr_2in_1out_strides(DPNP_FN_LOGICAL_AND_EXT, x1_obj, x2_obj, dtype, out, where, func_name="logical_and")
 
 
-cpdef utils.dpnp_descriptor dpnp_logical_not(utils.dpnp_descriptor input1):
-    input1_obj = input1.get_array()
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=input1_obj.sycl_device,
-                                                                             usm_type=input1_obj.usm_type,
-                                                                             sycl_queue=input1_obj.sycl_queue)
-
-    for i in range(result.size):
-        result.get_pyobj()[i] = numpy.logical_not(input1.get_pyobj()[i])
-
-    return result
+cpdef utils.dpnp_descriptor dpnp_logical_not(utils.dpnp_descriptor x_obj,
+                                            object dtype=None,
+                                            utils.dpnp_descriptor out=None,
+                                            object where=True):
+    return call_fptr_1in_1out_strides(DPNP_FN_LOGICAL_NOT_EXT, x_obj, dtype, out, where, func_name="logical_not")
 
 
-cpdef utils.dpnp_descriptor dpnp_logical_or(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=result_sycl_device,
-                                                                             usm_type=result_usm_type,
-                                                                             sycl_queue=result_sycl_queue)
-
-    for i in range(result.size):
-        result.get_pyobj()[i] = numpy.logical_or(input1.get_pyobj()[i], input2.get_pyobj()[i])
-
-    return result
+cpdef utils.dpnp_descriptor dpnp_logical_or(utils.dpnp_descriptor x1_obj,
+                                            utils.dpnp_descriptor x2_obj,
+                                            object dtype=None,
+                                            utils.dpnp_descriptor out=None,
+                                            object where=True):
+    return call_fptr_2in_1out_strides(DPNP_FN_LOGICAL_OR_EXT, x1_obj, x2_obj, dtype, out, where, func_name="logical_or")
 
 
-cpdef utils.dpnp_descriptor dpnp_logical_xor(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=result_sycl_device,
-                                                                             usm_type=result_usm_type,
-                                                                             sycl_queue=result_sycl_queue)
-
-    for i in range(result.size):
-        result.get_pyobj()[i] = numpy.logical_xor(input1.get_pyobj()[i], input2.get_pyobj()[i])
-
-    return result
+cpdef utils.dpnp_descriptor dpnp_logical_xor(utils.dpnp_descriptor x1_obj,
+                                             utils.dpnp_descriptor x2_obj,
+                                             object dtype=None,
+                                             utils.dpnp_descriptor out=None,
+                                             object where=True):
+    return call_fptr_2in_1out_strides(DPNP_FN_LOGICAL_XOR_EXT, x1_obj, x2_obj, dtype, out, where, func_name="logical_xor")
 
 
 cpdef utils.dpnp_descriptor dpnp_not_equal(utils.dpnp_descriptor x1_obj,
