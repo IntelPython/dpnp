@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -63,9 +63,12 @@ __all__ = [
     "convert_single_elem_array_to_scalar",
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu",
+    "get_coerced_usm_type",
     "get_dpnp_descriptor",
+    "get_execution_queue",
     "get_include",
-    "get_normalized_queue_device"
+    "get_normalized_queue_device",
+    "isarray"
 ]
 
 from dpnp import (
@@ -191,6 +194,16 @@ def convert_single_elem_array_to_scalar(obj, keepdims=False):
     return obj
 
 
+def get_coerced_usm_type(usm_types):
+    """
+    Given a list of strings denoting the types of USM allocations
+    for input arrays returns the type of USM allocation for the output
+    array(s) per compute follows data paradigm.
+    Returns `None` if the type can not be deduced.
+    """
+    return dpctl.utils.get_coerced_usm_type(usm_types)
+
+
 def get_dpnp_descriptor(ext_obj,
                         copy_when_strides=True,
                         copy_when_nondefault_queue=True,
@@ -252,6 +265,15 @@ def get_dpnp_descriptor(ext_obj,
     return False
 
 
+def get_execution_queue(qs):
+    """
+    Given a list of :class:`dpctl.SyclQueue` objects
+    returns the execution queue under compute follows data paradigm,
+    or returns `None` if queues are not equal.
+    """
+    return dpctl.utils.get_execution_queue(qs)
+
+
 def get_include():
     """
     Return the directory that contains the DPNP C++ backend \\*.h header files.
@@ -307,3 +329,11 @@ def get_normalized_queue_device(obj=None,
     if hasattr(dpt._device, 'normalize_queue_device'):
         return dpt._device.normalize_queue_device(sycl_queue=sycl_queue, device=device)
     return sycl_queue
+
+
+def isarray(obj):
+    """
+    Returns True if the type of `obj` is a usm_ndarray type.
+
+    """
+    return isinstance(obj, (dpnp_array, dpt.usm_ndarray))

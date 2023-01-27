@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -148,6 +148,31 @@ def full(shape,
                          usm_type=usm_type,
                          sycl_queue=sycl_queue_normalized)
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+
+
+def linspace(start,
+             stop,
+             /,
+             num,
+             *,
+             dtype=None,
+             device=None,
+             endpoint=True,
+             sycl_queue=None,
+             usm_type="device"):
+    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    dpu.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+
+    """Creates `dpnp_array` with evenly spaced numbers of specified interval."""
+    array_obj = dpt.linspace(start,
+                             stop,
+                             num,
+                             dtype=dtype,
+                             endpoint=endpoint,
+                             sycl_queue=sycl_queue,
+                             usm_type=usm_type)
+    return dpnp_array(array_obj.shape, buffer=array_obj)
 
 
 def ones(shape,
