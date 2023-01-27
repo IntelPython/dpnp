@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -127,6 +127,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_EIG_EXT
         DPNP_FN_EIGVALS
         DPNP_FN_EIGVALS_EXT
+        DPNP_FN_EQUAL_EXT
         DPNP_FN_ERF
         DPNP_FN_ERF_EXT
         DPNP_FN_EYE
@@ -155,6 +156,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
         DPNP_FN_FULL_LIKE
+        DPNP_FN_GREATER_EXT
+        DPNP_FN_GREATER_EQUAL_EXT
         DPNP_FN_HYPOT
         DPNP_FN_HYPOT_EXT
         DPNP_FN_IDENTITY
@@ -169,6 +172,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_KRON_EXT
         DPNP_FN_LEFT_SHIFT
         DPNP_FN_LEFT_SHIFT_EXT
+        DPNP_FN_LESS_EXT
+        DPNP_FN_LESS_EQUAL_EXT
         DPNP_FN_LOG
         DPNP_FN_LOG_EXT
         DPNP_FN_LOG10
@@ -203,6 +208,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_NEGATIVE_EXT
         DPNP_FN_NONZERO
         DPNP_FN_NONZERO_EXT
+        DPNP_FN_NOT_EQUAL_EXT
         DPNP_FN_ONES
         DPNP_FN_ONES_LIKE
         DPNP_FN_PARTITION
@@ -429,7 +435,7 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_strides_t)(c_dpctl.DPCTLSyclQu
                                                              const shape_elem_type * ,
                                                              const shape_elem_type * ,
                                                              const long * ,
-                                                             const c_dpctl.DPCTLEventVectorRef)
+                                                             const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void *, void * , void * , size_t, size_t, size_t)
 ctypedef c_dpctl.DPCTLSyclEventRef(*dpnp_reduction_c_t)(c_dpctl.DPCTLSyclQueueRef,
                                                         void *,

@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2022, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -151,6 +151,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_EIG_EXT,                      /**< Used in numpy.linalg.eig() impl, requires extra parameters */
     DPNP_FN_EIGVALS,                      /**< Used in numpy.linalg.eigvals() impl  */
     DPNP_FN_EIGVALS_EXT,                  /**< Used in numpy.linalg.eigvals() impl, requires extra parameters */
+    DPNP_FN_EQUAL_EXT,                    /**< Used in numpy.equal() impl, requires extra parameters */
     DPNP_FN_ERF,                          /**< Used in scipy.special.erf impl  */
     DPNP_FN_ERF_EXT,                      /**< Used in scipy.special.erf impl, requires extra parameters */
     DPNP_FN_EYE,                          /**< Used in numpy.eye() impl  */
@@ -179,6 +180,8 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FMOD_EXT,                     /**< Used in numpy.fmod() impl, requires extra parameters  */
     DPNP_FN_FULL,                         /**< Used in numpy.full() impl  */
     DPNP_FN_FULL_LIKE,                    /**< Used in numpy.full_like() impl  */
+    DPNP_FN_GREATER_EXT,                  /**< Used in numpy.greater() impl, requires extra parameters */
+    DPNP_FN_GREATER_EQUAL_EXT,            /**< Used in numpy.greater_equal() impl, requires extra parameters */
     DPNP_FN_HYPOT,                        /**< Used in numpy.hypot() impl  */
     DPNP_FN_HYPOT_EXT,                    /**< Used in numpy.hypot() impl, requires extra parameters  */
     DPNP_FN_IDENTITY,                     /**< Used in numpy.identity() impl  */
@@ -193,6 +196,8 @@ enum class DPNPFuncName : size_t
     DPNP_FN_KRON_EXT,                     /**< Used in numpy.kron() impl, requires extra parameters  */
     DPNP_FN_LEFT_SHIFT,                   /**< Used in numpy.left_shift() impl  */
     DPNP_FN_LEFT_SHIFT_EXT,               /**< Used in numpy.left_shift() impl, requires extra parameters  */
+    DPNP_FN_LESS_EXT,                     /**< Used in numpy.less() impl, requires extra parameters */
+    DPNP_FN_LESS_EQUAL_EXT,               /**< Used in numpy.less_equal() impl, requires extra parameters */
     DPNP_FN_LOG,                          /**< Used in numpy.log() impl  */
     DPNP_FN_LOG_EXT,                      /**< Used in numpy.log() impl, requires extra parameters  */
     DPNP_FN_LOG10,                        /**< Used in numpy.log10() impl  */
@@ -227,6 +232,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NEGATIVE_EXT,                 /**< Used in numpy.negative() impl, requires extra parameters */
     DPNP_FN_NONZERO,                      /**< Used in numpy.nonzero() impl  */
     DPNP_FN_NONZERO_EXT,                  /**< Used in numpy.nonzero() impl, requires extra parameters */
+    DPNP_FN_NOT_EQUAL_EXT,                /**< Used in numpy.not_equal() impl, requires extra parameters */
     DPNP_FN_ONES,                         /**< Used in numpy.ones() impl */
     DPNP_FN_ONES_LIKE,                    /**< Used in numpy.ones_like() impl */
     DPNP_FN_PARTITION,                    /**< Used in numpy.partition() impl */
@@ -391,7 +397,7 @@ enum class DPNPFuncType : size_t
     DPNP_FT_DOUBLE,   /**< analog of numpy.float32 or double */
     DPNP_FT_CMPLX64,  /**< analog of numpy.complex64 or std::complex<float> */
     DPNP_FT_CMPLX128, /**< analog of numpy.complex128 or std::complex<double> */
-    DPNP_FT_BOOL      /**< analog of numpy.bool or numpy.bool_ or bool */
+    DPNP_FT_BOOL      /**< analog of numpy.bool_ or bool */
 };
 
 /**

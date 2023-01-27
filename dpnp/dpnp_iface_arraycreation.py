@@ -1355,7 +1355,7 @@ def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
     return call_origin(numpy.trace, x1, offset, axis1, axis2, dtype, out)
 
 
-def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
+def tri(N, M=None, k=0, dtype=dpnp.float, **kwargs):
     """
     An array with ones at and below the given diagonal and zeros elsewhere.
 
@@ -1390,7 +1390,7 @@ def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
         elif not isinstance(k, int):
             pass
         else:
-            if dtype is numpy.float:
+            if dtype is dpnp.float:
                 sycl_queue = dpnp.get_normalized_queue_device(sycl_queue=None, device=None)
                 dtype = map_dtype_to_device(dpnp.float64, sycl_queue.sycl_device)
             return dpnp_tri(N, M, k, dtype).get_pyobj()

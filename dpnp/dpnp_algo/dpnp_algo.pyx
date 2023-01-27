@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -221,7 +221,7 @@ cpdef dpnp_queue_initialize():
 
 
 cpdef dpnp_queue_is_cpu():
-    """Return 1 if current queue is CPU or HOST. Return 0 otherwise.
+    """Return 1 if current queue is CPU. Return 0 otherwise.
 
     """
     return dpnp_queue_is_cpu_c()
@@ -276,7 +276,7 @@ cdef dpnp_DPNPFuncType_to_dtype(size_t type):
     elif type == <size_t > DPNP_FT_CMPLX128:
         return numpy.complex128
     elif type == <size_t > DPNP_FT_BOOL:
-        return numpy.bool
+        return numpy.bool_
     else:
         utils.checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
 

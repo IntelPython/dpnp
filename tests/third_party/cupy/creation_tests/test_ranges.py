@@ -54,7 +54,7 @@ class TestRanges(unittest.TestCase):
 
     def test_arange9(self):
         for xp in (numpy, cupy):
-            with pytest.raises(ValueError):
+            with pytest.raises((ValueError, TypeError)):
                 xp.arange(10, dtype=xp.bool_)
 
     @testing.numpy_cupy_array_equal()
