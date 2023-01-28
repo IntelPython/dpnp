@@ -51,19 +51,8 @@ def test_arange(start, stop, step, dtype):
     func = lambda xp: xp.arange(start, stop=stop, step=step, dtype=dtype)
 
     if not is_dtype_supported(dtype):
-        if stop is None:
-            _stop, _start = start, 0
-        else:
-            _stop, _start = stop, start
-        _step = 1 if step is None else step
-
-        if _start == _stop:
-            pass
-        elif (_step < 0) ^ (_start < _stop):
-            # exception is raising when dpctl calls a kernel function,
-            # i.e. when resulting array is not empty
-            assert_raises(RuntimeError, func, dpnp)
-            return
+        assert_raises(RuntimeError, func, dpnp)
+        return
 
     exp_array = func(numpy)
     res_array = func(dpnp).asnumpy()
@@ -473,7 +462,7 @@ def test_vander(array, dtype, n, increase):
 def test_full(shape, fill_value, dtype, order):
     func = lambda xp: xp.full(shape, fill_value, dtype=dtype, order=order)
 
-    if shape != 0 and not 0 in shape and not is_dtype_supported(dtype, no_complex_check=True):
+    if not is_dtype_supported(dtype, no_complex_check=True):
         assert_raises(RuntimeError, func, dpnp)
         return
 
@@ -499,7 +488,7 @@ def test_full_like(array, fill_value, dtype, order):
     ia = dpnp.array(array)
     func = lambda xp, x: xp.full_like(x, fill_value, dtype=dtype, order=order)
 
-    if ia.size and not is_dtype_supported(dtype, no_complex_check=True):
+    if not is_dtype_supported(dtype, no_complex_check=True):
         assert_raises(RuntimeError, func, dpnp, ia)
         return
     
@@ -552,10 +541,13 @@ def test_full_invalid_fill_value(fill_value):
                          [None, "C", "F"],
                          ids=['None', 'C', 'F'])
 def test_zeros(shape, dtype, order):
-    expected = numpy.zeros(shape, dtype=dtype, order=order)
-    result = dpnp.zeros(shape, dtype=dtype, order=order)
+    func = lambda xp: xp.zeros(shape, dtype=dtype, order=order)
 
-    assert_array_equal(expected, result)
+    if not is_dtype_supported(dtype, no_complex_check=True):
+        assert_raises(RuntimeError, func, dpnp)
+        return
+
+    assert_array_equal(func(numpy), func(dpnp))
 
 
 @pytest.mark.parametrize("array",
@@ -572,11 +564,13 @@ def test_zeros(shape, dtype, order):
 def test_zeros_like(array, dtype, order):
     a = numpy.array(array)
     ia = dpnp.array(array)
+    func = lambda xp, x: xp.zeros_like(x, dtype=dtype, order=order)
 
-    expected = numpy.zeros_like(a, dtype=dtype, order=order)
-    result = dpnp.zeros_like(ia, dtype=dtype, order=order)
+    if not is_dtype_supported(dtype, no_complex_check=True):
+        assert_raises(RuntimeError, func, dpnp, ia)
+        return
 
-    assert_array_equal(expected, result)
+    assert_array_equal(func(numpy, a), func(dpnp, ia))
 
 
 @pytest.mark.parametrize("shape",
@@ -591,10 +585,13 @@ def test_zeros_like(array, dtype, order):
                          [None, "C", "F"],
                          ids=['None', 'C', 'F'])
 def test_empty(shape, dtype, order):
-    expected = numpy.empty(shape, dtype=dtype, order=order)
-    result = dpnp.empty(shape, dtype=dtype, order=order)
+    func = lambda xp: xp.zeros(shape, dtype=dtype, order=order)
 
-    assert expected.shape == result.shape
+    if not is_dtype_supported(dtype, no_complex_check=True):
+        assert_raises(RuntimeError, func, dpnp)
+        return
+
+    assert func(numpy).shape == func(dpnp).shape
 
 
 @pytest.mark.parametrize("array",
@@ -611,11 +608,13 @@ def test_empty(shape, dtype, order):
 def test_empty_like(array, dtype, order):
     a = numpy.array(array)
     ia = dpnp.array(array)
+    func = lambda xp, x: xp.empty_like(x, dtype=dtype, order=order)
 
-    expected = numpy.empty_like(a, dtype=dtype, order=order)
-    result = dpnp.empty_like(ia, dtype=dtype, order=order)
+    if not is_dtype_supported(dtype, no_complex_check=True):
+        assert_raises(RuntimeError, func, dpnp, ia)
+        return
 
-    assert expected.shape == result.shape
+    assert func(numpy, a).shape == func(dpnp, ia).shape
 
 
 @pytest.mark.parametrize("shape",
@@ -632,7 +631,7 @@ def test_empty_like(array, dtype, order):
 def test_ones(shape, dtype, order):
     func = lambda xp: xp.ones(shape, dtype=dtype, order=order)
 
-    if shape != 0 and not 0 in shape and not is_dtype_supported(dtype, no_complex_check=True):
+    if not is_dtype_supported(dtype, no_complex_check=True):
         assert_raises(RuntimeError, func, dpnp)
         return
 
@@ -655,7 +654,7 @@ def test_ones_like(array, dtype, order):
     ia = dpnp.array(array)
     func = lambda xp, x: xp.ones_like(x, dtype=dtype, order=order)
 
-    if ia.size and not is_dtype_supported(dtype, no_complex_check=True):
+    if not is_dtype_supported(dtype, no_complex_check=True):
         assert_raises(RuntimeError, func, dpnp, ia)
         return
 
