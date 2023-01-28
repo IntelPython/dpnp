@@ -28,7 +28,7 @@ class TestIndices(unittest.TestCase):
 
     def test_indices_list3(self):
         for xp in (numpy, cupy):
-            with pytest.raises(ValueError):
+            with pytest.raises((ValueError, TypeError)):
                 xp.indices((1, 2, 3, 4), dtype=xp.bool_)
 
 

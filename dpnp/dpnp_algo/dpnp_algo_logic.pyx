@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -166,46 +166,28 @@ cpdef utils.dpnp_descriptor dpnp_any(utils.dpnp_descriptor array1):
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_equal(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=result_sycl_device,
-                                                                             usm_type=result_usm_type,
-                                                                             sycl_queue=result_sycl_queue)
-    for i in range(result.size):
-        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] == input2.get_pyobj()[i])
-
-    return result
+cpdef utils.dpnp_descriptor dpnp_equal(utils.dpnp_descriptor x1_obj,
+                                       utils.dpnp_descriptor x2_obj,
+                                       object dtype=None,
+                                       utils.dpnp_descriptor out=None,
+                                       object where=True):
+    return call_fptr_2in_1out_strides(DPNP_FN_EQUAL_EXT, x1_obj, x2_obj, dtype, out, where, func_name="equal")
 
 
-cpdef utils.dpnp_descriptor dpnp_greater(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=result_sycl_device,
-                                                                             usm_type=result_usm_type,
-                                                                             sycl_queue=result_sycl_queue)
-    for i in range(result.size):
-        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] > input2.get_pyobj()[i])
-
-    return result
+cpdef utils.dpnp_descriptor dpnp_greater(utils.dpnp_descriptor x1_obj,
+                                         utils.dpnp_descriptor x2_obj,
+                                         object dtype=None,
+                                         utils.dpnp_descriptor out=None,
+                                         object where=True):
+    return call_fptr_2in_1out_strides(DPNP_FN_GREATER_EXT, x1_obj, x2_obj, dtype, out, where, func_name="greater")
 
 
-cpdef utils.dpnp_descriptor dpnp_greater_equal(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=result_sycl_device,
-                                                                             usm_type=result_usm_type,
-                                                                             sycl_queue=result_sycl_queue)
-    for i in range(result.size):
-        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] >= input2.get_pyobj()[i])
-
-    return result
+cpdef utils.dpnp_descriptor dpnp_greater_equal(utils.dpnp_descriptor x1_obj,
+                                               utils.dpnp_descriptor x2_obj,
+                                               object dtype=None,
+                                               utils.dpnp_descriptor out=None,
+                                               object where=True):
+    return call_fptr_2in_1out_strides(DPNP_FN_GREATER_EQUAL_EXT, x1_obj, x2_obj, dtype, out, where, func_name="greater_equal")
 
 
 cpdef utils.dpnp_descriptor dpnp_isclose(utils.dpnp_descriptor input1,
@@ -272,32 +254,21 @@ cpdef utils.dpnp_descriptor dpnp_isnan(utils.dpnp_descriptor input1):
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_less(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=result_sycl_device,
-                                                                             usm_type=result_usm_type,
-                                                                             sycl_queue=result_sycl_queue)
-    for i in range(result.size):
-        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] < input2.get_pyobj()[i])
-
-    return result
+cpdef utils.dpnp_descriptor dpnp_less(utils.dpnp_descriptor x1_obj,
+                                      utils.dpnp_descriptor x2_obj,
+                                      object dtype=None,
+                                      utils.dpnp_descriptor out=None,
+                                      object where=True):
+    return call_fptr_2in_1out_strides(DPNP_FN_LESS_EXT, x1_obj, x2_obj, dtype, out, where, func_name="less")
 
 
-cpdef utils.dpnp_descriptor dpnp_less_equal(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=result_sycl_device,
-                                                                             usm_type=result_usm_type,
-                                                                             sycl_queue=result_sycl_queue)
-    for i in range(result.size):
-        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] <= input2.get_pyobj()[i])
+cpdef utils.dpnp_descriptor dpnp_less_equal(utils.dpnp_descriptor x1_obj,
+                                            utils.dpnp_descriptor x2_obj,
+                                            object dtype=None,
+                                            utils.dpnp_descriptor out=None,
+                                            object where=True):
+    return call_fptr_2in_1out_strides(DPNP_FN_LESS_EQUAL_EXT, x1_obj, x2_obj, dtype, out, where, func_name="less_equal")
 
-    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_logical_and(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
@@ -360,15 +331,9 @@ cpdef utils.dpnp_descriptor dpnp_logical_xor(utils.dpnp_descriptor input1, utils
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_not_equal(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(input1, input2)
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=result_sycl_device,
-                                                                             usm_type=result_usm_type,
-                                                                             sycl_queue=result_sycl_queue)
-    for i in range(result.size):
-        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] != input2.get_pyobj()[i])
-
-    return result
+cpdef utils.dpnp_descriptor dpnp_not_equal(utils.dpnp_descriptor x1_obj,
+                                           utils.dpnp_descriptor x2_obj,
+                                           object dtype=None,
+                                           utils.dpnp_descriptor out=None,
+                                           object where=True):
+    return call_fptr_2in_1out_strides(DPNP_FN_NOT_EQUAL_EXT, x1_obj, x2_obj, dtype, out, where, func_name="not_equal")

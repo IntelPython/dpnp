@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -1545,11 +1545,11 @@ def subtract(x1, x2, dtype=None, out=None, where=True, **kwargs):
             pass
         elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x1_desc and x1_desc.dtype == numpy.bool:
+        elif x1_desc and x1_desc.dtype == dpnp.bool:
             pass
         elif x2_desc and x2_desc.ndim == 0:
             pass
-        elif x2_desc and x2_desc.dtype == numpy.bool:
+        elif x2_desc and x2_desc.dtype == dpnp.bool:
             pass
         elif dtype is not None:
             pass

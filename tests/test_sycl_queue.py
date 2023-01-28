@@ -17,7 +17,7 @@ list_of_device_type_str = [
     "cpu",
 ]
 
-available_devices = [d for d in dpctl.get_devices() if not d.has_aspect_host]
+available_devices = [d for d in dpctl.get_devices() if not getattr(d, 'has_aspect_host', False)]
 
 valid_devices = []
 for device in available_devices:
@@ -658,7 +658,6 @@ def test_qr(device):
     assert_sycl_queue_equal(dpnp_r_queue, expected_queue)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("device",
                         valid_devices,
                         ids=[device.filter_string for device in valid_devices])
@@ -666,7 +665,7 @@ def test_svd(device):
     tol = 1e-12
     shape = (2,2)
     numpy_data = numpy.arange(shape[0] * shape[1]).reshape(shape)
-    dpnp_data = dpnp.arange(shape[0] * shape[1]).reshape(shape)
+    dpnp_data = dpnp.arange(shape[0] * shape[1], device=device).reshape(shape)
     np_u, np_s, np_vt = numpy.linalg.svd(numpy_data)
     dpnp_u, dpnp_s, dpnp_vt = dpnp.linalg.svd(dpnp_data)
 
@@ -678,7 +677,7 @@ def test_svd(device):
     assert (dpnp_vt.shape == np_vt.shape)
 
     # check decomposition
-    dpnp_diag_s = dpnp.zeros(shape, dtype=dpnp_s.dtype)
+    dpnp_diag_s = dpnp.zeros(shape, dtype=dpnp_s.dtype, device=device)
     for i in range(dpnp_s.size):
         dpnp_diag_s[i, i] = dpnp_s[i]
 
