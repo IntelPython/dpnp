@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -579,6 +579,7 @@ def eye(N,
         k=0,
         dtype=None,
         order="C",
+        like=None,
         device=None,
         usm_type="device",
         sycl_queue=None,
@@ -590,10 +591,14 @@ def eye(N,
     Limitations
     -----------
     Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
+    Parameter ``like`` is supported only with default value ``None``.
+    Additional ``kwards`` are not supported.
     Otherwise the function will be executed sequentially on CPU.
 
     """
     if order not in ('C', 'c', 'F', 'f', None):
+        pass
+    elif like is not None:
         pass
     elif len(kwargs) != 0:
         pass
@@ -607,7 +612,7 @@ def eye(N,
                                   usm_type=usm_type,
                                   sycl_queue=sycl_queue)
 
-    return call_origin(numpy.eye, N, M=M, k=k, dtype=dtype, order=order, **kwargs)
+    return call_origin(numpy.eye, N, M, k=k, dtype=dtype, order=order, like=None, **kwargs)
 
 
 def frombuffer(buffer, **kwargs):
