@@ -165,7 +165,7 @@ def call_origin(function, *args, **kwargs):
 
     exec_q = dpctl.utils.get_execution_queue(alloc_queues)
     if exec_q is None:
-        exec_q = sycl_queue
+        exec_q = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue)
     # print(f"DPNP call_origin(): bakend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     # TODO need to put array memory into NumPy call
     result_origin = function(*args_new, **kwargs_new)
