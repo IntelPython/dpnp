@@ -582,8 +582,7 @@ def eye(N,
         like=None,
         device=None,
         usm_type="device",
-        sycl_queue=None,
-        **kwargs):
+        sycl_queue=None):
     """
     Return a 2-D array with ones on the diagonal and zeros elsewhere.
     For full documentation refer to :obj:`numpy.eye`.
@@ -592,15 +591,12 @@ def eye(N,
     -----------
     Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
     Parameter ``like`` is supported only with default value ``None``.
-    Additional ``kwards`` are not supported.
     Otherwise the function will be executed sequentially on CPU.
 
     """
     if order not in ('C', 'c', 'F', 'f', None):
         pass
     elif like is not None:
-        pass
-    elif len(kwargs) != 0:
         pass
     else:
         return dpnp_container.eye(N,
@@ -612,7 +608,7 @@ def eye(N,
                                   usm_type=usm_type,
                                   sycl_queue=sycl_queue)
 
-    return call_origin(numpy.eye, N, M, k=k, dtype=dtype, order=order, like=None, **kwargs)
+    return call_origin(numpy.eye, N, M, k=k, dtype=dtype, order=order, like=None)
 
 
 def frombuffer(buffer, **kwargs):
