@@ -75,7 +75,7 @@
 <span class="c1"># distutils: language = c++</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2022, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2023, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -134,6 +134,7 @@
     <span class="s2">&quot;asnumpy&quot;</span><span class="p">,</span>
     <span class="s2">&quot;astype&quot;</span><span class="p">,</span>
     <span class="s2">&quot;convert_single_elem_array_to_scalar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;default_float_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dpnp_queue_initialize&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dpnp_queue_is_cpu&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_dpnp_descriptor&quot;</span><span class="p">,</span>
@@ -142,7 +143,8 @@
 <span class="p">]</span>
 
 <span class="kn">from</span> <span class="nn">dpnp</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">isscalar</span>
+    <span class="n">isscalar</span><span class="p">,</span>
+    <span class="n">float64</span>
 <span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="o">*</span>
@@ -262,6 +264,35 @@
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">obj</span>
+
+
+<span class="k">def</span> <span class="nf">default_float_type</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a floating type used by default in DPNP depending on device capabilities.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
+<span class="sd">        An array API concept of device where an array of default floating type might be created.</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
+<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
+<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">        The value ``None`` is interpreted as to use a default device.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue which might be used to create an array of default floating type.</span>
+<span class="sd">        The `sycl_queue` can be ``None`` (the default), which is interpreted as</span>
+<span class="sd">        to get the SYCL queue from `device` keyword if present or to use a default queue.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dt : dtype</span>
+<span class="sd">        A default DPNP floating type.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">get_normalized_queue_device</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">float64</span><span class="p">,</span> <span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">get_dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span>
