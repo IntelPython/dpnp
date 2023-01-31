@@ -101,21 +101,29 @@ def test_diag(v, k):
 
 
 @pytest.mark.parametrize("N",
-                         [0, 1, 2, 3, 4],
-                         ids=['0', '1', '2', '3', '4'])
+                         [0, 1, 2, 3],
+                         ids=['0', '1', '2', '3'])
 @pytest.mark.parametrize("M",
-                         [None, 0, 1, 2, 3, 4],
-                         ids=['None', '0', '1', '2', '3', '4'])
+                         [None, 0, 1, 2, 3],
+                         ids=['None', '0', '1', '2', '3'])
 @pytest.mark.parametrize("k",
-                         [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
-                         ids=['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5'])
+                         [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+                         ids=['-4', '-3', '-2', '-1', '0', '1', '2', '3', '4'])
 @pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
-def test_eye(N, M, k, dtype):
-    expected = numpy.eye(N, M=M, k=k, dtype=dtype)
-    result = dpnp.eye(N, M=M, k=k, dtype=dtype)
-    assert_array_equal(expected, result)
+                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
+                          numpy.float16, numpy.int64, numpy.int32, numpy.bool],
+                         ids=['None', 'complex128', 'complex64', 'float64', 'float32',
+                         'float16', 'int64', 'int32', 'bool'])
+@pytest.mark.parametrize("order",
+                         [None, "C", "F"],
+                         ids=['None', 'C', 'F'])
+def test_eye(N, M, k, dtype, order):
+    func = lambda xp: xp.eye(N, M, k=k, dtype=dtype, order=order)
+    if not is_dtype_supported(dtype, no_complex_check=True):
+        assert_raises(RuntimeError, func, dpnp)
+        return
+
+    assert_array_equal(func(numpy), func(dpnp))
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")

@@ -164,7 +164,7 @@ class TestBasic(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_eye(self, xp, dtype):
-        return xp.eye(5, 4, 1, dtype)
+        return xp.eye(5, 4, k=1, dtype=dtype)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
