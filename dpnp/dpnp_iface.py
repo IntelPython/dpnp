@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -61,6 +61,7 @@ __all__ = [
     "asnumpy",
     "astype",
     "convert_single_elem_array_to_scalar",
+    "default_float_type",
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu",
     "get_dpnp_descriptor",
@@ -69,7 +70,8 @@ __all__ = [
 ]
 
 from dpnp import (
-    isscalar
+    isscalar,
+    float64
 )
 
 from dpnp.dpnp_iface_arraycreation import *
@@ -189,6 +191,35 @@ def convert_single_elem_array_to_scalar(obj, keepdims=False):
         return obj.dtype.type(obj[0])
 
     return obj
+
+
+def default_float_type(device=None, sycl_queue=None):
+    """
+    Return a floating type used by default in DPNP depending on device capabilities.
+
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where an array of default floating type might be created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        The value ``None`` is interpreted as to use a default device.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue which might be used to create an array of default floating type.
+        The `sycl_queue` can be ``None`` (the default), which is interpreted as
+        to get the SYCL queue from `device` keyword if present or to use a default queue.
+
+    Returns
+    -------
+    dt : dtype
+        A default DPNP floating type.
+
+    """
+
+    _sycl_queue = get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
+    return map_dtype_to_device(float64, _sycl_queue.sycl_device)
 
 
 def get_dpnp_descriptor(ext_obj,

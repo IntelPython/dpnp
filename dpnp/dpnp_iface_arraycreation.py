@@ -871,10 +871,8 @@ def identity(n, dtype=None, *, like=None):
         elif n < 0:
             pass
         else:
-            if dtype is None:
-                sycl_queue = dpnp.get_normalized_queue_device(sycl_queue=None, device=None)
-                dtype = map_dtype_to_device(dpnp.float64, sycl_queue.sycl_device)
-            return dpnp_identity(n, dtype).get_pyobj()
+            _dtype = dpnp.default_float_type() if dtype is None else dtype
+            return dpnp_identity(n, _dtype).get_pyobj()
 
     return call_origin(numpy.identity, n, dtype=dtype, like=like)
 
@@ -1327,10 +1325,8 @@ def tri(N, M=None, k=0, dtype=dpnp.float, **kwargs):
         elif not isinstance(k, int):
             pass
         else:
-            if dtype is dpnp.float:
-                sycl_queue = dpnp.get_normalized_queue_device(sycl_queue=None, device=None)
-                dtype = map_dtype_to_device(dpnp.float64, sycl_queue.sycl_device)
-            return dpnp_tri(N, M, k, dtype).get_pyobj()
+            _dtype = dpnp.default_float_type() if dtype in (dpnp.float, None) else dtype
+            return dpnp_tri(N, M, k, _dtype).get_pyobj()
 
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
