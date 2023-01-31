@@ -36,12 +36,12 @@ This module provides public type interface file for the library
 
 import numpy
 
+
 __all__ = [
     "bool",
     "bool_",
     "complex128",
     "complex64",
-    "default_float_type",
     "dtype",
     "float",
     "float16",
@@ -73,10 +73,6 @@ int64 = numpy.int64
 integer = numpy.integer
 int = numpy.int_
 longcomplex = numpy.longcomplex
-
-
-def default_float_type():
-    return float64
 
 
 def isscalar(obj):

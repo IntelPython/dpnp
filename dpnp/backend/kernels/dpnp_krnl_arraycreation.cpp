@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2022, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -291,13 +291,6 @@ void dpnp_eye_c(void* result1, int k, const shape_elem_type* res_shape)
 
 template <typename _DataType>
 void (*dpnp_eye_default_c)(void*, int, const shape_elem_type*) = dpnp_eye_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_eye_ext_c)(DPCTLSyclQueueRef,
-                                    void*,
-                                    int,
-                                    const shape_elem_type*,
-                                    const DPCTLEventVectorRef) = dpnp_eye_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_full_c(DPCTLSyclQueueRef q_ref,
@@ -1318,11 +1311,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_EYE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_eye_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_EYE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eye_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_EYE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eye_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_EYE_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_eye_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_EYE_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_eye_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_EYE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eye_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_EYE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eye_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_full_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_default_c<int64_t>};
