@@ -737,19 +737,32 @@ def less_equal(x1,
     return call_origin(numpy.less_equal, x1, x2)
 
 
-def logical_and(x1, x2, out=None, **kwargs):
+def logical_and(x1,
+                x2,
+                /,
+                out=None,
+                *,
+                where=True,
+                dtype=None,
+                subok=True):
     """
     Compute the truth value of x1 AND x2 element-wise.
 
     For full documentation refer to :obj:`numpy.logical_and`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array of bool type, element-wise logical comparison of `x1` and `x2`.
+
     Limitations
     -----------
-    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
+    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``where`` is supported only with default value ``True``.
+    Input array data types are limited by supported DPNP :ref:`Data types`,
+    excluding `dpnp.complex64` and `dpnp.complex128`.
 
     See Also
     --------
@@ -769,30 +782,53 @@ def logical_and(x1, x2, out=None, **kwargs):
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # x2_desc = dpnp.get_dpnp_descriptor(x2)
-    # if x1_desc and x2_desc and not kwargs:
-    #     if out is not None:
-    #         pass
-    #     else:
-    #         return dpnp_logical_and(x1_desc, x2_desc).get_pyobj()
+    if out is not None:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get a common queue to copy data from the host into a device if any input is scalar
+        queue = get_common_allocation_queue([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else None
 
-    return call_origin(numpy.logical_and, x1, x2, out, **kwargs)
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        if x1_desc and x2_desc:
+            return dpnp_logical_and(x1_desc, x2_desc).get_pyobj()
+    return call_origin(numpy.logical_and, x1, x2)
 
 
-def logical_not(x1, out=None, **kwargs):
+def logical_not(x,
+                /,
+                out=None,
+                *,
+                where=True,
+                dtype=None,
+                subok=True):
     """
     Compute the truth value of NOT x element-wise.
 
     For full documentation refer to :obj:`numpy.logical_not`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Boolean result with the same shape as `x` of the NOT operation
+        on elements of `x`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is only supported as :class:`dpnp.ndarray`.
+    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``where`` is supported only with default value ``True``.
+    Input array data type is limited by supported DPNP :ref:`Data types`,
+    excluding `dpnp.complex64` and `dpnp.complex128`.
 
     See Also
     --------
@@ -810,29 +846,47 @@ def logical_not(x1, out=None, **kwargs):
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # if x1_desc and not kwargs:
-    #     if out is not None:
-    #         pass
-    #     else:
-    #         return dpnp_logical_not(x1_desc).get_pyobj()
+    if out is not None:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    else:
+        x1_desc = dpnp.get_dpnp_descriptor(x, copy_when_strides=False, copy_when_nondefault_queue=False)
+        if x1_desc:
+            return dpnp_logical_not(x1_desc).get_pyobj()
+    return call_origin(numpy.logical_not, x)
 
-    return call_origin(numpy.logical_not, x1, out, **kwargs)
 
-
-def logical_or(x1, x2, out=None, **kwargs):
+def logical_or(x1,
+               x2,
+               /,
+               out=None,
+               *,
+               where=True,
+               dtype=None,
+               subok=True):
     """
     Compute the truth value of x1 OR x2 element-wise.
 
     For full documentation refer to :obj:`numpy.logical_or`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array of bool type, element-wise logical comparison of `x1` and `x2`.
+
     Limitations
     -----------
-    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
+    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``where`` is supported only with default value ``True``.
+    Input array data types are limited by supported DPNP :ref:`Data types`,
+    excluding `dpnp.complex64` and `dpnp.complex128`.
 
     See Also
     --------
@@ -852,30 +906,54 @@ def logical_or(x1, x2, out=None, **kwargs):
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # x2_desc = dpnp.get_dpnp_descriptor(x2)
-    # if x1_desc and x2_desc and not kwargs:
-    #     if out is not None:
-    #         pass
-    #     else:
-    #         return dpnp_logical_or(x1_desc, x2_desc).get_pyobj()
+    if out is not None:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get a common queue to copy data from the host into a device if any input is scalar
+        queue = get_common_allocation_queue([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else None
 
-    return call_origin(numpy.logical_or, x1, x2, out, **kwargs)
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        if x1_desc and x2_desc:
+            return dpnp_logical_or(x1_desc, x2_desc).get_pyobj()
+    return call_origin(numpy.logical_or, x1, x2)
 
 
-def logical_xor(x1, x2, out=None, **kwargs):
+def logical_xor(x1,
+               x2,
+               /,
+               out=None,
+               *,
+               where=True,
+               dtype=None,
+               subok=True):
     """
-    Compute the truth value of x1 XOR x2, element-wise.
+    Compute the truth value of x1 XOR x2 element-wise.
 
     For full documentation refer to :obj:`numpy.logical_xor`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array of bool type, element-wise logical comparison of `x1` and `x2`.
+
     Limitations
     -----------
-    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
+    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``where`` is supported only with default value ``True``.
+    Input array data types are limited by supported DPNP :ref:`Data types`,
+    excluding `dpnp.complex64` and `dpnp.complex128`.
 
     See Also
     --------
@@ -895,15 +973,26 @@ def logical_xor(x1, x2, out=None, **kwargs):
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # x2_desc = dpnp.get_dpnp_descriptor(x2)
-    # if x1_desc and x2_desc and not kwargs:
-    #     if out is not None:
-    #         pass
-    #     else:
-    #         return dpnp_logical_xor(x1_desc, x2_desc).get_pyobj()
+    if out is not None:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get a common queue to copy data from the host into a device if any input is scalar
+        queue = get_common_allocation_queue([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else None
 
-    return call_origin(numpy.logical_xor, x1, x2, out, **kwargs)
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        if x1_desc and x2_desc:
+            return dpnp_logical_xor(x1_desc, x2_desc).get_pyobj()
+    return call_origin(numpy.logical_xor, x1, x2)
 
 
 def not_equal(x1,
