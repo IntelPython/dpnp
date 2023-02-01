@@ -68,3 +68,110 @@ def test_flags_strides(dtype, order, strides):
     assert usm_array.flags == dpnp_array.flags
     assert numpy_array.flags.c_contiguous == dpnp_array.flags.c_contiguous
     assert numpy_array.flags.f_contiguous == dpnp_array.flags.f_contiguous
+
+def test_print_dpnp_int():
+    result = repr(dpnp.array([1, 0, 2, -3, -1, 2, 21, -9], dtype='i4'))
+    expected = "array([ 1,  0,  2, -3, -1,  2, 21, -9], dtype=int32)"
+    assert(result==expected)
+
+    result = str(dpnp.array([1, 0, 2, -3, -1, 2, 21, -9], dtype='i4'))
+    expected = "[ 1  0  2 -3 -1  2 21 -9]"
+    assert(result==expected)
+# int32
+    result = repr(dpnp.array([1, -1, 21], dtype=dpnp.int32))
+    expected = "array([ 1, -1, 21], dtype=int32)"
+    assert(result==expected)
+
+    result = str(dpnp.array([1, -1, 21], dtype=dpnp.int32))
+    expected = "[ 1 -1 21]"
+    assert(result==expected)
+# uint8
+    result = repr(dpnp.array([1, 0, 3], dtype=numpy.uint8))
+    expected = "array([1, 0, 3], dtype=uint8)"
+    assert(result==expected)
+
+    result = str(dpnp.array([1, 0, 3], dtype=numpy.uint8))
+    expected = "[1 0 3]"
+    assert(result==expected)
+
+def test_print_dpnp_float():
+    result = repr(dpnp.array([1, -1, 21], dtype=float))
+    expected = "array([ 1., -1., 21.])"
+    assert(result==expected)
+
+    result = str(dpnp.array([1, -1, 21], dtype=float))
+    expected = "[ 1. -1. 21.]"
+    assert(result==expected)
+# float32
+    result = repr(dpnp.array([1, -1, 21], dtype=dpnp.float32))
+    expected = "array([ 1., -1., 21.], dtype=float32)"
+    assert(result==expected)
+
+    result = str(dpnp.array([1, -1, 21], dtype=dpnp.float32))
+    expected = "[ 1. -1. 21.]"
+    assert(result==expected)
+
+def test_print_dpnp_complex():
+    result = repr(dpnp.array([1, -1, 21], dtype=complex))
+    expected = "array([ 1.+0.j, -1.+0.j, 21.+0.j])"
+    assert(result==expected)
+
+    result = str(dpnp.array([1, -1, 21], dtype=complex))
+    expected = "[ 1.+0.j -1.+0.j 21.+0.j]"
+    assert(result==expected)
+
+def test_print_dpnp_boolean():
+    result = repr(dpnp.array([1, 0, 3], dtype=bool))
+    expected = "array([ True, False,  True])"
+    assert(result==expected)
+
+    result = str(dpnp.array([1, 0, 3], dtype=bool))
+    expected = "[ True False  True]"
+    assert(result==expected)
+
+def test_print_dpnp_special_character():
+# NaN
+    result = repr(dpnp.array([1., 0., dpnp.nan, 3.]))
+    expected = "array([ 1.,  0., nan,  3.])"
+    assert(result==expected)
+
+    result = str(dpnp.array([1., 0., dpnp.nan, 3.]))
+    expected = "[ 1.  0. nan  3.]"
+    assert(result==expected)
+# inf
+    result = repr(dpnp.array([1., 0., numpy.inf, 3.]))
+    expected = "array([ 1.,  0., inf,  3.])"
+    assert(result==expected)
+
+    result = str(dpnp.array([1., 0., numpy.inf, 3.]))
+    expected = "[ 1.  0. inf  3.]"
+    assert(result==expected)
+
+def test_print_dpnp_nd():
+# 1D
+    result = repr(dpnp.arange(10000, dtype='float32'))
+    expected = "array([0.000e+00, 1.000e+00, 2.000e+00, ..., 9.997e+03, 9.998e+03,\n       9.999e+03], dtype=float32)"
+    assert(result==expected)
+
+    result = str(dpnp.arange(10000, dtype='float32'))
+    expected = "[0.000e+00 1.000e+00 2.000e+00 ... 9.997e+03 9.998e+03 9.999e+03]"
+    assert(result==expected)
+
+# 2D
+    result = repr(dpnp.array([[1, 2], [3, 4]], dtype=float))
+    expected = "array([[1., 2.],\n       [3., 4.]])"
+    assert(result==expected)
+
+    result = str(dpnp.array([[1, 2], [3, 4]]))
+    expected = "[[1 2]\n [3 4]]"
+    assert(result==expected)
+
+# 0 shape
+    result = repr(dpnp.empty( shape=(0, 0) ))
+    expected = "array([])"
+    assert(result==expected)
+
+    result = str(dpnp.empty( shape=(0, 0) ))
+    expected = "[]"
+    assert(result==expected)
+    
