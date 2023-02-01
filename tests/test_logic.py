@@ -1,4 +1,5 @@
 import pytest
+from .helper import get_all_dtypes
 
 import dpnp
 
@@ -9,9 +10,7 @@ from numpy.testing import (
 )
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool_],
-                         ids=['float64', 'float32', 'int64', 'int32', 'bool'])
+@pytest.mark.parametrize("type", get_all_dtypes(no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(0,), (4,), (2, 3), (2, 2, 2)],
                          ids=['(0,)', '(4,)', '(2,3)', '(2,2,2)'])
@@ -42,9 +41,7 @@ def test_all(type, shape):
         assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_allclose(type):
 
     a = numpy.random.rand(10)
@@ -66,9 +63,7 @@ def test_allclose(type):
     assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool_],
-                         ids=['float64', 'float32', 'int64', 'int32', 'bool'])
+@pytest.mark.parametrize("type", get_all_dtypes(no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(0,), (4,), (2, 3), (2, 2, 2)],
                          ids=['(0,)', '(4,)', '(2,3)', '(2,2,2)'])
@@ -153,17 +148,60 @@ def test_not_equal():
         assert_equal(dpnp_res, np_res)
 
 
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
 @pytest.mark.parametrize("op",
-                         ['equal', 'greater', 'greater_equal', 'less', 'less_equal', 'not_equal'],
-                         ids=['equal', 'greater', 'greater_equal', 'less', 'less_equal', 'not_equal'])
+                        ['logical_and', 'logical_or', 'logical_xor'],
+                        ids=['logical_and', 'logical_or', 'logical_xor'])
+def test_logic_comparison(op, dtype):
+    a = numpy.array([0, 0, 3, 2], dtype=dtype)
+    b = numpy.array([0, 4, 0, 2], dtype=dtype)
+
+    # x1 OP x2
+    np_res = getattr(numpy, op)(a, b)
+    dpnp_res = getattr(dpnp, op)(dpnp.array(a), dpnp.array(b))
+    assert_equal(dpnp_res, np_res)
+
+    # x2 OP x1
+    np_res = getattr(numpy, op)(b, a)
+    dpnp_res = getattr(dpnp, op)(dpnp.array(b), dpnp.array(a))
+    assert_equal(dpnp_res, np_res)
+
+    # numpy.tile(x1, (10,)) OP numpy.tile(x2, (10,))
+    a, b = numpy.tile(a, (10,)), numpy.tile(b, (10,))
+    np_res = getattr(numpy, op)(a, b)
+    dpnp_res = getattr(dpnp, op)(dpnp.array(a), dpnp.array(b))
+    assert_equal(dpnp_res, np_res)
+
+    # numpy.tile(x2, (10, 2)) OP numpy.tile(x1, (10, 2))
+    a, b = numpy.tile(a, (10, 1)), numpy.tile(b, (10, 1))
+    np_res = getattr(numpy, op)(b, a)
+    dpnp_res = getattr(dpnp, op)(dpnp.array(b), dpnp.array(a))
+    assert_equal(dpnp_res, np_res)
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+def test_logical_not(dtype):
+    a = dpnp.array([0, 4, 0, 2], dtype=dtype)
+
+    np_res = numpy.logical_not(a.asnumpy())
+    dpnp_res = dpnp.logical_not(a)
+    assert_equal(dpnp_res, np_res)
+
+
+@pytest.mark.parametrize("op",
+                         ['equal', 'greater', 'greater_equal', 'less', 'less_equal',
+                          'logical_and', 'logical_or', 'logical_xor', 'not_equal'],
+                         ids=['equal', 'greater', 'greater_equal', 'less', 'less_equal',
+                              'logical_and', 'logical_or', 'logical_xor', 'not_equal'])
 @pytest.mark.parametrize("x1",
                          [[3, 4, 5, 6], [[1, 2, 3, 4], [5, 6, 7, 8]], [[1, 2, 5, 6], [3, 4, 7, 8], [1, 2, 7, 8]]],
                          ids=['[3, 4, 5, 6]', '[[1, 2, 3, 4], [5, 6, 7, 8]]', '[[1, 2, 5, 6], [3, 4, 7, 8], [1, 2, 7, 8]]'])
 @pytest.mark.parametrize("x2",
                          [5, [1, 2, 5, 6]],
                          ids=['5', '[1, 2, 5, 6]'])
-def test_elemwise_comparison(op, x1, x2):
-    create_func = lambda xp, a: xp.asarray(a) if not numpy.isscalar(a) else a
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+def test_elemwise_comparison(op, x1, x2, dtype):
+    create_func = lambda xp, a: xp.asarray(a, dtype=dtype) if not numpy.isscalar(a) else numpy.dtype(dtype=dtype).type(a)
 
     np_x1, np_x2 = create_func(numpy, x1), create_func(numpy, x2)
     dp_x1, dp_x2 = create_func(dpnp, np_x1), create_func(dpnp, np_x2)
@@ -185,8 +223,10 @@ def test_elemwise_comparison(op, x1, x2):
 
 
 @pytest.mark.parametrize("op",
-                         ['equal', 'greater', 'greater_equal', 'less', 'less_equal', 'not_equal'],
-                         ids=['equal', 'greater', 'greater_equal', 'less', 'less_equal', 'not_equal'])
+                         ['equal', 'greater', 'greater_equal', 'less', 'less_equal',
+                          'logical_and', 'logical_or', 'logical_xor', 'not_equal'],
+                         ids=['equal', 'greater', 'greater_equal', 'less', 'less_equal',
+                              'logical_and', 'logical_or', 'logical_xor', 'not_equal'])
 @pytest.mark.parametrize("sh1",
                          [[10], [8, 4], [4, 1, 2]],
                          ids=['(10,)', '(8, 4)', '(4, 1, 2)'])

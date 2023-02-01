@@ -1,4 +1,5 @@
 import pytest
+from .helper import get_all_dtypes
 
 import dpnp
 
@@ -8,24 +9,12 @@ import dpctl.tensor as dpt
 import numpy
 from numpy.testing import (
     assert_allclose,
+    assert_almost_equal,
     assert_array_equal,
     assert_raises
 )
 
 import tempfile
-
-
-# TODO: discuss with DPCTL why no exception on complex128
-def is_dtype_supported(dtype, no_complex_check=False):
-    device = dpctl.SyclQueue().sycl_device
-
-    if dtype is dpnp.float16 and not device.has_aspect_fp16:
-        return False
-    if dtype is dpnp.float64 and not device.has_aspect_fp64:
-        return False
-    if dtype is dpnp.complex128 and not device.has_aspect_fp64 and not no_complex_check:
-        return False
-    return True
 
 
 @pytest.mark.parametrize("start",
@@ -37,11 +26,7 @@ def is_dtype_supported(dtype, no_complex_check=False):
 @pytest.mark.parametrize("step",
                          [None, 1, 2.7, -1.6, 100],
                          ids=['None', '1', '2.7', '-1.6', '100'])
-@pytest.mark.parametrize("dtype",
-                         [numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32],
-                         ids=['complex128', 'complex64', 'float64', 'float32',
-                              'float16', 'int64', 'int32'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_float16=False))
 def test_arange(start, stop, step, dtype):
     rtol_mult = 2
     if numpy.issubdtype(dtype, numpy.float16):
@@ -50,26 +35,23 @@ def test_arange(start, stop, step, dtype):
 
     func = lambda xp: xp.arange(start, stop=stop, step=step, dtype=dtype)
 
-    if not is_dtype_supported(dtype):
-        if stop is None:
-            _stop, _start = start, 0
-        else:
-            _stop, _start = stop, start
-        _step = 1 if step is None else step
-
-        if _start == _stop:
-            pass
-        elif (_step < 0) ^ (_start < _stop):
-            # exception is raising when dpctl calls a kernel function,
-            # i.e. when resulting array is not empty
-            assert_raises(RuntimeError, func, dpnp)
-            return
-
     exp_array = func(numpy)
     res_array = func(dpnp).asnumpy()
 
-    if numpy.issubdtype(dtype, numpy.floating) or numpy.issubdtype(dtype, numpy.complexfloating):
-        assert_allclose(exp_array, res_array, rtol=rtol_mult*numpy.finfo(dtype).eps)
+    if dtype is None:
+        _device = dpctl.SyclQueue().sycl_device
+        if not _device.has_aspect_fp64:
+            # numpy allocated array with dtype=float64 by default,
+            # while dpnp might use float32, if float64 isn't supported by device
+            _dtype = dpnp.float32
+            rtol_mult *= 150
+        else:
+            _dtype = dpnp.float64
+    else:
+        _dtype = dtype
+
+    if numpy.issubdtype(_dtype, numpy.floating) or numpy.issubdtype(_dtype, numpy.complexfloating):
+        assert_allclose(exp_array, res_array, rtol=rtol_mult*numpy.finfo(_dtype).eps)
     else:
         assert_array_equal(exp_array, res_array)
 
@@ -101,43 +83,33 @@ def test_diag(v, k):
 
 
 @pytest.mark.parametrize("N",
-                         [0, 1, 2, 3, 4],
-                         ids=['0', '1', '2', '3', '4'])
+                         [0, 1, 2, 3],
+                         ids=['0', '1', '2', '3'])
 @pytest.mark.parametrize("M",
-                         [None, 0, 1, 2, 3, 4],
-                         ids=['None', '0', '1', '2', '3', '4'])
+                         [None, 0, 1, 2, 3],
+                         ids=['None', '0', '1', '2', '3'])
 @pytest.mark.parametrize("k",
-                         [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
-                         ids=['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5'])
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
-def test_eye(N, M, k, dtype):
-    expected = numpy.eye(N, M=M, k=k, dtype=dtype)
-    result = dpnp.eye(N, M=M, k=k, dtype=dtype)
-    assert_array_equal(expected, result)
+                         [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+                         ids=['-4', '-3', '-2', '-1', '0', '1', '2', '3', '4'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize("order",
+                         [None, "C", "F"],
+                         ids=['None', 'C', 'F'])
+def test_eye(N, M, k, dtype, order):
+    func = lambda xp: xp.eye(N, M, k=k, dtype=dtype, order=order)
+    assert_array_equal(func(numpy), func(dpnp))
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_frombuffer(dtype):
-    buffer = b'12345678'
+    buffer = b'12345678ABCDEF00'
     func = lambda xp: xp.frombuffer(buffer, dtype=dtype)
-
-    if not is_dtype_supported(dtype):
-        # dtpcl intercepts RuntimeError about 'double' type and raise ValueError instead
-        assert_raises(ValueError, func, dpnp)
-        return
-
-    assert_array_equal(func(dpnp), func(numpy))
+    assert_allclose(func(dpnp), func(numpy))
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_fromfile(dtype):
     with tempfile.TemporaryFile() as fh:
         fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
@@ -145,76 +117,44 @@ def test_fromfile(dtype):
 
         func = lambda xp: xp.fromfile(fh, dtype=dtype)
 
-        if not is_dtype_supported(dtype):
-            fh.seek(0)
-            # dtpcl intercepts RuntimeError about 'double' type and raise ValueError instead
-            assert_raises(ValueError, func, dpnp)
-            return
-
         fh.seek(0)
         np_res = func(numpy)
 
         fh.seek(0)
         dpnp_res = func(dpnp)
 
-        assert_array_equal(dpnp_res, np_res)
+        assert_almost_equal(dpnp_res, np_res)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_float16=False))
 def test_fromfunction(dtype):
     def func(x, y):
         return x * y
 
     shape = (3, 3)
     call_func = lambda xp: xp.fromfunction(func, shape=shape, dtype=dtype)
-
-    if not is_dtype_supported(dtype):
-        # dtpcl intercepts RuntimeError about 'double' type and raise ValueError instead
-        assert_raises(ValueError, call_func, dpnp)
-        return
-
     assert_array_equal(call_func(dpnp), call_func(numpy))
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_fromiter(dtype):
     _iter = [1, 2, 3, 4]
     func = lambda xp: xp.fromiter(_iter, dtype=dtype)
-
-    if not is_dtype_supported(dtype):
-        # dtpcl intercepts RuntimeError about 'double' type and raise ValueError instead
-        assert_raises(ValueError, func, dpnp)
-        return
-
     assert_array_equal(func(dpnp), func(numpy))
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_fromstring(dtype):
     string = "1 2 3 4"
     func = lambda xp: xp.fromstring(string, dtype=dtype, sep=' ')
-
-    if not is_dtype_supported(dtype):
-        # dtpcl intercepts RuntimeError about 'double' type and raise ValueError instead
-        assert_raises(ValueError, func, dpnp)
-        return
-
     assert_array_equal(func(dpnp), func(numpy))
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("dtype", get_all_dtypes())
 @pytest.mark.parametrize("num",
                          [2, 4, 8, 3, 9, 27])
 @pytest.mark.parametrize("endpoint",
@@ -224,11 +164,6 @@ def test_geomspace(dtype, num, endpoint):
     stop = 256
 
     func = lambda xp: xp.geomspace(start, stop, num, endpoint, dtype)
-
-    if not is_dtype_supported(dtype):
-        # dtpcl intercepts RuntimeError about 'double' type and raise ValueError instead
-        assert_raises(ValueError, func, dpnp)
-        return
 
     np_res = func(numpy)
     dpnp_res = func(dpnp)
@@ -244,37 +179,20 @@ def test_geomspace(dtype, num, endpoint):
 @pytest.mark.parametrize("n",
                          [0, 1, 4],
                          ids=['0', '1', '4'])
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32,
-                          numpy.bool_, numpy.complex64, numpy.complex128, None],
-                         ids=['float64', 'float32', 'int64', 'int32',
-                              'bool', 'complex64', 'complex128', 'None'])
+@pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_identity(n, dtype):
     func = lambda xp: xp.identity(n, dtype=dtype)
-
-    if n > 0 and not is_dtype_supported(dtype):
-        assert_raises(RuntimeError, func, dpnp)
-        return
-
     assert_array_equal(func(numpy), func(dpnp))
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_loadtxt(dtype):
     func = lambda xp: xp.loadtxt(fh, dtype=dtype)
 
     with tempfile.TemporaryFile() as fh:
         fh.write(b"1 2 3 4")
         fh.flush()
-
-        if not is_dtype_supported(dtype):
-            # dtpcl intercepts RuntimeError about 'double' type and raise ValueError instead
-            fh.seek(0)
-            assert_raises(ValueError, func, dpnp)
-            return
 
         fh.seek(0)
         np_res = func(numpy)
@@ -284,12 +202,8 @@ def test_loadtxt(dtype):
         assert_array_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, None],
-                         ids=['float64', 'float32', 'int64', 'int32', 'None'])
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("offset",
                          [0, 1],
                          ids=['0', '1'])
@@ -317,21 +231,9 @@ def test_trace(array, offset, type, dtype):
     create_array = lambda xp: xp.array(array, type)
     trace_func = lambda xp, x: xp.trace(x, offset=offset, dtype=dtype)
 
-    if not is_dtype_supported(type):
-        # dtpcl intercepts RuntimeError about 'double' type and raise ValueError instead
-        assert_raises(ValueError, create_array, dpnp)
-        return
-
     a = create_array(numpy)
     ia = create_array(dpnp)
-
-    if not is_dtype_supported(dtype):
-        assert_raises(RuntimeError, trace_func, dpnp, ia)
-        return
-
-    expected = trace_func(numpy, a)
-    result = trace_func(dpnp, ia)
-    assert_array_equal(expected, result)
+    assert_array_equal(trace_func(dpnp, ia), trace_func(numpy, a))
 
 
 @pytest.mark.parametrize("N",
@@ -343,16 +245,9 @@ def test_trace(array, offset, type, dtype):
 @pytest.mark.parametrize("k",
                          [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
                          ids=['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5'])
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, float, numpy.int64, numpy.int32, numpy.int_, numpy.float_, int],
-                         ids=['numpy.float64', 'numpy.float32', 'float', 'numpy.int64', 'numpy.int32', 'numpy.int', 'numpy.float', 'int'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 def test_tri(N, M, k, dtype):
     func = lambda xp: xp.tri(N, M, k, dtype=dtype)
-
-    if M > 0 and N > 0 and not is_dtype_supported(dtype):
-        assert_raises(RuntimeError, func, dpnp)
-        return
-
     assert_array_equal(func(dpnp), func(numpy))
 
 
@@ -426,11 +321,7 @@ def test_triu_size_null(k):
                          ids=['[1, 2, 3, 4]',
                               '[]',
                               '[0, 3, 5]'])
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32,
-                          numpy.bool_, numpy.complex64, numpy.complex128],
-                         ids=['float64', 'float32', 'int64', 'int32',
-                              'bool', 'complex64', 'complex128'])
+@pytest.mark.parametrize("dtype", get_all_dtypes())
 @pytest.mark.parametrize("n",
                          [0, 1, 4, None],
                          ids=['0', '1', '4', 'None'])
@@ -441,18 +332,8 @@ def test_vander(array, dtype, n, increase):
     create_array = lambda xp: xp.array(array, dtype=dtype)
     vander_func = lambda xp, x: xp.vander(x, N=n, increasing=increase)
 
-    if array and not is_dtype_supported(dtype):
-        # dtpcl intercepts RuntimeError about 'double' type and raise ValueError instead
-        assert_raises(ValueError, create_array, dpnp)
-        return
-
     a_np = numpy.array(array, dtype=dtype)
     a_dpnp = dpnp.array(array, dtype=dtype)
-
-    if array and not is_dtype_supported(dtype):
-        assert_raises(RuntimeError, vander_func, dpnp, a_dpnp)
-        return
-
     assert_array_equal(vander_func(numpy, a_np), vander_func(dpnp, a_dpnp))
 
 
@@ -462,21 +343,12 @@ def test_vander(array, dtype, n, increase):
 @pytest.mark.parametrize("fill_value",
                          [1.5, 2, 1.5+0.j],
                          ids=['1.5', '2', '1.5+0.j'])
-@pytest.mark.parametrize("dtype",
-                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
-                         ids=['None', 'complex128', 'complex64', 'float64', 'float32',
-                              'float16', 'int64', 'int32', 'bool'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 @pytest.mark.parametrize("order",
                          [None, "C", "F"],
                          ids=['None', 'C', 'F'])
 def test_full(shape, fill_value, dtype, order):
     func = lambda xp: xp.full(shape, fill_value, dtype=dtype, order=order)
-
-    if shape != 0 and not 0 in shape and not is_dtype_supported(dtype, no_complex_check=True):
-        assert_raises(RuntimeError, func, dpnp)
-        return
-
     assert_array_equal(func(numpy), func(dpnp))
 
 
@@ -486,23 +358,15 @@ def test_full(shape, fill_value, dtype, order):
 @pytest.mark.parametrize("fill_value",
                          [1.5, 2, 1.5+0.j],
                          ids=['1.5', '2', '1.5+0.j'])
-@pytest.mark.parametrize("dtype",
-                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
-                         ids=['None', 'complex128', 'complex64', 'float64', 'float32',
-                              'float16', 'int64', 'int32', 'bool'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 @pytest.mark.parametrize("order",
                          [None, "C", "F"],
                          ids=['None', 'C', 'F'])
 def test_full_like(array, fill_value, dtype, order):
-    a = numpy.array(array)
-    ia = dpnp.array(array)
     func = lambda xp, x: xp.full_like(x, fill_value, dtype=dtype, order=order)
 
-    if ia.size and not is_dtype_supported(dtype, no_complex_check=True):
-        assert_raises(RuntimeError, func, dpnp, ia)
-        return
-    
+    a = numpy.array(array)
+    ia = dpnp.array(array)
     assert_array_equal(func(numpy, a), func(dpnp, ia))
 
 
@@ -534,7 +398,9 @@ def test_full_strides():
     assert_array_equal(dpnp.asnumpy(ia), a)
 
 
-@pytest.mark.parametrize("fill_value", [[], (), dpnp.full(0, 0)], ids=['[]', '()', 'dpnp.full(0, 0)'])
+@pytest.mark.parametrize("fill_value",
+                         [[], (), dpnp.full(0, 0)],
+                         ids=['[]', '()', 'dpnp.full(0, 0)'])
 def test_full_invalid_fill_value(fill_value):
     with pytest.raises(ValueError):
         dpnp.full(10, fill_value=fill_value)
@@ -543,120 +409,79 @@ def test_full_invalid_fill_value(fill_value):
 @pytest.mark.parametrize("shape",
                          [(), 0, (0,), (2, 0, 3), (3, 2)],
                          ids=['()', '0', '(0,)', '(2, 0, 3)', '(3, 2)'])
-@pytest.mark.parametrize("dtype",
-                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
-                         ids=['None', 'complex128', 'complex64', 'float64', 'float32',
-                              'float16', 'int64', 'int32', 'bool'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 @pytest.mark.parametrize("order",
                          [None, "C", "F"],
                          ids=['None', 'C', 'F'])
 def test_zeros(shape, dtype, order):
-    expected = numpy.zeros(shape, dtype=dtype, order=order)
-    result = dpnp.zeros(shape, dtype=dtype, order=order)
-
-    assert_array_equal(expected, result)
-
-
-@pytest.mark.parametrize("array",
-                         [[], 0,  [1, 2, 3], [[1, 2], [3, 4]]],
-                         ids=['[]', '0',  '[1, 2, 3]', '[[1, 2], [3, 4]]'])
-@pytest.mark.parametrize("dtype",
-                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
-                         ids=['None', 'complex128', 'complex64', 'float64', 'float32',
-                              'float16', 'int64', 'int32', 'bool'])
-@pytest.mark.parametrize("order",
-                         [None, "C", "F"],
-                         ids=['None', 'C', 'F'])
-def test_zeros_like(array, dtype, order):
-    a = numpy.array(array)
-    ia = dpnp.array(array)
-
-    expected = numpy.zeros_like(a, dtype=dtype, order=order)
-    result = dpnp.zeros_like(ia, dtype=dtype, order=order)
-
-    assert_array_equal(expected, result)
-
-
-@pytest.mark.parametrize("shape",
-                         [(), 0, (0,), (2, 0, 3), (3, 2)],
-                         ids=['()', '0', '(0,)', '(2, 0, 3)', '(3, 2)'])
-@pytest.mark.parametrize("dtype",
-                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
-                         ids=['None', 'complex128', 'complex64', 'float64', 'float32',
-                              'float16', 'int64', 'int32', 'bool'])
-@pytest.mark.parametrize("order",
-                         [None, "C", "F"],
-                         ids=['None', 'C', 'F'])
-def test_empty(shape, dtype, order):
-    expected = numpy.empty(shape, dtype=dtype, order=order)
-    result = dpnp.empty(shape, dtype=dtype, order=order)
-
-    assert expected.shape == result.shape
-
-
-@pytest.mark.parametrize("array",
-                         [[], 0,  [1, 2, 3], [[1, 2], [3, 4]]],
-                         ids=['[]', '0',  '[1, 2, 3]', '[[1, 2], [3, 4]]'])
-@pytest.mark.parametrize("dtype",
-                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32,
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
-                         ids=['None', 'complex128', 'complex64', 'float64', 'float32',
-                              'float16', 'int64', 'int32', 'bool'])
-@pytest.mark.parametrize("order",
-                         [None, "C", "F"],
-                         ids=['None', 'C', 'F'])
-def test_empty_like(array, dtype, order):
-    a = numpy.array(array)
-    ia = dpnp.array(array)
-
-    expected = numpy.empty_like(a, dtype=dtype, order=order)
-    result = dpnp.empty_like(ia, dtype=dtype, order=order)
-
-    assert expected.shape == result.shape
-
-
-@pytest.mark.parametrize("shape",
-                         [(), 0, (0,), (2, 0, 3), (3, 2)],
-                         ids=['()', '0', '(0,)', '(2, 0, 3)', '(3, 2)'])
-@pytest.mark.parametrize("dtype",
-                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, 
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
-                         ids=['None', 'complex128', 'complex64', 'float64', 'float32',
-                         'float16', 'int64', 'int32', 'bool'])
-@pytest.mark.parametrize("order",
-                         [None, "C", "F"],
-                         ids=['None', 'C', 'F'])
-def test_ones(shape, dtype, order):
-    func = lambda xp: xp.ones(shape, dtype=dtype, order=order)
-
-    if shape != 0 and not 0 in shape and not is_dtype_supported(dtype, no_complex_check=True):
-        assert_raises(RuntimeError, func, dpnp)
-        return
-
+    func = lambda xp: xp.zeros(shape, dtype=dtype, order=order)
     assert_array_equal(func(numpy), func(dpnp))
 
 
 @pytest.mark.parametrize("array",
                          [[], 0,  [1, 2, 3], [[1, 2], [3, 4]]],
                          ids=['[]', '0',  '[1, 2, 3]', '[[1, 2], [3, 4]]'])
-@pytest.mark.parametrize("dtype",
-                         [None, numpy.complex128, numpy.complex64, numpy.float64, numpy.float32, 
-                          numpy.float16, numpy.int64, numpy.int32, numpy.bool_],
-                         ids=['None', 'complex128', 'complex64', 'float64', 'float32',
-                         'float16', 'int64', 'int32', 'bool'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize("order",
+                         [None, "C", "F"],
+                         ids=['None', 'C', 'F'])
+def test_zeros_like(array, dtype, order):
+    func = lambda xp, x: xp.zeros_like(x, dtype=dtype, order=order)
+
+    a = numpy.array(array)
+    ia = dpnp.array(array)
+    assert_array_equal(func(numpy, a), func(dpnp, ia))
+
+
+@pytest.mark.parametrize("shape",
+                         [(), 0, (0,), (2, 0, 3), (3, 2)],
+                         ids=['()', '0', '(0,)', '(2, 0, 3)', '(3, 2)'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize("order",
+                         [None, "C", "F"],
+                         ids=['None', 'C', 'F'])
+def test_empty(shape, dtype, order):
+    func = lambda xp: xp.empty(shape, dtype=dtype, order=order)
+    assert func(numpy).shape == func(dpnp).shape
+
+
+@pytest.mark.parametrize("array",
+                         [[], 0,  [1, 2, 3], [[1, 2], [3, 4]]],
+                         ids=['[]', '0',  '[1, 2, 3]', '[[1, 2], [3, 4]]'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize("order",
+                         [None, "C", "F"],
+                         ids=['None', 'C', 'F'])
+def test_empty_like(array, dtype, order):
+    func = lambda xp, x: xp.empty_like(x, dtype=dtype, order=order)
+
+    a = numpy.array(array)
+    ia = dpnp.array(array)
+    assert func(numpy, a).shape == func(dpnp, ia).shape
+
+
+@pytest.mark.parametrize("shape",
+                         [(), 0, (0,), (2, 0, 3), (3, 2)],
+                         ids=['()', '0', '(0,)', '(2, 0, 3)', '(3, 2)'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize("order",
+                         [None, "C", "F"],
+                         ids=['None', 'C', 'F'])
+def test_ones(shape, dtype, order):
+    func = lambda xp: xp.ones(shape, dtype=dtype, order=order)
+    assert_array_equal(func(numpy), func(dpnp))
+
+
+@pytest.mark.parametrize("array",
+                         [[], 0,  [1, 2, 3], [[1, 2], [3, 4]]],
+                         ids=['[]', '0',  '[1, 2, 3]', '[[1, 2], [3, 4]]'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 @pytest.mark.parametrize("order",
                          [None, "C", "F"],
                          ids=['None', 'C', 'F'])
 def test_ones_like(array, dtype, order):
-    a = numpy.array(array)
-    ia = dpnp.array(array)
     func = lambda xp, x: xp.ones_like(x, dtype=dtype, order=order)
 
-    if ia.size and not is_dtype_supported(dtype, no_complex_check=True):
-        assert_raises(RuntimeError, func, dpnp, ia)
-        return
-
+    a = numpy.array(array)
+    ia = dpnp.array(array)
     assert_array_equal(func(numpy, a), func(dpnp, ia))

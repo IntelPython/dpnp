@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@ __all__ = [
     "arange",
     "asarray",
     "empty",
+    "eye",
     "full",
     "ones"
     "zeros",
@@ -147,6 +148,33 @@ def full(shape,
                          order=order,
                          usm_type=usm_type,
                          sycl_queue=sycl_queue_normalized)
+    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+
+
+def eye(N,
+        M=None,
+        /,
+        *,
+        k=0,
+        dtype=None,
+        order="C",
+        device=None,
+        usm_type="device",
+        sycl_queue=None):
+    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    dpu.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+    if order is None:
+        order = 'C'
+
+    """Creates `dpnp_array` with ones on the `k`th diagonal."""
+    array_obj = dpt.eye(N,
+                        M,
+                        k=k,
+                        dtype=dtype,
+                        order=order,
+                        usm_type=usm_type,
+                        sycl_queue=sycl_queue_normalized)
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
 

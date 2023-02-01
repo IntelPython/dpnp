@@ -64,7 +64,7 @@
     /** @param[in]  input2_strides     Input array 2 strides.                                                        */ \
     /** @param[in]  where              Where condition.                                                              */ \
     /** @param[in]  dep_event_vec_ref  Reference to vector of SYCL events.                                           */ \
-    template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>                          \
+    template <typename _DataType_input1, typename _DataType_input2>                                                     \
     DPCTLSyclEventRef __name__(DPCTLSyclQueueRef q_ref,                                                                 \
                                void* result_out,                                                                        \
                                const size_t result_size,                                                                \
@@ -91,6 +91,9 @@ MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_greater_c, input1_elem > input2_elem)
 MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_greater_equal_c, input1_elem >= input2_elem)
 MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_less_c, input1_elem < input2_elem)
 MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_less_equal_c, input1_elem <= input2_elem)
+MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_logical_and_c, input1_elem && input2_elem)
+MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_logical_or_c, input1_elem || input2_elem)
+MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_logical_xor_c, (!!input1_elem) != (!!input2_elem))
 MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_not_equal_c, input1_elem != input2_elem)
 
 #undef MACRO_2ARG_2TYPES_LOGIC_OP
