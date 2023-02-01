@@ -101,6 +101,8 @@ __all__ = [
 def _get_random_state(device=None, sycl_queue=None):
     global _dpnp_random_states
 
+    if not isinstance(_dpnp_random_states, dict):
+         _dpnp_random_states = dict()
     sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
     if sycl_queue not in _dpnp_random_states:
         rs = RandomState(device=device, sycl_queue=sycl_queue)
