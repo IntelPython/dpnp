@@ -810,19 +810,32 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">less_equal</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="logical_and"><a class="viewcode-back" href="../../reference/generated/dpnp.logical_and.html#dpnp.logical_and">[docs]</a><span class="k">def</span> <span class="nf">logical_and</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="logical_and"><a class="viewcode-back" href="../../reference/generated/dpnp.logical_and.html#dpnp.logical_and">[docs]</a><span class="k">def</span> <span class="nf">logical_and</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span>
+                <span class="n">x2</span><span class="p">,</span>
+                <span class="o">/</span><span class="p">,</span>
+                <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="o">*</span><span class="p">,</span>
+                <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the truth value of x1 AND x2 element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.logical_and`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Output array of bool type, element-wise logical comparison of `x1` and `x2`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input arrays are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,</span>
+<span class="sd">    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).</span>
+<span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Parameter ``out`` is supported only with default value ``None``.</span>
-<span class="sd">    Parameter ``where`` is supported only with default value ``True``.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`,</span>
+<span class="sd">    excluding `dpnp.complex64` and `dpnp.complex128`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -842,30 +855,53 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># x1_desc = dpnp.get_dpnp_descriptor(x1)</span>
-    <span class="c1"># x2_desc = dpnp.get_dpnp_descriptor(x2)</span>
-    <span class="c1"># if x1_desc and x2_desc and not kwargs:</span>
-    <span class="c1">#     if out is not None:</span>
-    <span class="c1">#         pass</span>
-    <span class="c1">#     else:</span>
-    <span class="c1">#         return dpnp_logical_and(x1_desc, x2_desc).get_pyobj()</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">):</span>
+        <span class="c1"># at least either x1 or x2 has to be an array</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># get a common queue to copy data from the host into a device if any input is scalar</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="n">get_common_allocation_queue</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">])</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alloc_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
+        <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alloc_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_logical_and</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="logical_not"><a class="viewcode-back" href="../../reference/generated/dpnp.logical_not.html#dpnp.logical_not">[docs]</a><span class="k">def</span> <span class="nf">logical_not</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="logical_not"><a class="viewcode-back" href="../../reference/generated/dpnp.logical_not.html#dpnp.logical_not">[docs]</a><span class="k">def</span> <span class="nf">logical_not</span><span class="p">(</span><span class="n">x</span><span class="p">,</span>
+                <span class="o">/</span><span class="p">,</span>
+                <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="o">*</span><span class="p">,</span>
+                <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the truth value of NOT x element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.logical_not`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Boolean result with the same shape as `x` of the NOT operation</span>
+<span class="sd">        on elements of `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `x` is only supported as :class:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Parameter ``out`` is supported only with default value ``None``.</span>
-<span class="sd">    Parameter ``where`` is supported only with default value ``True``.</span>
+<span class="sd">    Input array data type is limited by supported DPNP :ref:`Data types`,</span>
+<span class="sd">    excluding `dpnp.complex64` and `dpnp.complex128`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -883,29 +919,47 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># x1_desc = dpnp.get_dpnp_descriptor(x1)</span>
-    <span class="c1"># if x1_desc and not kwargs:</span>
-    <span class="c1">#     if out is not None:</span>
-    <span class="c1">#         pass</span>
-    <span class="c1">#     else:</span>
-    <span class="c1">#         return dpnp_logical_not(x1_desc).get_pyobj()</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_logical_not</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_not</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_not</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="logical_or"><a class="viewcode-back" href="../../reference/generated/dpnp.logical_or.html#dpnp.logical_or">[docs]</a><span class="k">def</span> <span class="nf">logical_or</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="logical_or"><a class="viewcode-back" href="../../reference/generated/dpnp.logical_or.html#dpnp.logical_or">[docs]</a><span class="k">def</span> <span class="nf">logical_or</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span>
+               <span class="n">x2</span><span class="p">,</span>
+               <span class="o">/</span><span class="p">,</span>
+               <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="o">*</span><span class="p">,</span>
+               <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+               <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the truth value of x1 OR x2 element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.logical_or`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Output array of bool type, element-wise logical comparison of `x1` and `x2`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input arrays are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,</span>
+<span class="sd">    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).</span>
+<span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Parameter ``out`` is supported only with default value ``None``.</span>
-<span class="sd">    Parameter ``where`` is supported only with default value ``True``.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`,</span>
+<span class="sd">    excluding `dpnp.complex64` and `dpnp.complex128`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -925,30 +979,54 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># x1_desc = dpnp.get_dpnp_descriptor(x1)</span>
-    <span class="c1"># x2_desc = dpnp.get_dpnp_descriptor(x2)</span>
-    <span class="c1"># if x1_desc and x2_desc and not kwargs:</span>
-    <span class="c1">#     if out is not None:</span>
-    <span class="c1">#         pass</span>
-    <span class="c1">#     else:</span>
-    <span class="c1">#         return dpnp_logical_or(x1_desc, x2_desc).get_pyobj()</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">):</span>
+        <span class="c1"># at least either x1 or x2 has to be an array</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># get a common queue to copy data from the host into a device if any input is scalar</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="n">get_common_allocation_queue</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">])</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alloc_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
+        <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alloc_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_logical_or</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="logical_xor"><a class="viewcode-back" href="../../reference/generated/dpnp.logical_xor.html#dpnp.logical_xor">[docs]</a><span class="k">def</span> <span class="nf">logical_xor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="logical_xor"><a class="viewcode-back" href="../../reference/generated/dpnp.logical_xor.html#dpnp.logical_xor">[docs]</a><span class="k">def</span> <span class="nf">logical_xor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span>
+               <span class="n">x2</span><span class="p">,</span>
+               <span class="o">/</span><span class="p">,</span>
+               <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="o">*</span><span class="p">,</span>
+               <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+               <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the truth value of x1 XOR x2, element-wise.</span>
+<span class="sd">    Compute the truth value of x1 XOR x2 element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.logical_xor`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Output array of bool type, element-wise logical comparison of `x1` and `x2`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input arrays are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,</span>
+<span class="sd">    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).</span>
+<span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Parameter ``out`` is supported only with default value ``None``.</span>
-<span class="sd">    Parameter ``where`` is supported only with default value ``True``.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`,</span>
+<span class="sd">    excluding `dpnp.complex64` and `dpnp.complex128`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -968,15 +1046,26 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># x1_desc = dpnp.get_dpnp_descriptor(x1)</span>
-    <span class="c1"># x2_desc = dpnp.get_dpnp_descriptor(x2)</span>
-    <span class="c1"># if x1_desc and x2_desc and not kwargs:</span>
-    <span class="c1">#     if out is not None:</span>
-    <span class="c1">#         pass</span>
-    <span class="c1">#     else:</span>
-    <span class="c1">#         return dpnp_logical_xor(x1_desc, x2_desc).get_pyobj()</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">):</span>
+        <span class="c1"># at least either x1 or x2 has to be an array</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># get a common queue to copy data from the host into a device if any input is scalar</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="n">get_common_allocation_queue</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">])</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alloc_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
+        <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alloc_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_logical_xor</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="not_equal"><a class="viewcode-back" href="../../reference/generated/dpnp.not_equal.html#dpnp.not_equal">[docs]</a><span class="k">def</span> <span class="nf">not_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span>
