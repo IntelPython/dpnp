@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -332,7 +332,7 @@ class RandomState:
         if not use_origin_backend(low):
             if not dpnp.isscalar(low):
                 pass
-            elif not dpnp.isscalar(high):
+            elif not (high is None or dpnp.isscalar(high)):
                 pass
             else:
                 _dtype = dpnp.int32 if dtype is int else dpnp.dtype(dtype)
