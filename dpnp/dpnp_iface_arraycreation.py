@@ -1331,13 +1331,19 @@ def tri(N, M=None, k=0, dtype=dpnp.float, **kwargs):
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
 
-def tril(x1, k=0):
+def tril(x1, /, *, k=0):
     """
     Lower triangle of an array.
 
     Return a copy of an array with elements above the `k`-th diagonal zeroed.
 
     For full documentation refer to :obj:`numpy.tril`.
+
+    Limitations
+    -----------
+    Parameter ``x1`` is supported only as :class:`dpnp.dpnp_array` with two or more dimensions.
+    Parameter ``k`` is supported only as int data type.
+    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -1350,12 +1356,14 @@ def tril(x1, k=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not isinstance(k, int):
-            pass
-        else:
-            return dpnp_tril(x1_desc, k).get_pyobj()
+    if not dpnp.isarray(x1):
+        pass
+    elif x1.ndim < 2:
+        pass
+    elif not isinstance(k, int):
+        pass
+    else:
+        return dpnp_container.tril(x1, k=k)
 
     return call_origin(numpy.tril, x1, k)
 

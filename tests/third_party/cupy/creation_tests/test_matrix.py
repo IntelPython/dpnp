@@ -157,13 +157,13 @@ class TestTriLowerAndUpper(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_tril_nega(self, xp, dtype):
         m = testing.shaped_arange(self.shape, xp, dtype)
-        return xp.tril(m, -1)
+        return xp.tril(m, k=-1)
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_tril_posi(self, xp, dtype):
         m = testing.shaped_arange(self.shape, xp, dtype)
-        return xp.tril(m, 1)
+        return xp.tril(m, k=1)
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
