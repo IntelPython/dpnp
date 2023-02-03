@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,12 @@ class RandomState:
     """
 
     def __init__(self, seed=None, device=None, sycl_queue=None):
-        self._seed = 1 if seed is None else seed
+        if seed is None:
+            # ask NumPy to generate an array of three random integers as default seed value
+            self._seed = numpy.random.randint(low=0, high=numpy.iinfo(numpy.int32).max + 1, size=3)
+        else:
+            self._seed = seed
+
         self._sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
         self._sycl_device = self._sycl_queue.sycl_device
 
@@ -290,7 +295,7 @@ class RandomState:
 
     def randint(self, low, high=None, size=None, dtype=int, usm_type="device"):
         """
-        Draw random integers from low (inclusive) to high (exclusive).
+        Draw random integers from `low` (inclusive) to `high` (exclusive).
 
         Return random integers from the “discrete uniform” distribution of the specified type
         in the “half-open” interval [low, high).
