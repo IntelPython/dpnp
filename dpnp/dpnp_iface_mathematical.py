@@ -154,56 +154,64 @@ def absolute(x1, **kwargs):
     return call_origin(numpy.absolute, x1, **kwargs)
 
 
-def add(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def add(x1,
+        x2,
+        /,
+        out=None,
+        *,
+        where=True,
+        dtype=None,
+        subok=True,
+        **kwargs):
     """
     Add arguments element-wise.
 
     For full documentation refer to :obj:`numpy.add`.
 
+    Returns
+    -------
+    add : dpnp.ndarray
+        The sum of `x1` and `x2`, element-wise.
+
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
+    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Keyword arguments ``kwargs`` are currently unsupported.
-    Otherwise the functions will be executed sequentially on CPU.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> a = np.array([1, 2, 3])
-    >>> b = np.array([1, 2, 3])
-    >>> result = np.add(a, b)
-    >>> [x for x in result]
+    >>> import dpnp as dp
+    >>> a = dp.array([1, 2, 3])
+    >>> b = dp.array([1, 2, 3])
+    >>> result = dp.add(a, b)
+    >>> print(result)
     [2, 4, 6]
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
+    if out is not None:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get a common queue to copy data from the host into a device if any input is scalar
+        queue = get_common_allocation_queue([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else None
 
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        else:
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            return dpnp_add(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False, alloc_queue=queue)
+        if x1_desc and x2_desc:
+            return dpnp_add(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.add, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -1093,11 +1101,11 @@ def multiply(x1,
     -------
     y : {dpnp.ndarray, scalar}
         The product of `x1` and `x2`, element-wise.
-        The result is a scalar if both x1 and x2 are scalars.
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
+    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the functions will be executed sequentially on CPU.
@@ -1122,8 +1130,8 @@ def multiply(x1,
     elif subok is not True:
         pass
     elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # keep the result in host memory, if both inputs are scalars
-        return x1 * x2
+        # at least either x1 or x2 has to be an array
+        pass
     else:
         # get a common queue to copy data from the host into a device if any input is scalar
         queue = get_common_allocation_queue([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else None
