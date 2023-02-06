@@ -193,6 +193,9 @@ tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extr
 tests/third_party/cupy/creation_tests/test_matrix.py::TestTriLowerAndUpper_param_0_{shape=(2,)}::test_tril
 tests/third_party/cupy/creation_tests/test_matrix.py::TestTriLowerAndUpper_param_0_{shape=(2,)}::test_tril_nega
 tests/third_party/cupy/creation_tests/test_matrix.py::TestTriLowerAndUpper_param_0_{shape=(2,)}::test_tril_posi
+tests/third_party/cupy/creation_tests/test_matrix.py::TestTriLowerAndUpper_param_0_{shape=(2,)}::test_triu
+tests/third_party/cupy/creation_tests/test_matrix.py::TestTriLowerAndUpper_param_0_{shape=(2,)}::test_triu_nega
+tests/third_party/cupy/creation_tests/test_matrix.py::TestTriLowerAndUpper_param_0_{shape=(2,)}::test_triu_posi
 
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_1darray
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_fill_diagonal

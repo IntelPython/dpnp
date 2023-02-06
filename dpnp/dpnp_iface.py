@@ -66,8 +66,7 @@ __all__ = [
     "dpnp_queue_is_cpu",
     "get_dpnp_descriptor",
     "get_include",
-    "get_normalized_queue_device",
-    "isarray"
+    "get_normalized_queue_device"
 ]
 
 from dpnp import (
@@ -339,13 +338,3 @@ def get_normalized_queue_device(obj=None,
     if hasattr(dpt._device, 'normalize_queue_device'):
         return dpt._device.normalize_queue_device(sycl_queue=sycl_queue, device=device)
     return sycl_queue
-
-
-def isarray(obj):
-    """
-    Return True if:
-      `obj` has a supported array type
-    Return False if:
-      `obj` has an unsupported array type or other data type
-    """
-    return isinstance(obj, (dpnp_array, dpt.usm_ndarray))

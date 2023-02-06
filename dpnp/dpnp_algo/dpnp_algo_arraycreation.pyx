@@ -45,7 +45,6 @@ __all__ += [
     "dpnp_ptp",
     "dpnp_trace",
     "dpnp_tri",
-    "dpnp_triu",
     "dpnp_vander",
 ]
 
@@ -418,50 +417,6 @@ cpdef utils.dpnp_descriptor dpnp_tri(N, M=None, k=0, dtype=dpnp.float):
     cdef custom_indexing_1out_func_ptr_t func = <custom_indexing_1out_func_ptr_t > kernel_data.ptr
 
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), N, M, k, NULL)
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_triu(utils.dpnp_descriptor m, int k):
-    cdef shape_type_c input_shape = m.shape
-    cdef shape_type_c result_shape
-
-    if m.ndim == 1:
-        result_shape = (m.shape[0], m.shape[0])
-    else:
-        result_shape = m.shape
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(m.dtype)
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRIU_EXT, param1_type, param1_type)
-
-    m_obj = m.get_array()
-
-    # ceate result array with type given by FPTR data
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=m_obj.sycl_device,
-                                                                       usm_type=m_obj.usm_type,
-                                                                       sycl_queue=m_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    m.get_data(),
-                                                    result.get_data(),
-                                                    k,
-                                                    input_shape.data(),
-                                                    result_shape.data(),
-                                                    m.ndim,
-                                                    result.ndim,
-                                                    NULL)  # dep_events_ref
 
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)

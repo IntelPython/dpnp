@@ -48,6 +48,7 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
 import dpnp.dpnp_container as dpnp_container
+import dpctl.tensor as dpt
 
 
 __all__ = [
@@ -1341,8 +1342,8 @@ def tril(x1, /, *, k=0):
 
     Limitations
     -----------
-    Parameter ``x1`` is supported only as :class:`dpnp.dpnp_array` with two or more dimensions.
-    Parameter ``k`` is supported only as int data type.
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
+    Parameter `k` is supported only of integer data type.
     Otherwise the function will be executed sequentially on CPU.
 
     Examples
@@ -1356,19 +1357,20 @@ def tril(x1, /, *, k=0):
 
     """
 
-    if not dpnp.isarray(x1):
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
     elif x1.ndim < 2:
         pass
     elif not isinstance(k, int):
-        pass
+        if not (isinstance(k, (dpnp.ndarray, dpt.usm_ndarray)) and numpy.issubdtype(k.dtype, int)):
+            pass
     else:
         return dpnp_container.tril(x1, k=k)
 
     return call_origin(numpy.tril, x1, k)
 
 
-def triu(x1, k=0):
+def triu(x1, /, *, k=0):
     """
     Upper triangle of an array.
 
@@ -1376,6 +1378,12 @@ def triu(x1, k=0):
     zeroed.
 
     For full documentation refer to :obj:`numpy.triu`.
+
+    Limitations
+    -----------
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
+    Parameter `k` is supported only of integer data type.
+    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -1388,12 +1396,15 @@ def triu(x1, k=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not isinstance(k, int):
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
+        pass
+    elif x1.ndim < 2:
+        pass
+    elif not isinstance(k, int):
+        if not (isinstance(k, (dpnp.ndarray, dpt.usm_ndarray)) and numpy.issubdtype(k.dtype, int)):
             pass
-        else:
-            return dpnp_triu(x1_desc, k).get_pyobj()
+    else:
+        return dpnp_container.triu(x1, k=k)
 
     return call_origin(numpy.triu, x1, k)
 

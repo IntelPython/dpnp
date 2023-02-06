@@ -1208,17 +1208,6 @@ void (*dpnp_triu_default_c)(void*,
                             const size_t) = dpnp_triu_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_triu_ext_c)(DPCTLSyclQueueRef,
-                                     void*,
-                                     void*,
-                                     const int,
-                                     shape_elem_type*,
-                                     shape_elem_type*,
-                                     const size_t,
-                                     const size_t,
-                                     const DPCTLEventVectorRef) = dpnp_triu_c<_DataType>;
-
-template <typename _DataType>
 DPCTLSyclEventRef dpnp_zeros_c(DPCTLSyclQueueRef q_ref,
                                void* result,
                                size_t size,
@@ -1432,11 +1421,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_TRIU][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_triu_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_TRIU][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_triu_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_TRIU][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_triu_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_TRIU_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_triu_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRIU_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_triu_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRIU_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_triu_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRIU_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_triu_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_zeros_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_zeros_default_c<int64_t>};
