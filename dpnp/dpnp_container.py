@@ -39,7 +39,6 @@ import dpctl.tensor as dpt
 
 from dpnp.dpnp_array import dpnp_array
 import dpnp
-import operator
 
 
 __all__ = [
@@ -204,19 +203,15 @@ def ones(shape,
 
 
 def tril(x1, /, *, k=0):
-    k = operator.index(k)
-    order = "F" if (x1.flags.f_contiguous) else "C"
     """"Creates `dpnp_array` as lower triangular part of an input array."""
     array_obj = dpt.tril(x1.get_array() if isinstance(x1, dpnp_array) else x1, k)
-    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+    return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
 
 
 def triu(x1, /, *, k=0):
-    k = operator.index(k)
-    order = "F" if (x1.flags.f_contiguous) else "C"
     """"Creates `dpnp_array` as upper triangular part of an input array."""
     array_obj = dpt.triu(x1.get_array() if isinstance(x1, dpnp_array) else x1, k)
-    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+    return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
 
 
 def zeros(shape,

@@ -168,7 +168,7 @@ def test_array_creation_like(func, kwargs, device_x, device_y):
 def test_tril_triu(func, device):
     x0 = dpnp.ones((3,3), device=device)
     x = getattr(dpnp, func)(x0)
-    assert x.sycl_device == device
+    assert_sycl_queue_equal(x.sycl_queue, x0.sycl_queue)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")

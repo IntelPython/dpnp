@@ -42,6 +42,7 @@ it contains:
 
 import numpy
 import dpnp
+import operator
 
 import dpnp.config as config
 from dpnp.dpnp_algo import *
@@ -1357,15 +1358,20 @@ def tril(x1, /, *, k=0):
 
     """
 
+    _k = None
+    try:
+        _k = operator.index(k)
+    except TypeError:
+        pass
+
     if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
     elif x1.ndim < 2:
         pass
-    elif not isinstance(k, int):
-        if not (isinstance(k, (dpnp.ndarray, dpt.usm_ndarray)) and numpy.issubdtype(k.dtype, int)):
-            pass
+    elif _k is None:
+        pass
     else:
-        return dpnp_container.tril(x1, k=k)
+        return dpnp_container.tril(x1, k=_k)
 
     return call_origin(numpy.tril, x1, k)
 
@@ -1396,15 +1402,20 @@ def triu(x1, /, *, k=0):
 
     """
 
+    _k = None
+    try:
+        _k = operator.index(k)
+    except TypeError:
+        pass
+
     if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
     elif x1.ndim < 2:
         pass
-    elif not isinstance(k, int):
-        if not (isinstance(k, (dpnp.ndarray, dpt.usm_ndarray)) and numpy.issubdtype(k.dtype, int)):
-            pass
+    elif _k is None:
+        pass
     else:
-        return dpnp_container.triu(x1, k=k)
+        return dpnp_container.triu(x1, k=_k)
 
     return call_origin(numpy.triu, x1, k)
 
