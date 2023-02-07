@@ -270,7 +270,9 @@ class dpnp_array:
  # '__rpow__',
  # '__rrshift__',
  # '__rshift__',
- # '__rsub__',
+
+    def __rsub__(self, other):
+        return dpnp.subtract(other, self)
 
     def __rtruediv__(self, other):
         return dpnp.true_divide(other, self)
