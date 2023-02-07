@@ -121,6 +121,7 @@
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="kn">import</span> <span class="nn">dpnp.dpnp_container</span> <span class="k">as</span> <span class="nn">dpnp_container</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -603,7 +604,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.</span>
+<span class="sd">    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Parameter ``order`` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter ``subok`` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -625,7 +626,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">pass</span>
@@ -835,7 +836,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.</span>
+<span class="sd">    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Parameter ``order`` is supported only with values ``&quot;C&quot;`` and ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter ``subok`` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -856,7 +857,7 @@
 <span class="sd">    [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">pass</span>
@@ -1262,7 +1263,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.</span>
+<span class="sd">    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Parameter ``order`` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter ``subok`` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -1284,7 +1285,7 @@
 <span class="sd">    [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">pass</span>
@@ -1575,7 +1576,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.</span>
+<span class="sd">    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Parameter ``order`` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter ``subok`` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -1596,8 +1597,8 @@
 <span class="sd">    &gt;&gt;&gt; [i for i in np.zeros_like(x)]</span>
 <span class="sd">    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">pass</span>
