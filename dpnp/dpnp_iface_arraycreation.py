@@ -48,6 +48,7 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
 import dpnp.dpnp_container as dpnp_container
+import dpctl.tensor as dpt
 
 
 __all__ = [
@@ -530,7 +531,7 @@ def empty_like(x1,
 
     Limitations
     -----------
-    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
     Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -552,7 +553,7 @@ def empty_like(x1,
 
     """
 
-    if not isinstance(x1, dpnp.ndarray):
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
     elif order not in ('C', 'c', 'F', 'f', None):
         pass
@@ -762,7 +763,7 @@ def full_like(x1,
 
     Limitations
     -----------
-    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
     Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -783,7 +784,7 @@ def full_like(x1,
     [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
     """
-    if not isinstance(x1, dpnp.ndarray):
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
     elif order not in ('C', 'c', 'F', 'f', None):
         pass
@@ -1189,7 +1190,7 @@ def ones_like(x1,
 
     Limitations
     -----------
-    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
     Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -1211,7 +1212,7 @@ def ones_like(x1,
     [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
     """
-    if not isinstance(x1, dpnp.ndarray):
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
     elif order not in ('C', 'c', 'F', 'f', None):
         pass
@@ -1502,7 +1503,7 @@ def zeros_like(x1,
 
     Limitations
     -----------
-    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
     Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -1523,8 +1524,8 @@ def zeros_like(x1,
     >>> [i for i in np.zeros_like(x)]
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-"""
-    if not isinstance(x1, dpnp.ndarray):
+    """
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
     elif order not in ('C', 'c', 'F', 'f', None):
         pass
