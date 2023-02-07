@@ -18,7 +18,6 @@ tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-conjugate-data2]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-copy-data3]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-cumprod-data4]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-cumsum-data5]
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-diff-data6]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-ediff1d-data7]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-fabs-data8]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-floor-data9]
@@ -29,11 +28,9 @@ tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-conjugate-data2]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-copy-data3]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-cumprod-data4]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-cumsum-data5]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-diff-data6]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-ediff1d-data7]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-fabs-data8]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-floor-data9]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-gradient-data10]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nancumprod-data11]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nancumsum-data12]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nanprod-data13]
@@ -554,7 +551,6 @@ tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asar
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_ascontiguousarray_on_noncontiguous_array
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asfortranarray_cuda_array_zero_dim
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asfortranarray_cuda_array_zero_dim_dtype
-tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_fromfile
 
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid0
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid1

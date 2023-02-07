@@ -184,9 +184,9 @@ MACRO_2ARG_3TYPES_OP(dpnp_power_c,
 
 MACRO_2ARG_3TYPES_OP(dpnp_subtract_c,
                      input1_elem - input2_elem,
-                     nullptr,
-                     std::false_type,
+                     sycl::sub_sat(x1, x2),
+                     MACRO_UNPACK_TYPES(int, long),
                      oneapi::mkl::vm::sub,
-                     MACRO_UNPACK_TYPES(float, double))
+                     MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
 
 #undef MACRO_2ARG_3TYPES_OP
