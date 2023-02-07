@@ -485,3 +485,26 @@ def test_ones_like(array, dtype, order):
     a = numpy.array(array)
     ia = dpnp.array(array)
     assert_array_equal(func(numpy, a), func(dpnp, ia))
+
+
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("full_like",
+                     ['x0', '4']),
+        pytest.param("zeros_like",
+                     ['x0']),
+        pytest.param("ones_like",
+                     ['x0']),
+        pytest.param("empty_like",
+                     ['x0']),
+    ])
+def test_dpctl_tensor_input(func, args):
+    x0 = dpt.reshape(dpt.arange(9), (3,3))
+    new_args = [eval(val, {'x0' : x0}) for val in args]
+    X = getattr(dpt, func)(*new_args)
+    Y = getattr(dpnp, func)(*new_args)
+    if func is 'empty_like':
+        assert X.shape == Y.shape
+    else:
+        assert_array_equal(X, Y)
