@@ -33,7 +33,6 @@ class TestRandint(unittest.TestCase):
         a = random.randint(-1.1, -0.9, size=(2, 2))
         numpy.testing.assert_array_equal(a, cupy.full((2, 2), -1))
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_zero_sizes(self):
         a = random.randint(10, size=(0,))
         numpy.testing.assert_array_equal(a, cupy.array(()))
@@ -112,7 +111,6 @@ class TestRandint2(unittest.TestCase):
         self.assertTrue(hypothesis.chi_square_test(counts, expected))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestRandintDtype(unittest.TestCase):
 
