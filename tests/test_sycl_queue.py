@@ -76,27 +76,30 @@ def vvsort(val, vec, size, xp):
     "func, arg, kwargs",
     [
         pytest.param("arange",
-                     -25.7,
+                     [-25.7],
                      {'stop': 10**8, 'step': 15}),
         pytest.param("full",
-                     (2,2),
+                     [(2,2)],
                      {'fill_value': 5}),
+        pytest.param("eye",
+                     [4, 2],
+                     {}),
         pytest.param("ones",
-                     (2,2),
+                     [(2,2)],
                      {}),
         pytest.param("zeros",
-                     (2,2),
+                     [(2,2)],
                      {})
     ])
 @pytest.mark.parametrize("device",
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_array_creation(func, arg, kwargs, device):
-    numpy_array = getattr(numpy, func)(arg, **kwargs)
+    numpy_array = getattr(numpy, func)(*arg, **kwargs)
 
     dpnp_kwargs = dict(kwargs)
     dpnp_kwargs['device'] = device
-    dpnp_array = getattr(dpnp, func)(arg, **dpnp_kwargs)
+    dpnp_array = getattr(dpnp, func)(*arg, **dpnp_kwargs)
 
     numpy.testing.assert_array_equal(numpy_array, dpnp_array)
     assert dpnp_array.sycl_device == device
@@ -335,36 +338,101 @@ def test_broadcasting(func, data1, data2, device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
+@pytest.mark.parametrize(
+    "func, kwargs",
+    [
+        pytest.param("normal",
+                     {'loc': 1.0, 'scale': 3.4, 'size': (5, 12)}),
+        pytest.param("rand",
+                     {'d0': 20}),
+        pytest.param("randint",
+                     {'low': 2, 'high': 15, 'size': (4, 8, 16), 'dtype': dpnp.int32}),
+        pytest.param("randn",
+                     {'d0': 20}),
+        pytest.param("random",
+                     {'size': (35, 45)}),
+        pytest.param("random_integers",
+                     {'low': -17, 'high': 3, 'size': (12, 16)}),
+        pytest.param("random_sample",
+                     {'size': (7, 7)}),
+        pytest.param("ranf",
+                     {'size': (10, 7, 12)}),
+        pytest.param("sample",
+                     {'size': (7, 9)}),
+        pytest.param("standard_normal",
+                     {'size': (4, 4, 8)}),
+        pytest.param("uniform",
+                     {'low': 1.0, 'high': 2.0, 'size': (4, 2, 5)})
+    ])
+@pytest.mark.parametrize("device",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
 @pytest.mark.parametrize("usm_type",
                          ["host", "device", "shared"])
-@pytest.mark.parametrize("size",
-                         [None, (), 3, (2, 1), (4, 2, 5)],
-                         ids=['None', '()', '3', '(2,1)', '(4,2,5)'])
-def test_uniform(usm_type, size):
-    low = 1.0
-    high = 2.0
-    res = dpnp.random.uniform(low, high, size=size, usm_type=usm_type)
+def test_random(func, kwargs, device, usm_type):
+    kwargs = {**kwargs, 'device': device, 'usm_type': usm_type}
 
-    assert usm_type == res.usm_type
+    # test with default SYCL queue per a device
+    res_array = getattr(dpnp.random, func)(**kwargs)
+    assert device == res_array.sycl_device
+    assert usm_type == res_array.usm_type
+
+    sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    kwargs['device'] = None
+    kwargs['sycl_queue'] = sycl_queue
+
+    # test with in-order SYCL queue per a device and passed as argument
+    res_array = getattr(dpnp.random, func)(**kwargs)
+    assert usm_type == res_array.usm_type
+    assert_sycl_queue_equal(res_array.sycl_queue, sycl_queue)
 
 
+@pytest.mark.parametrize(
+    "func, args, kwargs",
+    [
+        pytest.param("normal",
+                     [],
+                     {'loc': 1.0, 'scale': 3.4, 'size': (5, 12)}),
+        pytest.param("rand",
+                     [15, 30, 5],
+                     {}),
+        pytest.param("randint",
+                     [],
+                     {'low': 2, 'high': 15, 'size': (4, 8, 16), 'dtype': dpnp.int32}),
+        pytest.param("randn",
+                     [20, 5, 40],
+                     {}),
+        pytest.param("random_sample",
+                     [],
+                     {'size': (7, 7)}),
+        pytest.param("standard_normal",
+                     [],
+                     {'size': (4, 4, 8)}),
+        pytest.param("uniform",
+                     [],
+                     {'low': 1.0, 'high': 2.0, 'size': (4, 2, 5)})
+    ])
+@pytest.mark.parametrize("device",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
 @pytest.mark.parametrize("usm_type",
                          ["host", "device", "shared"])
-@pytest.mark.parametrize("seed",
-                         [None, (), 123, (12, 58), (147, 56, 896), [1, 654, 78]],
-                         ids=['None', '()', '123', '(12,58)', '(147,56,896)', '[1,654,78]'])
-def test_rs_uniform(usm_type, seed):
-    seed = 123
-    sycl_queue = dpctl.SyclQueue()
-    low = 1.0
-    high = 2.0
-    rs = dpnp.random.RandomState(seed, sycl_queue=sycl_queue)
-    res = rs.uniform(low, high, usm_type=usm_type)
+def test_random_state(func, args, kwargs, device, usm_type):
+    kwargs = {**kwargs, 'usm_type': usm_type}
 
-    assert usm_type == res.usm_type
+    # test with default SYCL queue per a device
+    rs = dpnp.random.RandomState(seed=1234567, device=device)
+    res_array = getattr(rs, func)(*args, **kwargs)
+    assert device == res_array.sycl_device
+    assert usm_type == res_array.usm_type
 
-    res_sycl_queue = res.get_array().sycl_queue
-    assert_sycl_queue_equal(res_sycl_queue, sycl_queue)
+    sycl_queue = dpctl.SyclQueue(device=device, property="in_order")
+
+    # test with in-order SYCL queue per a device and passed as argument
+    rs = dpnp.random.RandomState((147, 56, 896), sycl_queue=sycl_queue)
+    res_array = getattr(rs, func)(*args, **kwargs)
+    assert usm_type == res_array.usm_type
+    assert_sycl_queue_equal(res_array.sycl_queue, sycl_queue)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")

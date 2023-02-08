@@ -37,7 +37,6 @@ class TestComparison(unittest.TestCase):
         self.check_binary('equal')
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestComparisonOperator(unittest.TestCase):
 

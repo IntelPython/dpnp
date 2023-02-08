@@ -48,6 +48,7 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
 import dpnp.dpnp_container as dpnp_container
+import dpctl.tensor as dpt
 
 
 __all__ = [
@@ -530,7 +531,7 @@ def empty_like(x1,
 
     Limitations
     -----------
-    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
     Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -552,7 +553,7 @@ def empty_like(x1,
 
     """
 
-    if not isinstance(x1, dpnp.ndarray):
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
     elif order not in ('C', 'c', 'F', 'f', None):
         pass
@@ -572,31 +573,43 @@ def empty_like(x1,
     return call_origin(numpy.empty_like, x1, dtype, order, subok, shape)
 
 
-def eye(N, M=None, k=0, dtype=None, order='C', **kwargs):
+def eye(N,
+        M=None,
+        /,
+        *,
+        k=0,
+        dtype=None,
+        order="C",
+        like=None,
+        device=None,
+        usm_type="device",
+        sycl_queue=None):
     """
     Return a 2-D array with ones on the diagonal and zeros elsewhere.
     For full documentation refer to :obj:`numpy.eye`.
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameters ``order`` is supported only with default value.
-    """
-    if (not use_origin_backend()):
-        if not isinstance(N, (int, dpnp.int, dpnp.int32, dpnp.int64)):
-            pass
-        elif M is not None and not isinstance(M, (int, dpnp.int, dpnp.int32, dpnp.int64)):
-            pass
-        elif not isinstance(k, (int, dpnp.int, dpnp.int32, dpnp.int64)):
-            pass
-        elif order != 'C':
-            pass
-        elif len(kwargs) != 0:
-            pass
-        else:
-            return dpnp_eye(N, M=M, k=k, dtype=dtype).get_pyobj()
+    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
+    Parameter ``like`` is supported only with default value ``None``.
+    Otherwise the function will be executed sequentially on CPU.
 
-    return call_origin(numpy.eye, N, M=M, k=k, dtype=dtype, order=order, **kwargs)
+    """
+    if order not in ('C', 'c', 'F', 'f', None):
+        pass
+    elif like is not None:
+        pass
+    else:
+        return dpnp_container.eye(N,
+                                  M,
+                                  k=k,
+                                  dtype=dtype,
+                                  order=order,
+                                  device=device,
+                                  usm_type=usm_type,
+                                  sycl_queue=sycl_queue)
+
+    return call_origin(numpy.eye, N, M, k=k, dtype=dtype, order=order, like=None)
 
 
 def frombuffer(buffer, **kwargs):
@@ -750,7 +763,7 @@ def full_like(x1,
 
     Limitations
     -----------
-    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
     Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -771,7 +784,7 @@ def full_like(x1,
     [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
     """
-    if not isinstance(x1, dpnp.ndarray):
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
     elif order not in ('C', 'c', 'F', 'f', None):
         pass
@@ -859,10 +872,8 @@ def identity(n, dtype=None, *, like=None):
         elif n < 0:
             pass
         else:
-            if dtype is None:
-                sycl_queue = dpnp.get_normalized_queue_device(sycl_queue=None, device=None)
-                dtype = map_dtype_to_device(dpnp.float64, sycl_queue.sycl_device)
-            return dpnp_identity(n, dtype).get_pyobj()
+            _dtype = dpnp.default_float_type() if dtype is None else dtype
+            return dpnp_identity(n, _dtype).get_pyobj()
 
     return call_origin(numpy.identity, n, dtype=dtype, like=like)
 
@@ -1254,7 +1265,7 @@ def ones_like(x1,
 
     Limitations
     -----------
-    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
     Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -1276,7 +1287,7 @@ def ones_like(x1,
     [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
     """
-    if not isinstance(x1, dpnp.ndarray):
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
     elif order not in ('C', 'c', 'F', 'f', None):
         pass
@@ -1390,10 +1401,8 @@ def tri(N, M=None, k=0, dtype=dpnp.float, **kwargs):
         elif not isinstance(k, int):
             pass
         else:
-            if dtype is dpnp.float:
-                sycl_queue = dpnp.get_normalized_queue_device(sycl_queue=None, device=None)
-                dtype = map_dtype_to_device(dpnp.float64, sycl_queue.sycl_device)
-            return dpnp_tri(N, M, k, dtype).get_pyobj()
+            _dtype = dpnp.default_float_type() if dtype in (dpnp.float, None) else dtype
+            return dpnp_tri(N, M, k, _dtype).get_pyobj()
 
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
@@ -1569,7 +1578,7 @@ def zeros_like(x1,
 
     Limitations
     -----------
-    Parameters ``x1`` is supported only as :class:`dpnp.dpnp_array`.
+    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
     Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
     Parameter ``subok`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -1590,8 +1599,8 @@ def zeros_like(x1,
     >>> [i for i in np.zeros_like(x)]
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-"""
-    if not isinstance(x1, dpnp.ndarray):
+    """
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
     elif order not in ('C', 'c', 'F', 'f', None):
         pass

@@ -852,7 +852,7 @@ tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_arra
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_length
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_is_equal
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_not_equal
-tests/third_party/cupy/logic_tests/test_comparison.py::TestComparisonOperator::test_binary_npscalar_array
+
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_10_{shapes=[(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]}::test_broadcast
