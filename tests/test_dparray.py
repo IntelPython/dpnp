@@ -174,4 +174,3 @@ def test_print_dpnp_nd():
     result = str(dpnp.empty( shape=(0, 0) ))
     expected = "[]"
     assert(result==expected)
-    
