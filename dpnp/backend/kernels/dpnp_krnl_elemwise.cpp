@@ -1178,6 +1178,47 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
 
 #include <dpnp_gen_2arg_3type_tbl.hpp>
 
+template <DPNPFuncType FT1, DPNPFuncType FT2, typename has_fp64 = std::true_type>
+static constexpr DPNPFuncType get_divide_res_type()
+{
+    constexpr auto widest_type = populate_func_types<FT1, FT2>();
+    constexpr auto shortes_type = (widest_type == FT1) ? FT2 : FT1;
+
+    if constexpr (widest_type == DPNPFuncType::DPNP_FT_CMPLX128 || widest_type == DPNPFuncType::DPNP_FT_DOUBLE)
+    {
+        return widest_type;
+    }
+    else if constexpr (widest_type == DPNPFuncType::DPNP_FT_CMPLX64)
+    {
+        if constexpr (shortes_type == DPNPFuncType::DPNP_FT_DOUBLE)
+        {
+            return DPNPFuncType::DPNP_FT_CMPLX128;
+        }
+        else if constexpr (has_fp64::value &&
+                           (shortes_type == DPNPFuncType::DPNP_FT_INT || shortes_type == DPNPFuncType::DPNP_FT_LONG))
+        {
+            return DPNPFuncType::DPNP_FT_CMPLX128;
+        }
+    }
+    else if constexpr (widest_type == DPNPFuncType::DPNP_FT_FLOAT)
+    {
+        if constexpr (has_fp64::value &&
+                      (shortes_type == DPNPFuncType::DPNP_FT_INT || shortes_type == DPNPFuncType::DPNP_FT_LONG))
+        {
+            return DPNPFuncType::DPNP_FT_DOUBLE;
+        }
+    }
+    else if constexpr (has_fp64::value)
+    {
+        return DPNPFuncType::DPNP_FT_DOUBLE;
+    }
+    else
+    {
+        return DPNPFuncType::DPNP_FT_FLOAT;
+    }
+    return widest_type;
+}
+
 template <DPNPFuncType FT1, DPNPFuncType... FTs>
 static void func_map_elemwise_2arg_3type_core(func_map_t& fmap)
 {
@@ -1198,6 +1239,16 @@ static void func_map_elemwise_2arg_3type_core(func_map_t& fmap)
            (void*)dpnp_subtract_c_ext<func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
                                       func_type_map_t::find_type<FT1>,
                                       func_type_map_t::find_type<FTs>>}),
+     ...);
+    ((fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][FT1][FTs] =
+          {get_divide_res_type<FT1, FTs>(),
+           (void*)dpnp_divide_c_ext<func_type_map_t::find_type<get_divide_res_type<FT1, FTs>()>,
+                                    func_type_map_t::find_type<FT1>,
+                                    func_type_map_t::find_type<FTs>>,
+           get_divide_res_type<FT1, FTs, std::false_type>(),
+           (void*)dpnp_divide_c_ext<func_type_map_t::find_type<get_divide_res_type<FT1, FTs, std::false_type>()>,
+                                    func_type_map_t::find_type<FT1>,
+                                    func_type_map_t::find_type<FTs>>}),
      ...);
 }
 
@@ -1406,39 +1457,6 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
                                                             (void*)dpnp_divide_c_default<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_DBL][eft_DBL] = {eft_DBL,
                                                             (void*)dpnp_divide_c_default<double, double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_INT][eft_INT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_INT][eft_LNG] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_INT][eft_FLT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int32_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_INT][eft_DBL] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_LNG][eft_INT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_LNG][eft_LNG] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_LNG][eft_FLT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int64_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_LNG][eft_DBL] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_FLT][eft_INT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_FLT][eft_LNG] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_FLT][eft_FLT] = {eft_FLT,
-                                                                (void*)dpnp_divide_c_ext<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_FLT][eft_DBL] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_DBL][eft_INT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_DBL][eft_LNG] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_DBL][eft_FLT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, double, float>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_DBL][eft_DBL] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_FMOD][eft_INT][eft_INT] = {eft_INT,
                                                           (void*)dpnp_fmod_c_default<int32_t, int32_t, int32_t>};

@@ -132,10 +132,10 @@ MACRO_2ARG_3TYPES_OP(dpnp_copysign_c,
 
 MACRO_2ARG_3TYPES_OP(dpnp_divide_c,
                      input1_elem / input2_elem,
-                     nullptr,
-                     std::false_type,
+                     sycl::native::divide(x1, x2),
+                     MACRO_UNPACK_TYPES(float, double),
                      oneapi::mkl::vm::div,
-                     MACRO_UNPACK_TYPES(float, double))
+                     MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
 
 MACRO_2ARG_3TYPES_OP(dpnp_fmod_c,
                      sycl::fmod((double)input1_elem, (double)input2_elem),
