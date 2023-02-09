@@ -170,7 +170,7 @@ def add(x1,
 
     Returns
     -------
-    add : dpnp.ndarray
+    y : dpnp.ndarray
         The sum of `x1` and `x2`, element-wise.
 
     Limitations

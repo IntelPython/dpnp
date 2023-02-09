@@ -426,7 +426,7 @@ def test_random_state(func, args, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    sycl_queue = dpctl.SyclQueue(device=device, property="in_order")
+    sycl_queue = dpctl.SyclQueue(device, property="in_order")
 
     # test with in-order SYCL queue per a device and passed as argument
     rs = dpnp.random.RandomState((147, 56, 896), sycl_queue=sycl_queue)
