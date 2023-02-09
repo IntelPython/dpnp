@@ -213,7 +213,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__bool__</span><span class="p">()</span>
 
  <span class="c1"># &#39;__class__&#39;,</span>
- <span class="c1"># &#39;__complex__&#39;,</span>
+ 
+    <span class="k">def</span> <span class="fm">__complex__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__complex__</span><span class="p">()</span>
+
  <span class="c1"># &#39;__contains__&#39;,</span>
  <span class="c1"># &#39;__copy__&#39;,</span>
  <span class="c1"># &#39;__deepcopy__&#39;,</span>
@@ -260,7 +263,10 @@
  <span class="c1"># &#39;__imatmul__&#39;,</span>
  <span class="c1"># &#39;__imod__&#39;,</span>
  <span class="c1"># &#39;__imul__&#39;,</span>
- <span class="c1"># &#39;__index__&#39;,</span>
+ 
+    <span class="k">def</span> <span class="fm">__index__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__index__</span><span class="p">()</span>
+
  <span class="c1"># &#39;__init__&#39;,</span>
  <span class="c1"># &#39;__init_subclass__&#39;,</span>
 

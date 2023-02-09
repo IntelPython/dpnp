@@ -410,7 +410,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
                 <span class="k">pass</span>
-            <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">high</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="n">high</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">high</span><span class="p">)):</span>
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int32</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
