@@ -140,7 +140,10 @@ class dpnp_array:
         return self._array_obj.__bool__()
 
  # '__class__',
- # '__complex__',
+ 
+    def __complex__(self):
+        return self._array_obj.__complex__()
+
  # '__contains__',
  # '__copy__',
  # '__deepcopy__',
@@ -187,7 +190,10 @@ class dpnp_array:
  # '__imatmul__',
  # '__imod__',
  # '__imul__',
- # '__index__',
+ 
+    def __index__(self):
+        return self._array_obj.__index__()
+
  # '__init__',
  # '__init_subclass__',
 
