@@ -337,7 +337,7 @@ class RandomState:
         if not use_origin_backend(low):
             if not dpnp.isscalar(low):
                 pass
-            elif not dpnp.isscalar(high):
+            elif not (high is None or dpnp.isscalar(high)):
                 pass
             else:
                 _dtype = dpnp.int32 if dtype is int else dpnp.dtype(dtype)
