@@ -1027,22 +1027,23 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                     auto sg = nd_it.get_sub_group();                                                                   \
                     size_t start = vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +                           \
                                             sg.get_group_id()[0] * sg.get_max_local_range()[0]);                       \
-                    size_t end = start + static_cast<size_t>(vec_sz);                                                  \
+                    size_t end = start + static_cast<size_t>(vec_sz) * sg.get_max_local_range()[0] - 1;                \
                                                                                                                        \
-                    if (end < result_size) {                                                                           \
+                    if (end < result_size)                                                                             \
+                    {                                                                                                  \
                         sycl::vec<_DataType_input1, vec_sz> x1 =                                                       \
                             sg.load<vec_sz>(sycl::multi_ptr<_DataType_input1, global_space>(&input1_data[start]));     \
                         sycl::vec<_DataType_input2, vec_sz> x2 =                                                       \
                             sg.load<vec_sz>(sycl::multi_ptr<_DataType_input2, global_space>(&input2_data[start]));     \
                         sycl::vec<_DataType_output, vec_sz> res_vec;                                                   \
-                                                                                                                       \
                         if constexpr (both_types_are_same<_DataType_input1, _DataType_input2, __vec_types__>)          \
                         {                                                                                              \
                             res_vec = __vec_operation__;                                                               \
                         }                                                                                              \
                         else                                                                                           \
                         {                                                                                              \
-                            for (size_t k = 0; k < vec_sz; ++k) {                                                      \
+                            for (size_t k = 0; k < vec_sz; ++k)                                                        \
+                            {                                                                                          \
                                 const _DataType_output input1_elem = x1[k];                                            \
                                 const _DataType_output input2_elem = x2[k];                                            \
                                 res_vec[k] = __operation__;                                                            \
@@ -1051,8 +1052,10 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                         sg.store<vec_sz>(sycl::multi_ptr<_DataType_output, global_space>(&result[start]), res_vec);    \
                                                                                                                        \
                     }                                                                                                  \
-                    else {                                                                                             \
-                        for (size_t k = start; k < result_size; ++k) {                                                 \
+                    else                                                                                               \
+                    {                                                                                                  \
+                        for (size_t k = start; k < result_size; ++k)                                                   \
+                        {                                                                                              \
                             const _DataType_output input1_elem = input1_data[k];                                       \
                             const _DataType_output input2_elem = input2_data[k];                                       \
                             result[k] = __operation__;                                                                 \
@@ -1061,6 +1064,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                 };                                                                                                     \
                                                                                                                        \
                 auto kernel_func = [&](sycl::handler& cgh) {                                                           \
+                    sycl::stream out(65536, 128, cgh);\
                     cgh.parallel_for<class __name__##_sg_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(\
                         sycl::nd_range<1>(gws_range, lws_range), kernel_parallel_for_func);                            \
                 };                                                                                                     \
@@ -1070,11 +1074,11 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
             {                                                                                                          \
                 auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                           \
                     const size_t i = global_id[0]; /* for (size_t i = 0; i < result_size; ++i) */                      \
-                    {                                                                                                  \
-                        const _DataType_output input1_elem = input1_data[i];                                           \
-                        const _DataType_output input2_elem = input2_data[i];                                           \
-                        result[i] = __operation__;                                                                     \
-                    }                                                                                                  \
+                                                                                                                       \
+                    const _DataType_output input1_elem = input1_data[i];                                               \
+                    const _DataType_output input2_elem = input2_data[i];                                               \
+                    result[i] = __operation__;                                                                         \
+                                                                                                                       \
                 };                                                                                                     \
                 auto kernel_func = [&](sycl::handler& cgh) {                                                           \
                     cgh.parallel_for<class __name__##_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(   \
