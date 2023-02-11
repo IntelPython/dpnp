@@ -102,15 +102,15 @@
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.multiply.html#numpy.multiply" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.multiply</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>y</strong> – The product of <cite>x1</cite> and <cite>x2</cite>, element-wise.
-The result is a scalar if both x1 and x2 are scalars.</p>
+<dd class="field-odd"><p><strong>y</strong> – The product of <cite>x1</cite> and <cite>x2</cite>, element-wise.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>{dpnp.ndarray, scalar}</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
-<p>Parameters <cite>x1</cite> and <cite>x2</cite> are supported as either <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or scalar.
+<p>Parameters <cite>x1</cite> and <cite>x2</cite> are supported as either <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or scalar,
+but not both (at least either <cite>x1</cite> or <cite>x2</cite> should be as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>).
 Parameters <cite>out</cite>, <cite>where</cite>, <cite>dtype</cite> and <cite>subok</cite> are supported with their default values.
 Keyword arguments <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are currently unsupported.
 Otherwise the functions will be executed sequentially on CPU.

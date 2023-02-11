@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DPNP C++ backend kernel library: Class Index</title>
+<title>DPNP C++ backend kernel library: are_same&lt; T, Ts &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -64,7 +64,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('classes.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('structare__same.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -83,38 +83,43 @@ $(document).ready(function(){initNavTree('classes.html',''); initResizable(); })
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">Class Index</div></div>
+  <div class="headertitle"><div class="title">are_same&lt; T, Ts &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="qindex"><a class="qindex" href="#letter_A">A</a>&#160;|&#160;<a class="qindex" href="#letter_B">B</a>&#160;|&#160;<a class="qindex" href="#letter_D">D</a>&#160;|&#160;<a class="qindex" href="#letter_F">F</a>&#160;|&#160;<a class="qindex" href="#letter_I">I</a>&#160;|&#160;<a class="qindex" href="#letter_M">M</a>&#160;|&#160;<a class="qindex" href="#letter_P">P</a></div>
-<div class="classindex">
-<dl class="classindex even">
-<dt class="alphachar"><a id="letter_A" name="letter_A">A</a></dt>
-<dd><a class="el" href="structare__same.html">are_same</a></dd></dl>
-<dl class="classindex odd">
-<dt class="alphachar"><a id="letter_B" name="letter_B">B</a></dt>
-<dd><a class="el" href="classbackend__sycl.html">backend_sycl</a></dd></dl>
-<dl class="classindex even">
-<dt class="alphachar"><a id="letter_D" name="letter_D">D</a></dt>
-<dd><a class="el" href="class_d_p_n_p___u_s_m__iterator.html">DPNP_USM_iterator</a></dd><dd><a class="el" href="class_d_p_n_p_c__id.html">DPNPC_id</a></dd><dd><a class="el" href="class_d_p_n_p_c__ptr__adapter.html">DPNPC_ptr_adapter</a></dd><dd><a class="el" href="struct_d_p_n_p_func_data.html">DPNPFuncData</a></dd></dl>
-<dl class="classindex odd">
-<dt class="alphachar"><a id="letter_F" name="letter_F">F</a></dt>
-<dd><a class="el" href="structfunc__type__map__factory__t.html">func_type_map_factory_t</a></dd><dd><a class="el" href="structfunc__type__pair__t.html">func_type_pair_t</a></dd></dl>
-<dl class="classindex even">
-<dt class="alphachar"><a id="letter_I" name="letter_I">I</a></dt>
-<dd><a class="el" href="structis__any.html">is_any</a></dd></dl>
-<dl class="classindex odd">
-<dt class="alphachar"><a id="letter_M" name="letter_M">M</a></dt>
-<dd><a class="el" href="structmt19937__struct.html">mt19937_struct</a></dd></dl>
-<dl class="classindex even">
-<dt class="alphachar"><a id="letter_P" name="letter_P">P</a></dt>
-<dd><a class="el" href="structpython__constants.html">python_constants</a></dd></dl>
-</div>
+
+<p><code>#include &lt;<a class="el" href="dpnp__fptr_8hpp_source.html">dpnp_fptr.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for are_same&lt; T, Ts &gt;:</div>
+<div class="dyncontent">
+<div class="center"><img src="structare__same__inherit__graph.png" border="0" usemap="#aare__same_3_01_t_00_01_ts_01_4_inherit__map" alt="Inheritance graph"/></div>
+<map name="aare__same_3_01_t_00_01_ts_01_4_inherit__map" id="aare__same_3_01_t_00_01_ts_01_4_inherit__map">
+<area shape="rect" title=" " alt="" coords="15,95,145,121"/>
+<area shape="rect" title=" " alt="" coords="5,5,155,47"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for are_same&lt; T, Ts &gt;:</div>
+<div class="dyncontent">
+<div class="center"><img src="structare__same__coll__graph.png" border="0" usemap="#aare__same_3_01_t_00_01_ts_01_4_coll__map" alt="Collaboration graph"/></div>
+<map name="aare__same_3_01_t_00_01_ts_01_4_coll__map" id="aare__same_3_01_t_00_01_ts_01_4_coll__map">
+<area shape="rect" title=" " alt="" coords="15,95,145,121"/>
+<area shape="rect" title=" " alt="" coords="5,5,155,47"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename T, typename... Ts&gt;<br />
+struct are_same&lt; T, Ts &gt;</div><p >Implements std::is_same&lt;&gt; with variadic number of types to compare with and when type T has to match every type from Ts sequence. </p>
+
+<p class="definition">Definition at line <a class="el" href="dpnp__fptr_8hpp_source.html#l00137">137</a> of file <a class="el" href="dpnp__fptr_8hpp_source.html">dpnp_fptr.hpp</a>.</p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/github/workspace/dpnp/backend/src/<a class="el" href="dpnp__fptr_8hpp_source.html">dpnp_fptr.hpp</a></li>
+</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a class="el" href="structare__same.html">are_same</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
   </ul>
 </div>
