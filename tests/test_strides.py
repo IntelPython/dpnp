@@ -1,8 +1,13 @@
 import math
 import pytest
+from .helper import get_all_dtypes
 
 import dpnp
+
 import numpy
+from numpy.testing import (
+    assert_allclose
+)
 
 
 def _getattr(ex, str_):
@@ -15,12 +20,10 @@ def _getattr(ex, str_):
 
 @pytest.mark.parametrize("func_name",
                          ['abs', ])
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
-def test_strides(func_name, type):
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_strides(func_name, dtype):
     shape = (4, 4)
-    a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
+    a = numpy.arange(shape[0] * shape[1], dtype=dtype).reshape(shape)
     a_strides = a[0::2, 0::2]
     dpa = dpnp.array(a)
     dpa_strides = dpa[0::2, 0::2]
@@ -31,7 +34,7 @@ def test_strides(func_name, type):
     numpy_func = _getattr(numpy, func_name)
     expected = numpy_func(a_strides)
 
-    numpy.testing.assert_allclose(expected, result)
+    assert_allclose(expected, result)
 
 
 @pytest.mark.parametrize("func_name",
@@ -39,9 +42,7 @@ def test_strides(func_name, type):
                           "cosh", "conjugate", "degrees", "ediff1d", "exp", "exp2", "expm1", "fabs", "floor", "log",
                           "log10", "log1p", "log2", "negative", "radians", "sign", "sin", "sinh", "sqrt", "square",
                           "tanh", "trunc"])
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(10,)],
                          ids=["(10,)"])
@@ -58,12 +59,10 @@ def test_strides_1arg(func_name, dtype, shape):
     numpy_func = _getattr(numpy, func_name)
     expected = numpy_func(b)
 
-    numpy.testing.assert_allclose(result, expected)
+    assert_allclose(result, expected)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(10,)],
                          ids=["(10,)"])
@@ -80,12 +79,10 @@ def test_strides_erf(dtype, shape):
     for idx, val in enumerate(b):
         expected[idx] = math.erf(val)
 
-    numpy.testing.assert_allclose(result, expected)
+    assert_allclose(result, expected)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(10,)],
                          ids=["(10,)"])
@@ -101,12 +98,10 @@ def test_strides_reciprocal(dtype, shape):
     result = dpnp.reciprocal(dpb)
     expected = numpy.reciprocal(b)
 
-    numpy.testing.assert_allclose(result, expected, rtol=1e-06)
+    assert_allclose(result, expected, rtol=1e-06)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(10,)],
                          ids=["(10,)"])
@@ -120,14 +115,12 @@ def test_strides_tan(dtype, shape):
     result = dpnp.tan(dpb)
     expected = numpy.tan(b)
 
-    numpy.testing.assert_allclose(result, expected, rtol=1e-06)
+    assert_allclose(result, expected, rtol=1e-06)
 
 
 @pytest.mark.parametrize("func_name",
                          ["add", "arctan2", "hypot", "maximum", "minimum", "multiply", "power", "subtract"])
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(3, 3)],
                          ids=["(3, 3)"])
@@ -144,7 +137,7 @@ def test_strides_2args(func_name, dtype, shape):
     numpy_func = _getattr(numpy, func_name)
     expected = numpy_func(a, b)
 
-    numpy.testing.assert_allclose(result, expected)
+    assert_allclose(result, expected)
 
 
 @pytest.mark.parametrize("func_name",
@@ -168,12 +161,10 @@ def test_strides_bitwise(func_name, dtype, shape):
     numpy_func = _getattr(numpy, func_name)
     expected = numpy_func(a, b)
 
-    numpy.testing.assert_allclose(result, expected)
+    assert_allclose(result, expected)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(3, 3)],
                          ids=["(3, 3)"])
@@ -187,13 +178,10 @@ def test_strides_copysign(dtype, shape):
     result = dpnp.copysign(dpa, dpb)
     expected = numpy.copysign(a, b)
 
-    numpy.testing.assert_allclose(result, expected)
+    assert_allclose(result, expected)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(3, 3)],
                          ids=["(3, 3)"])
@@ -207,13 +195,10 @@ def test_strides_fmod(dtype, shape):
     result = dpnp.fmod(dpa, dpb)
     expected = numpy.fmod(a, b)
 
-    numpy.testing.assert_allclose(result, expected)
+    assert_allclose(result, expected)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(3, 3)],
                          ids=["(3, 3)"])
@@ -227,4 +212,4 @@ def test_strides_true_devide(dtype, shape):
     result = dpnp.fmod(dpa, dpb)
     expected = numpy.fmod(a, b)
 
-    numpy.testing.assert_allclose(result, expected)
+    assert_allclose(result, expected)

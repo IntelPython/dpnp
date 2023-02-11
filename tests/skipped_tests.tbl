@@ -769,7 +769,6 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNu
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_10_{name='remainder', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_11_{name='mod', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_1_{name='angle', nargs=1}::test_raises_with_numpy_input
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_2_{name='add', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_4_{name='divide', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_5_{name='power', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_6_{name='subtract', nargs=2}::test_raises_with_numpy_input

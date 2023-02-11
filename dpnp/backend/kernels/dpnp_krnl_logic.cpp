@@ -403,11 +403,11 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
                                                                                                                        \
             auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {                                              \
                 auto sg = nd_it.get_sub_group();                                                                       \
-                size_t start = vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +                               \
-                                         sg.get_group_id()[0] * sg.get_max_local_range()[0]);                          \
-                size_t end = start + static_cast<size_t>(vec_sz);                                                      \
+                const auto max_sg_size = sg.get_max_local_range()[0];                                                  \
+                const size_t start = vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +                         \
+                                               sg.get_group_id()[0] * max_sg_size);                                    \
                                                                                                                        \
-                if (end < result_size) {                                                                               \
+                if (start + static_cast<size_t>(vec_sz) * max_sg_size < result_size) {                                 \
                     sycl::vec<_DataType_input1, vec_sz> x1 =                                                           \
                         sg.load<vec_sz>(sycl::multi_ptr<_DataType_input1, global_space>(&input1_data[start]));         \
                     sycl::vec<bool, vec_sz> res_vec;                                                                   \
@@ -647,11 +647,11 @@ static void func_map_logic_1arg_1type_helper(func_map_t& fmap)
                                                                                                                        \
             auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {                                              \
                 auto sg = nd_it.get_sub_group();                                                                       \
-                size_t start = vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +                               \
-                                         sg.get_group_id()[0] * sg.get_max_local_range()[0]);                          \
-                size_t end = start + static_cast<size_t>(vec_sz);                                                      \
+                const auto max_sg_size = sg.get_max_local_range()[0];                                                  \
+                const size_t start = vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +                         \
+                                               sg.get_group_id()[0] * max_sg_size);                                    \
                                                                                                                        \
-                if (end < result_size) {                                                                               \
+                if (start + static_cast<size_t>(vec_sz) * max_sg_size < result_size) {                                 \
                     sycl::vec<_DataType_input1, vec_sz> x1 =                                                           \
                         sg.load<vec_sz>(sycl::multi_ptr<_DataType_input1, global_space>(&input1_data[start]));         \
                     sycl::vec<_DataType_input2, vec_sz> x2 =                                                           \

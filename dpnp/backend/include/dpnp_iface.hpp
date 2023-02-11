@@ -1829,7 +1829,8 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
 
 #include <dpnp_gen_2arg_2type_tbl.hpp>
 
-#define MACRO_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                                 \
+#define MACRO_2ARG_3TYPES_OP(                                                                                          \
+    __name__, __operation__, __vec_operation__, __vec_types__, __mkl_operation__, __mkl_types__)                       \
     template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>                         \
     INP_DLLEXPORT DPCTLSyclEventRef __name__(DPCTLSyclQueueRef q_ref,                                                  \
                                              void* result_out,                                                         \

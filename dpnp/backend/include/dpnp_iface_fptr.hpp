@@ -394,13 +394,13 @@ enum class DPNPFuncName : size_t
 enum class DPNPFuncType : size_t
 {
     DPNP_FT_NONE,     /**< Very first element of the enumeration */
+    DPNP_FT_BOOL,     /**< analog of numpy.bool_ or bool */
     DPNP_FT_INT,      /**< analog of numpy.int32 or int */
     DPNP_FT_LONG,     /**< analog of numpy.int64 or long */
     DPNP_FT_FLOAT,    /**< analog of numpy.float32 or float */
     DPNP_FT_DOUBLE,   /**< analog of numpy.float32 or double */
     DPNP_FT_CMPLX64,  /**< analog of numpy.complex64 or std::complex<float> */
-    DPNP_FT_CMPLX128, /**< analog of numpy.complex128 or std::complex<double> */
-    DPNP_FT_BOOL      /**< analog of numpy.bool_ or bool */
+    DPNP_FT_CMPLX128  /**< analog of numpy.complex128 or std::complex<double> */
 };
 
 /**
