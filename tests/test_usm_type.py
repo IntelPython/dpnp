@@ -37,6 +37,19 @@ def test_coerced_usm_types_mul(usm_type_x, usm_type_y):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_subtract(usm_type_x, usm_type_y):
+    x = dp.arange(50, usm_type = usm_type_x)
+    y = dp.arange(50, usm_type = usm_type_y)
+
+    z = 20 - x - y - 7.4
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
 @pytest.mark.parametrize(
     "func, args",
     [
