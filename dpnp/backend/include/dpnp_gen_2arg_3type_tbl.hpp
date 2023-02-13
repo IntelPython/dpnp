@@ -112,7 +112,7 @@
 MACRO_2ARG_3TYPES_OP(dpnp_add_c,
                      input1_elem + input2_elem,
                      x1 + x2,
-                     MACRO_UNPACK_TYPES(int, long, bool),
+                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
                      oneapi::mkl::vm::add,
                      MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
 
@@ -133,7 +133,7 @@ MACRO_2ARG_3TYPES_OP(dpnp_copysign_c,
 MACRO_2ARG_3TYPES_OP(dpnp_divide_c,
                      input1_elem / input2_elem,
                      x1 / x2,
-                     MACRO_UNPACK_TYPES(int, long, bool),
+                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
                      oneapi::mkl::vm::div,
                      MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
 
@@ -171,7 +171,7 @@ MACRO_2ARG_3TYPES_OP(dpnp_minimum_c,
 MACRO_2ARG_3TYPES_OP(dpnp_multiply_c,
                      input1_elem * input2_elem,
                      x1 * x2,
-                     MACRO_UNPACK_TYPES(int, long, bool),
+                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
                      oneapi::mkl::vm::mul,
                      MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
 
@@ -185,7 +185,7 @@ MACRO_2ARG_3TYPES_OP(dpnp_power_c,
 MACRO_2ARG_3TYPES_OP(dpnp_subtract_c,
                      input1_elem - input2_elem,
                      x1 - x2,
-                     MACRO_UNPACK_TYPES(int, long, bool),
+                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
                      oneapi::mkl::vm::sub,
                      MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
 
