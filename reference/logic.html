@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Logic Functions &mdash; dpnp 0.11.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -10,10 +11,8 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> dpnp
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dpnp
           </a>
               <div class="version">
                 0.11
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -91,7 +94,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="routines.html">Routines</a></li>
       <li class="breadcrumb-item active">Logic Functions</li>
@@ -104,15 +107,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="logic-functions">
+  <section id="logic-functions">
 <h1>Logic Functions<a class="headerlink" href="#logic-functions" title="Permalink to this heading"></a></h1>
-<div class="section" id="truth-value-testing">
+<section id="truth-value-testing">
 <h2>Truth value testing<a class="headerlink" href="#truth-value-testing" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.all.html#dpnp.all" title="dpnp.all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.all</span></code></a></p></td>
 <td><p>Test whether all array elements along a given axis evaluate to True.</p></td>
@@ -122,14 +121,10 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="infinities-and-nans">
+</section>
+<section id="infinities-and-nans">
 <h2>Infinities and NaNs<a class="headerlink" href="#infinities-and-nans" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.isfinite.html#dpnp.isfinite" title="dpnp.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isfinite</span></code></a></p></td>
 <td><p>Test element-wise for finiteness (not infinity or not Not a Number).</p></td>
@@ -142,28 +137,20 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="array-type-testing">
+</section>
+<section id="array-type-testing">
 <h2>Array type testing<a class="headerlink" href="#array-type-testing" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.isscalar.html#dpnp.isscalar" title="dpnp.isscalar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isscalar</span></code></a></p></td>
 <td><p>Returns True if the type of <cite>obj</cite> is a scalar type.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="logic-operations">
+</section>
+<section id="logic-operations">
 <h2>Logic operations<a class="headerlink" href="#logic-operations" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.logical_and.html#dpnp.logical_and" title="dpnp.logical_and"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_and</span></code></a></p></td>
 <td><p>Compute the truth value of x1 AND x2 element-wise.</p></td>
@@ -179,14 +166,10 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="comparison">
+</section>
+<section id="comparison">
 <h2>Comparison<a class="headerlink" href="#comparison" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.allclose.html#dpnp.allclose" title="dpnp.allclose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.allclose</span></code></a></p></td>
 <td><p>Returns True if two arrays are element-wise equal within a tolerance.</p></td>
@@ -217,8 +200,8 @@
 </tr>
 </tbody>
 </table>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

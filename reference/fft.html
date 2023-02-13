@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FFT Functions &mdash; dpnp 0.11.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -10,10 +11,8 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> dpnp
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dpnp
           </a>
               <div class="version">
                 0.11
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -90,7 +93,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="routines.html">Routines</a></li>
       <li class="breadcrumb-item active">FFT Functions</li>
@@ -103,15 +106,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-dpnp.fft"></span><div class="section" id="fft-functions">
+  <span class="target" id="module-dpnp.fft"></span><section id="fft-functions">
 <h1>FFT Functions<a class="headerlink" href="#fft-functions" title="Permalink to this heading"></a></h1>
-<div class="section" id="standard-ffts">
+<section id="standard-ffts">
 <h2>Standard FFTs<a class="headerlink" href="#standard-ffts" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fft.fft.html#dpnp.fft.fft" title="dpnp.fft.fft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.fft</span></code></a></p></td>
 <td><p>Compute the one-dimensional discrete Fourier Transform.</p></td>
@@ -133,14 +132,10 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="real-ffts">
+</section>
+<section id="real-ffts">
 <h2>Real FFTs<a class="headerlink" href="#real-ffts" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fft.rfft.html#dpnp.fft.rfft" title="dpnp.fft.rfft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.rfft</span></code></a></p></td>
 <td><p>Compute the one-dimensional discrete Fourier Transform for real input.</p></td>
@@ -162,14 +157,10 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="hermitian-ffts">
+</section>
+<section id="hermitian-ffts">
 <h2>Hermitian FFTs<a class="headerlink" href="#hermitian-ffts" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fft.hfft.html#dpnp.fft.hfft" title="dpnp.fft.hfft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.hfft</span></code></a></p></td>
 <td><p>Compute the one-dimensional discrete Fourier Transform of a signal that has Hermitian symmetry.</p></td>
@@ -179,14 +170,10 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="helper-routines">
+</section>
+<section id="helper-routines">
 <h2>Helper routines<a class="headerlink" href="#helper-routines" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fft.fftfreq.html#dpnp.fft.fftfreq" title="dpnp.fft.fftfreq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.fftfreq</span></code></a></p></td>
 <td><p>Compute the one-dimensional discrete Fourier Transform sample frequencies.</p></td>
@@ -202,8 +189,8 @@
 </tr>
 </tbody>
 </table>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

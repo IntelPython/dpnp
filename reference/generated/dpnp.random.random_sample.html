@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dpnp.random.random_sample &mdash; dpnp 0.11.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -10,10 +11,8 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> dpnp
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            dpnp
           </a>
               <div class="version">
                 0.11
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -90,7 +93,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a></li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
           <li class="breadcrumb-item"><a href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
@@ -104,7 +107,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="dpnp-random-random-sample">
+  <section id="dpnp-random-random-sample">
 <h1>dpnp.random.random_sample<a class="headerlink" href="#dpnp-random-random-sample" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.random.random_sample">
@@ -113,7 +116,7 @@
 <p>Results are from the “continuous uniform” distribution over the interval.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.random_sample.html#numpy.random.random_sample" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.random_sample</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – An array API concept of device where the output array is created.
 The <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), an OneAPI filter selector string,
@@ -124,11 +127,11 @@ an instance of <code class="xref py py-class docutils literal notranslate"><span
 <li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – A SYCL queue to use for output array allocation and copying.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>out</strong> – Array of random floats of shape <cite>size</cite> (if <code class="docutils literal notranslate"><span class="pre">size=None</span></code>, zero dimension array with a single float is returned).
 Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code> if device supports it, or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code> otherwise.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
@@ -142,7 +145,7 @@ Output array data type is <code class="xref py py-obj docutils literal notransla
 </div>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>

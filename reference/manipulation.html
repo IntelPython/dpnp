@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Array Manipulation Routines &mdash; dpnp 0.11.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -10,10 +11,8 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> dpnp
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dpnp
           </a>
               <div class="version">
                 0.11
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -96,7 +99,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="routines.html">Routines</a></li>
       <li class="breadcrumb-item active">Array Manipulation Routines</li>
@@ -109,29 +112,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="array-manipulation-routines">
+  <section id="array-manipulation-routines">
 <h1>Array Manipulation Routines<a class="headerlink" href="#array-manipulation-routines" title="Permalink to this heading"></a></h1>
-<div class="section" id="basic-operations">
+<section id="basic-operations">
 <h2>Basic operations<a class="headerlink" href="#basic-operations" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.copyto.html#dpnp.copyto" title="dpnp.copyto"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.copyto</span></code></a></p></td>
 <td><p>Copies values from one array to another, broadcasting as necessary.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="changing-array-shape">
+</section>
+<section id="changing-array-shape">
 <h2>Changing array shape<a class="headerlink" href="#changing-array-shape" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a></p></td>
 <td><p>Gives a new shape to an array without changing its data.</p></td>
@@ -141,14 +136,10 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="transpose-like-operations">
+</section>
+<section id="transpose-like-operations">
 <h2>Transpose-like operations<a class="headerlink" href="#transpose-like-operations" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.moveaxis.html#dpnp.moveaxis" title="dpnp.moveaxis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.moveaxis</span></code></a></p></td>
 <td><p>Move axes of an array to new positions.</p></td>
@@ -168,14 +159,10 @@
 <p class="admonition-title">See also</p>
 <p><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpnp.dparray.T</span></code></p>
 </div>
-</div>
-<div class="section" id="changing-number-of-dimensions">
+</section>
+<section id="changing-number-of-dimensions">
 <h2>Changing number of dimensions<a class="headerlink" href="#changing-number-of-dimensions" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.atleast_1d.html#dpnp.atleast_1d" title="dpnp.atleast_1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_1d</span></code></a></p></td>
 <td><p>Convert inputs to arrays with at least one dimension.</p></td>
@@ -194,14 +181,10 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="changing-kind-of-array">
+</section>
+<section id="changing-kind-of-array">
 <h2>Changing kind of array<a class="headerlink" href="#changing-kind-of-array" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.asarray.html#dpnp.asarray" title="dpnp.asarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asarray</span></code></a></p></td>
 <td><p>Converts an input object into array.</p></td>
@@ -220,14 +203,10 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="joining-arrays">
+</section>
+<section id="joining-arrays">
 <h2>Joining arrays<a class="headerlink" href="#joining-arrays" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.concatenate.html#dpnp.concatenate" title="dpnp.concatenate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.concatenate</span></code></a></p></td>
 <td><p>Join a sequence of arrays along an existing axis.</p></td>
@@ -243,61 +222,45 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="splitting-arrays">
+</section>
+<section id="splitting-arrays">
 <h2>Splitting arrays<a class="headerlink" href="#splitting-arrays" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 </tbody>
 </table>
-</div>
-<div class="section" id="tiling-arrays">
+</section>
+<section id="tiling-arrays">
 <h2>Tiling arrays<a class="headerlink" href="#tiling-arrays" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.repeat.html#dpnp.repeat" title="dpnp.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.repeat</span></code></a></p></td>
 <td><p>Repeat elements of an array.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="adding-and-removing-elements">
+</section>
+<section id="adding-and-removing-elements">
 <h2>Adding and removing elements<a class="headerlink" href="#adding-and-removing-elements" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.unique.html#dpnp.unique" title="dpnp.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.unique</span></code></a></p></td>
 <td><p>Find the unique elements of an array.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="rearranging-elements">
+</section>
+<section id="rearranging-elements">
 <h2>Rearranging elements<a class="headerlink" href="#rearranging-elements" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a></p></td>
 <td><p>Gives a new shape to an array without changing its data.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
