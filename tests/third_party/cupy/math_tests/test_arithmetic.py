@@ -146,7 +146,7 @@ class ArithmeticBinaryBase:
                 y = y.astype(numpy.complex64)
 
         # NumPy returns an output array of another type than DPNP when input ones have diffrent types.
-        if self.name == 'multiply' and xp is cupy:
+        if self.name in ('add', 'multiply') and xp is cupy:
             if xp.isscalar(arg1) and xp.isscalar(arg2):
                 # If both are scalars, the result will be a scalar, so needs to convert into numpy-scalar.
                 y = numpy.asarray(y)

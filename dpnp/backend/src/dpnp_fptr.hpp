@@ -100,6 +100,55 @@ typedef func_type_map_factory_t<func_type_pair_t<eft_BLN, bool>,
                                 func_type_pair_t<eft_C128, std::complex<double>>> func_type_map_t;
 
 /**
+ * Return an enum value of result type populated from input types.
+ */
+template <DPNPFuncType FT1, DPNPFuncType FT2>
+static constexpr DPNPFuncType populate_func_types()
+{
+    if constexpr (FT1 == DPNPFuncType::DPNP_FT_NONE)
+    {
+        throw std::runtime_error("Templated enum value of FT1 is None");
+    }
+    else if constexpr (FT2 == DPNPFuncType::DPNP_FT_NONE)
+    {
+        throw std::runtime_error("Templated enum value of FT2 is None");
+    }
+    return (FT1 < FT2) ? FT2 : FT1;
+}
+
+/**
+ * Removes parentheses for a passed list of types separated by comma.
+ * It's intended to be used in operations macro.
+ */
+#define MACRO_UNPACK_TYPES(...) __VA_ARGS__
+
+/**
+ * Implements std::is_same<> with variadic number of types to compare with
+ * and when type T has to match only one of types Ts.
+ */
+template <typename T, typename... Ts>
+struct is_any : std::disjunction<std::is_same<T, Ts>...> {};
+
+/**
+ * Implements std::is_same<> with variadic number of types to compare with
+ * and when type T has to match every type from Ts sequence.
+ */
+template <typename T, typename... Ts>
+struct are_same : std::conjunction<std::is_same<T, Ts>...> {};
+
+/**
+ * A template constat to check if both types T1 and T2 match every type from Ts sequence.
+ */
+template <typename T1, typename T2, typename... Ts>
+constexpr auto both_types_are_same = std::conjunction_v<is_any<T1, Ts...>, are_same<T1, T2>>;
+
+/**
+ * A template constat to check if both types T1 and T2 don't match any type from Ts sequence.
+ */
+template <typename T1, typename T2, typename... Ts>
+constexpr auto none_of_both_types = !std::disjunction_v<is_any<T1, Ts...>, is_any<T2, Ts...>>;
+
+/**
  * FPTR interface initialization functions
  */
 void func_map_init_arraycreation(func_map_t& fmap);
