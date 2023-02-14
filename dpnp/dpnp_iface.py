@@ -64,6 +64,7 @@ __all__ = [
     "default_float_type",
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu",
+    "from_dlpack",
     "get_dpnp_descriptor",
     "get_include",
     "get_normalized_queue_device"
@@ -220,6 +221,30 @@ def default_float_type(device=None, sycl_queue=None):
 
     _sycl_queue = get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
     return map_dtype_to_device(float64, _sycl_queue.sycl_device)
+
+
+def from_dlpack(obj):
+    """
+    Create a dpnp array from a Python object implementing the ``__dlpack__``
+    protocol.
+
+    See https://dmlc.github.io/dlpack/latest/ for more details.
+
+    Parameters
+    ----------
+    obj : A Python object representing an array that implements the ``__dlpack__``
+        and ``__dlpack_device__`` methods.
+
+    Returns
+    -------
+    array : dpnp_array
+
+    """
+
+    usm_ary = dpt.from_dlpack(obj)
+    dpnp_ary = dpnp_array.__new__(dpnp_array)
+    dpnp_ary._array_obj = usm_ary
+    return dpnp_ary
 
 
 def get_dpnp_descriptor(ext_obj,

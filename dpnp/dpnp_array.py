@@ -140,7 +140,7 @@ class dpnp_array:
         return self._array_obj.__bool__()
 
  # '__class__',
- 
+
     def __complex__(self):
         return self._array_obj.__complex__()
 
@@ -152,6 +152,12 @@ class dpnp_array:
  # '__dir__',
  # '__divmod__',
  # '__doc__',
+
+    def __dlpack__(self, stream=None):
+        return self._array_obj.__dlpack__(stream=stream)
+
+    def __dlpack_device__(self):
+        return self._array_obj.__dlpack_device__()
 
     def __eq__(self, other):
         return dpnp.equal(self, other)
@@ -190,7 +196,7 @@ class dpnp_array:
  # '__imatmul__',
  # '__imod__',
  # '__imul__',
- 
+
     def __index__(self):
         return self._array_obj.__index__()
 
