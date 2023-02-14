@@ -41,6 +41,20 @@ def test_from_dlpack(arr_dtype,shape):
         W = dpnp.from_dlpack(V)
         assert V.strides == W.strides
 
+@pytest.mark.parametrize("arr_dtype", get_all_dtypes())
+def test_from_dlpack_with_dpt(arr_dtype):
+    X = dpt.empty((64,),dtype=arr_dtype)
+    Y = dpnp.from_dlpack(X)
+    assert_array_equal(X, Y)
+    assert isinstance(Y, dpnp.dpnp_array.dpnp_array)
+    assert X.__dlpack_device__() == Y.__dlpack_device__()
+    assert X.shape == Y.shape
+    assert X.dtype == Y.dtype or (
+        str(X.dtype) == "bool" and str(Y.dtype) == "uint8"
+    )
+    assert X.sycl_device == Y.sycl_device
+    assert X.usm_type == Y.usm_type
+
 
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes())
 @pytest.mark.parametrize("arr",
