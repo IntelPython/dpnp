@@ -238,7 +238,7 @@ def get_common_allocation_queue(objects):
     elif len(queues_in_use) == 1:
         return queues_in_use[0]
 
-    common_queue = dpt.get_execution_queue(queues_in_use)
+    common_queue = dpctl.utils.get_execution_queue(queues_in_use)
     if common_queue is None:
         raise ValueError("Input arrays must be allocated on the same SYCL queue")
     return common_queue

@@ -186,9 +186,9 @@ def linspace(start,
              *,
              dtype=None,
              device=None,
-             endpoint=True,
+             usm_type="device",
              sycl_queue=None,
-             usm_type="device"):
+             endpoint=True):
     """Validate input parameters before passing them into `dpctl.tensor` module"""
     dpu.validate_usm_type(usm_type, allow_none=False)
     sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
@@ -198,9 +198,9 @@ def linspace(start,
                              stop,
                              num,
                              dtype=dtype,
-                             endpoint=endpoint,
-                             sycl_queue=sycl_queue,
-                             usm_type=usm_type)
+                             usm_type=usm_type,
+                             sycl_queue=sycl_queue_normalized,
+                             endpoint=endpoint)
     return dpnp_array(array_obj.shape, buffer=array_obj)
 
 

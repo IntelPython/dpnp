@@ -108,7 +108,7 @@ class TestRanges(unittest.TestCase):
         return xp.linspace(0, 2, 1, dtype=dtype)
 
     @testing.for_all_dtypes(no_bool=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose()
     def test_linspace_no_endpoint(self, xp, dtype):
         return xp.linspace(0, 10, 5, dtype=dtype, endpoint=False)
 

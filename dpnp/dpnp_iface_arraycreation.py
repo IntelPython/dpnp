@@ -49,6 +49,7 @@ from dpnp.dpnp_utils import *
 
 import dpnp.dpnp_container as dpnp_container
 import dpctl.tensor as dpt
+import dpctl
 
 
 __all__ = [
@@ -885,9 +886,9 @@ def linspace(start,
              *,
              dtype=None,
              device=None,
-             endpoint=True,
-             sycl_queue=None,
              usm_type=None,
+             sycl_queue=None,
+             endpoint=True,
              retstep=False,
              axis=0):
     """
@@ -899,6 +900,7 @@ def linspace(start,
     -----------
     Parameter ``axis`` is supported only with default value ``0``.
     Parameter ``retstep`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -928,75 +930,15 @@ def linspace(start,
         pass
     elif axis != 0:
         pass
-    elif dpnp.isscalar(start) and dpnp.isscalar(stop):
-        usm_type = usm_type if usm_type is not None else "device"
-        dt = None if numpy.issubdtype(dtype, dpnp.integer) else dtype
-        res = dpnp_container.linspace(start,
-                                       stop,
-                                       num,
-                                       dtype=dt,
-                                       device=device,
-                                       endpoint=endpoint,
-                                       sycl_queue=sycl_queue,
-                                       usm_type=usm_type)
-        if numpy.issubdtype(dtype, dpnp.integer):
-            dpnp.floor(res, out=res)
-            res = res.astype(dtype)
-        return res
     else:
-        start_isarray = dpnp.isarray(start)
-        stop_isarray = dpnp.isarray(stop)
-
-        if start_isarray and stop_isarray:
-            dt = numpy.result_type(start.dtype, stop.dtype)
-            if sycl_queue is None and device is None:
-                sycl_queue = dpnp.get_execution_queue([start.sycl_queue, stop.sycl_queue])
-            if usm_type is None:
-                usm_type = dpnp.get_coerced_usm_type([start.usm_type, stop.usm_type])
-
-        elif start_isarray:
-            dt = start.dtype
-            if sycl_queue is None and device is None:
-                sycl_queue = start.sycl_queue
-            usm_type = start.usm_type if usm_type is None else usm_type
-        elif stop_isarray:
-            dt = stop.dtype
-            if sycl_queue is None and device is None:
-                sycl_queue = stop.sycl_queue
-            usm_type = stop.usm_type if usm_type is None else usm_type
-        else:
-            dt = numpy.result_type(None)
-
-        if numpy.issubdtype(dt, dpnp.integer):
-            dt = numpy.result_type(float(num), dt)
-        usm_type = usm_type if usm_type is not None else "device"
-        sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
-
-        _start = array([start] if dpnp.isscalar(start) else start, dtype=dt,
-                       usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-        _stop = array([stop] if dpnp.isscalar(stop) else stop, dtype=dt,
-                      usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-
-        if dtype is None:
-            dtype = dt
-
-        step = ((_stop - _start) * (1. / (num - 1) if endpoint else num)).astype(dt)
-
-        res = dpnp_container.arange(0,
-                                    stop=num,
-                                    step=1,
-                                    dtype=dt,
-                                    usm_type=usm_type,
-                                    sycl_queue=sycl_queue_normalized)
-
-        res = res.reshape((-1,) + (1,) * step.ndim)
-        res = res * step + _start
-
-        if endpoint and num > 1:
-            res[-1] = dpnp_container.full(step.shape, _stop)
-        if numpy.issubdtype(dtype, dpnp.integer):
-            dpnp.floor(res, out=res)
-        return res.astype(dtype)
+        return dpnp_linspace(start,
+                             stop,
+                             num,
+                             dtype=dtype,
+                             device=device,
+                             usm_type=usm_type,
+                             sycl_queue=sycl_queue,
+                             endpoint=endpoint).get_pyobj()
 
     return call_origin(numpy.linspace, start, stop, num, endpoint, retstep, dtype, axis)
 

@@ -84,6 +84,9 @@ def vvsort(val, vec, size, xp):
         pytest.param("eye",
                      [4, 2],
                      {}),
+        pytest.param("linspace",
+                     [0, 4, 8],
+                     {}),
         pytest.param("ones",
                      [(2,2)],
                      {}),
@@ -128,13 +131,22 @@ def test_empty_like(device_x, device_y):
 
 
 @pytest.mark.parametrize(
-    "func, kwargs",
+    "func, args, kwargs",
     [
         pytest.param("full_like",
+                     ['x0'],
                      {'fill_value': 5}),
         pytest.param("ones_like",
+                     ['x0'],
                      {}),
         pytest.param("zeros_like",
+                     ['x0'],
+                     {}),
+        pytest.param("linspace",
+                     ['x0', '4', '4'],
+                     {}),
+        pytest.param("linspace",
+                     ['1', 'x0', '4'],
                      {})
     ])
 @pytest.mark.parametrize("device_x",
@@ -143,21 +155,23 @@ def test_empty_like(device_x, device_y):
 @pytest.mark.parametrize("device_y",
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
-def test_array_creation_like(func, kwargs, device_x, device_y):
-    x_orig = numpy.ndarray([1, 2, 3])
-    y_orig = getattr(numpy, func)(x_orig, **kwargs)
+def test_array_creation_like(func, args, kwargs, device_x, device_y):
+    x_orig = numpy.array([1, 2, 3])
+    numpy_args = [eval(val, {'x0' : x_orig}) for val in args]
+    y_orig = getattr(numpy, func)(*numpy_args, **kwargs)
 
-    x = dpnp.ndarray([1, 2, 3], device=device_x)
+    x = dpnp.array([1, 2, 3], device=device_x)
+    dpnp_args = [eval(val, {'x0' : x}) for val in args]
 
-    y = getattr(dpnp, func)(x, **kwargs)
-    numpy.testing.assert_array_equal(y_orig, y)
+    y = getattr(dpnp, func)(*dpnp_args, **kwargs)
+    numpy.testing.assert_allclose(y_orig, y)
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
     dpnp_kwargs = dict(kwargs)
     dpnp_kwargs['device'] = device_y
     
-    y = getattr(dpnp, func)(x, **dpnp_kwargs)
-    numpy.testing.assert_array_equal(y_orig, y)
+    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
+    numpy.testing.assert_allclose(y_orig, y)
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
