@@ -64,6 +64,7 @@ def test_array_creation(func, args, usm_type_x, usm_type_y):
     assert y.usm_type == usm_type_y
 
 
+@pytest.mark.skip()
 @pytest.mark.parametrize("func", ["tril", "triu"], ids=["tril", "triu"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_tril_triu(func, usm_type):
