@@ -223,7 +223,7 @@ def default_float_type(device=None, sycl_queue=None):
     return map_dtype_to_device(float64, _sycl_queue.sycl_device)
 
 
-def from_dlpack(obj):
+def from_dlpack(obj, /):
     """
     Create a dpnp array from a Python object implementing the ``__dlpack__``
     protocol.
@@ -232,19 +232,20 @@ def from_dlpack(obj):
 
     Parameters
     ----------
-    obj : A Python object representing an array that implements the ``__dlpack__``
+    obj : object
+        A Python object representing an array that implements the ``__dlpack__``
         and ``__dlpack_device__`` methods.
 
     Returns
     -------
-    array : dpnp_array
+    out : dpnp_array
+        Returns a new dpnp array containing the data from another array
+        (obj) with the ``__dlpack__`` method on the same device as object.
 
     """
 
     usm_ary = dpt.from_dlpack(obj)
-    dpnp_ary = dpnp_array.__new__(dpnp_array)
-    dpnp_ary._array_obj = usm_ary
-    return dpnp_ary
+    return dpnp_array._create_from_usm_ndarray(usm_ary)
 
 
 def get_dpnp_descriptor(ext_obj,

@@ -319,6 +319,16 @@ class dpnp_array:
 
  # '__xor__',
 
+    @staticmethod
+    def _create_from_usm_ndarray(usm_ary : dpt.usm_ndarray):
+        if not isinstance(usm_ary, dpt.usm_ndarray):
+            raise TypeError(
+                f"Expected dpctl.tensor.usm_ndarray, got {type(usm_ary)}"
+                )
+        res = dpnp_array.__new__(dpnp_array)
+        res._array_obj = usm_ary
+        return res
+
     def all(self, axis=None, out=None, keepdims=False):
         """
         Returns True if all elements evaluate to True.
