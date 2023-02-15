@@ -473,10 +473,9 @@ class TestRandN:
         data = RandomState(seed, sycl_queue=sycl_queue).randn(3, 2, usm_type=usm_type)
         assert_array_almost_equal(data.asnumpy(), desired, decimal=precision)
 
-        # TODO: discuss with oneMKL: return 0.0 instead of the 1st element
         # call with omitted dimensions has to draw the first element from desired
-        # actual = dpnp.asnumpy(RandomState(seed).randn(usm_type=usm_type))
-        # assert_array_almost_equal(actual, desired[0, 0], decimal=precision)
+        actual = dpnp.asnumpy(RandomState(seed).randn(usm_type=usm_type))
+        assert_array_almost_equal(actual, desired[0, 0], decimal=precision)
 
         # randn() is an alias on standard_normal(), map arguments
         with mock.patch('dpnp.random.RandomState.standard_normal') as m:
@@ -622,10 +621,13 @@ class TestStandardNormal:
         precision = numpy.finfo(dtype=numpy.float32).precision
         assert_array_almost_equal(data.asnumpy(), desired, decimal=precision)
 
-        # TODO: discuss with oneMKL: return 0.0 instead of the 1st element
+        # call with the same seed has to draw the same values
+        data = RandomState(seed, sycl_queue=sycl_queue).standard_normal(size=(4, 2), usm_type=usm_type)
+        assert_array_almost_equal(data.asnumpy(), desired, decimal=precision)
+
         # call with omitted dimensions has to draw the first element from desired
-        # actual = dpnp.asnumpy(RandomState(seed).standard_normal(usm_type=usm_type))
-        # assert_array_almost_equal(actual, desired[0, 0], decimal=precision)
+        actual = dpnp.asnumpy(RandomState(seed).standard_normal(usm_type=usm_type))
+        assert_array_almost_equal(actual, desired[0, 0], decimal=precision)
 
         # random_sample() is an alias on uniform(), map arguments
         with mock.patch('dpnp.random.RandomState.normal') as m:
