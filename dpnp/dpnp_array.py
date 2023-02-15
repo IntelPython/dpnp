@@ -253,7 +253,10 @@ class dpnp_array:
  # '__rdivmod__',
  # '__reduce__',
  # '__reduce_ex__',
- # '__repr__',
+
+    def __repr__(self):
+        return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
+
  # '__rfloordiv__',
  # '__rlshift__',
 
@@ -298,8 +301,7 @@ class dpnp_array:
 
         """
 
-        return str(self.asnumpy())
-
+        return self._array_obj.__str__()
 
     def __sub__(self, other):
         return dpnp.subtract(self, other)
