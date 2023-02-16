@@ -505,7 +505,7 @@ def test_dpctl_tensor_input(func, args):
     new_args = [eval(val, {'x0' : x0}) for val in args]
     X = getattr(dpt, func)(*new_args)
     Y = getattr(dpnp, func)(*new_args)
-    if func is 'empty_like':
+    if func == 'empty_like':
         assert X.shape == Y.shape
     else:
         assert_array_equal(X, Y)

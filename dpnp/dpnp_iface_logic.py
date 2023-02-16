@@ -69,7 +69,13 @@ __all__ = [
 ]
 
 
-def all(x1, axis=None, out=None, keepdims=False):
+def all(x1,
+        /,
+        axis=None,
+        out=None,
+        keepdims=False,
+        *,
+        where=True):
     """
     Test whether all array elements along a given axis evaluate to True.
 
@@ -80,9 +86,10 @@ def all(x1, axis=None, out=None, keepdims=False):
     Input array is supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``axis`` is supported only with default value ``None``.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``keepdims`` is supported only with default value ``False``.
+    Parameter `axis` is supported only with default value `None`.
+    Parameter `out` is supported only with default value `None`.
+    Parameter `keepdims` is supported only with default value `False`.
+    Parameter `where` is supported only with default value `True`.
 
     See Also
     --------
@@ -95,15 +102,15 @@ def all(x1, axis=None, out=None, keepdims=False):
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> x = np.array([[True, False], [True, True]])
-    >>> np.all(x)
+    >>> import dpnp as dp
+    >>> x = dp.array([[True, False], [True, True]])
+    >>> dp.all(x)
     False
-    >>> x2 = np.array([-1, 4, 5])
-    >>> np.all(x2)
+    >>> x2 = dp.array([-1, 4, 5])
+    >>> dp.all(x2)
     True
-    >>> x3 = np.array([1.0, np.nan])
-    >>> np.all(x3)
+    >>> x3 = dp.array([1.0, dp.nan])
+    >>> dp.all(x3)
     True
 
     """
@@ -116,13 +123,13 @@ def all(x1, axis=None, out=None, keepdims=False):
             pass
         elif keepdims is not False:
             pass
+        elif where is not True:
+            pass
         else:
             result_obj = dpnp_all(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+            return dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-            return result
-
-    return call_origin(numpy.all, x1, axis, out, keepdims)
+    return call_origin(numpy.all, x1, axis=axis, out=out, keepdims=keepdims, where=where)
 
 
 def allclose(x1, x2, rtol=1.e-5, atol=1.e-8, **kwargs):
