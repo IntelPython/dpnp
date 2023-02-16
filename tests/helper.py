@@ -32,7 +32,7 @@ def get_all_dtypes(no_bool=False,
         dtypes.append(dpnp.complex64)
         if dev.has_aspect_fp64:
             dtypes.append(dpnp.complex128)
-    
+
     # add None value to validate a default dtype
     if not no_none:
         dtypes.append(None)

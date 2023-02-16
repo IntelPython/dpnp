@@ -110,7 +110,7 @@ def test_frombuffer(dtype):
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_fromfile(dtype):
     with tempfile.TemporaryFile() as fh:
         fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
@@ -274,11 +274,12 @@ def test_tri_default_dtype():
                               '[[1, 2], [3, 4]]',
                               '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
                               '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_tril(m, k, dtype):
     a = numpy.array(m, dtype=dtype)
     ia = dpnp.array(a)
-    expected = numpy.tril(a, k=operator.index(k))
+    expected = numpy.tril(a, k=k)
     result = dpnp.tril(ia, k=k)
     assert_array_equal(expected, result)
 
@@ -295,11 +296,12 @@ def test_tril(m, k, dtype):
                          ids=['[[1, 2], [3, 4]]',
                               '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
                               '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_triu(m, k, dtype):
     a = numpy.array(m, dtype=dtype)
     ia = dpnp.array(a)
-    expected = numpy.triu(a, k=operator.index(k))
+    expected = numpy.triu(a, k=k)
     result = dpnp.triu(ia, k=k)
     assert_array_equal(expected, result)
 

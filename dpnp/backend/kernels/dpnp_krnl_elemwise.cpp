@@ -881,9 +881,9 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                                                                                                                        \
         sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));                                                      \
                                                                                                                        \
-        _DataType_input1* input1_data = static_cast<_DataType_input1 *>(const_cast<void *>(input1_in));                \
-        _DataType_input2* input2_data = static_cast<_DataType_input2 *>(const_cast<void *>(input2_in));                \
-        _DataType_output* result = static_cast<_DataType_output *>(result_out);                                        \
+        _DataType_input1* input1_data = static_cast<_DataType_input1*>(const_cast<void*>(input1_in));                  \
+        _DataType_input2* input2_data = static_cast<_DataType_input2*>(const_cast<void*>(input2_in));                  \
+        _DataType_output* result = static_cast<_DataType_output*>(result_out);                                         \
                                                                                                                        \
         bool use_broadcasting = !array_equal(input1_shape, input1_ndim, input2_shape, input2_ndim);                    \
                                                                                                                        \
@@ -896,8 +896,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
         shape_elem_type* input2_shape_offsets = new shape_elem_type[input2_ndim];                                      \
                                                                                                                        \
         get_shape_offsets_inkernel(input2_shape, input2_ndim, input2_shape_offsets);                                   \
-        use_strides =                                                                                                  \
-            use_strides || !array_equal(input2_strides, input2_ndim, input2_shape_offsets, input2_ndim);               \
+        use_strides = use_strides || !array_equal(input2_strides, input2_ndim, input2_shape_offsets, input2_ndim);     \
         delete[] input2_shape_offsets;                                                                                 \
                                                                                                                        \
         sycl::event event;                                                                                             \
@@ -907,19 +906,17 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
         {                                                                                                              \
             DPNPC_id<_DataType_input1>* input1_it;                                                                     \
             const size_t input1_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input1>);                                 \
-            input1_it = reinterpret_cast<DPNPC_id<_DataType_input1>*>(dpnp_memory_alloc_c(q_ref,                       \
-                                                                                          input1_it_size_in_bytes));   \
-            new (input1_it)                                                                                            \
-                DPNPC_id<_DataType_input1>(q_ref, input1_data, input1_shape, input1_strides, input1_ndim);             \
+            input1_it =                                                                                                \
+                reinterpret_cast<DPNPC_id<_DataType_input1>*>(dpnp_memory_alloc_c(q_ref, input1_it_size_in_bytes));    \
+            new (input1_it) DPNPC_id<_DataType_input1>(q_ref, input1_data, input1_shape, input1_strides, input1_ndim); \
                                                                                                                        \
             input1_it->broadcast_to_shape(result_shape, result_ndim);                                                  \
                                                                                                                        \
             DPNPC_id<_DataType_input2>* input2_it;                                                                     \
             const size_t input2_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input2>);                                 \
-            input2_it = reinterpret_cast<DPNPC_id<_DataType_input2>*>(dpnp_memory_alloc_c(q_ref,                       \
-                                                                                          input2_it_size_in_bytes));   \
-            new (input2_it)                                                                                            \
-                DPNPC_id<_DataType_input2>(q_ref, input2_data, input2_shape, input2_strides, input2_ndim);             \
+            input2_it =                                                                                                \
+                reinterpret_cast<DPNPC_id<_DataType_input2>*>(dpnp_memory_alloc_c(q_ref, input2_it_size_in_bytes));    \
+            new (input2_it) DPNPC_id<_DataType_input2>(q_ref, input2_data, input2_shape, input2_strides, input2_ndim); \
                                                                                                                        \
             input2_it->broadcast_to_shape(result_shape, result_ndim);                                                  \
                                                                                                                        \
@@ -957,27 +954,26 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
             using usm_host_allocatorT = sycl::usm_allocator<shape_elem_type, sycl::usm::alloc::host>;                  \
                                                                                                                        \
             size_t strides_size = 3 * result_ndim;                                                                     \
-            shape_elem_type *dev_strides_data = sycl::malloc_device<shape_elem_type>(strides_size, q);                 \
+            shape_elem_type* dev_strides_data = sycl::malloc_device<shape_elem_type>(strides_size, q);                 \
                                                                                                                        \
             /* create host temporary for packed strides managed by shared pointer */                                   \
-            auto strides_host_packed = std::vector<shape_elem_type, usm_host_allocatorT>(strides_size,                 \
-                                                                                         usm_host_allocatorT(q));      \
+            auto strides_host_packed =                                                                                 \
+                std::vector<shape_elem_type, usm_host_allocatorT>(strides_size, usm_host_allocatorT(q));               \
                                                                                                                        \
             /* packed vector is concatenation of result_strides, input1_strides and input2_strides */                  \
             std::copy(result_strides, result_strides + result_ndim, strides_host_packed.begin());                      \
             std::copy(input1_strides, input1_strides + result_ndim, strides_host_packed.begin() + result_ndim);        \
             std::copy(input2_strides, input2_strides + result_ndim, strides_host_packed.begin() + 2 * result_ndim);    \
                                                                                                                        \
-            auto copy_strides_ev = q.copy<shape_elem_type>(strides_host_packed.data(),                                 \
-                                                           dev_strides_data,                                           \
-                                                           strides_host_packed.size());                                \
+            auto copy_strides_ev =                                                                                     \
+                q.copy<shape_elem_type>(strides_host_packed.data(), dev_strides_data, strides_host_packed.size());     \
                                                                                                                        \
             auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
                 const size_t output_id = global_id[0]; /* for (size_t i = 0; i < result_size; ++i) */                  \
                 {                                                                                                      \
-                    const shape_elem_type *result_strides_data = &dev_strides_data[0];                                 \
-                    const shape_elem_type *input1_strides_data = &dev_strides_data[1];                                 \
-                    const shape_elem_type *input2_strides_data = &dev_strides_data[2];                                 \
+                    const shape_elem_type* result_strides_data = &dev_strides_data[0];                                 \
+                    const shape_elem_type* input1_strides_data = &dev_strides_data[1];                                 \
+                    const shape_elem_type* input2_strides_data = &dev_strides_data[2];                                 \
                                                                                                                        \
                     size_t input1_id = 0;                                                                              \
                     size_t input2_id = 0;                                                                              \
@@ -1013,8 +1009,10 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
             {                                                                                                          \
                 event = __mkl_operation__(q, result_size, input1_data, input2_data, result);                           \
             }                                                                                                          \
-            else if constexpr (none_of_both_types<_DataType_input1, _DataType_input2,                                  \
-                                                  std::complex<float>, std::complex<double>>)                          \
+            else if constexpr (none_of_both_types<_DataType_input1,                                                    \
+                                                  _DataType_input2,                                                    \
+                                                  std::complex<float>,                                                 \
+                                                  std::complex<double>>)                                               \
             {                                                                                                          \
                 constexpr size_t lws = 64;                                                                             \
                 constexpr unsigned int vec_sz = 8;                                                                     \
@@ -1026,22 +1024,47 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                 auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {                                          \
                     auto sg = nd_it.get_sub_group();                                                                   \
                     const auto max_sg_size = sg.get_max_local_range()[0];                                              \
-                    const size_t start = vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +                     \
-                                                   sg.get_group_id()[0] * max_sg_size);                                \
+                    const size_t start =                                                                               \
+                        vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) + sg.get_group_id()[0] * max_sg_size); \
                                                                                                                        \
                     if (start + static_cast<size_t>(vec_sz) * max_sg_size < result_size)                               \
                     {                                                                                                  \
-                        sycl::vec<_DataType_input1, vec_sz> x1 =                                                       \
-                            sg.load<vec_sz>(sycl::multi_ptr<_DataType_input1, global_space>(&input1_data[start]));     \
-                        sycl::vec<_DataType_input2, vec_sz> x2 =                                                       \
-                            sg.load<vec_sz>(sycl::multi_ptr<_DataType_input2, global_space>(&input2_data[start]));     \
+                        using input1_ptrT = sycl::multi_ptr<_DataType_input1, global_space>;                           \
+                        using input2_ptrT = sycl::multi_ptr<_DataType_input2, global_space>;                           \
+                        using result_ptrT = sycl::multi_ptr<_DataType_output, global_space>;                           \
+                                                                                                                       \
                         sycl::vec<_DataType_output, vec_sz> res_vec;                                                   \
-                        if constexpr (both_types_are_same<_DataType_input1, _DataType_input2, __vec_types__>)          \
+                                                                                                                       \
+                        if constexpr (both_types_are_any_of<_DataType_input1, _DataType_input2, __vec_types__>)        \
                         {                                                                                              \
-                            res_vec = __vec_operation__;                                                               \
+                            if constexpr (both_types_are_same<_DataType_input1, _DataType_input2, _DataType_output>)   \
+                            {                                                                                          \
+                                sycl::vec<_DataType_input1, vec_sz> x1 =                                               \
+                                    sg.load<vec_sz>(input1_ptrT(&input1_data[start]));                                 \
+                                sycl::vec<_DataType_input2, vec_sz> x2 =                                               \
+                                    sg.load<vec_sz>(input2_ptrT(&input2_data[start]));                                 \
+                                                                                                                       \
+                                res_vec = __vec_operation__;                                                           \
+                            }                                                                                          \
+                            else /* input types don't match result type, so explicit casting is required */            \
+                            {                                                                                          \
+                                sycl::vec<_DataType_output, vec_sz> x1 =                                               \
+                                    dpnp_vec_cast<_DataType_output, _DataType_input1, vec_sz>(                         \
+                                        sg.load<vec_sz>(input1_ptrT(&input1_data[start])));                            \
+                                sycl::vec<_DataType_output, vec_sz> x2 =                                               \
+                                    dpnp_vec_cast<_DataType_output, _DataType_input2, vec_sz>(                         \
+                                        sg.load<vec_sz>(input2_ptrT(&input2_data[start])));                            \
+                                                                                                                       \
+                                res_vec = __vec_operation__;                                                           \
+                            }                                                                                          \
                         }                                                                                              \
                         else                                                                                           \
                         {                                                                                              \
+                            sycl::vec<_DataType_input1, vec_sz> x1 =                                                   \
+                                sg.load<vec_sz>(input1_ptrT(&input1_data[start]));                                     \
+                            sycl::vec<_DataType_input2, vec_sz> x2 =                                                   \
+                                sg.load<vec_sz>(input2_ptrT(&input2_data[start]));                                     \
+                                                                                                                       \
                             for (size_t k = 0; k < vec_sz; ++k)                                                        \
                             {                                                                                          \
                                 const _DataType_output input1_elem = x1[k];                                            \
@@ -1049,12 +1072,11 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                                 res_vec[k] = __operation__;                                                            \
                             }                                                                                          \
                         }                                                                                              \
-                        sg.store<vec_sz>(sycl::multi_ptr<_DataType_output, global_space>(&result[start]), res_vec);    \
-                                                                                                                       \
+                        sg.store<vec_sz>(result_ptrT(&result[start]), res_vec);                                        \
                     }                                                                                                  \
                     else                                                                                               \
                     {                                                                                                  \
-                        for (size_t k = start; k < result_size; ++k)                                                   \
+                        for (size_t k = start + sg.get_local_id()[0]; k < result_size; k += max_sg_size)               \
                         {                                                                                              \
                             const _DataType_output input1_elem = input1_data[k];                                       \
                             const _DataType_output input2_elem = input2_data[k];                                       \
@@ -1064,8 +1086,8 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                 };                                                                                                     \
                                                                                                                        \
                 auto kernel_func = [&](sycl::handler& cgh) {                                                           \
-                    sycl::stream out(65536, 128, cgh);\
-                    cgh.parallel_for<class __name__##_sg_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(\
+                    cgh.parallel_for<                                                                                  \
+                        class __name__##_sg_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(             \
                         sycl::nd_range<1>(gws_range, lws_range), kernel_parallel_for_func);                            \
                 };                                                                                                     \
                 event = q.submit(kernel_func);                                                                         \
@@ -1078,7 +1100,6 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                     const _DataType_output input1_elem = input1_data[i];                                               \
                     const _DataType_output input2_elem = input2_data[i];                                               \
                     result[i] = __operation__;                                                                         \
-                                                                                                                       \
                 };                                                                                                     \
                 auto kernel_func = [&](sycl::handler& cgh) {                                                           \
                     cgh.parallel_for<class __name__##_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(   \
@@ -1112,26 +1133,25 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
     {                                                                                                                  \
         DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);                                    \
         DPCTLEventVectorRef dep_event_vec_ref = nullptr;                                                               \
-        DPCTLSyclEventRef event_ref = __name__<_DataType_output, _DataType_input1, _DataType_input2>(                  \
-            q_ref,                                                                                                     \
-            result_out,                                                                                                \
-            result_size,                                                                                               \
-            result_ndim,                                                                                               \
-            result_shape,                                                                                              \
-            result_strides,                                                                                            \
-            input1_in,                                                                                                 \
-            input1_size,                                                                                               \
-            input1_ndim,                                                                                               \
-            input1_shape,                                                                                              \
-            input1_strides,                                                                                            \
-            input2_in,                                                                                                 \
-            input2_size,                                                                                               \
-            input2_ndim,                                                                                               \
-            input2_shape,                                                                                              \
-            input2_strides,                                                                                            \
-            where,                                                                                                     \
-            dep_event_vec_ref                                                                                          \
-        );                                                                                                             \
+        DPCTLSyclEventRef event_ref =                                                                                  \
+            __name__<_DataType_output, _DataType_input1, _DataType_input2>(q_ref,                                      \
+                                                                           result_out,                                 \
+                                                                           result_size,                                \
+                                                                           result_ndim,                                \
+                                                                           result_shape,                               \
+                                                                           result_strides,                             \
+                                                                           input1_in,                                  \
+                                                                           input1_size,                                \
+                                                                           input1_ndim,                                \
+                                                                           input1_shape,                               \
+                                                                           input1_strides,                             \
+                                                                           input2_in,                                  \
+                                                                           input2_size,                                \
+                                                                           input2_ndim,                                \
+                                                                           input2_shape,                               \
+                                                                           input2_strides,                             \
+                                                                           where,                                      \
+                                                                           dep_event_vec_ref);                         \
         DPCTLEvent_WaitAndThrow(event_ref);                                                                            \
         DPCTLEvent_Delete(event_ref);                                                                                  \
     }                                                                                                                  \
@@ -1172,11 +1192,51 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                                         const shape_elem_type*,                                                        \
                                         const shape_elem_type*,                                                        \
                                         const size_t*,                                                                 \
-                                        const DPCTLEventVectorRef) = __name__<_DataType_output,                        \
-                                                                              _DataType_input1,                        \
-                                                                              _DataType_input2>;
+                                        const DPCTLEventVectorRef) =                                                   \
+        __name__<_DataType_output, _DataType_input1, _DataType_input2>;
 
 #include <dpnp_gen_2arg_3type_tbl.hpp>
+
+template <DPNPFuncType FT1, DPNPFuncType FT2, typename has_fp64 = std::true_type>
+static constexpr DPNPFuncType get_divide_res_type()
+{
+    constexpr auto widest_type = populate_func_types<FT1, FT2>();
+    constexpr auto shortes_type = (widest_type == FT1) ? FT2 : FT1;
+
+    if constexpr (widest_type == DPNPFuncType::DPNP_FT_CMPLX128 || widest_type == DPNPFuncType::DPNP_FT_DOUBLE)
+    {
+        return widest_type;
+    }
+    else if constexpr (widest_type == DPNPFuncType::DPNP_FT_CMPLX64)
+    {
+        if constexpr (shortes_type == DPNPFuncType::DPNP_FT_DOUBLE)
+        {
+            return DPNPFuncType::DPNP_FT_CMPLX128;
+        }
+        else if constexpr (has_fp64::value &&
+                           (shortes_type == DPNPFuncType::DPNP_FT_INT || shortes_type == DPNPFuncType::DPNP_FT_LONG))
+        {
+            return DPNPFuncType::DPNP_FT_CMPLX128;
+        }
+    }
+    else if constexpr (widest_type == DPNPFuncType::DPNP_FT_FLOAT)
+    {
+        if constexpr (has_fp64::value &&
+                      (shortes_type == DPNPFuncType::DPNP_FT_INT || shortes_type == DPNPFuncType::DPNP_FT_LONG))
+        {
+            return DPNPFuncType::DPNP_FT_DOUBLE;
+        }
+    }
+    else if constexpr (has_fp64::value)
+    {
+        return DPNPFuncType::DPNP_FT_DOUBLE;
+    }
+    else
+    {
+        return DPNPFuncType::DPNP_FT_FLOAT;
+    }
+    return widest_type;
+}
 
 template <DPNPFuncType FT1, DPNPFuncType... FTs>
 static void func_map_elemwise_2arg_3type_core(func_map_t& fmap)
@@ -1192,6 +1252,22 @@ static void func_map_elemwise_2arg_3type_core(func_map_t& fmap)
            (void*)dpnp_multiply_c_ext<func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
                                       func_type_map_t::find_type<FT1>,
                                       func_type_map_t::find_type<FTs>>}),
+     ...);
+    ((fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][FT1][FTs] =
+          {populate_func_types<FT1, FTs>(),
+           (void*)dpnp_subtract_c_ext<func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
+                                      func_type_map_t::find_type<FT1>,
+                                      func_type_map_t::find_type<FTs>>}),
+     ...);
+    ((fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][FT1][FTs] =
+          {get_divide_res_type<FT1, FTs>(),
+           (void*)dpnp_divide_c_ext<func_type_map_t::find_type<get_divide_res_type<FT1, FTs>()>,
+                                    func_type_map_t::find_type<FT1>,
+                                    func_type_map_t::find_type<FTs>>,
+           get_divide_res_type<FT1, FTs, std::false_type>(),
+           (void*)dpnp_divide_c_ext<func_type_map_t::find_type<get_divide_res_type<FT1, FTs, std::false_type>()>,
+                                    func_type_map_t::find_type<FT1>,
+                                    func_type_map_t::find_type<FTs>>}),
      ...);
 }
 
@@ -1400,39 +1476,6 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
                                                             (void*)dpnp_divide_c_default<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_DBL][eft_DBL] = {eft_DBL,
                                                             (void*)dpnp_divide_c_default<double, double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_INT][eft_INT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_INT][eft_LNG] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_INT][eft_FLT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int32_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_INT][eft_DBL] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_LNG][eft_INT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_LNG][eft_LNG] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_LNG][eft_FLT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int64_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_LNG][eft_DBL] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_FLT][eft_INT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_FLT][eft_LNG] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_FLT][eft_FLT] = {eft_FLT,
-                                                                (void*)dpnp_divide_c_ext<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_FLT][eft_DBL] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_DBL][eft_INT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_DBL][eft_LNG] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_DBL][eft_FLT] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, double, float>};
-    fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][eft_DBL][eft_DBL] = {eft_DBL,
-                                                                (void*)dpnp_divide_c_ext<double, double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_FMOD][eft_INT][eft_INT] = {eft_INT,
                                                           (void*)dpnp_fmod_c_default<int32_t, int32_t, int32_t>};
@@ -1877,39 +1920,6 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
         eft_DBL, (void*)dpnp_subtract_c_default<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_subtract_c_default<double, double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void*)dpnp_subtract_c_ext<int32_t, int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_INT][eft_LNG] = {
-        eft_LNG, (void*)dpnp_subtract_c_ext<int64_t, int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_INT][eft_FLT] = {
-        eft_DBL, (void*)dpnp_subtract_c_ext<double, int32_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_INT][eft_DBL] = {
-        eft_DBL, (void*)dpnp_subtract_c_ext<double, int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_LNG][eft_INT] = {
-        eft_LNG, (void*)dpnp_subtract_c_ext<int64_t, int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void*)dpnp_subtract_c_ext<int64_t, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_LNG][eft_FLT] = {
-        eft_DBL, (void*)dpnp_subtract_c_ext<double, int64_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_LNG][eft_DBL] = {
-        eft_DBL, (void*)dpnp_subtract_c_ext<double, int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_FLT][eft_INT] = {
-        eft_DBL, (void*)dpnp_subtract_c_ext<double, float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_FLT][eft_LNG] = {
-        eft_DBL, (void*)dpnp_subtract_c_ext<double, float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void*)dpnp_subtract_c_ext<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_FLT][eft_DBL] = {
-        eft_DBL, (void*)dpnp_subtract_c_ext<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_DBL][eft_INT] = {
-        eft_DBL, (void*)dpnp_subtract_c_ext<double, double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_DBL][eft_LNG] = {
-        eft_DBL, (void*)dpnp_subtract_c_ext<double, double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_DBL][eft_FLT] = {
-        eft_DBL, (void*)dpnp_subtract_c_ext<double, double, float>};
-    fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_subtract_c_ext<double, double, double>};
 
     func_map_elemwise_2arg_3type_helper<eft_BLN, eft_INT, eft_LNG, eft_FLT, eft_DBL, eft_C64, eft_C128>(fmap);
 

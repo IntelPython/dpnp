@@ -89,7 +89,6 @@ class TestMedianAxis(unittest.TestCase):
         return xp.median(a, self.axis, keepdims=self.keepdims)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestAverage(unittest.TestCase):
 
@@ -101,12 +100,14 @@ class TestAverage(unittest.TestCase):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return xp.average(a)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_average_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.average(a, axis=1)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_average_weights(self, xp, dtype):
@@ -114,6 +115,7 @@ class TestAverage(unittest.TestCase):
         w = testing.shaped_arange((2, 3), xp, dtype)
         return xp.average(a, weights=w)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_average_axis_weights(self, xp, dtype):
@@ -132,6 +134,7 @@ class TestAverage(unittest.TestCase):
         testing.assert_allclose(average_cpu, average_gpu)
         testing.assert_allclose(sum_weights_cpu, sum_weights_gpu)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     def test_returned(self, dtype):
         a = testing.shaped_arange((2, 3), numpy, dtype)

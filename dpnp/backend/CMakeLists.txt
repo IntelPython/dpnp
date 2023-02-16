@@ -93,6 +93,7 @@ string(CONCAT COMMON_COMPILE_FLAGS
   "-fsycl "
   "-fsycl-device-code-split=per_kernel "
   "-fno-approx-func "
+  "-fno-finite-math-only "
 )
 string(CONCAT COMMON_LINK_FLAGS
   "-fsycl "
