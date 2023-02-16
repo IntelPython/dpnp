@@ -1010,8 +1010,10 @@ def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
 
     Limitations
     -----------
+    Parameter ``xi`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
     Parameter ``copy`` is supported only with default value ``True``.
     Parameter ``sparse`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -1045,17 +1047,16 @@ def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
 
     """
 
-    if not use_origin_backend():
-        # original limitation
-        if indexing not in ["ij", "xy"]:
-            checker_throw_value_error("meshgrid", "indexing", indexing, "'ij' or 'xy'")
-
-        if copy is not True:
-            checker_throw_value_error("meshgrid", "copy", copy, True)
-        if sparse is not False:
-            checker_throw_value_error("meshgrid", "sparse", sparse, False)
-
-        return dpnp_meshgrid(xi, copy, sparse, indexing)
+    if not all((isinstance(x, (dpnp.ndarray, dpt.usm_ndarray)) for x in xi)):
+        pass
+    elif indexing not in ["ij", "xy"]:
+        pass
+    elif copy is not True:
+        pass
+    elif sparse is not False:
+        pass
+    else:
+        return dpnp_container.meshgrid(*xi, indexing=indexing)
 
     return call_origin(numpy.meshgrid, xi, copy, sparse, indexing)
 

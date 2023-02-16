@@ -406,16 +406,10 @@ tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_3_{copy
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_3_{copy=False, indexing='ij', sparse=True}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_3_{copy=False, indexing='ij', sparse=True}::test_meshgrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_3_{copy=False, indexing='ij', sparse=True}::test_meshgrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_4_{copy=True, indexing='xy', sparse=False}::test_meshgrid1
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_4_{copy=True, indexing='xy', sparse=False}::test_meshgrid2
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_4_{copy=True, indexing='xy', sparse=False}::test_meshgrid3
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_5_{copy=True, indexing='xy', sparse=True}::test_meshgrid0
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_5_{copy=True, indexing='xy', sparse=True}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_5_{copy=True, indexing='xy', sparse=True}::test_meshgrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_5_{copy=True, indexing='xy', sparse=True}::test_meshgrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_6_{copy=True, indexing='ij', sparse=False}::test_meshgrid1
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_6_{copy=True, indexing='ij', sparse=False}::test_meshgrid2
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_6_{copy=True, indexing='ij', sparse=False}::test_meshgrid3
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid0
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid2
