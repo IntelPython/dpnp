@@ -215,7 +215,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__bool__</span><span class="p">()</span>
 
  <span class="c1"># &#39;__class__&#39;,</span>
- 
+
     <span class="k">def</span> <span class="fm">__complex__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__complex__</span><span class="p">()</span>
 
@@ -227,6 +227,12 @@
  <span class="c1"># &#39;__dir__&#39;,</span>
  <span class="c1"># &#39;__divmod__&#39;,</span>
  <span class="c1"># &#39;__doc__&#39;,</span>
+
+    <span class="k">def</span> <span class="nf">__dlpack__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__dlpack__</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__dlpack_device__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__dlpack_device__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="dpnp_array.__eq__"><a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__eq__">[docs]</a>    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
@@ -265,7 +271,7 @@
  <span class="c1"># &#39;__imatmul__&#39;,</span>
  <span class="c1"># &#39;__imod__&#39;,</span>
  <span class="c1"># &#39;__imul__&#39;,</span>
- 
+
     <span class="k">def</span> <span class="fm">__index__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__index__</span><span class="p">()</span>
 
@@ -389,6 +395,16 @@
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">true_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
  <span class="c1"># &#39;__xor__&#39;,</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_ary</span> <span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">dpnp_array</span><span class="p">)</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">_array_obj</span> <span class="o">=</span> <span class="n">usm_ary</span>
+        <span class="k">return</span> <span class="n">res</span>
 
 <div class="viewcode-block" id="dpnp_array.all"><a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
