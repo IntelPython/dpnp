@@ -1076,7 +1076,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                     }                                                                                                  \
                     else                                                                                               \
                     {                                                                                                  \
-                        for (size_t k = start; k < result_size; ++k)                                                   \
+                        for (size_t k = start + sg.get_local_id()[0]; k < result_size; k += max_sg_size)               \
                         {                                                                                              \
                             const _DataType_output input1_elem = input1_data[k];                                       \
                             const _DataType_output input2_elem = input2_data[k];                                       \
