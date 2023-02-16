@@ -274,12 +274,12 @@ def test_tri_default_dtype():
                               '[[1, 2], [3, 4]]',
                               '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
                               '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
-# TODO: add fixture 'allow_fall_back_on_numpy' and remove operator.index()
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_tril(m, k, dtype):
     a = numpy.array(m, dtype=dtype)
     ia = dpnp.array(a)
-    expected = numpy.tril(a, k=operator.index(k))
+    expected = numpy.tril(a, k=k)
     result = dpnp.tril(ia, k=k)
     assert_array_equal(expected, result)
 
@@ -296,12 +296,12 @@ def test_tril(m, k, dtype):
                          ids=['[[1, 2], [3, 4]]',
                               '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
                               '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
-# TODO: add fixture 'allow_fall_back_on_numpy' and remove operator.index()
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_triu(m, k, dtype):
     a = numpy.array(m, dtype=dtype)
     ia = dpnp.array(a)
-    expected = numpy.triu(a, k=operator.index(k))
+    expected = numpy.triu(a, k=k)
     result = dpnp.triu(ia, k=k)
     assert_array_equal(expected, result)
 
