@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,10 @@
  * Parameters:
  * - public name of the function and kernel name
  * - operation used to calculate the result
+ * - vector operation over SYCL group used to calculate the result
+ * - list of types vector operation accepts
  * - mkl operation used to calculate the result
+ * - list of types mkl operation accepts
  *
  */
 
@@ -41,11 +44,12 @@
 
 #ifdef _SECTION_DOCUMENTATION_GENERATION_
 
-#define MACRO_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                                  \
+#define MACRO_2ARG_3TYPES_OP(                                                                                           \
+    __name__, __operation__, __vec_operation__, __vec_types__, __mkl_operation__, __mkl_types__)                        \
     /** @ingroup BACKEND_API                                                                                         */ \
     /** @brief Per element operation function __name__                                                               */ \
     /**                                                                                                              */ \
-    /** Function "__name__" executes operator "__operation1__" over corresponding elements of input arrays           */ \
+    /** Function "__name__" executes operator "__operation__" over corresponding elements of input arrays            */ \
     /**                                                                                                              */ \
     /** @param[in]  q_ref              Reference to SYCL queue.                                                      */ \
     /** @param[out] result_out         Output array.                                                                 */ \
@@ -105,23 +109,84 @@
 
 #endif
 
-MACRO_2ARG_3TYPES_OP(dpnp_add_c, input1_elem + input2_elem, oneapi::mkl::vm::add)
-MACRO_2ARG_3TYPES_OP(dpnp_arctan2_c, sycl::atan2((double)input1_elem, (double)input2_elem), oneapi::mkl::vm::atan2)
+MACRO_2ARG_3TYPES_OP(dpnp_add_c,
+                     input1_elem + input2_elem,
+                     x1 + x2,
+                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
+                     oneapi::mkl::vm::add,
+                     MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
+
+MACRO_2ARG_3TYPES_OP(dpnp_arctan2_c,
+                     sycl::atan2((double)input1_elem, (double)input2_elem),
+                     nullptr,
+                     std::false_type,
+                     oneapi::mkl::vm::atan2,
+                     MACRO_UNPACK_TYPES(float, double))
+
 MACRO_2ARG_3TYPES_OP(dpnp_copysign_c,
                      sycl::copysign((double)input1_elem, (double)input2_elem),
-                     oneapi::mkl::vm::copysign)
-MACRO_2ARG_3TYPES_OP(dpnp_divide_c, input1_elem / input2_elem, oneapi::mkl::vm::div)
-MACRO_2ARG_3TYPES_OP(dpnp_fmod_c, sycl::fmod((double)input1_elem, (double)input2_elem), oneapi::mkl::vm::fmod)
-MACRO_2ARG_3TYPES_OP(dpnp_hypot_c, sycl::hypot((double)input1_elem, (double)input2_elem), oneapi::mkl::vm::hypot)
-MACRO_2ARG_3TYPES_OP(dpnp_maximum_c, sycl::max(input1_elem, input2_elem), oneapi::mkl::vm::fmax)
-MACRO_2ARG_3TYPES_OP(dpnp_minimum_c, sycl::min(input1_elem, input2_elem), oneapi::mkl::vm::fmin)
+                     nullptr,
+                     std::false_type,
+                     oneapi::mkl::vm::copysign,
+                     MACRO_UNPACK_TYPES(float, double))
+
+MACRO_2ARG_3TYPES_OP(dpnp_divide_c,
+                     input1_elem / input2_elem,
+                     x1 / x2,
+                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
+                     oneapi::mkl::vm::div,
+                     MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
+
+MACRO_2ARG_3TYPES_OP(dpnp_fmod_c,
+                     sycl::fmod((double)input1_elem, (double)input2_elem),
+                     nullptr,
+                     std::false_type,
+                     oneapi::mkl::vm::fmod,
+                     MACRO_UNPACK_TYPES(float, double))
+
+MACRO_2ARG_3TYPES_OP(dpnp_hypot_c,
+                     sycl::hypot((double)input1_elem, (double)input2_elem),
+                     nullptr,
+                     std::false_type,
+                     oneapi::mkl::vm::hypot,
+                     MACRO_UNPACK_TYPES(float, double))
+
+MACRO_2ARG_3TYPES_OP(dpnp_maximum_c,
+                     sycl::max(input1_elem, input2_elem),
+                     nullptr,
+                     std::false_type,
+                     oneapi::mkl::vm::fmax,
+                     MACRO_UNPACK_TYPES(float, double))
+
+MACRO_2ARG_3TYPES_OP(dpnp_minimum_c,
+                     sycl::min(input1_elem, input2_elem),
+                     nullptr,
+                     std::false_type,
+                     oneapi::mkl::vm::fmin,
+                     MACRO_UNPACK_TYPES(float, double))
 
 // "multiply" needs to be standalone kernel (not autogenerated) due to complex algorithm. This is not an element wise.
 // pytest "tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid3"
 // requires multiplication shape1[10] with shape2[10,1] and result expected as shape[10,10]
-MACRO_2ARG_3TYPES_OP(dpnp_multiply_c, input1_elem* input2_elem, oneapi::mkl::vm::mul)
+MACRO_2ARG_3TYPES_OP(dpnp_multiply_c,
+                     input1_elem * input2_elem,
+                     x1 * x2,
+                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
+                     oneapi::mkl::vm::mul,
+                     MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
 
-MACRO_2ARG_3TYPES_OP(dpnp_power_c, sycl::pow((double)input1_elem, (double)input2_elem), oneapi::mkl::vm::pow)
-MACRO_2ARG_3TYPES_OP(dpnp_subtract_c, input1_elem - input2_elem, oneapi::mkl::vm::sub)
+MACRO_2ARG_3TYPES_OP(dpnp_power_c,
+                     sycl::pow((double)input1_elem, (double)input2_elem),
+                     nullptr,
+                     std::false_type,
+                     oneapi::mkl::vm::pow,
+                     MACRO_UNPACK_TYPES(float, double))
+
+MACRO_2ARG_3TYPES_OP(dpnp_subtract_c,
+                     input1_elem - input2_elem,
+                     x1 - x2,
+                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
+                     oneapi::mkl::vm::sub,
+                     MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
 
 #undef MACRO_2ARG_3TYPES_OP

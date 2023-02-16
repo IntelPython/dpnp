@@ -34,7 +34,7 @@ This module contains differnt helpers and utilities
 import numpy
 
 import dpctl
-import dpctl.tensor as dpt
+import dpctl.utils as dpu
 
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
@@ -70,7 +70,7 @@ __all__ = [
     "dpnp_descriptor",
     "get_axis_indeces",
     "get_axis_offsets",
-    "get_common_allocation_queue",
+    "get_usm_allocations",
     "_get_linear_index",
     "map_dtype_to_device",
     "normalize_axis",
@@ -163,7 +163,7 @@ def call_origin(function, *args, **kwargs):
         kwargx = convert_item(kwarg)
         kwargs_new[key] = kwargx
 
-    exec_q = dpctl.utils.get_execution_queue(alloc_queues)
+    exec_q = dpu.get_execution_queue(alloc_queues)
     if exec_q is None:
         exec_q = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue)
     # print(f"DPNP call_origin(): bakend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
@@ -220,28 +220,47 @@ def unwrap_array(x1):
     return x1
 
 
-def get_common_allocation_queue(objects):
-    """
-    Given a list of objects returns the queue which can be used for a memory allocation
-    to follow compute follows data paradigm, or returns `None` if the default queue can be used.
-    An exception will be raised, if the paradigm is broked for the given list of objects.
-    """
-    if not isinstance(objects, (list, tuple)):
-        raise TypeError("Expected a list or a tuple, got {}".format(type(objects)))
-    
-    if len(objects) == 0:
+def _get_coerced_usm_type(objects):
+    types_in_use = [obj.usm_type for obj in objects if hasattr(obj, "usm_type")]
+    if len(types_in_use) == 0:
         return None
+    elif len(types_in_use) == 1:
+        return types_in_use[0]
 
+    common_usm_type = dpu.get_coerced_usm_type(types_in_use)
+    if common_usm_type is None:
+        raise ValueError("Input arrays must have coerced USM types")
+    return common_usm_type
+
+
+def _get_common_allocation_queue(objects):
     queues_in_use = [obj.sycl_queue for obj in objects if hasattr(obj, "sycl_queue")]
     if len(queues_in_use) == 0:
         return None
     elif len(queues_in_use) == 1:
         return queues_in_use[0]
 
-    common_queue = dpctl.utils.get_execution_queue(queues_in_use)
+    common_queue = dpu.get_execution_queue(queues_in_use)
     if common_queue is None:
         raise ValueError("Input arrays must be allocated on the same SYCL queue")
     return common_queue
+
+
+def get_usm_allocations(objects):
+    """
+    Given a list of objects returns a tuple of USM type and SYCL queue
+    which can be used for a memory allocation and to follow compute follows data paradigm,
+    or returns `(None, None)` if the default USM type and SYCL queue can be used.
+    An exception will be raised, if the paradigm is broked for the given list of objects.
+
+    """
+
+    if not isinstance(objects, (list, tuple)):
+        raise TypeError("Expected a list or a tuple, got {}".format(type(objects)))
+    
+    if len(objects) == 0:
+        return (None, None)
+    return (_get_coerced_usm_type(objects), _get_common_allocation_queue(objects))
 
 
 def map_dtype_to_device(dtype, device):
@@ -631,7 +650,7 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
             "could not recognize common USM type for inputs of USM types {} and {}"
             "".format(array1_obj.usm_type, array2_obj.usm_type))
 
-    common_sycl_queue = dpctl.utils.get_execution_queue((array1_obj.sycl_queue, array2_obj.sycl_queue))
+    common_sycl_queue = dpu.get_execution_queue((array1_obj.sycl_queue, array2_obj.sycl_queue))
     # TODO: refactor, remove when CFD is implemented in all array constructors
     if common_sycl_queue is None and array1_obj.sycl_context == array2_obj.sycl_context:
         common_sycl_queue = array1_obj.sycl_queue

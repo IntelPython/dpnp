@@ -140,7 +140,10 @@ class dpnp_array:
         return self._array_obj.__bool__()
 
  # '__class__',
- # '__complex__',
+
+    def __complex__(self):
+        return self._array_obj.__complex__()
+
  # '__contains__',
  # '__copy__',
  # '__deepcopy__',
@@ -149,6 +152,12 @@ class dpnp_array:
  # '__dir__',
  # '__divmod__',
  # '__doc__',
+
+    def __dlpack__(self, stream=None):
+        return self._array_obj.__dlpack__(stream=stream)
+
+    def __dlpack_device__(self):
+        return self._array_obj.__dlpack_device__()
 
     def __eq__(self, other):
         return dpnp.equal(self, other)
@@ -187,7 +196,10 @@ class dpnp_array:
  # '__imatmul__',
  # '__imod__',
  # '__imul__',
- # '__index__',
+
+    def __index__(self):
+        return self._array_obj.__index__()
+
  # '__init__',
  # '__init_subclass__',
 
@@ -247,7 +259,10 @@ class dpnp_array:
  # '__rdivmod__',
  # '__reduce__',
  # '__reduce_ex__',
- # '__repr__',
+
+    def __repr__(self):
+        return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
+
  # '__rfloordiv__',
  # '__rlshift__',
 
@@ -264,7 +279,9 @@ class dpnp_array:
  # '__rpow__',
  # '__rrshift__',
  # '__rshift__',
- # '__rsub__',
+
+    def __rsub__(self, other):
+        return dpnp.subtract(other, self)
 
     def __rtruediv__(self, other):
         return dpnp.true_divide(other, self)
@@ -292,8 +309,7 @@ class dpnp_array:
 
         """
 
-        return str(self.asnumpy())
-
+        return self._array_obj.__str__()
 
     def __sub__(self, other):
         return dpnp.subtract(self, other)
@@ -304,6 +320,16 @@ class dpnp_array:
         return dpnp.true_divide(self, other)
 
  # '__xor__',
+
+    @staticmethod
+    def _create_from_usm_ndarray(usm_ary : dpt.usm_ndarray):
+        if not isinstance(usm_ary, dpt.usm_ndarray):
+            raise TypeError(
+                f"Expected dpctl.tensor.usm_ndarray, got {type(usm_ary)}"
+                )
+        res = dpnp_array.__new__(dpnp_array)
+        res._array_obj = usm_ary
+        return res
 
     def all(self, axis=None, out=None, keepdims=False):
         """

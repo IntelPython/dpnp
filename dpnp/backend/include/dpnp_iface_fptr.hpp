@@ -370,9 +370,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TRI,                          /**< Used in numpy.tri() impl  */
     DPNP_FN_TRI_EXT,                      /**< Used in numpy.tri() impl, requires extra parameters */
     DPNP_FN_TRIL,                         /**< Used in numpy.tril() impl  */
-    DPNP_FN_TRIL_EXT,                     /**< Used in numpy.tril() impl, requires extra parameters */
     DPNP_FN_TRIU,                         /**< Used in numpy.triu() impl  */
-    DPNP_FN_TRIU_EXT,                     /**< Used in numpy.triu() impl, requires extra parameters */
     DPNP_FN_TRUNC,                        /**< Used in numpy.trunc() impl  */
     DPNP_FN_TRUNC_EXT,                    /**< Used in numpy.trunc() impl, requires extra parameters */
     DPNP_FN_VANDER,                       /**< Used in numpy.vander() impl  */
@@ -394,13 +392,13 @@ enum class DPNPFuncName : size_t
 enum class DPNPFuncType : size_t
 {
     DPNP_FT_NONE,     /**< Very first element of the enumeration */
+    DPNP_FT_BOOL,     /**< analog of numpy.bool_ or bool */
     DPNP_FT_INT,      /**< analog of numpy.int32 or int */
     DPNP_FT_LONG,     /**< analog of numpy.int64 or long */
     DPNP_FT_FLOAT,    /**< analog of numpy.float32 or float */
     DPNP_FT_DOUBLE,   /**< analog of numpy.float32 or double */
     DPNP_FT_CMPLX64,  /**< analog of numpy.complex64 or std::complex<float> */
-    DPNP_FT_CMPLX128, /**< analog of numpy.complex128 or std::complex<double> */
-    DPNP_FT_BOOL      /**< analog of numpy.bool_ or bool */
+    DPNP_FT_CMPLX128  /**< analog of numpy.complex128 or std::complex<double> */
 };
 
 /**
@@ -419,8 +417,26 @@ size_t operator-(DPNPFuncType lhs, DPNPFuncType rhs);
  */
 typedef struct DPNPFuncData
 {
-    DPNPFuncType return_type; /**< return type identifier which expected by the @ref ptr function */
-    void* ptr;                /**< C++ backend function pointer */
+    DPNPFuncData(const DPNPFuncType gen_type, void* gen_ptr, const DPNPFuncType type_no_fp64, void* ptr_no_fp64)
+        : return_type(gen_type)
+        , ptr(gen_ptr)
+        , return_type_no_fp64(type_no_fp64)
+        , ptr_no_fp64(ptr_no_fp64)
+    {
+    }
+    DPNPFuncData(const DPNPFuncType gen_type, void* gen_ptr)
+        : DPNPFuncData(gen_type, gen_ptr, DPNPFuncType::DPNP_FT_NONE, nullptr)
+    {
+    }
+    DPNPFuncData()
+        : DPNPFuncData(DPNPFuncType::DPNP_FT_NONE, nullptr)
+    {
+    }
+
+    DPNPFuncType return_type;         /**< return type identifier which expected by the @ref ptr function */
+    void* ptr;                        /**< C++ backend function pointer */
+    DPNPFuncType return_type_no_fp64; /**< alternative return type identifier when no fp64 support by device */
+    void* ptr_no_fp64;                /**< alternative C++ backend function pointer when no fp64 support by device */
 } DPNPFuncData_t;
 
 /**

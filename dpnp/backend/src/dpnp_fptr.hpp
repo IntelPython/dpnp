@@ -35,6 +35,8 @@
 #include <map>
 #include <complex>
 
+#include <CL/sycl.hpp>
+
 #include <dpnp_iface_fptr.hpp>
 
 /**
@@ -98,6 +100,86 @@ typedef func_type_map_factory_t<func_type_pair_t<eft_BLN, bool>,
                                 func_type_pair_t<eft_DBL, double>,
                                 func_type_pair_t<eft_C64, std::complex<float>>,
                                 func_type_pair_t<eft_C128, std::complex<double>>> func_type_map_t;
+
+/**
+ * Return an enum value of result type populated from input types.
+ */
+template <DPNPFuncType FT1, DPNPFuncType FT2>
+static constexpr DPNPFuncType populate_func_types()
+{
+    if constexpr (FT1 == DPNPFuncType::DPNP_FT_NONE)
+    {
+        throw std::runtime_error("Templated enum value of FT1 is None");
+    }
+    else if constexpr (FT2 == DPNPFuncType::DPNP_FT_NONE)
+    {
+        throw std::runtime_error("Templated enum value of FT2 is None");
+    }
+    return (FT1 < FT2) ? FT2 : FT1;
+}
+
+/**
+ * @brief A helper function to cast SYCL vector between types.
+ */
+template <typename Op, typename Vec, std::size_t... I>
+static auto dpnp_vec_cast_impl(const Vec& v, std::index_sequence<I...>)
+{
+    return Op{v[I]...};
+}
+
+/**
+ * @brief A casting function for SYCL vector.
+ * 
+ * @tparam dstT A result type upon casting.
+ * @tparam srcT An incoming type of the vector.
+ * @tparam N A number of elements with the vector.
+ * @tparam Indices A sequence of integers
+ * @param s An incoming SYCL vector to cast.
+ * @return SYCL vector casted to desctination type.
+ */
+template <typename dstT, typename srcT, std::size_t N, typename Indices = std::make_index_sequence<N>>
+static auto dpnp_vec_cast(const sycl::vec<srcT, N>& s)
+{
+    return dpnp_vec_cast_impl<sycl::vec<dstT, N>, sycl::vec<srcT, N>>(s, Indices{});
+}
+
+/**
+ * Removes parentheses for a passed list of types separated by comma.
+ * It's intended to be used in operations macro.
+ */
+#define MACRO_UNPACK_TYPES(...) __VA_ARGS__
+
+/**
+ * Implements std::is_same<> with variadic number of types to compare with
+ * and when type T has to match only one of types Ts.
+ */
+template <typename T, typename... Ts>
+struct is_any : std::disjunction<std::is_same<T, Ts>...> {};
+
+/**
+ * Implements std::is_same<> with variadic number of types to compare with
+ * and when type T has to match every type from Ts sequence.
+ */
+template <typename T, typename... Ts>
+struct are_same : std::conjunction<std::is_same<T, Ts>...> {};
+
+/**
+ * A template constat to check if both types T1 and T2 match every type from Ts sequence.
+ */
+template <typename T1, typename T2, typename... Ts>
+constexpr auto both_types_are_same = std::conjunction_v<is_any<T1, Ts...>, are_same<T1, T2>>;
+
+/**
+ * A template constat to check if both types T1 and T2 match any type from Ts.
+ */
+template <typename T1, typename T2, typename... Ts>
+constexpr auto both_types_are_any_of = std::conjunction_v<is_any<T1, Ts...>, is_any<T2, Ts...>>;
+
+/**
+ * A template constat to check if both types T1 and T2 don't match any type from Ts sequence.
+ */
+template <typename T1, typename T2, typename... Ts>
+constexpr auto none_of_both_types = !std::disjunction_v<is_any<T1, Ts...>, is_any<T2, Ts...>>;
 
 /**
  * FPTR interface initialization functions

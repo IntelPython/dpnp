@@ -64,6 +64,7 @@ __all__ = [
     "default_float_type",
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu",
+    "from_dlpack",
     "get_dpnp_descriptor",
     "get_include",
     "get_normalized_queue_device"
@@ -222,9 +223,35 @@ def default_float_type(device=None, sycl_queue=None):
     return map_dtype_to_device(float64, _sycl_queue.sycl_device)
 
 
+def from_dlpack(obj, /):
+    """
+    Create a dpnp array from a Python object implementing the ``__dlpack__``
+    protocol.
+
+    See https://dmlc.github.io/dlpack/latest/ for more details.
+
+    Parameters
+    ----------
+    obj : object
+        A Python object representing an array that implements the ``__dlpack__``
+        and ``__dlpack_device__`` methods.
+
+    Returns
+    -------
+    out : dpnp_array
+        Returns a new dpnp array containing the data from another array
+        (obj) with the ``__dlpack__`` method on the same device as object.
+
+    """
+
+    usm_ary = dpt.from_dlpack(obj)
+    return dpnp_array._create_from_usm_ndarray(usm_ary)
+
+
 def get_dpnp_descriptor(ext_obj,
                         copy_when_strides=True,
                         copy_when_nondefault_queue=True,
+                        alloc_usm_type=None,
                         alloc_queue=None):
     """
     Return True:
@@ -245,9 +272,9 @@ def get_dpnp_descriptor(ext_obj,
         return False
 
     # If input object is a scalar, it means it was allocated on host memory.
-    # We need to copy it to device memory according to compute follows data paradigm.
+    # We need to copy it to USM memory according to compute follows data paradigm.
     if isscalar(ext_obj):
-        ext_obj = array(ext_obj, sycl_queue=alloc_queue)
+        ext_obj = array(ext_obj, usm_type=alloc_usm_type, sycl_queue=alloc_queue)
 
     # while dpnp functions have no implementation with strides support
     # we need to create a non-strided copy

@@ -42,6 +42,7 @@ it contains:
 
 import numpy
 import dpnp
+import operator
 
 import dpnp.config as config
 from dpnp.dpnp_algo import *
@@ -1349,13 +1350,19 @@ def tri(N, M=None, k=0, dtype=dpnp.float, **kwargs):
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
 
-def tril(x1, k=0):
+def tril(x1, /, *, k=0):
     """
     Lower triangle of an array.
 
     Return a copy of an array with elements above the `k`-th diagonal zeroed.
 
     For full documentation refer to :obj:`numpy.tril`.
+
+    Limitations
+    -----------
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
+    Parameter `k` is supported only of integer data type.
+    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -1368,17 +1375,25 @@ def tril(x1, k=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not isinstance(k, int):
-            pass
-        else:
-            return dpnp_tril(x1_desc, k).get_pyobj()
+    _k = None
+    try:
+        _k = operator.index(k)
+    except TypeError:
+        pass
+
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
+        pass
+    elif x1.ndim < 2:
+        pass
+    elif _k is None:
+        pass
+    else:
+        return dpnp_container.tril(x1, k=_k)
 
     return call_origin(numpy.tril, x1, k)
 
 
-def triu(x1, k=0):
+def triu(x1, /, *, k=0):
     """
     Upper triangle of an array.
 
@@ -1386,6 +1401,12 @@ def triu(x1, k=0):
     zeroed.
 
     For full documentation refer to :obj:`numpy.triu`.
+
+    Limitations
+    -----------
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
+    Parameter `k` is supported only of integer data type.
+    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -1398,12 +1419,20 @@ def triu(x1, k=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not isinstance(k, int):
-            pass
-        else:
-            return dpnp_triu(x1_desc, k).get_pyobj()
+    _k = None
+    try:
+        _k = operator.index(k)
+    except TypeError:
+        pass
+
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
+        pass
+    elif x1.ndim < 2:
+        pass
+    elif _k is None:
+        pass
+    else:
+        return dpnp_container.triu(x1, k=_k)
 
     return call_origin(numpy.triu, x1, k)
 

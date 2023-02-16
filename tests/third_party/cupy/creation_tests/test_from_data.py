@@ -454,6 +454,7 @@ class TestFromData(unittest.TestCase):
         a = xp.ones((), dtype=dtype_a)
         return xp.asfortranarray(a, dtype=dtype_b)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_fromfile(self, xp):
         with tempfile.TemporaryFile() as fh:

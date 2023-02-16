@@ -374,6 +374,8 @@ cdef extern from "dpnp_iface_fptr.hpp":
     struct DPNPFuncData:
         DPNPFuncType return_type
         void * ptr
+        DPNPFuncType return_type_no_fp64
+        void *ptr_no_fp64
 
     DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
 

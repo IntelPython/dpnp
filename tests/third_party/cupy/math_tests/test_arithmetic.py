@@ -146,17 +146,14 @@ class ArithmeticBinaryBase:
                 y = y.astype(numpy.complex64)
 
         # NumPy returns an output array of another type than DPNP when input ones have diffrent types.
-        if self.name == 'multiply' and xp is cupy:
-            if xp.isscalar(arg1) and xp.isscalar(arg2):
-                # If both are scalars, the result will be a scalar, so needs to convert into numpy-scalar.
-                y = numpy.asarray(y)
-            elif dtype1 != dtype2:
-                is_array_arg1 = not xp.isscalar(arg1)
-                is_array_arg2 = not xp.isscalar(arg2)
+        if xp is cupy and dtype1 != dtype2 and not self.use_dtype:
+            is_array_arg1 = not xp.isscalar(arg1)
+            is_array_arg2 = not xp.isscalar(arg2)
 
-                is_int_float = lambda _x, _y: numpy.issubdtype(_x, numpy.integer) and numpy.issubdtype(_y, numpy.floating)
-                is_same_type = lambda _x, _y, _type: numpy.issubdtype(_x, _type) and numpy.issubdtype(_y, _type)
+            is_int_float = lambda _x, _y: numpy.issubdtype(_x, numpy.integer) and numpy.issubdtype(_y, numpy.floating)
+            is_same_type = lambda _x, _y, _type: numpy.issubdtype(_x, _type) and numpy.issubdtype(_y, _type)
 
+            if self.name in ('add', 'multiply', 'subtract'):
                 if is_array_arg1 and is_array_arg2:
                     # If both inputs are arrays where one is of floating type and another - integer,
                     # NumPy will return an output array of always "float64" type,
@@ -171,6 +168,13 @@ class ArithmeticBinaryBase:
                         y = y.astype(dtype1)
                     elif is_array_arg2 and not is_array_arg1:
                         y = y.astype(dtype2)
+            elif self.name in ('divide', 'true_divide'):
+                # If one input is an array of float32 and another - an integer or floating scalar,
+                # NumPy will return an output array of float32, while DPNP will return the array of float64,
+                # since NumPy would use the same float64 type when instead of scalar here is array of integer of floating type.
+                if not (is_array_arg1 and is_array_arg2):
+                    if (is_array_arg1 and arg1.dtype == numpy.float32) ^ (is_array_arg2 and arg2.dtype == numpy.float32):
+                        y = y.astype(numpy.float32)
 
         # NumPy returns different values (nan/inf) on division by zero
         # depending on the architecture.
@@ -188,7 +192,6 @@ class ArithmeticBinaryBase:
 @testing.gpu
 @testing.parameterize(*(
     testing.product({
-        # TODO(unno): boolean subtract causes DeprecationWarning in numpy>=1.13
         'arg1': [testing.shaped_arange((2, 3), numpy, dtype=d)
                  for d in all_types
                  ] + [0, 0.0, 2, 2.0],
@@ -283,7 +286,6 @@ class TestArithmeticModf(unittest.TestCase):
     'xp': [numpy, cupy],
     'shape': [(3, 2), (), (3, 0, 2)]
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestBoolSubtract(unittest.TestCase):
 
