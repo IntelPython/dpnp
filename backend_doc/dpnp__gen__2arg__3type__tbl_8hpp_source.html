@@ -199,8 +199,8 @@ $(document).ready(function(){initNavTree('dpnp__gen__2arg__3type__tbl_8hpp_sourc
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>MACRO_2ARG_3TYPES_OP(<a class="code hl_function" href="group___b_a_c_k_e_n_d___a_p_i.html#ga0aa4fab91e27e82e51588ac19e7250d9">dpnp_add_c</a>,</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                     input1_elem + input2_elem,</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                     sycl::add_sat(x1, x2),</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                     MACRO_UNPACK_TYPES(<span class="keywordtype">int</span>, <span class="keywordtype">long</span>),</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                     x1 + x2,</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                     MACRO_UNPACK_TYPES(<span class="keywordtype">bool</span>, std::int32_t, std::int64_t),</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                     oneapi::mkl::vm::add,</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga0aa4fab91e27e82e51588ac19e7250d9">  117</a></span>                     MACRO_UNPACK_TYPES(<span class="keywordtype">float</span>, <span class="keywordtype">double</span>, std::complex&lt;float&gt;, std::complex&lt;double&gt;))</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
@@ -258,8 +258,8 @@ $(document).ready(function(){initNavTree('dpnp__gen__2arg__3type__tbl_8hpp_sourc
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="comment">// requires multiplication shape1[10] with shape2[10,1] and result expected as shape[10,10]</span></div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>MACRO_2ARG_3TYPES_OP(<a class="code hl_function" href="group___b_a_c_k_e_n_d___a_p_i.html#ga36f1d99a7a55a7d383d37682f9ed129c">dpnp_multiply_c</a>,</div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                     input1_elem* input2_elem,</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                     <span class="keyword">nullptr</span>,</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                     std::false_type,</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                     x1 * x2,</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                     MACRO_UNPACK_TYPES(<span class="keywordtype">bool</span>, std::int32_t, std::int64_t),</div>
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                     oneapi::mkl::vm::mul,</div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga36f1d99a7a55a7d383d37682f9ed129c">  176</a></span>                     MACRO_UNPACK_TYPES(<span class="keywordtype">float</span>, <span class="keywordtype">double</span>, std::complex&lt;float&gt;, std::complex&lt;double&gt;))</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
@@ -272,10 +272,10 @@ $(document).ready(function(){initNavTree('dpnp__gen__2arg__3type__tbl_8hpp_sourc
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>MACRO_2ARG_3TYPES_OP(dpnp_subtract_c,</div>
 <div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>                     input1_elem - input2_elem,</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                     <span class="keyword">nullptr</span>,</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                     std::false_type,</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                     x1 - x2,</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                     MACRO_UNPACK_TYPES(<span class="keywordtype">bool</span>, std::int32_t, std::int64_t),</div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                     oneapi::mkl::vm::sub,</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                     MACRO_UNPACK_TYPES(<span class="keywordtype">float</span>, <span class="keywordtype">double</span>))</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                     MACRO_UNPACK_TYPES(<span class="keywordtype">float</span>, <span class="keywordtype">double</span>, std::complex&lt;float&gt;, std::complex&lt;double&gt;))</div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span><span class="preprocessor">#undef MACRO_2ARG_3TYPES_OP</span></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga015fbc0a319fc7348ca07cf784298a21"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga015fbc0a319fc7348ca07cf784298a21">dpnp_copysign_c</a></div><div class="ttdeci">void dpnp_copysign_c(void *result_out, const size_t result_size, const size_t result_ndim, const shape_elem_type *result_shape, const shape_elem_type *result_strides, const void *input1_in, const size_t input1_size, const size_t input1_ndim, const shape_elem_type *input1_shape, const shape_elem_type *input1_strides, const void *input2_in, const size_t input2_size, const size_t input2_ndim, const shape_elem_type *input2_shape, const shape_elem_type *input2_strides, const size_t *where) template&lt; typename _DataType_input1</div><div class="ttdoc">Per element operation function dpnp_divide_c</div></div>
