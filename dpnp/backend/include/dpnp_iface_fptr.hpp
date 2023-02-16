@@ -370,9 +370,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TRI,                          /**< Used in numpy.tri() impl  */
     DPNP_FN_TRI_EXT,                      /**< Used in numpy.tri() impl, requires extra parameters */
     DPNP_FN_TRIL,                         /**< Used in numpy.tril() impl  */
-    DPNP_FN_TRIL_EXT,                     /**< Used in numpy.tril() impl, requires extra parameters */
     DPNP_FN_TRIU,                         /**< Used in numpy.triu() impl  */
-    DPNP_FN_TRIU_EXT,                     /**< Used in numpy.triu() impl, requires extra parameters */
     DPNP_FN_TRUNC,                        /**< Used in numpy.trunc() impl  */
     DPNP_FN_TRUNC_EXT,                    /**< Used in numpy.trunc() impl, requires extra parameters */
     DPNP_FN_VANDER,                       /**< Used in numpy.vander() impl  */
