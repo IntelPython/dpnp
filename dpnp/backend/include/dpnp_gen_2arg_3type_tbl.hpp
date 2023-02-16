@@ -111,8 +111,8 @@
 
 MACRO_2ARG_3TYPES_OP(dpnp_add_c,
                      input1_elem + input2_elem,
-                     sycl::add_sat(x1, x2),
-                     MACRO_UNPACK_TYPES(int, long),
+                     x1 + x2,
+                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
                      oneapi::mkl::vm::add,
                      MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
 
@@ -170,8 +170,8 @@ MACRO_2ARG_3TYPES_OP(dpnp_minimum_c,
 // requires multiplication shape1[10] with shape2[10,1] and result expected as shape[10,10]
 MACRO_2ARG_3TYPES_OP(dpnp_multiply_c,
                      input1_elem* input2_elem,
-                     nullptr,
-                     std::false_type,
+                     x1 * x2,
+                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
                      oneapi::mkl::vm::mul,
                      MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
 
@@ -184,9 +184,9 @@ MACRO_2ARG_3TYPES_OP(dpnp_power_c,
 
 MACRO_2ARG_3TYPES_OP(dpnp_subtract_c,
                      input1_elem - input2_elem,
-                     nullptr,
-                     std::false_type,
+                     x1 - x2,
+                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
                      oneapi::mkl::vm::sub,
-                     MACRO_UNPACK_TYPES(float, double))
+                     MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
 
 #undef MACRO_2ARG_3TYPES_OP

@@ -66,7 +66,7 @@ def test_diff(array):
 @pytest.mark.parametrize("dtype1", get_all_dtypes())
 @pytest.mark.parametrize("dtype2", get_all_dtypes())
 @pytest.mark.parametrize("func",
-                         ['add', 'multiply'])
+                         ['add', 'multiply', 'subtract'])
 @pytest.mark.parametrize("data",
                          [[[1, 2], [3, 4]]],
                          ids=['[[1, 2], [3, 4]]'])
@@ -77,9 +77,14 @@ def test_op_multiple_dtypes(dtype1, func, dtype2, data):
     np_b = numpy.array(data, dtype=dtype2)
     dpnp_b = dpnp.array(data, dtype=dtype2)
 
-    result = getattr(dpnp, func)(dpnp_a, dpnp_b)
-    expected = getattr(numpy, func)(np_a, np_b)
-    assert_array_equal(result, expected)
+    if func == 'subtract' and (dtype1 == dtype2 == dpnp.bool):
+        with pytest.raises(TypeError):
+            result = getattr(dpnp, func)(dpnp_a, dpnp_b)
+            expected = getattr(numpy, func)(np_a, np_b)
+    else:
+        result = getattr(dpnp, func)(dpnp_a, dpnp_b)
+        expected = getattr(numpy, func)(np_a, np_b)
+        assert_array_equal(result, expected)
 
 
 @pytest.mark.parametrize("rhs", [[[1, 2, 3], [4, 5, 6]], [2.0, 1.5, 1.0], 3, 0.3])
@@ -98,15 +103,20 @@ class TestMathematical:
         return xp.array(data, dtype=dtype)
 
     def _test_mathematical(self, name, dtype, lhs, rhs):
-        a = self.array_or_scalar(dpnp, lhs, dtype=dtype)
-        b = self.array_or_scalar(dpnp, rhs, dtype=dtype)
-        result = getattr(dpnp, name)(a, b)
+        a_dpnp = self.array_or_scalar(dpnp, lhs, dtype=dtype)
+        b_dpnp = self.array_or_scalar(dpnp, rhs, dtype=dtype)
 
-        a = self.array_or_scalar(numpy, lhs, dtype=dtype)
-        b = self.array_or_scalar(numpy, rhs, dtype=dtype)
-        expected = getattr(numpy, name)(a, b)
+        a_np = self.array_or_scalar(numpy, lhs, dtype=dtype)
+        b_np = self.array_or_scalar(numpy, rhs, dtype=dtype)
 
-        assert_allclose(result, expected, atol=1e-4)
+        if name == 'subtract' and not numpy.isscalar(rhs) and dtype == dpnp.bool:
+            with pytest.raises(TypeError):
+                result = getattr(dpnp, name)(a_dpnp, b_dpnp)
+                expected = getattr(numpy, name)(a_np, b_np)
+        else:
+            result = getattr(dpnp, name)(a_dpnp, b_dpnp)
+            expected = getattr(numpy, name)(a_np, b_np)
+            assert_allclose(result, expected, atol=1e-4)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_add(self, dtype, lhs, rhs):
@@ -166,8 +176,7 @@ class TestMathematical:
     def test_power(self, dtype, lhs, rhs):
         self._test_mathematical('power', dtype, lhs, rhs)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_subtract(self, dtype, lhs, rhs):
         self._test_mathematical('subtract', dtype, lhs, rhs)
 
@@ -177,7 +186,7 @@ class TestMathematical:
                          ids=['bool', 'int', 'float'])
 @pytest.mark.parametrize("data_type", get_all_dtypes())
 @pytest.mark.parametrize("func",
-                         ['add', 'multiply'])
+                         ['add', 'multiply', 'subtract'])
 @pytest.mark.parametrize("val",
                          [0, 1, 5],
                          ids=['0', '1', '5'])
@@ -197,27 +206,59 @@ def test_op_with_scalar(array, val, func, data_type, val_type):
     dpnp_a = dpnp.array(array, dtype=data_type)
     val_ = val_type(val)
 
-    result = getattr(dpnp, func)(dpnp_a, val_)
-    expected = getattr(numpy, func)(np_a, val_)
-    assert_array_equal(result, expected)
+    if func == 'subtract' and val_type == bool and data_type == dpnp.bool:
+        with pytest.raises(TypeError):
+            result = getattr(dpnp, func)(dpnp_a, val_)
+            expected = getattr(numpy, func)(np_a, val_)
 
-    result = getattr(dpnp, func)(val_, dpnp_a)
-    expected = getattr(numpy, func)(val_, np_a)
-    assert_array_equal(result, expected)
+            result = getattr(dpnp, func)(val_, dpnp_a)
+            expected = getattr(numpy, func)(val_, np_a)
+    else:
+        result = getattr(dpnp, func)(dpnp_a, val_)
+        expected = getattr(numpy, func)(np_a, val_)
+        assert_array_equal(result, expected)
+
+        result = getattr(dpnp, func)(val_, dpnp_a)
+        expected = getattr(numpy, func)(val_, np_a)
+        assert_array_equal(result, expected)
 
 
 @pytest.mark.parametrize("shape",
                          [(), (3, 2)],
                          ids=['()', '(3, 2)'])
-@pytest.mark.parametrize("dtype",
-                         [numpy.float32, numpy.float64],
-                         ids=['numpy.float32', 'numpy.float64'])
-def test_multiply_scalar2(shape, dtype):
+@pytest.mark.parametrize("dtype", get_all_dtypes())
+def test_multiply_scalar(shape, dtype):
     np_a = numpy.ones(shape, dtype=dtype)
     dpnp_a = dpnp.ones(shape, dtype=dtype)
 
     result = 0.5 * dpnp_a * 1.7
     expected = 0.5 * np_a * 1.7
+    assert_allclose(result, expected)
+
+
+@pytest.mark.parametrize("shape",
+                         [(), (3, 2)],
+                         ids=['()', '(3, 2)'])
+@pytest.mark.parametrize("dtype", get_all_dtypes())
+def test_add_scalar(shape, dtype):
+    np_a = numpy.ones(shape, dtype=dtype)
+    dpnp_a = dpnp.ones(shape, dtype=dtype)
+
+    result = 0.5 + dpnp_a + 1.7
+    expected = 0.5 + np_a + 1.7
+    assert_allclose(result, expected)
+
+
+@pytest.mark.parametrize("shape",
+                         [(), (3, 2)],
+                         ids=['()', '(3, 2)'])
+@pytest.mark.parametrize("dtype", get_all_dtypes())
+def test_subtract_scalar(shape, dtype):
+    np_a = numpy.ones(shape, dtype=dtype)
+    dpnp_a = dpnp.ones(shape, dtype=dtype)
+
+    result = 0.5 - dpnp_a - 1.7
+    expected = 0.5 - np_a - 1.7
     assert_allclose(result, expected)
 
 
