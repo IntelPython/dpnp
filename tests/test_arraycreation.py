@@ -15,6 +15,7 @@ from numpy.testing import (
 )
 
 import tempfile
+import operator
 
 
 @pytest.mark.parametrize("start",
@@ -258,48 +259,48 @@ def test_tri_default_dtype():
 
 
 @pytest.mark.parametrize("k",
-                         [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
-                         ids=['-6', '-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5', '6'])
+                         [-3, -2, -1, 0, 1, 2, 3, 4, 5,
+                          numpy.array(1), dpnp.array(2), dpt.asarray(3)],
+                         ids=['-3', '-2', '-1', '0', '1', '2', '3', '4', '5',
+                              'np.array(1)', 'dpnp.array(2)', 'dpt.asarray(3)'])
 @pytest.mark.parametrize("m",
-                         [[0, 1, 2, 3, 4],
-                          [1, 1, 1, 1, 1],
-                          [[0, 0], [0, 0]],
+                         [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
                           [[1, 2], [3, 4]],
                           [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
                           [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
-                         ids=['[0, 1, 2, 3, 4]',
-                              '[1, 1, 1, 1, 1]',
-                              '[[0, 0], [0, 0]]',
+                         ids=['[[0, 0], [0, 0]]',
                               '[[1, 2], [1, 2]]',
                               '[[1, 2], [3, 4]]',
                               '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
                               '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
-def test_tril(m, k):
-    a = numpy.array(m)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+def test_tril(m, k, dtype):
+    a = numpy.array(m, dtype=dtype)
     ia = dpnp.array(a)
-    expected = numpy.tril(a, k)
-    result = dpnp.tril(ia, k)
+    expected = numpy.tril(a, k=operator.index(k))
+    result = dpnp.tril(ia, k=k)
     assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("k",
-                         [-4, -3, -2, -1, 0, 1, 2, 3, 4],
-                         ids=['-4', '-3', '-2', '-1', '0', '1', '2', '3', '4'])
+                         [-3, -2, -1, 0, 1, 2, 3, 4, 5,
+                          numpy.array(1), dpnp.array(2), dpt.asarray(3)],
+                         ids=['-3', '-2', '-1', '0', '1', '2', '3', '4', '5',
+                              'np.array(1)', 'dpnp.array(2)', 'dpt.asarray(3)'])
 @pytest.mark.parametrize("m",
-                         [[0, 1, 2, 3, 4],
-                          [[1, 2], [3, 4]],
+                         [[[1, 2], [3, 4]],
                           [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
                           [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
-                         ids=['[0, 1, 2, 3, 4]',
-                              '[[1, 2], [3, 4]]',
+                         ids=['[[1, 2], [3, 4]]',
                               '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
                               '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
-def test_triu(m, k):
-    a = numpy.array(m)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+def test_triu(m, k, dtype):
+    a = numpy.array(m, dtype=dtype)
     ia = dpnp.array(a)
-    expected = numpy.triu(a, k)
-    result = dpnp.triu(ia, k)
+    expected = numpy.triu(a, k=operator.index(k))
+    result = dpnp.triu(ia, k=k)
     assert_array_equal(expected, result)
 
 
@@ -309,8 +310,8 @@ def test_triu(m, k):
 def test_triu_size_null(k):
     a = numpy.ones(shape=(1, 2, 0))
     ia = dpnp.array(a)
-    expected = numpy.triu(a, k)
-    result = dpnp.triu(ia, k)
+    expected = numpy.triu(a, k=k)
+    result = dpnp.triu(ia, k=k)
     assert_array_equal(expected, result)
 
 

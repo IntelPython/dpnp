@@ -166,6 +166,16 @@ def test_array_creation_like(func, kwargs, device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
+@pytest.mark.parametrize("func", ["tril", "triu"], ids=["tril", "triu"])
+@pytest.mark.parametrize("device",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+def test_tril_triu(func, device):
+    x0 = dpnp.ones((3,3), device=device)
+    x = getattr(dpnp, func)(x0)
+    assert_sycl_queue_equal(x.sycl_queue, x0.sycl_queue)
+
+
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "func,data",
