@@ -163,7 +163,13 @@ def allclose(x1, x2, rtol=1.e-5, atol=1.e-8, **kwargs):
     return call_origin(numpy.allclose, x1, x2, rtol=rtol, atol=atol, **kwargs)
 
 
-def any(x1, axis=None, out=None, keepdims=False):
+def any(x1,
+        /,
+        axis=None,
+        out=None,
+        keepdims=False,
+        *,
+        where=True):
     """
     Test whether any array element along a given axis evaluates to True.
 
@@ -174,9 +180,10 @@ def any(x1, axis=None, out=None, keepdims=False):
     Input array is supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``axis`` is supported only with default value ``None``.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``keepdims`` is supported only with default value ``False``.
+    Parameter `axis` is supported only with default value `None`.
+    Parameter `out` is supported only with default value `None`.
+    Parameter `keepdims` is supported only with default value `False`.
+    Parameter `where` is supported only with default value `True`.
 
     See Also
     --------
@@ -189,15 +196,15 @@ def any(x1, axis=None, out=None, keepdims=False):
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> x = np.array([[True, False], [True, True]])
-    >>> np.any(x)
+    >>> import dpnp as dp
+    >>> x = dp.array([[True, False], [True, True]])
+    >>> dp.any(x)
     True
-    >>> x2 = np.array([0, 0, 0])
-    >>> np.any(x2)
+    >>> x2 = dp.array([0, 0, 0])
+    >>> dp.any(x2)
     False
-    >>> x3 = np.array([1.0, np.nan])
-    >>> np.any(x3)
+    >>> x3 = dp.array([1.0, dp.nan])
+    >>> dp.any(x3)
     True
 
     """
@@ -210,13 +217,13 @@ def any(x1, axis=None, out=None, keepdims=False):
             pass
         elif keepdims is not False:
             pass
+        elif where is not True:
+            pass
         else:
             result_obj = dpnp_any(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+            return dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-            return result
-
-    return call_origin(numpy.any, x1, axis, out, keepdims)
+    return call_origin(numpy.any, x1, axis=axis, out=out, keepdims=keepdims, where=where)
 
 
 def equal(x1,
