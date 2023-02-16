@@ -66,7 +66,7 @@ def test_diff(array):
 @pytest.mark.parametrize("dtype1", get_all_dtypes())
 @pytest.mark.parametrize("dtype2", get_all_dtypes())
 @pytest.mark.parametrize("func",
-                         ['add', 'multiply', 'subtract'])
+                         ['add', 'multiply', 'subtract', 'divide'])
 @pytest.mark.parametrize("data",
                          [[[1, 2], [3, 4]]],
                          ids=['[[1, 2], [3, 4]]'])
@@ -132,8 +132,7 @@ class TestMathematical:
     def test_copysign(self, dtype, lhs, rhs):
         self._test_mathematical('copysign', dtype, lhs, rhs)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_divide(self, dtype, lhs, rhs):
         self._test_mathematical('divide', dtype, lhs, rhs)
 
@@ -181,12 +180,13 @@ class TestMathematical:
         self._test_mathematical('subtract', dtype, lhs, rhs)
 
 
+@pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
 @pytest.mark.parametrize("val_type",
                          [bool, int, float],
                          ids=['bool', 'int', 'float'])
 @pytest.mark.parametrize("data_type", get_all_dtypes())
 @pytest.mark.parametrize("func",
-                         ['add', 'multiply', 'subtract'])
+                         ['add', 'multiply', 'subtract', 'divide'])
 @pytest.mark.parametrize("val",
                          [0, 1, 5],
                          ids=['0', '1', '5'])
@@ -216,11 +216,11 @@ def test_op_with_scalar(array, val, func, data_type, val_type):
     else:
         result = getattr(dpnp, func)(dpnp_a, val_)
         expected = getattr(numpy, func)(np_a, val_)
-        assert_array_equal(result, expected)
+        assert_allclose(result, expected)
 
         result = getattr(dpnp, func)(val_, dpnp_a)
         expected = getattr(numpy, func)(val_, np_a)
-        assert_array_equal(result, expected)
+        assert_allclose(result, expected)
 
 
 @pytest.mark.parametrize("shape",
@@ -259,6 +259,19 @@ def test_subtract_scalar(shape, dtype):
 
     result = 0.5 - dpnp_a - 1.7
     expected = 0.5 - np_a - 1.7
+    assert_allclose(result, expected)
+
+
+@pytest.mark.parametrize("shape",
+                         [(), (3, 2)],
+                         ids=['()', '(3, 2)'])
+@pytest.mark.parametrize("dtype", get_all_dtypes())
+def test_divide_scalar(shape, dtype):
+    np_a = numpy.ones(shape, dtype=dtype)
+    dpnp_a = dpnp.ones(shape, dtype=dtype)
+
+    result = 0.5 / dpnp_a / 1.7
+    expected = 0.5 / np_a / 1.7
     assert_allclose(result, expected)
 
 
@@ -442,7 +455,6 @@ class TestCross:
         assert_array_equal(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestGradient:
 
     @pytest.mark.parametrize("array", [[2, 3, 6, 8, 4, 9],
@@ -456,6 +468,7 @@ class TestGradient:
         expected = numpy.gradient(np_y)
         assert_array_equal(expected, result)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("array", [[2, 3, 6, 8, 4, 9],
                                        [3., 4., 7.5, 9.],
                                        [2, 6, 8, 10]])

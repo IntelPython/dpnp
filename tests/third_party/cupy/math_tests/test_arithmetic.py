@@ -146,27 +146,35 @@ class ArithmeticBinaryBase:
                 y = y.astype(numpy.complex64)
 
         # NumPy returns an output array of another type than DPNP when input ones have diffrent types.
-        if self.name in ('add', 'multiply', 'subtract') and xp is cupy and dtype1 != dtype2 and not self.use_dtype:
+        if xp is cupy and dtype1 != dtype2 and not self.use_dtype:
             is_array_arg1 = not xp.isscalar(arg1)
             is_array_arg2 = not xp.isscalar(arg2)
 
             is_int_float = lambda _x, _y: numpy.issubdtype(_x, numpy.integer) and numpy.issubdtype(_y, numpy.floating)
             is_same_type = lambda _x, _y, _type: numpy.issubdtype(_x, _type) and numpy.issubdtype(_y, _type)
 
-            if is_array_arg1 and is_array_arg2:
-                # If both inputs are arrays where one is of floating type and another - integer,
-                # NumPy will return an output array of always "float64" type,
-                # while DPNP will return the array of a wider type from the input arrays.
-                if is_int_float(dtype1, dtype2) or is_int_float(dtype2, dtype1):
-                    y = y.astype(numpy.float64)
-            elif is_same_type(dtype1, dtype2, numpy.floating) or is_same_type(dtype1, dtype2, numpy.integer):
-                # If one input is an array and another - scalar,
-                # NumPy will return an output array of the same type as the inpupt array has,
-                # while DPNP will return the array of a wider type from the inputs (considering both array and scalar).
-                if is_array_arg1 and not is_array_arg2:
-                    y = y.astype(dtype1)
-                elif is_array_arg2 and not is_array_arg1:
-                    y = y.astype(dtype2)
+            if self.name in ('add', 'multiply', 'subtract'):
+                if is_array_arg1 and is_array_arg2:
+                    # If both inputs are arrays where one is of floating type and another - integer,
+                    # NumPy will return an output array of always "float64" type,
+                    # while DPNP will return the array of a wider type from the input arrays.
+                    if is_int_float(dtype1, dtype2) or is_int_float(dtype2, dtype1):
+                        y = y.astype(numpy.float64)
+                elif is_same_type(dtype1, dtype2, numpy.floating) or is_same_type(dtype1, dtype2, numpy.integer):
+                    # If one input is an array and another - scalar,
+                    # NumPy will return an output array of the same type as the inpupt array has,
+                    # while DPNP will return the array of a wider type from the inputs (considering both array and scalar).
+                    if is_array_arg1 and not is_array_arg2:
+                        y = y.astype(dtype1)
+                    elif is_array_arg2 and not is_array_arg1:
+                        y = y.astype(dtype2)
+            elif self.name in ('divide', 'true_divide'):
+                # If one input is an array of float32 and another - an integer or floating scalar,
+                # NumPy will return an output array of float32, while DPNP will return the array of float64,
+                # since NumPy would use the same float64 type when instead of scalar here is array of integer of floating type.
+                if not (is_array_arg1 and is_array_arg2):
+                    if (is_array_arg1 and arg1.dtype == numpy.float32) ^ (is_array_arg2 and arg2.dtype == numpy.float32):
+                        y = y.astype(numpy.float32)
 
         # NumPy returns different values (nan/inf) on division by zero
         # depending on the architecture.
