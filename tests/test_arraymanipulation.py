@@ -6,7 +6,7 @@ import numpy
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes())
 @pytest.mark.parametrize(
     "data", [[1, 2, 3], [1.0, 2.0, 3.0]], ids=["[1, 2, 3]", "[1., 2., 3.]"]
 )
@@ -17,13 +17,12 @@ def test_asfarray(dtype, data):
     numpy.testing.assert_array_equal(result, expected)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-@pytest.mark.parametrize(
-    "data", [[1, 2, 3], [1.0, 2.0, 3.0]], ids=["[1, 2, 3]", "[1., 2., 3.]"]
-)
-def test_asfarray2(dtype, data):
-    expected = numpy.asfarray(numpy.array(data), dtype)
-    result = dpnp.asfarray(dpnp.array(data), dtype)
+@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.parametrize("data", [[1.0, 2.0, 3.0]], ids=["[1., 2., 3.]"])
+@pytest.mark.parametrize("data_dtype", get_all_dtypes(no_none=True))
+def test_asfarray2(dtype, data, data_dtype):
+    expected = numpy.asfarray(numpy.array(data, dtype=data_dtype), dtype)
+    result = dpnp.asfarray(dpnp.array(data, dtype=data_dtype), dtype)
 
     numpy.testing.assert_array_equal(result, expected)
 
