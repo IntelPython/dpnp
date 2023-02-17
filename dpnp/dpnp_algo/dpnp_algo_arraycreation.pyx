@@ -191,25 +191,17 @@ cpdef utils.dpnp_descriptor dpnp_identity(n, result_dtype):
 
 
 cpdef utils.dpnp_descriptor dpnp_linspace(start, stop, num, dtype=None, device=None, usm_type=None, sycl_queue=None, endpoint=True, retstep=False, axis=0):
-    start_isarray = isinstance(start, (dpnp.ndarray, dpctl.tensor.usm_ndarray))
-    stop_isarray = isinstance(stop, (dpnp.ndarray, dpctl.tensor.usm_ndarray))
+    usm_type_alloc, sycl_queue_alloc = utils_py.get_usm_allocations([start, stop])
 
     if sycl_queue is None and device is None:
-        sycl_queue = utils_py.get_common_allocation_queue([start, stop])
+        sycl_queue = sycl_queue_alloc
     sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
 
     if usm_type is None:
-        if start_isarray and stop_isarray:
-            usm_type = dpctl.utils.get_coerced_usm_type([start.usm_type, stop.usm_type])
-        elif start_isarray:
-            usm_type = start.usm_type
-        elif stop_isarray:
-            usm_type = stop.usm_type
-        else:
-            usm_type = "device"
+        usm_type = "device" if usm_type_alloc is None else usm_type_alloc
 
-    start_isarray = start_isarray or isinstance(start, numpy.ndarray)
-    stop_isarray = stop_isarray or isinstance(stop, numpy.ndarray)
+    start_isarray = isinstance(start, (dpnp.ndarray, dpctl.tensor.usm_ndarray, numpy.ndarray))
+    stop_isarray = isinstance(stop, (dpnp.ndarray, dpctl.tensor.usm_ndarray, numpy.ndarray))
 
     dt = None
     if start_isarray and stop_isarray:
@@ -237,32 +229,14 @@ cpdef utils.dpnp_descriptor dpnp_linspace(start, stop, num, dtype=None, device=N
                                       sycl_queue=sycl_queue_normalized,
                                       endpoint=endpoint)
     else:
-        #num = operator.index(num)
+        num = operator.index(num)
         if num < 0:
             raise ValueError("Number of points must be non-negative")
-
-        #FIXME: When subtraction with scalar will be implemented
-        start_isscalar = dpnp.isscalar(start)
-        if start_isscalar:
-            start = [start]
-        elif start_isarray:
-            if start.ndim == 0:
-                start = start.reshape((1))
-                start_isscalar = True
-        stop_isscalar = dpnp.isscalar(stop)
-        if stop_isscalar:
-            stop = [stop]
-        elif stop_isarray:
-            if stop.ndim == 0:
-                stop = stop.reshape((1))
-                stop_isscalar = True
 
         _start = dpnp.asarray(start, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
         _stop = dpnp.asarray(stop, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
 
-        _num = dpnp.asarray([(num - 1) if endpoint else num], dtype=dt,
-                            usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-
+        _num = dpnp.asarray((num - 1) if endpoint else num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
         step = (_stop - _start) / _num
 
         res = dpnp_container.arange(0,
@@ -278,11 +252,7 @@ cpdef utils.dpnp_descriptor dpnp_linspace(start, stop, num, dtype=None, device=N
         if endpoint and num > 1:
             res[-1] = dpnp_container.full(step.shape, _stop)
 
-        if stop_isscalar and start_isscalar:
-            res = res.reshape(-1)
-
     if numpy.issubdtype(dtype, dpnp.integer):
-        res = res + dpnp.asarray([0.000000001], dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
         dpnp.floor(res, out=res)
     return dpnp.get_dpnp_descriptor(res.astype(dtype), copy_when_nondefault_queue=False)
 

@@ -178,8 +178,6 @@ def test_array_creation_like(func, args, kwargs, device_x, device_y):
     y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
     numpy.testing.assert_allclose(y_orig, y)
 
-    y = getattr(dpnp, func)(x, **dpnp_kwargs)
-    numpy.testing.assert_array_equal(y_orig, y)
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 

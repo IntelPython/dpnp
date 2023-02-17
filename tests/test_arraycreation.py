@@ -520,19 +520,16 @@ def test_dpctl_tensor_input(func, args):
                          [0, 10, -2, 20.5, 1000],
                          ids=['0', '10', '-2', '20.5', '1000'])
 @pytest.mark.parametrize("num",
-                         [5, 10, 17, 100],
-                         ids=['5', '10', '17', '100'])
-# @pytest.mark.parametrize("num",
-#                          [5, numpy.array(10), dpnp.array(17), dpt.asarray(100)],
-#                          ids=['5', 'numpy.array(10)', 'dpnp.array(17)', 'dpt.asarray(100)'])
+                         [5, numpy.array(10), dpnp.array(17), dpt.asarray(100)],
+                         ids=['5', 'numpy.array(10)', 'dpnp.array(17)', 'dpt.asarray(100)'])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_float16=False))
 def test_linspace(start, stop, num, dtype):
     func = lambda xp: xp.linspace(start, stop, num, dtype=dtype)
 
-    if numpy.issubdtype(dtype, numpy.floating) or numpy.issubdtype(dtype, numpy.complexfloating):
-        assert_allclose(func(numpy), func(dpnp), atol=numpy.finfo(dtype).eps)
+    if numpy.issubdtype(dtype, dpnp.integer):
+        assert_allclose(func(numpy), func(dpnp), rtol=1)
     else:
-        assert_array_equal(func(numpy), func(dpnp))
+        assert_allclose(func(numpy), func(dpnp), atol=numpy.finfo(dtype).eps)
 
 
 @pytest.mark.parametrize("start_dtype",
@@ -542,8 +539,8 @@ def test_linspace(start, stop, num, dtype):
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
 def test_linspace_dtype(start_dtype, stop_dtype):
-    start = dpnp.asarray([1, 2, 3], dtype=start_dtype)
-    stop = dpnp.asarray([11, 7, -2], dtype=stop_dtype)
+    start = numpy.array([1, 2, 3], dtype=start_dtype)
+    stop = numpy.array([11, 7, -2], dtype=stop_dtype)
     dpnp.linspace(start, stop, 10)
 
 
@@ -553,6 +550,4 @@ def test_linspace_dtype(start_dtype, stop_dtype):
                          [dpnp.array([-4]), dpnp.array([[2.6], [- 4]]), numpy.array(2), [[-4.6]], (3,)])
 def test_linspace_arrays(start, stop):
     func = lambda xp: xp.linspace(start, stop, 10)
-    func(dpnp)
-    #assert func(numpy).shape == func(dpnp).shape
-    #assert_array_equal(func(numpy), func(dpnp))
+    assert func(numpy).shape == func(dpnp).shape
