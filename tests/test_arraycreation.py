@@ -551,3 +551,8 @@ def test_linspace_dtype(start_dtype, stop_dtype):
 def test_linspace_arrays(start, stop):
     func = lambda xp: xp.linspace(start, stop, 10)
     assert func(numpy).shape == func(dpnp).shape
+
+
+def test_linspace_complex():
+    func = lambda xp: xp.linspace(0, 3 + 2j, num=1000)
+    assert_allclose(func(numpy), func(dpnp))

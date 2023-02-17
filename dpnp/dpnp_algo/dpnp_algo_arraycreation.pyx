@@ -200,19 +200,13 @@ cpdef utils.dpnp_descriptor dpnp_linspace(start, stop, num, dtype=None, device=N
     if usm_type is None:
         usm_type = "device" if usm_type_alloc is None else usm_type_alloc
 
-    start_isarray = isinstance(start, (dpnp.ndarray, dpctl.tensor.usm_ndarray, numpy.ndarray))
-    stop_isarray = isinstance(stop, (dpnp.ndarray, dpctl.tensor.usm_ndarray, numpy.ndarray))
+    if isinstance(start, (list, tuple)):
+        start = dpnp.asarray(start, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
 
-    dt = None
-    if start_isarray and stop_isarray:
-        dt = numpy.result_type(start.dtype, stop.dtype)
-    elif start_isarray:
-        dt = start.dtype
-    elif stop_isarray:
-        dt = stop.dtype
+    if isinstance(stop, (list, tuple)):
+        stop = dpnp.asarray(stop, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
 
-    if dt == None or numpy.issubdtype(dt, dpnp.integer):
-        dt = numpy.result_type(float(num), dt)
+    dt = numpy.result_type(start, stop, float(num))
 
     dt = utils_py.map_dtype_to_device(dt, sycl_queue_normalized.sycl_device)
 
