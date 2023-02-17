@@ -25,7 +25,8 @@ CC=icpx python setup.py build_ext --inplace
 
 echo
 echo =========example3==============
-icpx -fsycl -g -fPIC dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
+DPCTL_INCLUDES=$(python -m dpctl --includes)
+icpx -fsycl -g -O0 -ggdb3 -fPIC dpnp/backend/examples/example3.cpp $DPCTL_INCLUDES -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
 # LD_DEBUG=libs,bindings,symbols ./example3
 ./example3
 
@@ -47,7 +48,7 @@ icpx -fsycl -g -fPIC dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend/in
 # strings /usr/share/miniconda/envs/dpnp*/lib/libstdc++.so | grep GLIBCXX | sort -n
 
 
-# echo
+echo
 echo =========example1==============
 # LD_DEBUG=libs,bindings,symbols python examples/example1.py
 # LD_DEBUG=libs python examples/example1.py

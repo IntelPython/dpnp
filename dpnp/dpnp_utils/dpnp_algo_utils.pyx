@@ -651,9 +651,6 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
             "".format(array1_obj.usm_type, array2_obj.usm_type))
 
     common_sycl_queue = dpu.get_execution_queue((array1_obj.sycl_queue, array2_obj.sycl_queue))
-    # TODO: refactor, remove when CFD is implemented in all array constructors
-    if common_sycl_queue is None and array1_obj.sycl_context == array2_obj.sycl_context:
-        common_sycl_queue = array1_obj.sycl_queue
     if common_sycl_queue is None:
         raise ValueError(
             "could not recognize common SYCL queue for inputs in SYCL queues {} and {}"
