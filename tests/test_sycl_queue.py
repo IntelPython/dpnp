@@ -6,7 +6,8 @@ import dpctl
 import numpy
 
 from numpy.testing import (
-    assert_array_equal
+    assert_array_equal,
+    assert_raises
 )
 
 
@@ -351,6 +352,19 @@ def test_broadcasting(func, data1, data2, device):
     result_queue = result.get_array().sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize("func", ["add", "copysign", "divide", "floor_divide", "fmod",
+                                  "maximum", "minimum", "multiply", "outer", "power",
+                                  "remainder", "subtract"])
+@pytest.mark.parametrize("device",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+def test_2in_1out_diff_queue_but_equal_context(func, device):
+    x1 = dpnp.arange(10)
+    x2 = dpnp.arange(10, sycl_queue=dpctl.SyclQueue(device))[::-1]
+    with assert_raises(ValueError):
+        getattr(dpnp, func)(x1, x2)
 
 
 @pytest.mark.parametrize(
