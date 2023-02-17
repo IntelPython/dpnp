@@ -73,7 +73,7 @@ __all__ = [
 ]
 
 
-def asfarray(x1, dtype=numpy.float64):
+def asfarray(x1, dtype=None):
     """
     Return an array converted to a float type.
 
@@ -87,9 +87,10 @@ def asfarray(x1, dtype=numpy.float64):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
-        # behavior of original function: int types replaced with float64
-        if numpy.issubdtype(dtype, numpy.integer):
-            dtype = numpy.float64
+        # int types replaced with a floating type by default in DPNP
+        # depending on device capabilities.
+        if dtype is None or numpy.issubdtype(dtype, numpy.integer):
+            dtype = dpnp.default_float_type()
 
         # if type is the same then same object should be returned
         if x1_desc.dtype == dtype:
