@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -342,13 +342,13 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
     cdef long size_input = input.size
     cdef shape_type_c shape_input = input.shape
 
-    if input.dtype == numpy.float32:
-        res_type = numpy.float32
+    if input.dtype == dpnp.float32:
+        res_type = dpnp.float32
     else:
-        res_type = numpy.float64
+        res_type = dpnp.float64
 
     if size_input == 0:
-        return dpnp.array([numpy.nan], dtype=res_type)
+        return dpnp.array([dpnp.nan], dtype=res_type)
 
     if isinstance(axis, int):
         axis_ = tuple([axis])

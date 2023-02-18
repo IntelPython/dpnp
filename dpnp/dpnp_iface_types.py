@@ -40,39 +40,73 @@ import numpy
 __all__ = [
     "bool",
     "bool_",
+    "cdouble",
+    "complex_",
     "complex128",
     "complex64",
+    "complexfloating",
+    "cfloat",
+    "csingle",
+    "double",
     "dtype",
     "float",
+    "float_",
     "float16",
     "float32",
     "float64",
+    "floating",
+    "inexact",
     "int",
+    "int_",
     "int32",
     "int64",
     "integer",
+    "intc",
     "isscalar",
+    "issubdtype",
+    "issubsctype",
     "is_type_supported",
     "longcomplex",
     "nan",
     "newaxis",
+    "number",
+    "object_",
+    "signedinteger",
+    "single",
+    "singlecomplex",
     "void"
 ]
 
 bool = numpy.bool_
 bool_ = numpy.bool_
+cdouble = numpy.cdouble
+complex_ = numpy.complex_
 complex128 = numpy.complex128
 complex64 = numpy.complex64
+complexfloating = numpy.complexfloating
+cfloat = numpy.cfloat
+csingle = numpy.csingle
+double = numpy.double
 dtype = numpy.dtype
+float = numpy.float_
+float_ = numpy.float_
 float16 = numpy.float16
 float32 = numpy.float32
 float64 = numpy.float64
-float = numpy.float_
+floating = numpy.floating
+inexact = numpy.inexact
+int = numpy.int_
+int_ = numpy.int_
 int32 = numpy.int32
 int64 = numpy.int64
 integer = numpy.integer
-int = numpy.int_
+intc = numpy.intc
 longcomplex = numpy.longcomplex
+number = numpy.number
+object_ = numpy.object_
+signedinteger = numpy.signedinteger
+single = numpy.single
+singlecomplex = numpy.singlecomplex
 
 
 def isscalar(obj):
@@ -83,6 +117,28 @@ def isscalar(obj):
 
     """
     return numpy.isscalar(obj)
+
+
+def issubdtype(arg1, arg2):
+    """
+    Returns True if first argument is a typecode lower/equal in type hierarchy.
+
+    For full documentation refer to :obj:`numpy.issubdtype`.
+
+    """
+
+    return numpy.issubdtype(arg1, arg2)
+
+
+def issubsctype(arg1, arg2):
+    """
+    Determine if the first argument is a subclass of the second argument.
+
+    For full documentation refer to :obj:`numpy.issubsctype`.
+
+    """
+
+    return numpy.issubsctype(arg1, arg2)
 
 
 nan = numpy.nan

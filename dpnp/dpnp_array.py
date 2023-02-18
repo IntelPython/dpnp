@@ -527,7 +527,7 @@ class dpnp_array:
 
         """
 
-        if not numpy.issubsctype(self.dtype, numpy.complex_):
+        if not dpnp.issubsctype(self.dtype, dpnp.complex_):
             return self
         else:
             return dpnp.conjugate(self)
@@ -540,7 +540,7 @@ class dpnp_array:
 
         """
 
-        if not numpy.issubsctype(self.dtype, numpy.complex_):
+        if not dpnp.issubsctype(self.dtype, dpnp.complex_):
             return self
         else:
             return dpnp.conjugate(self)
