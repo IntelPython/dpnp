@@ -417,8 +417,26 @@ size_t operator-(DPNPFuncType lhs, DPNPFuncType rhs);
  */
 typedef struct DPNPFuncData
 {
-    DPNPFuncType return_type; /**< return type identifier which expected by the @ref ptr function */
-    void* ptr;                /**< C++ backend function pointer */
+    DPNPFuncData(const DPNPFuncType gen_type, void* gen_ptr, const DPNPFuncType type_no_fp64, void* ptr_no_fp64)
+        : return_type(gen_type)
+        , ptr(gen_ptr)
+        , return_type_no_fp64(type_no_fp64)
+        , ptr_no_fp64(ptr_no_fp64)
+    {
+    }
+    DPNPFuncData(const DPNPFuncType gen_type, void* gen_ptr)
+        : DPNPFuncData(gen_type, gen_ptr, DPNPFuncType::DPNP_FT_NONE, nullptr)
+    {
+    }
+    DPNPFuncData()
+        : DPNPFuncData(DPNPFuncType::DPNP_FT_NONE, nullptr)
+    {
+    }
+
+    DPNPFuncType return_type;         /**< return type identifier which expected by the @ref ptr function */
+    void* ptr;                        /**< C++ backend function pointer */
+    DPNPFuncType return_type_no_fp64; /**< alternative return type identifier when no fp64 support by device */
+    void* ptr_no_fp64;                /**< alternative C++ backend function pointer when no fp64 support by device */
 } DPNPFuncData_t;
 
 /**

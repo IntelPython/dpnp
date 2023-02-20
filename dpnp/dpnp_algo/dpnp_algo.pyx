@@ -481,8 +481,6 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, x1_c_type, x2_c_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-
     # Create result array
     cdef shape_type_c x1_shape = x1_obj.shape
 
@@ -495,15 +493,26 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
 
     result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
 
+    # get FPTR function and return type
+    cdef fptr_2in_1out_strides_t func = NULL
+    cdef DPNPFuncType return_type = DPNP_FT_NONE
+    if fptr_name != DPNP_FN_DIVIDE_EXT or result_sycl_device.has_aspect_fp64:
+        return_type = kernel_data.return_type
+        func = < fptr_2in_1out_strides_t > kernel_data.ptr
+    else:
+        return_type = kernel_data.return_type_no_fp64
+        func = < fptr_2in_1out_strides_t > kernel_data.ptr_no_fp64
+
     if out is None:
         """ Create result array with type given by FPTR data """
         result = utils.create_output_descriptor(result_shape,
-                                                kernel_data.return_type,
+                                                return_type,
                                                 None,
                                                 device=result_sycl_device,
                                                 usm_type=result_usm_type,
                                                 sycl_queue=result_sycl_queue)
     else:
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > return_type)
         if out.dtype != result_type:
             utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
         if out.shape != result_shape:
@@ -517,11 +526,10 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
 
     result_obj = result.get_array()
 
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_obj.sycl_queue
+    cdef c_dpctl.SyclQueue q = < c_dpctl.SyclQueue > result_obj.sycl_queue
     cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     """ Call FPTR function """
-    cdef fptr_2in_1out_strides_t func = <fptr_2in_1out_strides_t > kernel_data.ptr
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
                                                     result.get_data(),
                                                     result.size,
