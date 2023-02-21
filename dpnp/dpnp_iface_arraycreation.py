@@ -1010,7 +1010,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
 
     Limitations
     -----------
-    Parameter ``xi`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Each array instance from `xi` is supported as either :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
     Parameter ``copy`` is supported only with default value ``True``.
     Parameter ``sparse`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
