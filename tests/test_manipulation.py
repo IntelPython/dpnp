@@ -1,13 +1,27 @@
 import pytest
+from .helper import get_all_dtypes
 import numpy
 import dpnp
 
 
+dtypes_list = get_all_dtypes(no_none=True, no_complex=True)
 testdata = []
-testdata += [([True, False, True], dtype) for dtype in ['float32', 'float64', 'int32', 'int64', 'bool']]
-testdata += [([1, -1, 0], dtype) for dtype in ['float32', 'float64', 'int32', 'int64']]
-testdata += [([0.1, 0.0, -0.1], dtype) for dtype in ['float32', 'float64']]
-testdata += [([1j, -1j, 1 - 2j], dtype) for dtype in ['complex128']]
+testdata += [([True, False, True], dtype) for dtype in dtypes_list]
+testdata += [
+    ([1, -1, 0], dtype)
+    for dtype in dtypes_list
+    if not numpy.issubdtype(dtype, numpy.bool_)
+]
+testdata += [
+    ([0.1, 0.0, -0.1], dtype)
+    for dtype in dtypes_list
+    if numpy.issubdtype(dtype, numpy.floating)
+]
+testdata += [
+    ([1j, -1j, 1 - 2j], dtype)
+    for dtype in ["complex128"]
+    if numpy.complex128 in get_all_dtypes(no_none=True, no_bool=True)
+]
 
 
 @pytest.mark.parametrize("in_obj,out_dtype", testdata)
