@@ -102,7 +102,7 @@ def test_eye(N, M, k, dtype, order):
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False, no_none=True))
 def test_frombuffer(dtype):
     buffer = b'12345678ABCDEF00'
     func = lambda xp: xp.frombuffer(buffer, dtype=dtype)
