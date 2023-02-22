@@ -1,5 +1,6 @@
 import dpctl
 import dpnp
+import pytest
 
 
 def get_all_dtypes(no_bool=False,
@@ -37,3 +38,29 @@ def get_all_dtypes(no_bool=False,
     if not no_none:
         dtypes.append(None)
     return dtypes
+
+
+def skip_or_check_if_dtype_not_supported(dtype, device=None, check_dtype=False):
+    """
+    The function to check input type supported in DPNP based on the device capabilities.
+    """
+
+    dev = dpctl.select_default_device() if device is None else device
+    dev_has_dp = dev.has_aspect_fp64
+    if dtype is dpnp.float64 and dev_has_dp is False:
+        if check_dtype:
+            return False
+        else:
+            pytest.skip(
+                f"{dev.name} does not support double precision floating point types"
+            )
+    dev_has_hp = dev.has_aspect_fp16
+    if dtype is dpnp.complex128 and dev_has_hp is False:
+        if check_dtype:
+            return False
+        else:
+            pytest.skip(
+                f"{dev.name} does not support double precision floating point types"
+            )
+
+    return True
