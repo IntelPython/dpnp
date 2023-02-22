@@ -1,10 +1,23 @@
 import dpnp
+from .helper import skip_or_check_if_dtype_not_supported
 
 import numpy
 
 
-def test_sum_float64():
-    a = numpy.array([[[-2., 3.], [9.1, 0.2]], [[-2., 5.0], [-2, -1.2]], [[1.0, -2.], [5.0, -1.1]]])
+dtype = numpy.float64 if skip_or_check_if_dtype_not_supported(
+    numpy.float64, check_dtype=True
+    ) else numpy.float32
+
+
+def test_sum_float():
+    a = numpy.array(
+        [
+            [[-2.0, 3.0], [9.1, 0.2]],
+            [[-2.0, 5.0], [-2, -1.2]],
+            [[1.0, -2.0], [5.0, -1.1]],
+        ],
+        dtype=dtype,
+    )
     ia = dpnp.array(a)
 
     for axis in range(len(a)):
@@ -23,7 +36,14 @@ def test_sum_int():
 
 
 def test_sum_axis():
-    a = numpy.array([[[-2., 3.], [9.1, 0.2]], [[-2., 5.0], [-2, -1.2]], [[1.0, -2.], [5.0, -1.1]]])
+    a = numpy.array(
+        [
+            [[-2.0, 3.0], [9.1, 0.2]],
+            [[-2.0, 5.0], [-2, -1.2]],
+            [[1.0, -2.0], [5.0, -1.1]],
+        ],
+        dtype=dtype,
+    )
     ia = dpnp.array(a)
 
     result = dpnp.sum(ia, axis=1)
