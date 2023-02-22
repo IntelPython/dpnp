@@ -15,6 +15,9 @@ import dpnp as cupyx
 # from dpnp.core import internal
 from tests.third_party.cupy.testing import array
 from tests.third_party.cupy.testing import parameterized
+
+from dpctl import select_default_device
+
 # import dpnp
 # import dpnp.scipy.sparse
 
@@ -655,8 +658,15 @@ def for_dtypes(dtypes, name='dtype'):
     return decorator
 
 
+def _get_supported_float_dtypes():
+    if select_default_device().has_aspect_fp64:
+        return (numpy.float64, numpy.float32)
+    else:
+        return (numpy.float32,)
+
+
 _complex_dtypes = ()
-_regular_float_dtypes = (numpy.float64, numpy.float32)
+_regular_float_dtypes = _get_supported_float_dtypes()
 _float_dtypes = _regular_float_dtypes
 _signed_dtypes = ()
 _unsigned_dtypes = tuple(numpy.dtype(i).type for i in 'BHILQ')
