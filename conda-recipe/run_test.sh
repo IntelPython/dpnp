@@ -23,3 +23,11 @@ fi
 if [ -n "${TBBROOT}" ]; then
     . ${TBBROOT}/env/vars.sh
 fi
+
+
+# Enable system installed OpenCL GPU driver from conda test env
+if [ -f /etc/OpenCL/vendors/intel.icd ] &&
+   [ -d $CONDA_PREFIX/etc/OpenCL/vendors/ ] &&
+   [ ! -f $CONDA_PREFIX/etc/OpenCL/vendors/intel-ocl-gpu.icd ]; then
+    ln -s /etc/OpenCL/vendors/intel.icd $CONDA_PREFIX/etc/OpenCL/vendors/intel-ocl-gpu.icd
+fi
