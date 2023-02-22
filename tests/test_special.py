@@ -1,11 +1,17 @@
 import math
 import dpnp
 import numpy
+from .helper import skip_or_check_if_dtype_not_supported
+
+
+dtype = numpy.float64 if skip_or_check_if_dtype_not_supported(
+    numpy.float64, check_dtype=True
+    ) else numpy.float32
 
 
 def test_erf():
-    a = numpy.linspace(2.0, 3.0, num=10)
-    ia = dpnp.linspace(2.0, 3.0, num=10)
+    a = numpy.linspace(2.0, 3.0, num=10, dtype=dtype)
+    ia = dpnp.linspace(2.0, 3.0, num=10, dtype=dtype)
 
     numpy.testing.assert_array_equal(a, ia)
 
@@ -19,8 +25,8 @@ def test_erf():
 
 
 def test_erf_fallback():
-    a = numpy.linspace(2.0, 3.0, num=10)
-    dpa = dpnp.linspace(2.0, 3.0, num=10)
+    a = numpy.linspace(2.0, 3.0, num=10, dtype=dtype)
+    dpa = dpnp.linspace(2.0, 3.0, num=10, dtype=dtype)
 
     expected = numpy.empty_like(a)
     for idx, val in enumerate(a):
