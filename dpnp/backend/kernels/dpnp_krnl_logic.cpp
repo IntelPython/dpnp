@@ -74,17 +74,17 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
     sycl::nd_range<1> gws(gws_range, lws_range);
 
     auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {
-        auto sg = nd_it.get_sub_group();
-        const auto max_sg_size = sg.get_max_local_range()[0];
+        auto gr = nd_it.get_group();
+        const auto max_gr_size = gr.get_max_local_range()[0];
         const size_t start =
-            vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) + sg.get_group_id()[0] * max_sg_size);
-        const size_t end = sycl::min(start + vec_sz * max_sg_size, size);
+            vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) + gr.get_group_id()[0] * max_gr_size);
+        const size_t end = sycl::min(start + vec_sz * max_gr_size, size);
 
         // each work-item reduces over "vec_sz" elements in the input array
         bool local_reduction = sycl::joint_none_of(
-            sg, &array_in[start], &array_in[end], [&](_DataType elem) { return elem == static_cast<_DataType>(0); });
+            gr, &array_in[start], &array_in[end], [&](_DataType elem) { return elem == static_cast<_DataType>(0); });
 
-        if (sg.leader() && (local_reduction == false))
+        if (gr.leader() && (local_reduction == false))
         {
             result[0] = false;
         }
