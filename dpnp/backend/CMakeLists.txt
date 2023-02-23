@@ -27,7 +27,7 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.11.0)
+# set(DPNP_VERSION 0.11.1)
 # set(DPNP_API_VERSION 0.11)
 
 # set directory where the custom finders live
@@ -93,6 +93,7 @@ string(CONCAT COMMON_COMPILE_FLAGS
   "-fsycl "
   "-fsycl-device-code-split=per_kernel "
   "-fno-approx-func "
+  "-fno-finite-math-only "
 )
 string(CONCAT COMMON_LINK_FLAGS
   "-fsycl "
