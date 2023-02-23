@@ -939,7 +939,7 @@ def linspace(start,
                              device=device,
                              usm_type=usm_type,
                              sycl_queue=sycl_queue,
-                             endpoint=endpoint).get_pyobj()
+                             endpoint=endpoint)
 
     return call_origin(numpy.linspace, start, stop, num, endpoint, retstep, dtype, axis)
 

@@ -190,26 +190,31 @@ cpdef utils.dpnp_descriptor dpnp_identity(n, result_dtype):
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_linspace(start, stop, num, dtype=None, device=None, usm_type=None, sycl_queue=None, endpoint=True, retstep=False, axis=0):
+def dpnp_linspace(start, stop, num, dtype=None, device=None, usm_type=None, sycl_queue=None, endpoint=True, retstep=False, axis=0):
     usm_type_alloc, sycl_queue_alloc = utils_py.get_usm_allocations([start, stop])
 
     if sycl_queue is None and device is None:
         sycl_queue = sycl_queue_alloc
     sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
 
-    if usm_type is None:
+    if dpnp.isscalar(start) and dpnp.isscalar(stop):
+        pass
+    if usm_type is not None:
+        _start = dpnp.asarray(start, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+        _stop = dpnp.asarray(stop, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+    else:
         usm_type = "device" if usm_type_alloc is None else usm_type_alloc
+        if not hasattr(start, "usm_type"):
+            _start = dpnp.asarray(start, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+        else:
+            _start = start
+        if not hasattr(stop, "usm_type"):
+            _stop = dpnp.asarray(stop, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+        else:
+            _stop = stop
 
-    if isinstance(start, (list, tuple)):
-        start = dpnp.asarray(start, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-
-    if isinstance(stop, (list, tuple)):
-        stop = dpnp.asarray(stop, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-
-    dt = numpy.result_type(start, stop, float(num))
-
+    dt = numpy.result_type(start if dpnp.isscalar(start) else _start, stop if dpnp.isscalar(stop) else _stop, float(num))
     dt = utils_py.map_dtype_to_device(dt, sycl_queue_normalized.sycl_device)
-
     if dtype is None:
         dtype = dt
 
@@ -218,7 +223,6 @@ cpdef utils.dpnp_descriptor dpnp_linspace(start, stop, num, dtype=None, device=N
                                       stop,
                                       num,
                                       dtype=dt,
-                                      device=device,
                                       usm_type=usm_type,
                                       sycl_queue=sycl_queue_normalized,
                                       endpoint=endpoint)
@@ -226,10 +230,8 @@ cpdef utils.dpnp_descriptor dpnp_linspace(start, stop, num, dtype=None, device=N
         num = operator.index(num)
         if num < 0:
             raise ValueError("Number of points must be non-negative")
-
-        _start = dpnp.asarray(start, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-        _stop = dpnp.asarray(stop, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-
+        _start = dpnp.asarray(_start, dtype=dt, sycl_queue=sycl_queue_normalized)
+        _stop = dpnp.asarray(_stop, dtype=dt, sycl_queue=sycl_queue_normalized)
         _num = dpnp.asarray((num - 1) if endpoint else num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
         step = (_stop - _start) / _num
 
@@ -248,7 +250,7 @@ cpdef utils.dpnp_descriptor dpnp_linspace(start, stop, num, dtype=None, device=N
 
     if numpy.issubdtype(dtype, dpnp.integer):
         dpnp.floor(res, out=res)
-    return dpnp.get_dpnp_descriptor(res.astype(dtype), copy_when_nondefault_queue=False)
+    return res.astype(dtype)
 
 
 cpdef utils.dpnp_descriptor dpnp_logspace(start, stop, num, endpoint, base, dtype, axis):
