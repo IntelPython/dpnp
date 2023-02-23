@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2022, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -291,13 +291,6 @@ void dpnp_eye_c(void* result1, int k, const shape_elem_type* res_shape)
 
 template <typename _DataType>
 void (*dpnp_eye_default_c)(void*, int, const shape_elem_type*) = dpnp_eye_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_eye_ext_c)(DPCTLSyclQueueRef,
-                                    void*,
-                                    int,
-                                    const shape_elem_type*,
-                                    const DPCTLEventVectorRef) = dpnp_eye_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_full_c(DPCTLSyclQueueRef q_ref,
@@ -1063,17 +1056,6 @@ void (*dpnp_tril_default_c)(void*,
                             const size_t) = dpnp_tril_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_tril_ext_c)(DPCTLSyclQueueRef,
-                                     void*,
-                                     void*,
-                                     const int,
-                                     shape_elem_type*,
-                                     shape_elem_type*,
-                                     const size_t,
-                                     const size_t,
-                                     const DPCTLEventVectorRef) = dpnp_tril_c<_DataType>;
-
-template <typename _DataType>
 DPCTLSyclEventRef dpnp_triu_c(DPCTLSyclQueueRef q_ref,
                               void* array_in,
                               void* result1,
@@ -1226,17 +1208,6 @@ void (*dpnp_triu_default_c)(void*,
                             const size_t) = dpnp_triu_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_triu_ext_c)(DPCTLSyclQueueRef,
-                                     void*,
-                                     void*,
-                                     const int,
-                                     shape_elem_type*,
-                                     shape_elem_type*,
-                                     const size_t,
-                                     const size_t,
-                                     const DPCTLEventVectorRef) = dpnp_triu_c<_DataType>;
-
-template <typename _DataType>
 DPCTLSyclEventRef dpnp_zeros_c(DPCTLSyclQueueRef q_ref,
                                void* result,
                                size_t size,
@@ -1318,11 +1289,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_EYE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_eye_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_EYE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eye_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_EYE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eye_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_EYE_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_eye_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_EYE_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_eye_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_EYE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eye_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_EYE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eye_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_full_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_default_c<int64_t>};
@@ -1451,20 +1417,10 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_TRIL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_tril_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_TRIL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_tril_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_TRIL_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_tril_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRIL_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_tril_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRIL_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_tril_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRIL_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_tril_ext_c<double>};
-
     fmap[DPNPFuncName::DPNP_FN_TRIU][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_triu_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_TRIU][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_triu_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_TRIU][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_triu_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_TRIU][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_triu_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_TRIU_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_triu_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRIU_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_triu_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRIU_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_triu_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRIU_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_triu_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_zeros_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_zeros_default_c<int64_t>};

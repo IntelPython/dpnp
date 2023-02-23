@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -127,6 +127,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_EIG_EXT
         DPNP_FN_EIGVALS
         DPNP_FN_EIGVALS_EXT
+        DPNP_FN_EQUAL_EXT
         DPNP_FN_ERF
         DPNP_FN_ERF_EXT
         DPNP_FN_EYE
@@ -155,6 +156,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
         DPNP_FN_FULL_LIKE
+        DPNP_FN_GREATER_EXT
+        DPNP_FN_GREATER_EQUAL_EXT
         DPNP_FN_HYPOT
         DPNP_FN_HYPOT_EXT
         DPNP_FN_IDENTITY
@@ -169,6 +172,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_KRON_EXT
         DPNP_FN_LEFT_SHIFT
         DPNP_FN_LEFT_SHIFT_EXT
+        DPNP_FN_LESS_EXT
+        DPNP_FN_LESS_EQUAL_EXT
         DPNP_FN_LOG
         DPNP_FN_LOG_EXT
         DPNP_FN_LOG10
@@ -177,6 +182,10 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_LOG1P_EXT
         DPNP_FN_LOG2
         DPNP_FN_LOG2_EXT
+        DPNP_FN_LOGICAL_AND_EXT
+        DPNP_FN_LOGICAL_NOT_EXT
+        DPNP_FN_LOGICAL_OR_EXT
+        DPNP_FN_LOGICAL_XOR_EXT
         DPNP_FN_MATMUL
         DPNP_FN_MATMUL_EXT
         DPNP_FN_MATRIX_RANK
@@ -203,6 +212,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_NEGATIVE_EXT
         DPNP_FN_NONZERO
         DPNP_FN_NONZERO_EXT
+        DPNP_FN_NOT_EQUAL_EXT
         DPNP_FN_ONES
         DPNP_FN_ONES_LIKE
         DPNP_FN_PARTITION
@@ -364,6 +374,8 @@ cdef extern from "dpnp_iface_fptr.hpp":
     struct DPNPFuncData:
         DPNPFuncType return_type
         void * ptr
+        DPNPFuncType return_type_no_fp64
+        void *ptr_no_fp64
 
     DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
 
@@ -379,7 +391,7 @@ cdef extern from "constants.hpp":
 
 cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
-    size_t dpnp_queue_is_cpu_c()
+    size_t dpnp_queue_is_cpu_c() except +
 
     char * dpnp_memory_alloc_c(size_t size_in_bytes) except +
     void dpnp_memory_free_c(void * ptr)
@@ -429,7 +441,7 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_strides_t)(c_dpctl.DPCTLSyclQu
                                                              const shape_elem_type * ,
                                                              const shape_elem_type * ,
                                                              const long * ,
-                                                             const c_dpctl.DPCTLEventVectorRef)
+                                                             const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void *, void * , void * , size_t, size_t, size_t)
 ctypedef c_dpctl.DPCTLSyclEventRef(*dpnp_reduction_c_t)(c_dpctl.DPCTLSyclQueueRef,
                                                         void *,

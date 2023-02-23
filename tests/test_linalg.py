@@ -1,9 +1,15 @@
 import pytest
+from .helper import get_all_dtypes
 
 import dpnp as inp
 
 import dpctl
+
 import numpy
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal
+)
 
 
 def vvsort(val, vec, size, xp):
@@ -49,7 +55,7 @@ def test_cholesky(array):
     ia = inp.array(a)
     result = inp.linalg.cholesky(ia)
     expected = numpy.linalg.cholesky(a)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("arr",
@@ -63,7 +69,7 @@ def test_cond(arr, p):
     ia = inp.array(a)
     result = inp.linalg.cond(ia, p)
     expected = numpy.linalg.cond(a, p)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("array",
@@ -82,13 +88,11 @@ def test_det(array):
     ia = inp.array(a)
     result = inp.linalg.det(ia)
     expected = numpy.linalg.det(a)
-    numpy.testing.assert_allclose(expected, result)
+    assert_allclose(expected, result)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("size",
                          [2, 4, 8, 16, 300])
 def test_eig_arange(type, size):
@@ -115,21 +119,19 @@ def test_eig_arange(type, size):
         if np_vec[0, i] * dpnp_vec[0, i] < 0:
             np_vec[:, i] = -np_vec[:, i]
 
-    numpy.testing.assert_array_equal(symm_orig, symm)
-    numpy.testing.assert_array_equal(dpnp_symm_orig, dpnp_symm)
+    assert_array_equal(symm_orig, symm)
+    assert_array_equal(dpnp_symm_orig, dpnp_symm)
 
     assert (dpnp_val.dtype == np_val.dtype)
     assert (dpnp_vec.dtype == np_vec.dtype)
     assert (dpnp_val.shape == np_val.shape)
     assert (dpnp_vec.shape == np_vec.shape)
 
-    numpy.testing.assert_allclose(dpnp_val, np_val, rtol=1e-05, atol=1e-05)
-    numpy.testing.assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
+    assert_allclose(dpnp_val, np_val, rtol=1e-05, atol=1e-05)
+    assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_eigvals(type):
     if dpctl.get_current_device_type() != dpctl.device_type.gpu:
         pytest.skip("eigvals function doesn\'t work on CPU: https://github.com/IntelPython/dpnp/issues/1005")
@@ -144,12 +146,10 @@ def test_eigvals(type):
         ia = inp.array(a)
         result = inp.linalg.eigvals(ia)
         expected = numpy.linalg.eigvals(a)
-        numpy.testing.assert_allclose(expected, result, atol=0.5)
+        assert_allclose(expected, result, atol=0.5)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("array",
                          [[[1., 2.], [3., 4.]], [[0, 1, 2], [3, 2, -1], [4, -2, 3]]],
                          ids=['[[1., 2.], [3., 4.]]', '[[0, 1, 2], [3, 2, -1], [4, -2, 3]]'])
@@ -158,12 +158,10 @@ def test_inv(type, array):
     ia = inp.array(a)
     result = inp.linalg.inv(ia)
     expected = numpy.linalg.inv(a)
-    numpy.testing.assert_allclose(expected, result)
+    assert_allclose(expected, result)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
 @pytest.mark.parametrize("array",
                          [[0, 0], [0, 1], [1, 2], [[0, 0], [0, 0]], [[1, 2], [1, 2]], [[1, 2], [3, 4]]],
                          ids=['[0, 0]', '[0, 1]', '[1, 2]', '[[0, 0], [0, 0]]', '[[1, 2], [1, 2]]', '[[1, 2], [3, 4]]'])
@@ -177,10 +175,11 @@ def test_matrix_rank(type, tol, array):
     result = inp.linalg.matrix_rank(ia, tol=tol)
     expected = numpy.linalg.matrix_rank(a, tol=tol)
 
-    numpy.testing.assert_allclose(expected, result)
+    assert_allclose(expected, result)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures("suppress_divide_numpy_warnings")
 @pytest.mark.parametrize("array",
                          [[7], [1, 2], [1, 0]],
                          ids=['[7]', '[1, 2]', '[1, 0]'])
@@ -195,7 +194,7 @@ def test_norm1(array, ord, axis):
     ia = inp.array(a)
     result = inp.linalg.norm(ia, ord=ord, axis=axis)
     expected = numpy.linalg.norm(a, ord=ord, axis=axis)
-    numpy.testing.assert_allclose(expected, result)
+    assert_allclose(expected, result)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -213,7 +212,7 @@ def test_norm2(array, ord, axis):
     ia = inp.array(a)
     result = inp.linalg.norm(ia, ord=ord, axis=axis)
     expected = numpy.linalg.norm(a, ord=ord, axis=axis)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -231,13 +230,11 @@ def test_norm3(array, ord, axis):
     ia = inp.array(a)
     result = inp.linalg.norm(ia, ord=ord, axis=axis)
     expected = numpy.linalg.norm(a, ord=ord, axis=axis)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(2, 2), (3, 4), (5, 3), (16, 16)],
                          ids=['(2,2)', '(3,4)', '(5,3)', '(16,16)'])
@@ -262,7 +259,7 @@ def test_qr(type, shape, mode):
         tol = 1e-11
 
     # check decomposition
-    numpy.testing.assert_allclose(ia, numpy.dot(inp.asnumpy(dpnp_q), inp.asnumpy(dpnp_r)), rtol=tol, atol=tol)
+    assert_allclose(ia, numpy.dot(inp.asnumpy(dpnp_q), inp.asnumpy(dpnp_r)), rtol=tol, atol=tol)
 
     # NP change sign for comparison
     ncols = min(a.shape[0], a.shape[1])
@@ -273,15 +270,12 @@ def test_qr(type, shape, mode):
             np_r[i, :] = -np_r[i, :]
 
         if numpy.any(numpy.abs(np_r[i, :]) > tol):
-            numpy.testing.assert_allclose(inp.asnumpy(dpnp_q)[:, i], np_q[:, i], rtol=tol, atol=tol)
+            assert_allclose(inp.asnumpy(dpnp_q)[:, i], np_q[:, i], rtol=tol, atol=tol)
 
-    numpy.testing.assert_allclose(dpnp_r, np_r, rtol=tol, atol=tol)
+    assert_allclose(dpnp_r, np_r, rtol=tol, atol=tol)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(2, 2), (3, 4), (5, 3), (16, 16)],
                          ids=['(2,2)', '(3,4)', '(5,3)', '(16,16)'])
@@ -310,10 +304,10 @@ def test_svd(type, shape):
         dpnp_diag_s[i, i] = dpnp_s[i]
 
     # check decomposition
-    numpy.testing.assert_allclose(ia, inp.dot(dpnp_u, inp.dot(dpnp_diag_s, dpnp_vt)), rtol=tol, atol=tol)
+    assert_allclose(ia, inp.dot(dpnp_u, inp.dot(dpnp_diag_s, dpnp_vt)), rtol=tol, atol=tol)
 
     # compare singular values
-    # numpy.testing.assert_allclose(dpnp_s, np_s, rtol=tol, atol=tol)
+    # assert_allclose(dpnp_s, np_s, rtol=tol, atol=tol)
 
     # change sign of vectors
     for i in range(min(shape[0], shape[1])):
@@ -323,5 +317,5 @@ def test_svd(type, shape):
 
     # compare vectors for non-zero values
     for i in range(numpy.count_nonzero(np_s > tol)):
-        numpy.testing.assert_allclose(inp.asnumpy(dpnp_u)[:, i], np_u[:, i], rtol=tol, atol=tol)
-        numpy.testing.assert_allclose(inp.asnumpy(dpnp_vt)[i, :], np_vt[i, :], rtol=tol, atol=tol)
+        assert_allclose(inp.asnumpy(dpnp_u)[:, i], np_u[:, i], rtol=tol, atol=tol)
+        assert_allclose(inp.asnumpy(dpnp_vt)[i, :], np_vt[i, :], rtol=tol, atol=tol)

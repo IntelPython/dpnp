@@ -29,11 +29,8 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9']
+        python: ['3.8', '3.9', '3.10']
         os: [ubuntu-20.04, windows-latest]
-        include:
-          - python: '3.10'
-            os: ubuntu-20.04
 
     runs-on: ${{ matrix.os }}
 
@@ -110,7 +107,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9']
+        python: ['3.8', '3.9', '3.10']
         os: [ubuntu-20.04, ubuntu-latest]
 
         experimental: [false]
@@ -215,7 +212,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9']
+        python: ['3.8', '3.9', '3.10']
         experimental: [false]
 
     continue-on-error: ${{ matrix.experimental }}
@@ -384,7 +381,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9']
+        python: ['3.8', '3.9', '3.10']
         os: [ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.os }}
