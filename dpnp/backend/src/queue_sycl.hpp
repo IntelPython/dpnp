@@ -137,6 +137,13 @@ public:
 #else
         // temporal solution. Started from Sept-2020
         DPCTLSyclQueueRef DPCtrl_queue = DPCTLQueueMgr_GetCurrentQueue();
+        if (DPCtrl_queue == nullptr)
+        {
+            std::string reason = (DPCTLQueueMgr_GetQueueStackSize() == static_cast<size_t>(-1))
+                                     ? ": the queue stack is empty, probably no device is available."
+                                     : ".";
+            throw std::runtime_error("Failed to create a copy of SYCL queue with default device" + reason);
+        }
         return *(reinterpret_cast<sycl::queue*>(DPCtrl_queue));
 #endif
     }
