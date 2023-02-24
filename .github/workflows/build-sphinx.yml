@@ -54,7 +54,7 @@ jobs:
           sudo apt-get install -y nvidia-cuda-toolkit clinfo
 
       - name: Checkout repo
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       # https://github.com/marketplace/actions/setup-miniconda
       - name: Setup miniconda
@@ -94,7 +94,7 @@ jobs:
 
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
-        uses: mattnotmitt/doxygen-action@v1.9.4
+        uses: mattnotmitt/doxygen-action@v1.9.5
         with:
             working-directory: 'dpnp/backend/doc'
 
@@ -106,7 +106,7 @@ jobs:
         if: |
           !github.event.pull_request.head.repo.fork  &&
           (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
-        uses: peaceiris/actions-gh-pages@v3.9.0
+        uses: peaceiris/actions-gh-pages@v3.9.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: doc/_build/html/
