@@ -193,46 +193,60 @@ cpdef utils.dpnp_descriptor dpnp_identity(n, result_dtype):
 def dpnp_linspace(start, stop, num, dtype=None, device=None, usm_type=None, sycl_queue=None, endpoint=True, retstep=False, axis=0):
     usm_type_alloc, sycl_queue_alloc = utils_py.get_usm_allocations([start, stop])
 
+    # Get sycl_queue.
     if sycl_queue is None and device is None:
         sycl_queue = sycl_queue_alloc
     sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
 
-    if dpnp.isscalar(start) and dpnp.isscalar(stop):
-        pass
-    if usm_type is not None:
-        _start = dpnp.asarray(start, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-        _stop = dpnp.asarray(stop, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+    # Get temporary usm_type for getting dtype.
+    if usm_type is None:
+        _usm_type = "device" if usm_type_alloc is None else usm_type_alloc
     else:
-        usm_type = "device" if usm_type_alloc is None else usm_type_alloc
-        if not hasattr(start, "usm_type"):
-            _start = dpnp.asarray(start, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-        else:
-            _start = start
-        if not hasattr(stop, "usm_type"):
-            _stop = dpnp.asarray(stop, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-        else:
-            _stop = stop
+        _usm_type = usm_type
 
-    dt = numpy.result_type(start if dpnp.isscalar(start) else _start, stop if dpnp.isscalar(stop) else _stop, float(num))
+    # Get dtype.
+    if not hasattr(start, "dtype") and not dpnp.isscalar(start):
+        start = dpnp.asarray(start, usm_type=_usm_type, sycl_queue=sycl_queue_normalized)
+    if not hasattr(stop, "dtype") and not dpnp.isscalar(stop):
+        stop = dpnp.asarray(stop, usm_type=_usm_type, sycl_queue=sycl_queue_normalized)
+    dt = numpy.result_type(start, stop, float(num))
     dt = utils_py.map_dtype_to_device(dt, sycl_queue_normalized.sycl_device)
     if dtype is None:
         dtype = dt
 
     if dpnp.isscalar(start) and dpnp.isscalar(stop):
+        # Call linspace() function for scalars.
         res = dpnp_container.linspace(start,
                                       stop,
                                       num,
                                       dtype=dt,
-                                      usm_type=usm_type,
+                                      usm_type=_usm_type,
                                       sycl_queue=sycl_queue_normalized,
                                       endpoint=endpoint)
     else:
         num = operator.index(num)
         if num < 0:
             raise ValueError("Number of points must be non-negative")
-        _start = dpnp.asarray(_start, dtype=dt, sycl_queue=sycl_queue_normalized)
-        _stop = dpnp.asarray(_stop, dtype=dt, sycl_queue=sycl_queue_normalized)
+
+        # Get final usm_type and copy arrays if needed with current dtype, usm_type and sycl_queue.
+        # Do not need to copy usm_ndarray by usm_type if it is not explicitly stated.
+        if usm_type is None:
+            usm_type = _usm_type
+            if not hasattr(start, "usm_type"):
+                _start = dpnp.asarray(start, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+            else:
+                _start = dpnp.asarray(start, dtype=dt, sycl_queue=sycl_queue_normalized)
+            if not hasattr(stop, "usm_type"):
+                _stop = dpnp.asarray(stop, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+            else:
+                _stop = dpnp.asarray(stop, dtype=dt, sycl_queue=sycl_queue_normalized)
+        else:
+            _start = dpnp.asarray(start, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+            _stop = dpnp.asarray(stop, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+
+        # FIXME: issue #1304. Mathematical operations with scalar don't follow data type.
         _num = dpnp.asarray((num - 1) if endpoint else num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+
         step = (_stop - _start) / _num
 
         res = dpnp_container.arange(0,
