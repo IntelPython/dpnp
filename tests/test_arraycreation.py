@@ -507,7 +507,7 @@ def test_dpctl_tensor_input(func, args):
     new_args = [eval(val, {'x0' : x0}) for val in args]
     X = getattr(dpt, func)(*new_args)
     Y = getattr(dpnp, func)(*new_args)
-    if func is 'empty_like':
+    if func == 'empty_like':
         assert X.shape == Y.shape
     else:
         assert_array_equal(X, Y)
@@ -556,3 +556,17 @@ def test_linspace_arrays(start, stop):
 def test_linspace_complex():
     func = lambda xp: xp.linspace(0, 3 + 2j, num=1000)
     assert_allclose(func(numpy), func(dpnp))
+
+
+@pytest.mark.parametrize("arrays",
+                         [[], [[1]], [[1, 2, 3], [4, 5, 6]], [[1, 2], [3, 4], [5, 6]]],
+                         ids=['[]', '[[1]]', '[[1, 2, 3], [4, 5, 6]]', '[[1, 2], [3, 4], [5, 6]]'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize("indexing",
+                         ["ij", "xy"],
+                         ids=["ij", "xy"])
+def test_meshgrid(arrays, dtype, indexing):
+    func = lambda xp, xi: xp.meshgrid(*xi, indexing=indexing)
+    a = tuple(numpy.array(array, dtype=dtype) for array in arrays)
+    ia = tuple(dpnp.array(array, dtype=dtype) for array in arrays)
+    assert_array_equal(func(numpy, a), func(dpnp, ia))

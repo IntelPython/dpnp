@@ -41,7 +41,6 @@ __all__ += [
     "dpnp_identity",
     "dpnp_linspace",
     "dpnp_logspace",
-    "dpnp_meshgrid",
     "dpnp_ptp",
     "dpnp_trace",
     "dpnp_tri",
@@ -270,53 +269,6 @@ def dpnp_linspace(start, stop, num, dtype=None, device=None, usm_type=None, sycl
 cpdef utils.dpnp_descriptor dpnp_logspace(start, stop, num, endpoint, base, dtype, axis):
     temp = dpnp.linspace(start, stop, num=num, endpoint=endpoint)
     return dpnp.get_dpnp_descriptor(dpnp.astype(dpnp.power(base, temp), dtype))
-
-
-cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
-    input_count = len(xi)
-
-    # simple case
-    if input_count == 0:
-        return []
-
-    # simple case
-    if input_count == 1:
-        return [dpnp_copy(dpnp.get_dpnp_descriptor(xi[0])).get_pyobj()]
-
-    shape_mult = 1
-    for i in range(input_count):
-        shape_mult = shape_mult * xi[i].size
-
-    shape_list = []
-    for i in range(input_count):
-        shape_list.append(xi[i].size)
-    if indexing == "xy":
-        temp = shape_list[0]
-        shape_list[0] = shape_list[1]
-        shape_list[1] = temp
-
-    steps = []
-    for i in range(input_count):
-        shape_mult = shape_mult // shape_list[i]
-        steps.append(shape_mult)
-    if indexing == "xy":
-        temp = steps[0]
-        steps[0] = steps[1]
-        steps[1] = temp
-
-    shape = tuple(shape_list)
-
-    cdef utils.dpnp_descriptor res_item
-    result = []
-    for i in range(input_count):
-        res_item = utils_py.create_output_descriptor_py(shape, xi[i].dtype, None)
-
-        for j in range(res_item.size):
-            res_item.get_pyobj()[j] = xi[i][(j // steps[i]) % xi[i].size]
-
-        result.append(res_item.get_pyobj())
-
-    return result
 
 
 cpdef dpnp_ptp(utils.dpnp_descriptor arr, axis=None):

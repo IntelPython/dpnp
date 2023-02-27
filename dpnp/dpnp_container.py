@@ -206,6 +206,15 @@ def linspace(start,
     return dpnp_array(array_obj.shape, buffer=array_obj)
 
 
+def meshgrid(*xi, indexing="xy"):
+    """Creates list of `dpnp_array` coordinate matrices from vectors."""
+    if len(xi) == 0:
+        return []
+    arrays = tuple(x.get_array() if isinstance(x, dpnp_array) else x for x in xi)
+    arrays_obj = dpt.meshgrid(*arrays, indexing=indexing)
+    return [dpnp_array._create_from_usm_ndarray(array_obj) for array_obj in arrays_obj]
+
+
 def ones(shape,
          *,
          dtype=None,

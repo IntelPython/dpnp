@@ -130,3 +130,13 @@ def test_coerced_usm_types_logic_op(op, usm_type_x, usm_type_y):
     assert x.usm_type == zx.usm_type == usm_type_x
     assert y.usm_type == zy.usm_type == usm_type_y
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_meshgrid(usm_type_x, usm_type_y):
+    x = dp.arange(100, usm_type = usm_type_x)
+    y = dp.arange(100, usm_type = usm_type_y)
+    z = dp.meshgrid(x, y)
+    assert z[0].usm_type == usm_type_x
+    assert z[1].usm_type == usm_type_y
