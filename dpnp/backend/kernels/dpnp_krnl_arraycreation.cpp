@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2022, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -58,6 +58,8 @@ DPCTLSyclEventRef dpnp_arange_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
+    validate_type_for_device<_DataType>(q);
+
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     sycl::range<1> gws(size);
@@ -72,7 +74,6 @@ DPCTLSyclEventRef dpnp_arange_c(DPCTLSyclQueueRef q_ref,
     };
 
     event = q.submit(kernel_func);
-
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
     return DPCTLEvent_Copy(event_ref);
@@ -144,6 +145,8 @@ DPCTLSyclEventRef dpnp_diag_c(DPCTLSyclQueueRef q_ref,
     DPCTLSyclEventRef event_ref = nullptr;
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
+    validate_type_for_device<_DataType>(q);
+
     const size_t input1_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     const size_t result_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<shape_elem_type>());
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,v_in, input1_size, true);
@@ -194,6 +197,7 @@ void dpnp_diag_c(void* v_in,
                                                          res_ndim,
                                                          dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -240,6 +244,8 @@ DPCTLSyclEventRef dpnp_eye_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
+    validate_type_for_device<_DataType>(q);
+
     size_t result_size = res_shape[0] * res_shape[1];
 
     DPNPC_ptr_adapter<_DataType> result_ptr(q_ref,result1, result_size, true, true);
@@ -280,17 +286,11 @@ void dpnp_eye_c(void* result1, int k, const shape_elem_type* res_shape)
                                                         res_shape,
                                                         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
 void (*dpnp_eye_default_c)(void*, int, const shape_elem_type*) = dpnp_eye_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_eye_ext_c)(DPCTLSyclQueueRef,
-                                    void*,
-                                    int,
-                                    const shape_elem_type*,
-                                    const DPCTLEventVectorRef) = dpnp_eye_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_full_c(DPCTLSyclQueueRef q_ref,
@@ -313,17 +313,11 @@ void dpnp_full_c(void* array_in, void* result, const size_t size)
                                                          size,
                                                          dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
 void (*dpnp_full_default_c)(void*, void*, const size_t) = dpnp_full_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_full_ext_c)(DPCTLSyclQueueRef,
-                                     void*,
-                                     void*,
-                                     const size_t,
-                                     const DPCTLEventVectorRef) = dpnp_full_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_full_like_c(DPCTLSyclQueueRef q_ref,
@@ -346,17 +340,11 @@ void dpnp_full_like_c(void* array_in, void* result, const size_t size)
                                                               size,
                                                               dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
 void (*dpnp_full_like_default_c)(void*, void*, const size_t) = dpnp_full_like_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_full_like_ext_c)(DPCTLSyclQueueRef,
-                                          void*,
-                                          void*,
-                                          const size_t,
-                                          const DPCTLEventVectorRef) = dpnp_full_like_c<_DataType>;
 
 template <typename _KernelNameSpecialization>
 class dpnp_identity_c_kernel;
@@ -380,7 +368,9 @@ DPCTLSyclEventRef dpnp_identity_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    validate_type_for_device<_DataType>(q);
+
+    _DataType* result = static_cast<_DataType *>(result1);
 
     sycl::range<2> gws(n, n);
     auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
@@ -394,10 +384,9 @@ DPCTLSyclEventRef dpnp_identity_c(DPCTLSyclQueueRef q_ref,
     };
 
     event = q.submit(kernel_func);
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
-    event.wait();
-
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -410,6 +399,7 @@ void dpnp_identity_c(void* result1, const size_t n)
                                                              n,
                                                              dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -437,10 +427,11 @@ DPCTLSyclEventRef dpnp_ones_c(DPCTLSyclQueueRef q_ref,
 
     DPCTLSyclEventRef event_ref = dpnp_initval_c<_DataType>(q_ref, result, fill_value, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 
     sycl::free(fill_value, q);
 
-    return event_ref;
+    return nullptr;
 }
 
 template <typename _DataType>
@@ -453,16 +444,11 @@ void dpnp_ones_c(void* result, size_t size)
                                                          size,
                                                          dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
 void (*dpnp_ones_default_c)(void*, size_t) = dpnp_ones_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_ones_ext_c)(DPCTLSyclQueueRef,
-                                     void*,
-                                     size_t,
-                                     const DPCTLEventVectorRef) = dpnp_ones_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_ones_like_c(DPCTLSyclQueueRef q_ref,
@@ -483,16 +469,11 @@ void dpnp_ones_like_c(void* result, size_t size)
                                                               size,
                                                               dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
 void (*dpnp_ones_like_default_c)(void*, size_t) = dpnp_ones_like_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_ones_like_ext_c)(DPCTLSyclQueueRef,
-                                          void*,
-                                          size_t,
-                                          const DPCTLEventVectorRef) = dpnp_ones_like_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_ptp_c(DPCTLSyclQueueRef q_ref,
@@ -531,6 +512,8 @@ DPCTLSyclEventRef dpnp_ptp_c(DPCTLSyclQueueRef q_ref,
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+
+    validate_type_for_device<_DataType>(q);
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,input1_in, input_size, true);
     DPNPC_ptr_adapter<_DataType> result_ptr(q_ref,result1_out, result_size, false, true);
@@ -575,7 +558,7 @@ DPCTLSyclEventRef dpnp_ptp_c(DPCTLSyclQueueRef q_ref,
     sycl::free(max_arr, q);
     sycl::free(_strides, q);
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -661,6 +644,9 @@ DPCTLSyclEventRef dpnp_vander_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
+    validate_type_for_device<_DataType_input>(q);
+    validate_type_for_device<_DataType_output>(q);
+
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(q_ref,array1_in, size_in, true);
     DPNPC_ptr_adapter<_DataType_output> result_ptr(q_ref,result1, size_in * N, true, true);
     const _DataType_input* array_in = input1_ptr.get_ptr();
@@ -705,7 +691,7 @@ DPCTLSyclEventRef dpnp_vander_c(DPCTLSyclQueueRef q_ref,
         }
     }
 
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType_input, typename _DataType_output>
@@ -721,6 +707,7 @@ void dpnp_vander_c(const void* array1_in, void* result1, const size_t size_in, c
                                                                                    increasing,
                                                                                    dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType_input, typename _DataType_output>
@@ -769,10 +756,11 @@ DPCTLSyclEventRef dpnp_trace_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,array1_in, size * last_dim);
+    validate_type_for_device<_DataType>(q);
+    validate_type_for_device<_ResultType>(q);
 
-    const _DataType* input = input1_ptr.get_ptr();
-    _ResultType* result = reinterpret_cast<_ResultType*>(result_in);
+    const _DataType* input = static_cast<const _DataType *>(array1_in);
+    _ResultType* result = static_cast<_ResultType *>(result_in);
 
     sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](auto index) {
@@ -792,7 +780,6 @@ DPCTLSyclEventRef dpnp_trace_c(DPCTLSyclQueueRef q_ref,
     };
 
     auto event = q.submit(kernel_func);
-
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
     return DPCTLEvent_Copy(event_ref);
@@ -810,6 +797,7 @@ void dpnp_trace_c(const void* array1_in, void* result_in, const shape_elem_type*
                                                                        ndim,
                                                                        dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -851,7 +839,9 @@ DPCTLSyclEventRef dpnp_tri_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    validate_type_for_device<_DataType>(q);
+
+    _DataType* result = static_cast<_DataType *>(result1);
 
     size_t idx = N * M;
     sycl::range<1> gws(idx);
@@ -879,7 +869,6 @@ DPCTLSyclEventRef dpnp_tri_c(DPCTLSyclQueueRef q_ref,
     };
 
     event = q.submit(kernel_func);
-
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
     return DPCTLEvent_Copy(event_ref);
@@ -897,6 +886,7 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
                                                         k,
                                                         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -958,6 +948,8 @@ DPCTLSyclEventRef dpnp_tril_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
+    validate_type_for_device<_DataType>(q);
+
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,array_in, input_size, true);
     DPNPC_ptr_adapter<_DataType> result_ptr(q_ref,result1, res_size, true, true);
     _DataType* array_m = input1_ptr.get_ptr();
@@ -1027,7 +1019,7 @@ DPCTLSyclEventRef dpnp_tril_c(DPCTLSyclQueueRef q_ref,
             }
         }
     }
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -1051,6 +1043,7 @@ void dpnp_tril_c(void* array_in,
                                                          res_ndim,
                                                          dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -1061,17 +1054,6 @@ void (*dpnp_tril_default_c)(void*,
                             shape_elem_type*,
                             const size_t,
                             const size_t) = dpnp_tril_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_tril_ext_c)(DPCTLSyclQueueRef,
-                                     void*,
-                                     void*,
-                                     const int,
-                                     shape_elem_type*,
-                                     shape_elem_type*,
-                                     const size_t,
-                                     const size_t,
-                                     const DPCTLEventVectorRef) = dpnp_tril_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_triu_c(DPCTLSyclQueueRef q_ref,
@@ -1118,6 +1100,8 @@ DPCTLSyclEventRef dpnp_triu_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
+    validate_type_for_device<_DataType>(q);
+
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,array_in, input_size, true);
     DPNPC_ptr_adapter<_DataType> result_ptr(q_ref,result1, res_size, true, true);
     _DataType* array_m = input1_ptr.get_ptr();
@@ -1187,7 +1171,7 @@ DPCTLSyclEventRef dpnp_triu_c(DPCTLSyclQueueRef q_ref,
             }
         }
     }
-    return event_ref;
+    return DPCTLEvent_Copy(event_ref);
 }
 
 template <typename _DataType>
@@ -1211,6 +1195,7 @@ void dpnp_triu_c(void* array_in,
                                                          res_ndim,
                                                          dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -1221,17 +1206,6 @@ void (*dpnp_triu_default_c)(void*,
                             shape_elem_type*,
                             const size_t,
                             const size_t) = dpnp_triu_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_triu_ext_c)(DPCTLSyclQueueRef,
-                                     void*,
-                                     void*,
-                                     const int,
-                                     shape_elem_type*,
-                                     shape_elem_type*,
-                                     const size_t,
-                                     const size_t,
-                                     const DPCTLEventVectorRef) = dpnp_triu_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_zeros_c(DPCTLSyclQueueRef q_ref,
@@ -1246,10 +1220,11 @@ DPCTLSyclEventRef dpnp_zeros_c(DPCTLSyclQueueRef q_ref,
 
     DPCTLSyclEventRef event_ref = dpnp_initval_c<_DataType>(q_ref, result, fill_value, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 
     sycl::free(fill_value, q);
 
-    return event_ref;
+    return nullptr;
 }
 
 template <typename _DataType>
@@ -1262,16 +1237,11 @@ void dpnp_zeros_c(void* result, size_t size)
                                                           size,
                                                           dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
 void (*dpnp_zeros_default_c)(void*, size_t) = dpnp_zeros_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_zeros_ext_c)(DPCTLSyclQueueRef,
-                                      void*,
-                                      size_t,
-                                      const DPCTLEventVectorRef) = dpnp_zeros_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_zeros_like_c(DPCTLSyclQueueRef q_ref,
@@ -1292,16 +1262,11 @@ void dpnp_zeros_like_c(void* result, size_t size)
                                                                size,
                                                                dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
 void (*dpnp_zeros_like_default_c)(void*, size_t) = dpnp_zeros_like_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_zeros_like_ext_c)(DPCTLSyclQueueRef,
-                                           void*,
-                                           size_t,
-                                           const DPCTLEventVectorRef) = dpnp_zeros_like_c<_DataType>;
 
 void func_map_init_arraycreation(func_map_t& fmap)
 {
@@ -1325,11 +1290,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_EYE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eye_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_EYE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eye_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_EYE_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_eye_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_EYE_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_eye_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_EYE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eye_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_EYE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eye_ext_c<double>};
-
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_full_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_full_default_c<float>};
@@ -1338,14 +1298,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_C128][eft_C128] = {eft_C128,
                                                             (void*)dpnp_full_default_c<std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_FULL_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_full_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FULL_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FULL_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_full_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_FULL_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_full_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_FULL_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_full_ext_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_FULL_EXT][eft_C128][eft_C128] = {eft_C128,
-                                                                (void*)dpnp_full_ext_c<std::complex<double>>};
-
     fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_full_like_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_like_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_full_like_default_c<float>};
@@ -1353,14 +1305,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_full_like_default_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_full_like_default_c<std::complex<double>>};
-
-    fmap[DPNPFuncName::DPNP_FN_FULL_LIKE_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_full_like_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FULL_LIKE_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_like_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FULL_LIKE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_full_like_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_FULL_LIKE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_full_like_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_FULL_LIKE_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_full_like_ext_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_FULL_LIKE_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void*)dpnp_full_like_ext_c<std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_identity_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_identity_default_c<int64_t>};
@@ -1375,6 +1319,8 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_IDENTITY_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_identity_ext_c<float>};
     fmap[DPNPFuncName::DPNP_FN_IDENTITY_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_identity_ext_c<double>};
     fmap[DPNPFuncName::DPNP_FN_IDENTITY_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_identity_ext_c<bool>};
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY_EXT][eft_C64][eft_C64] = {eft_C64,
+                                                                    (void*)dpnp_identity_ext_c<std::complex<float>>};
     fmap[DPNPFuncName::DPNP_FN_IDENTITY_EXT][eft_C128][eft_C128] = {eft_C128,
                                                                     (void*)dpnp_identity_ext_c<std::complex<double>>};
 
@@ -1386,14 +1332,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ONES][eft_C128][eft_C128] = {eft_C128,
                                                             (void*)dpnp_ones_default_c<std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_ONES_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_ones_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ONES_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ones_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ONES_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_ones_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_ONES_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_ones_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_ONES_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_ones_ext_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_ONES_EXT][eft_C128][eft_C128] = {eft_C128,
-                                                                (void*)dpnp_ones_ext_c<std::complex<double>>};
-
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_ones_like_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ones_like_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_ones_like_default_c<float>};
@@ -1401,14 +1339,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_ones_like_default_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_ones_like_default_c<std::complex<double>>};
-
-    fmap[DPNPFuncName::DPNP_FN_ONES_LIKE_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_ones_like_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ONES_LIKE_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ones_like_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ONES_LIKE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_ones_like_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_ONES_LIKE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_ones_like_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_ONES_LIKE_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_ones_like_ext_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_ONES_LIKE_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void*)dpnp_ones_like_ext_c<std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_PTP][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_ptp_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_PTP][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ptp_default_c<int64_t>};
@@ -1430,9 +1360,11 @@ void func_map_init_arraycreation(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_vander_ext_c<int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_vander_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_FLT][eft_FLT] = {eft_DBL, (void*)dpnp_vander_ext_c<float, double>};
+    fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_vander_ext_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_vander_ext_c<double, double>};
     fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_BLN][eft_BLN] = {eft_LNG, (void*)dpnp_vander_ext_c<bool, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_C64][eft_C64] = {
+        eft_C64, (void*)dpnp_vander_ext_c<std::complex<float>, std::complex<float>>};
     fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_vander_ext_c<std::complex<double>, std::complex<double>>};
 
@@ -1485,20 +1417,10 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_TRIL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_tril_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_TRIL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_tril_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_TRIL_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_tril_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRIL_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_tril_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRIL_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_tril_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRIL_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_tril_ext_c<double>};
-
     fmap[DPNPFuncName::DPNP_FN_TRIU][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_triu_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_TRIU][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_triu_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_TRIU][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_triu_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_TRIU][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_triu_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_TRIU_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_triu_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRIU_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_triu_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRIU_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_triu_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRIU_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_triu_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_zeros_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_zeros_default_c<int64_t>};
@@ -1508,14 +1430,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_C128][eft_C128] = {eft_C128,
                                                              (void*)dpnp_zeros_default_c<std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_zeros_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_zeros_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_zeros_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_zeros_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_zeros_ext_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_EXT][eft_C128][eft_C128] = {eft_C128,
-                                                                 (void*)dpnp_zeros_ext_c<std::complex<double>>};
-
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_zeros_like_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_zeros_like_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_zeros_like_default_c<float>};
@@ -1523,14 +1437,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_zeros_like_default_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_zeros_like_default_c<std::complex<double>>};
-
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_zeros_like_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_zeros_like_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_zeros_like_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_zeros_like_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_zeros_like_ext_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void*)dpnp_zeros_like_ext_c<std::complex<double>>};
 
     return;
 }

@@ -151,7 +151,7 @@ class TestCorrelateInvalid(unittest.TestCase):
     @testing.for_all_dtypes()
     def test_correlate_empty(self, dtype):
         for xp in (numpy, cupy):
-            a = xp.zeros((0,), dtype)
+            a = xp.zeros((0,), dtype=dtype)
             with pytest.raises(ValueError):
                 xp.correlate(a, a, mode=self.mode)
 

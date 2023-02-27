@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -299,7 +299,7 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
     return call_origin(numpy.cov, x1, y, rowvar, bias, ddof, fweights, aweights)
 
 
-def histogram(a, bins=10, range=None, normed=None, weights=None, density=None):
+def histogram(a, bins=10, range=None, density=None, weights=None):
     """
     Compute the histogram of a dataset.
     For full documentation refer to :obj:`numpy.histogram`.
@@ -323,7 +323,7 @@ def histogram(a, bins=10, range=None, normed=None, weights=None, density=None):
     1.0
     """
 
-    return call_origin(numpy.histogram, a=a, bins=bins, range=range, normed=normed, weights=weights, density=density)
+    return call_origin(numpy.histogram, a=a, bins=bins, range=range, density=density, weights=weights)
 
 
 def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):

@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2022, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -45,15 +45,15 @@
  * Intel(R) oneAPI DPC++ 2022.2.1 compiler has version 20221020L on Linux and
  * 20221101L on Windows.
  */
-#ifndef __SYCL_COMPILER_2023_SWITCHOVER
-#define __SYCL_COMPILER_2023_SWITCHOVER 20221102L
+#ifndef __SYCL_COMPILER_VERSION_REQUIRED
+#define __SYCL_COMPILER_VERSION_REQUIRED 20221102L
 #endif
 
 /**
  * Version of Intel MKL at which transition to OneMKL release 2023.0.0 occurs.
  */
-#ifndef __INTEL_MKL_2023_SWITCHOVER
-#define __INTEL_MKL_2023_SWITCHOVER 20230000
+#ifndef __INTEL_MKL_2023_VERSION_REQUIRED
+#define __INTEL_MKL_2023_VERSION_REQUIRED 20230000
 #endif
 
 /**
@@ -387,6 +387,58 @@ out:
 err:
     // TODO exception if wrong axis? need common function for throwing exceptions
     throw std::range_error("DPNP Error: validate_axes() failed with axis check");
+}
+
+/**
+ * @ingroup BACKEND_UTILS
+ * @brief check support of type T by SYCL device.
+ *
+ * To check if sycl::device may use templated type T.
+ *
+ * @param [in]  q  sycl::device which is examined for type support.
+ *
+ * @exception std::runtime_error    type T is out of suppport by the queue.
+ */
+template <typename T>
+static inline void validate_type_for_device(const sycl::device &d)
+{
+    if constexpr (std::is_same_v<T, double>) {
+        if (!d.has(sycl::aspect::fp64)) {
+            throw std::runtime_error("Device " +
+                                     d.get_info<sycl::info::device::name>() +
+                                     " does not support type 'double'");
+        }
+    }
+    else if constexpr (std::is_same_v<T, std::complex<double>>) {
+        if (!d.has(sycl::aspect::fp64)) {
+            throw std::runtime_error("Device " +
+                                     d.get_info<sycl::info::device::name>() +
+                                     " does not support type 'complex<double>'");
+        }
+    }
+    else if constexpr (std::is_same_v<T, sycl::half>) {
+        if (!d.has(sycl::aspect::fp16)) {
+            throw std::runtime_error("Device " +
+                                     d.get_info<sycl::info::device::name>() +
+                                     " does not support type 'half'");
+        }
+    }
+}
+
+/**
+ * @ingroup BACKEND_UTILS
+ * @brief check support of type T by SYCL queue.
+ *
+ * To check if sycl::queue assigned to a device may use templated type T.
+ *
+ * @param [in]  q  sycl::queue which is examined for type support.
+ *
+ * @exception std::runtime_error    type T is out of suppport by the queue.
+ */
+template <typename T>
+static inline void validate_type_for_device(const sycl::queue &q)
+{
+    validate_type_for_device<T>(q.get_device());
 }
 
 /**

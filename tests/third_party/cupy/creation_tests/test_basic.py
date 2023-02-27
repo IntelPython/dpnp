@@ -39,7 +39,7 @@ class TestBasic(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_scalar(self, xp, dtype, order):
-        a = xp.empty(None, dtype=dtype, order=order)
+        a = xp.empty((), dtype=dtype, order=order)
         a.fill(0)
         return a
 
@@ -164,7 +164,7 @@ class TestBasic(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_eye(self, xp, dtype):
-        return xp.eye(5, 4, 1, dtype)
+        return xp.eye(5, 4, k=1, dtype=dtype)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -181,7 +181,7 @@ class TestBasic(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_zeros_scalar(self, xp, dtype, order):
-        return xp.zeros(None, dtype=dtype, order=order)
+        return xp.zeros((), dtype=dtype, order=order)
 
     @testing.for_CF_orders()
     @testing.for_all_dtypes()

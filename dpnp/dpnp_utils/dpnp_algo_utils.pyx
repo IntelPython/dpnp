@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,12 +31,22 @@ This module contains differnt helpers and utilities
 
 """
 
-import dpctl
 import numpy
+
+import dpctl
+import dpctl.utils as dpu
+
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
 import dpnp
-from dpnp.dpnp_algo.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
+
+from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_algo.dpnp_algo cimport (
+    dpnp_DPNPFuncType_to_dtype,
+    dpnp_dtype_to_DPNPFuncType,
+    get_dpnp_function_ptr
+)
+
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
@@ -60,7 +70,9 @@ __all__ = [
     "dpnp_descriptor",
     "get_axis_indeces",
     "get_axis_offsets",
+    "get_usm_allocations",
     "_get_linear_index",
+    "map_dtype_to_device",
     "normalize_axis",
     "_object_to_tuple",
     "unwrap_array",
@@ -151,9 +163,9 @@ def call_origin(function, *args, **kwargs):
         kwargx = convert_item(kwarg)
         kwargs_new[key] = kwargx
 
-    exec_q = dpctl.utils.get_execution_queue(alloc_queues)
+    exec_q = dpu.get_execution_queue(alloc_queues)
     if exec_q is None:
-        exec_q = sycl_queue
+        exec_q = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue)
     # print(f"DPNP call_origin(): bakend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     # TODO need to put array memory into NumPy call
     result_origin = function(*args_new, **kwargs_new)
@@ -170,11 +182,12 @@ def call_origin(function, *args, **kwargs):
                     arg[i] = val
 
     elif isinstance(result, numpy.ndarray):
-        if (kwargs_out is None):
-            result_dtype = result_origin.dtype
-            kwargs_dtype = kwargs.get("dtype", None)
-            if (kwargs_dtype is not None):
-                result_dtype = kwargs_dtype
+        if kwargs_out is None:
+            # use dtype from input arguments if present or from the result otherwise
+            result_dtype = kwargs.get("dtype", None) or result_origin.dtype
+
+            if exec_q is not None:
+                result_dtype = map_dtype_to_device(result_origin.dtype, exec_q.sycl_device)
 
             result = dpnp_container.empty(result_origin.shape, dtype=result_dtype, sycl_queue=exec_q)
         else:
@@ -198,11 +211,100 @@ def call_origin(function, *args, **kwargs):
 
 
 def unwrap_array(x1):
-    """Get array from input object."""
-    if isinstance(x1, dpnp.dpnp_array.dpnp_array):
+    """
+    Get array from input object.
+    """
+    if isinstance(x1, dpnp_array):
         return x1.get_array()
 
     return x1
+
+
+def _get_coerced_usm_type(objects):
+    types_in_use = [obj.usm_type for obj in objects if hasattr(obj, "usm_type")]
+    if len(types_in_use) == 0:
+        return None
+    elif len(types_in_use) == 1:
+        return types_in_use[0]
+
+    common_usm_type = dpu.get_coerced_usm_type(types_in_use)
+    if common_usm_type is None:
+        raise ValueError("Input arrays must have coerced USM types")
+    return common_usm_type
+
+
+def _get_common_allocation_queue(objects):
+    queues_in_use = [obj.sycl_queue for obj in objects if hasattr(obj, "sycl_queue")]
+    if len(queues_in_use) == 0:
+        return None
+    elif len(queues_in_use) == 1:
+        return queues_in_use[0]
+
+    common_queue = dpu.get_execution_queue(queues_in_use)
+    if common_queue is None:
+        raise ValueError("Input arrays must be allocated on the same SYCL queue")
+    return common_queue
+
+
+def get_usm_allocations(objects):
+    """
+    Given a list of objects returns a tuple of USM type and SYCL queue
+    which can be used for a memory allocation and to follow compute follows data paradigm,
+    or returns `(None, None)` if the default USM type and SYCL queue can be used.
+    An exception will be raised, if the paradigm is broked for the given list of objects.
+
+    """
+
+    if not isinstance(objects, (list, tuple)):
+        raise TypeError("Expected a list or a tuple, got {}".format(type(objects)))
+    
+    if len(objects) == 0:
+        return (None, None)
+    return (_get_coerced_usm_type(objects), _get_common_allocation_queue(objects))
+
+
+def map_dtype_to_device(dtype, device):
+    """
+    Map an input ``dtype`` with type ``device`` may use
+    """
+
+    dtype = numpy.dtype(dtype)
+    if not hasattr(dtype, 'char'):
+        raise TypeError(f"Invalid type of input dtype={dtype}")
+    elif not isinstance(device, dpctl.SyclDevice):
+        raise TypeError(f"Invalid type of input device={device}")
+
+    dtc = dtype.char
+    if dtc == "?" or numpy.issubdtype(dtype, numpy.integer):
+        # bool or integer type
+        return dtype
+
+    if numpy.issubdtype(dtype, numpy.floating):
+        if dtc == "f":
+            # float32 type
+            return dtype
+        elif dtc == "d":
+            # float64 type
+            if device.has_aspect_fp64:
+                return dtype
+        elif dtc == "e":
+            # float16 type
+            if device.has_aspect_fp16:
+                return dtype
+        # float32 is default floating type
+        return dpnp.dtype("f4")
+
+    if numpy.issubdtype(dtype, numpy.complexfloating):
+        if dtc == "F":
+            # complex64 type
+            return dtype
+        elif dtc == "D":
+            # complex128 type
+            if device.has_aspect_fp64:
+                return dtype
+        # complex64 is default complex type
+        return dpnp.dtype("c8")
+    raise RuntimeError(f"Unrecognized type of input dtype={dtype}")
 
 
 cpdef checker_throw_axis_error(function_name, param_name, param, expected):
@@ -316,7 +418,7 @@ cdef tuple get_shape_dtype(object input_obj):
 
             # shape and dtype does not match with siblings.
             if ((return_shape != elem_shape) or (return_dtype != elem_dtype)):
-                return (elem_shape, numpy.dtype(numpy.object))
+                return (elem_shape, numpy.dtype(numpy.object_))
 
         list_shape.push_back(len(input_obj))
         list_shape.insert(list_shape.end(), return_shape.begin(), return_shape.end())
@@ -346,7 +448,9 @@ cpdef find_common_type(object x1_obj, object x2_obj):
     return numpy.find_common_type(array_types, scalar_types)
 
 
-cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input2_shape):
+cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input2_shape) except *:
+    cdef shape_type_c input1_shape_orig = input1_shape
+    cdef shape_type_c input2_shape_orig = input2_shape
     cdef shape_type_c result_shape
 
     # ex (8, 1, 6, 1) and (7, 1, 5) -> (8, 1, 6, 1) and (1, 7, 1, 5)
@@ -363,9 +467,9 @@ cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input
         elif input2_shape[it] == 1:
             result_shape.push_back(input1_shape[it])
         else:
-            err_msg = f"{ERROR_PREFIX} in function get_common_shape()"
-            err_msg += f"operands could not be broadcast together with shapes {input1_shape} {input2_shape}"
-            ValueError(err_msg)
+            err_msg = f"{ERROR_PREFIX} in function get_common_shape(): "
+            err_msg += f"operands could not be broadcast together with shapes {input1_shape_orig} {input2_shape_orig}"
+            raise ValueError(err_msg)
 
     return result_shape
 
@@ -540,31 +644,13 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
     array1_obj = x1.get_array()
     array2_obj = x2.get_array()
 
-    def get_usm_type(usm_types):
-        if not isinstance(usm_types, (list, tuple)):
-            raise TypeError(
-                "Expected a list or a tuple, got {}".format(type(usm_types))
-            )
-        if len(usm_types) == 0:
-            return None
-        elif len(usm_types) == 1:
-            return usm_types[0]
-        for usm_type1, usm_type2 in zip(usm_types, usm_types[1:]):
-            if usm_type1 != usm_type2:
-                return None
-        return usm_types[0]
-
-    # TODO: use similar function from dpctl.utils instead of get_usm_type
-    common_usm_type = get_usm_type((array1_obj.usm_type, array2_obj.usm_type))
+    common_usm_type = dpctl.utils.get_coerced_usm_type((array1_obj.usm_type, array2_obj.usm_type))
     if common_usm_type is None:
         raise ValueError(
             "could not recognize common USM type for inputs of USM types {} and {}"
             "".format(array1_obj.usm_type, array2_obj.usm_type))
 
-    common_sycl_queue = dpctl.utils.get_execution_queue((array1_obj.sycl_queue, array2_obj.sycl_queue))
-    # TODO: refactor, remove when CFD is implemented in all array constructors
-    if common_sycl_queue is None and array1_obj.sycl_context == array2_obj.sycl_context:
-        common_sycl_queue = array1_obj.sycl_queue
+    common_sycl_queue = dpu.get_execution_queue((array1_obj.sycl_queue, array2_obj.sycl_queue))
     if common_sycl_queue is None:
         raise ValueError(
             "could not recognize common SYCL queue for inputs in SYCL queues {} and {}"
@@ -645,6 +731,12 @@ cdef class dpnp_descriptor:
         return None
 
     @property
+    def offset(self):
+        if self.is_valid:
+            return self.descriptor.get('offset', 0)
+        return 0
+
+    @property
     def is_scalar(self):
         return self.dpnp_descriptor_is_scalar
 
@@ -685,7 +777,7 @@ cdef class dpnp_descriptor:
     def get_array(self):
         if isinstance(self.origin_pyobj, dpctl.tensor.usm_ndarray):
             return self.origin_pyobj
-        if isinstance(self.origin_pyobj, dpnp.dpnp_array.dpnp_array):
+        if isinstance(self.origin_pyobj, dpnp_array):
             return self.origin_pyobj.get_array()
 
         raise TypeError(
@@ -693,7 +785,17 @@ cdef class dpnp_descriptor:
             "".format(type(self.origin_pyobj)))
 
     cdef void * get_data(self):
+        cdef Py_ssize_t item_size = 0
+        cdef Py_ssize_t elem_offset = 0
+        cdef char *data_ptr = NULL
         cdef size_t val = self.data
+
+        if self.offset > 0:
+            item_size = self.origin_pyobj.itemsize
+            elem_offset = self.offset
+            data_ptr = <char *>(val) + item_size * elem_offset
+            return < void * > data_ptr
+
         return < void * > val
 
     def __bool__(self):

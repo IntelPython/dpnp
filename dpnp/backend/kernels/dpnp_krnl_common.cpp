@@ -728,7 +728,7 @@ class dpnp_initval_c_kernel;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_initval_c(DPCTLSyclQueueRef q_ref,
-                                 void* result1,
+                                 void* result,
                                  void* value,
                                  size_t size,
                                  const DPCTLEventVectorRef dep_event_vec_ref)
@@ -744,24 +744,11 @@ DPCTLSyclEventRef dpnp_initval_c(DPCTLSyclQueueRef q_ref,
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+    _DataType val = *(static_cast<_DataType *>(value));
 
-    DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result1, size);
-    DPNPC_ptr_adapter<_DataType> value_ptr(q_ref, value, 1);
-    _DataType* result = result1_ptr.get_ptr();
-    _DataType* val = value_ptr.get_ptr();
+    validate_type_for_device<_DataType>(q);
 
-    sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
-        const size_t idx = global_id[0];
-        result[idx] = *val;
-    };
-
-    auto kernel_func = [&](sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_initval_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
-    };
-
-    sycl::event event = q.submit(kernel_func);
-
+    auto event = q.fill<_DataType>(result, val, size);
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
     return DPCTLEvent_Copy(event_ref);
@@ -1149,6 +1136,8 @@ void func_map_init_linalg(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_INITVAL_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_initval_ext_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_INITVAL_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_initval_ext_c<float>};
     fmap[DPNPFuncName::DPNP_FN_INITVAL_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_initval_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_INITVAL_EXT][eft_C64][eft_C64] = {eft_C64,
+                                                                 (void*)dpnp_initval_ext_c<std::complex<float>>};
     fmap[DPNPFuncName::DPNP_FN_INITVAL_EXT][eft_C128][eft_C128] = {eft_C128,
                                                                    (void*)dpnp_initval_ext_c<std::complex<double>>};
 

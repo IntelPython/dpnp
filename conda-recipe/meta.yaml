@@ -8,20 +8,20 @@ requirements:
     host:
       - python
       - setuptools
-      - numpy >=1.19,<1.23a0
+      - numpy >=1.19,<1.25a0
       - cython
       - cmake >=3.19
-      - dpctl >=0.13
-      - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2021.1.1') }}
+      - dpctl >=0.14
+      - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2023.0.0') }}
       - onedpl-devel
       - tbb-devel
       - wheel
     build:
       - {{ compiler('cxx') }}
-      - {{ compiler('dpcpp') }}  >=2022.1  # [not osx]
+      - {{ compiler('dpcpp') }}  >=2023.0  # [not osx]
     run:
       - python
-      - dpctl >=0.13
+      - dpctl >=0.14
       - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('mkl-dpcpp', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}

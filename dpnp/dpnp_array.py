@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -140,7 +140,10 @@ class dpnp_array:
         return self._array_obj.__bool__()
 
  # '__class__',
- # '__complex__',
+
+    def __complex__(self):
+        return self._array_obj.__complex__()
+
  # '__contains__',
  # '__copy__',
  # '__deepcopy__',
@@ -149,6 +152,12 @@ class dpnp_array:
  # '__dir__',
  # '__divmod__',
  # '__doc__',
+
+    def __dlpack__(self, stream=None):
+        return self._array_obj.__dlpack__(stream=stream)
+
+    def __dlpack_device__(self):
+        return self._array_obj.__dlpack_device__()
 
     def __eq__(self, other):
         return dpnp.equal(self, other)
@@ -187,7 +196,10 @@ class dpnp_array:
  # '__imatmul__',
  # '__imod__',
  # '__imul__',
- # '__index__',
+
+    def __index__(self):
+        return self._array_obj.__index__()
+
  # '__init__',
  # '__init_subclass__',
 
@@ -247,7 +259,10 @@ class dpnp_array:
  # '__rdivmod__',
  # '__reduce__',
  # '__reduce_ex__',
- # '__repr__',
+
+    def __repr__(self):
+        return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
+
  # '__rfloordiv__',
  # '__rlshift__',
 
@@ -264,7 +279,9 @@ class dpnp_array:
  # '__rpow__',
  # '__rrshift__',
  # '__rshift__',
- # '__rsub__',
+
+    def __rsub__(self, other):
+        return dpnp.subtract(other, self)
 
     def __rtruediv__(self, other):
         return dpnp.true_divide(other, self)
@@ -278,17 +295,21 @@ class dpnp_array:
  # '__setstate__',
  # '__sizeof__',
 
-    def __str__(self):
-        """ Output values from the array to standard output
 
-        Example:
-          [[ 136.  136.  136.]
-           [ 272.  272.  272.]
-           [ 408.  408.  408.]]
+    def __str__(self):
+        """
+        Output values from the array to standard output.
+
+        Examples
+        --------
+        >>> print(a)
+        [[ 136.  136.  136.]
+         [ 272.  272.  272.]
+         [ 408.  408.  408.]]
 
         """
 
-        return str(dpnp.asnumpy(self._array_obj))
+        return self._array_obj.__str__()
 
     def __sub__(self, other):
         return dpnp.subtract(self, other)
@@ -299,6 +320,16 @@ class dpnp_array:
         return dpnp.true_divide(self, other)
 
  # '__xor__',
+
+    @staticmethod
+    def _create_from_usm_ndarray(usm_ary : dpt.usm_ndarray):
+        if not isinstance(usm_ary, dpt.usm_ndarray):
+            raise TypeError(
+                f"Expected dpctl.tensor.usm_ndarray, got {type(usm_ary)}"
+                )
+        res = dpnp_array.__new__(dpnp_array)
+        res._array_obj = usm_ary
+        return res
 
     def all(self, axis=None, out=None, keepdims=False):
         """
@@ -425,6 +456,21 @@ class dpnp_array:
         """
         return dpnp.argsort(self, axis, kind, order)
 
+
+    def asnumpy(self):
+        """
+        Copy content of the array into :class:`numpy.ndarray` instance of the same shape and data type.
+
+        Returns
+        -------
+        numpy.ndarray
+            An instance of :class:`numpy.ndarray` populated with the array content.
+
+        """
+
+        return dpt.asnumpy(self._array_obj)
+
+
     def astype(self, dtype, order='K', casting='unsafe', subok=True, copy=True):
         """Copy the array with data type casting.
 
@@ -473,7 +519,7 @@ class dpnp_array:
 
         """
 
-        if not numpy.issubsctype(self.dtype, numpy.complex):
+        if not numpy.issubsctype(self.dtype, numpy.complex_):
             return self
         else:
             return dpnp.conjugate(self)
@@ -486,7 +532,7 @@ class dpnp_array:
 
         """
 
-        if not numpy.issubsctype(self.dtype, numpy.complex):
+        if not numpy.issubsctype(self.dtype, numpy.complex_):
             return self
         else:
             return dpnp.conjugate(self)
@@ -558,7 +604,14 @@ class dpnp_array:
         for i in range(self.size):
             self.flat[i] = value
 
- # 'flags',
+    @property
+    def flags(self):
+        """
+        Return information about the memory layout of the array.
+
+        """
+
+        return self._array_obj.flags
 
     @property
     def flat(self):

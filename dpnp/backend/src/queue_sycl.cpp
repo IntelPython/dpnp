@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -215,11 +215,6 @@ bool backend_sycl::backend_sycl_is_cpu()
     if (qptr.get_device().is_cpu()) {
         return true;
     }
-#if (__SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER)
-    else if (qptr.is_host() || qptr.get_device().is_host()) {
-        return true;
-    }
-#endif
 
     return false;
 }

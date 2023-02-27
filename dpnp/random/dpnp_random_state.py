@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@ import dpctl.utils as dpu
 import dpnp
 from dpnp.dpnp_utils.dpnp_algo_utils import (
     call_origin,
+    map_dtype_to_device,
     use_origin_backend
 )
 from dpnp.random.dpnp_algo_random import MT19937
@@ -56,32 +57,58 @@ class RandomState:
     A container for the Mersenne Twister pseudo-random number generator.
 
     For full documentation refer to :obj:`numpy.random.RandomState`.
+
+    Parameters
+    ----------
+    seed : {None, int, array_like}, optional
+        A random seed to initialize the pseudo-random number generator.
+        The `seed` can be ``None`` (the default), an integer scalar, or
+        an array_like of maximumum three integer scalars.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
     """
 
     def __init__(self, seed=None, device=None, sycl_queue=None):
-        self._seed = 1 if seed is None else seed
-        self._sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
+        if seed is None:
+            # ask NumPy to generate an array of three random integers as default seed value
+            self._seed = numpy.random.randint(low=0, high=numpy.iinfo(numpy.int32).max + 1, size=3)
+        else:
+            self._seed = seed
 
-        self._def_float_type = dpnp.float32
-        if self._sycl_queue.get_sycl_device().has_aspect_fp64:
-            self._def_float_type = dpnp.float64
+        self._sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
+        self._sycl_device = self._sycl_queue.sycl_device
+
+        # 'float32' is default floating data type if device doesn't support 'float64'
+        self._def_float_type = map_dtype_to_device(dpnp.float64, self._sycl_device)
 
         self._random_state = MT19937(self._seed, self._sycl_queue)
         self._fallback_random_state = call_origin(numpy.random.RandomState, seed, allow_fallback=True)
 
 
+    def __repr__(self):
+        return self.__str__() + ' at 0x{:X}'.format(id(self))
+
+
+    def __str__(self):
+        _str = self.__class__.__name__
+        _str += '(' + self._random_state.__class__.__name__ + ')'
+        return _str
+
+
+    def __getstate__(self):
+        return self.get_state()
+
+
     def _is_finite_scalar(self, x):
         """
         Test a scalar for finiteness (not infinity and not Not a Number).
-
-        Parameters
-        -----------
-            x : input value for test, must be a scalar.
-
-        Returns
-        -------
-            True where ``x`` is not positive infinity, negative infinity, or NaN;
-            false otherwise.
         """
 
         # TODO: replace with dpnp.isfinite() once function is available in DPNP,
@@ -92,15 +119,6 @@ class RandomState:
     def _is_signbit_scalar(self, x):
         """
         Test a scalar if sign bit is set for it (less than zero).
-
-        Parameters
-        -----------
-            x : input value for test, must be a scalar.
-
-        Returns
-        -------
-            True where sign bit is set for ``x`` (that is ``x`` is less than zero);
-            false otherwise.
         """
 
         # TODO: replace with dpnp.signbit() once function is available in DPNP,
@@ -108,20 +126,60 @@ class RandomState:
         return numpy.signbit(x)
 
 
+    def _validate_float_dtype(self, dtype, supported_types):
+        """
+        Test an input floating type if it is listed in `supported_types` and
+        if it is supported by the used SYCL device.
+        If `dtype` is ``None``, default floating type will be validating.
+        Return the examined floating type if it follows all validation checks.
+        """
+
+        if dtype is None:
+            dtype = self._def_float_type
+
+        if not dtype in supported_types:
+            raise TypeError(f"dtype={dtype} is unsupported.")
+        elif dtype != map_dtype_to_device(dtype, self._sycl_device):
+            raise RuntimeError(f"dtype={dtype} is not supported by SYCL device '{self._sycl_device}'")
+        return dtype
+
+
     def get_state(self):
         """
         Return an internal state of the generator.
 
         For full documentation refer to :obj:`numpy.random.RandomState.get_state`.
+
+        Returns
+        -------
+        out : object
+            An object representing the internal state of the generator.
         """
         return self._random_state
 
 
     def get_sycl_queue(self):
         """
-        Return a sycl queue used from the container.
+        Return an instance of :class:`dpctl.SyclQueue` used within the generator for data allocation.
+
+        Returns
+        -------
+        queue : dpctl.SyclQueue
+            A SYCL queue used for data allocation.
         """
         return self._sycl_queue
+
+
+    def get_sycl_device(self):
+        """
+        Return an instance of :class:`dpctl.SyclDevice` used within the generator to allocate data on.
+
+        Returns
+        -------
+        device : dpctl.SyclDevice
+            A SYCL device used to allocate data on.
+        """
+        return self._sycl_device
 
 
     def normal(self, loc=0.0, scale=1.0, size=None, dtype=None, usm_type="device"):
@@ -130,19 +188,26 @@ class RandomState:
 
         For full documentation refer to :obj:`numpy.random.RandomState.normal`.
 
+        Parameters
+        ----------
+        usm_type : {"device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            Drawn samples from the parameterized normal distribution.
+            Output array data type is the same as input `dtype`. If `dtype` is ``None`` (the default),
+            :obj:`dpnp.float64` type will be used if device supports it, or :obj:`dpnp.float32` otherwise.
+
         Limitations
         -----------
-        Parameters ``loc`` and ``scale`` are supported as scalar.
-        Otherwise, :obj:`numpy.random.RandomState.normal(loc, scale, size)` samples are drawn.
-
-        Parameter ``dtype`` is supported only for :obj:`dpnp.float32`, :obj:`dpnp.float64` or `None`.
-        If ``dtype`` is None (default), :obj:`dpnp.float64` type will be used if device supports it
-        or :obj:`dpnp.float32` otherwise.
-        Output array data type is the same as ``dtype``.
+        Parameters `loc` and `scale` are supported as a scalar. Otherwise,
+        :obj:`numpy.random.RandomState.normal(loc, scale, size)` samples are drawn.
+        Parameter `dtype` is supported only as :obj:`dpnp.float32`, :obj:`dpnp.float64` or ``None``.
 
         Examples
         --------
-        Draw samples from the distribution:
         >>> s = dpnp.random.RandomState().normal(loc=3.7, scale=2.5, size=(2, 4))
         >>> print(s)
         [[ 1.58997253 -0.84288406  2.33836967  4.16394577]
@@ -161,22 +226,18 @@ class RandomState:
             elif not dpnp.isscalar(scale):
                 pass
             else:
-                min_double = numpy.finfo('double').min
-                max_double = numpy.finfo('double').max
+                dtype = self._validate_float_dtype(dtype, (dpnp.float32, dpnp.float64))
+                min_floating = numpy.finfo(dtype).min
+                max_floating = numpy.finfo(dtype).max
 
-                if (loc >= max_double or loc <= min_double) and self._is_finite_scalar(loc):
+                if (loc >= max_floating or loc <= min_floating) and self._is_finite_scalar(loc):
                     raise OverflowError(f"Range of loc={loc} exceeds valid bounds")
 
-                if (scale >= max_double) and self._is_finite_scalar(scale):
+                if (scale >= max_floating) and self._is_finite_scalar(scale):
                     raise OverflowError(f"Range of scale={scale} exceeds valid bounds")
                 # scale = -0.0 is cosidered as negative
                 elif scale < 0 or scale == 0 and self._is_signbit_scalar(scale):
                     raise ValueError(f"scale={scale}, but must be non-negative.")
-
-                if dtype is None:
-                    dtype = self._def_float_type
-                elif not dtype in (dpnp.float32, dpnp.float64):
-                    raise TypeError(f"dtype={dtype} is unsupported.")
 
                 dpu.validate_usm_type(usm_type=usm_type, allow_none=False)
                 return self._random_state.normal(loc=loc,
@@ -198,9 +259,16 @@ class RandomState:
 
         For full documentation refer to :obj:`numpy.random.RandomState.rand`.
 
-        Limitations
-        -----------
-        Output array data type is :obj:`dpnp.float64`.
+        Parameters
+        ----------
+        usm_type : {"device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            Random values in a given shape.
+            Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
 
         Examples
         --------
@@ -227,19 +295,31 @@ class RandomState:
 
     def randint(self, low, high=None, size=None, dtype=int, usm_type="device"):
         """
-        Draw random integers from low (inclusive) to high (exclusive).
+        Draw random integers from `low` (inclusive) to `high` (exclusive).
 
         Return random integers from the “discrete uniform” distribution of the specified type
         in the “half-open” interval [low, high).
 
         For full documentation refer to :obj:`numpy.random.RandomState.randint`.
 
+        Parameters
+        ----------
+        usm_type : {"device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            `size`-shaped array of random integers from the appropriate distribution,
+            or a single such random int if `size` is not provided.
+            Output array data type is the same as input `dtype`.
+
         Limitations
         -----------
-        Parameters ``low`` and ``high`` are supported only as scalar.
-        Parameter ``dtype`` is supported only as :obj:`dpnp.int32` or `int`,
-        but `int` value is considered to be exactly equivalent to :obj:`dpnp.int32`.
-        Otherwise, :obj:`numpy.random.randint(low, high, size, dtype)` samples are drawn.
+        Parameters `low` and `high` are supported only as a scalar.
+        Parameter `dtype` is supported only as :obj:`dpnp.int32` or ``int``,
+        but ``int`` value is considered to be exactly equivalent to :obj:`dpnp.int32`.
+        Otherwise, :obj:`numpy.random.RandomState.randint(low, high, size, dtype)` samples are drawn.
 
         Examples
         --------
@@ -257,7 +337,7 @@ class RandomState:
         if not use_origin_backend(low):
             if not dpnp.isscalar(low):
                 pass
-            elif not dpnp.isscalar(high):
+            elif not (high is None or dpnp.isscalar(high)):
                 pass
             else:
                 _dtype = dpnp.int32 if dtype is int else dpnp.dtype(dtype)
@@ -297,10 +377,19 @@ class RandomState:
 
         For full documentation refer to :obj:`numpy.random.RandomState.randn`.
 
-        Limitations
-        -----------
-        Output array data type is :obj:`dpnp.float64` if device supports it
-        or :obj:`dpnp.float32` otherwise.
+        Parameters
+        ----------
+        usm_type : {"device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            A ``(d0, d1, ..., dn)``-shaped array of floating-point samples from
+            the standard normal distribution, or a single such float if
+            no parameters were supplied.
+            Output array data type is :obj:`dpnp.float64` if device supports it,
+            or :obj:`dpnp.float32` otherwise.
 
         Examples
         --------
@@ -337,10 +426,18 @@ class RandomState:
 
         For full documentation refer to :obj:`numpy.random.RandomState.random_sample`.
 
-        Limitations
-        -----------
-        Output array data type is :obj:`dpnp.float64` if device supports it
-        or :obj:`dpnp.float32` otherwise.
+        Parameters
+        ----------
+        usm_type : {"device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            Array of random floats of shape `size` (if ``size=None``,
+            zero dimension array with a single float is returned).
+            Output array data type is :obj:`dpnp.float64` if device supports it,
+            or :obj:`dpnp.float32` otherwise.
 
         Examples
         --------
@@ -368,14 +465,21 @@ class RandomState:
 
         For full documentation refer to :obj:`numpy.random.RandomState.standard_normal`.
 
-        Limitations
-        -----------
-        Output array data type is :obj:`dpnp.float64` if device supports it
-        or :obj:`dpnp.float32` otherwise.
+        Parameters
+        ----------
+        usm_type : {"device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            A floating-point array of shape `size` of drawn samples, or a
+            single sample if `size` was not specified.
+            Output array data type is :obj:`dpnp.float64` if device supports it,
+            or :obj:`dpnp.float32` otherwise.
 
         Examples
         --------
-        Draw samples from the distribution:
         >>> s = dpnp.random.RandomState().standard_normal(size=(3, 5))
         >>> print(s)
         [[-0.84401099 -1.81715362 -0.54465213  0.18557831  0.28352814]
@@ -405,18 +509,26 @@ class RandomState:
 
         For full documentation refer to :obj:`numpy.random.RandomState.uniform`.
 
+        Parameters
+        ----------
+        usm_type : {"device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            Drawn samples from the parameterized uniform distribution.
+            Output array data type is the same as input `dtype`. If `dtype` is ``None`` (the default),
+            :obj:`dpnp.float64` type will be used if device supports it, or :obj:`dpnp.float32` otherwise.
+
         Limitations
         -----------
-        Parameters ``low`` and ``high`` are supported as scalar.
-        Otherwise, :obj:`numpy.random.uniform(low, high, size)` samples are drawn.
-        Parameter ``dtype`` is supported only for :obj:`dpnp.int32`, :obj:`dpnp.float32`, :obj:`dpnp.float64` or `None`.
-        If ``dtype`` is None (default), :obj:`dpnp.float64` type will be used if device supports it
-        or :obj:`dpnp.float32` otherwise.
-        Output array data type is the same as ``dtype``.
+        Parameters `low` and `high` are supported as a scalar. Otherwise,
+        :obj:`numpy.random.RandomState.uniform(low, high, size)` samples are drawn.
+        Parameter `dtype` is supported only as :obj:`dpnp.int32`, :obj:`dpnp.float32`, :obj:`dpnp.float64` or ``None``.
 
         Examples
         --------
-        Draw samples from the distribution:
         >>> low, high = 1.23, 10.54    # low and high
         >>> s = dpnp.random.RandomState().uniform(low, high, 5)
         >>> print(s)
@@ -450,12 +562,9 @@ class RandomState:
                 if low > high:
                     low, high = high, low
 
-                if dtype is None:
-                    dtype = self._def_float_type
-                elif not dtype in (dpnp.int32, dpnp.float32, dpnp.float64):
-                    raise TypeError(f"dtype={dtype} is unsupported.")
-
+                dtype = self._validate_float_dtype(dtype, (dpnp.int32, dpnp.float32, dpnp.float64))
                 dpu.validate_usm_type(usm_type, allow_none=False)
+
                 return self._random_state.uniform(low=low,
                                                   high=high,
                                                   size=size,

@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.11.0)
+# set(DPNP_VERSION 0.11.1)
 # set(DPNP_API_VERSION 0.11)
 
 # set directory where the custom finders live
@@ -93,16 +93,17 @@ string(CONCAT COMMON_COMPILE_FLAGS
   "-fsycl "
   "-fsycl-device-code-split=per_kernel "
   "-fno-approx-func "
+  "-fno-finite-math-only "
 )
 string(CONCAT COMMON_LINK_FLAGS
   "-fsycl "
   "-fsycl-device-code-split=per_kernel "
 )
 if(UNIX)
-  set(CMAKE_CXX_COMPILER "dpcpp")
+  set(CMAKE_CXX_COMPILER "icpx")
   # add_compile_options(-fPIC)
 elseif(WIN32)
-  set(CMAKE_CXX_COMPILER "dpcpp")
+  set(CMAKE_CXX_COMPILER "icx")
   # set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld-link")
   # set(CMAKE_LINKER "lld-link")
   # include (Platform/Windows-Clang)
@@ -111,7 +112,7 @@ elseif(WIN32)
   # set(CMAKE_RANLIB "llvm-ranlib")
   # set(CMAKE_CXX_FLAGS "/EHsc")
 
-  string(APPEND COMMON_COMPILER_FLAGS
+  string(APPEND COMMON_COMPILE_FLAGS
     "/EHsc "
 #    "/Ox "
 #    "/W3 "
@@ -133,23 +134,29 @@ string(CONCAT DPNP_WARNING_FLAGS
   "-Wextra "
   "-Wshadow "
   "-Wall "
-  "-Wstring-prototypes "
+  "-Wstrict-prototypes "
   "-Wformat "
   "-Wformat-security "
 )
-string(APPEND COMMON_COMPILER_FLAGS
+string(APPEND COMMON_COMPILE_FLAGS
   "${DPNP_WARNING_FLAGS}"
 )
 
 # debug/release compile definitions
 if(DPNP_DEBUG_ENABLE)
   set(CMAKE_BUILD_TYPE "Debug")
-  string(APPEND COMMON_COMPILER_FLAGS
+  string(APPEND COMMON_COMPILE_FLAGS
     "-O0 "
+    "-ggdb3 "
+  )
+  string(APPEND COMMON_LINK_FLAGS
+    "-O0 "
+    "-ggdb3 "
+    "-fsycl-link-huge-device-code "
   )
 else()
   set(CMAKE_BUILD_TYPE "Release")
-  string(APPEND COMMON_COMPILER_FLAGS
+  string(APPEND COMMON_COMPILE_FLAGS
     "-O3 "
   )
 endif()
@@ -162,7 +169,7 @@ string(CONCAT DPNP_DEFS
   "-D_FORTIFY_SOURCE=2 "
 )
 if(NOT WIN32)
-  string(APPEND COMMON_COMPILER_FLAGS
+  string(APPEND COMMON_COMPILE_FLAGS
     "-fno-delete-null-pointer-checks "
     "-fstack-protector-strong "
     "-fno-strict-overflow "

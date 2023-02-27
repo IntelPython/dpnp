@@ -3,6 +3,9 @@ import pytest
 import dpnp
 
 import numpy
+from numpy.testing import (
+    assert_array_equal
+)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -16,7 +19,7 @@ def test_choose():
 
     expected = numpy.choose([0, 0, 0, 0], [a, b, c])
     result = dpnp.choose([0, 0, 0, 0], [ia, ib, ic])
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("offset",
@@ -47,7 +50,7 @@ def test_diagonal(array, offset):
     ia = dpnp.array(a)
     expected = numpy.diagonal(a, offset)
     result = dpnp.diagonal(ia, offset)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("val",
@@ -71,7 +74,7 @@ def test_fill_diagonal(array, val):
     ia = dpnp.array(a)
     expected = numpy.fill_diagonal(a, val)
     result = dpnp.fill_diagonal(ia, val)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("dimension",
@@ -81,7 +84,7 @@ def test_fill_diagonal(array, val):
 def test_indices(dimension):
     expected = numpy.indices(dimension)
     result = dpnp.indices(dimension)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("array",
@@ -107,7 +110,7 @@ def test_nonzero(array):
     ia = dpnp.array(array)
     expected = numpy.nonzero(a)
     result = dpnp.nonzero(ia)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -137,7 +140,7 @@ def test_place1(arr, mask, vals):
     im = dpnp.array(m)
     numpy.place(a, m, vals)
     dpnp.place(ia, im, vals)
-    numpy.testing.assert_array_equal(a, ia)
+    assert_array_equal(a, ia)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -161,7 +164,7 @@ def test_place2(arr, mask, vals):
     im = dpnp.array(m)
     numpy.place(a, m, vals)
     dpnp.place(ia, im, vals)
-    numpy.testing.assert_array_equal(a, ia)
+    assert_array_equal(a, ia)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -186,7 +189,7 @@ def test_place3(arr, mask, vals):
     im = dpnp.array(m)
     numpy.place(a, m, vals)
     dpnp.place(ia, im, vals)
-    numpy.testing.assert_array_equal(a, ia)
+    assert_array_equal(a, ia)
 
 
 @pytest.mark.parametrize("v",
@@ -211,7 +214,7 @@ def test_put(array, ind, v):
     ia = dpnp.array(a)
     numpy.put(a, ind, v)
     dpnp.put(ia, ind, v)
-    numpy.testing.assert_array_equal(a, ia)
+    assert_array_equal(a, ia)
 
 
 @pytest.mark.parametrize("v",
@@ -236,7 +239,7 @@ def test_put2(array, ind, v):
     ia = dpnp.array(a)
     numpy.put(a, ind, v)
     dpnp.put(ia, ind, v)
-    numpy.testing.assert_array_equal(a, ia)
+    assert_array_equal(a, ia)
 
 
 def test_put3():
@@ -244,7 +247,7 @@ def test_put3():
     ia = dpnp.array(a)
     dpnp.put(ia, [0, 2], [-44, -55])
     numpy.put(a, [0, 2], [-44, -55])
-    numpy.testing.assert_array_equal(a, ia)
+    assert_array_equal(a, ia)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -256,7 +259,7 @@ def test_put_along_axis_val_int():
     for axis in range(2):
         numpy.put_along_axis(a, ind_r, 777, axis)
         dpnp.put_along_axis(ai, ind_r_i, 777, axis)
-        numpy.testing.assert_array_equal(a, ai)
+        assert_array_equal(a, ai)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -268,7 +271,7 @@ def test_put_along_axis1():
     for axis in range(3):
         numpy.put_along_axis(a, ind_r, 777, axis)
         dpnp.put_along_axis(ai, ind_r_i, 777, axis)
-        numpy.testing.assert_array_equal(a, ai)
+        assert_array_equal(a, ai)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -280,7 +283,7 @@ def test_put_along_axis2():
     for axis in range(3):
         numpy.put_along_axis(a, ind_r, [100, 200, 300, 400], axis)
         dpnp.put_along_axis(ai, ind_r_i, [100, 200, 300, 400], axis)
-        numpy.testing.assert_array_equal(a, ai)
+        assert_array_equal(a, ai)
 
 
 @pytest.mark.parametrize("vals",
@@ -309,7 +312,7 @@ def test_putmask1(arr, mask, vals):
     iv = dpnp.array(v)
     numpy.putmask(a, m, v)
     dpnp.putmask(ia, im, iv)
-    numpy.testing.assert_array_equal(a, ia)
+    assert_array_equal(a, ia)
 
 
 @pytest.mark.parametrize("vals",
@@ -334,7 +337,7 @@ def test_putmask2(arr, mask, vals):
     iv = dpnp.array(v)
     numpy.putmask(a, m, v)
     dpnp.putmask(ia, im, iv)
-    numpy.testing.assert_array_equal(a, ia)
+    assert_array_equal(a, ia)
 
 
 @pytest.mark.parametrize("vals",
@@ -360,7 +363,7 @@ def test_putmask3(arr, mask, vals):
     iv = dpnp.array(v)
     numpy.putmask(a, m, v)
     dpnp.putmask(ia, im, iv)
-    numpy.testing.assert_array_equal(a, ia)
+    assert_array_equal(a, ia)
 
 
 def test_select():
@@ -378,7 +381,7 @@ def test_select():
     ichoicelist = [ichoice_val1, ichoice_val2]
     expected = numpy.select(condlist, choicelist)
     result = dpnp.select(icondlist, ichoicelist)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("array_type",
@@ -415,10 +418,9 @@ def test_take(array, indices, array_type, indices_type):
     iind = dpnp.array(ind)
     expected = numpy.take(a, ind)
     result = dpnp.take(ia, iind)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_take_along_axis():
     a = numpy.arange(16).reshape(4, 4)
     ai = dpnp.array(a)
@@ -427,10 +429,9 @@ def test_take_along_axis():
     for axis in range(2):
         expected = numpy.take_along_axis(a, ind_r, axis)
         result = dpnp.take_along_axis(ai, ind_r_i, axis)
-        numpy.testing.assert_array_equal(expected, result)
+        assert_array_equal(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_take_along_axis1():
     a = numpy.arange(64).reshape(4, 4, 4)
     ai = dpnp.array(a)
@@ -439,7 +440,7 @@ def test_take_along_axis1():
     for axis in range(3):
         expected = numpy.take_along_axis(a, ind_r, axis)
         result = dpnp.take_along_axis(ai, ind_r_i, axis)
-        numpy.testing.assert_array_equal(expected, result)
+        assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("m",
@@ -454,7 +455,7 @@ def test_take_along_axis1():
 def test_tril_indices(n, k, m):
     result = dpnp.tril_indices(n, k, m)
     expected = numpy.tril_indices(n, k, m)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("k",
@@ -472,7 +473,7 @@ def test_tril_indices_from(array, k):
     ia = dpnp.array(a)
     result = dpnp.tril_indices_from(ia, k)
     expected = numpy.tril_indices_from(a, k)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("m",
@@ -487,7 +488,7 @@ def test_tril_indices_from(array, k):
 def test_triu_indices(n, k, m):
     result = dpnp.triu_indices(n, k, m)
     expected = numpy.triu_indices(n, k, m)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("k",
@@ -505,4 +506,4 @@ def test_triu_indices_from(array, k):
     ia = dpnp.array(a)
     result = dpnp.triu_indices_from(ia, k)
     expected = numpy.triu_indices_from(a, k)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)

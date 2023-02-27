@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2022, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -151,10 +151,10 @@ enum class DPNPFuncName : size_t
     DPNP_FN_EIG_EXT,                      /**< Used in numpy.linalg.eig() impl, requires extra parameters */
     DPNP_FN_EIGVALS,                      /**< Used in numpy.linalg.eigvals() impl  */
     DPNP_FN_EIGVALS_EXT,                  /**< Used in numpy.linalg.eigvals() impl, requires extra parameters */
+    DPNP_FN_EQUAL_EXT,                    /**< Used in numpy.equal() impl, requires extra parameters */
     DPNP_FN_ERF,                          /**< Used in scipy.special.erf impl  */
     DPNP_FN_ERF_EXT,                      /**< Used in scipy.special.erf impl, requires extra parameters */
     DPNP_FN_EYE,                          /**< Used in numpy.eye() impl  */
-    DPNP_FN_EYE_EXT,                      /**< Used in numpy.eye() impl, requires extra parameters */
     DPNP_FN_EXP,                          /**< Used in numpy.exp() impl  */
     DPNP_FN_EXP_EXT,                      /**< Used in numpy.exp() impl, requires extra parameters */
     DPNP_FN_EXP2,                         /**< Used in numpy.exp2() impl  */
@@ -178,9 +178,9 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FMOD,                         /**< Used in numpy.fmod() impl  */
     DPNP_FN_FMOD_EXT,                     /**< Used in numpy.fmod() impl, requires extra parameters  */
     DPNP_FN_FULL,                         /**< Used in numpy.full() impl  */
-    DPNP_FN_FULL_EXT,                     /**< Used in numpy.full() impl, requires extra parameters  */
     DPNP_FN_FULL_LIKE,                    /**< Used in numpy.full_like() impl  */
-    DPNP_FN_FULL_LIKE_EXT,                /**< Used in numpy.full_like() impl, requires extra parameters  */
+    DPNP_FN_GREATER_EXT,                  /**< Used in numpy.greater() impl, requires extra parameters */
+    DPNP_FN_GREATER_EQUAL_EXT,            /**< Used in numpy.greater_equal() impl, requires extra parameters */
     DPNP_FN_HYPOT,                        /**< Used in numpy.hypot() impl  */
     DPNP_FN_HYPOT_EXT,                    /**< Used in numpy.hypot() impl, requires extra parameters  */
     DPNP_FN_IDENTITY,                     /**< Used in numpy.identity() impl  */
@@ -195,6 +195,8 @@ enum class DPNPFuncName : size_t
     DPNP_FN_KRON_EXT,                     /**< Used in numpy.kron() impl, requires extra parameters  */
     DPNP_FN_LEFT_SHIFT,                   /**< Used in numpy.left_shift() impl  */
     DPNP_FN_LEFT_SHIFT_EXT,               /**< Used in numpy.left_shift() impl, requires extra parameters  */
+    DPNP_FN_LESS_EXT,                     /**< Used in numpy.less() impl, requires extra parameters */
+    DPNP_FN_LESS_EQUAL_EXT,               /**< Used in numpy.less_equal() impl, requires extra parameters */
     DPNP_FN_LOG,                          /**< Used in numpy.log() impl  */
     DPNP_FN_LOG_EXT,                      /**< Used in numpy.log() impl, requires extra parameters  */
     DPNP_FN_LOG10,                        /**< Used in numpy.log10() impl  */
@@ -203,6 +205,10 @@ enum class DPNPFuncName : size_t
     DPNP_FN_LOG2_EXT,                     /**< Used in numpy.log2() impl, requires extra parameters  */
     DPNP_FN_LOG1P,                        /**< Used in numpy.log1p() impl  */
     DPNP_FN_LOG1P_EXT,                    /**< Used in numpy.log1p() impl, requires extra parameters  */
+    DPNP_FN_LOGICAL_AND_EXT,              /**< Used in numpy.logical_and() impl, requires extra parameters */
+    DPNP_FN_LOGICAL_NOT_EXT,              /**< Used in numpy.logical_not() impl, requires extra parameters */
+    DPNP_FN_LOGICAL_OR_EXT,               /**< Used in numpy.logical_or() impl, requires extra parameters */
+    DPNP_FN_LOGICAL_XOR_EXT,              /**< Used in numpy.logical_xor() impl, requires extra parameters */
     DPNP_FN_MATMUL,                       /**< Used in numpy.matmul() impl  */
     DPNP_FN_MATMUL_EXT,                   /**< Used in numpy.matmul() impl, requires extra parameters */
     DPNP_FN_MATRIX_RANK,                  /**< Used in numpy.linalg.matrix_rank() impl  */
@@ -229,10 +235,9 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NEGATIVE_EXT,                 /**< Used in numpy.negative() impl, requires extra parameters */
     DPNP_FN_NONZERO,                      /**< Used in numpy.nonzero() impl  */
     DPNP_FN_NONZERO_EXT,                  /**< Used in numpy.nonzero() impl, requires extra parameters */
+    DPNP_FN_NOT_EQUAL_EXT,                /**< Used in numpy.not_equal() impl, requires extra parameters */
     DPNP_FN_ONES,                         /**< Used in numpy.ones() impl */
-    DPNP_FN_ONES_EXT,                     /**< Used in numpy.ones() impl, requires extra parameters */
     DPNP_FN_ONES_LIKE,                    /**< Used in numpy.ones_like() impl */
-    DPNP_FN_ONES_LIKE_EXT,                /**< Used in numpy.ones_like() impl, requires extra parameters */
     DPNP_FN_PARTITION,                    /**< Used in numpy.partition() impl */
     DPNP_FN_PARTITION_EXT,                /**< Used in numpy.partition() impl, requires extra parameters */
     DPNP_FN_PLACE,                        /**< Used in numpy.place() impl  */
@@ -365,9 +370,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TRI,                          /**< Used in numpy.tri() impl  */
     DPNP_FN_TRI_EXT,                      /**< Used in numpy.tri() impl, requires extra parameters */
     DPNP_FN_TRIL,                         /**< Used in numpy.tril() impl  */
-    DPNP_FN_TRIL_EXT,                     /**< Used in numpy.tril() impl, requires extra parameters */
     DPNP_FN_TRIU,                         /**< Used in numpy.triu() impl  */
-    DPNP_FN_TRIU_EXT,                     /**< Used in numpy.triu() impl, requires extra parameters */
     DPNP_FN_TRUNC,                        /**< Used in numpy.trunc() impl  */
     DPNP_FN_TRUNC_EXT,                    /**< Used in numpy.trunc() impl, requires extra parameters */
     DPNP_FN_VANDER,                       /**< Used in numpy.vander() impl  */
@@ -375,9 +378,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_VAR,                          /**< Used in numpy.var() impl  */
     DPNP_FN_VAR_EXT,                      /**< Used in numpy.var() impl, requires extra parameters */
     DPNP_FN_ZEROS,                        /**< Used in numpy.zeros() impl */
-    DPNP_FN_ZEROS_EXT,                    /**< Used in numpy.zeros() impl, requires extra parameters */
     DPNP_FN_ZEROS_LIKE,                   /**< Used in numpy.zeros_like() impl */
-    DPNP_FN_ZEROS_LIKE_EXT,               /**< Used in numpy.zeros_like() impl, requires extra parameters */
     DPNP_FN_LAST,                         /**< The latest element of the enumeration */
 };
 
@@ -391,13 +392,13 @@ enum class DPNPFuncName : size_t
 enum class DPNPFuncType : size_t
 {
     DPNP_FT_NONE,     /**< Very first element of the enumeration */
+    DPNP_FT_BOOL,     /**< analog of numpy.bool_ or bool */
     DPNP_FT_INT,      /**< analog of numpy.int32 or int */
     DPNP_FT_LONG,     /**< analog of numpy.int64 or long */
     DPNP_FT_FLOAT,    /**< analog of numpy.float32 or float */
     DPNP_FT_DOUBLE,   /**< analog of numpy.float32 or double */
     DPNP_FT_CMPLX64,  /**< analog of numpy.complex64 or std::complex<float> */
-    DPNP_FT_CMPLX128, /**< analog of numpy.complex128 or std::complex<double> */
-    DPNP_FT_BOOL      /**< analog of numpy.bool or numpy.bool_ or bool */
+    DPNP_FT_CMPLX128  /**< analog of numpy.complex128 or std::complex<double> */
 };
 
 /**
@@ -416,8 +417,26 @@ size_t operator-(DPNPFuncType lhs, DPNPFuncType rhs);
  */
 typedef struct DPNPFuncData
 {
-    DPNPFuncType return_type; /**< return type identifier which expected by the @ref ptr function */
-    void* ptr;                /**< C++ backend function pointer */
+    DPNPFuncData(const DPNPFuncType gen_type, void* gen_ptr, const DPNPFuncType type_no_fp64, void* ptr_no_fp64)
+        : return_type(gen_type)
+        , ptr(gen_ptr)
+        , return_type_no_fp64(type_no_fp64)
+        , ptr_no_fp64(ptr_no_fp64)
+    {
+    }
+    DPNPFuncData(const DPNPFuncType gen_type, void* gen_ptr)
+        : DPNPFuncData(gen_type, gen_ptr, DPNPFuncType::DPNP_FT_NONE, nullptr)
+    {
+    }
+    DPNPFuncData()
+        : DPNPFuncData(DPNPFuncType::DPNP_FT_NONE, nullptr)
+    {
+    }
+
+    DPNPFuncType return_type;         /**< return type identifier which expected by the @ref ptr function */
+    void* ptr;                        /**< C++ backend function pointer */
+    DPNPFuncType return_type_no_fp64; /**< alternative return type identifier when no fp64 support by device */
+    void* ptr_no_fp64;                /**< alternative C++ backend function pointer when no fp64 support by device */
 } DPNPFuncData_t;
 
 /**

@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2022, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -131,12 +131,13 @@ def atleast_2d(*arys):
     all_is_array = True
     arys_desc = []
     for ary in arys:
-        ary_desc = dpnp.get_dpnp_descriptor(ary, copy_when_nondefault_queue=False)
-        if ary_desc:
-            arys_desc.append(ary_desc)
-        else:
-            all_is_array = False
-            break
+        if not dpnp.isscalar(ary):
+            ary_desc = dpnp.get_dpnp_descriptor(ary, copy_when_nondefault_queue=False)
+            if ary_desc:
+                arys_desc.append(ary_desc)
+                continue
+        all_is_array = False
+        break
 
     if not use_origin_backend(arys[0]) and all_is_array:
         result = []
@@ -166,12 +167,13 @@ def atleast_3d(*arys):
     all_is_array = True
     arys_desc = []
     for ary in arys:
-        ary_desc = dpnp.get_dpnp_descriptor(ary, copy_when_nondefault_queue=False)
-        if ary_desc:
-            arys_desc.append(ary_desc)
-        else:
-            all_is_array = False
-            break
+        if not dpnp.isscalar(ary):
+            ary_desc = dpnp.get_dpnp_descriptor(ary, copy_when_nondefault_queue=False)
+            if ary_desc:
+                arys_desc.append(ary_desc)
+                continue
+        all_is_array = False
+        break
 
     if not use_origin_backend(arys[0]) and all_is_array:
         result = []

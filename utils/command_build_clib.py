@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -61,9 +61,9 @@ else:
 Set compiler for the project
 """
 # default variables (for Linux)
-_project_compiler = "dpcpp"
-_project_linker = "dpcpp"
-_project_cmplr_flag_sycl_devel = ["-fsycl-device-code-split=per_kernel", "-fno-approx-func"]
+_project_compiler = "icpx"
+_project_linker = "icpx"
+_project_cmplr_flag_sycl_devel = ["-fsycl-device-code-split=per_kernel", "-fno-approx-func", "-fno-finite-math-only"]
 _project_cmplr_flag_sycl = ["-fsycl"]
 _project_cmplr_flag_stdcpp_static = []  # This brakes TBB ["-static-libstdc++", "-static-libgcc"]
 _project_cmplr_flag_compatibility = ["-Wl,--enable-new-dtags"]

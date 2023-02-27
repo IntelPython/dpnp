@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -896,6 +896,7 @@ DPCTLSyclEventRef dpnp_take_c(DPCTLSyclQueueRef q_ref,
                               const DPCTLEventVectorRef dep_event_vec_ref)
 {
     // avoid warning unused variable
+    (void)array1_size;
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
