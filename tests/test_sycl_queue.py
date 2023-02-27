@@ -862,8 +862,7 @@ def test_from_dlpack(arr_dtype, shape, device):
     Y = dpnp.from_dlpack(X)
     assert_array_equal(X, Y)
     assert X.__dlpack_device__() == Y.__dlpack_device__()
-    assert X.sycl_device == Y.sycl_device
-    assert X.sycl_context == Y.sycl_context
+    assert_sycl_queue_equal(X.sycl_queue, Y.sycl_queue)
     assert X.usm_type == Y.usm_type
     if Y.ndim:
         V = Y[::-1]
@@ -882,6 +881,5 @@ def test_from_dlpack_with_dpt(arr_dtype, device):
     assert_array_equal(X, Y)
     assert isinstance(Y, dpnp.dpnp_array.dpnp_array)
     assert X.__dlpack_device__() == Y.__dlpack_device__()
-    assert X.sycl_device == Y.sycl_device
-    assert X.sycl_context == Y.sycl_context
     assert X.usm_type == Y.usm_type
+    assert_sycl_queue_equal(X.sycl_queue, Y.sycl_queue)
