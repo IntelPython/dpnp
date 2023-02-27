@@ -205,7 +205,7 @@ def test_array_creation_follow_device(func, args, kwargs, device):
                           ids=[device.filter_string for device in valid_devices])
 def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
     if func is 'linspace' and sys.platform.startswith('win'):
-        pytest.skip()
+        pytest.skip("CPU driver experiences an instability on Windows.")
 
     x_orig = numpy.array([1, 2, 3, 4])
     numpy_args = [eval(val, {'x0' : x_orig}) for val in args]
