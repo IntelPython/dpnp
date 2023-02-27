@@ -67,7 +67,9 @@ jobs:
           channels: intel, conda-forge
 
       - name: Install sphinx dependencies
-        run: conda install sphinx sphinx_rtd_theme
+        run: |
+          conda install sphinx sphinx_rtd_theme
+          pip install sphinxcontrib-googleanalytics
 
       - name: Install dpnp dependencies
         run: |
