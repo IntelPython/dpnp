@@ -50,6 +50,7 @@ __all__ = [
     "double",
     "dtype",
     "e",
+    "euler_gamma",
     "float",
     "float_",
     "float16",
@@ -57,7 +58,10 @@ __all__ = [
     "float64",
     "floating",
     "inexact",
+    "Inf",
     "inf",
+    "Infinity",
+    "infty",
     "int",
     "int_",
     "int32",
@@ -68,16 +72,25 @@ __all__ = [
     "issubdtype",
     "issubsctype",
     "is_type_supported",
+    "NAN",
+    "NaN",
     "nan",
     "newaxis",
+    "NINF",
+    "NZERO",
     "number",
     "pi",
+    "PINF",
+    "PZERO",
     "signedinteger",
     "single",
-    "singlecomplex",
-    "void"
+    "singlecomplex"
 ]
 
+
+# =============================================================================
+# Data types (borrowed from NumPy)
+# =============================================================================
 bool = numpy.bool_
 bool_ = numpy.bool_
 cdouble = numpy.cdouble
@@ -106,6 +119,26 @@ number = numpy.number
 signedinteger = numpy.signedinteger
 single = numpy.single
 singlecomplex = numpy.singlecomplex
+
+
+# =============================================================================
+# Constants (borrowed from NumPy)
+# =============================================================================
+e = numpy.e
+euler_gamma = numpy.euler_gamma
+Inf = numpy.Inf
+inf = numpy.inf
+Infinity = numpy.Infinity
+infty = numpy.infty
+NAN = numpy.NAN
+NaN = numpy.NaN
+nan = numpy.nan
+newaxis = None
+NINF = numpy.NINF
+NZERO = numpy.NZERO
+pi = numpy.pi
+PINF = numpy.PINF
+PZERO = numpy.PZERO
 
 
 def isscalar(obj):
@@ -138,13 +171,6 @@ def issubsctype(arg1, arg2):
     """
 
     return numpy.issubsctype(arg1, arg2)
-
-
-e = numpy.e
-inf = numpy.inf
-nan = numpy.nan
-newaxis = None
-pi = numpy.pi
 
 
 def is_type_supported(obj_type):
