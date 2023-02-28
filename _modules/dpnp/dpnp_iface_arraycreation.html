@@ -134,6 +134,7 @@
 
 <span class="kn">import</span> <span class="nn">dpnp.dpnp_container</span> <span class="k">as</span> <span class="nn">dpnp_container</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<span class="kn">import</span> <span class="nn">dpctl</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -963,7 +964,18 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="linspace"><a class="viewcode-back" href="../../reference/generated/dpnp.linspace.html#dpnp.linspace">[docs]</a><span class="k">def</span> <span class="nf">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">retstep</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="linspace"><a class="viewcode-back" href="../../reference/generated/dpnp.linspace.html#dpnp.linspace">[docs]</a><span class="k">def</span> <span class="nf">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span>
+             <span class="n">stop</span><span class="p">,</span>
+             <span class="o">/</span><span class="p">,</span>
+             <span class="n">num</span><span class="p">,</span>
+             <span class="o">*</span><span class="p">,</span>
+             <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+             <span class="n">retstep</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+             <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return evenly spaced numbers over a specified interval.</span>
 
@@ -972,6 +984,8 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter ``axis`` is supported only with default value ``0``.</span>
+<span class="sd">    Parameter ``retstep`` is supported only with default value ``False``.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -997,16 +1011,19 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;linspace&quot;</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-
-        <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp_linspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">retstep</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">retstep</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">res</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">retstep</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_linspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span>
+                             <span class="n">stop</span><span class="p">,</span>
+                             <span class="n">num</span><span class="p">,</span>
+                             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                             <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+                             <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">retstep</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
 
