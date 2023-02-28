@@ -177,6 +177,20 @@ def test_tril_triu(func, device):
     assert_sycl_queue_equal(x.sycl_queue, x0.sycl_queue)
 
 
+@pytest.mark.parametrize("device_x",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize("device_y",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+def test_meshgrid(device_x, device_y):
+    x = dpnp.arange(100, device = device_x)
+    y = dpnp.arange(100, device = device_y)
+    z = dpnp.meshgrid(x, y)
+    assert_sycl_queue_equal(z[0].sycl_queue, x.sycl_queue)
+    assert_sycl_queue_equal(z[1].sycl_queue, y.sycl_queue)
+
+
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "func,data",
@@ -848,8 +862,7 @@ def test_from_dlpack(arr_dtype, shape, device):
     Y = dpnp.from_dlpack(X)
     assert_array_equal(X, Y)
     assert X.__dlpack_device__() == Y.__dlpack_device__()
-    assert X.sycl_device == Y.sycl_device
-    assert X.sycl_context == Y.sycl_context
+    assert_sycl_queue_equal(X.sycl_queue, Y.sycl_queue)
     assert X.usm_type == Y.usm_type
     if Y.ndim:
         V = Y[::-1]
@@ -868,6 +881,5 @@ def test_from_dlpack_with_dpt(arr_dtype, device):
     assert_array_equal(X, Y)
     assert isinstance(Y, dpnp.dpnp_array.dpnp_array)
     assert X.__dlpack_device__() == Y.__dlpack_device__()
-    assert X.sycl_device == Y.sycl_device
-    assert X.sycl_context == Y.sycl_context
     assert X.usm_type == Y.usm_type
+    assert_sycl_queue_equal(X.sycl_queue, Y.sycl_queue)
