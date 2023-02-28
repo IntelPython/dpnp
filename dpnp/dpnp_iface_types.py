@@ -49,6 +49,7 @@ __all__ = [
     "csingle",
     "double",
     "dtype",
+    "e",
     "float",
     "float_",
     "float16",
@@ -56,6 +57,7 @@ __all__ = [
     "float64",
     "floating",
     "inexact",
+    "inf",
     "int",
     "int_",
     "int32",
@@ -69,6 +71,7 @@ __all__ = [
     "nan",
     "newaxis",
     "number",
+    "pi",
     "signedinteger",
     "single",
     "singlecomplex",
@@ -137,8 +140,11 @@ def issubsctype(arg1, arg2):
     return numpy.issubsctype(arg1, arg2)
 
 
+e = numpy.e
+inf = numpy.inf
 nan = numpy.nan
 newaxis = None
+pi = numpy.pi
 
 
 def is_type_supported(obj_type):
