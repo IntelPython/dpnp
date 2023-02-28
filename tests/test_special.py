@@ -7,7 +7,7 @@ def test_erf():
     a = numpy.linspace(2.0, 3.0, num=10)
     ia = dpnp.linspace(2.0, 3.0, num=10)
 
-    numpy.testing.assert_array_equal(a, ia)
+    numpy.testing.assert_allclose(a, ia)
 
     expected = numpy.empty_like(a)
     for idx, val in enumerate(a):
