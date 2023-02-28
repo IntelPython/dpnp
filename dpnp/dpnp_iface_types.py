@@ -66,7 +66,6 @@ __all__ = [
     "issubdtype",
     "issubsctype",
     "is_type_supported",
-    "longcomplex",
     "nan",
     "newaxis",
     "number",
@@ -100,7 +99,6 @@ int32 = numpy.int32
 int64 = numpy.int64
 integer = numpy.integer
 intc = numpy.intc
-longcomplex = numpy.longcomplex
 number = numpy.number
 signedinteger = numpy.signedinteger
 single = numpy.single
@@ -141,7 +139,6 @@ def issubsctype(arg1, arg2):
 
 nan = numpy.nan
 newaxis = None
-void = numpy.void
 
 
 def is_type_supported(obj_type):
