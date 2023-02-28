@@ -174,6 +174,9 @@ class dpnp_array:
  # '__getattribute__',
 
     def __getitem__(self, key):
+        if isinstance(key, dpnp_array):
+            key = key.get_array()
+
         item = self._array_obj.__getitem__(key)
         if not isinstance(item, dpt.usm_ndarray):
             raise RuntimeError(
@@ -290,6 +293,11 @@ class dpnp_array:
  # '__setattr__',
 
     def __setitem__(self, key, val):
+        if isinstance(key, dpnp_array):
+            key = key.get_array()
+        if isinstance(val, dpnp_array):
+            val = val.get_array()
+
         self._array_obj.__setitem__(key, val)
 
  # '__setstate__',
