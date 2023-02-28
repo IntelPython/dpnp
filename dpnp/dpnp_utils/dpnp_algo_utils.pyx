@@ -418,7 +418,7 @@ cdef tuple get_shape_dtype(object input_obj):
 
             # shape and dtype does not match with siblings.
             if ((return_shape != elem_shape) or (return_dtype != elem_dtype)):
-                return (elem_shape, dpnp.dtype(dpnp.object_))
+                return (elem_shape, dpnp.dtype(numpy.object_))
 
         list_shape.push_back(len(input_obj))
         list_shape.insert(list_shape.end(), return_shape.begin(), return_shape.end())

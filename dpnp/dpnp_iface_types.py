@@ -70,7 +70,6 @@ __all__ = [
     "nan",
     "newaxis",
     "number",
-    "object_",
     "signedinteger",
     "single",
     "singlecomplex",
@@ -103,7 +102,6 @@ integer = numpy.integer
 intc = numpy.intc
 longcomplex = numpy.longcomplex
 number = numpy.number
-object_ = numpy.object_
 signedinteger = numpy.signedinteger
 single = numpy.single
 singlecomplex = numpy.singlecomplex
