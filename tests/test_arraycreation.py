@@ -513,6 +513,51 @@ def test_dpctl_tensor_input(func, args):
         assert_array_equal(X, Y)
 
 
+@pytest.mark.parametrize("start",
+                         [0, -5, 10, -2.5, 9.7],
+                         ids=['0', '-5', '10', '-2.5', '9.7'])
+@pytest.mark.parametrize("stop",
+                         [0, 10, -2, 20.5, 1000],
+                         ids=['0', '10', '-2', '20.5', '1000'])
+@pytest.mark.parametrize("num",
+                         [5, numpy.array(10), dpnp.array(17), dpt.asarray(100)],
+                         ids=['5', 'numpy.array(10)', 'dpnp.array(17)', 'dpt.asarray(100)'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_float16=False))
+def test_linspace(start, stop, num, dtype):
+    func = lambda xp: xp.linspace(start, stop, num, dtype=dtype)
+
+    if numpy.issubdtype(dtype, dpnp.integer):
+        assert_allclose(func(numpy), func(dpnp), rtol=1)
+    else:
+        assert_allclose(func(numpy), func(dpnp), atol=numpy.finfo(dtype).eps)
+
+
+@pytest.mark.parametrize("start_dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("stop_dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+def test_linspace_dtype(start_dtype, stop_dtype):
+    start = numpy.array([1, 2, 3], dtype=start_dtype)
+    stop = numpy.array([11, 7, -2], dtype=stop_dtype)
+    dpnp.linspace(start, stop, 10)
+
+
+@pytest.mark.parametrize("start",
+                         [dpnp.array(1), dpnp.array([2.6]), numpy.array([[-6.7, 3]]), [1, -4], (3, 5)])
+@pytest.mark.parametrize("stop",
+                         [dpnp.array([-4]), dpnp.array([[2.6], [- 4]]), numpy.array(2), [[-4.6]], (3,)])
+def test_linspace_arrays(start, stop):
+    func = lambda xp: xp.linspace(start, stop, 10)
+    assert func(numpy).shape == func(dpnp).shape
+
+
+def test_linspace_complex():
+    func = lambda xp: xp.linspace(0, 3 + 2j, num=1000)
+    assert_allclose(func(numpy), func(dpnp))
+
+
 @pytest.mark.parametrize("arrays",
                          [[], [[1]], [[1, 2, 3], [4, 5, 6]], [[1, 2], [3, 4], [5, 6]]],
                          ids=['[]', '[[1]]', '[[1, 2, 3], [4, 5, 6]]', '[[1, 2], [3, 4], [5, 6]]'])
