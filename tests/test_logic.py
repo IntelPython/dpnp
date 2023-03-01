@@ -10,7 +10,7 @@ from numpy.testing import (
 )
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_complex=True))
+@pytest.mark.parametrize("type", get_all_dtypes())
 @pytest.mark.parametrize("shape",
                          [(0,), (4,), (2, 3), (2, 2, 2)],
                          ids=['(0,)', '(4,)', '(2,3)', '(2,2,2)'])
