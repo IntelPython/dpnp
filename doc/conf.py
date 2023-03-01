@@ -27,7 +27,7 @@ with open('reference/comparison_table.rst.inc', 'w') as fd:
 # -- Project information -----------------------------------------------------
 
 project = 'dpnp'
-copyright = '2020-2022, Intel'
+copyright = '2020-2023, Intel Corporation'
 author = 'Intel'
 
 # The short X.Y version
@@ -54,7 +54,11 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
+    'sphinxcontrib.googleanalytics',
 ]
+
+googleanalytics_id = 'G-554F8VNE28'
+googleanalytics_enabled = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

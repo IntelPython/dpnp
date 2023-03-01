@@ -47,7 +47,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 0
 
@@ -74,7 +74,7 @@ jobs:
         run: conda install conda-build
 
       - name: Cache conda packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.6
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -89,7 +89,7 @@ jobs:
         run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
@@ -124,7 +124,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.1
+        uses: actions/download-artifact@v3.0.2
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -167,7 +167,7 @@ jobs:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
       - name: Cache conda packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.6
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -228,7 +228,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.1
+        uses: actions/download-artifact@v3.0.2
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -294,7 +294,7 @@ jobs:
         run: more lockfile
 
       - name: Cache conda packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.6
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -398,7 +398,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.1
+        uses: actions/download-artifact@v3.0.2
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 

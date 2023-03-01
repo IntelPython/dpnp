@@ -174,6 +174,9 @@ class dpnp_array:
  # '__getattribute__',
 
     def __getitem__(self, key):
+        if isinstance(key, dpnp_array):
+            key = key.get_array()
+
         item = self._array_obj.__getitem__(key)
         if not isinstance(item, dpt.usm_ndarray):
             raise RuntimeError(
@@ -290,6 +293,11 @@ class dpnp_array:
  # '__setattr__',
 
     def __setitem__(self, key, val):
+        if isinstance(key, dpnp_array):
+            key = key.get_array()
+        if isinstance(val, dpnp_array):
+            val = val.get_array()
+
         self._array_obj.__setitem__(key, val)
 
  # '__setstate__',
@@ -331,19 +339,24 @@ class dpnp_array:
         res._array_obj = usm_ary
         return res
 
-    def all(self, axis=None, out=None, keepdims=False):
+    def all(self,
+            axis=None,
+            out=None,
+            keepdims=False,
+            *,
+            where=True):
         """
         Returns True if all elements evaluate to True.
 
-        Refer to `numpy.all` for full documentation.
+        Refer to :obj:`dpnp.all` for full documentation.
 
         See Also
         --------
-        :obj:`numpy.all` : equivalent function
+        :obj:`dpnp.all` : equivalent function
 
         """
 
-        return dpnp.all(self, axis, out, keepdims)
+        return dpnp.all(self, axis=axis, out=out, keepdims=keepdims, where=where)
 
     def any(self,
             axis=None,

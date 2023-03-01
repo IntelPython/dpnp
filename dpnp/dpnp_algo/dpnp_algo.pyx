@@ -48,6 +48,8 @@ cimport dpnp.dpnp_utils as utils
 cimport numpy
 import numpy
 
+import operator
+
 
 __all__ = [
     "dpnp_astype",
