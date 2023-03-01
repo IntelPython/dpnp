@@ -103,7 +103,6 @@ def test_linspace_arrays(usm_type_start, usm_type_stop):
     assert res.usm_type == du.get_coerced_usm_type([usm_type_start, usm_type_stop])
 
 
-@pytest.mark.skip()
 @pytest.mark.parametrize("func", ["tril", "triu"], ids=["tril", "triu"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_tril_triu(func, usm_type):
