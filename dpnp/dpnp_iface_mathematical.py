@@ -45,6 +45,7 @@ from dpnp.dpnp_utils import *
 
 import dpnp
 import numpy
+import dpctl.tensor as dpt
 
 
 __all__ = [
@@ -1325,18 +1326,35 @@ def negative(x1, **kwargs):
     return call_origin(numpy.negative, x1, **kwargs)
 
 
-def power(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def power(x1,
+          x2,
+          /,
+          out=None,
+          *,
+          where=True,
+          dtype=None,
+          subok=True,
+          **kwargs):
     """
     First array elements raised to powers from second array, element-wise.
 
+    An integer type (of either negative or positive value, but not zero)
+    raised to a negative integer power will return an array of zeroes.
+
     For full documentation refer to :obj:`numpy.power`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        The bases in `x1` raised to the exponents in `x2`.
+    
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
+    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword arguments ``kwargs`` are currently unsupported.
-    Otherwise the functions will be executed sequentially on CPU.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -1348,40 +1366,44 @@ def power(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     Example
     -------
-    >>> import dpnp as np
-    >>> a = np.array([1, 2, 3, 4, 5])
-    >>> b = np.array([2, 2, 2, 2, 2])
-    >>> result = np.power(a, b)
+    >>> import dpnp as dp
+    >>> a = dp.array([1, 2, 3, 4, 5])
+    >>> b = dp.array([2, 2, 2, 2, 2])
+    >>> result = dp.power(a, b)
     >>> [x for x in result]
     [1, 4, 9, 16, 25]
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
+    if where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
 
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif dtype is not None:
-            pass
-        elif not where:
-            pass
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
+                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
+                                           alloc_usm_type=usm_type, alloc_queue=queue)
+
+        if out is not None:
+            if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
+                raise TypeError("return array must be of supported array type")
+            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
         else:
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            return dpnp_power(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
+            out_desc = None
 
-    return call_origin(numpy.power, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+        if x1_desc and x2_desc:
+            return dpnp_power(x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where).get_pyobj()
+
+    return call_origin(numpy.power, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
 
 
 def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
