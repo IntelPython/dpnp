@@ -138,7 +138,7 @@ def absolute(x,
     
     Limitations
     -----------
-    Parameters `x` is supported as :class:`dpnp.ndarray`. It can't be a scalar.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
