@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -114,10 +114,10 @@ DPCTLSyclEventRef (*dpnp_around_ext_c)(DPCTLSyclQueueRef,
                                        const int,
                                        const DPCTLEventVectorRef) = dpnp_around_c<_DataType>;
 
-template <typename _KernelNameSpecialization>
+template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2>
 class dpnp_elemwise_absolute_c_kernel;
 
-template <typename _DataType>
+template <typename _DataType_input, typename _DataType_output>
 DPCTLSyclEventRef dpnp_elemwise_absolute_c(DPCTLSyclQueueRef q_ref,
                                            const void* input1_in,
                                            void* result1,
@@ -137,43 +137,63 @@ DPCTLSyclEventRef dpnp_elemwise_absolute_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, input1_in, size);
-    _DataType* array1 = input1_ptr.get_ptr();
-    DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result1, size, false, true);
-    _DataType* result = result1_ptr.get_ptr();
+    _DataType_input* array1 = static_cast<_DataType_input*>(const_cast<void*>(input1_in));
+    _DataType_output* result = static_cast<_DataType_output*>(result1);
 
-    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    if constexpr (is_any_v<_DataType_input, float, double, std::complex<float>, std::complex<double>>)
     {
-        // https://docs.oneapi.com/versions/latest/onemkl/abs.html
         event = oneapi::mkl::vm::abs(q, size, array1, result);
     }
     else
     {
-        sycl::range<1> gws(size);
-        auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
-            const size_t idx = global_id[0];
+        static_assert(is_any_v<_DataType_input, int32_t, int64_t>,
+                      "Integer types are only expected to pass in 'abs' kernel");
+        static_assert(std::is_same_v<_DataType_input, _DataType_output>, "Result type must match a type of input data");
 
-            if (array1[idx] >= 0)
+        constexpr size_t lws = 64;
+        constexpr unsigned int vec_sz = 8;
+        constexpr sycl::access::address_space global_space = sycl::access::address_space::global_space;
+
+        auto gws_range = sycl::range<1>(((size + lws * vec_sz - 1) / (lws * vec_sz)) * lws);
+        auto lws_range = sycl::range<1>(lws);
+
+        auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {
+            auto sg = nd_it.get_sub_group();
+            const auto max_sg_size = sg.get_max_local_range()[0];
+            const size_t start =
+                vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) + sg.get_group_id()[0] * max_sg_size);
+
+            if (start + static_cast<size_t>(vec_sz) * max_sg_size < size)
             {
-                result[idx] = array1[idx];
+                using input_ptrT = sycl::multi_ptr<_DataType_input, global_space>;
+                using result_ptrT = sycl::multi_ptr<_DataType_output, global_space>;
+
+                sycl::vec<_DataType_input, vec_sz> data_vec = sg.load<vec_sz>(input_ptrT(&array1[start]));
+
+                // sycl::abs() returns unsigned integers only, so explicit casting to signed ones is required
+                using result_absT = typename cl::sycl::detail::make_unsigned<_DataType_output>::type;
+                sycl::vec<_DataType_output, vec_sz> res_vec =
+                    dpnp_vec_cast<_DataType_output, result_absT, vec_sz>(sycl::abs(data_vec));
+
+                sg.store<vec_sz>(result_ptrT(&result[start]), res_vec);
             }
             else
             {
-                result[idx] = -1 * array1[idx];
+                for (size_t k = start + sg.get_local_id()[0]; k < size; k += max_sg_size)
+                {
+                    result[k] = std::abs(array1[k]);
+                }
             }
         };
 
         auto kernel_func = [&](sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_elemwise_absolute_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+            cgh.parallel_for<class dpnp_elemwise_absolute_c_kernel<_DataType_input, _DataType_output>>(
+                sycl::nd_range<1>(gws_range, lws_range), kernel_parallel_for_func);
         };
-
         event = q.submit(kernel_func);
     }
 
-    input1_ptr.depends_on(event);
-    result1_ptr.depends_on(event);
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
-
     return DPCTLEvent_Copy(event_ref);
 }
 
@@ -182,28 +202,24 @@ void dpnp_elemwise_absolute_c(const void* input1_in, void* result1, size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_elemwise_absolute_c<_DataType>(q_ref,
-                                                                      input1_in,
-                                                                      result1,
-                                                                      size,
-                                                                      dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_elemwise_absolute_c<_DataType, _DataType>(q_ref,
+                                                                                 input1_in,
+                                                                                 result1,
+                                                                                 size,
+                                                                                 dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
 void (*dpnp_elemwise_absolute_default_c)(const void*, void*, size_t) = dpnp_elemwise_absolute_c<_DataType>;
 
-template <typename _DataType>
+template <typename _DataType_input, typename _DataType_output = _DataType_input>
 DPCTLSyclEventRef (*dpnp_elemwise_absolute_ext_c)(DPCTLSyclQueueRef,
                                                   const void*,
                                                   void*,
                                                   size_t,
-                                                  const DPCTLEventVectorRef) = dpnp_elemwise_absolute_c<_DataType>;
-
-// template void dpnp_elemwise_absolute_c<double>(void* array1_in, void* result1, size_t size);
-// template void dpnp_elemwise_absolute_c<float>(void* array1_in, void* result1, size_t size);
-// template void dpnp_elemwise_absolute_c<long>(void* array1_in, void* result1, size_t size);
-// template void dpnp_elemwise_absolute_c<int>(void* array1_in, void* result1, size_t size);
+                                                  const DPCTLEventVectorRef) = dpnp_elemwise_absolute_c<_DataType_input, _DataType_output>;
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 DPCTLSyclEventRef dpnp_cross_c(DPCTLSyclQueueRef q_ref,
@@ -1085,10 +1101,12 @@ void func_map_init_mathematical(func_map_t& fmap)
                                                                   (void*)dpnp_elemwise_absolute_ext_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_LNG][eft_LNG] = {eft_LNG,
                                                                   (void*)dpnp_elemwise_absolute_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_FLT][eft_FLT] = {eft_FLT,
-                                                                  (void*)dpnp_elemwise_absolute_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_DBL][eft_DBL] = {eft_DBL,
-                                                                  (void*)dpnp_elemwise_absolute_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_elemwise_absolute_ext_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_elemwise_absolute_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_C64][eft_C64] = {
+        eft_FLT, (void*)dpnp_elemwise_absolute_ext_c<std::complex<float>, float>};
+    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_C128][eft_C128] = {
+        eft_DBL, (void*)dpnp_elemwise_absolute_ext_c<std::complex<double>, double>};
 
     fmap[DPNPFuncName::DPNP_FN_AROUND][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_around_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_AROUND][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_around_default_c<int64_t>};
