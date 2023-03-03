@@ -1,3 +1,5 @@
+from sys import platform
+
 import dpctl
 import dpnp
 
@@ -72,3 +74,18 @@ def get_all_dtypes(no_bool=False,
     if not no_none:
         dtypes.append(None)
     return dtypes
+
+
+def is_cpu_device(device=None):
+    """
+    Return True if a test is running on CPU device, False otherwise.
+    """
+    dev = dpctl.select_default_device() if device is None else device
+    return dev.has_aspect_cpu
+
+
+def is_win_platform():
+    """
+    Return True if a test is runing on Windows OS, False otherwise.
+    """
+    return platform.startswith('win')

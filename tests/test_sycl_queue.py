@@ -1,6 +1,8 @@
 import pytest
-from .helper import get_all_dtypes
-import sys
+from .helper import (
+    get_all_dtypes,
+    is_win_platform
+)
 
 import dpnp
 import dpctl
@@ -204,7 +206,7 @@ def test_array_creation_follow_device(func, args, kwargs, device):
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
-    if func is 'linspace' and sys.platform.startswith('win'):
+    if func is 'linspace' and is_win_platform():
         pytest.skip("CPU driver experiences an instability on Windows.")
 
     x_orig = numpy.array([1, 2, 3, 4])

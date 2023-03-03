@@ -211,7 +211,11 @@ class dpnp_array:
 
  # '__invert__',
  # '__ior__',
- # '__ipow__',
+
+    def __ipow__(self, other):
+        dpnp.power(self, other, out=self)
+        return self
+
  # '__irshift__',
  # '__isub__',
  # '__iter__',
@@ -279,7 +283,10 @@ class dpnp_array:
         return dpnp.multiply(other, self)
 
  # '__ror__',
- # '__rpow__',
+ 
+    def __rpow__(self, other):
+        return dpnp.power(other, self)
+
  # '__rrshift__',
  # '__rshift__',
 
@@ -537,7 +544,7 @@ class dpnp_array:
 
         """
 
-        if not numpy.issubsctype(self.dtype, numpy.complex_):
+        if not dpnp.issubsctype(self.dtype, dpnp.complex_):
             return self
         else:
             return dpnp.conjugate(self)
@@ -550,7 +557,7 @@ class dpnp_array:
 
         """
 
-        if not numpy.issubsctype(self.dtype, numpy.complex_):
+        if not dpnp.issubsctype(self.dtype, dpnp.complex_):
             return self
         else:
             return dpnp.conjugate(self)

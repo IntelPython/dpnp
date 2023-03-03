@@ -1247,18 +1247,6 @@ static void func_map_elemwise_2arg_3type_core(func_map_t& fmap)
                                  func_type_map_t::find_type<FT1>,
                                  func_type_map_t::find_type<FTs>>}),
      ...);
-    ((fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][FT1][FTs] =
-          {populate_func_types<FT1, FTs>(),
-           (void*)dpnp_multiply_c_ext<func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
-                                      func_type_map_t::find_type<FT1>,
-                                      func_type_map_t::find_type<FTs>>}),
-     ...);
-    ((fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][FT1][FTs] =
-          {populate_func_types<FT1, FTs>(),
-           (void*)dpnp_subtract_c_ext<func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
-                                      func_type_map_t::find_type<FT1>,
-                                      func_type_map_t::find_type<FTs>>}),
-     ...);
     ((fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][FT1][FTs] =
           {get_divide_res_type<FT1, FTs>(),
            (void*)dpnp_divide_c_ext<func_type_map_t::find_type<get_divide_res_type<FT1, FTs>()>,
@@ -1268,6 +1256,24 @@ static void func_map_elemwise_2arg_3type_core(func_map_t& fmap)
            (void*)dpnp_divide_c_ext<func_type_map_t::find_type<get_divide_res_type<FT1, FTs, std::false_type>()>,
                                     func_type_map_t::find_type<FT1>,
                                     func_type_map_t::find_type<FTs>>}),
+     ...);
+    ((fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][FT1][FTs] =
+          {populate_func_types<FT1, FTs>(),
+           (void*)dpnp_multiply_c_ext<func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
+                                      func_type_map_t::find_type<FT1>,
+                                      func_type_map_t::find_type<FTs>>}),
+     ...);
+    ((fmap[DPNPFuncName::DPNP_FN_POWER_EXT][FT1][FTs] =
+          {populate_func_types<FT1, FTs>(),
+           (void*)dpnp_power_c_ext<func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
+                                   func_type_map_t::find_type<FT1>,
+                                   func_type_map_t::find_type<FTs>>}),
+     ...);
+    ((fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][FT1][FTs] =
+          {populate_func_types<FT1, FTs>(),
+           (void*)dpnp_subtract_c_ext<func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
+                                      func_type_map_t::find_type<FT1>,
+                                      func_type_map_t::find_type<FTs>>}),
      ...);
 }
 
@@ -1854,39 +1860,6 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
                                                            (void*)dpnp_power_c_default<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_POWER][eft_DBL][eft_DBL] = {eft_DBL,
                                                            (void*)dpnp_power_c_default<double, double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_INT][eft_INT] = {eft_INT,
-                                                               (void*)dpnp_power_c_ext<int32_t, int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_INT][eft_LNG] = {eft_LNG,
-                                                               (void*)dpnp_power_c_ext<int64_t, int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_INT][eft_FLT] = {eft_DBL,
-                                                               (void*)dpnp_power_c_ext<double, int32_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_INT][eft_DBL] = {eft_DBL,
-                                                               (void*)dpnp_power_c_ext<double, int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_LNG][eft_INT] = {eft_LNG,
-                                                               (void*)dpnp_power_c_ext<int64_t, int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_LNG][eft_LNG] = {eft_LNG,
-                                                               (void*)dpnp_power_c_ext<int64_t, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_LNG][eft_FLT] = {eft_DBL,
-                                                               (void*)dpnp_power_c_ext<double, int64_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_LNG][eft_DBL] = {eft_DBL,
-                                                               (void*)dpnp_power_c_ext<double, int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_FLT][eft_INT] = {eft_DBL,
-                                                               (void*)dpnp_power_c_ext<double, float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_FLT][eft_LNG] = {eft_DBL,
-                                                               (void*)dpnp_power_c_ext<double, float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_FLT][eft_FLT] = {eft_FLT,
-                                                               (void*)dpnp_power_c_ext<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_FLT][eft_DBL] = {eft_DBL,
-                                                               (void*)dpnp_power_c_ext<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_DBL][eft_INT] = {eft_DBL,
-                                                               (void*)dpnp_power_c_ext<double, double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_DBL][eft_LNG] = {eft_DBL,
-                                                               (void*)dpnp_power_c_ext<double, double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_DBL][eft_FLT] = {eft_DBL,
-                                                               (void*)dpnp_power_c_ext<double, double, float>};
-    fmap[DPNPFuncName::DPNP_FN_POWER_EXT][eft_DBL][eft_DBL] = {eft_DBL,
-                                                               (void*)dpnp_power_c_ext<double, double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_INT] = {
         eft_INT, (void*)dpnp_subtract_c_default<int32_t, int32_t, int32_t>};

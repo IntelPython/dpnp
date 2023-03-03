@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -119,10 +119,10 @@ cpdef object dpnp_cond(object input, object p):
         sqnorm = dpnp.dot(input, input)
         res = dpnp.sqrt(sqnorm)
         ret = dpnp.array([res])
-    elif p == numpy.inf:
+    elif p == dpnp.inf:
         dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=1)
         ret = dpnp.max(dpnp_sum_val)
-    elif p == -numpy.inf:
+    elif p == -dpnp.inf:
         dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=1)
         ret = dpnp.min(dpnp_sum_val)
     elif p == 1:
@@ -342,13 +342,13 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
     cdef long size_input = input.size
     cdef shape_type_c shape_input = input.shape
 
-    if input.dtype == numpy.float32:
-        res_type = numpy.float32
+    if input.dtype == dpnp.float32:
+        res_type = dpnp.float32
     else:
-        res_type = numpy.float64
+        res_type = dpnp.float64
 
     if size_input == 0:
-        return dpnp.array([numpy.nan], dtype=res_type)
+        return dpnp.array([dpnp.nan], dtype=res_type)
 
     if isinstance(axis, int):
         axis_ = tuple([axis])
@@ -368,9 +368,9 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
 
     len_axis = 1 if axis is None else len(axis_)
     if len_axis == 1:
-        if ord == numpy.inf:
+        if ord == dpnp.inf:
             return dpnp.array([dpnp.abs(input).max(axis=axis)])
-        elif ord == -numpy.inf:
+        elif ord == -dpnp.inf:
             return dpnp.array([dpnp.abs(input).min(axis=axis)])
         elif ord == 0:
             return input.dtype.type(dpnp.count_nonzero(input, axis=axis))
@@ -414,7 +414,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
                 col_axis -= 1
             dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=row_axis)
             ret = dpnp_sum_val.min(axis=col_axis)
-        elif ord == numpy.inf:
+        elif ord == dpnp.inf:
             if row_axis > col_axis:
                 row_axis -= 1
             dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=col_axis)
@@ -424,7 +424,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
                 col_axis -= 1
             dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=row_axis)
             ret = dpnp_sum_val.min(axis=col_axis)
-        elif ord == -numpy.inf:
+        elif ord == -dpnp.inf:
             if row_axis > col_axis:
                 row_axis -= 1
             dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=col_axis)

@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -269,7 +269,7 @@ def matmul(x1, x2, out=None, **kwargs):
                 array2_size = x2_desc.size
                 cost_size = 4096  # 2D array shape(64, 64)
 
-                if ((x1_desc.dtype == numpy.float64) or (x1_desc.dtype == numpy.float32)):
+                if ((x1_desc.dtype == dpnp.float64) or (x1_desc.dtype == dpnp.float32)):
                     """
                     Floating point types are handled via original math library better than SYCL math library
                     """

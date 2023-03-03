@@ -63,6 +63,21 @@ def test_coerced_usm_types_divide(usm_type_x, usm_type_y):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_power(usm_type_x, usm_type_y):
+    x = dp.arange(70, usm_type = usm_type_x).reshape((7, 5, 2))
+    y = dp.arange(70, usm_type = usm_type_y).reshape((7, 5, 2))
+
+    z = 2 ** x ** y ** 1.5
+    z **= x
+    z **= 1.7
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
 @pytest.mark.parametrize(
     "func, args",
     [
