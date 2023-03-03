@@ -174,9 +174,9 @@ class TestNormal:
 
     @pytest.mark.parametrize("dtype",
                              [dpnp.float16, float, dpnp.integer, dpnp.int64, dpnp.int32, dpnp.int, int,
-                              dpnp.longcomplex, dpnp.complex128, dpnp.complex64, dpnp.bool, dpnp.bool_],
+                              numpy.longcomplex, dpnp.complex128, dpnp.complex64, dpnp.bool, dpnp.bool_],
                              ids=['dpnp.float16', 'float', 'dpnp.integer', 'dpnp.int64', 'dpnp.int32', 'dpnp.int', 'int',
-                                  'dpnp.longcomplex', 'dpnp.complex128', 'dpnp.complex64', 'dpnp.bool', 'dpnp.bool_'])
+                                  'numpy.longcomplex', 'dpnp.complex128', 'dpnp.complex64', 'dpnp.bool', 'dpnp.bool_'])
     def test_invalid_dtype(self, dtype):
         # dtype must be float32 or float64
         assert_raises(TypeError, RandomState().normal, dtype=dtype)
@@ -834,9 +834,9 @@ class TestUniform:
 
     @pytest.mark.parametrize("dtype",
                              [dpnp.float16, float, dpnp.integer, dpnp.int64, dpnp.int, int,
-                              dpnp.longcomplex, dpnp.complex128, dpnp.complex64, dpnp.bool, dpnp.bool_],
+                              numpy.longcomplex, dpnp.complex128, dpnp.complex64, dpnp.bool, dpnp.bool_],
                              ids=['dpnp.float16', 'float', 'dpnp.integer', 'dpnp.int64', 'dpnp.int', 'int',
-                                  'dpnp.longcomplex', 'dpnp.complex128', 'dpnp.complex64', 'dpnp.bool', 'dpnp.bool_'])
+                                  'numpy.longcomplex', 'dpnp.complex128', 'dpnp.complex64', 'dpnp.bool', 'dpnp.bool_'])
     def test_invalid_dtype(self, dtype):
         if dtype in (dpnp.int, dpnp.integer) and dtype == dpnp.dtype('int32'):
             pytest.skip("dtype is alias on dpnp.int32 on the target OS, so no error here")

@@ -233,11 +233,11 @@ cpdef dpnp_queue_is_cpu():
 Internal functions
 """
 cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
-    dt_c = numpy.dtype(dtype).char
-    kind = numpy.dtype(dtype).kind
+    dt_c = dpnp.dtype(dtype).char
+    kind = dpnp.dtype(dtype).kind
     if isinstance(kind, int):
         kind = chr(kind)
-    itemsize = numpy.dtype(dtype).itemsize
+    itemsize = dpnp.dtype(dtype).itemsize
 
     if dt_c == 'd':
         return DPNP_FT_DOUBLE
@@ -266,19 +266,19 @@ cdef dpnp_DPNPFuncType_to_dtype(size_t type):
     TODO needs to use DPNPFuncType here
     """
     if type == <size_t > DPNP_FT_DOUBLE:
-        return numpy.float64
+        return dpnp.float64
     elif type == <size_t > DPNP_FT_FLOAT:
-        return numpy.float32
+        return dpnp.float32
     elif type == <size_t > DPNP_FT_LONG:
-        return numpy.int64
+        return dpnp.int64
     elif type == <size_t > DPNP_FT_INT:
-        return numpy.int32
+        return dpnp.int32
     elif type == <size_t > DPNP_FT_CMPLX64:
-        return numpy.complex64
+        return dpnp.complex64
     elif type == <size_t > DPNP_FT_CMPLX128:
-        return numpy.complex128
+        return dpnp.complex128
     elif type == <size_t > DPNP_FT_BOOL:
-        return numpy.bool_
+        return dpnp.bool
     else:
         utils.checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
 
