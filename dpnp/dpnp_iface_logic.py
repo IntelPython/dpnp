@@ -511,9 +511,8 @@ def isfinite(x1, out=None, **kwargs):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([-numpy.inf, 0., numpy.inf])
+    >>> x = np.array([-np.inf, 0., np.inf])
     >>> out = np.isfinite(x)
     >>> [i for i in out]
     [False, True, False]
@@ -556,9 +555,8 @@ def isinf(x1, out=None, **kwargs):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([-numpy.inf, 0., numpy.inf])
+    >>> x = np.array([-np.inf, 0., np.inf])
     >>> out = np.isinf(x)
     >>> [i for i in out]
     [True, False, True]
@@ -602,9 +600,8 @@ def isnan(x1, out=None, **kwargs):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([numpy.inf, 0., np.nan])
+    >>> x = np.array([np.inf, 0., np.nan])
     >>> out = np.isnan(x)
     >>> [i for i in out]
     [False, False, True]

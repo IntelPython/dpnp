@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -353,9 +353,9 @@ cdef class MT19937:
 
     cdef bint is_integer(self, value):
         if isinstance(value, numbers.Number):
-            return isinstance(value, int) or isinstance(value, numpy.integer)
+            return isinstance(value, int) or isinstance(value, dpnp.integer)
         # cover an element of dpnp array:
-        return numpy.ndim(value) == 0 and hasattr(value, "dtype") and numpy.issubdtype(value, numpy.integer)
+        return numpy.ndim(value) == 0 and hasattr(value, "dtype") and dpnp.issubdtype(value, dpnp.integer)
 
 
     cdef bint is_uint_range(self, value):
@@ -455,7 +455,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_beta(double a, double b, size):
     """
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_BETA_EXT, param1_type, param1_type)
@@ -488,7 +488,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_binomial(int ntrial, double p, size):
 
     """
 
-    dtype = numpy.int32
+    dtype = dpnp.int32
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_binomial_c_1out_t func
@@ -527,7 +527,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_chisquare(int df, size):
     """
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_CHISQUARE_EXT, param1_type, param1_type)
@@ -560,7 +560,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_exponential(double beta, size):
 
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
@@ -593,7 +593,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_f(double df_num, double df_den, size):
     univariate F distribution.
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
@@ -627,7 +627,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_gamma(double shape, double scale, size):
 
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_gamma_c_1out_t func
@@ -664,7 +664,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_geometric(float p, size):
 
     """
 
-    dtype = numpy.int32
+    dtype = dpnp.int32
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_geometric_c_1out_t func
@@ -702,7 +702,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_gumbel(double loc, double scale, size):
 
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_gumbel_c_1out_t func
@@ -737,7 +737,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_hypergeometric(int l, int s, int m, size):
 
     """
 
-    dtype = numpy.int32
+    dtype = dpnp.int32
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_hypergeometric_c_1out_t func
@@ -775,7 +775,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_laplace(double loc, double scale, size):
 
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_laplace_c_1out_t func
@@ -814,7 +814,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_logistic(double loc, double scale, size):
     """
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGISTIC_EXT, param1_type, param1_type)
@@ -846,7 +846,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_lognormal(double mean, double stddev, size)
 
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_lognormal_c_1out_t func
@@ -886,7 +886,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_multinomial(int ntrial, utils.dpnp_descript
 
     """
 
-    dtype = numpy.int32
+    dtype = dpnp.int32
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_multinomial_c_1out_t func
@@ -934,7 +934,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_multivariate_normal(utils.dpnp_descriptor m
 
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     cdef int dimen
     cdef size_t mean_size
     cdef size_t cov_size
@@ -981,7 +981,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_negative_binomial(double a, double p, size)
 
     """
 
-    dtype = numpy.int32
+    dtype = dpnp.int32
     cdef utils.dpnp_descriptor result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
@@ -1031,7 +1031,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_noncentral_chisquare(double df, double nonc
     """
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NONCENTRAL_CHISQUARE_EXT, param1_type, param1_type)
@@ -1063,7 +1063,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_pareto(double alpha, size):
 
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
@@ -1098,7 +1098,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_poisson(double lam, size):
 
     """
 
-    dtype = numpy.int32
+    dtype = dpnp.int32
     cdef shape_type_c result_shape
     cdef utils.dpnp_descriptor result
     cdef DPNPFuncType param1_type
@@ -1143,7 +1143,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_power(double alpha, size):
     univariate power distribution of `alpha`.
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
@@ -1177,7 +1177,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_rayleigh(double scale, size):
 
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     cdef shape_type_c result_shape
     cdef utils.dpnp_descriptor result
     cdef DPNPFuncType param1_type
@@ -1252,7 +1252,7 @@ cpdef dpnp_rng_srand(seed):
     """
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_SRAND, param1_type, param1_type)
@@ -1271,7 +1271,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_cauchy(size):
     """
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_CAUCHY_EXT, param1_type, param1_type)
@@ -1306,7 +1306,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_exponential(size):
     cdef fptr_dpnp_rng_standard_exponential_c_1out_t func
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_EXPONENTIAL_EXT, param1_type, param1_type)
@@ -1338,7 +1338,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_gamma(double shape, size):
 
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     cdef shape_type_c result_shape
     cdef utils.dpnp_descriptor result
     cdef DPNPFuncType param1_type
@@ -1385,7 +1385,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_t(double df, size):
     """
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_T_EXT, param1_type, param1_type)
@@ -1417,7 +1417,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_triangular(double left, double mode, double
 
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
@@ -1452,7 +1452,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_vonmises(double mu, double kappa, size):
     """
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_VONMISES_EXT, param1_type, param1_type)
@@ -1484,7 +1484,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_wald(double mean, double scale, size):
 
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
@@ -1518,13 +1518,13 @@ cpdef utils.dpnp_descriptor dpnp_rng_weibull(double a, size):
 
     """
 
-    dtype = numpy.float64
+    dtype = dpnp.float64
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_weibull_c_1out_t func
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
 
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WEIBULL_EXT, param1_type, param1_type)
@@ -1557,7 +1557,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_zipf(double a, size):
     """
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_ZIPF_EXT, param1_type, param1_type)
