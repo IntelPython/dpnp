@@ -117,7 +117,14 @@ def abs(*args, **kwargs):
     return dpnp.absolute(*args, **kwargs)
 
 
-def absolute(x1, **kwargs):
+def absolute(x,
+             /,
+             out=None,
+             *,
+             where=True,
+             dtype=None,
+             subok=True,
+             **kwargs):
     """
     Calculate the absolute value element-wise.
 
@@ -125,34 +132,48 @@ def absolute(x1, **kwargs):
 
     .. seealso:: :obj:`dpnp.abs` : Calculate the absolute value element-wise.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        An array containing the absolute value of each element in `x`.
+    
     Limitations
     -----------
-        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
-        Dimension of input array is limited by ``x1.ndim != 0``.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> a = np.array([-1.2, 1.2])
-    >>> result = np.absolute(a)
+    >>> import dpnp as dp
+    >>> a = dp.array([-1.2, 1.2])
+    >>> result = dp.absolute(a)
     >>> [x for x in result]
     [1.2, 1.2]
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        if not x1_desc.ndim:
-            pass
-        else:
-            result = dpnp_absolute(x1_desc).get_pyobj()
+    if out is not None:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x):
+        pass
+    else:
+        x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+        if x_desc:
+            if x_desc.dtype == dpnp.bool:
+                # return a copy of input array "x"
+                return dpnp.array(x, dtype=x.dtype, sycl_queue=x.sycl_queue, usm_type=x.usm_type)
+            return dpnp_absolute(x_desc).get_pyobj()
 
-            return result
-
-    return call_origin(numpy.absolute, x1, **kwargs)
+    return call_origin(numpy.absolute, x, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
 
 
 def add(x1,

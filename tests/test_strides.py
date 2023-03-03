@@ -20,10 +20,10 @@ def _getattr(ex, str_):
 
 @pytest.mark.parametrize("func_name",
                          ['abs', ])
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_strides(func_name, dtype):
     shape = (4, 4)
-    a = numpy.arange(shape[0] * shape[1], dtype=dtype).reshape(shape)
+    a = numpy.ones(shape[0] * shape[1], dtype=dtype).reshape(shape)
     a_strides = a[0::2, 0::2]
     dpa = dpnp.array(a)
     dpa_strides = dpa[0::2, 0::2]
