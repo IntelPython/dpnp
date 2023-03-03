@@ -184,4 +184,14 @@ def where(condition, x=None, y=None):
 
     """
 
+    missing = (x is None, y is None).count(True)
+    if missing == 1:
+        raise ValueError("Must provide both 'x' and 'y' or neither.")
+    if missing == 2:
+        condition_desc = dpnp.get_dpnp_descriptor(condition, copy_when_nondefault_queue=False)
+        if condition_desc:
+            return dpnp_nonzero(condition_desc)
+
+        return call_origin(numpy.nonzero, condition)
+
     return call_origin(numpy.where, condition, x, y)
