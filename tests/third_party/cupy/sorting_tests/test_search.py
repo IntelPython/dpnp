@@ -262,6 +262,7 @@ class TestArgMinMaxDtype(unittest.TestCase):
     {'cond_shape': (2, 3, 4), 'x_shape': (2, 3, 4), 'y_shape': (3, 4)},
     {'cond_shape': (3, 4), 'x_shape': (2, 3, 4), 'y_shape': (4,)},
 )
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestWhereTwoArrays(unittest.TestCase):
 
