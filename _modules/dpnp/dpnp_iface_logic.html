@@ -595,9 +595,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([-numpy.inf, 0., numpy.inf])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
 <span class="sd">    &gt;&gt;&gt; out = np.isfinite(x)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [False, True, False]</span>
@@ -640,9 +639,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([-numpy.inf, 0., numpy.inf])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
 <span class="sd">    &gt;&gt;&gt; out = np.isinf(x)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [True, False, True]</span>
@@ -686,9 +684,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([numpy.inf, 0., np.nan])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([np.inf, 0., np.nan])</span>
 <span class="sd">    &gt;&gt;&gt; out = np.isnan(x)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [False, False, True]</span>

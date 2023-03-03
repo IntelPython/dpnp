@@ -86,7 +86,7 @@
 <span class="c1"># distutils: language = c++</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2020, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2023, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -220,9 +220,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([numpy.e, 10.0])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([np.e, 10.0])</span>
 <span class="sd">    &gt;&gt;&gt; out = np.arccosh(x)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [1.65745445, 2.99322285]</span>
@@ -289,9 +288,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([numpy.e, 10.0])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([np.e, 10.0])</span>
 <span class="sd">    &gt;&gt;&gt; out = np.arcsinh(x)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [1.72538256, 2.99822295]</span>
@@ -468,9 +466,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([0, numpy.pi/2, numpy.pi])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([0, np.pi/2, np.pi])</span>
 <span class="sd">    &gt;&gt;&gt; out = np.cos(x)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [1.0, 6.123233995736766e-17, -1.0]</span>
@@ -548,9 +545,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; rad = np.arange(6.) * numpy.pi/6</span>
+<span class="sd">    &gt;&gt;&gt; rad = np.arange(6.) * np.pi/6</span>
 <span class="sd">    &gt;&gt;&gt; out = np.degrees(rad)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [0.0, 30.0, 60.0, 90.0, 120.0, 150.0]</span>
@@ -736,9 +732,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([1.0, numpy.e, numpy.e**2, 0.0])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([1.0, np.e, np.e**2, 0.0])</span>
 <span class="sd">    &gt;&gt;&gt; out = np.log(x)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [0.0, 1.0, 2.0, -inf]</span>
@@ -951,9 +946,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([0, numpy.pi/2, numpy.pi])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([0, np.pi/2, np.pi])</span>
 <span class="sd">    &gt;&gt;&gt; out = np.sin(x)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [0.0, 1.0, 1.2246467991473532e-16]</span>
@@ -981,9 +975,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([0, numpy.pi/2, numpy.pi])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([0, np.pi/2, np.pi])</span>
 <span class="sd">    &gt;&gt;&gt; out = np.sinh(x)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [0.0, 2.3012989, 11.548739]</span>
@@ -1075,9 +1068,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([-numpy.pi, numpy.pi/2, numpy.pi])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([-np.pi, np.pi/2, np.pi])</span>
 <span class="sd">    &gt;&gt;&gt; out = np.tan(x)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [1.22460635e-16, 1.63317787e+16, -1.22460635e-16]</span>
@@ -1105,9 +1097,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([-numpy.pi, numpy.pi/2, numpy.pi])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([-np.pi, np.pi/2, np.pi])</span>
 <span class="sd">    &gt;&gt;&gt; out = np.tanh(x)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [-0.996272, 0.917152, 0.996272]</span>
@@ -1139,11 +1130,10 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; phase = np.linspace(0, numpy.pi, num=5)</span>
+<span class="sd">    &gt;&gt;&gt; phase = np.linspace(0, np.pi, num=5)</span>
 <span class="sd">    &gt;&gt;&gt; for i in range(3, 5):</span>
-<span class="sd">    &gt;&gt;&gt;     phase[i] += numpy.pi</span>
+<span class="sd">    &gt;&gt;&gt;     phase[i] += np.pi</span>
 <span class="sd">    &gt;&gt;&gt; out = np.unwrap(phase)</span>
 <span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
 <span class="sd">    [0.0, 0.78539816, 1.57079633, 5.49778714, 6.28318531]</span>
