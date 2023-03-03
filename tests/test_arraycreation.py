@@ -30,7 +30,7 @@ import operator
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_float16=False))
 def test_arange(start, stop, step, dtype):
     rtol_mult = 2
-    if numpy.issubdtype(dtype, numpy.float16):
+    if dpnp.issubdtype(dtype, dpnp.float16):
         # numpy casts to float32 type when computes float16 data
         rtol_mult = 4
 
@@ -51,7 +51,7 @@ def test_arange(start, stop, step, dtype):
     else:
         _dtype = dtype
 
-    if numpy.issubdtype(_dtype, numpy.floating) or numpy.issubdtype(_dtype, numpy.complexfloating):
+    if dpnp.issubdtype(_dtype, dpnp.floating) or dpnp.issubdtype(_dtype, dpnp.complexfloating):
         assert_allclose(exp_array, res_array, rtol=rtol_mult*numpy.finfo(_dtype).eps)
     else:
         assert_array_equal(exp_array, res_array)

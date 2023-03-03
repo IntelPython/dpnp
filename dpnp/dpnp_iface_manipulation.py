@@ -89,7 +89,7 @@ def asfarray(x1, dtype=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
-        if dtype is None or not numpy.issubdtype(dtype, numpy.inexact):
+        if dtype is None or not numpy.issubdtype(dtype, dpnp.inexact):
             dtype = dpnp.default_float_type(sycl_queue=x1.sycl_queue)
 
         # if type is the same then same object should be returned

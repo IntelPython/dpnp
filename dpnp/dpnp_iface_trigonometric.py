@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -136,9 +136,8 @@ def arccosh(x1):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([numpy.e, 10.0])
+    >>> x = np.array([np.e, 10.0])
     >>> out = np.arccosh(x)
     >>> [i for i in out]
     [1.65745445, 2.99322285]
@@ -205,9 +204,8 @@ def arcsinh(x1):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([numpy.e, 10.0])
+    >>> x = np.array([np.e, 10.0])
     >>> out = np.arcsinh(x)
     >>> [i for i in out]
     [1.72538256, 2.99822295]
@@ -384,9 +382,8 @@ def cos(x1, out=None, **kwargs):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([0, numpy.pi/2, numpy.pi])
+    >>> x = np.array([0, np.pi/2, np.pi])
     >>> out = np.cos(x)
     >>> [i for i in out]
     [1.0, 6.123233995736766e-17, -1.0]
@@ -464,9 +461,8 @@ def degrees(x1):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> rad = np.arange(6.) * numpy.pi/6
+    >>> rad = np.arange(6.) * np.pi/6
     >>> out = np.degrees(rad)
     >>> [i for i in out]
     [0.0, 30.0, 60.0, 90.0, 120.0, 150.0]
@@ -652,9 +648,8 @@ def log(x1, out=None, **kwargs):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([1.0, numpy.e, numpy.e**2, 0.0])
+    >>> x = np.array([1.0, np.e, np.e**2, 0.0])
     >>> out = np.log(x)
     >>> [i for i in out]
     [0.0, 1.0, 2.0, -inf]
@@ -867,9 +862,8 @@ def sin(x1, out=None, **kwargs):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([0, numpy.pi/2, numpy.pi])
+    >>> x = np.array([0, np.pi/2, np.pi])
     >>> out = np.sin(x)
     >>> [i for i in out]
     [0.0, 1.0, 1.2246467991473532e-16]
@@ -897,9 +891,8 @@ def sinh(x1):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([0, numpy.pi/2, numpy.pi])
+    >>> x = np.array([0, np.pi/2, np.pi])
     >>> out = np.sinh(x)
     >>> [i for i in out]
     [0.0, 2.3012989, 11.548739]
@@ -991,9 +984,8 @@ def tan(x1, out=None, **kwargs):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([-numpy.pi, numpy.pi/2, numpy.pi])
+    >>> x = np.array([-np.pi, np.pi/2, np.pi])
     >>> out = np.tan(x)
     >>> [i for i in out]
     [1.22460635e-16, 1.63317787e+16, -1.22460635e-16]
@@ -1021,9 +1013,8 @@ def tanh(x1):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([-numpy.pi, numpy.pi/2, numpy.pi])
+    >>> x = np.array([-np.pi, np.pi/2, np.pi])
     >>> out = np.tanh(x)
     >>> [i for i in out]
     [-0.996272, 0.917152, 0.996272]
@@ -1055,11 +1046,10 @@ def unwrap(x1):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> phase = np.linspace(0, numpy.pi, num=5)
+    >>> phase = np.linspace(0, np.pi, num=5)
     >>> for i in range(3, 5):
-    >>>     phase[i] += numpy.pi
+    >>>     phase[i] += np.pi
     >>> out = np.unwrap(phase)
     >>> [i for i in out]
     [0.0, 0.78539816, 1.57079633, 5.49778714, 6.28318531]
