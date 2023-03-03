@@ -10358,7 +10358,7 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
 
 <p>Per element operation function dpnp_power_c <br  />
  </p>
-<p >&lt;&gt; Function "dpnp_power_c" executes operator "sycl::pow((double)input1_elem, (double)input2_elem)" over corresponding elements of input arrays <br  />
+<p >&lt;&gt; Function "dpnp_power_c" executes operator "static_cast&lt;_DataType_output&gt;(std::pow(input1_elem, input2_elem))" over corresponding elements of input arrays <br  />
  </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. <br  />

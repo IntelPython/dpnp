@@ -295,7 +295,11 @@
 
  <span class="c1"># &#39;__invert__&#39;,</span>
  <span class="c1"># &#39;__ior__&#39;,</span>
- <span class="c1"># &#39;__ipow__&#39;,</span>
+
+    <span class="k">def</span> <span class="fm">__ipow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
  <span class="c1"># &#39;__irshift__&#39;,</span>
  <span class="c1"># &#39;__isub__&#39;,</span>
  <span class="c1"># &#39;__iter__&#39;,</span>
@@ -363,7 +367,10 @@
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
  <span class="c1"># &#39;__ror__&#39;,</span>
- <span class="c1"># &#39;__rpow__&#39;,</span>
+ 
+    <span class="k">def</span> <span class="fm">__rpow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
  <span class="c1"># &#39;__rrshift__&#39;,</span>
  <span class="c1"># &#39;__rshift__&#39;,</span>
 

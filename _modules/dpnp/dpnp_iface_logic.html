@@ -337,8 +337,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,</span>
-<span class="sd">    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`,</span>
@@ -407,8 +407,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,</span>
-<span class="sd">    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`,</span>
@@ -477,8 +477,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,</span>
-<span class="sd">    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`,</span>
@@ -722,8 +722,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,</span>
-<span class="sd">    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`,</span>
@@ -792,8 +792,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,</span>
-<span class="sd">    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`,</span>
@@ -862,8 +862,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,</span>
-<span class="sd">    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`,</span>
@@ -931,7 +931,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x` is only supported as :class:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
 <span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data type is limited by supported DPNP :ref:`Data types`,</span>
@@ -988,8 +988,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,</span>
-<span class="sd">    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`,</span>
@@ -1057,8 +1057,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,</span>
-<span class="sd">    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`,</span>
@@ -1126,8 +1126,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,</span>
-<span class="sd">    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`,</span>
