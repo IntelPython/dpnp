@@ -164,6 +164,12 @@ template <typename T, typename... Ts>
 struct are_same : std::conjunction<std::is_same<T, Ts>...> {};
 
 /**
+ * A template constant to check if type T matces any type from Ts.
+ */
+template <typename T, typename... Ts>
+constexpr auto is_any_v = is_any<T, Ts...>::value;
+
+/**
  * A template constat to check if both types T1 and T2 match every type from Ts sequence.
  */
 template <typename T1, typename T2, typename... Ts>
