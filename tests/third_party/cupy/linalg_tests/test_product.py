@@ -31,7 +31,6 @@ from tests.third_party.cupy import testing
     'trans_a': [True, False],
     'trans_b': [True, False],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestDot(unittest.TestCase):
 

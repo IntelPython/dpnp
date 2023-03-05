@@ -592,7 +592,8 @@ class dpnp_array:
 
         return dpnp.diagonal(input, offset, axis1, axis2)
 
- # 'dot',
+    def dot(self, other, out=None):
+        return dpnp.dot(self, other, out)
 
     @property
     def dtype(self):

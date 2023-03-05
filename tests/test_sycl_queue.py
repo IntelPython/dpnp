@@ -297,7 +297,7 @@ def test_1in_1out(func, data, device):
     x = dpnp.array(data, device=device)
     result = getattr(dpnp, func)(x)
 
-    numpy.testing.assert_array_equal(result, expected)
+    assert_array_equal(result, expected)
 
     expected_queue = x.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -320,6 +320,9 @@ def test_1in_1out(func, data, device):
         pytest.param("divide",
                      [0., 1., 2., 3., 4.],
                      [4., 4., 4., 4., 4.]),
+        pytest.param("dot",
+                     [[0., 1., 2.], [3., 4., 5.]],
+                     [[4., 4.], [4., 4.], [4., 4.]]),
         pytest.param("floor_divide",
                      [1., 2., 3., 4.],
                      [2.5, 2.5, 2.5, 2.5]),
@@ -364,7 +367,7 @@ def test_2in_1out(func, data1, data2, device):
     x2 = dpnp.array(data2, device=device)
     result = getattr(dpnp, func)(x1, x2)
 
-    numpy.testing.assert_array_equal(result, expected)
+    assert_array_equal(result, expected)
 
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
@@ -539,6 +542,9 @@ def test_random_state(func, args, kwargs, device, usm_type):
         pytest.param("divide",
                      [0., 1., 2., 3., 4.],
                      [4., 4., 4., 4., 4.]),
+        pytest.param("dot",
+                     [[0., 1., 2.], [3., 4., 5.]],
+                     [[4., 4.], [4., 4.], [4., 4.]]),
         pytest.param("floor_divide",
                      [1., 2., 3., 4.],
                      [2.5, 2.5, 2.5, 2.5]),
@@ -571,20 +577,20 @@ def test_random_state(func, args, kwargs, device, usm_type):
 def test_out(func, data1, data2, device):
     x1_orig = numpy.array(data1)
     x2_orig = numpy.array(data2)
-    expected = numpy.empty(x1_orig.size)
-    numpy.add(x1_orig, x2_orig, out=expected)
+    np_out = getattr(numpy, func)(x1_orig, x2_orig)
+    expected = numpy.empty_like(np_out)
+    getattr(numpy, func)(x1_orig, x2_orig, out=expected)
 
     x1 = dpnp.array(data1, device=device)
     x2 = dpnp.array(data2, device=device)
-    result = dpnp.empty(x1.size, device=device)
-    dpnp.add(x1, x2, out=result)
+    dp_out = getattr(dpnp, func)(x1, x2)
+    result = dpnp.empty_like(dp_out)
+    getattr(dpnp, func)(x1, x2, out=result)
 
-    numpy.testing.assert_array_equal(result, expected)
+    assert_array_equal(result, expected)
 
-    expected_queue = x1.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
-
-    assert_sycl_queue_equal(result_queue, expected_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
 
 @pytest.mark.parametrize("device",
