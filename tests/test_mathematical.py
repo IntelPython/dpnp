@@ -1,6 +1,7 @@
 import pytest
 from .helper import (
     get_all_dtypes,
+    get_float_complex_dtypes,
     is_cpu_device,
     is_win_platform
 )
@@ -634,25 +635,75 @@ class TestTrunc:
             dpnp.trunc(dp_array, out=dp_out)
 
 
-class TestPower:
-
-    def test_power(self):
+class TestAdd:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_power(self, dtype):
         array1_data = numpy.arange(10)
         array2_data = numpy.arange(5, 15)
-        out = numpy.empty(10, dtype=numpy.float64)
+        out = numpy.empty(10, dtype=dtype)
 
         # DPNP
-        dp_array1 = dpnp.array(array1_data, dtype=dpnp.float64)
-        dp_array2 = dpnp.array(array2_data, dtype=dpnp.float64)
-        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        dp_array1 = dpnp.array(array1_data, dtype=dtype)
+        dp_array2 = dpnp.array(array2_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
+        result = dpnp.add(dp_array1, dp_array2, out=dp_out)
+
+        # original
+        np_array1 = numpy.array(array1_data, dtype=dtype)
+        np_array2 = numpy.array(array2_data, dtype=dtype)
+        expected = numpy.add(np_array1, np_array2, out=out)
+
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_none=True))
+    def test_invalid_dtype(self, dtype):
+        dp_array1 = dpnp.arange(10, dtype=dpnp.complex64)
+        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.complex64)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.add(dp_array1, dp_array2, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+        dp_array1 = dpnp.arange(10, dtype=dpnp.float64)
+        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float64)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+
+        with pytest.raises(ValueError):
+            dpnp.add(dp_array1, dp_array2, out=dp_out)
+
+    @pytest.mark.parametrize("out",
+                             [4, (), [], (3, 7), [2, 4]],
+                             ids=['4', '()', '[]', '(3, 7)', '[2, 4]'])
+    def test_invalid_out(self, out):
+        a = dpnp.arange(10)
+
+        assert_raises(TypeError, dpnp.add, a, 2,  out)
+        assert_raises(TypeError, numpy.add, a.asnumpy(), 2,  out)
+
+
+class TestPower:
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_power(self, dtype):
+        array1_data = numpy.arange(10)
+        array2_data = numpy.arange(5, 15)
+        out = numpy.empty(10, dtype=dtype)
+
+        # DPNP
+        dp_array1 = dpnp.array(array1_data, dtype=dtype)
+        dp_array2 = dpnp.array(array2_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
         result = dpnp.power(dp_array1, dp_array2, out=dp_out)
 
         # original
-        np_array1 = numpy.array(array1_data, dtype=numpy.float64)
-        np_array2 = numpy.array(array2_data, dtype=numpy.float64)
+        np_array1 = numpy.array(array1_data, dtype=dtype)
+        np_array2 = numpy.array(array2_data, dtype=dtype)
         expected = numpy.power(np_array1, np_array2, out=out)
 
-        assert_array_equal(expected, result)
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_none=True))
     def test_invalid_dtype(self, dtype):

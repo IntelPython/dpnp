@@ -192,7 +192,11 @@ class dpnp_array:
         return dpnp.greater(self, other)
 
  # '__hash__',
- # '__iadd__',
+
+    def __iadd__(self, other):
+        dpnp.add(self, other, out=self)
+        return self
+
  # '__iand__',
  # '__ifloordiv__',
  # '__ilshift__',

@@ -18,6 +18,8 @@ def test_coerced_usm_types_sum(usm_type_x, usm_type_y):
     y = dp.arange(1000, usm_type = usm_type_y)
 
     z = 1.3 + x + y + 2
+    z += x
+    z += 7.4
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y

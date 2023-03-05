@@ -199,7 +199,7 @@ def add(x1,
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -215,9 +215,7 @@ def add(x1,
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
+    if where is not True:
         pass
     elif dtype is not None:
         pass
@@ -234,8 +232,15 @@ def add(x1,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
+        if out is not None:
+            if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
+                raise TypeError("return array must be of supported array type")
+            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+        else:
+            out_desc = None
+
         if x1_desc and x2_desc:
-            return dpnp_add(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
+            return dpnp_add(x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where).get_pyobj()
 
     return call_origin(numpy.add, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
 
@@ -1413,7 +1418,6 @@ def power(x1,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
-
         if out is not None:
             if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
                 raise TypeError("return array must be of supported array type")
