@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -148,53 +148,62 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
                                                                                                                        \
         sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));                                                      \
                                                                                                                        \
-        DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, input1_in, input1_size);                                        \
-        DPNPC_ptr_adapter<shape_elem_type> input1_shape_ptr(q_ref, input1_shape, input1_ndim, true);                   \
-        DPNPC_ptr_adapter<shape_elem_type> input1_strides_ptr(q_ref, input1_strides, input1_ndim, true);               \
+        _DataType* input1_data = static_cast<_DataType*>(const_cast<void*>(input1_in));                                \
+        _DataType* input2_data = static_cast<_DataType*>(const_cast<void*>(input2_in));                                \
+        _DataType* result = static_cast<_DataType*>(result_out);                                                       \
                                                                                                                        \
-        DPNPC_ptr_adapter<_DataType> input2_ptr(q_ref, input2_in, input2_size);                                        \
-        DPNPC_ptr_adapter<shape_elem_type> input2_shape_ptr(q_ref, input2_shape, input2_ndim, true);                   \
-        DPNPC_ptr_adapter<shape_elem_type> input2_strides_ptr(q_ref, input2_strides, input2_ndim, true);               \
+        shape_elem_type* input1_shape_offsets = new shape_elem_type[input1_ndim];                                      \
                                                                                                                        \
-        DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result_out, result_size, false, true);                          \
-        DPNPC_ptr_adapter<shape_elem_type> result_strides_ptr(q_ref, result_strides, result_ndim);                     \
+        get_shape_offsets_inkernel(input1_shape, input1_ndim, input1_shape_offsets);                                   \
+        bool use_strides = !array_equal(input1_strides, input1_ndim, input1_shape_offsets, input1_ndim);               \
+        delete[] input1_shape_offsets;                                                                                 \
                                                                                                                        \
-        _DataType* input1_data = input1_ptr.get_ptr();                                                                 \
-        shape_elem_type* input1_shape_data = input1_shape_ptr.get_ptr();                                               \
-        shape_elem_type* input1_strides_data = input1_strides_ptr.get_ptr();                                           \
+        shape_elem_type* input2_shape_offsets = new shape_elem_type[input2_ndim];                                      \
                                                                                                                        \
-        _DataType* input2_data = input2_ptr.get_ptr();                                                                 \
-        shape_elem_type* input2_shape_data = input2_shape_ptr.get_ptr();                                               \
-        shape_elem_type* input2_strides_data = input2_strides_ptr.get_ptr();                                           \
-                                                                                                                       \
-        _DataType* result = result_ptr.get_ptr();                                                                      \
-        shape_elem_type* result_strides_data = result_strides_ptr.get_ptr();                                           \
-                                                                                                                       \
-        const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(shape_elem_type);                               \
-        shape_elem_type* input1_shape_offsets =                                                                        \
-            reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(input1_shape_size_in_bytes, q));                    \
-        get_shape_offsets_inkernel(input1_shape_data, input1_ndim, input1_shape_offsets);                              \
-        bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
-        sycl::free(input1_shape_offsets, q);                                                                           \
-                                                                                                                       \
-        const size_t input2_shape_size_in_bytes = input2_ndim * sizeof(shape_elem_type);                               \
-        shape_elem_type* input2_shape_offsets =                                                                        \
-            reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(input2_shape_size_in_bytes, q));                    \
-        get_shape_offsets_inkernel(input2_shape_data, input2_ndim, input2_shape_offsets);                              \
-        use_strides =                                                                                                  \
-            use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);          \
-        sycl::free(input2_shape_offsets, q);                                                                           \
+        get_shape_offsets_inkernel(input2_shape, input2_ndim, input2_shape_offsets);                                   \
+        use_strides = use_strides || !array_equal(input2_strides, input2_ndim, input2_shape_offsets, input2_ndim);     \
+        delete[] input2_shape_offsets;                                                                                 \
                                                                                                                        \
         sycl::event event;                                                                                             \
         sycl::range<1> gws(result_size);                                                                               \
                                                                                                                        \
         if (use_strides)                                                                                               \
         {                                                                                                              \
+            if ((result_ndim != input1_ndim) || (result_ndim != input2_ndim))                                          \
+            {                                                                                                          \
+                throw std::runtime_error("Result ndim=" + std::to_string(result_ndim) +                                \
+                                         " mismatches with either input1 ndim=" + std::to_string(input1_ndim) +        \
+                                         " or input2 ndim=" + std::to_string(input2_ndim));                            \
+            }                                                                                                          \
+                                                                                                                       \
+            /* memory transfer optimization, use USM-host for temporary speeds up tranfer to device */                 \
+            using usm_host_allocatorT = sycl::usm_allocator<shape_elem_type, sycl::usm::alloc::host>;                  \
+                                                                                                                       \
+            size_t strides_size = 3 * result_ndim;                                                                     \
+            shape_elem_type* dev_strides_data = sycl::malloc_device<shape_elem_type>(strides_size, q);                 \
+                                                                                                                       \
+            /* create host temporary for packed strides managed by shared pointer */                                   \
+            auto strides_host_packed =                                                                                 \
+                std::vector<shape_elem_type, usm_host_allocatorT>(strides_size, usm_host_allocatorT(q));               \
+                                                                                                                       \
+            /* packed vector is concatenation of result_strides, input1_strides and input2_strides */                  \
+            std::copy(result_strides, result_strides + result_ndim, strides_host_packed.begin());                      \
+            std::copy(input1_strides, input1_strides + result_ndim, strides_host_packed.begin() + result_ndim);        \
+            std::copy(input2_strides, input2_strides + result_ndim, strides_host_packed.begin() + 2 * result_ndim);    \
+                                                                                                                       \
+            auto copy_strides_ev =                                                                                     \
+                q.copy<shape_elem_type>(strides_host_packed.data(), dev_strides_data, strides_host_packed.size());     \
+                                                                                                                       \
             auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
-                const size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                    \
+                const size_t output_id = global_id[0]; /* for (size_t i = 0; i < result_size; ++i) */                  \
                 {                                                                                                      \
+                    const shape_elem_type* result_strides_data = &dev_strides_data[0];                                 \
+                    const shape_elem_type* input1_strides_data = &dev_strides_data[1];                                 \
+                    const shape_elem_type* input2_strides_data = &dev_strides_data[2];                                 \
+                                                                                                                       \
                     size_t input1_id = 0;                                                                              \
                     size_t input2_id = 0;                                                                              \
+                                                                                                                       \
                     for (size_t i = 0; i < result_ndim; ++i)                                                           \
                     {                                                                                                  \
                         const size_t output_xyz_id =                                                                   \
@@ -209,14 +218,19 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
                 }                                                                                                      \
             };                                                                                                         \
             auto kernel_func = [&](sycl::handler& cgh) {                                                               \
+                cgh.depends_on(copy_strides_ev);                                                                       \
                 cgh.parallel_for<class __name__##_strides_kernel<_DataType>>(gws, kernel_parallel_for_func);           \
             };                                                                                                         \
-            event = q.submit(kernel_func);                                                                             \
+                                                                                                                       \
+            q.submit(kernel_func).wait();                                                                              \
+                                                                                                                       \
+            sycl::free(dev_strides_data, q);                                                                           \
+            return event_ref;                                                                                          \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
             auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
-                size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                                  \
+                size_t i = global_id[0]; /* for (size_t i = 0; i < result_size; ++i) */                                \
                 const _DataType input1_elem = (input1_size == 1) ? input1_data[0] : input1_data[i];                    \
                 const _DataType input2_elem = (input2_size == 1) ? input2_data[0] : input2_data[i];                    \
                 result[i] = __operation__;                                                                             \
@@ -226,16 +240,8 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
             };                                                                                                         \
             event = q.submit(kernel_func);                                                                             \
         }                                                                                                              \
-        input1_ptr.depends_on(event);                                                                                  \
-        input1_shape_ptr.depends_on(event);                                                                            \
-        input1_strides_ptr.depends_on(event);                                                                          \
-        input2_ptr.depends_on(event);                                                                                  \
-        input2_shape_ptr.depends_on(event);                                                                            \
-        input2_strides_ptr.depends_on(event);                                                                          \
-        result_ptr.depends_on(event);                                                                                  \
-        result_strides_ptr.depends_on(event);                                                                          \
-        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                                       \
                                                                                                                        \
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                                       \
         return DPCTLEvent_Copy(event_ref);                                                                             \
     }                                                                                                                  \
                                                                                                                        \
@@ -278,6 +284,7 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
                                                           where,                                                       \
                                                           dep_event_vec_ref);                                          \
         DPCTLEvent_WaitAndThrow(event_ref);                                                                            \
+        DPCTLEvent_Delete(event_ref);                                                                                  \
     }                                                                                                                  \
                                                                                                                        \
     template <typename _DataType>                                                                                      \
