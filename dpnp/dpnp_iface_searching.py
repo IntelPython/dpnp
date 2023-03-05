@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,9 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
 import dpnp
+
 import numpy
+import dpctl.tensor as dpt
 
 
 __all__ = [
@@ -218,7 +220,9 @@ def where(condition, x=None, y=None, /):
     if missing == 1:
         raise ValueError("Must provide both 'x' and 'y' or neither.")
     elif missing == 2:
-        return dpnp.nonzero(condition)
+        # TODO: rework through dpnp.nonzero() once ready
+        return dpt.nonzero(dpt.asarray(condition))
+        # return dpnp.nonzero(condition)
     elif missing == 0:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
         usm_type, queue = get_usm_allocations([condition, x, y])
