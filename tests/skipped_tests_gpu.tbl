@@ -12,7 +12,6 @@ tests/test_random.py::TestPermutationsTestShuffle::test_no_miss_numbers[int64]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.array([])]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32)]
 
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-abs-data0]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-ceil-data1]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-conjugate-data2]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-copy-data3]
@@ -22,7 +21,6 @@ tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-ediff1d-data7]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-fabs-data8]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-floor-data9]
 
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-abs-data0]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-ceil-data1]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-conjugate-data2]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-copy-data3]
@@ -814,10 +812,6 @@ tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperationWith
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperationWithScalar::test_scalar_int
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_invalid_sub1
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot
-tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_64_{shape=((2,), (2, 4)), trans_a=True, trans_b=True}::test_dot
-tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_65_{shape=((2,), (2, 4)), trans_a=True, trans_b=False}::test_dot
-tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_66_{shape=((2,), (2, 4)), trans_a=False, trans_b=True}::test_dot
-tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_67_{shape=((2,), (2, 4)), trans_a=False, trans_b=False}::test_dot
 tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_invlarge
 tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_large
 tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_of_two
@@ -829,7 +823,6 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transpose
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot_with_int_axes
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot_with_list_axes
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_tensordot_zero_dim
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot_with_out_f_contiguous
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_multidim_vdot
