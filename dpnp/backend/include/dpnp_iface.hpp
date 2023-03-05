@@ -57,6 +57,7 @@ typedef ssize_t shape_elem_type;
 
 #include <dpctl_sycl_interface.h>
 
+#include "dpnp_iface_fptr.hpp"
 #include "dpnp_iface_fft.hpp"
 #include "dpnp_iface_random.hpp"
 
@@ -1682,6 +1683,57 @@ INP_DLLEXPORT void dpnp_var_c(void* array,
                               const shape_elem_type* axis,
                               size_t naxis,
                               size_t ddof);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Implementation of where function
+ *
+ * @param [in]  q_ref               Reference to SYCL queue.
+ * @param [out] result_out          Output array.
+ * @param [in]  result_size         Size of output array.
+ * @param [in]  result_ndim         Number of output array dimensions.
+ * @param [in]  result_shape        Shape of output array.
+ * @param [in]  result_strides      Strides of output array.
+ * @param [in]  condition_in        Condition array.
+ * @param [in]  condition_size      Size of condition array.
+ * @param [in]  condition_ndim      Number of condition array dimensions.
+ * @param [in]  condition_shape     Shape of condition array.
+ * @param [in]  condition_strides   Strides of condition array.
+ * @param [in]  input1_in           First input array.
+ * @param [in]  input1_size         Size of first input array.
+ * @param [in]  input1_ndim         Number of first input array dimensions.
+ * @param [in]  input1_shape        Shape of first input array.
+ * @param [in]  input1_strides      Strides of first input array.
+ * @param [in]  input2_in           Second input array.
+ * @param [in]  input2_size         Size of second input array.
+ * @param [in]  input2_ndim         Number of second input array dimensions.
+ * @param [in]  input2_shape        Shape of second input array.
+ * @param [in]  input2_strides      Strides of second input array.
+ * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
+ */
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
+INP_DLLEXPORT DPCTLSyclEventRef dpnp_where_c(DPCTLSyclQueueRef q_ref,
+                                             void* result_out,
+                                             const size_t result_size,
+                                             const size_t result_ndim,
+                                             const shape_elem_type* result_shape,
+                                             const shape_elem_type* result_strides,
+                                             const void* condition_in,
+                                             const size_t condition_size,
+                                             const size_t condition_ndim,
+                                             const shape_elem_type* condition_shape,
+                                             const shape_elem_type* condition_strides,
+                                             const void* input1_in,
+                                             const size_t input1_size,
+                                             const size_t input1_ndim,
+                                             const shape_elem_type* input1_shape,
+                                             const shape_elem_type* input1_strides,
+                                             const void* input2_in,
+                                             const size_t input2_size,
+                                             const size_t input2_ndim,
+                                             const shape_elem_type* input2_shape,
+                                             const shape_elem_type* input2_strides,
+                                             const DPCTLEventVectorRef dep_event_vec_ref);
 
 /**
  * @ingroup BACKEND_API
