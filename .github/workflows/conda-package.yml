@@ -12,6 +12,7 @@ env:
   CHANNELS: '-c dppy/label/dev -c intel -c main --override-channels'
   TEST_SCOPE: >-
       test_arraycreation.py
+      test_dot.py
       test_dparray.py
       test_fft.py
       test_linalg.py
