@@ -129,6 +129,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_trunc_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga30f085bcc46a07a7c3fe50da2f4da765", null ],
     [ "dpnp_vander_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga93b2cdde37389d750f53ae537c56f4ba", null ],
     [ "dpnp_var_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga91baef74014e4e8b8ce22013cc361a66", null ],
+    [ "dpnp_where_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaee720913fc365de9d1a691fb27d30279", null ],
     [ "dpnp_zeros_c", "group___b_a_c_k_e_n_d___a_p_i.html#gacd17ba5828ba92fae45ab9c3b82419ae", null ],
     [ "dpnp_zeros_like_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga701ba350a76dc444f53a7e7d59c7a143", null ],
     [ "get_dpnp_function_ptr", "group___b_a_c_k_e_n_d___a_p_i.html#ga5d37203d4448c22f7b046710d639fd4e", null ],
