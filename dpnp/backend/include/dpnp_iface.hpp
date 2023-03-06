@@ -57,7 +57,6 @@ typedef ssize_t shape_elem_type;
 
 #include <dpctl_sycl_interface.h>
 
-#include "dpnp_iface_fptr.hpp"
 #include "dpnp_iface_fft.hpp"
 #include "dpnp_iface_random.hpp"
 

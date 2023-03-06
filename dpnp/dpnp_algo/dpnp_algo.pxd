@@ -211,7 +211,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_NEGATIVE
         DPNP_FN_NEGATIVE_EXT
         DPNP_FN_NONZERO
-        DPNP_FN_NONZERO_EXT
         DPNP_FN_NOT_EQUAL_EXT
         DPNP_FN_ONES
         DPNP_FN_ONES_LIKE

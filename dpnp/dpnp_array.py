@@ -760,7 +760,10 @@ class dpnp_array:
         return self._array_obj.ndim
 
  # 'newbyteorder',
- # 'nonzero',
+
+    def nonzero(self):
+        return dpnp.nonzero(self)
+
  # 'partition',
 
     def prod(self, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):

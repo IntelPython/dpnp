@@ -44,10 +44,7 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
 import dpnp
-from dpnp.dpnp_array import dpnp_array
-
 import numpy
-import dpctl.tensor as dpt
 
 
 __all__ = [
@@ -221,13 +218,7 @@ def where(condition, x=None, y=None, /):
     if missing == 1:
         raise ValueError("Must provide both 'x' and 'y' or neither.")
     elif missing == 2:
-        # TODO: rework through dpnp.nonzero() once ready
-        # return dpnp.nonzero(condition)
-        if isinstance(condition, dpnp_array):
-            return dpt.nonzero(condition.get_array())
-
-        if isinstance(condition, dpt.usm_ndarray):
-            return dpt.nonzero(condition)
+        return dpnp.nonzero(condition)
     elif missing == 0:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
         usm_type, queue = get_usm_allocations([condition, x, y])
