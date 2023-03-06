@@ -69,7 +69,13 @@ __all__ = [
 ]
 
 
-def all(x1, axis=None, out=None, keepdims=False):
+def all(x1,
+        /,
+        axis=None,
+        out=None,
+        keepdims=False,
+        *,
+        where=True):
     """
     Test whether all array elements along a given axis evaluate to True.
 
@@ -80,9 +86,10 @@ def all(x1, axis=None, out=None, keepdims=False):
     Input array is supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``axis`` is supported only with default value ``None``.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``keepdims`` is supported only with default value ``False``.
+    Parameter `axis` is supported only with default value `None`.
+    Parameter `out` is supported only with default value `None`.
+    Parameter `keepdims` is supported only with default value `False`.
+    Parameter `where` is supported only with default value `True`.
 
     See Also
     --------
@@ -95,15 +102,15 @@ def all(x1, axis=None, out=None, keepdims=False):
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> x = np.array([[True, False], [True, True]])
-    >>> np.all(x)
+    >>> import dpnp as dp
+    >>> x = dp.array([[True, False], [True, True]])
+    >>> dp.all(x)
     False
-    >>> x2 = np.array([-1, 4, 5])
-    >>> np.all(x2)
+    >>> x2 = dp.array([-1, 4, 5])
+    >>> dp.all(x2)
     True
-    >>> x3 = np.array([1.0, np.nan])
-    >>> np.all(x3)
+    >>> x3 = dp.array([1.0, dp.nan])
+    >>> dp.all(x3)
     True
 
     """
@@ -116,13 +123,13 @@ def all(x1, axis=None, out=None, keepdims=False):
             pass
         elif keepdims is not False:
             pass
+        elif where is not True:
+            pass
         else:
             result_obj = dpnp_all(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+            return dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-            return result
-
-    return call_origin(numpy.all, x1, axis, out, keepdims)
+    return call_origin(numpy.all, x1, axis=axis, out=out, keepdims=keepdims, where=where)
 
 
 def allclose(x1, x2, rtol=1.e-5, atol=1.e-8, **kwargs):
@@ -163,7 +170,13 @@ def allclose(x1, x2, rtol=1.e-5, atol=1.e-8, **kwargs):
     return call_origin(numpy.allclose, x1, x2, rtol=rtol, atol=atol, **kwargs)
 
 
-def any(x1, axis=None, out=None, keepdims=False):
+def any(x1,
+        /,
+        axis=None,
+        out=None,
+        keepdims=False,
+        *,
+        where=True):
     """
     Test whether any array element along a given axis evaluates to True.
 
@@ -174,9 +187,10 @@ def any(x1, axis=None, out=None, keepdims=False):
     Input array is supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``axis`` is supported only with default value ``None``.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``keepdims`` is supported only with default value ``False``.
+    Parameter `axis` is supported only with default value `None`.
+    Parameter `out` is supported only with default value `None`.
+    Parameter `keepdims` is supported only with default value `False`.
+    Parameter `where` is supported only with default value `True`.
 
     See Also
     --------
@@ -189,15 +203,15 @@ def any(x1, axis=None, out=None, keepdims=False):
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> x = np.array([[True, False], [True, True]])
-    >>> np.any(x)
+    >>> import dpnp as dp
+    >>> x = dp.array([[True, False], [True, True]])
+    >>> dp.any(x)
     True
-    >>> x2 = np.array([0, 0, 0])
-    >>> np.any(x2)
+    >>> x2 = dp.array([0, 0, 0])
+    >>> dp.any(x2)
     False
-    >>> x3 = np.array([1.0, np.nan])
-    >>> np.any(x3)
+    >>> x3 = dp.array([1.0, dp.nan])
+    >>> dp.any(x3)
     True
 
     """
@@ -210,13 +224,13 @@ def any(x1, axis=None, out=None, keepdims=False):
             pass
         elif keepdims is not False:
             pass
+        elif where is not True:
+            pass
         else:
             result_obj = dpnp_any(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+            return dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-            return result
-
-    return call_origin(numpy.any, x1, axis, out, keepdims)
+    return call_origin(numpy.any, x1, axis=axis, out=out, keepdims=keepdims, where=where)
 
 
 def equal(x1,
@@ -239,8 +253,8 @@ def equal(x1,
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
-    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`,
@@ -309,8 +323,8 @@ def greater(x1,
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
-    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`,
@@ -379,8 +393,8 @@ def greater_equal(x1,
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
-    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`,
@@ -497,9 +511,8 @@ def isfinite(x1, out=None, **kwargs):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([-numpy.inf, 0., numpy.inf])
+    >>> x = np.array([-np.inf, 0., np.inf])
     >>> out = np.isfinite(x)
     >>> [i for i in out]
     [False, True, False]
@@ -542,9 +555,8 @@ def isinf(x1, out=None, **kwargs):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([-numpy.inf, 0., numpy.inf])
+    >>> x = np.array([-np.inf, 0., np.inf])
     >>> out = np.isinf(x)
     >>> [i for i in out]
     [True, False, True]
@@ -588,9 +600,8 @@ def isnan(x1, out=None, **kwargs):
 
     Examples
     --------
-    >>> import numpy
     >>> import dpnp as np
-    >>> x = np.array([numpy.inf, 0., np.nan])
+    >>> x = np.array([np.inf, 0., np.nan])
     >>> out = np.isnan(x)
     >>> [i for i in out]
     [False, False, True]
@@ -627,8 +638,8 @@ def less(x1,
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
-    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`,
@@ -697,8 +708,8 @@ def less_equal(x1,
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
-    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`,
@@ -767,8 +778,8 @@ def logical_and(x1,
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
-    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`,
@@ -836,7 +847,7 @@ def logical_not(x,
 
     Limitations
     -----------
-    Parameters `x` is only supported as :class:`dpnp.ndarray`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data type is limited by supported DPNP :ref:`Data types`,
@@ -893,8 +904,8 @@ def logical_or(x1,
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
-    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`,
@@ -962,8 +973,8 @@ def logical_xor(x1,
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
-    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`,
@@ -1031,8 +1042,8 @@ def not_equal(x1,
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar,
-    but not both (at least either `x1` or `x2` should be as :class:`dpnp.ndarray`).
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`,

@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,14 +39,14 @@ it contains:
 
 """
 
-
-import collections
-
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
+
 import numpy
+import dpctl.tensor as dpt
 
 
 __all__ = [
@@ -286,15 +286,21 @@ def indices(dimensions, dtype=int, sparse=False):
     return call_origin(numpy.indices, dimensions, dtype, sparse)
 
 
-def nonzero(x1):
+def nonzero(x, /):
     """
     Return the indices of the elements that are non-zero.
 
     For full documentation refer to :obj:`numpy.nonzero`.
 
+    Returns
+    -------
+    y : tuple[dpnp.ndarray]
+        Indices of elements that are non-zero.
+    
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -329,11 +335,11 @@ def nonzero(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        return dpnp_nonzero(x1_desc)
+    if isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
+        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+        return tuple(dpnp_array._create_from_usm_ndarray(y) for y in dpt.nonzero(dpt_array))
 
-    return call_origin(numpy.nonzero, x1)
+    return call_origin(numpy.nonzero, x)
 
 
 def place(x1, mask, vals):

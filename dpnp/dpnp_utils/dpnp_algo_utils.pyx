@@ -268,18 +268,18 @@ def map_dtype_to_device(dtype, device):
     Map an input ``dtype`` with type ``device`` may use
     """
 
-    dtype = numpy.dtype(dtype)
+    dtype = dpnp.dtype(dtype)
     if not hasattr(dtype, 'char'):
         raise TypeError(f"Invalid type of input dtype={dtype}")
     elif not isinstance(device, dpctl.SyclDevice):
         raise TypeError(f"Invalid type of input device={device}")
 
     dtc = dtype.char
-    if dtc == "?" or numpy.issubdtype(dtype, numpy.integer):
+    if dtc == "?" or dpnp.issubdtype(dtype, dpnp.integer):
         # bool or integer type
         return dtype
 
-    if numpy.issubdtype(dtype, numpy.floating):
+    if dpnp.issubdtype(dtype, dpnp.floating):
         if dtc == "f":
             # float32 type
             return dtype
@@ -294,7 +294,7 @@ def map_dtype_to_device(dtype, device):
         # float32 is default floating type
         return dpnp.dtype("f4")
 
-    if numpy.issubdtype(dtype, numpy.complexfloating):
+    if dpnp.issubdtype(dtype, dpnp.complexfloating):
         if dtc == "F":
             # complex64 type
             return dtype
@@ -418,14 +418,14 @@ cdef tuple get_shape_dtype(object input_obj):
 
             # shape and dtype does not match with siblings.
             if ((return_shape != elem_shape) or (return_dtype != elem_dtype)):
-                return (elem_shape, numpy.dtype(numpy.object_))
+                return (elem_shape, dpnp.dtype(numpy.object_))
 
         list_shape.push_back(len(input_obj))
         list_shape.insert(list_shape.end(), return_shape.begin(), return_shape.end())
         return (list_shape, return_dtype)
 
     # assume scalar or object
-    return (return_shape, numpy.dtype(type(input_obj)))
+    return (return_shape, dpnp.dtype(type(input_obj)))
 
 
 cpdef find_common_type(object x1_obj, object x2_obj):

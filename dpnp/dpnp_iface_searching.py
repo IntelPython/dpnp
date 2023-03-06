@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -176,12 +176,62 @@ def searchsorted(a, v, side='left', sorter=None):
     return call_origin(numpy.where, a, v, side, sorter)
 
 
-def where(condition, x=None, y=None):
+def where(condition, x=None, y=None, /):
     """
-    Find indices where elements should be inserted to maintain order.
+    Return elements chosen from `x` or `y` depending on `condition`.
 
-    For full documentation refer to :obj:`numpy.searchsorted`.
+    When only `condition` is provided, this function is a shorthand for
+    :obj:`dpnp.nonzero(condition)`. 
+
+    For full documentation refer to :obj:`numpy.where`.
+
+    Returns
+    -------
+    y : dpnp.ndarray
+        An array with elements from `x` where `condition` is True, and elements
+        from `y` elsewhere.
+
+    Limitations
+    -----------
+    Parameters `condition`, `x` and `y` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Data type of `condition` parameter is limited by :obj:`dpnp.bool`.
+    Input array data types of `x` and `y` are limited by supported DPNP :ref:`Data types`.
+        
+    See Also
+    --------
+    :obj:`nonzero` : The function that is called when `x` and `y`are omitted.
+
+    Examples
+    --------
+    >>> import dpnp as dp
+    >>> a = dp.arange(10)
+    >>> d
+    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    >>> dp.where(a < 5, a, 10*a)
+    array([ 0,  1,  2,  3,  4, 50, 60, 70, 80, 90])
 
     """
+
+    missing = (x is None, y is None).count(True)
+    if missing == 1:
+        raise ValueError("Must provide both 'x' and 'y' or neither.")
+    elif missing == 2:
+        return dpnp.nonzero(condition)
+    elif missing == 0:
+        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        usm_type, queue = get_usm_allocations([condition, x, y])
+
+        c_desc = dpnp.get_dpnp_descriptor(condition, copy_when_strides=False, copy_when_nondefault_queue=False,
+                                          alloc_usm_type=usm_type, alloc_queue=queue)
+        x_desc = dpnp.get_dpnp_descriptor(x, copy_when_strides=False, copy_when_nondefault_queue=False,
+                                          alloc_usm_type=usm_type, alloc_queue=queue)
+        y_desc = dpnp.get_dpnp_descriptor(y, copy_when_strides=False, copy_when_nondefault_queue=False,
+                                          alloc_usm_type=usm_type, alloc_queue=queue)
+        if c_desc and x_desc and y_desc:
+            if c_desc.dtype != dpnp.bool:
+                raise TypeError("condition must be a boolean array")
+            return dpnp_where(c_desc, x_desc, y_desc).get_pyobj()
 
     return call_origin(numpy.where, condition, x, y)
