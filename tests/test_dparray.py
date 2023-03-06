@@ -139,11 +139,11 @@ def test_print_dpnp_special_character():
     expected = "[ 1.  0. nan  3.]"
     assert(result==expected)
 # inf
-    result = repr(dpnp.array([1., 0., numpy.inf, 3.]))
+    result = repr(dpnp.array([1., 0., dpnp.inf, 3.]))
     expected = "array([ 1.,  0., inf,  3.])"
     assert(result==expected)
 
-    result = str(dpnp.array([1., 0., numpy.inf, 3.]))
+    result = str(dpnp.array([1., 0., dpnp.inf, 3.]))
     expected = "[ 1.  0. inf  3.]"
     assert(result==expected)
 

@@ -50,6 +50,7 @@ from dpnp.dpnp_utils import *
 
 import dpnp.dpnp_container as dpnp_container
 import dpctl.tensor as dpt
+import dpctl
 
 
 __all__ = [
@@ -879,7 +880,18 @@ def identity(n, dtype=None, *, like=None):
     return call_origin(numpy.identity, n, dtype=dtype, like=like)
 
 
-def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0):
+def linspace(start,
+             stop,
+             /,
+             num,
+             *,
+             dtype=None,
+             device=None,
+             usm_type=None,
+             sycl_queue=None,
+             endpoint=True,
+             retstep=False,
+             axis=0):
     """
     Return evenly spaced numbers over a specified interval.
 
@@ -888,6 +900,8 @@ def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis
     Limitations
     -----------
     Parameter ``axis`` is supported only with default value ``0``.
+    Parameter ``retstep`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -913,16 +927,19 @@ def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis
 
     """
 
-    if not use_origin_backend():
-        if axis != 0:
-            checker_throw_value_error("linspace", "axis", axis, 0)
-
-        res = dpnp_linspace(start, stop, num, endpoint, retstep, dtype, axis)
-
-        if retstep:
-            return res
-        else:
-            return res[0]
+    if retstep is not False:
+        pass
+    elif axis != 0:
+        pass
+    else:
+        return dpnp_linspace(start,
+                             stop,
+                             num,
+                             dtype=dtype,
+                             device=device,
+                             usm_type=usm_type,
+                             sycl_queue=sycl_queue,
+                             endpoint=endpoint)
 
     return call_origin(numpy.linspace, start, stop, num, endpoint, retstep, dtype, axis)
 
@@ -1010,8 +1027,10 @@ def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
 
     Limitations
     -----------
+    Each array instance from `xi` is supported as either :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
     Parameter ``copy`` is supported only with default value ``True``.
     Parameter ``sparse`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -1045,17 +1064,16 @@ def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
 
     """
 
-    if not use_origin_backend():
-        # original limitation
-        if indexing not in ["ij", "xy"]:
-            checker_throw_value_error("meshgrid", "indexing", indexing, "'ij' or 'xy'")
-
-        if copy is not True:
-            checker_throw_value_error("meshgrid", "copy", copy, True)
-        if sparse is not False:
-            checker_throw_value_error("meshgrid", "sparse", sparse, False)
-
-        return dpnp_meshgrid(xi, copy, sparse, indexing)
+    if not all((isinstance(x, (dpnp.ndarray, dpt.usm_ndarray)) for x in xi)):
+        pass
+    elif indexing not in ["ij", "xy"]:
+        pass
+    elif copy is not True:
+        pass
+    elif sparse is not False:
+        pass
+    else:
+        return dpnp_container.meshgrid(*xi, indexing=indexing)
 
     return call_origin(numpy.meshgrid, xi, copy, sparse, indexing)
 

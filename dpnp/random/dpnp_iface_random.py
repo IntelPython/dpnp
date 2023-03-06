@@ -670,7 +670,7 @@ def multinomial(n, pvals, size=None):
         d = len(pvals)
         if n < 0:
             pass
-        elif n > numpy.iinfo(numpy.int32).max:
+        elif n > numpy.iinfo(dpnp.int32).max:
             pass
         elif pvals_sum > 1.0:
             pass
@@ -714,11 +714,11 @@ def multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8):
     """
 
     if not use_origin_backend(mean):
-        mean_ = dpnp.get_dpnp_descriptor(dpnp.array(mean, dtype=numpy.float64))
-        cov_ = dpnp.get_dpnp_descriptor(dpnp.array(cov, dtype=numpy.float64))
+        mean_ = dpnp.get_dpnp_descriptor(dpnp.array(mean, dtype=dpnp.float64))
+        cov_ = dpnp.get_dpnp_descriptor(dpnp.array(cov, dtype=dpnp.float64))
         if size is None:
             shape = []
-        elif isinstance(size, (int, numpy.integer)):
+        elif isinstance(size, (int, dpnp.integer)):
             shape = [size]
         else:
             shape = size

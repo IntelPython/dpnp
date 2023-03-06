@@ -174,6 +174,9 @@ class dpnp_array:
  # '__getattribute__',
 
     def __getitem__(self, key):
+        if isinstance(key, dpnp_array):
+            key = key.get_array()
+
         item = self._array_obj.__getitem__(key)
         if not isinstance(item, dpt.usm_ndarray):
             raise RuntimeError(
@@ -208,7 +211,11 @@ class dpnp_array:
 
  # '__invert__',
  # '__ior__',
- # '__ipow__',
+
+    def __ipow__(self, other):
+        dpnp.power(self, other, out=self)
+        return self
+
  # '__irshift__',
  # '__isub__',
  # '__iter__',
@@ -276,7 +283,10 @@ class dpnp_array:
         return dpnp.multiply(other, self)
 
  # '__ror__',
- # '__rpow__',
+ 
+    def __rpow__(self, other):
+        return dpnp.power(other, self)
+
  # '__rrshift__',
  # '__rshift__',
 
@@ -290,6 +300,11 @@ class dpnp_array:
  # '__setattr__',
 
     def __setitem__(self, key, val):
+        if isinstance(key, dpnp_array):
+            key = key.get_array()
+        if isinstance(val, dpnp_array):
+            val = val.get_array()
+
         self._array_obj.__setitem__(key, val)
 
  # '__setstate__',
@@ -331,33 +346,43 @@ class dpnp_array:
         res._array_obj = usm_ary
         return res
 
-    def all(self, axis=None, out=None, keepdims=False):
+    def all(self,
+            axis=None,
+            out=None,
+            keepdims=False,
+            *,
+            where=True):
         """
         Returns True if all elements evaluate to True.
 
-        Refer to `numpy.all` for full documentation.
+        Refer to :obj:`dpnp.all` for full documentation.
 
         See Also
         --------
-        :obj:`numpy.all` : equivalent function
+        :obj:`dpnp.all` : equivalent function
 
         """
 
-        return dpnp.all(self, axis, out, keepdims)
+        return dpnp.all(self, axis=axis, out=out, keepdims=keepdims, where=where)
 
-    def any(self, axis=None, out=None, keepdims=False):
+    def any(self,
+            axis=None,
+            out=None,
+            keepdims=False,
+            *,
+            where=True):
         """
         Returns True if any of the elements of `a` evaluate to True.
 
-        Refer to `numpy.any` for full documentation.
+        Refer to :obj:`dpnp.any` for full documentation.
 
         See Also
         --------
-        :obj:`numpy.any` : equivalent function
+        :obj:`dpnp.any` : equivalent function
 
         """
 
-        return dpnp.any(self, axis, out, keepdims)
+        return dpnp.any(self, axis=axis, out=out, keepdims=keepdims, where=where)
 
     def argmax(self, axis=None, out=None):
         """
@@ -519,7 +544,7 @@ class dpnp_array:
 
         """
 
-        if not numpy.issubsctype(self.dtype, numpy.complex_):
+        if not dpnp.issubsctype(self.dtype, dpnp.complex_):
             return self
         else:
             return dpnp.conjugate(self)
@@ -532,7 +557,7 @@ class dpnp_array:
 
         """
 
-        if not numpy.issubsctype(self.dtype, numpy.complex_):
+        if not dpnp.issubsctype(self.dtype, dpnp.complex_):
             return self
         else:
             return dpnp.conjugate(self)
@@ -567,7 +592,8 @@ class dpnp_array:
 
         return dpnp.diagonal(input, offset, axis1, axis2)
 
- # 'dot',
+    def dot(self, other, out=None):
+        return dpnp.dot(self, other, out)
 
     @property
     def dtype(self):
@@ -734,7 +760,10 @@ class dpnp_array:
         return self._array_obj.ndim
 
  # 'newbyteorder',
- # 'nonzero',
+
+    def nonzero(self):
+        return dpnp.nonzero(self)
+
  # 'partition',
 
     def prod(self, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):

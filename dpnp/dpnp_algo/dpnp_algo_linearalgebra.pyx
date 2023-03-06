@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -65,8 +65,9 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_matmul_t)(c_dpctl.DPCTLSyclQue
                                                             const shape_elem_type *, const shape_elem_type * ,
                                                             const c_dpctl.DPCTLEventVectorRef)
 
-cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
-
+cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1,
+                                     utils.dpnp_descriptor in_array2,
+                                     utils.dpnp_descriptor out=None):
     cdef shape_type_c shape1, shape2
 
     shape1 = in_array1.shape
@@ -78,6 +79,7 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DOT_EXT, param1_type, param2_type)
+    cdef utils.dpnp_descriptor result
 
     ndim1 = in_array1.ndim
     ndim2 = in_array2.ndim
@@ -89,7 +91,7 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
     elif ndim1 == 1 and ndim2 == 1:
         result_shape = ()
     elif ndim1 == 1:  # ndim2 > 1
-        result_shape = shape2[:-1]
+        result_shape = shape2[::-2] if ndim2 == 2 else shape2[::2]
     elif ndim2 == 1:  # ndim1 > 1
         result_shape = shape1[:-1]
     else:
@@ -101,13 +103,24 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
 
     result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(in_array1, in_array2)
 
-    # create result array with type given by FPTR data
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=result_sycl_device,
-                                                                       usm_type=result_usm_type,
-                                                                       sycl_queue=result_sycl_queue)
+    if out is None:
+        # create result array with type given by FPTR data
+        result = utils.create_output_descriptor(result_shape,
+                                                kernel_data.return_type,
+                                                None,
+                                                device=result_sycl_device,
+                                                usm_type=result_usm_type,
+                                                sycl_queue=result_sycl_queue)
+    else:
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+        if out.dtype != result_type:
+            utils.checker_throw_value_error('dot', 'out.dtype', out.dtype, result_type)
+        if out.shape != result_shape:
+            utils.checker_throw_value_error('dot', 'out.shape', out.shape, result_shape)
+
+        result = out
+
+        utils.get_common_usm_allocation(in_array1, result)  # check USM allocation is common
 
     cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result.shape)
     cdef shape_type_c in_array1_shape = in_array1.shape

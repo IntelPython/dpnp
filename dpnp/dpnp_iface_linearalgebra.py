@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -44,9 +44,9 @@ from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 import dpnp
-import dpnp.config as config
 
 import numpy
+import dpctl.tensor as dpt
 
 
 __all__ = [
@@ -62,18 +62,25 @@ __all__ = [
 ]
 
 
-def dot(x1, x2, **kwargs):
+def dot(x1, x2, out=None, **kwargs):
     """
-    Returns the dot product of `x1` and `x2`.
+    Dot product of `x1` and `x2`.
 
     For full documentation refer to :obj:`numpy.dot`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        Returns the dot product of `x1` and `x2`.
+        If `out` is given, then it is returned.
+    
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray` of the same type.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Keyword argument ``kwargs`` is currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -82,31 +89,37 @@ def dot(x1, x2, **kwargs):
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> np.dot(3, 4)
-    12
-    >>> a = np.array([1, 2, 3])
-    >>> b = np.array([1, 2, 3])
-    >>> np.dot(a, b)
+    >>> import dpnp as dp
+    >>> a = dp.array([1, 2, 3])
+    >>> b = dp.array([1, 2, 3])
+    >>> dp.dot(a, b)
     14
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
-    if x1_desc and x2_desc and not kwargs:
-        # TODO: remove fallback with scalars when muliply backend func will support strides
-        if(x1_desc.ndim == 0 and x2_desc.strides is not None
-                or x2_desc.ndim == 0 and x1_desc.strides is not None):
-            pass
-        elif (x1_desc.ndim >= 1 and x2_desc.ndim > 1 and x1_desc.shape[-1] != x2_desc.shape[-2]):
-            pass
-        elif (x1_desc.ndim > 0 and x2_desc.ndim == 1 and x1_desc.shape[-1] != x2_desc.shape[0]):
-            pass
-        else:
-            return dpnp_dot(x1_desc, x2_desc).get_pyobj()
+    if kwargs:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
 
-    return call_origin(numpy.dot, x1, x2, **kwargs)
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
+                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
+                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        if x1_desc and x2_desc:
+            if out is not None:
+                if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
+                    raise TypeError("return array must be of supported array type")
+                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+            else:
+                out_desc = None
+            return dpnp_dot(x1_desc, x2_desc, out=out_desc).get_pyobj()
+
+    return call_origin(numpy.dot, x1, x2, out=out, **kwargs)
 
 
 def einsum(*args, **kwargs):
@@ -269,7 +282,7 @@ def matmul(x1, x2, out=None, **kwargs):
                 array2_size = x2_desc.size
                 cost_size = 4096  # 2D array shape(64, 64)
 
-                if ((x1_desc.dtype == numpy.float64) or (x1_desc.dtype == numpy.float32)):
+                if ((x1_desc.dtype == dpnp.float64) or (x1_desc.dtype == dpnp.float32)):
                     """
                     Floating point types are handled via original math library better than SYCL math library
                     """

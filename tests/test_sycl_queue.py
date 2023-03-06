@@ -1,5 +1,8 @@
 import pytest
-from .helper import get_all_dtypes
+from .helper import (
+    get_all_dtypes,
+    is_win_platform
+)
 
 import dpnp
 import dpctl
@@ -90,6 +93,9 @@ def vvsort(val, vec, size, xp):
         pytest.param("eye",
                      [4, 2],
                      {}),
+        pytest.param("linspace",
+                     [0, 4, 8],
+                     {}),
         pytest.param("ones",
                      [(2,2)],
                      {}),
@@ -134,13 +140,63 @@ def test_empty_like(device_x, device_y):
 
 
 @pytest.mark.parametrize(
-    "func, kwargs",
+    "func, args, kwargs",
     [
         pytest.param("full_like",
+                     ['x0'],
                      {'fill_value': 5}),
         pytest.param("ones_like",
+                     ['x0'],
                      {}),
         pytest.param("zeros_like",
+                     ['x0'],
+                     {}),
+        pytest.param("tril",
+                     ['x0.reshape((2,2))'],
+                     {}),
+        pytest.param("triu",
+                     ['x0.reshape((2,2))'],
+                     {}),
+        pytest.param("linspace",
+                     ['x0', '4', '4'],
+                     {}),
+        pytest.param("linspace",
+                     ['1', 'x0', '4'],
+                     {})
+    ])
+@pytest.mark.parametrize("device",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+def test_array_creation_follow_device(func, args, kwargs, device):
+    x_orig = numpy.array([1, 2, 3, 4])
+    numpy_args = [eval(val, {'x0' : x_orig}) for val in args]
+    y_orig = getattr(numpy, func)(*numpy_args, **kwargs)
+
+    x = dpnp.array([1, 2, 3, 4], device=device)
+    dpnp_args = [eval(val, {'x0' : x}) for val in args]
+
+    y = getattr(dpnp, func)(*dpnp_args, **kwargs)
+    numpy.testing.assert_allclose(y_orig, y)
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "func, args, kwargs",
+    [
+        pytest.param("full_like",
+                     ['x0'],
+                     {'fill_value': 5}),
+        pytest.param("ones_like",
+                     ['x0'],
+                     {}),
+        pytest.param("zeros_like",
+                     ['x0'],
+                     {}),
+        pytest.param("linspace",
+                     ['x0', '4', '4'],
+                     {}),
+        pytest.param("linspace",
+                     ['1', 'x0', '4'],
                      {})
     ])
 @pytest.mark.parametrize("device_x",
@@ -149,32 +205,38 @@ def test_empty_like(device_x, device_y):
 @pytest.mark.parametrize("device_y",
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
-def test_array_creation_like(func, kwargs, device_x, device_y):
-    x_orig = numpy.ndarray([1, 2, 3])
-    y_orig = getattr(numpy, func)(x_orig, **kwargs)
+def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
+    if func is 'linspace' and is_win_platform():
+        pytest.skip("CPU driver experiences an instability on Windows.")
 
-    x = dpnp.ndarray([1, 2, 3], device=device_x)
+    x_orig = numpy.array([1, 2, 3, 4])
+    numpy_args = [eval(val, {'x0' : x_orig}) for val in args]
+    y_orig = getattr(numpy, func)(*numpy_args, **kwargs)
 
-    y = getattr(dpnp, func)(x, **kwargs)
-    numpy.testing.assert_array_equal(y_orig, y)
-    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+    x = dpnp.array([1, 2, 3, 4], device=device_x)
+    dpnp_args = [eval(val, {'x0' : x}) for val in args]
 
     dpnp_kwargs = dict(kwargs)
     dpnp_kwargs['device'] = device_y
+    
+    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
+    numpy.testing.assert_allclose(y_orig, y)
 
-    y = getattr(dpnp, func)(x, **dpnp_kwargs)
-    numpy.testing.assert_array_equal(y_orig, y)
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
-@pytest.mark.parametrize("func", ["tril", "triu"], ids=["tril", "triu"])
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize("device_x",
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
-def test_tril_triu(func, device):
-    x0 = dpnp.ones((3,3), device=device)
-    x = getattr(dpnp, func)(x0)
-    assert_sycl_queue_equal(x.sycl_queue, x0.sycl_queue)
+@pytest.mark.parametrize("device_y",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+def test_meshgrid(device_x, device_y):
+    x = dpnp.arange(100, device = device_x)
+    y = dpnp.arange(100, device = device_y)
+    z = dpnp.meshgrid(x, y)
+    assert_sycl_queue_equal(z[0].sycl_queue, x.sycl_queue)
+    assert_sycl_queue_equal(z[1].sycl_queue, y.sycl_queue)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -235,7 +297,7 @@ def test_1in_1out(func, data, device):
     x = dpnp.array(data, device=device)
     result = getattr(dpnp, func)(x)
 
-    numpy.testing.assert_array_equal(result, expected)
+    assert_array_equal(result, expected)
 
     expected_queue = x.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -258,6 +320,9 @@ def test_1in_1out(func, data, device):
         pytest.param("divide",
                      [0., 1., 2., 3., 4.],
                      [4., 4., 4., 4., 4.]),
+        pytest.param("dot",
+                     [[0., 1., 2.], [3., 4., 5.]],
+                     [[4., 4.], [4., 4.], [4., 4.]]),
         pytest.param("floor_divide",
                      [1., 2., 3., 4.],
                      [2.5, 2.5, 2.5, 2.5]),
@@ -302,7 +367,7 @@ def test_2in_1out(func, data1, data2, device):
     x2 = dpnp.array(data2, device=device)
     result = getattr(dpnp, func)(x1, x2)
 
-    numpy.testing.assert_array_equal(result, expected)
+    assert_array_equal(result, expected)
 
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
@@ -477,6 +542,9 @@ def test_random_state(func, args, kwargs, device, usm_type):
         pytest.param("divide",
                      [0., 1., 2., 3., 4.],
                      [4., 4., 4., 4., 4.]),
+        pytest.param("dot",
+                     [[0., 1., 2.], [3., 4., 5.]],
+                     [[4., 4.], [4., 4.], [4., 4.]]),
         pytest.param("floor_divide",
                      [1., 2., 3., 4.],
                      [2.5, 2.5, 2.5, 2.5]),
@@ -509,20 +577,20 @@ def test_random_state(func, args, kwargs, device, usm_type):
 def test_out(func, data1, data2, device):
     x1_orig = numpy.array(data1)
     x2_orig = numpy.array(data2)
-    expected = numpy.empty(x1_orig.size)
-    numpy.add(x1_orig, x2_orig, out=expected)
+    np_out = getattr(numpy, func)(x1_orig, x2_orig)
+    expected = numpy.empty_like(np_out)
+    getattr(numpy, func)(x1_orig, x2_orig, out=expected)
 
     x1 = dpnp.array(data1, device=device)
     x2 = dpnp.array(data2, device=device)
-    result = dpnp.empty(x1.size, device=device)
-    dpnp.add(x1, x2, out=result)
+    dp_out = getattr(dpnp, func)(x1, x2)
+    result = dpnp.empty_like(dp_out)
+    getattr(dpnp, func)(x1, x2, out=result)
 
-    numpy.testing.assert_array_equal(result, expected)
+    assert_array_equal(result, expected)
 
-    expected_queue = x1.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
-
-    assert_sycl_queue_equal(result_queue, expected_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
 
 @pytest.mark.parametrize("device",
@@ -848,8 +916,7 @@ def test_from_dlpack(arr_dtype, shape, device):
     Y = dpnp.from_dlpack(X)
     assert_array_equal(X, Y)
     assert X.__dlpack_device__() == Y.__dlpack_device__()
-    assert X.sycl_device == Y.sycl_device
-    assert X.sycl_context == Y.sycl_context
+    assert_sycl_queue_equal(X.sycl_queue, Y.sycl_queue)
     assert X.usm_type == Y.usm_type
     if Y.ndim:
         V = Y[::-1]
@@ -868,6 +935,5 @@ def test_from_dlpack_with_dpt(arr_dtype, device):
     assert_array_equal(X, Y)
     assert isinstance(Y, dpnp.dpnp_array.dpnp_array)
     assert X.__dlpack_device__() == Y.__dlpack_device__()
-    assert X.sycl_device == Y.sycl_device
-    assert X.sycl_context == Y.sycl_context
     assert X.usm_type == Y.usm_type
+    assert_sycl_queue_equal(X.sycl_queue, Y.sycl_queue)
