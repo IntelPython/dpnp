@@ -1,4 +1,5 @@
 import pytest
+from .helper import get_all_dtypes, get_float_dtypes
 
 import numpy
 import dpnp
@@ -392,3 +393,53 @@ class TestArctan2:
 
         with pytest.raises(ValueError):
             dpnp.arctan2(dp_array, dp_array, out=dp_out)
+
+
+class TestSqrt:
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_sqrt_ordinary(self, dtype):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=dtype)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
+        result = dpnp.sqrt(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=dtype)
+        expected = numpy.sqrt(np_array, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+        numpy.testing.assert_array_equal(out, dp_out)
+
+    @pytest.mark.parametrize("dtype",
+                             [numpy.int64, numpy.int32],
+                             ids=['numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float32)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.sqrt(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float32)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float32)
+
+        with pytest.raises(ValueError):
+            dpnp.sqrt(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("out",
+                             [4, (), [], (3, 7), [2, 4]],
+                             ids=['4', '()', '[]', '(3, 7)', '[2, 4]'])
+    def test_invalid_out(self, out):
+        a = dpnp.arange(10)
+
+        numpy.testing.assert_raises(TypeError, dpnp.sqrt, a, out)
+        numpy.testing.assert_raises(TypeError, numpy.sqrt, a.asnumpy(), out)
