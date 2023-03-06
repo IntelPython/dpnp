@@ -234,7 +234,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NEGATIVE,                     /**< Used in numpy.negative() impl  */
     DPNP_FN_NEGATIVE_EXT,                 /**< Used in numpy.negative() impl, requires extra parameters */
     DPNP_FN_NONZERO,                      /**< Used in numpy.nonzero() impl  */
-    DPNP_FN_NONZERO_EXT,                  /**< Used in numpy.nonzero() impl, requires extra parameters */
     DPNP_FN_NOT_EQUAL_EXT,                /**< Used in numpy.not_equal() impl, requires extra parameters */
     DPNP_FN_ONES,                         /**< Used in numpy.ones() impl */
     DPNP_FN_ONES_LIKE,                    /**< Used in numpy.ones_like() impl */
