@@ -94,6 +94,9 @@
    .. automethod:: min
 
 
+   .. automethod:: nonzero
+
+
    .. automethod:: prod
 
 

@@ -128,10 +128,7 @@
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
-
 <span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -305,13 +302,7 @@
     <span class="k">if</span> <span class="n">missing</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must provide both &#39;x&#39; and &#39;y&#39; or neither.&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">missing</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="c1"># TODO: rework through dpnp.nonzero() once ready</span>
-        <span class="c1"># return dpnp.nonzero(condition)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">condition</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">missing</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># get USM type and queue to copy scalar from the host memory into a USM allocation</span>
         <span class="n">usm_type</span><span class="p">,</span> <span class="n">queue</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
