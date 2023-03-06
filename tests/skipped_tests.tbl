@@ -364,7 +364,7 @@ tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOf
 tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_7_{copy=True, ndmin=3, xp=dpnp}::test_cupy_array
 tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_8_{copy=False, ndmin=0, xp=numpy}::test_cupy_array
 tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_9_{copy=False, ndmin=0, xp=dpnp}::test_cupy_array
-tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_is_copied 
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_is_copied
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_list_of_cupy_with_dtype
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_list_of_cupy_with_dtype_char
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_list_of_numpy_with_dtype
@@ -1068,11 +1068,6 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_pa
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_0_{cond_shape=(2, 3, 4)}::test_where_cond
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_1_{cond_shape=(4,)}::test_where_cond
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_2_{cond_shape=(2, 3, 4)}::test_where_cond
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_3_{cond_shape=(3, 4)}::test_where_cond
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereError::test_one_argument
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_invalid_axis1
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_invalid_axis2

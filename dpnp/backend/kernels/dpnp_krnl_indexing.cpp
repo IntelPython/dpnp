@@ -1021,6 +1021,7 @@ void func_map_init_indexing_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_NONZERO][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_nonzero_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_NONZERO][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_nonzero_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_NONZERO_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_nonzero_ext_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_NONZERO_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_nonzero_ext_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_NONZERO_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_nonzero_ext_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_NONZERO_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_nonzero_ext_c<float>};

@@ -1269,15 +1269,6 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_pa
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_0_{cond_shape=(2, 3, 4)}::test_where_cond
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_1_{cond_shape=(4,)}::test_where_cond
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_2_{cond_shape=(2, 3, 4)}::test_where_cond
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_3_{cond_shape=(3, 4)}::test_where_cond
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereError::test_one_argument
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereTwoArrays_param_0_{cond_shape=(2, 3, 4), x_shape=(2, 3, 4), y_shape=(2, 3, 4)}::test_where_two_arrays
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereTwoArrays_param_1_{cond_shape=(4,), x_shape=(2, 3, 4), y_shape=(2, 3, 4)}::test_where_two_arrays
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereTwoArrays_param_2_{cond_shape=(2, 3, 4), x_shape=(2, 3, 4), y_shape=(3, 4)}::test_where_two_arrays
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereTwoArrays_param_3_{cond_shape=(3, 4), x_shape=(2, 3, 4), y_shape=(4,)}::test_where_two_arrays
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_invalid_axis1
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_invalid_axis2
