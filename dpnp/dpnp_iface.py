@@ -251,6 +251,7 @@ def from_dlpack(obj, /):
 def get_dpnp_descriptor(ext_obj,
                         copy_when_strides=True,
                         copy_when_nondefault_queue=True,
+                        alloc_dtype=None,
                         alloc_usm_type=None,
                         alloc_queue=None):
     """
@@ -274,7 +275,7 @@ def get_dpnp_descriptor(ext_obj,
     # If input object is a scalar, it means it was allocated on host memory.
     # We need to copy it to USM memory according to compute follows data paradigm.
     if isscalar(ext_obj):
-        ext_obj = array(ext_obj, usm_type=alloc_usm_type, sycl_queue=alloc_queue)
+        ext_obj = array(ext_obj, dtype=alloc_dtype, usm_type=alloc_usm_type, sycl_queue=alloc_queue)
 
     # while dpnp functions have no implementation with strides support
     # we need to create a non-strided copy
