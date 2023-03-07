@@ -335,6 +335,7 @@
 <span class="k">def</span> <span class="nf">get_dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span>
                         <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">alloc_dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">alloc_usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">alloc_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -358,7 +359,7 @@
     <span class="c1"># If input object is a scalar, it means it was allocated on host memory.</span>
     <span class="c1"># We need to copy it to USM memory according to compute follows data paradigm.</span>
     <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">):</span>
-        <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">alloc_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">alloc_queue</span><span class="p">)</span>
+        <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">alloc_dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">alloc_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">alloc_queue</span><span class="p">)</span>
 
     <span class="c1"># while dpnp functions have no implementation with strides support</span>
     <span class="c1"># we need to create a non-strided copy</span>
