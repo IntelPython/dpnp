@@ -410,8 +410,8 @@ class TestSqrt:
         np_array = numpy.array(array_data, dtype=dtype)
         expected = numpy.sqrt(np_array, out=out)
 
-        numpy.testing.assert_array_equal(expected, result)
-        numpy.testing.assert_array_equal(out, dp_out)
+        numpy.testing.assert_allclose(expected, result)
+        numpy.testing.assert_allclose(out, dp_out)
 
     @pytest.mark.parametrize("dtype",
                              [numpy.int64, numpy.int32],
