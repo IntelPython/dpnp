@@ -27,7 +27,9 @@ def get_float_dtypes(no_float16=True,
     dev = dpctl.select_default_device() if device is None else device
 
     # add floating types
-    dtypes = [dpnp.float16] if not no_float16 else []
+    dtypes = []
+    if not no_float16 and dev.has_aspect_fp16:
+        dtypes.append(dpnp.float16)
 
     dtypes.append(dpnp.float32)
     if dev.has_aspect_fp64:
@@ -64,11 +66,11 @@ def get_all_dtypes(no_bool=False,
     dtypes.extend([dpnp.int32, dpnp.int64])
 
     # add floating types
-    dtypes.extend(get_float_dtypes(dev))
+    dtypes.extend(get_float_dtypes(no_float16=no_float16, device=dev))
 
     # add complex types
     if not no_complex:
-        dtypes.extend(get_complex_dtypes(dev))
+        dtypes.extend(get_complex_dtypes(device=dev))
 
     # add None value to validate a default dtype
     if not no_none:
