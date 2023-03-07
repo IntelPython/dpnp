@@ -27,6 +27,7 @@
 
 #include "dpnp_fptr.hpp"
 #include "dpnp_iface.hpp"
+#include "dpnp_iterator.hpp"
 #include "dpnp_utils.hpp"
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
@@ -49,27 +50,66 @@ DPCTLSyclEventRef dpnp_invert_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
-    _DataType* array1 = input1_ptr.get_ptr();
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    _DataType* input_data = static_cast<_DataType*>(array1_in);
+    _DataType* result = static_cast<_DataType*>(result1);
 
-    sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
-        size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
+    constexpr size_t lws = 64;
+    constexpr unsigned int vec_sz = 8;
+
+    auto gws_range = sycl::range<1>(((size + lws * vec_sz - 1) / (lws * vec_sz)) * lws);
+    auto lws_range = sycl::range<1>(lws);
+
+    auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {
+        auto sg = nd_it.get_sub_group();
+        const auto max_sg_size = sg.get_max_local_range()[0];
+        const size_t start =
+            vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) + sg.get_group_id()[0] * max_sg_size);
+
+        if (start + static_cast<size_t>(vec_sz) * max_sg_size < size)
         {
-            _DataType input_elem1 = array1[i];
-            result[i] = ~input_elem1;
+            using multi_ptrT = sycl::multi_ptr<_DataType, sycl::access::address_space::global_space>;
+
+            sycl::vec<_DataType, vec_sz> x = sg.load<vec_sz>(multi_ptrT(&input_data[start]));
+            sycl::vec<_DataType, vec_sz> res_vec;
+
+            if constexpr (std::is_same_v<_DataType, bool>)
+            {
+#pragma unroll
+                for (size_t k = 0; k < vec_sz; ++k)
+                {
+                    res_vec[k] = !(x[k]);
+                }
+            }
+            else
+            {
+                res_vec = ~x;
+            }
+
+            sg.store<vec_sz>(multi_ptrT(&result[start]), res_vec);
+        }
+        else
+        {
+            for (size_t k = start + sg.get_local_id()[0]; k < size; k += max_sg_size)
+            {
+                if constexpr (std::is_same_v<_DataType, bool>)
+                {
+                    result[k] = !(input_data[k]);
+                }
+                else
+                {
+                    result[k] = ~(input_data[k]);
+                }
+            }
         }
     };
 
     auto kernel_func = [&](sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_invert_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class dpnp_invert_c_kernel<_DataType>>(sycl::nd_range<1>(gws_range, lws_range),
+                                                                kernel_parallel_for_func);
     };
-
     event = q.submit(kernel_func);
 
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
-
     return DPCTLEvent_Copy(event_ref);
 }
 
@@ -84,6 +124,7 @@ void dpnp_invert_c(void* array1_in, void* result1, size_t size)
                                                            size,
                                                            dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -98,9 +139,11 @@ DPCTLSyclEventRef (*dpnp_invert_ext_c)(DPCTLSyclQueueRef,
 
 static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
 {
+    fmap[DPNPFuncName::DPNP_FN_INVERT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_invert_default_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_INVERT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_invert_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_INVERT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_invert_default_c<int64_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_INVERT_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_invert_ext_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_INVERT_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_invert_ext_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_INVERT_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_invert_ext_c<int64_t>};
 
@@ -113,6 +156,9 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
                                                                                                                        \
     template <typename _KernelNameSpecialization>                                                                      \
     class __name__##_strides_kernel;                                                                                   \
+                                                                                                                       \
+    template <typename _KernelNameSpecialization>                                                                      \
+    class __name__##_broadcast_kernel;                                                                                 \
                                                                                                                        \
     template <typename _DataType>                                                                                      \
     DPCTLSyclEventRef __name__(DPCTLSyclQueueRef q_ref,                                                                \
@@ -152,6 +198,8 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
         _DataType* input2_data = static_cast<_DataType*>(const_cast<void*>(input2_in));                                \
         _DataType* result = static_cast<_DataType*>(result_out);                                                       \
                                                                                                                        \
+        bool use_broadcasting = !array_equal(input1_shape, input1_ndim, input2_shape, input2_ndim);                    \
+                                                                                                                       \
         shape_elem_type* input1_shape_offsets = new shape_elem_type[input1_ndim];                                      \
                                                                                                                        \
         get_shape_offsets_inkernel(input1_shape, input1_ndim, input1_shape_offsets);                                   \
@@ -167,7 +215,42 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
         sycl::event event;                                                                                             \
         sycl::range<1> gws(result_size);                                                                               \
                                                                                                                        \
-        if (use_strides)                                                                                               \
+        if (use_broadcasting)                                                                                          \
+        {                                                                                                              \
+            DPNPC_id<_DataType>* input1_it;                                                                            \
+            const size_t input1_it_size_in_bytes = sizeof(DPNPC_id<_DataType>);                                        \
+            input1_it = reinterpret_cast<DPNPC_id<_DataType>*>(dpnp_memory_alloc_c(q_ref, input1_it_size_in_bytes));   \
+            new (input1_it) DPNPC_id<_DataType>(q_ref, input1_data, input1_shape, input1_strides, input1_ndim);        \
+                                                                                                                       \
+            input1_it->broadcast_to_shape(result_shape, result_ndim);                                                  \
+                                                                                                                       \
+            DPNPC_id<_DataType>* input2_it;                                                                            \
+            const size_t input2_it_size_in_bytes = sizeof(DPNPC_id<_DataType>);                                        \
+            input2_it = reinterpret_cast<DPNPC_id<_DataType>*>(dpnp_memory_alloc_c(q_ref, input2_it_size_in_bytes));   \
+            new (input2_it) DPNPC_id<_DataType>(q_ref, input2_data, input2_shape, input2_strides, input2_ndim);        \
+                                                                                                                       \
+            input2_it->broadcast_to_shape(result_shape, result_ndim);                                                  \
+                                                                                                                       \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
+                const size_t i = global_id[0]; /* for (size_t i = 0; i < result_size; ++i) */                          \
+                {                                                                                                      \
+                    const _DataType input1_elem = (*input1_it)[i];                                                     \
+                    const _DataType input2_elem = (*input2_it)[i];                                                     \
+                    result[i] = __operation__;                                                                         \
+                }                                                                                                      \
+            };                                                                                                         \
+            auto kernel_func = [&](sycl::handler& cgh) {                                                               \
+                cgh.parallel_for<class __name__##_broadcast_kernel<_DataType>>(gws, kernel_parallel_for_func);         \
+            };                                                                                                         \
+                                                                                                                       \
+            q.submit(kernel_func).wait();                                                                              \
+                                                                                                                       \
+            input1_it->~DPNPC_id();                                                                                    \
+            input2_it->~DPNPC_id();                                                                                    \
+                                                                                                                       \
+            return event_ref;                                                                                          \
+        }                                                                                                              \
+        else if (use_strides)                                                                                          \
         {                                                                                                              \
             if ((result_ndim != input1_ndim) || (result_ndim != input2_ndim))                                          \
             {                                                                                                          \
@@ -332,18 +415,21 @@ static void func_map_init_bitwise_2arg_1type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_BITWISE_AND][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_and_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_AND][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_and_c_default<int64_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_AND_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_bitwise_and_c_ext<bool>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_AND_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_and_c_ext<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_AND_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_and_c_ext<int64_t>};
 
     fmap[DPNPFuncName::DPNP_FN_BITWISE_OR][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_or_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_OR][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_or_c_default<int64_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_OR_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_bitwise_or_c_ext<bool>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_OR_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_or_c_ext<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_OR_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_or_c_ext<int64_t>};
 
     fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_xor_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_xor_c_default<int64_t>};
 
+    fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_bitwise_xor_c_ext<bool>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_bitwise_xor_c_ext<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_bitwise_xor_c_ext<int64_t>};
 

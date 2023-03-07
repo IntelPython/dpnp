@@ -927,8 +927,7 @@ def test_from_dlpack(arr_dtype, shape, device):
 @pytest.mark.parametrize("device",
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
-#TODO need to delete no_bool=True when use dlpack > 0.7 version
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True, no_bool=True))
+@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
 def test_from_dlpack_with_dpt(arr_dtype, device):
     X = dpctl.tensor.empty((64,), dtype=arr_dtype, device=device)
     Y = dpnp.from_dlpack(X)
@@ -937,3 +936,12 @@ def test_from_dlpack_with_dpt(arr_dtype, device):
     assert X.__dlpack_device__() == Y.__dlpack_device__()
     assert X.usm_type == Y.usm_type
     assert_sycl_queue_equal(X.sycl_queue, Y.sycl_queue)
+
+
+@pytest.mark.parametrize("device",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+def test_broadcast_to(device):
+    x = dpnp.arange(5, device=device)
+    y = dpnp.broadcast_to(x, (3, 5))
+    assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
