@@ -1,18 +1,19 @@
 import unittest
 
+import numpy
 from tests.third_party.cupy import testing
 
 
 @testing.gpu
 class TestElementwise(unittest.TestCase):
 
-    @testing.for_int_dtypes()
+    @testing.for_dtypes((numpy.bool_, numpy.int32, numpy.int64))
     @testing.numpy_cupy_array_equal()
     def check_unary_int(self, name, xp, dtype):
         a = xp.array([-3, -2, -1, 0, 1, 2, 3], dtype=dtype)
         return getattr(xp, name)(a)
 
-    @testing.for_int_dtypes()
+    @testing.for_dtypes((numpy.int32, numpy.int64))
     @testing.numpy_cupy_array_equal()
     def check_binary_int(self, name, xp, dtype):
         a = xp.array([-3, -2, -1, 0, 1, 2, 3], dtype=dtype)

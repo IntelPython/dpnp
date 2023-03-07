@@ -173,6 +173,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
     assert z[0].usm_type == usm_type_x
     assert z[1].usm_type == usm_type_y
 
+
 @pytest.mark.parametrize(
     "func,data1,data2",
     [
@@ -191,3 +192,10 @@ def test_2in_1out(func, data1, data2, usm_type_x, usm_type_y):
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_broadcast_to(usm_type):
+    x = dp.ones(7, usm_type=usm_type)
+    y = dp.broadcast_to(x, (2, 7))
+    assert x.usm_type == y.usm_type
