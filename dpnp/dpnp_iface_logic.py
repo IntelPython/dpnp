@@ -300,7 +300,8 @@ def equal(x1,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         if x1_desc and x2_desc:
             return dpnp_equal(x1_desc, x2_desc).get_pyobj()
-    return call_origin(numpy.equal, x1, x2)
+
+    return call_origin(numpy.equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
 
 
 def greater(x1,
@@ -370,7 +371,8 @@ def greater(x1,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         if x1_desc and x2_desc:
             return dpnp_greater(x1_desc, x2_desc).get_pyobj()
-    return call_origin(numpy.greater, x1, x2)
+
+    return call_origin(numpy.greater, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
 
 
 def greater_equal(x1,
@@ -440,7 +442,8 @@ def greater_equal(x1,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         if x1_desc and x2_desc:
             return dpnp_greater_equal(x1_desc, x2_desc).get_pyobj()
-    return call_origin(numpy.greater_equal, x1, x2)
+
+    return call_origin(numpy.greater_equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
 
 
 def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
@@ -685,7 +688,8 @@ def less(x1,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         if x1_desc and x2_desc:
             return dpnp_less(x1_desc, x2_desc).get_pyobj()
-    return call_origin(numpy.less, x1, x2)
+
+    return call_origin(numpy.less, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
 
 
 def less_equal(x1,
@@ -755,7 +759,8 @@ def less_equal(x1,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         if x1_desc and x2_desc:
             return dpnp_less_equal(x1_desc, x2_desc).get_pyobj()
-    return call_origin(numpy.less_equal, x1, x2)
+
+    return call_origin(numpy.less_equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
 
 
 def logical_and(x1,
@@ -824,7 +829,8 @@ def logical_and(x1,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         if x1_desc and x2_desc:
             return dpnp_logical_and(x1_desc, x2_desc).get_pyobj()
-    return call_origin(numpy.logical_and, x1, x2)
+
+    return call_origin(numpy.logical_and, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
 
 
 def logical_not(x,
@@ -881,7 +887,8 @@ def logical_not(x,
         x1_desc = dpnp.get_dpnp_descriptor(x, copy_when_strides=False, copy_when_nondefault_queue=False)
         if x1_desc:
             return dpnp_logical_not(x1_desc).get_pyobj()
-    return call_origin(numpy.logical_not, x)
+
+    return call_origin(numpy.logical_not, x, out=out, where=where, dtype=dtype, subok=subok)
 
 
 def logical_or(x1,
@@ -950,7 +957,8 @@ def logical_or(x1,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         if x1_desc and x2_desc:
             return dpnp_logical_or(x1_desc, x2_desc).get_pyobj()
-    return call_origin(numpy.logical_or, x1, x2)
+
+    return call_origin(numpy.logical_or, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
 
 
 def logical_xor(x1,
@@ -1019,7 +1027,8 @@ def logical_xor(x1,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         if x1_desc and x2_desc:
             return dpnp_logical_xor(x1_desc, x2_desc).get_pyobj()
-    return call_origin(numpy.logical_xor, x1, x2)
+
+    return call_origin(numpy.logical_xor, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
 
 
 def not_equal(x1,
@@ -1089,4 +1098,5 @@ def not_equal(x1,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         if x1_desc and x2_desc:
             return dpnp_not_equal(x1_desc, x2_desc).get_pyobj()
-    return call_origin(numpy.not_equal, x1, x2)
+
+    return call_origin(numpy.not_equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
