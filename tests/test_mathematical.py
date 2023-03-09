@@ -681,8 +681,8 @@ class TestAdd:
     def test_invalid_out(self, out):
         a = dpnp.arange(10)
 
-        assert_raises(TypeError, dpnp.add, a, 2,  out)
-        assert_raises(TypeError, numpy.add, a.asnumpy(), 2,  out)
+        assert_raises(TypeError, dpnp.add, a, 2, out)
+        assert_raises(TypeError, numpy.add, a.asnumpy(), 2, out)
 
 
 class TestPower:
