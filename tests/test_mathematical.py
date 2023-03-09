@@ -654,7 +654,7 @@ class TestAdd:
         expected = numpy.add(np_array1, np_array2, out=out)
 
         assert_allclose(expected, result)
-
+        assert_allclose(out, dp_out)
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_none=True))
     def test_invalid_dtype(self, dtype):
         dp_array1 = dpnp.arange(10, dtype=dpnp.complex64)
