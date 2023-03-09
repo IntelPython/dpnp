@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@ __all__ += [
     "dpnp_diagonal",
     "dpnp_fill_diagonal",
     "dpnp_indices",
-    "dpnp_nonzero",
     "dpnp_place",
     "dpnp_put",
     "dpnp_put_along_axis",
@@ -104,14 +103,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_6in_func_ptr_t)(c_dpctl.DPCT
                                                                     const size_t,
                                                                     const size_t,
                                                                     const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_nonzero_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                         const void * ,
-                                                         void * ,
-                                                         const size_t,
-                                                         const shape_elem_type * ,
-                                                         const size_t ,
-                                                         const size_t,
-                                                         const c_dpctl.DPCTLEventVectorRef)
 
 
 cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor x1, list choices1):
@@ -314,60 +305,6 @@ cpdef object dpnp_indices(dimensions):
 
     dpnp_result = dpnp.array(result)
     return dpnp_result
-
-
-cpdef tuple dpnp_nonzero(utils.dpnp_descriptor in_array1):
-    cdef shape_type_c shape_arr = in_array1.shape
-    res_count = in_array1.ndim
-
-    # have to go through array one extra time to count size of result arrays
-    res_size_obj = dpnp_count_nonzero(in_array1)
-    cdef size_t res_size = dpnp.convert_single_elem_array_to_scalar(res_size_obj.get_pyobj())
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_NONZERO_EXT, param1_type, param1_type)
-
-    cdef fptr_dpnp_nonzero_t func = <fptr_dpnp_nonzero_t > kernel_data.ptr
-
-    cdef c_dpctl.SyclQueue q
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref
-    cdef c_dpctl.DPCTLSyclEventRef event_ref
-
-    array1_obj = in_array1.get_array()
-
-    res_list = []
-    cdef utils.dpnp_descriptor res_arr
-    cdef shape_type_c result_shape
-    for j in range(res_count):
-        result_shape = utils._object_to_tuple(res_size)
-        res_arr = utils_py.create_output_descriptor_py(result_shape,
-                                                       dpnp.int64,
-                                                       None,
-                                                       device=array1_obj.sycl_device,
-                                                       usm_type=array1_obj.usm_type,
-                                                       sycl_queue=array1_obj.sycl_queue)
-
-        q = <c_dpctl.SyclQueue> res_arr.get_array().sycl_queue
-        q_ref = q.get_queue_ref()
-
-        event_ref = func(q_ref,
-                         in_array1.get_data(),
-                         res_arr.get_data(),
-                         res_arr.size,
-                         shape_arr.data(),
-                         in_array1.ndim,
-                         j,
-                         NULL)  # dep_events_ref
-
-        with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-        c_dpctl.DPCTLEvent_Delete(event_ref)
-
-        res_list.append(res_arr.get_pyobj())
-
-    result = utils._object_to_tuple(res_list)
-
-    return result
 
 
 cpdef dpnp_place(dpnp_descriptor arr, object mask, dpnp_descriptor vals):

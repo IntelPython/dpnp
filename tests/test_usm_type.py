@@ -148,6 +148,24 @@ def test_coerced_usm_types_logic_op(op, usm_type_x, usm_type_y):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
+@pytest.mark.parametrize("op",
+                         ['bitwise_and', 'bitwise_or', 'bitwise_xor', 'left_shift', 'right_shift'],
+                         ids=['bitwise_and', 'bitwise_or', 'bitwise_xor', 'left_shift', 'right_shift'])
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_bitwise_op(op, usm_type_x, usm_type_y):
+    x = dp.arange(25, usm_type = usm_type_x)
+    y = dp.arange(25, usm_type = usm_type_y)[::-1]
+
+    z = getattr(dp, op)(x, y)
+    zx = getattr(dp, op)(x, 7)
+    zy = getattr(dp, op)(12, y)
+
+    assert x.usm_type == zx.usm_type == usm_type_x
+    assert y.usm_type == zy.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_meshgrid(usm_type_x, usm_type_y):
@@ -156,6 +174,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
     z = dp.meshgrid(x, y)
     assert z[0].usm_type == usm_type_x
     assert z[1].usm_type == usm_type_y
+
 
 @pytest.mark.parametrize(
     "func,data1,data2",
@@ -175,3 +194,10 @@ def test_2in_1out(func, data1, data2, usm_type_x, usm_type_y):
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_broadcast_to(usm_type):
+    x = dp.ones(7, usm_type=usm_type)
+    y = dp.broadcast_to(x, (2, 7))
+    assert x.usm_type == y.usm_type

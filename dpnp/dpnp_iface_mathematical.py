@@ -44,6 +44,7 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
 import dpnp
+
 import numpy
 import dpctl.tensor as dpt
 
@@ -1418,14 +1419,14 @@ def power(x1,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
-        if out is not None:
-            if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                raise TypeError("return array must be of supported array type")
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-        else:
-            out_desc = None
-
         if x1_desc and x2_desc:
+            if out is not None:
+                if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
+                    raise TypeError("return array must be of supported array type")
+                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+            else:
+                out_desc = None
+
             return dpnp_power(x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where).get_pyobj()
 
     return call_origin(numpy.power, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)

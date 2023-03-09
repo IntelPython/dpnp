@@ -234,7 +234,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NEGATIVE,                     /**< Used in numpy.negative() impl  */
     DPNP_FN_NEGATIVE_EXT,                 /**< Used in numpy.negative() impl, requires extra parameters */
     DPNP_FN_NONZERO,                      /**< Used in numpy.nonzero() impl  */
-    DPNP_FN_NONZERO_EXT,                  /**< Used in numpy.nonzero() impl, requires extra parameters */
     DPNP_FN_NOT_EQUAL_EXT,                /**< Used in numpy.not_equal() impl, requires extra parameters */
     DPNP_FN_ONES,                         /**< Used in numpy.ones() impl */
     DPNP_FN_ONES_LIKE,                    /**< Used in numpy.ones_like() impl */
@@ -377,6 +376,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_VANDER_EXT,                   /**< Used in numpy.vander() impl, requires extra parameters */
     DPNP_FN_VAR,                          /**< Used in numpy.var() impl  */
     DPNP_FN_VAR_EXT,                      /**< Used in numpy.var() impl, requires extra parameters */
+    DPNP_FN_WHERE_EXT,                    /**< Used in numpy.where() impl, requires extra parameters */
     DPNP_FN_ZEROS,                        /**< Used in numpy.zeros() impl */
     DPNP_FN_ZEROS_LIKE,                   /**< Used in numpy.zeros_like() impl */
     DPNP_FN_LAST,                         /**< The latest element of the enumeration */

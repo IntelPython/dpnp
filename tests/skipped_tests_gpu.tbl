@@ -52,13 +52,6 @@ tests/test_sycl_queue.py::test_modf[level_zero:gpu:0]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-trapz-data19]
 tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-trapz-data19]
 
-tests/test_indexing.py::test_nonzero[[[1, 0], [1, 0]]]
-tests/test_indexing.py::test_nonzero[[[1, 2], [3, 4]]]
-tests/test_indexing.py::test_nonzero[[[0, 1, 2], [3, 0, 5], [6, 7, 0]]]
-tests/test_indexing.py::test_nonzero[[[0, 1, 0, 3, 0], [5, 0, 7, 0, 9]]]
-tests/test_indexing.py::test_nonzero[[[[1, 2], [0, 4]], [[0, 2], [0, 1]], [[0, 0], [3, 1]]]]
-tests/test_indexing.py::test_nonzero[[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]]
-
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_no_axis
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_3_{n_vals=1, shape=(7,)}::test_place
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_4_{n_vals=1, shape=(2, 3)}::test_place
@@ -366,12 +359,7 @@ tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: (dpnp
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray(x).astype(dpnp.int8)]
 tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-float32-1]
-tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
-tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_or
-tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_xor
-tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_invert
-tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_left_shift
-tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_right_shift
+
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestAngle::test_angle
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_inplace
@@ -860,12 +848,7 @@ tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_8_{s
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_8_{shapes=[(2, 0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_9_{shapes=[(0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_9_{shapes=[(0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast_arrays
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to_fail
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to_fail_numpy19
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to_numpy19
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to_short_shape
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to_short_shape_numpy19
+
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_int_axis_failure1
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_int_axis_failure2
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_scalar_failure1
@@ -1269,15 +1252,6 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_pa
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_0_{cond_shape=(2, 3, 4)}::test_where_cond
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_1_{cond_shape=(4,)}::test_where_cond
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_2_{cond_shape=(2, 3, 4)}::test_where_cond
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_3_{cond_shape=(3, 4)}::test_where_cond
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereError::test_one_argument
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereTwoArrays_param_0_{cond_shape=(2, 3, 4), x_shape=(2, 3, 4), y_shape=(2, 3, 4)}::test_where_two_arrays
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereTwoArrays_param_1_{cond_shape=(4,), x_shape=(2, 3, 4), y_shape=(2, 3, 4)}::test_where_two_arrays
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereTwoArrays_param_2_{cond_shape=(2, 3, 4), x_shape=(2, 3, 4), y_shape=(3, 4)}::test_where_two_arrays
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereTwoArrays_param_3_{cond_shape=(3, 4), x_shape=(2, 3, 4), y_shape=(4,)}::test_where_two_arrays
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_invalid_axis1
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_invalid_axis2

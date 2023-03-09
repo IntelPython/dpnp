@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -104,7 +104,7 @@
 
 #endif
 
-MACRO_2ARG_1TYPE_OP(dpnp_bitwise_and_c, input1_elem& input2_elem)
+MACRO_2ARG_1TYPE_OP(dpnp_bitwise_and_c, input1_elem & input2_elem)
 MACRO_2ARG_1TYPE_OP(dpnp_bitwise_or_c, input1_elem | input2_elem)
 MACRO_2ARG_1TYPE_OP(dpnp_bitwise_xor_c, input1_elem ^ input2_elem)
 MACRO_2ARG_1TYPE_OP(dpnp_left_shift_c, input1_elem << input2_elem)

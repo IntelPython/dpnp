@@ -125,7 +125,9 @@ class dpnp_array:
     def __add__(self, other):
         return dpnp.add(self, other)
 
- # '__and__',
+    def __and__(self, other):
+        return dpnp.bitwise_and(self, other)
+
  # '__array__',
  # '__array_finalize__',
  # '__array_function__',
@@ -197,9 +199,16 @@ class dpnp_array:
         dpnp.add(self, other, out=self)
         return self
 
- # '__iand__',
+    def __iand__(self, other):
+        dpnp.bitwise_and(self, other, out=self)
+        return self
+
  # '__ifloordiv__',
- # '__ilshift__',
+
+    def __ilshift__(self, other):
+        dpnp.left_shift(self, other, out=self)
+        return self
+
  # '__imatmul__',
  # '__imod__',
  # '__imul__',
@@ -213,18 +222,28 @@ class dpnp_array:
     def __int__(self):
         return self._array_obj.__int__()
 
- # '__invert__',
- # '__ior__',
+    def __invert__(self):
+        return dpnp.invert(self)
+
+    def __ior__(self, other):
+        dpnp.bitwise_or(self, other, out=self)
+        return self
 
     def __ipow__(self, other):
         dpnp.power(self, other, out=self)
         return self
 
- # '__irshift__',
+    def __irshift__(self, other):
+        dpnp.right_shift(self, other, out=self)
+        return self
+
  # '__isub__',
  # '__iter__',
  # '__itruediv__',
- # '__ixor__',
+
+    def __ixor__(self, other):
+        dpnp.bitwise_xor(self, other, out=self)
+        return self
 
     def __le__(self, other):
         return dpnp.less_equal(self, other)
@@ -236,7 +255,8 @@ class dpnp_array:
 
         return self._array_obj.__len__()
 
- # '__lshift__',
+    def __lshift__(self, other):
+        return dpnp.left_shift(self, other)
 
     def __lt__(self, other):
         return dpnp.less(self, other)
@@ -257,7 +277,10 @@ class dpnp_array:
         return dpnp.negative(self)
 
  # '__new__',
- # '__or__',
+
+    def __or__(self, other):
+        return dpnp.bitwise_or(self, other)
+
  # '__pos__',
 
     def __pow__(self, other):
@@ -266,7 +289,9 @@ class dpnp_array:
     def __radd__(self, other):
         return dpnp.add(other, self)
 
- # '__rand__',
+    def __rand__(self, other):
+        return dpnp.bitwise_and(other, self)
+
  # '__rdivmod__',
  # '__reduce__',
  # '__reduce_ex__',
@@ -275,7 +300,9 @@ class dpnp_array:
         return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
 
  # '__rfloordiv__',
- # '__rlshift__',
+
+    def __rlshift__(self, other):
+        return dpnp.left_shift(other, self)
 
     def __rmatmul__(self, other):
         return dpnp.matmul(other, self)
@@ -286,13 +313,17 @@ class dpnp_array:
     def __rmul__(self, other):
         return dpnp.multiply(other, self)
 
- # '__ror__',
- 
+    def __ror__(self, other):
+        return dpnp.bitwise_or(other, self)
+
     def __rpow__(self, other):
         return dpnp.power(other, self)
 
- # '__rrshift__',
- # '__rshift__',
+    def __rrshift__(self, other):
+        return dpnp.right_shift(other, self)
+
+    def __rshift__(self, other):
+        return dpnp.right_shift(self, other)
 
     def __rsub__(self, other):
         return dpnp.subtract(other, self)
@@ -300,7 +331,9 @@ class dpnp_array:
     def __rtruediv__(self, other):
         return dpnp.true_divide(other, self)
 
- # '__rxor__',
+    def __rxor__(self, other):
+        return dpnp.bitwise_xor(other, self)
+
  # '__setattr__',
 
     def __setitem__(self, key, val):
@@ -338,7 +371,8 @@ class dpnp_array:
     def __truediv__(self, other):
         return dpnp.true_divide(self, other)
 
- # '__xor__',
+    def __xor__(self, other):
+        return dpnp.bitwise_xor(self, other)
 
     @staticmethod
     def _create_from_usm_ndarray(usm_ary : dpt.usm_ndarray):
@@ -764,7 +798,10 @@ class dpnp_array:
         return self._array_obj.ndim
 
  # 'newbyteorder',
- # 'nonzero',
+
+    def nonzero(self):
+        return dpnp.nonzero(self)
+
  # 'partition',
 
     def prod(self, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
