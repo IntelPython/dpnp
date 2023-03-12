@@ -915,9 +915,10 @@ def sqrt(x1, /, out = None, **kwargs):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array is supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `out` is supported as class:`dpnp.ndarray`, class:`dpctl.tensor.usm_ndarray` or
+    with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
-    Parameter ``out`` is supported as :obj:`dpnp.ndarray`, obj:`dpt.usm_ndarray` and as default value ``None``.
     Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -931,15 +932,21 @@ def sqrt(x1, /, out = None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
+    x1_desc = (
+        dpnp.get_dpnp_descriptor(
+            x1, copy_when_strides=False, copy_when_nondefault_queue=False
+        )
+        if not kwargs
+        else None
+    )
+    if x1_desc:
         if out is not None:
             if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
                 raise TypeError("return array must be of supported array type")
             out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
         else:
             out_desc = None
-        return dpnp_sqrt(x1_desc, out = out_desc).get_pyobj()
+        return dpnp_sqrt(x1_desc, out=out_desc).get_pyobj()
 
     return call_origin(numpy.sqrt, x1, out=out, **kwargs)
 

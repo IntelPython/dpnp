@@ -1,5 +1,5 @@
 import pytest
-from .helper import get_all_dtypes, get_float_dtypes
+from .helper import get_float_dtypes
 
 import numpy
 import dpnp

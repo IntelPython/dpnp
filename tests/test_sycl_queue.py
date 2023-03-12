@@ -9,6 +9,7 @@ import dpctl
 import numpy
 
 from numpy.testing import (
+    assert_allclose,
     assert_array_equal,
     assert_raises
 )
@@ -218,7 +219,7 @@ def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
 
     dpnp_kwargs = dict(kwargs)
     dpnp_kwargs['device'] = device_y
-    
+
     y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
     numpy.testing.assert_allclose(y_orig, y)
 
@@ -279,6 +280,8 @@ def test_meshgrid(device_x, device_y):
                      [1., 2.]),
         pytest.param("sign",
                      [-5., 4.5]),
+        pytest.param("sqrt",
+                     [1., 3., 9.]),
         pytest.param("sum",
                      [1., 2.]),
         pytest.param("trapz",
@@ -297,7 +300,7 @@ def test_1in_1out(func, data, device):
     x = dpnp.array(data, device=device)
     result = getattr(dpnp, func)(x)
 
-    assert_array_equal(result, expected)
+    assert_allclose(result, expected)
 
     expected_queue = x.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -531,6 +534,33 @@ def test_random_state(func, args, kwargs, device, usm_type):
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
+    "func,data",
+    [
+        pytest.param("sqrt",
+                     [0., 1., 2., 3., 4., 5., 6., 7., 8.]),
+    ],
+)
+@pytest.mark.parametrize("device",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+def test_out_1in_1out(func, data, device):
+    x_orig = numpy.array(data)
+    np_out = getattr(numpy, func)(x_orig)
+    expected = numpy.empty_like(np_out)
+    getattr(numpy, func)(x_orig, out=expected)
+
+    x = dpnp.array(data, device=device)
+    dp_out = getattr(dpnp, func)(x)
+    result = dpnp.empty_like(dp_out)
+    getattr(dpnp, func)(x, out=result)
+
+    assert_allclose(result, expected)
+
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.parametrize(
     "func,data1,data2",
     [
         pytest.param("add",
@@ -574,7 +604,7 @@ def test_random_state(func, args, kwargs, device, usm_type):
 @pytest.mark.parametrize("device",
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
-def test_out(func, data1, data2, device):
+def test_out_2in_1out(func, data1, data2, device):
     x1_orig = numpy.array(data1)
     x2_orig = numpy.array(data2)
     np_out = getattr(numpy, func)(x1_orig, x2_orig)
