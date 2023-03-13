@@ -807,7 +807,17 @@ def full_like(x1,
     return numpy.full_like(x1, fill_value, dtype, order, subok, shape)
 
 
-def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
+def geomspace(start,
+              stop,
+              /,
+              num,
+              *,
+              dtype=None,
+              device=None,
+              usm_type=None,
+              sycl_queue=None,
+              endpoint=True,
+              axis=0):
     """
     Return numbers spaced evenly on a log scale (a geometric progression).
 
@@ -816,6 +826,7 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
     Limitations
     -----------
     Parameter ``axis`` is supported only with default value ``0``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -838,11 +849,17 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
 
     """
 
-    if not use_origin_backend():
-        if axis != 0:
-            pass
-        else:
-            return dpnp_geomspace(start, stop, num, endpoint, dtype, axis).get_pyobj()
+    if axis != 0:
+        pass
+    else:
+        return dpnp_geomspace(start,
+                              stop,
+                              num,
+                              dtype=dtype,
+                              device=device,
+                              usm_type=usm_type,
+                              sycl_queue=sycl_queue,
+                              endpoint=endpoint)
 
     return call_origin(numpy.geomspace, start, stop, num, endpoint, dtype, axis)
 

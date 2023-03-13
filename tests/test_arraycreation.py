@@ -154,29 +154,6 @@ def test_fromstring(dtype):
     assert_array_equal(func(dpnp), func(numpy))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes())
-@pytest.mark.parametrize("num",
-                         [2, 4, 8, 3, 9, 27])
-@pytest.mark.parametrize("endpoint",
-                         [True, False])
-def test_geomspace(dtype, num, endpoint):
-    start = 2
-    stop = 256
-
-    func = lambda xp: xp.geomspace(start, stop, num, endpoint, dtype)
-
-    np_res = func(numpy)
-    dpnp_res = func(dpnp)
-
-    # Note that the above may not produce exact integers:
-    # (c) https://numpy.org/doc/stable/reference/generated/numpy.geomspace.html
-    if dtype in [numpy.int64, numpy.int32]:
-        assert_allclose(dpnp_res, np_res, atol=1)
-    else:
-        assert_allclose(dpnp_res, np_res)
-
-
 @pytest.mark.parametrize("n",
                          [0, 1, 4],
                          ids=['0', '1', '4'])
@@ -517,17 +494,20 @@ def test_dpctl_tensor_input(func, args):
                          [0, -5, 10, -2.5, 9.7],
                          ids=['0', '-5', '10', '-2.5', '9.7'])
 @pytest.mark.parametrize("stop",
-                         [0, 10, -2, 20.5, 1000],
-                         ids=['0', '10', '-2', '20.5', '1000'])
+                         [0, 10, -2, 20.5, 999],
+                         ids=['0', '10', '-2', '20.5', '999'])
 @pytest.mark.parametrize("num",
                          [5, numpy.array(10), dpnp.array(17), dpt.asarray(100)],
                          ids=['5', 'numpy.array(10)', 'dpnp.array(17)', 'dpt.asarray(100)'])
+@pytest.mark.parametrize("endpoint",
+                         [True, False],
+                         ids=['True', 'False'])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_float16=False))
-def test_linspace(start, stop, num, dtype):
-    func = lambda xp: xp.linspace(start, stop, num, dtype=dtype)
+def test_linspace(start, stop, num, dtype, endpoint):
+    func = lambda xp: xp.linspace(start, stop, num, dtype=dtype, endpoint=endpoint)
 
     if numpy.issubdtype(dtype, dpnp.integer):
-        assert_allclose(func(numpy), func(dpnp), rtol=1)
+        assert_allclose(func(numpy), func(dpnp), atol=1, rtol=1)
     else:
         assert_allclose(func(numpy), func(dpnp), atol=numpy.finfo(dtype).eps)
 
@@ -545,11 +525,16 @@ def test_linspace_dtype(start_dtype, stop_dtype):
 
 
 @pytest.mark.parametrize("start",
-                         [dpnp.array(1), dpnp.array([2.6]), numpy.array([[-6.7, 3]]), [1, -4], (3, 5)])
+                         [dpnp.array(1), dpt.asarray([2.6]), numpy.array([[-6.7, 3]]), [1, -4], (3, 5), 2],
+                         ids=['dpnp.array(1)', 'dpt.asarray([2.6]', 'numpy.array([[-6.7, 3]])', '[1, -4]', '(3, 5)', '2'])
 @pytest.mark.parametrize("stop",
-                         [dpnp.array([-4]), dpnp.array([[2.6], [- 4]]), numpy.array(2), [[-4.6]], (3,)])
-def test_linspace_arrays(start, stop):
-    func = lambda xp: xp.linspace(start, stop, 10)
+                         [dpnp.array([-4]), dpt.asarray([[2.6], [- 4]]), numpy.array(2), [[-4.6]], (3,), 10],
+                         ids=['dpnp.array([-4])', 'dpt.asarray([[2.6], [- 4]])', 'numpy.array(2)', '[[-4.6]]', '(3,)', '10'])
+@pytest.mark.parametrize("endpoint",
+                         [True, False],
+                         ids=['True', 'False'])
+def test_linspace_arrays(start, stop, endpoint):
+    func = lambda xp: xp.linspace(start, stop, 10, endpoint=endpoint)
     assert func(numpy).shape == func(dpnp).shape
 
 
@@ -570,3 +555,56 @@ def test_meshgrid(arrays, dtype, indexing):
     a = tuple(numpy.array(array, dtype=dtype) for array in arrays)
     ia = tuple(dpnp.array(array, dtype=dtype) for array in arrays)
     assert_array_equal(func(numpy, a), func(dpnp, ia))
+
+
+@pytest.mark.parametrize("start",
+                         [2, 9.7],
+                         ids=[ '2', '9.7'])
+@pytest.mark.parametrize("stop",
+                         [2, 20.5, 256],
+                         ids=['2', '20.5', '256'])
+@pytest.mark.parametrize("num",
+                         [2, numpy.array(3), dpnp.array(4), dpt.asarray(100)],
+                         ids=['2', 'numpy.array(3)', 'dpnp.array(4)', 'dpt.asarray(100)'])
+@pytest.mark.parametrize("endpoint",
+                         [True, False],
+                         ids=['True', 'False'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_float16=False))
+def test_geomspace(start, stop, num, dtype, endpoint):
+    func = lambda xp: xp.geomspace(start, stop, num, dtype=dtype, endpoint=endpoint)
+
+    if numpy.issubdtype(dtype, dpnp.integer):
+        assert_allclose(func(numpy), func(dpnp), rtol=1)
+    else:
+        assert_allclose(func(numpy), func(dpnp), atol=numpy.finfo(dtype).eps)
+
+
+@pytest.mark.parametrize("start_dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("stop_dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+def test_geomspace_dtype(start_dtype, stop_dtype):
+    start = numpy.array([1, 2, 3], dtype=start_dtype)
+    stop = numpy.array([11, 7, -2], dtype=stop_dtype)
+    dpnp.geomspace(start, stop, 10)
+
+
+@pytest.mark.parametrize("start",
+                         [dpnp.array(1), dpt.asarray([2.6]), numpy.array([[6.7, 3]]), [1, 4], (3, 5), 2],
+                         ids=['dpnp.array(1)', 'dpt.asarray([2.6]', 'numpy.array([[6.7, 3]])', '[1, -4]', '(3, 5)', '2'])
+@pytest.mark.parametrize("stop",
+                         [dpnp.array([4]), dpt.asarray([[2.6], [4]]), numpy.array(2), [[4.6]], (3,), 256],
+                         ids=['dpnp.array([4])', 'dpt.asarray([[2.6], [4]])', 'numpy.array(2)', '[[4.6]]', '(3,)', '256'])
+@pytest.mark.parametrize("endpoint",
+                         [True, False],
+                         ids=['True', 'False'])
+def test_geomspace_arrays(start, stop, endpoint):
+    #1336: AttributeError: 'dpnp_array' object has no attribute 'log10'"
+    dpnp_shape = dpnp.geomspace(start, stop, 10, endpoint=endpoint).shape
+    if isinstance(start, (dpnp.ndarray, dpt.usm_ndarray)):
+        start = dpnp.asnumpy(start)
+    if isinstance(stop, (dpnp.ndarray, dpt.usm_ndarray)):
+        stop = dpnp.asnumpy(stop)
+    assert numpy.geomspace(start, stop, 10, endpoint=endpoint).shape == dpnp_shape

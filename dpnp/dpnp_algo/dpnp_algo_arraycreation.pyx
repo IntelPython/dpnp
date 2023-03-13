@@ -139,32 +139,77 @@ cpdef utils.dpnp_descriptor dpnp_diag(utils.dpnp_descriptor v, int k):
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_geomspace(start, stop, num, endpoint, dtype, axis):
-    cdef shape_type_c obj_shape = utils._object_to_tuple(num)
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(obj_shape, dtype, None)
+def _copy_by_usm_type(x, dtype, usm_type, sycl_queue):
+    if not hasattr(x, "usm_type"):
+        result = dpnp.asarray(x, dtype=dtype, usm_type=usm_type, sycl_queue=sycl_queue)
+    elif usm_type == "host" and x.usm_type != "host" or usm_type == "shared" and x.usm_type == "device":
+        result = dpnp.asarray(x, dtype=dtype, usm_type=usm_type, sycl_queue=sycl_queue)
+    else:
+        result = dpnp.asarray(x, dtype=dtype, sycl_queue=sycl_queue)
+    return result
+
+
+def _get_start_stop(start, stop, device=None, usm_type=None, sycl_queue=None):
+    usm_type_alloc, sycl_queue_alloc = utils_py.get_usm_allocations([start, stop])
+
+    # Get sycl_queue.
+    if sycl_queue is None and device is None:
+        sycl_queue = sycl_queue_alloc
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
+
+    # Get usm_type.
+    if usm_type is None:
+        usm_type = "device" if usm_type_alloc is None else usm_type_alloc
+
+    # Get dtype.
+    if not hasattr(start, "dtype") and not dpnp.isscalar(start):
+        start = dpnp.asarray(start, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+    if not hasattr(stop, "dtype") and not dpnp.isscalar(stop):
+        stop = dpnp.asarray(stop, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+    dt = numpy.result_type(start, stop, float(0))
+    dt = utils_py.map_dtype_to_device(dt, sycl_queue_normalized.sycl_device)
+
+    # Copy arrays if needed with current dtype, usm_type and sycl_queue.
+    # Do not need to copy usm_ndarray by usm_type if it is not explicitly stated.
+    _start = _copy_by_usm_type(start, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+    _stop = _copy_by_usm_type(stop, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+    return _start, _stop
+
+
+def dpnp_geomspace(start, stop, num, dtype=None, device=None, usm_type=None, sycl_queue=None, endpoint=True, axis=0):
+    num = operator.index(num)
+    if num < 0:
+        raise ValueError("Number of points must be non-negative")
+
+    _start, _stop = _get_start_stop(start, stop, device, usm_type, sycl_queue)
+
+    if dtype is None:
+        dtype = _start.dtype
 
     if endpoint:
-        steps_count = num - 1
+            steps_count = num - 1
     else:
         steps_count = num
-
-    # if there are steps, then fill values
     if steps_count > 0:
-        step = dpnp.power(dpnp.float64(stop) / start, 1.0 / steps_count)
-        mult = step
-        for i in range(1, result.size):
-            result.get_pyobj()[i] = start * mult
-            mult = mult * step
+        step = (_stop / _start) ** (1.0 / steps_count)
     else:
         step = dpnp.nan
+    exp = dpnp_container.arange(0,
+                                stop=num,
+                                step=1,
+                                dtype=_start.dtype,
+                                usm_type=_start.usm_type,
+                                sycl_queue=_start.sycl_queue)
 
-    # if result is not empty, then fiil first and last elements
-    if num > 0:
-        result.get_pyobj()[0] = start
-        if endpoint and result.size > 1:
-            result.get_pyobj()[result.size - 1] = stop
+    exp = exp.reshape((-1,) + (1,) * step.ndim)
+    result = _start * (step ** exp)
+    if endpoint and num > 1:
+        result[-1] = dpnp_container.full(step.shape, _stop)
 
-    return result
+    if numpy.issubdtype(dtype, dpnp.integer):
+        dpnp.floor(result, out=result)
+
+    return result.astype(dtype)
 
 
 cpdef utils.dpnp_descriptor dpnp_identity(n, result_dtype):
@@ -190,80 +235,45 @@ cpdef utils.dpnp_descriptor dpnp_identity(n, result_dtype):
 
 
 def dpnp_linspace(start, stop, num, dtype=None, device=None, usm_type=None, sycl_queue=None, endpoint=True, retstep=False, axis=0):
-    usm_type_alloc, sycl_queue_alloc = utils_py.get_usm_allocations([start, stop])
+    num = operator.index(num)
+    if num < 0:
+        raise ValueError("Number of points must be non-negative")
 
-    # Get sycl_queue.
-    if sycl_queue is None and device is None:
-        sycl_queue = sycl_queue_alloc
-    sycl_queue_normalized = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue, device=device)
-
-    # Get temporary usm_type for getting dtype.
-    if usm_type is None:
-        _usm_type = "device" if usm_type_alloc is None else usm_type_alloc
-    else:
-        _usm_type = usm_type
-
-    # Get dtype.
-    if not hasattr(start, "dtype") and not dpnp.isscalar(start):
-        start = dpnp.asarray(start, usm_type=_usm_type, sycl_queue=sycl_queue_normalized)
-    if not hasattr(stop, "dtype") and not dpnp.isscalar(stop):
-        stop = dpnp.asarray(stop, usm_type=_usm_type, sycl_queue=sycl_queue_normalized)
-    dt = numpy.result_type(start, stop, float(num))
-    dt = utils_py.map_dtype_to_device(dt, sycl_queue_normalized.sycl_device)
+    _start, _stop = _get_start_stop(start, stop, device, usm_type, sycl_queue)
     if dtype is None:
-        dtype = dt
+        dtype = _start.dtype
 
     if dpnp.isscalar(start) and dpnp.isscalar(stop):
         # Call linspace() function for scalars.
-        res = dpnp_container.linspace(start,
-                                      stop,
-                                      num,
-                                      dtype=dt,
-                                      usm_type=_usm_type,
-                                      sycl_queue=sycl_queue_normalized,
-                                      endpoint=endpoint)
+        result = dpnp_container.linspace(start,
+                                         stop,
+                                         num,
+                                         dtype=_start.dtype,
+                                         usm_type=_start.usm_type,
+                                         sycl_queue=_start.sycl_queue,
+                                         endpoint=endpoint)
     else:
-        num = operator.index(num)
-        if num < 0:
-            raise ValueError("Number of points must be non-negative")
-
-        # Get final usm_type and copy arrays if needed with current dtype, usm_type and sycl_queue.
-        # Do not need to copy usm_ndarray by usm_type if it is not explicitly stated.
-        if usm_type is None:
-            usm_type = _usm_type
-            if not hasattr(start, "usm_type"):
-                _start = dpnp.asarray(start, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-            else:
-                _start = dpnp.asarray(start, dtype=dt, sycl_queue=sycl_queue_normalized)
-            if not hasattr(stop, "usm_type"):
-                _stop = dpnp.asarray(stop, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-            else:
-                _stop = dpnp.asarray(stop, dtype=dt, sycl_queue=sycl_queue_normalized)
-        else:
-            _start = dpnp.asarray(start, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-            _stop = dpnp.asarray(stop, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
-
         # FIXME: issue #1304. Mathematical operations with scalar don't follow data type.
-        _num = dpnp.asarray((num - 1) if endpoint else num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue_normalized)
+        _num = dpnp.asarray((num - 1) if endpoint else num, dtype=_start.dtype, usm_type=_start.usm_type, sycl_queue=_start.sycl_queue)
 
         step = (_stop - _start) / _num
 
-        res = dpnp_container.arange(0,
-                                    stop=num,
-                                    step=1,
-                                    dtype=dt,
-                                    usm_type=usm_type,
-                                    sycl_queue=sycl_queue_normalized)
+        result = dpnp_container.arange(0,
+                                       stop=num,
+                                       step=1,
+                                       dtype=_start.dtype,
+                                       usm_type=_start.usm_type,
+                                       sycl_queue=_start.sycl_queue)
 
-        res = res.reshape((-1,) + (1,) * step.ndim)
-        res = res * step + _start
+        result = result.reshape((-1,) + (1,) * step.ndim)
+        result = result * step + _start
 
         if endpoint and num > 1:
-            res[-1] = dpnp_container.full(step.shape, _stop)
+            result[-1] = dpnp_container.full(step.shape, _stop)
 
     if numpy.issubdtype(dtype, dpnp.integer):
-        dpnp.floor(res, out=res)
-    return res.astype(dtype)
+        dpnp.floor(result, out=result)
+    return result.astype(dtype)
 
 
 cpdef utils.dpnp_descriptor dpnp_logspace(start, stop, num, endpoint, base, dtype, axis):
