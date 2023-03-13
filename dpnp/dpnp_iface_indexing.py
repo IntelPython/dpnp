@@ -296,7 +296,7 @@ def nonzero(x, /):
     -------
     y : tuple[dpnp.ndarray]
         Indices of elements that are non-zero.
-    
+
     Limitations
     -----------
     Parameters `x` is supported as either :class:`dpnp.ndarray`
@@ -342,24 +342,27 @@ def nonzero(x, /):
     return call_origin(numpy.nonzero, x)
 
 
-def place(x1, mask, vals):
+def place(x, mask, vals, /):
     """
     Change elements of an array based on conditional and input values.
     For full documentation refer to :obj:`numpy.place`.
 
     Limitations
     -----------
-    Input arrays ``arr`` and ``mask``  are supported as :obj:`dpnp.ndarray`.
-    Parameter ``vals`` is supported as 1-D sequence.
+    Parameters `arr`, `mask` and `vals` are supported either
+    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Parameter `vals` is supported as 1-D sequence.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    mask_desc = dpnp.get_dpnp_descriptor(mask, copy_when_nondefault_queue=False)
-    vals_desc = dpnp.get_dpnp_descriptor(vals, copy_when_nondefault_queue=False)
-    if x1_desc and mask_desc and vals_desc:
-        return dpnp_place(x1_desc, mask, vals_desc)
+    check_dtype = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
+    if check_dtype(x) and check_dtype(mask) and check_dtype(vals):
+        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+        dpt_mask = mask.get_array() if isinstance(mask, dpnp_array) else mask
+        dpt_vals = vals.get_array() if isinstance(vals, dpnp_array) else vals
+        return dpt.place(dpt_array, dpt_mask, dpt_vals)
 
-    return call_origin(numpy.place, x1, mask, vals, dpnp_inplace=True)
+    return call_origin(numpy.place, x, mask, vals, dpnp_inplace=True)
 
 
 def put(x1, ind, v, mode='raise'):
