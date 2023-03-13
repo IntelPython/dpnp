@@ -125,7 +125,7 @@ if IS_WIN:
     '''
     This variable controls setuptools execution on windows
     to avoid automatically search and confirm workability of the compiler
-    If not set, error "Microsoft Visual C++ 14.0 or greater is required." appiars
+    If not set, error "Microsoft Visual C++ 14.0 or greater is required." appears
     '''
     os.environ["DISTUTILS_USE_SDK"] = "1"
 
@@ -145,6 +145,21 @@ kwargs_common = {
 dpnp_algo = Extension(
     name="dpnp.dpnp_algo.dpnp_algo",
     sources=[os.path.join("dpnp", "dpnp_algo", "dpnp_algo.pyx")],
+    depends=[
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_linearalgebra.pyx"),
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_manipulation.pyx"),
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_counting.pyx"),
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_statistics.pyx"),
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_trigonometric.pyx"),
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_sorting.pyx"),
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_arraycreation.pyx"),
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_mathematical.pyx"),
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_searching.pyx"),
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_indexing.pyx"),
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_logic.pyx"),
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_bitwise.pyx"),
+        os.path.join("dpnp", "dpnp_algo", "dpnp_algo_special.pyx"),
+    ],
     **kwargs_common)
 
 dpnp_dparray = Extension(
