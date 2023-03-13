@@ -349,14 +349,14 @@ def place(x, mask, vals, /):
 
     Limitations
     -----------
-    Parameters `arr`, `mask` and `vals` are supported either
+    Parameters `x`, `mask` and `vals` are supported either
     :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Otherwise the function will be executed sequentially on CPU.
     Parameter `vals` is supported as 1-D sequence.
     """
 
-    check_dtype = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
-    if check_dtype(x) and check_dtype(mask) and check_dtype(vals):
+    check_type = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
+    if check_type(x) and check_type(mask) and check_type(vals):
         dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
         dpt_mask = mask.get_array() if isinstance(mask, dpnp_array) else mask
         dpt_vals = vals.get_array() if isinstance(vals, dpnp_array) else vals
