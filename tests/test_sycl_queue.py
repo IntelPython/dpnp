@@ -93,6 +93,9 @@ def vvsort(val, vec, size, xp):
         pytest.param("eye",
                      [4, 2],
                      {}),
+        pytest.param("geomspace",
+                     [2, 256, 8],
+                     {}),
         pytest.param("linspace",
                      [0, 4, 8],
                      {}),
@@ -113,7 +116,7 @@ def test_array_creation(func, arg, kwargs, device):
     dpnp_kwargs['device'] = device
     dpnp_array = getattr(dpnp, func)(*arg, **dpnp_kwargs)
 
-    numpy.testing.assert_array_equal(numpy_array, dpnp_array)
+    numpy.testing.assert_allclose(numpy_array, dpnp_array)
     assert dpnp_array.sycl_device == device
 
 
@@ -162,6 +165,12 @@ def test_empty_like(device_x, device_y):
                      {}),
         pytest.param("linspace",
                      ['1', 'x0', '4'],
+                     {}),
+        pytest.param("geomspace",
+                     ['x0', '4', '4'],
+                     {}),
+        pytest.param("geomspace",
+                     ['1', 'x0', '4'],
                      {})
     ])
 @pytest.mark.parametrize("device",
@@ -197,6 +206,12 @@ def test_array_creation_follow_device(func, args, kwargs, device):
                      {}),
         pytest.param("linspace",
                      ['1', 'x0', '4'],
+                     {}),
+        pytest.param("geomspace",
+                     ['x0', '4', '4'],
+                     {}),
+        pytest.param("geomspace",
+                     ['1', 'x0', '4'],
                      {})
     ])
 @pytest.mark.parametrize("device_x",
@@ -206,7 +221,7 @@ def test_array_creation_follow_device(func, args, kwargs, device):
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
-    if func is 'linspace' and is_win_platform():
+    if 'space' in func and is_win_platform():
         pytest.skip("CPU driver experiences an instability on Windows.")
 
     x_orig = numpy.array([1, 2, 3, 4])

@@ -187,7 +187,7 @@ def dpnp_geomspace(start, stop, num, dtype=None, device=None, usm_type=None, syc
         dtype = _start.dtype
 
     if endpoint:
-            steps_count = num - 1
+        steps_count = num - 1
     else:
         steps_count = num
     if steps_count > 0:

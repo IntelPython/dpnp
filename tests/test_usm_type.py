@@ -95,11 +95,15 @@ def test_coerced_usm_types_power(usm_type_x, usm_type_y):
                      ['x0[0:2]', '4', '4']),
         pytest.param("linspace",
                      ['0', 'x0[3:5]', '4']),
+        pytest.param("geomspace",
+                     ['x0[0:2]', '4', '4']),
+        pytest.param("geomspace",
+                     ['0', 'x0[3:5]', '4']),
     ])
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_array_creation(func, args, usm_type_x, usm_type_y):
-    x0 = dp.full(10, 3, usm_type=usm_type_x)
+    x0 = dp.arange(0, 10, usm_type=usm_type_x)
     new_args = [eval(val, {'x0' : x0}) for val in args]
 
     x = getattr(dp, func)(*new_args)
@@ -109,12 +113,13 @@ def test_array_creation(func, args, usm_type_x, usm_type_y):
     assert y.usm_type == usm_type_y
 
 
+@pytest.mark.parametrize("func", ["linspace", "geomspace"], ids=["linspace", "geomspace"])
 @pytest.mark.parametrize("usm_type_start", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_stop", list_of_usm_types, ids=list_of_usm_types)
-def test_linspace_arrays(usm_type_start, usm_type_stop):
+def test_space_arrays(func, usm_type_start, usm_type_stop):
     start = dp.asarray([0, 0], usm_type=usm_type_start)
     stop = dp.asarray([2, 4], usm_type=usm_type_stop)
-    res = dp.linspace(start, stop, 4)
+    res =  getattr(dp, func)(start, stop, 4)
     assert res.usm_type == du.get_coerced_usm_type([usm_type_start, usm_type_stop])
 
 
