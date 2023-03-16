@@ -114,7 +114,7 @@ def dot(x1, x2, out=None, **kwargs):
             if out is not None:
                 if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
                     raise TypeError("return array must be of supported array type")
-                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
             else:
                 out_desc = None
             return dpnp_dot(x1_desc, x2_desc, out=out_desc).get_pyobj()

@@ -660,9 +660,10 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
 
 
 cdef class dpnp_descriptor:
-    def __init__(self, obj):
+    def __init__(self, obj, dpnp_descriptor orig_desc=None):
         """ Initialze variables """
         self.origin_pyobj = None
+        self.origin_desc = None
         self.descriptor = None
         self.dpnp_descriptor_data_size = 0
         self.dpnp_descriptor_is_scalar = True
@@ -680,6 +681,10 @@ cdef class dpnp_descriptor:
                 return
 
         self.origin_pyobj = obj
+
+        """ Keep track of a descriptor with original data """
+        if orig_desc is not None and orig_desc.is_valid:
+            self.origin_desc = orig_desc
 
         """ array size calculation """
         cdef Py_ssize_t shape_it = 0
@@ -741,6 +746,14 @@ cdef class dpnp_descriptor:
         return self.dpnp_descriptor_is_scalar
 
     @property
+    def is_tempored(self):
+        """
+        Non-none descriptor of original data means the current descriptor
+        holds a temporary allocated data.
+        """
+        return self.origin_desc is not None
+
+    @property
     def data(self):
         if self.is_valid:
             data_tuple = self.descriptor["data"]
@@ -783,6 +796,13 @@ cdef class dpnp_descriptor:
         raise TypeError(
             "expected either dpctl.tensor.usm_ndarray or dpnp.dpnp_array.dpnp_array, got {}"
             "".format(type(self.origin_pyobj)))
+
+    def get_result_desc(self):
+        if self.is_tempored:
+            """ Copy the result data into an original array """
+            self.origin_desc.get_array()[:] = self.get_array()
+            return self.origin_desc
+        return self
 
     cdef void * get_data(self):
         cdef Py_ssize_t item_size = 0
