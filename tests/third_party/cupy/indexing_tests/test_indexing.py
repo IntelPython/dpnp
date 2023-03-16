@@ -166,6 +166,7 @@ class TestIndexing(unittest.TestCase):
         b = xp.array([[1, 0, 1], [0, 1, 0], [1, 0, 1]], dtype=dtype)
         return xp.extract(b, a)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_extract_shape_mismatch(self, xp):
         a = testing.shaped_arange((2, 3), xp)
@@ -174,6 +175,7 @@ class TestIndexing(unittest.TestCase):
                       [True, False]])
         return xp.extract(b, a)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_extract_size_mismatch(self, xp):
         a = testing.shaped_arange((3, 3), xp)
@@ -181,6 +183,7 @@ class TestIndexing(unittest.TestCase):
                       [False, True, False]])
         return xp.extract(b, a)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_extract_size_mismatch2(self, xp):
         a = testing.shaped_arange((3, 3), xp)
@@ -188,6 +191,7 @@ class TestIndexing(unittest.TestCase):
                       [False, True, False, True]])
         return xp.extract(b, a)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_extract_empty_1dim(self, xp):
         a = testing.shaped_arange((3, 3), xp)
