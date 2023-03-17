@@ -29,6 +29,7 @@ class TestIndexing(unittest.TestCase):
         b = xp.array([[1, 3], [2, 0]])
         return a.take(b, axis=1)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_take_no_axis(self, xp):
         a = testing.shaped_arange((2, 3, 4), xp)
@@ -47,7 +48,7 @@ class TestIndexing(unittest.TestCase):
         if dtype in (numpy.int32, numpy.uint32):
             pytest.skip()
         iinfo = numpy.iinfo(dtype)
-        a = xp.broadcast_to(xp.ones(1), (iinfo.max + 1,))
+        a = xp.broadcast_to(xp.ones(1, dtype=dtype), (iinfo.max + 1,))
         b = xp.array([0], dtype=dtype)
         return a.take(b)
 

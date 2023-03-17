@@ -332,7 +332,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SVD
         DPNP_FN_SVD_EXT
         DPNP_FN_TAKE
-        DPNP_FN_TAKE_EXT
         DPNP_FN_TAN
         DPNP_FN_TAN_EXT
         DPNP_FN_TANH

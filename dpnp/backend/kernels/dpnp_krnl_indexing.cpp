@@ -932,15 +932,6 @@ void dpnp_take_c(void* array1_in, const size_t array1_size, void* indices1, void
 template <typename _DataType, typename _IndecesType>
 void (*dpnp_take_default_c)(void*, const size_t, void*, void*, size_t) = dpnp_take_c<_DataType, _IndecesType>;
 
-template <typename _DataType, typename _IndecesType>
-DPCTLSyclEventRef (*dpnp_take_ext_c)(DPCTLSyclQueueRef,
-                                     void*,
-                                     const size_t,
-                                     void*,
-                                     void*,
-                                     size_t,
-                                     const DPCTLEventVectorRef) = dpnp_take_c<_DataType, _IndecesType>;
-
 void func_map_init_indexing_func(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_choose_default_c<int32_t, int32_t>};
@@ -1072,22 +1063,6 @@ void func_map_init_indexing_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_take_default_c<double, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_C128][eft_LNG] = {eft_C128,
                                                            (void*)dpnp_take_default_c<std::complex<double>, int64_t>};
-
-    // TODO: add a handling of other indexes types once DPCtl implementation of data copy is ready
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_BLN][eft_INT] = {eft_BLN, (void*)dpnp_take_ext_c<bool, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_take_ext_c<int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_take_ext_c<int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_FLT][eft_INT] = {eft_FLT, (void*)dpnp_take_ext_c<float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_take_ext_c<double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_C128][eft_INT] = {eft_C128,
-                                                               (void*)dpnp_take_ext_c<std::complex<double>, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_BLN][eft_LNG] = {eft_BLN, (void*)dpnp_take_ext_c<bool, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_INT][eft_LNG] = {eft_INT, (void*)dpnp_take_ext_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_take_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_FLT][eft_LNG] = {eft_FLT, (void*)dpnp_take_ext_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_take_ext_c<double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_C128][eft_LNG] = {eft_C128,
-                                                               (void*)dpnp_take_ext_c<std::complex<double>, int64_t>};
 
     return;
 }

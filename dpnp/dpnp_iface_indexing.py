@@ -501,16 +501,25 @@ def select(condlist, choicelist, default=0):
     return call_origin(numpy.select, condlist, choicelist, default)
 
 
-def take(x1, indices, axis=None, out=None, mode='raise'):
+def take(x, indices, /, *, axis=None, out=None, mode="clip"):
     """
-    Take elements from an array.
+    Take elements from an array along an axis.
     For full documentation refer to :obj:`numpy.take`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array formed from the elements of x at the given indices.
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameters ``axis``, ``out`` and ``mode`` are supported only with default values.
-    Parameter ``indices`` is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` and `indices` are supported either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `indices` is supported as 1-D sequence.
+    Parameter `out` is supported only with default values.
+    Parameter `mode` is supported with clip(default) and wrap mode.
+    Parameter `axis` is optional if `x` is a 1-D sequence.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -518,19 +527,26 @@ def take(x1, indices, axis=None, out=None, mode='raise'):
     :obj:`take_along_axis` : Take elements by matching the array and the index arrays.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    indices_desc = dpnp.get_dpnp_descriptor(indices, copy_when_nondefault_queue=False)
-    if x1_desc and indices_desc:
-        if axis is not None:
+    check_type = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
+    if check_type(x) and check_type(indices):
+        if indices.ndim != 1:
+            pass
+        elif axis is None and x.ndim > 1:
             pass
         elif out is not None:
             pass
-        elif mode != 'raise':
+        elif mode == "raise":
             pass
         else:
-            return dpnp_take(x1_desc, indices_desc).get_pyobj()
+            dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+            dpt_indices = (
+                indices.get_array() if isinstance(indices, dpnp_array) else indices
+            )
+            return dpnp_array._create_from_usm_ndarray(
+                dpt.take(dpt_array, dpt_indices, axis=axis, mode=mode)
+            )
 
-    return call_origin(numpy.take, x1, indices, axis, out, mode)
+    return call_origin(numpy.take, x, indices, axis, out, mode)
 
 
 def take_along_axis(x1, indices, axis):

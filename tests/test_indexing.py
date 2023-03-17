@@ -1,7 +1,6 @@
 import pytest
 from .helper import get_all_dtypes
 
-
 import dpnp
 
 import numpy
@@ -398,40 +397,54 @@ def test_select():
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("array_type",
-                         [numpy.bool8, numpy.int32, numpy.int64, numpy.float32, numpy.float64, numpy.complex128],
-                         ids=['bool8', 'int32', 'int64', 'float32', 'float64', 'complex128'])
+@pytest.mark.parametrize("array_type", get_all_dtypes())
 @pytest.mark.parametrize("indices_type",
                          [numpy.int32, numpy.int64],
                          ids=['int32', 'int64'])
 @pytest.mark.parametrize("indices",
-                         [[[0, 0], [0, 0]],
-                          [[1, 2], [1, 2]],
-                          [[1, 2], [3, 4]]],
-                         ids=['[[0, 0], [0, 0]]',
-                              '[[1, 2], [1, 2]]',
-                              '[[1, 2], [3, 4]]'])
-@pytest.mark.parametrize("array",
-                         [[[0, 1, 2], [3, 4, 5], [6, 7, 8]],
-                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
-                          [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
-                          [[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]],
-                          [[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [
-                              [[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]],
-                          [[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]],
-                         ids=['[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
-                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]',
-                              '[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]',
-                              '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]',
-                              '[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]',
-                              '[[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]'])
-def test_take(array, indices, array_type, indices_type):
-    a = numpy.array(array, dtype=array_type)
+                         [[-2, 2],
+                          [-5, 4],
+                          [-6, 6]],
+                         ids=['[-1, 4]',
+                              '[-5, 5]',
+                              '[-6, 6]'])
+@pytest.mark.parametrize("mode",
+                         ["clip", "wrap"],
+                         ids=['clip', 'wrap'])
+def test_take_1d(indices, array_type, indices_type, mode):
+    a = numpy.array([-2, -1, 0, 1, 2], dtype=array_type)
     ind = numpy.array(indices, dtype=indices_type)
     ia = dpnp.array(a)
     iind = dpnp.array(ind)
-    expected = numpy.take(a, ind)
-    result = dpnp.take(ia, iind)
+    expected = numpy.take(a, ind, mode=mode)
+    result = dpnp.take(ia, iind, mode=mode)
+    assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("array_type", get_all_dtypes())
+@pytest.mark.parametrize("indices_type",
+                         [numpy.int32, numpy.int64],
+                         ids=['int32', 'int64'])
+@pytest.mark.parametrize("indices",
+                         [[-1, 0],
+                          [-3, 2],
+                          [-4, 4]],
+                         ids=['[-1, 4]',
+                              '[-5, 5]',
+                              '[-6, 6]'])
+@pytest.mark.parametrize("mode",
+                         ["clip", "wrap"],
+                         ids=['clip', 'wrap'])
+@pytest.mark.parametrize("axis",
+                         [0, 1],
+                         ids=['0', '1'])
+def test_take_2d(indices, array_type, indices_type, axis, mode):
+    a = numpy.array([[-1, 0, 1], [1, 0, -1]], dtype=array_type)
+    ind = numpy.array(indices, dtype=indices_type)
+    ia = dpnp.array(a)
+    iind = dpnp.array(ind)
+    expected = numpy.take(a, ind, axis=axis, mode=mode)
+    result = dpnp.take(ia, iind, axis=axis, mode=mode)
     assert_array_equal(expected, result)
 
 
