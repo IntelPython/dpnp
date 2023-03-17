@@ -56,11 +56,11 @@ def test_diagonal(array, offset):
 
 
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes())
-def test_extract_1d(arr_dtype):
+@pytest.mark.parametrize("cond_dtype", get_all_dtypes())
+def test_extract_1d(arr_dtype, cond_dtype):
     a = numpy.array([-2, -1, 0, 1, 2, 3], dtype=arr_dtype)
     ia = dpnp.array(a)
-    cond = numpy.ones(6, dtype='bool')
-    cond[::2] = False
+    cond = numpy.array([1, -1, 2, 0, -2, 3], dtype=cond_dtype)
     icond = dpnp.array(cond)
     expected = numpy.extract(cond, a)
     result = dpnp.extract(icond, ia)

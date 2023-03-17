@@ -238,17 +238,22 @@ def extract(condition, x):
     Return the elements of an array that satisfy some condition.
     For full documentation refer to :obj:`numpy.extract`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        Rank 1 array of values from `x` where `condition` is True.
+
     Limitations
     -----------
     Parameters `condition` and `x` are supported either as
     :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `x` must be the same size and shape as `condition`.
+    Parameter `x` must be the same shape as `condition`.
     Otherwise the function will be executed sequentially on CPU.
     """
 
     check_input_type = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
     if check_input_type(condition) and check_input_type(x):
-        if condition.size != x.size or condition.shape != x.shape:
+        if condition.shape != x.shape:
             pass
         else:
             dpt_condition = (
