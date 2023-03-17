@@ -91,7 +91,6 @@ endif()
 # SYCL related compile options
 string(CONCAT COMMON_COMPILE_FLAGS
   "-fsycl "
-  "-fsycl-device-code-split=per_kernel "
   "-fno-approx-func "
   "-fno-finite-math-only "
 )
@@ -173,6 +172,7 @@ if(NOT WIN32)
     "-fno-delete-null-pointer-checks "
     "-fstack-protector-strong "
     "-fno-strict-overflow "
+    "-fwrapv "
     )
   string(APPEND COMMON_LINK_FLAGS
     "LINKER:-z,noexecstack,-z,relro,-z,now "
