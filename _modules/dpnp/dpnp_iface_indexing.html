@@ -19,7 +19,6 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
@@ -138,6 +137,7 @@
     <span class="s2">&quot;diag_indices&quot;</span><span class="p">,</span>
     <span class="s2">&quot;diag_indices_from&quot;</span><span class="p">,</span>
     <span class="s2">&quot;diagonal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;extract&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fill_diagonal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;indices&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nonzero&quot;</span><span class="p">,</span>
@@ -316,6 +316,40 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diagonal</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the elements of an array that satisfy some condition.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.extract`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">        Rank 1 array of values from `x` where `condition` is True.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `condition` and `x` are supported either as</span>
+<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameter `x` must be the same shape as `condition`.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">check_input_type</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">check_input_type</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span> <span class="ow">and</span> <span class="n">check_input_type</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">condition</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dpt_condition</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">condition</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">condition</span>
+            <span class="p">)</span>
+            <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
+            <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">dpt_condition</span><span class="p">,</span> <span class="n">dpt_array</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">extract</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+
 <span class="k">def</span> <span class="nf">fill_diagonal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fill the main diagonal of the given array of any dimensionality.</span>
@@ -380,7 +414,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    y : tuple[dpnp.ndarray]</span>
 <span class="sd">        Indices of elements that are non-zero.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters `x` is supported as either :class:`dpnp.ndarray`</span>
