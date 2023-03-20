@@ -1,4 +1,6 @@
 import pytest
+from .helper import get_all_dtypes
+
 
 import dpnp
 
@@ -50,6 +52,18 @@ def test_diagonal(array, offset):
     ia = dpnp.array(a)
     expected = numpy.diagonal(a, offset)
     result = dpnp.diagonal(ia, offset)
+    assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("arr_dtype", get_all_dtypes())
+@pytest.mark.parametrize("cond_dtype", get_all_dtypes())
+def test_extract_1d(arr_dtype, cond_dtype):
+    a = numpy.array([-2, -1, 0, 1, 2, 3], dtype=arr_dtype)
+    ia = dpnp.array(a)
+    cond = numpy.array([1, -1, 2, 0, -2, 3], dtype=cond_dtype)
+    icond = dpnp.array(cond)
+    expected = numpy.extract(cond, a)
+    result = dpnp.extract(icond, ia)
     assert_array_equal(expected, result)
 
 
