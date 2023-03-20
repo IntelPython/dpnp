@@ -35,6 +35,8 @@ import numpy
 
 import dpctl
 import dpctl.utils as dpu
+import dpctl.tensor._copy_utils as dpt_cu
+import dpctl.tensor._tensor_impl as dpt_ti
 
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
@@ -746,7 +748,7 @@ cdef class dpnp_descriptor:
         return self.dpnp_descriptor_is_scalar
 
     @property
-    def is_tempored(self):
+    def is_temporary(self):
         """
         Non-none descriptor of original data means the current descriptor
         holds a temporary allocated data.
@@ -784,6 +786,15 @@ cdef class dpnp_descriptor:
 
         return interface_dict
 
+    def _copy_array_from(self, other_desc):
+        """
+        Fill array data with usm_ndarray of the same shape from other DPNP descriptor
+        """
+        if not isinstance(other_desc, dpnp_descriptor):
+            raise TypeError("expected dpnp_descriptor, got {}".format(type(other_desc)))
+
+        dpt_cu._copy_same_shape(self.get_array(), other_desc.get_array())
+
     def get_pyobj(self):
         return self.origin_pyobj
 
@@ -797,12 +808,28 @@ cdef class dpnp_descriptor:
             "expected either dpctl.tensor.usm_ndarray or dpnp.dpnp_array.dpnp_array, got {}"
             "".format(type(self.origin_pyobj)))
 
-    def get_result_desc(self):
-        if self.is_tempored:
-            """ Copy the result data into an original array """
-            self.origin_desc.get_array()[:] = self.get_array()
+    def get_result_desc(self, result_desc=None):
+        """
+        Copy the result data into an original array
+        """
+        if self.is_temporary:
+            # Original descriptor is not None, so copy the array data into it and return
+            from_desc = self if result_desc is None else result_desc
+            self.origin_desc._copy_array_from(from_desc)
             return self.origin_desc
+        elif result_desc is not None:
+            # A temporary result descriptor was allocated, needs to copy data back into 'out' descriptor
+            self._copy_array_from(result_desc)
         return self
+
+    def is_array_overlapped(self, other_desc):
+        """
+        Check if usm_ndarray overlaps an array from other DPNP descriptor
+        """
+        if not isinstance(other_desc, dpnp_descriptor):
+            raise TypeError("expected dpnp_descriptor, got {}".format(type(other_desc)))
+
+        return dpt_ti._array_overlap(self.get_array(), other_desc.get_array())
 
     cdef void * get_data(self):
         cdef Py_ssize_t item_size = 0
@@ -817,6 +844,9 @@ cdef class dpnp_descriptor:
             return < void * > data_ptr
 
         return < void * > val
+
+    cdef cpp_bool match_ctype(self, DPNPFuncType ctype):
+        return self.dtype == dpnp_DPNPFuncType_to_dtype(< size_t > ctype)
 
     def __bool__(self):
         return self.is_valid
