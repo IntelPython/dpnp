@@ -507,19 +507,17 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
 
     # check 'out' parameter data
     if out is not None:
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > return_type)
-        if out.dtype != result_type:
-            utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
         if out.shape != result_shape:
             utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
 
         utils.get_common_usm_allocation(x1_obj, out)  # check USM allocation is common
 
-    if out is None or out.data in (x1_obj.data, x2_obj.data):
+    if out is None or out.is_array_overlapped(x1_obj) or out.is_array_overlapped(x2_obj) or not out.match_ctype(return_type):
         """
         Create result array with type given by FPTR data.
-        If 'out' array refers to the same memory as input arrays, we have to create a temporary array
-        and to copy data from the temporary into 'out' array, once the computation is completed.
+        If 'out' array has another dtype than expected or overlaps a memory from any input array,
+        we have to create a temporary array and to copy data from the temporary into 'out' array,
+        once the computation is completed.
         Otherwise simultaneously access to the same memory may cause a race condition issue
         which will result into undefined behaviour.
         """
@@ -565,8 +563,6 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     if out is not None and is_result_memory_allocated:
-        # copy the result data back to output array
-        out.get_array()[...] = result.get_array()
-        return out
+        return out.get_result_desc(result)
 
     return result.get_result_desc()

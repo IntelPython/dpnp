@@ -122,6 +122,7 @@ cdef class dpnp_descriptor:
         cpp_bool dpnp_descriptor_is_scalar
 
     cdef void * get_data(self)
+    cdef cpp_bool match_ctype(self, DPNPFuncType ctype)
 
 
 cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input2_shape) except *
