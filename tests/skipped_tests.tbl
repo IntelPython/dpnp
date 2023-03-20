@@ -456,12 +456,6 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compr
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_empty_1dim_no_axis
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_no_axis
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_no_bool
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract_empty_1dim
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract_no_bool
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract_shape_mismatch
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract_size_mismatch
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract_size_mismatch2
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_index_range_overflow
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
@@ -514,12 +508,6 @@ tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_5_{
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_6_{shape=(3, 3), val=(2, 2), wrap=True}::test_columnar_slice
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_7_{shape=(3, 3), val=(2, 2), wrap=False}::test_columnar_slice
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_9_{shape=(2, 2, 2), val=1, wrap=False}::test_1darray
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_0_{shape=(7,)}::test_place_empty_value_error
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_0_{shape=(7,)}::test_place_shape_unmatch_error
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_1_{shape=(2, 3)}::test_place_empty_value_error
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_1_{shape=(2, 3)}::test_place_shape_unmatch_error
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_2_{shape=(4, 3, 2)}::test_place_empty_value_error
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_2_{shape=(4, 3, 2)}::test_place_shape_unmatch_error
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmaskDifferentDtypes::test_putmask_differnt_dtypes_raises
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_non_equal_shape_raises
 tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiter::test_next
