@@ -240,7 +240,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_PARTITION,                    /**< Used in numpy.partition() impl */
     DPNP_FN_PARTITION_EXT,                /**< Used in numpy.partition() impl, requires extra parameters */
     DPNP_FN_PLACE,                        /**< Used in numpy.place() impl  */
-    DPNP_FN_PLACE_EXT,                    /**< Used in numpy.place() impl, requires extra parameters */
     DPNP_FN_POWER,                        /**< Used in numpy.power() impl  */
     DPNP_FN_POWER_EXT,                    /**< Used in numpy.power() impl, requires extra parameters */
     DPNP_FN_PROD,                         /**< Used in numpy.prod() impl  */

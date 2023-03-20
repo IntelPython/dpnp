@@ -126,7 +126,6 @@ def test_nonzero(array):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("vals",
                          [[100, 200],
                           (100, 200)],
@@ -151,12 +150,12 @@ def test_place1(arr, mask, vals):
     ia = dpnp.array(a)
     m = numpy.array(mask)
     im = dpnp.array(m)
+    iv = dpnp.array(vals)
     numpy.place(a, m, vals)
-    dpnp.place(ia, im, vals)
+    dpnp.place(ia, im, iv)
     assert_array_equal(a, ia)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("vals",
                          [[100, 200],
                           [100, 200, 300, 400, 500, 600],
@@ -175,12 +174,12 @@ def test_place2(arr, mask, vals):
     ia = dpnp.array(a)
     m = numpy.array(mask)
     im = dpnp.array(m)
+    iv = dpnp.array(vals)
     numpy.place(a, m, vals)
-    dpnp.place(ia, im, vals)
+    dpnp.place(ia, im, iv)
     assert_array_equal(a, ia)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("vals",
                          [[100, 200],
                           [100, 200, 300, 400, 500, 600],
@@ -200,8 +199,9 @@ def test_place3(arr, mask, vals):
     ia = dpnp.array(a)
     m = numpy.array(mask)
     im = dpnp.array(m)
+    iv = dpnp.array(vals)
     numpy.place(a, m, vals)
-    dpnp.place(ia, im, vals)
+    dpnp.place(ia, im, iv)
     assert_array_equal(a, ia)
 
 

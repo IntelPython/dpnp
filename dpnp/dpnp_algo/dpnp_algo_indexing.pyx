@@ -40,7 +40,6 @@ __all__ += [
     "dpnp_diagonal",
     "dpnp_fill_diagonal",
     "dpnp_indices",
-    "dpnp_place",
     "dpnp_put",
     "dpnp_put_along_axis",
     "dpnp_putmask",
@@ -76,13 +75,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_2in_1out_func_ptr_t_)(c_dpct
                                                                           const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_2in_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                     void *, void * , shape_elem_type * , const size_t,
-                                                                    const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_3in_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                    void * ,
-                                                                    void * ,
-                                                                    void * ,
-                                                                    const size_t,
-                                                                    const size_t,
                                                                     const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_3in_with_axis_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                               void * ,
@@ -304,41 +296,6 @@ cpdef object dpnp_indices(dimensions):
 
     dpnp_result = dpnp.array(result)
     return dpnp_result
-
-
-cpdef dpnp_place(dpnp_descriptor arr, object mask, dpnp_descriptor vals):
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(arr, vals)
-
-    cdef utils.dpnp_descriptor mask_ = utils_py.create_output_descriptor_py((mask.size,),
-                                                                            dpnp.int64,
-                                                                            None,
-                                                                            device=result_sycl_device,
-                                                                            usm_type=result_usm_type,
-                                                                            sycl_queue=result_sycl_queue)
-    for i in range(mask.size):
-        if mask.item(i):
-            mask_.get_pyobj()[i] = 1
-        else:
-            mask_.get_pyobj()[i] = 0
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PLACE_EXT, param1_type, param1_type)
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_indexing_3in_func_ptr_t func = <custom_indexing_3in_func_ptr_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    arr.get_data(),
-                                                    mask_.get_data(),
-                                                    vals.get_data(),
-                                                    arr.size,
-                                                    vals.size,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
 
 
 cpdef dpnp_put(dpnp_descriptor x1, object ind, v):
