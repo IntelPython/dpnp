@@ -460,24 +460,26 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change elements of an array based on conditional and input values.</span>
 <span class="sd">    For full documentation refer to :obj:`numpy.place`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input arrays ``arr`` and ``mask``  are supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Parameter ``vals`` is supported as 1-D sequence.</span>
+<span class="sd">    Parameters `x`, `mask` and `vals` are supported either as</span>
+<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">mask_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">vals_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">mask_desc</span> <span class="ow">and</span> <span class="n">vals_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_place</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals_desc</span><span class="p">)</span>
+    <span class="n">check_input_type</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">check_input_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="n">check_input_type</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="ow">and</span> <span class="n">check_input_type</span><span class="p">(</span><span class="n">vals</span><span class="p">):</span>
+        <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
+        <span class="n">dpt_mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">mask</span>
+        <span class="n">dpt_vals</span> <span class="o">=</span> <span class="n">vals</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">vals</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">dpt_mask</span><span class="p">,</span> <span class="n">dpt_vals</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">place</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">place</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
