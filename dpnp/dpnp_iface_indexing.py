@@ -503,7 +503,7 @@ def select(condlist, choicelist, default=0):
     return call_origin(numpy.select, condlist, choicelist, default)
 
 
-def take(x, indices, /, *, axis=None, out=None, mode="clip"):
+def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     """
     Take elements from an array along an axis.
     For full documentation refer to :obj:`numpy.take`.
@@ -511,33 +511,39 @@ def take(x, indices, /, *, axis=None, out=None, mode="clip"):
     Returns
     -------
     out : dpnp.ndarray
-        An array formed from the elements of x at the given indices.
+        An array formed from the elements of `x` at the given indices.
 
     Limitations
     -----------
-    Parameters `x` and `indices` are supported either :class:`dpnp.ndarray`
+    Parameters `x` and `indices` are supported either as :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `indices` is supported as 1-D sequence.
-    Parameter `out` is supported only with default values.
-    Parameter `mode` is supported with clip(default) and wrap mode.
-    Parameter `axis` is optional if `x` is a 1-D sequence.
+    Parameter `indices` is supported as 1-D array of integer data type.
+    Parameter `out` is supported only with default value.
+    Parameter `mode` is supported with ``wrap``(default) and ``clip`` mode.
+    Providing parameter `axis` is optional when `x` is a 1-D array.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
     :obj:`dpnp.compress` : Take elements using a boolean mask.
     :obj:`take_along_axis` : Take elements by matching the array and the index arrays.
+
+    Notes
+    -----
+    How out-of-bounds indices will be handled.
+    "wrap" - clamps indices to (-n <= i < n), then wraps negative indices.
+    "clip" - clips indices to (0 <= i < n)
     """
 
     check_type = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
     if check_type(x) and check_type(indices):
-        if indices.ndim != 1:
+        if indices.ndim != 1 or not dpnp.issubdtype(indices.dtype, dpnp.integer):
             pass
         elif axis is None and x.ndim > 1:
             pass
         elif out is not None:
             pass
-        elif mode == "raise":
+        elif not mode in ("clip", "wrap"):
             pass
         else:
             dpt_array = x.get_array() if isinstance(x, dpnp_array) else x

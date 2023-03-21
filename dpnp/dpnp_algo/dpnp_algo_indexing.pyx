@@ -57,13 +57,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_choose_t)(c_dpctl.DPCTLSyclQueueRe
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_diag_indices)(c_dpctl.DPCTLSyclQueueRef,
                                                             void * , size_t,
                                                             const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_2in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                         void *,
-                                                                         const size_t,
-                                                                         void * ,
-                                                                         void * ,
-                                                                         size_t,
-                                                                         const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_2in_1out_func_ptr_t_)(c_dpctl.DPCTLSyclQueueRef,
                                                                           void * ,
                                                                           const size_t,

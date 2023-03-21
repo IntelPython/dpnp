@@ -949,7 +949,7 @@ class dpnp_array:
 
  # 'swapaxes',
 
-    def take(self, indices, /, *, axis=None, out=None, mode='clip'):
+    def take(self, indices, /, *, axis=None, out=None, mode='wrap'):
         """
         Take elements from an array along an axis.
 

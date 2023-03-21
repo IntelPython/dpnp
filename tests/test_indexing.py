@@ -403,11 +403,9 @@ def test_select():
                          ids=['int32', 'int64'])
 @pytest.mark.parametrize("indices",
                          [[-2, 2],
-                          [-5, 4],
-                          [-6, 6]],
-                         ids=['[-1, 4]',
-                              '[-5, 5]',
-                              '[-6, 6]'])
+                          [-5, 4]],
+                         ids=['[-2, 2]',
+                              '[-5, 4]'])
 @pytest.mark.parametrize("mode",
                          ["clip", "wrap"],
                          ids=['clip', 'wrap'])
@@ -427,11 +425,9 @@ def test_take_1d(indices, array_type, indices_type, mode):
                          ids=['int32', 'int64'])
 @pytest.mark.parametrize("indices",
                          [[-1, 0],
-                          [-3, 2],
-                          [-4, 4]],
-                         ids=['[-1, 4]',
-                              '[-5, 5]',
-                              '[-6, 6]'])
+                          [-3, 2]],
+                         ids=['[-1, 0]',
+                              '[-3, 2]'])
 @pytest.mark.parametrize("mode",
                          ["clip", "wrap"],
                          ids=['clip', 'wrap'])
@@ -439,12 +435,27 @@ def test_take_1d(indices, array_type, indices_type, mode):
                          [0, 1],
                          ids=['0', '1'])
 def test_take_2d(indices, array_type, indices_type, axis, mode):
-    a = numpy.array([[-1, 0, 1], [1, 0, -1]], dtype=array_type)
+    a = numpy.array([[-1, 0, 1], [-2, -3, -4], [2, 3, 4]], dtype=array_type)
     ind = numpy.array(indices, dtype=indices_type)
     ia = dpnp.array(a)
     iind = dpnp.array(ind)
     expected = numpy.take(a, ind, axis=axis, mode=mode)
     result = dpnp.take(ia, iind, axis=axis, mode=mode)
+    assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("array_type", get_all_dtypes())
+@pytest.mark.parametrize("indices",
+                         [[-5, 5]],
+                         ids=['[-5, 5]'])
+@pytest.mark.parametrize("mode",
+                         ["clip", "wrap"],
+                         ids=['clip', 'wrap'])
+def test_take_over_index(indices, array_type, mode):
+    a = dpnp.array([-2, -1, 0, 1, 2], dtype=array_type)
+    ind = dpnp.array(indices, dtype=dpnp.int64)
+    expected = dpnp.array([-2, 2], dtype=a.dtype)
+    result = dpnp.take(a, ind, mode=mode)
     assert_array_equal(expected, result)
 
 
