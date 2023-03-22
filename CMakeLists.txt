@@ -36,7 +36,7 @@ set(MKL_INTERFACE_FULL "intel_ilp64")
 set(MKL_THREADING "tbb_thread")
 find_package(MKL REQUIRED)
 
-find_package(oneDPL REQUIRED)
+find_package(oneDPL REQUIRED HINTS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules)
 
 include(GNUInstallDirs)
 
