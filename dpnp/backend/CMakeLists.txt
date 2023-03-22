@@ -81,6 +81,11 @@ add_library(dpnp_backend_library INTERFACE IMPORTED GLOBAL)
 target_include_directories(dpnp_backend_library BEFORE INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(dpnp_backend_library INTERFACE ${_trgt})
 
+if(DPNP_BACKEND_TESTS)
+  add_subdirectory(tests)
+endif()
+
+
 install(
   TARGETS ${_trgt}
   LIBRARY DESTINATION dpnp
