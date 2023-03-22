@@ -10,19 +10,20 @@ requirements:
       - setuptools
       - numpy 1.21
       - cython
-      - cmake >=3.19
-      - dpctl >=0.14
+      - cmake >=3.21
+      - dpctl >=0.14.2
       - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2023.0.0') }}
       - onedpl-devel
       - tbb-devel
       - wheel
+      - scikit-build
     build:
       - {{ compiler('cxx') }}
       - {{ compiler('dpcpp') }}  =2023.1.0  # [not osx]
       - sysroot_linux-64 >=2.17  # [linux]
     run:
       - python
-      - dpctl >=0.14
+      - dpctl >=0.14.2
       - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('mkl-dpcpp', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
@@ -31,11 +32,6 @@ build:
     number: {{ GIT_DESCRIBE_NUMBER }}
     include_recipe: False
     script_env:
-      - ONEAPI_ROOT
-      - DPCPPROOT
-      - MKLROOT
-      - TBBROOT
-      - DPLROOT
       - WHEELS_OUTPUT_FOLDER
 
 test:
@@ -43,9 +39,9 @@ test:
       - pytest
       - setuptools
     source_files:
-        - examples
-        - tests
-        - setup.cfg
+      - examples
+      - tests
+      - setup.cfg
     commands:
       - python -c "import dpnp"
       - pytest -s
