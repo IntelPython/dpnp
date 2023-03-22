@@ -8,6 +8,9 @@ project(dpnp
   DESCRIPTION "NumPy-like API accelerated by SYCL."
 )
 
+option(DPNP_GENERATE_COVERAGE "Enable build DPNP with coverage instrumentation" FALSE)
+option(DPNP_BACKEND_TESTS "Enable building of DPNP backend test suite" FALSE)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
