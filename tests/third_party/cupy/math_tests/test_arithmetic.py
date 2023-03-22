@@ -145,6 +145,14 @@ class ArithmeticBinaryBase:
             if dtype1 in (numpy.float16, numpy.float32):
                 y = y.astype(numpy.complex64)
 
+        if xp is cupy and not xp.isscalar(y) and not self.use_dtype:
+            if self.name == 'fmod':
+                # TODO: Fix this: fmod(a, 0)
+                #     numpy => 0
+                #     cupy => 2147483647
+                if not (dtype1 in float_types or dtype2 in float_types) and (np2 == 0).any():
+                    y[xp.broadcast_to(xp.array(arg2), y.shape) == 0] = 0
+
         # NumPy returns an output array of another type than DPNP when input ones have diffrent types.
         if xp is cupy and dtype1 != dtype2 and not self.use_dtype:
             is_array_arg1 = not xp.isscalar(arg1)
@@ -153,7 +161,7 @@ class ArithmeticBinaryBase:
             is_int_float = lambda _x, _y: numpy.issubdtype(_x, numpy.integer) and numpy.issubdtype(_y, numpy.floating)
             is_same_type = lambda _x, _y, _type: numpy.issubdtype(_x, _type) and numpy.issubdtype(_y, _type)
 
-            if self.name in ('add', 'multiply', 'power', 'subtract'):
+            if self.name in ('add', 'fmod', 'multiply', 'power', 'subtract'):
                 if is_array_arg1 and is_array_arg2:
                     # If both inputs are arrays where one is of floating type and another - integer,
                     # NumPy will return an output array of always "float64" type,

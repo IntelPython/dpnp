@@ -1276,14 +1276,11 @@ static constexpr DPNPFuncType get_divide_res_type()
 template <DPNPFuncType FT1, DPNPFuncType FT2>
 static constexpr DPNPFuncType get_fmod_res_type()
 {
-    constexpr auto widest_type = populate_func_types<FT1, FT2>();
-    constexpr auto shortes_type = (widest_type == FT1) ? FT2 : FT1;
-
-    if constexpr (shortes_type == DPNPFuncType::DPNP_FT_BOOL)
+    if constexpr ((FT1 == DPNPFuncType::DPNP_FT_BOOL) && (FT2 == DPNPFuncType::DPNP_FT_BOOL))
     {
         return DPNPFuncType::DPNP_FT_INT;
     }
-    return widest_type;
+    return populate_func_types<FT1, FT2>();
 }
 
 template <DPNPFuncType FT1, DPNPFuncType... FTs>
