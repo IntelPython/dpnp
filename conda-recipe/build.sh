@@ -15,8 +15,8 @@ else
     WHEELS_BUILD_ARGS="-p manylinux2014_x86_64"
 fi
 if [ -n "${WHEELS_OUTPUT_FOLDER}" ]; then
-    $PYTHON setup.py bdist_wheel ${WHEELS_BUILD_ARGS} ${SKBUILD_ARGS}
+    $PYTHON setup.py install bdist_wheel ${WHEELS_BUILD_ARGS} ${SKBUILD_ARGS}
     cp dist/dpnp*.whl ${WHEELS_OUTPUT_FOLDER}
 else
-    $PYTHON setup.py ${SKBUILD_ARGS}
+    $PYTHON setup.py install ${SKBUILD_ARGS}
 fi
