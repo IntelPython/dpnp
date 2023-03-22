@@ -11,6 +11,8 @@ requirements:
       - numpy 1.21
       - cython
       - cmake >=3.21
+      - ninja
+      - git
       - dpctl >=0.14.2
       - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2023.0.0') }}
       - onedpl-devel
