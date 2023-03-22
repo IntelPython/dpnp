@@ -848,6 +848,18 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
     return;
 }
 
+template <typename T>
+constexpr auto dispatch_fmod_op(T elem1, T elem2)
+{
+    if constexpr (is_any_v<T, std::int32_t, std::int64_t>)
+    {
+        return elem1 % elem2;
+    }
+    else
+    {
+        return sycl::fmod(elem1, elem2);
+    }
+}
 
 #define MACRO_2ARG_3TYPES_OP(                                                                                          \
     __name__, __operation__, __vec_operation__, __vec_types__, __mkl_operation__, __mkl_types__)                       \
@@ -1261,6 +1273,19 @@ static constexpr DPNPFuncType get_divide_res_type()
     return widest_type;
 }
 
+template <DPNPFuncType FT1, DPNPFuncType FT2>
+static constexpr DPNPFuncType get_fmod_res_type()
+{
+    constexpr auto widest_type = populate_func_types<FT1, FT2>();
+    constexpr auto shortes_type = (widest_type == FT1) ? FT2 : FT1;
+
+    if constexpr (shortes_type == DPNPFuncType::DPNP_FT_BOOL)
+    {
+        return DPNPFuncType::DPNP_FT_INT;
+    }
+    return widest_type;
+}
+
 template <DPNPFuncType FT1, DPNPFuncType... FTs>
 static void func_map_elemwise_2arg_3type_core(func_map_t& fmap)
 {
@@ -1300,10 +1325,27 @@ static void func_map_elemwise_2arg_3type_core(func_map_t& fmap)
      ...);
 }
 
+template <DPNPFuncType FT1, DPNPFuncType... FTs>
+static void func_map_elemwise_2arg_3type_core_no_complex(func_map_t& fmap)
+{
+    ((fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][FT1][FTs] =
+          {get_fmod_res_type<FT1, FTs>(),
+           (void*)dpnp_fmod_c_ext<func_type_map_t::find_type<get_fmod_res_type<FT1, FTs>()>,
+                                  func_type_map_t::find_type<FT1>,
+                                  func_type_map_t::find_type<FTs>>}),
+     ...);
+}
+
 template <DPNPFuncType... FTs>
 static void func_map_elemwise_2arg_3type_helper(func_map_t& fmap)
 {
     ((func_map_elemwise_2arg_3type_core<FTs, FTs...>(fmap)), ...);
+}
+
+template <DPNPFuncType... FTs>
+static void func_map_elemwise_2arg_3type_helper_no_complex(func_map_t& fmap)
+{
+    ((func_map_elemwise_2arg_3type_core_no_complex<FTs, FTs...>(fmap)), ...);
 }
 
 static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
@@ -1538,39 +1580,6 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
                                                           (void*)dpnp_fmod_c_default<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_FMOD][eft_DBL][eft_DBL] = {eft_DBL,
                                                           (void*)dpnp_fmod_c_default<double, double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_INT][eft_INT] = {eft_INT,
-                                                              (void*)dpnp_fmod_c_ext<int32_t, int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_INT][eft_LNG] = {eft_LNG,
-                                                              (void*)dpnp_fmod_c_ext<int64_t, int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_INT][eft_FLT] = {eft_DBL,
-                                                              (void*)dpnp_fmod_c_ext<double, int32_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_INT][eft_DBL] = {eft_DBL,
-                                                              (void*)dpnp_fmod_c_ext<double, int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_LNG][eft_INT] = {eft_LNG,
-                                                              (void*)dpnp_fmod_c_ext<int64_t, int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_LNG][eft_LNG] = {eft_LNG,
-                                                              (void*)dpnp_fmod_c_ext<int64_t, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_LNG][eft_FLT] = {eft_DBL,
-                                                              (void*)dpnp_fmod_c_ext<double, int64_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_LNG][eft_DBL] = {eft_DBL,
-                                                              (void*)dpnp_fmod_c_ext<double, int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_FLT][eft_INT] = {eft_DBL,
-                                                              (void*)dpnp_fmod_c_ext<double, float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_FLT][eft_LNG] = {eft_DBL,
-                                                              (void*)dpnp_fmod_c_ext<double, float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_FLT][eft_FLT] = {eft_FLT,
-                                                              (void*)dpnp_fmod_c_ext<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_FLT][eft_DBL] = {eft_DBL,
-                                                              (void*)dpnp_fmod_c_ext<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_DBL][eft_INT] = {eft_DBL,
-                                                              (void*)dpnp_fmod_c_ext<double, double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_DBL][eft_LNG] = {eft_DBL,
-                                                              (void*)dpnp_fmod_c_ext<double, double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_DBL][eft_FLT] = {eft_DBL,
-                                                              (void*)dpnp_fmod_c_ext<double, double, float>};
-    fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][eft_DBL][eft_DBL] = {eft_DBL,
-                                                              (void*)dpnp_fmod_c_ext<double, double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_INT][eft_INT] = {eft_DBL,
                                                            (void*)dpnp_hypot_c_default<double, int32_t, int32_t>};
@@ -1918,6 +1927,7 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
         eft_DBL, (void*)dpnp_subtract_c_default<double, double, double>};
 
     func_map_elemwise_2arg_3type_helper<eft_BLN, eft_INT, eft_LNG, eft_FLT, eft_DBL, eft_C64, eft_C128>(fmap);
+    func_map_elemwise_2arg_3type_helper_no_complex<eft_BLN, eft_INT, eft_LNG, eft_FLT, eft_DBL>(fmap);
 
     return;
 }

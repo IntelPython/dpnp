@@ -865,7 +865,15 @@ def fmin(*args, **kwargs):
     return dpnp.minimum(*args, **kwargs)
 
 
-def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def fmod(x1,
+         x2,
+         /,
+         out=None,
+         *,
+         where=True,
+         dtype=None,
+         subok=True,
+         **kwargs):
     """
     Calculate the element-wise remainder of division.
 
@@ -873,55 +881,30 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
-    Keyword arguments ``kwargs`` are currently unsupported.
-    Otherwise the functions will be executed sequentially on CPU.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.reminder` : Remainder complementary to floor_divide.
+    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
     :obj:`dpnp.divide` : Standard division.
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> a = np.array([2, -3, 4, 5, -4.5])
-    >>> b = np.array([2, 2, 2, 2, 2])
-    >>> result = np.fmod(a, b)
+    >>> import dpnp as dp
+    >>> a = dp.array([2, -3, 4, 5, -4.5])
+    >>> b = dp.array([2, 2, 2, 2, 2])
+    >>> result = dp.fmod(a, b)
     >>> [x for x in result]
     [0.0, -1.0, 0.0, 1.0, -0.5]
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
-
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        else:
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            return dpnp_fmod(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
-
-    return call_origin(numpy.fmod, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return _check_nd_call(numpy.fmod, dpnp_fmod, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
 
 
 def gradient(x1, *varargs, **kwargs):
