@@ -26,7 +26,7 @@ endif()
 find_path(_onedpl_header
   NAMES include
   PATHS ${_onedpl_root}
-  PATH_SUFFIXES "" ${_onedpl_headers_subdir}
+  PATH_SUFFIXES "." ${_onedpl_headers_subdir}
 )
 
 
