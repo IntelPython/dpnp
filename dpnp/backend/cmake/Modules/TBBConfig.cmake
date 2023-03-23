@@ -74,7 +74,12 @@ foreach (_tbb_component ${TBB_FIND_COMPONENTS})
         if (NOT TARGET TBB::${_tbb_component})
             add_library(TBB::${_tbb_component} SHARED IMPORTED)
 
-            get_filename_component(_tbb_include_dir "${_tbb_root}/include" ABSOLUTE)
+	    find_path(_tbb_include_dir
+	      NAMES include
+	      PATHS ${_tbb_root}
+	      HITNS ENV TBB_ROOT_HINT
+	      )
+	    
             set_target_properties(TBB::${_tbb_component} PROPERTIES
                                   INTERFACE_INCLUDE_DIRECTORIES "${_tbb_include_dir}")
             unset(_tbb_current_realpath)
