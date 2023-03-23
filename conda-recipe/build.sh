@@ -6,8 +6,9 @@ export ICPXCFG="$(pwd)/icpx_for_conda.cfg"
 export ICXCFG="$(pwd)/icpx_for_conda.cfg"
 
 export CMAKE_GENERATOR="Ninja"
-export TBB_DIR=$CONDA_PREFIX
-export MKL_DIR=$CONDA_PREFIX
+export TBB_ROOT_HINT=$CONDA_PREFIX
+export DPL_ROOT_HINT=$CONDA_PREFIX
+export MKL_ROOT_HINT=$CONDA_PREFIX
 SKBUILD_ARGS="-- -DDPCTL_MODULE_PATH=$($PYTHON -m dpctl --cmakedir) -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
 
 # Build wheel package
