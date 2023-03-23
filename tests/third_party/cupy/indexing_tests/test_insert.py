@@ -39,6 +39,7 @@ class TestPlaceRaises(unittest.TestCase):
     # https://github.com/numpy/numpy/pull/5821
     @testing.with_requires('numpy>=1.10')
     @testing.for_all_dtypes()
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_place_empty_value_error(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange(self.shape, xp, dtype)
