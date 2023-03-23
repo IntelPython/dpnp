@@ -58,10 +58,14 @@ endif()
 foreach (_tbb_component ${TBB_FIND_COMPONENTS})
     set(TBB_${_tbb_component}_FOUND 0)
     
-    get_filename_component(_tbb_release_lib "${_tbb_root}/lib/${_tbb_subdir}/lib${_tbb_component}${_bin_version}.so.${_${_tbb_component}_bin_version}" ABSOLUTE)
+    find_library(_tbb_release_lib NAMES lib${_tbb_component}${_bin_version}.so.${_${_tbb_component}_bin_version}
+                  PATHS ${_tbb_root}
+                  PATH_SUFFIXES "lib" "lib/${_tbb_subdir}")
 
     if (NOT TBB_FIND_RELEASE_ONLY)
-        get_filename_component(_tbb_debug_lib "${_tbb_root}/lib/${_tbb_subdir}/lib${_tbb_component}${_bin_version}_debug.so.${_${_tbb_component}_bin_version}" ABSOLUTE)
+        find_library(_tbb_debug_lib NAMES lib${_tbb_component}${_bin_version}_debug.so.${_${_tbb_component}_bin_version}
+                     PATHS ${_tbb_root}
+                     PATH_SUFFIXES "lib" "lib/${_tbb_subdir}")
     endif()
 
     if (EXISTS "${_tbb_release_lib}" OR EXISTS "${_tbb_debug_lib}")
