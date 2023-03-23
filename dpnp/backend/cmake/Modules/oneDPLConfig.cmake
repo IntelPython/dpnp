@@ -23,9 +23,10 @@ else()
 endif()
 
 
-find_path(_onedpl_header
+find_path(_onedpl_headers
   NAMES include
   PATHS ${_onedpl_root}
+  HITNS ENV DPL_ROOT_HINT
   PATH_SUFFIXES "." ${_onedpl_headers_subdir}
 )
 
