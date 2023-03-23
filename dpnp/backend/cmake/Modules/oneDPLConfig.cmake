@@ -22,7 +22,13 @@ else()
     set(_onedpl_headers_subdir linux)
 endif()
 
-get_filename_component(_onedpl_headers "${_onedpl_root}/${_onedpl_headers_subdir}/include" ABSOLUTE)
+
+find_path(_onedpl_header
+  NAMES include
+  PATHS ${_onedpl_root}
+  PATH_SUFFIXES "" ${_onedpl_headers_subdir}
+)
+
 
 if (EXISTS "${_onedpl_headers}")
     if (NOT TARGET oneDPL)

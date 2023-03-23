@@ -65,7 +65,7 @@ foreach (_tbb_component ${TBB_FIND_COMPONENTS})
     if (NOT TBB_FIND_RELEASE_ONLY)
         find_library(_tbb_debug_lib NAMES lib${_tbb_component}${_bin_version}_debug.so.${_${_tbb_component}_bin_version}
                      PATHS ${_tbb_root}
-                     PATH_SUFFIXES "lib" "lib/${_tbb_subdir}")
+m                    PATH_SUFFIXES "lib" "lib/${_tbb_subdir}")
     endif()
 
     if (EXISTS "${_tbb_release_lib}" OR EXISTS "${_tbb_debug_lib}")
