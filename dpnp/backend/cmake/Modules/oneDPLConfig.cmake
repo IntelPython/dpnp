@@ -24,10 +24,10 @@ endif()
 
 
 find_path(_onedpl_headers
-  NAMES include
+  NAMES oneapi/dpl
   PATHS ${_onedpl_root}
-  HITNS ENV DPL_ROOT_HINT
-  PATH_SUFFIXES "." ${_onedpl_headers_subdir}
+  HINTS ENV DPL_ROOT_HINT
+  PATH_SUFFIXES include ${_onedpl_headers_subdir}/include
 )
 
 
