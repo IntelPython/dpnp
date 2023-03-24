@@ -123,4 +123,18 @@ else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
 
+if (DPNP_GENERATE_COVERAGE)
+    string(CONCAT PROFILE_FLAGS
+        "-fprofile-instr-generate "
+        "-fcoverage-mapping "
+        "-fno-sycl-use-footer "
+#        "-save-temps=obj "
+    )
+
+    # Add profiling flags
+    set(CMAKE_CXX_FLAGS
+        "${CMAKE_CXX_FLAGS} ${PROFILE_FLAGS}"
+    )
+endif()
+
 add_subdirectory(dpnp)

@@ -64,6 +64,10 @@ if(UNIX)
     target_link_options(${_trgt} PUBLIC -fsycl-link-huge-device-code)
 endif()
 
+if(DPNP_GENERATE_COVERAGE)
+    target_link_options(${_trgt} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
+endif()
+
 target_link_libraries(${_trgt} PUBLIC MKL::MKL_DPCPP)
 target_link_libraries(${_trgt} PUBLIC oneDPL)
 
