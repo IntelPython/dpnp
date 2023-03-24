@@ -55,19 +55,74 @@ else ()
     set(_tbb_subdir ia32/gcc4.8)
 endif()
 
+if (UNIX)
+  set(_tbb_lib_ext ".so")
+  set(_tbb_lib_prefix "lib")
+  set(_tbb_lib_dir_conda "lib")
+  set(_bin_version "")
+elseif (WIN32) 
+  set(_bin_version "")
+  set(_tbb_lib_prefix "")
+  set(_tbb_lib_ext ".dll")
+  set(_tbb_impllib_ext ".lib")
+  set(_tbb_lib_dir_conda "bin")
+  set(_tbb_impllib_dir_conda "lib")
+else()
+    message(FATAL_ERROR "Unsupported platform. Only Unix and Windows are supported.")
+endif()
+
 foreach (_tbb_component ${TBB_FIND_COMPONENTS})
     set(TBB_${_tbb_component}_FOUND 0)
 
-    find_library(_tbb_release_lib NAMES ${_tbb_component}${_bin_version} lib${_tbb_component}${_bin_version}.so.${_${_tbb_component}_bin_version}
-                  PATHS ${_tbb_root}
-                  HINTS ENV TBB_ROOT_HINT
-                  PATH_SUFFIXES "lib" "lib/${_tbb_subdir}")
+if(WIN32)
+    unset(_bin_version)
+    if (_tbb_component STREQUAL tbb)
+        set(_bin_version ${_tbb_bin_version})
+    endif()
+endif()
+
+    message(STATUS "Looking for ")
+    message(STATUS "  NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_lib_ext}")
+    message(STATUS "  PATHS ${_tbb_root}")
+    message(STATUS "  HINTS $ENV{TBB_ROOT_HINT}")
+    message(STATUS "  PATH_SUFFIXES ${_tbb_lib_dir_conda}  lib/${_tbb_subdir}")
+    if(UNIX)
+       find_library(_tbb_release_lib 
+                    NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_lib_ext}
+                    PATHS ${_tbb_root}
+                    HINTS ENV TBB_ROOT_HINT
+                    PATH_SUFFIXES "${_tbb_lib_dir_conda}" "lib/${_tbb_subdir}")
+
+    else()
+
+       find_file(_tbb_release_lib 
+                 NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_lib_ext}
+                 PATHS ${_tbb_root}
+                 HINTS ENV TBB_ROOT_HINT
+                 PATH_SUFFIXES "${_tbb_lib_dir_conda}" "lib/${_tbb_subdir}")
+
+       if (EXISTS "${_tbb_release_lib}")
+          find_library(_tbb_release_impllib 
+                       NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_impllib_ext}
+                       PATHS ${_tbb_root}
+                       HINTS ENV TBB_ROOT_HINT
+                       PATH_SUFFIXES "${_tbb_impllib_dir_conda}" "lib/${_tbb_subdir}")
+       endif()
+    endif()
 
     if (NOT TBB_FIND_RELEASE_ONLY)
-        find_library(_tbb_debug_lib ${_tbb_component}${_bin_version}_debug lib${_tbb_component}${_bin_version}_debug.so.${_${_tbb_component}_bin_version}
+        find_library(_tbb_debug_lib 
+                     NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}_debug.${_tbb_lib_ext}
                      PATHS ${_tbb_root}
                      HINTS ENV TBB_ROOT_HINT
-                     PATH_SUFFIXES "lib" "lib/${_tbb_subdir}")
+                     PATH_SUFFIXES "${_tbb_lib_dir_conda}" "lib/${_tbb_subdir}")
+        if(WIN32  AND EXISTS "${_tbb_debug_lib}")
+           find_library(_tbb_debug_impllib 
+                        NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}_debug.${_tbb_impllib_ext}
+                        PATHS ${_tbb_root}
+                        HINTS ENV TBB_ROOT_HINT
+                        PATH_SUFFIXES "${_tbb_impllib_dir_conda}" "lib/${_tbb_subdir}")
+        endif()
     endif()
 
     if (EXISTS "${_tbb_release_lib}" OR EXISTS "${_tbb_debug_lib}")
@@ -80,22 +135,48 @@ foreach (_tbb_component ${TBB_FIND_COMPONENTS})
 	      PATH_SUFFIXES include
 	      HINTS ENV TBB_ROOT_HINT
 	      )
-	    
-            set_target_properties(TBB::${_tbb_component} PROPERTIES
-                                  INTERFACE_INCLUDE_DIRECTORIES "${_tbb_include_dir}")
+
+if(WIN32)
+            set_target_properties(
+                TBB::${_tbb_component} PROPERTIES
+                INTERFACE_INCLUDE_DIRECTORIES "${_tbb_include_dir}"
+                INTERFACE_COMPILE_DEFINITIONS "__TBB_NO_IMPLICIT_LINKAGE=1"
+                )
+else()
+            set_target_properties(
+                TBB::${_tbb_component} PROPERTIES
+                INTERFACE_INCLUDE_DIRECTORIES "${_tbb_include_dir}"
+                )
+endif()
+            message(STATUS "Set ${_tbb_include_dir} for component ${_tbb_component}")
             unset(_tbb_current_realpath)
             unset(_tbb_include_dir)
 
             if (EXISTS "${_tbb_release_lib}")
+if(WIN32)
+                set_target_properties(TBB::${_tbb_component} PROPERTIES
+                                      IMPORTED_LOCATION_RELEASE "${_tbb_release_lib}"
+                                      IMPORTED_IMPLIB_RELEASE "${_tbb_release_impllib}")
+else()
                 set_target_properties(TBB::${_tbb_component} PROPERTIES
                                       IMPORTED_LOCATION_RELEASE "${_tbb_release_lib}")
+endif()
                 set_property(TARGET TBB::${_tbb_component} APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+                message(STATUS "Set IMPORTED_LOCATION_RELEASE ${_tbb_release_lib} for component ${_tbb_component}")
             endif()
 
             if (EXISTS "${_tbb_debug_lib}")
+if(WIN32)
+                set_target_properties(TBB::${_tbb_component} PROPERTIES
+                                      IMPORTED_LOCATION_DEBUG "${_tbb_debug_lib}"
+                                      IMPORTED_IMPLIB_DEBUG "${_tbb_debug_impllib}"
+                )
+else()
                 set_target_properties(TBB::${_tbb_component} PROPERTIES
                                       IMPORTED_LOCATION_DEBUG "${_tbb_debug_lib}")
+endif()
                 set_property(TARGET TBB::${_tbb_component} APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+                message(STATUS "Set IMPORTED_LOCATION_DEBUG ${_tbb_release_lib} for component ${_tbb_component}")
             endif()
 
             # Add internal dependencies for imported targets: TBB::tbbmalloc_proxy -> TBB::tbbmalloc
@@ -112,6 +193,7 @@ foreach (_tbb_component ${TBB_FIND_COMPONENTS})
         else()
             message(STATUS "  one or both of:\n   ${_tbb_release_lib}\n    ${_tbb_debug_lib}\n   files must exist.")
         endif()
+        message(STATUS "Value of TBB_ROOT_HINT = '$ENV{TBB_ROOT_HINT}'")
         set(TBB_FOUND FALSE)
     endif()
 endforeach()
