@@ -32,7 +32,7 @@ endif()
 
 get_filename_component(_tbb_root "${CMAKE_CURRENT_LIST_DIR}" REALPATH)
 get_filename_component(_tbb_root "${_tbb_root}/../../.." ABSOLUTE)
-
+         
 set(TBB_INTERFACE_VERSION )
 
 set(_tbb_bin_version 12)
@@ -58,13 +58,13 @@ endif()
 foreach (_tbb_component ${TBB_FIND_COMPONENTS})
     set(TBB_${_tbb_component}_FOUND 0)
 
-    find_library(_tbb_release_lib lib${_tbb_component}${_bin_version}.so.${_${_tbb_component}_bin_version}
+    find_library(_tbb_release_lib NAMES ${_tbb_component}${_bin_version} lib${_tbb_component}${_bin_version}.so.${_${_tbb_component}_bin_version}
                   PATHS ${_tbb_root}
                   HINTS ENV TBB_ROOT_HINT
                   PATH_SUFFIXES "lib" "lib/${_tbb_subdir}")
 
     if (NOT TBB_FIND_RELEASE_ONLY)
-        find_library(_tbb_debug_lib lib${_tbb_component}${_bin_version}_debug.so.${_${_tbb_component}_bin_version}
+        find_library(_tbb_debug_lib ${_tbb_component}${_bin_version}_debug lib${_tbb_component}${_bin_version}_debug.so.${_${_tbb_component}_bin_version}
                      PATHS ${_tbb_root}
                      HINTS ENV TBB_ROOT_HINT
                      PATH_SUFFIXES "lib" "lib/${_tbb_subdir}")
@@ -78,7 +78,7 @@ foreach (_tbb_component ${TBB_FIND_COMPONENTS})
 	      oneapi/tbb.h
 	      PATHS ${_tbb_root}
 	      PATH_SUFFIXES include
-	      HITNS ENV TBB_ROOT_HINT
+	      HINTS ENV TBB_ROOT_HINT
 	      )
 	    
             set_target_properties(TBB::${_tbb_component} PROPERTIES
