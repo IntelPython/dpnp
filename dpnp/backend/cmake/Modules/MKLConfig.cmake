@@ -635,7 +635,7 @@ foreach(lib ${MKL_LIBRARIES})
     file(GLOB MKL_DLL_FILE "${MKL_ROOT}/redist/${MKL_ARCH}/${MKL_DLL_GLOB}"
         "${MKL_ROOT}/../redist/${MKL_ARCH}/${MKL_DLL_GLOB}"
         "${MKL_ROOT}/../redist/${MKL_ARCH}/mkl/${MKL_DLL_GLOB}"
-	"${MKL_ROOT}/bin")
+	"${MKL_ROOT}/bin/${MKL_DLL_GLOB}")
     if(NOT ${lib} STREQUAL ${MKL_IFACE_LIB} AND NOT ${lib} STREQUAL ${MKL_BLAS95} AND NOT ${lib} STREQUAL ${MKL_LAPACK95})  # Windows IFACE libs are static only
       list(LENGTH MKL_DLL_FILE MKL_DLL_FILE_LEN)
       if(MKL_DLL_FILE_LEN)
@@ -647,7 +647,7 @@ foreach(lib ${MKL_LIBRARIES})
         mkl_message(STATUS "Found DLL: ${MKL_DLL_FILE}")
         set_target_properties(MKL::${lib} PROPERTIES IMPORTED_LOCATION "${MKL_DLL_FILE}")
       else()
-        mkl_message(FATAL_ERROR "${MKL_DLL_GLOB} not found")
+        mkl_message(FATAL_ERROR "${MKL_DLL_GLOB} not found. MKL_ROOT was '${MKL_ROOT}'. MKL_DLL_FILE is '${MKL_DLL_FILE}'")
       endif()
     endif()
   else()
