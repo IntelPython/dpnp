@@ -11,9 +11,9 @@ SET "SETUPTOOLS_USE_DISTUTILS=stdlib"
 
 "%PYTHON%" setup.py clean --all
 
-set "MKL_ROOT_HINT=%CONDA_PREFIX%/Library"
-set "TBB_ROOT_HINT=%CONDA_PREFIX%/Library"
-set "DPL_ROOT_HINT=%CONDA_PREFIX%/Library"
+set "MKLROOT=%PREFIX%/Library"
+set "TBB_ROOT_HINT=%PREFIX%/Library"
+set "DPL_ROOT_HINT=%PREFIX%/Library"
 
 %PYTHON% -m dpctl --cmakedir > Output
 set /p DPCTL_CMAKE_DIR= < Output
