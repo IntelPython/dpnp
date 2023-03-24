@@ -28,7 +28,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DPCTL_MODULE_PATH})
 
 
 find_package(IntelDPCPP REQUIRED)
-find_package(TBB REQUIRED HINTS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules)
+find_package(TBB REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
 
 set(MKL_ARCH "intel64")
 set(MKL_LINK "dynamic")
@@ -36,7 +36,7 @@ set(MKL_INTERFACE_FULL "intel_ilp64")
 set(MKL_THREADING "tbb_thread")
 find_package(MKL REQUIRED)
 
-find_package(oneDPL REQUIRED HINTS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules)
+find_package(oneDPL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
 
 include(GNUInstallDirs)
 
