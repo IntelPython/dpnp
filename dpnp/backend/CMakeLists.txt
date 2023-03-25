@@ -58,6 +58,12 @@ set_target_properties(${_trgt} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 target_include_directories(${_trgt} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(${_trgt} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+target_compile_options(${_trgt} PUBLIC
+  -fno-approx-func
+  -fno-finite-math-only
+)
+
+
 target_link_options(${_trgt} PUBLIC -fsycl-device-code-split=per_kernel)
 if(UNIX)
     # this option is support on Linux only
