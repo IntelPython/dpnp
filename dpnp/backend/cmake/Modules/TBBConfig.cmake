@@ -81,11 +81,6 @@ if(WIN32)
     endif()
 endif()
 
-    message(STATUS "Looking for ")
-    message(STATUS "  NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_lib_ext}")
-    message(STATUS "  PATHS ${_tbb_root}")
-    message(STATUS "  HINTS $ENV{TBB_ROOT_HINT}")
-    message(STATUS "  PATH_SUFFIXES ${_tbb_lib_dir_conda}  lib/${_tbb_subdir}")
     if(UNIX)
        find_library(_tbb_release_lib 
                     NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_lib_ext}
@@ -94,7 +89,6 @@ endif()
                     PATH_SUFFIXES "${_tbb_lib_dir_conda}" "lib/${_tbb_subdir}")
 
     else()
-
        find_file(_tbb_release_lib 
                  NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_lib_ext}
                  PATHS ${_tbb_root}
@@ -148,7 +142,6 @@ else()
                 INTERFACE_INCLUDE_DIRECTORIES "${_tbb_include_dir}"
                 )
 endif()
-            message(STATUS "Set ${_tbb_include_dir} for component ${_tbb_component}")
             unset(_tbb_current_realpath)
             unset(_tbb_include_dir)
 
@@ -162,7 +155,6 @@ else()
                                       IMPORTED_LOCATION_RELEASE "${_tbb_release_lib}")
 endif()
                 set_property(TARGET TBB::${_tbb_component} APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-                message(STATUS "Set IMPORTED_LOCATION_RELEASE ${_tbb_release_lib} for component ${_tbb_component}")
             endif()
 
             if (EXISTS "${_tbb_debug_lib}")
@@ -176,7 +168,6 @@ else()
                                       IMPORTED_LOCATION_DEBUG "${_tbb_debug_lib}")
 endif()
                 set_property(TARGET TBB::${_tbb_component} APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
-                message(STATUS "Set IMPORTED_LOCATION_DEBUG ${_tbb_release_lib} for component ${_tbb_component}")
             endif()
 
             # Add internal dependencies for imported targets: TBB::tbbmalloc_proxy -> TBB::tbbmalloc
@@ -193,7 +184,6 @@ endif()
         else()
             message(STATUS "  one or both of:\n   ${_tbb_release_lib}\n    ${_tbb_debug_lib}\n   files must exist.")
         endif()
-        message(STATUS "Value of TBB_ROOT_HINT = '$ENV{TBB_ROOT_HINT}'")
         set(TBB_FOUND FALSE)
     endif()
 endforeach()
