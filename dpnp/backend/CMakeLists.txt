@@ -47,21 +47,27 @@ set(DPNP_SRC
     src/dpnp_random_state.cpp
     )
 
-find_package(MKL REQUIRED)
-find_package(oneDPL REQUIRED)
-
 set(_trgt "dpnp_backend_c")
+
+if(WIN32)
+    if (${CMAKE_VERSION} VERSION_LESS "3.23")
+        # this is a work-around for target_link_options inserting option after -link option, cause
+        # linker to ignore it.
+        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -fsycl-device-code-split=per_kernel")
+    endif()
+endif()
 
 add_library(${_trgt} SHARED ${DPNP_SRC})
 set_target_properties(${_trgt} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-target_include_directories(${_trgt} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_include_directories(${_trgt} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-target_compile_options(${_trgt} PUBLIC
+target_compile_options(${_trgt} PRIVATE
   -fno-approx-func
   -fno-finite-math-only
 )
+target_compile_definitions(${_trgt} PRIVATE _WIN=1)
 
 
 target_link_options(${_trgt} PUBLIC -fsycl-device-code-split=per_kernel)
@@ -95,16 +101,16 @@ if(DPNP_BACKEND_TESTS)
   add_subdirectory(tests)
 endif()
 
-
+set(_lib_destination dpnp)
+set(_include_destination dpnp/backend/include)
 install(
   TARGETS ${_trgt}
-  LIBRARY DESTINATION dpnp
-  PERMISSIONS
-  OWNER_WRITE
-  OWNER_READ
-  OWNER_EXECUTE
-  GROUP_READ
-  GROUP_EXECUTE
-  WORLD_READ
-  WORLD_EXECUTE
+  LIBRARY
+    DESTINATION ${_lib_destination}
+  ARCHIVE
+    DESTINATION ${_lib_destination}
+  RUNTIME
+    DESTINATION ${_lib_destination}
+  PUBLIC_HEADER
+    DESTINATION ${_include_destination}
   )
