@@ -45,7 +45,9 @@ if (EXISTS "${_onedpl_headers}")
         endif()
 
         if (NOT ONEDPL_PAR_BACKEND OR ONEDPL_PAR_BACKEND STREQUAL "tbb")  # Handle oneTBB backend
-            find_package(TBB 2021 QUIET COMPONENTS tbb)
+            if (NOT TBB_FOUND)
+               find_package(TBB 2021 QUIET COMPONENTS tbb PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
+            endif()
             if (NOT TBB_FOUND AND ONEDPL_PAR_BACKEND STREQUAL "tbb")  # If oneTBB backend is requested explicitly, but not found.
                 message(STATUS "oneDPL: ONEDPL_PAR_BACKEND=${ONEDPL_PAR_BACKEND} requested, but not found")
                 set(oneDPL_FOUND FALSE)
