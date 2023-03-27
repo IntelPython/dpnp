@@ -46,7 +46,7 @@ if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
     rem Install and assemble wheel package from the build bits
     "%PYTHON%" setup.py install bdist_wheel %SKBUILD_ARGS%
     if errorlevel 1 exit 1
-    copy dist\dpctl*.whl %WHEELS_OUTPUT_FOLDER%
+    copy dist\dpnp*.whl %WHEELS_OUTPUT_FOLDER%
     if errorlevel 1 exit 1
 ) ELSE (
     rem Only install
