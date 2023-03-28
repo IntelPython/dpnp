@@ -47,7 +47,10 @@ from dpnp.dpnp_utils import *
 from dpnp.dpnp_iface_arraycreation import array
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
+
 import numpy
+import dpctl.tensor as dpt
 
 
 __all__ = [
@@ -55,6 +58,7 @@ __all__ = [
     "atleast_1d",
     "atleast_2d",
     "atleast_3d",
+    "broadcast_to",
     "concatenate",
     "copyto",
     "expand_dims",
@@ -188,6 +192,46 @@ def atleast_3d(*arys):
             return result
 
     return call_origin(numpy.atleast_3d, *arys)
+
+
+def broadcast_to(x, /, shape, subok=False):
+    """
+    Broadcast an array to a new shape.
+
+    For full documentation refer to :obj:`numpy.broadcast_to`.
+
+    Returns
+    -------
+    y : dpnp.ndarray
+        An array having a specified shape. Must have the same data type as `x`.
+
+    Limitations
+    -----------
+    Parameter `x` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `subok` is supported with default value.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types of `x` is limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as dp
+    >>> x = dp.array([1, 2, 3])
+    >>> dp.broadcast_to(x, (3, 3))
+    array([[1, 2, 3],
+           [1, 2, 3],
+           [1, 2, 3]])
+
+    """
+
+    if subok is not False:
+        pass
+    elif isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
+        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+        new_array = dpt.broadcast_to(dpt_array, shape)
+        return dpnp_array._create_from_usm_ndarray(new_array)
+
+    return call_origin(numpy.broadcast_to, x, shape=shape, subok=subok)
 
 
 def concatenate(arrs, axis=0, out=None, dtype=None, casting="same_kind"):

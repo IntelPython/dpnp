@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -68,8 +68,8 @@ cpdef utils.dpnp_descriptor dpnp_bitwise_xor(utils.dpnp_descriptor x1_obj,
     return call_fptr_2in_1out_strides(DPNP_FN_BITWISE_XOR_EXT, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef utils.dpnp_descriptor dpnp_invert(utils.dpnp_descriptor arr):
-    return call_fptr_1in_1out(DPNP_FN_INVERT_EXT, arr, arr.shape)
+cpdef utils.dpnp_descriptor dpnp_invert(utils.dpnp_descriptor arr, utils.dpnp_descriptor out=None):
+    return call_fptr_1in_1out(DPNP_FN_INVERT_EXT, arr, arr.shape, out=out, func_name="invert")
 
 
 cpdef utils.dpnp_descriptor dpnp_left_shift(utils.dpnp_descriptor x1_obj,
