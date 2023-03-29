@@ -945,3 +945,15 @@ def test_broadcast_to(device):
     x = dpnp.arange(5, device=device)
     y = dpnp.broadcast_to(x, (3, 5))
     assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
+
+
+@pytest.mark.parametrize("device_x",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize("device_y",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+def test_asarray(device_x, device_y):
+    x = dpnp.array([1, 2, 3], device=device_x)
+    y = dpnp.asarray([x], device=device_y)
+    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
