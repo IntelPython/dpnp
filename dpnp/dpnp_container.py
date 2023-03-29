@@ -91,7 +91,6 @@ def asarray(x1,
     else:
         x1_obj = x1
 
-    sycl_queue_normalized = dpnp.get_normalized_queue_device(x1_obj, device=device, sycl_queue=sycl_queue)
     if order is None:
         order = 'C'
 
@@ -100,8 +99,9 @@ def asarray(x1,
                             dtype=dtype,
                             copy=copy,
                             order=order,
+                            device=device,
                             usm_type=usm_type,
-                            sycl_queue=sycl_queue_normalized)
+                            sycl_queue=sycl_queue)
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
 
