@@ -955,5 +955,5 @@ def test_broadcast_to(device):
                          ids=[device.filter_string for device in valid_devices])
 def test_asarray(device_x, device_y):
     x = dpnp.array([1, 2, 3], device=device_x)
-    y = dpnp.asarray([x], device=device_y)
+    y = dpnp.asarray([x, x, x], device=device_y)
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
