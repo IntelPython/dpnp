@@ -355,6 +355,10 @@
     <span class="k">if</span> <span class="n">use_origin_backend</span><span class="p">():</span>
         <span class="k">return</span> <span class="kc">False</span>
 
+    <span class="c1"># It&#39;s required to keep track of input object if a non-strided copy is going to be created.</span>
+    <span class="c1"># Thus there will be an extra descriptor allocated to refer on original input.</span>
+    <span class="n">orig_desc</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="c1"># If input object is a scalar, it means it was allocated on host memory.</span>
     <span class="c1"># We need to copy it to USM memory according to compute follows data paradigm.</span>
     <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">):</span>
@@ -374,6 +378,7 @@
             <span class="n">ext_obj_offset</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="k">if</span> <span class="n">ext_obj</span><span class="o">.</span><span class="n">strides</span> <span class="o">!=</span> <span class="n">shape_offsets</span> <span class="ow">or</span> <span class="n">ext_obj_offset</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">orig_desc</span> <span class="o">=</span> <span class="n">dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
             <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
 
     <span class="c1"># while dpnp functions are based on DPNP_QUEUE</span>
@@ -387,7 +392,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">queue_is_default</span><span class="p">:</span>
             <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">default_queue</span><span class="p">)</span>
 
-    <span class="n">dpnp_desc</span> <span class="o">=</span> <span class="n">dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
+    <span class="n">dpnp_desc</span> <span class="o">=</span> <span class="n">dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">orig_desc</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp_desc</span><span class="o">.</span><span class="n">is_valid</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_desc</span>
 
