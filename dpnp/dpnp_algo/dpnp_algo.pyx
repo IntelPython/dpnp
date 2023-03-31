@@ -60,19 +60,19 @@ __all__ = [
 ]
 
 
-include "dpnp_algo_arraycreation.pyx"
-include "dpnp_algo_bitwise.pyx"
-include "dpnp_algo_counting.pyx"
-include "dpnp_algo_indexing.pyx"
-include "dpnp_algo_linearalgebra.pyx"
-include "dpnp_algo_logic.pyx"
-include "dpnp_algo_manipulation.pyx"
-include "dpnp_algo_mathematical.pyx"
-include "dpnp_algo_searching.pyx"
-include "dpnp_algo_sorting.pyx"
-include "dpnp_algo_special.pyx"
-include "dpnp_algo_statistics.pyx"
-include "dpnp_algo_trigonometric.pyx"
+include "dpnp_algo_arraycreation.pxi"
+include "dpnp_algo_bitwise.pxi"
+include "dpnp_algo_counting.pxi"
+include "dpnp_algo_indexing.pxi"
+include "dpnp_algo_linearalgebra.pxi"
+include "dpnp_algo_logic.pxi"
+include "dpnp_algo_manipulation.pxi"
+include "dpnp_algo_mathematical.pxi"
+include "dpnp_algo_searching.pxi"
+include "dpnp_algo_sorting.pxi"
+include "dpnp_algo_special.pxi"
+include "dpnp_algo_statistics.pxi"
+include "dpnp_algo_trigonometric.pxi"
 
 
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_astype_t)(c_dpctl.DPCTLSyclQueueRef,
