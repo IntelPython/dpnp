@@ -75,8 +75,9 @@ else()
     )
 endif()
 
-target_compile_definitions(${_trgt} PRIVATE _WIN=1)
-
+# if (WIN32)
+#   target_compile_definitions(${_trgt} PRIVATE _WIN=1)
+# endif()
 
 target_link_options(${_trgt} PUBLIC -fsycl-device-code-split=per_kernel)
 if(UNIX)
@@ -91,8 +92,11 @@ endif()
 target_link_libraries(${_trgt} PUBLIC MKL::MKL_DPCPP)
 target_link_libraries(${_trgt} PUBLIC oneDPL)
 
-# needed for STL headers with GCC < 11
-target_compile_definitions(${_trgt} PUBLIC _GLIBCXX_USE_TBB_PAR_BACKEND=0)
+if (UNIX)
+  # needed for STL headers with GCC < 11
+  target_compile_definitions(${_trgt} PUBLIC _GLIBCXX_USE_TBB_PAR_BACKEND=0)
+endif()
+
 target_compile_definitions(${_trgt} PUBLIC PSTL_USE_PARALLEL_POLICIES=0)
 # work-around for Windows at exit crash with predefined policies
 target_compile_definitions(${_trgt} PUBLIC ONEDPL_USE_PREDEFINED_POLICIES=0)
