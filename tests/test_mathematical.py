@@ -637,7 +637,7 @@ class TestTrunc:
 
 class TestAdd:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
-    def test_power(self, dtype):
+    def test_add(self, dtype):
         array1_data = numpy.arange(10)
         array2_data = numpy.arange(5, 15)
         out = numpy.empty(10, dtype=dtype)
