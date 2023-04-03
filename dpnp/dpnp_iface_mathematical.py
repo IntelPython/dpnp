@@ -1155,7 +1155,7 @@ def multiply(x1,
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the functions will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -1170,29 +1170,7 @@ def multiply(x1,
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
-
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        if x1_desc and x2_desc:
-            return dpnp_multiply(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
-
-    return call_origin(numpy.multiply, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
+    return _check_nd_call(numpy.multiply, dpnp_multiply, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
 
 
 def nancumprod(x1, **kwargs):
