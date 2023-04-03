@@ -782,7 +782,7 @@ class dpnp_array:
     @property
     def itemsize(self):
         """
-        Length of one array element in bytes.
+        Size of one array element in bytes.
 
         """
 
