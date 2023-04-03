@@ -782,6 +782,8 @@ class dpnp_array:
     @property
     def itemsize(self):
         """
+        Length of one array element in bytes.
+
         """
 
         return self._array_obj.itemsize
@@ -807,11 +809,20 @@ class dpnp_array:
 
         return dpnp.min(self, axis, out, keepdims, initial, where)
 
- # 'nbytes',
+    @property
+    def nbytes(self):
+        """
+        Total bytes consumed by the elements of the array.
+
+        """
+
+        return self._array_obj.nbytes
 
     @property
     def ndim(self):
         """
+        Number of array dimensions.
+
         """
 
         return self._array_obj.ndim
