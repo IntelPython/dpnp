@@ -718,6 +718,89 @@ class TestAdd:
         assert_raises(TypeError, numpy.add, a.asnumpy(), 2, out)
 
 
+class TestMultiply:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_multiply(self, dtype):
+        array1_data = numpy.arange(10)
+        array2_data = numpy.arange(5, 15)
+        out = numpy.empty(10, dtype=dtype)
+
+        # DPNP
+        dp_array1 = dpnp.array(array1_data, dtype=dtype)
+        dp_array2 = dpnp.array(array2_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
+        result = dpnp.multiply(dp_array1, dp_array2, out=dp_out)
+
+        # original
+        np_array1 = numpy.array(array1_data, dtype=dtype)
+        np_array2 = numpy.array(array2_data, dtype=dtype)
+        expected = numpy.multiply(np_array1, np_array2, out=out)
+
+        assert_allclose(expected, result)
+        assert_allclose(out, dp_out)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_out_dtypes(self, dtype):
+        size = 2 if dtype == dpnp.bool else 10
+
+        np_array1 = numpy.arange(size, 2 * size, dtype=dtype)
+        np_array2 = numpy.arange(size, dtype=dtype)
+        np_out = numpy.empty(size, dtype=numpy.complex64)
+        expected = numpy.multiply(np_array1, np_array2, out=np_out)
+
+        dp_array1 = dpnp.arange(size, 2 * size, dtype=dtype)
+        dp_array2 = dpnp.arange(size, dtype=dtype)
+        dp_out = dpnp.empty(size, dtype=dpnp.complex64)
+        result = dpnp.multiply(dp_array1, dp_array2, out=dp_out)
+
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_out_overlap(self, dtype):
+        size = 1 if dtype == dpnp.bool else 15
+
+        np_a = numpy.arange(2 * size, dtype=dtype)
+        expected = numpy.multiply(np_a[size::], np_a[::2], out=np_a[:size:])
+
+        dp_a = dpnp.arange(2 * size, dtype=dtype)
+        result = dpnp.multiply(dp_a[size::], dp_a[::2], out=dp_a[:size:])
+
+        assert_allclose(expected, result)
+        assert_allclose(dp_a, np_a)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_none=True))
+    def test_inplace_strided_out(self, dtype):
+        size = 21
+
+        np_a = numpy.arange(size, dtype=dtype)
+        np_a[::3] *= 4
+
+        dp_a = dpnp.arange(size, dtype=dtype)
+        dp_a[::3] *= 4
+
+        assert_allclose(dp_a, np_a)
+
+    @pytest.mark.parametrize("shape",
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+        dp_array1 = dpnp.arange(10, dtype=dpnp.float64)
+        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float64)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+
+        with pytest.raises(ValueError):
+            dpnp.multiply(dp_array1, dp_array2, out=dp_out)
+
+    @pytest.mark.parametrize("out",
+                             [4, (), [], (3, 7), [2, 4]],
+                             ids=['4', '()', '[]', '(3, 7)', '[2, 4]'])
+    def test_invalid_out(self, out):
+        a = dpnp.arange(10)
+
+        assert_raises(TypeError, dpnp.multiply, a, 2, out)
+        assert_raises(TypeError, numpy.multiply, a.asnumpy(), 2, out)
+
+
 class TestPower:
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_power(self, dtype):

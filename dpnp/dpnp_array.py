@@ -227,7 +227,10 @@ class dpnp_array:
 
  # '__imatmul__',
  # '__imod__',
- # '__imul__',
+
+    def __imul__(self, other):
+        dpnp.multiply(self, other, out=self)
+        return self
 
     def __index__(self):
         return self._array_obj.__index__()
