@@ -217,7 +217,7 @@ def test_strides_true_devide(dtype, shape):
 
 
 @pytest.mark.parametrize("func_name",
-                         ["power"])
+                         ["add", "power"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 def test_strided_out_2args(func_name, dtype):
     np_out = numpy.ones((5, 3, 2))[::3]
@@ -236,7 +236,7 @@ def test_strided_out_2args(func_name, dtype):
 
 
 @pytest.mark.parametrize("func_name",
-                         ["power"])
+                         ["add", "power"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 def test_strided_in_out_2args(func_name, dtype):
     sh = (3, 4, 2)
@@ -258,7 +258,7 @@ def test_strided_in_out_2args(func_name, dtype):
 
 
 @pytest.mark.parametrize("func_name",
-                         ["power"])
+                         ["add", "power"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 def test_strided_in_out_2args_diff_out_dtype(func_name, dtype):
     sh = (3, 3, 2)
@@ -280,7 +280,7 @@ def test_strided_in_out_2args_diff_out_dtype(func_name, dtype):
 
 
 @pytest.mark.parametrize("func_name",
-                         ["power"])
+                         ["add", "power"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
 def test_strided_in_2args_overlap(func_name, dtype):
     size = 5
@@ -296,7 +296,7 @@ def test_strided_in_2args_overlap(func_name, dtype):
 
 
 @pytest.mark.parametrize("func_name",
-                         ["power"])
+                         ["add", "power"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
 def test_strided_in_out_2args_overlap(func_name, dtype):
     sh = (4, 3, 2)

@@ -194,7 +194,10 @@ class dpnp_array:
         return dpnp.greater(self, other)
 
  # '__hash__',
- # '__iadd__',
+
+    def __iadd__(self, other):
+        dpnp.add(self, other, out=self)
+        return self
 
     def __iand__(self, other):
         dpnp.bitwise_and(self, other, out=self)
