@@ -165,6 +165,7 @@
    .. autoattribute:: flags
    .. autoattribute:: flat
    .. autoattribute:: itemsize
+   .. autoattribute:: nbytes
    .. autoattribute:: ndim
    .. autoattribute:: shape
    .. autoattribute:: size
