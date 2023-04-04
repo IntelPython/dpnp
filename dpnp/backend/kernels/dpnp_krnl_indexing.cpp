@@ -546,19 +546,11 @@ void dpnp_place_c(void* arr_in, long* mask_in, void* vals_in, const size_t arr_s
                                                           vals_size,
                                                           dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
 void (*dpnp_place_default_c)(void*, long*, void*, const size_t, const size_t) = dpnp_place_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_place_ext_c)(DPCTLSyclQueueRef,
-                                      void*,
-                                      long*,
-                                      void*,
-                                      const size_t,
-                                      const size_t,
-                                      const DPCTLEventVectorRef) = dpnp_place_c<_DataType>;
 
 template <typename _DataType, typename _IndecesType, typename _ValueType>
 DPCTLSyclEventRef dpnp_put_c(DPCTLSyclQueueRef q_ref,
@@ -1016,11 +1008,6 @@ void func_map_init_indexing_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_PLACE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_place_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_PLACE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_place_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_PLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_place_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_PLACE_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_place_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_PLACE_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_place_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_PLACE_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_place_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_PLACE_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_place_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_PUT][eft_INT][eft_INT] = {eft_INT,
                                                          (void*)dpnp_put_default_c<int32_t, int64_t, int32_t>};
