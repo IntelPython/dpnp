@@ -29,6 +29,23 @@ import numpy
 
 import dpnp
 
+
+def _get_unwrapped_index_key(key):
+    """
+    Return a key where each nested instance of DPNP array is unwrapped into USM ndarray
+    for futher processing in DPCTL advanced indexing functions.
+
+    """
+
+    if isinstance(key, tuple):
+        if any(isinstance(x, dpnp_array) for x in key):
+            # create a new tuple from the input key with unwrapped DPNP arrays
+            return tuple(x.get_array() if isinstance(x, dpnp_array) else x for x in key)
+    elif isinstance(key, dpnp_array):
+        return key.get_array()
+    return key
+
+
 class dpnp_array:
     """
     Multi-dimensional array object.
@@ -176,8 +193,7 @@ class dpnp_array:
  # '__getattribute__',
 
     def __getitem__(self, key):
-        if isinstance(key, dpnp_array):
-            key = key.get_array()
+        key = _get_unwrapped_index_key(key)
 
         item = self._array_obj.__getitem__(key)
         if not isinstance(item, dpt.usm_ndarray):
@@ -340,8 +356,8 @@ class dpnp_array:
  # '__setattr__',
 
     def __setitem__(self, key, val):
-        if isinstance(key, dpnp_array):
-            key = key.get_array()
+        key = _get_unwrapped_index_key(key)
+
         if isinstance(val, dpnp_array):
             val = val.get_array()
 
