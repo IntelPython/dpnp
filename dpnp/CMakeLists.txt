@@ -15,20 +15,33 @@ function(build_dpnp_cython_ext _trgt _src _dest)
   target_include_directories(${_trgt} PRIVATE ${Dpctl_INCLUDE_DIR})
   target_link_directories(${_trgt} PRIVATE ${Dpctl_INCLUDE_DIR}/..)
   target_link_libraries(${_trgt} DPCTLSyclInterface)
-  
+
   set(_linker_options "LINKER:${DPNP_LDFLAGS}")
   target_link_options(${_trgt} PRIVATE ${_linker_options})
   python_extension_module(${_trgt})
-  
+
+  if (DPNP_GENERATE_COVERAGE)
+       set(_copy_cxx_trgt "${_trgt}_copy_cxx")
+       add_custom_target(
+           ${_copy_cxx_trgt} ALL
+           COMMAND ${CMAKE_COMMAND}
+         -DSOURCE_FILE=${_generated_src}
+         -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
+         -P ${CMAKE_SOURCE_DIR}/dpnp/cmake/copy_existing.cmake
+     DEPENDS ${_trgt}
+     VERBATIM
+           COMMENT "Copying Cython-generated source to dpnp"
+       )
+  endif()
   install(TARGETS ${_trgt} LIBRARY DESTINATION ${_dest})
 endfunction()
 
 function(build_dpnp_cython_ext_with_backend _trgt _src _dest)
-  build_dpnp_cython_ext(${_trgt} ${_src} ${_dest})
-  target_link_libraries(${_trgt} dpnp_backend_library)
-  if (UNIX)
-    set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH "$ORIGIN/..")
-  endif()
+build_dpnp_cython_ext(${_trgt} ${_src} ${_dest})
+target_link_libraries(${_trgt} dpnp_backend_library)
+if (UNIX)
+  set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH "$ORIGIN/..")
+endif()
 endfunction()
 
 
@@ -40,4 +53,3 @@ add_subdirectory(dpnp_utils)
 add_subdirectory(fft)
 add_subdirectory(linalg)
 add_subdirectory(random)
-
