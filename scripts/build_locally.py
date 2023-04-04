@@ -126,7 +126,7 @@ if __name__ == "__main__":
     )
     driver.add_argument(
         "--cmake-opts",
-        help="DPCTLSyclInterface uses Google logger",
+        help="Channels through additional cmake options",
         dest="cmake_opts",
         default="",
         type=str,
