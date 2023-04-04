@@ -1,6 +1,7 @@
 import pytest
 from .helper import (
-    get_all_dtypes
+    get_all_dtypes,
+    get_float_dtypes
 )
 
 import numpy
