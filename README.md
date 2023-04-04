@@ -24,7 +24,7 @@ After these steps, `dpnp` can be built in debug mode as follows:
 ```bash
 git clone https://github.com/IntelPython/dpnp
 cd dpnp
-./0.build.sh
+python scripts/build_locally.py
 ```
 
 ## Install Wheel Package from Pypi
@@ -48,7 +48,6 @@ export OCL_ICD_FILENAMES=libintelocl.so
 
 ## Run test
 ```bash
-. ./0.env.sh
 pytest
 # or
 pytest tests/test_matmul.py -s -v
