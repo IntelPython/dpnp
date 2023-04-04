@@ -58,7 +58,8 @@ update-alternatives --get-selections
 echo ========================= install Intel OneAPI ===========================
 sudo aptitude install -y intel-oneapi-mkl                \
                          intel-oneapi-mkl-devel          \
-                         intel-oneapi-compiler-dpcpp-cpp
+                         intel-oneapi-compiler-dpcpp-cpp \
+			 intel-tbb
 
 #intel-oneapi-python
 
