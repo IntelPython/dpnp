@@ -294,9 +294,9 @@ DPCTLSyclEventRef dpnp_where_c(DPCTLSyclQueueRef q_ref,
             const size_t output_id = global_id[0]; /* for (size_t i = 0; i < result_size; ++i) */
             {
                 const shape_elem_type* result_strides_data = &dev_strides_data[0];
-                const shape_elem_type* condition_strides_data = &dev_strides_data[1];
-                const shape_elem_type* input1_strides_data = &dev_strides_data[2];
-                const shape_elem_type* input2_strides_data = &dev_strides_data[3];
+                const shape_elem_type* condition_strides_data = &dev_strides_data[result_ndim];
+                const shape_elem_type* input1_strides_data = &dev_strides_data[2 * result_ndim];
+                const shape_elem_type* input2_strides_data = &dev_strides_data[3 * result_ndim];
 
                 size_t condition_id = 0;
                 size_t input1_id = 0;

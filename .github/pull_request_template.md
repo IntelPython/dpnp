@@ -2,4 +2,5 @@
 - [ ] Have you added a test, reproducer or referred to issue with a reproducer?
 - [ ] Have you tested your changes locally for CPU and GPU devices?
 - [ ] Have you made sure that new changes do not introduce compiler warnings?
+- [ ] Have you checked performance impact of proposed changes?
 - [ ] If this PR is a work in progress, are you filing the PR as a draft?

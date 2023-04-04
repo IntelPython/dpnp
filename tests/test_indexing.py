@@ -5,8 +5,68 @@ import dpnp
 
 import numpy
 from numpy.testing import (
-    assert_array_equal
+    assert_,
+    assert_array_equal,
+    assert_equal
 )
+
+
+class TestIndexing:
+    def test_ellipsis_index(self):
+        a = dpnp.array([[1, 2, 3],
+                        [4, 5, 6],
+                        [7, 8, 9]])
+        assert_(a[...] is not a)
+        assert_equal(a[...], a)
+
+        # test that slicing with ellipsis doesn't skip an arbitrary number of dimensions
+        assert_equal(a[0, ...], a[0])
+        assert_equal(a[0, ...], a[0,:])
+        assert_equal(a[..., 0], a[:, 0])
+
+        # test that slicing with ellipsis always results in an array
+        assert_equal(a[0, ..., 1], dpnp.array(2))
+
+        # assignment with `(Ellipsis,)` on 0-d arrays
+        b = dpnp.array(1)
+        b[(Ellipsis,)] = 2
+        assert_equal(b, 2)
+
+    def test_boolean_indexing_list(self):
+        a = dpnp.array([1, 2, 3])
+        b = dpnp.array([True, False, True])
+
+        assert_equal(a[b], [1, 3])
+        assert_equal(a[None, b], [[1, 3]])
+
+    def test_indexing_array_weird_strides(self):
+        np_x = numpy.ones(10)
+        dp_x = dpnp.ones(10)
+
+        np_ind = numpy.arange(10)[:, None, None, None]
+        np_ind = numpy.broadcast_to(np_ind, (10, 55, 4, 4))
+
+        dp_ind = dpnp.arange(10)[:, None, None, None]
+        dp_ind = dpnp.broadcast_to(dp_ind, (10, 55, 4, 4))
+
+        # single advanced index case
+        assert_array_equal(dp_x[dp_ind], np_x[np_ind])
+
+        np_x2 = numpy.ones((10, 2))
+        dp_x2 = dpnp.ones((10, 2))
+
+        np_zind = numpy.zeros(4, dtype=np_ind.dtype)
+        dp_zind = dpnp.zeros(4, dtype=dp_ind.dtype)
+
+        # higher dimensional advanced index
+        assert_array_equal(dp_x2[dp_ind, dp_zind], np_x2[np_ind, np_zind])
+
+    def test_indexing_array_negative_strides(self):
+        arr = dpnp.zeros((4, 4))[::-1, ::-1]
+
+        slices = (slice(None), dpnp.array([0, 1, 2, 3]))
+        arr[slices] = 10
+        assert_array_equal(arr, 10.)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
