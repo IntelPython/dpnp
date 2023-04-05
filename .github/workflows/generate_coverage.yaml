@@ -42,7 +42,7 @@ jobs:
       - name: Install dpnp dependencies
         run: |
           conda install cython llvm cmake scikit-build ninja pytest pytest-cov \
-              dpctl dpcpp_linux-64  mkl-devel-dpcpp  tbb-devel  onedpl-devel
+              dppy/label/dev::dpctl dpcpp_linux-64  mkl-devel-dpcpp  tbb-devel  onedpl-devel
       - name: Conda info
         run: |
           conda info
@@ -50,6 +50,9 @@ jobs:
       - name: Build dpnp with coverage
         run: |
           python scripts/gen_coverage.py
+        env:
+          name: OCL_ICD_FILENAMES
+          value: libintelocl.so
       - name: Install coverall dependencies
         run: |
           sudo gem install coveralls-lcov
