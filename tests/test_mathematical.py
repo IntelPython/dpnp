@@ -941,3 +941,17 @@ def test_sum_empty_out(dtype):
     res = a.sum(out=out)
     assert_array_equal(out.asnumpy(), res.asnumpy())
     assert_array_equal(out.asnumpy(), numpy.array(0, dtype=dtype))
+
+
+@pytest.mark.parametrize("shape", [(), (1, 2, 3), (1, 0, 2), (10), (3, 3, 3), (5, 5), (0, 6)])
+@pytest.mark.parametrize("dtype_in", get_all_dtypes(no_complex=True, no_bool=True))
+@pytest.mark.parametrize("dtype_out", get_all_dtypes(no_complex=True, no_bool=True))
+def test_sum(shape, dtype_in, dtype_out):
+    a_np = numpy.ones(shape, dtype=dtype_in)
+    a = dpnp.ones(shape, dtype=dtype_in)
+    axes = [None, 0, 1, 2]
+    for axis in axes:
+        if axis is None or axis < a.ndim:
+            numpy_res = a_np.sum(axis=axis, dtype=dtype_out)
+            dpnp_res = a.sum(axis=axis, dtype=dtype_out)
+            assert_array_equal(numpy_res, dpnp_res.asnumpy())
