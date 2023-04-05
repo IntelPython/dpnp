@@ -149,8 +149,8 @@ cpdef utils.dpnp_descriptor dpnp_sinh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_SINH_EXT, x1)
 
 
-cpdef utils.dpnp_descriptor dpnp_sqrt(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_SQRT_EXT, x1)
+cpdef utils.dpnp_descriptor dpnp_sqrt(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
+    return call_fptr_1in_1out_strides(DPNP_FN_SQRT_EXT, x1, dtype=None, out=out, where=True, func_name='sqrt')
 
 
 cpdef utils.dpnp_descriptor dpnp_square(utils.dpnp_descriptor x1):

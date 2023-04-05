@@ -62,7 +62,9 @@ __all__ = [
 def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=True, **kwargs):
     """Choose function to call based on input and call chosen fucntion."""
 
-    if where is not True:
+    if kwargs:
+        pass
+    elif where is not True:
         pass
     elif dtype is not None:
         pass
@@ -85,7 +87,7 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
             if out is not None:
                 if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
                     raise TypeError("return array must be of supported array type")
-                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
             else:
                 out_desc = None
 
@@ -273,7 +275,7 @@ def invert(x,
             if out is not None:
                 if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
                     raise TypeError("return array must be of supported array type")
-                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
             else:
                 out_desc = None
         return dpnp_invert(x1_desc, out_desc).get_pyobj()
