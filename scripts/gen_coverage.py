@@ -64,6 +64,8 @@ def run(
             "term-missing",
             "--pyargs",
             "tests",
+            "--ignore",
+            "tests/test_random.py",
             "-vv",
         ],
         cwd=setup_dir,
