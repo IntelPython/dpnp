@@ -1,4 +1,5 @@
 # cython: language_level=3
+# cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -257,7 +258,7 @@ def get_usm_allocations(objects):
 
     if not isinstance(objects, (list, tuple)):
         raise TypeError("Expected a list or a tuple, got {}".format(type(objects)))
-    
+
     if len(objects) == 0:
         return (None, None)
     return (_get_coerced_usm_type(objects), _get_common_allocation_queue(objects))

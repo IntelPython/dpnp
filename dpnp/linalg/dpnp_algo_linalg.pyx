@@ -1,4 +1,5 @@
 # cython: language_level=3
+# cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -87,7 +88,7 @@ cpdef utils.dpnp_descriptor dpnp_cholesky(utils.dpnp_descriptor input_):
 
     # ceate result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(input_.shape,
-                                                                       kernel_data.return_type, 
+                                                                       kernel_data.return_type,
                                                                        None,
                                                                        device=input_obj.sycl_device,
                                                                        usm_type=input_obj.usm_type,
