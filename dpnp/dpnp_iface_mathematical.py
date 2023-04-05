@@ -44,7 +44,6 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
 import dpnp
-import dpnp.dpnp_container as dpnp_container
 
 import numpy
 import dpctl.tensor as dpt
@@ -1637,7 +1636,7 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
             result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
 
             if x1_desc.size == 0 and axis is None:
-                result = dpnp_container.zeros_like(result)
+                result = dpnp.zeros_like(result)
                 if out is not None:
                     out[...] = result
             return result
