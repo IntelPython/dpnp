@@ -41,30 +41,27 @@ jobs:
           sudo apt-get install lcov
       - name: Install dpnp dependencies
         run: |
-          conda install cython llvm cmake scikit-build ninja pytest pytest-cov \
+          conda install cython llvm cmake scikit-build ninja pytest pytest-cov coverage[toml] \
               dppy/label/dev::dpctl dpcpp_linux-64  mkl-devel-dpcpp  tbb-devel  onedpl-devel
       - name: Conda info
         run: |
           conda info
           conda list
-      # - name: Build dpnp with coverage
-      #   run: |
-      #     python scripts/gen_coverage.py
-      #   env:
-      #     OCL_ICD_FILENAMES: 'libintelocl.so'
+      - name: Build dpnp with coverage
+        run: |
+          python scripts/gen_coverage.py
+        env:
+          OCL_ICD_FILENAMES: 'libintelocl.so'
       - name: Install coverall dependencies
         run: |
           sudo gem install coveralls-lcov
-          pip install coveralls
+          conda install coveralls
       - name: Upload coverage data to coveralls.io
         run: |
           echo "Processing pytest-coverage"
           export DPNP_PYTEST_LCOV=$(find . -name dpnp_pytest.lcov)
-          grep "/tmp" $DPNP_PYTEST_LCOV
-          coveralls-lcov -v -n \
-              $DPNP_PYTEST_LCOV > pytest-dpnp-c-api-coverage.json
+          coveralls-lcov -v -n $DPNP_PYTEST_LCOV > pytest-dpnp-c-api-coverage.json
           # merge file with coverage data and upload
-          ls -lh pytest-dpnp-c-api-coverage.json $(find . -name dpnp_pytest.lcov)
           echo "Merging files with coverage data"
           coveralls --service=github --merge=pytest-dpnp-c-api-coverage.json
         env:
