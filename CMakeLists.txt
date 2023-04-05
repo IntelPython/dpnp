@@ -138,4 +138,8 @@ if (DPNP_GENERATE_COVERAGE)
     )
 endif()
 
+if(DEFINED SKBUILD)
+  set(_ignore_me ${SKBUILD})
+endif()
+
 add_subdirectory(dpnp)
