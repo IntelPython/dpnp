@@ -47,15 +47,15 @@ jobs:
         run: |
           conda info
           conda list
-      - name: Build dpnp with coverage
-        run: |
-          python scripts/gen_coverage.py
-        env:
-          OCL_ICD_FILENAMES: 'libintelocl.so'
+      # - name: Build dpnp with coverage
+      #   run: |
+      #     python scripts/gen_coverage.py
+      #   env:
+      #     OCL_ICD_FILENAMES: 'libintelocl.so'
       - name: Install coverall dependencies
         run: |
           sudo gem install coveralls-lcov
-          conda install coveralls
+          pip install coveralls
       - name: Upload coverage data to coveralls.io
         run: |
           echo "Processing pytest-coverage"
@@ -65,3 +65,21 @@ jobs:
               $DPNP_PYTEST_LCOV > pytest-dpnp-c-api-coverage.json
           # merge file with coverage data and upload
           ls -lh pytest-dpnp-c-api-coverage.json $(find . -name dpnp_pytest.lcov)
+          echo "Merging files with coverage data"
+          coveralls --service=github --merge=pytest-dpnp-c-api-coverage.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_PARALLEL: true
+
+  coveralls:
+    name: Indicate completion to coveralls.io
+    needs: generate-coverage
+    runs-on: ubuntu-latest
+    container: python:3-slim
+    steps:
+    - name: Finished
+      run: |
+        pip3 install --upgrade coveralls
+        coveralls --finish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
