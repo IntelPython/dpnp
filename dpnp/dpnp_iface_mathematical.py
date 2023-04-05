@@ -44,6 +44,7 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
 import dpnp
+import dpnp.dpnp_container as dpnp_container
 
 import numpy
 import dpctl.tensor as dpt
@@ -1629,10 +1630,16 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
         if where is not True:
             pass
         else:
+            if dpnp.isscalar(out):
+                raise TypeError("output must be an array")
             out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
             result_obj = dpnp_sum(x1_desc, axis, dtype, out_desc, keepdims, initial, where).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
 
+            if x1_desc.size == 0 and axis is None:
+                result = dpnp_container.zeros_like(result)
+                if out is not None:
+                    out[...] = result
             return result
 
     return call_origin(numpy.sum, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)

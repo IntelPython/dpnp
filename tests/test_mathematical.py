@@ -932,3 +932,12 @@ def test_sum_empty(dtype, axis):
     numpy_res = a.sum(axis=axis)
     dpnp_res = dpnp.array(a).sum(axis=axis)
     assert_array_equal(numpy_res, dpnp_res.asnumpy())
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_bool=True))
+def test_sum_empty_out(dtype):
+    a = dpnp.empty((1, 2, 0, 4), dtype=dtype)
+    out = dpnp.ones(())
+    res = a.sum(out=out)
+    assert_array_equal(out.asnumpy(), res.asnumpy())
+    assert_array_equal(out.asnumpy(), numpy.array(0, dtype=dtype))
