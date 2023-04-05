@@ -632,6 +632,9 @@ cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor x1,
                                                                        usm_type=x1_obj.usm_type,
                                                                        sycl_queue=x1_obj.sycl_queue)
 
+    if x1.size == 0 and axis is None:
+        return result
+
     result_sycl_queue = result.get_array().sycl_queue
 
     cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue

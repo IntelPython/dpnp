@@ -923,3 +923,12 @@ class TestPower:
         dpnp_res = dpnp.array(a) ** dpnp.array(b)
 
         assert_allclose(numpy_res, dpnp_res.asnumpy())
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_bool=True))
+@pytest.mark.parametrize("axis", [None, 0, 1, 2, 3])
+def test_sum_empty(dtype, axis):
+    a = numpy.empty((1, 2, 0, 4), dtype=dtype)
+    numpy_res = a.sum(axis=axis)
+    dpnp_res = dpnp.array(a).sum(axis=axis)
+    assert_array_equal(numpy_res, dpnp_res.asnumpy())
