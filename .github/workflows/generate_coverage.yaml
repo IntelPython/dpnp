@@ -51,8 +51,7 @@ jobs:
         run: |
           python scripts/gen_coverage.py
         env:
-          name: OCL_ICD_FILENAMES
-          value: libintelocl.so
+          OCL_ICD_FILENAMES: 'libintelocl.so'
       - name: Install coverall dependencies
         run: |
           sudo gem install coveralls-lcov
