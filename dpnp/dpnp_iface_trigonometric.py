@@ -41,6 +41,7 @@ it contains:
 
 
 import numpy
+import dpctl.tensor as dpt
 
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
@@ -906,7 +907,7 @@ def sinh(x1):
     return call_origin(numpy.sinh, x1, **kwargs)
 
 
-def sqrt(x1):
+def sqrt(x1, /, out = None, **kwargs):
     """
     Return the positive square-root of an array, element-wise.
 
@@ -914,8 +915,11 @@ def sqrt(x1):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array is supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `out` is supported as class:`dpnp.ndarray`, class:`dpctl.tensor.usm_ndarray` or
+    with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -928,11 +932,23 @@ def sqrt(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = (
+        dpnp.get_dpnp_descriptor(
+            x1, copy_when_strides=False, copy_when_nondefault_queue=False
+        )
+        if not kwargs
+        else None
+    )
     if x1_desc:
-        return dpnp_sqrt(x1_desc).get_pyobj()
+        if out is not None:
+            if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
+                raise TypeError("return array must be of supported array type")
+            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
+        else:
+            out_desc = None
+        return dpnp_sqrt(x1_desc, out=out_desc).get_pyobj()
 
-    return call_origin(numpy.sqrt, x1)
+    return call_origin(numpy.sqrt, x1, out=out, **kwargs)
 
 
 def square(x1):
