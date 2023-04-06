@@ -30,18 +30,18 @@ function(build_dpnp_cython_ext _trgt _src _dest)
          -P ${CMAKE_SOURCE_DIR}/dpnp/cmake/copy_existing.cmake
      DEPENDS ${_trgt}
      VERBATIM
-           COMMENT "Copying Cython-generated source to dpnp"
+           COMMENT "Copying Cython-generated source for target ${_trgt} to dpnp source layout"
        )
   endif()
   install(TARGETS ${_trgt} LIBRARY DESTINATION ${_dest})
 endfunction()
 
 function(build_dpnp_cython_ext_with_backend _trgt _src _dest)
-build_dpnp_cython_ext(${_trgt} ${_src} ${_dest})
-target_link_libraries(${_trgt} dpnp_backend_library)
-if (UNIX)
-  set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH "$ORIGIN/..")
-endif()
+  build_dpnp_cython_ext(${_trgt} ${_src} ${_dest})
+  target_link_libraries(${_trgt} dpnp_backend_library)
+  if (UNIX)
+    set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH "$ORIGIN/..")
+  endif()
 endfunction()
 
 
