@@ -189,15 +189,11 @@ jobs:
 
       - name: Smoke test
         run: python -c "import dpnp, dpctl; dpctl.lsplatform()"
-        env:
-          OCL_ICD_FILENAMES: 'libintelocl.so'
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
         run: |
           python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-        env:
-          OCL_ICD_FILENAMES: 'libintelocl.so'
         working-directory: ${{ env.tests-path }}
 
   test_windows:
