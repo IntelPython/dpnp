@@ -34,7 +34,7 @@ You can install the latest development version of DPNP from a cloned Git reposit
 
   $ git clone --recursive https://github.com/IntelPython/dpnp.git
   $ cd dpnp
-  $ ./0.build.sh
+  $ python scripts/build_locally.py
 
 .. note::
 

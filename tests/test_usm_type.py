@@ -18,6 +18,8 @@ def test_coerced_usm_types_sum(usm_type_x, usm_type_y):
     y = dp.arange(1000, usm_type = usm_type_y)
 
     z = 1.3 + x + y + 2
+    z += x
+    z += 7.4
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
@@ -31,6 +33,8 @@ def test_coerced_usm_types_mul(usm_type_x, usm_type_y):
     y = dp.arange(10, usm_type = usm_type_y)
 
     z = 3 * x * y * 1.5
+    z *= x
+    z *= 4.8
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
@@ -172,6 +176,23 @@ def test_meshgrid(usm_type_x, usm_type_y):
     z = dp.meshgrid(x, y)
     assert z[0].usm_type == usm_type_x
     assert z[1].usm_type == usm_type_y
+
+
+@pytest.mark.parametrize(
+    "func,data",
+    [
+        pytest.param(
+            "sqrt",
+            [1.0, 3.0, 9.0],
+        ),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_1in_1out(func, data, usm_type):
+    x = dp.array(data, usm_type=usm_type)
+    res = getattr(dp, func)(x)
+    assert x.usm_type == usm_type
+    assert res.usm_type == usm_type
 
 
 @pytest.mark.parametrize(
