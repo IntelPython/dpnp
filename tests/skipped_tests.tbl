@@ -1,5 +1,10 @@
 tests/test_histograms.py::TestHistogram::test_density
 
+tests/test_random.py::TestDistributionsMultivariateNormal::test_moments
+tests/test_random.py::TestDistributionsMultivariateNormal::test_output_shape_check
+tests/test_random.py::TestDistributionsMultivariateNormal::test_seed
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.vstack([x, x]).T]
+
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-trapz-data19]
 tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-trapz-data19]
 tests/test_sycl_queue.py::test_broadcasting[opencl:gpu:0-floor_divide-data12-data22]
