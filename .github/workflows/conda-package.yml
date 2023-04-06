@@ -189,15 +189,11 @@ jobs:
 
       - name: Smoke test
         run: python -c "import dpnp, dpctl; dpctl.lsplatform()"
-        env:
-          OCL_ICD_FILENAMES: 'libintelocl.so'
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
         run: |
           python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-        env:
-          OCL_ICD_FILENAMES: 'libintelocl.so'
         working-directory: ${{ env.tests-path }}
 
   test_windows:
@@ -319,52 +315,14 @@ jobs:
       - name: List installed packages
         run: conda list
 
-      - name: Add library
+      - name: Activate OCL CPU RT
         shell: pwsh
         run: |
-          # Make sure the below libraries exist
-          Get-Item -Path "$env:CONDA_LIB_BIN_PATH\OpenCL.dll"
-          Get-Item -Path "$env:CONDA_LIB_PATH\intelocl64.dll"
-
-          echo "OCL_ICD_FILENAMES = $env:CONDA_LIB_PATH\intelocl64.dll" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          try {$list = Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors | Select-Object -ExpandProperty Property } catch {$list=@()}
-
-          if ($list.count -eq 0) {
-              if (-not (Test-Path -Path HKLM:\SOFTWARE\Khronos)) {
-                 New-Item -Path HKLM:\SOFTWARE\Khronos
-              }
-
-              if (-not (Test-Path -Path HKLM:\SOFTWARE\Khronos\OpenCL)) {
-                 New-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL
-              }
-
-              if (-not (Test-Path -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors)) {
-                 New-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors
-              }
-
-              New-ItemProperty -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors -Name "$env:CONDA_LIB_PATH\intelocl64.dll" -Value 0
-              try {$list = Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors | Select-Object -ExpandProperty Property } catch {$list=@()}
-              Write-Output $(Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors)
-
-              # Now copy OpenCL.dll into system folder
-              $system_ocl_icd_loader="C:\Windows\System32\OpenCL.dll"
-              $python_ocl_icd_loader="$env:CONDA_LIB_BIN_PATH\OpenCL.dll"
-              Copy-Item -Path $python_ocl_icd_loader -Destination $system_ocl_icd_loader
-
-              if (Test-Path -Path $system_ocl_icd_loader) {
-                 Write-Output "$system_ocl_icd_loader has been copied"
-                 $acl = Get-Acl $system_ocl_icd_loader
-                 Write-Output $acl
-              } else {
-                 Write-Output "OCL-ICD-Loader was not copied"
-              }
-
-              # Configuration variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
-              $cl_cfg="$env:CONDA_LIB_PATH\cl.cfg"
-              Write-Output "`n>>> Dump content of $cl_cfg`n" (Get-Content $cl_cfg) "`n<<< end of dump`n"
-              (Get-Content $cl_cfg) -replace '^CL_CONFIG_TBB_DLL_PATH =.*', "CL_CONFIG_TBB_DLL_PATH = $env:CONDA_LIB_BIN_PATH" | Set-Content $cl_cfg
-              Write-Output "`n>>> Dump content of modified $cl_cfg`n" (Get-Content $cl_cfg) "`n<<< end of dump`n"
-          }
+          $script_path="$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
+          &$script_path
+          # Check the variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
+          $cl_cfg="$env:CONDA_PREFIX\Library\lib\cl.cfg"
+          Get-Content -Tail 5 -Path $cl_cfg
 
       - name: Smoke test
         run: python -c "import dpnp, dpctl; dpctl.lsplatform()"
