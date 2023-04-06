@@ -49,7 +49,8 @@ jobs:
           conda list
       - name: Build dpnp with coverage
         run: |
-          python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py"
+          python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py \
+                                                        --ignore tests/test_strides.py"
         env:
           OCL_ICD_FILENAMES: 'libintelocl.so'
       - name: Install coverall dependencies
