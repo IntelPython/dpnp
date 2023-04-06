@@ -6,6 +6,7 @@ def run(
     c_compiler=None,
     cxx_compiler=None,
     bin_llvm=None,
+    pytest_opts = "",
 ):
 
     IS_LIN = False
@@ -65,6 +66,7 @@ def run(
             "--pyargs",
             "tests",
             "-vv",
+            *pytest_opts.split(),
         ],
         cwd=setup_dir,
         shell=False,
@@ -112,6 +114,21 @@ def run(
         )
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Driver to build dpnp and generate coverage"
+    )
+    driver = parser.add_argument_group(title="Coverage driver arguments")
+    driver.add_argument(
+        "--pytest-opts",
+        help="Channels through additional pytest options",
+        dest="pytest_opts",
+        default="",
+        type=str,
+    )
+
+    args = parser.parse_args()
 
     c_compiler = "icx"
     cxx_compiler = "icpx"
@@ -124,4 +141,5 @@ if __name__ == "__main__":
         c_compiler=c_compiler,
         cxx_compiler=cxx_compiler,
         bin_llvm=bin_llvm,
+        pytest_opts = args.pytest_opts,
     )
