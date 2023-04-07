@@ -24,7 +24,7 @@ def run(
         )
 
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    dpctl_cmake_dir = subprocess.check_output(["python", "-m", "dpctl", "--cmakedir"])
+    dpctl_cmake_dir = subprocess.check_output([sys.executable, "-m", "dpctl", "--cmakedir"])
 
     cmake_args = [
         sys.executable,
