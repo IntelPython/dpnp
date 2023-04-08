@@ -1,6 +1,6 @@
 import math
 import pytest
-from .helper import get_all_dtypes
+from .helper import get_all_dtypes, is_cpu_device
 
 import dpnp
 

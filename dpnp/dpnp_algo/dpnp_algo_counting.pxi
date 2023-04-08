@@ -1,5 +1,8 @@
+# cython: language_level=3
+# cython: linetrace=True
+# -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,31 +26,19 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-# The following variables are optionally searched for defaults
-#  DPLROOT:         Environment variable to specify custom search place
-#  ONEAPI_ROOT:     Environment variable to specify search place from oneAPI
-#
-# The following are set after configuration is done:
-#  DPL_FOUND
-#  DPL_INCLUDE_DIR
+"""Module Backend (Counting part)
 
-include(FindPackageHandleStandardArgs)
+This module contains interface functions between C backend layer
+and the rest of the library
 
-set(DPNP_ONEAPI_DPL "$ENV{DPNP_ONEAPI_ROOT}/dpl/latest" CACHE PATH "Folder contains DPL files from ONEAPI_ROOT")
+"""
 
-if(DEFINED ENV{DPLROOT})
-  set(DPNP_DPLROOT "$ENV{DPLROOT}" CACHE PATH "Folder contains DPL files from DPLROOT")
-endif()
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
-find_path(
-  DPL_INCLUDE_DIR oneapi/dpl/algorithm
-  HINTS ${DPNP_DPLROOT} ${DPNP_ONEAPI_DPL} ENV CONDA_PREFIX ENV PREFIX # search order is important
-  PATH_SUFFIXES include linux/include
-  DOC "Path to DPL include files")
+__all__ += [
+    "dpnp_count_nonzero"
+]
 
-find_package_handle_standard_args(DPL DEFAULT_MSG DPL_INCLUDE_DIR)
 
-if(DPL_FOUND)
-  message(STATUS "Found DPL:                       (include: ${DPL_INCLUDE_DIR})")
-  # mark_as_advanced(DPNP_DPLROOT DPL_INCLUDE_DIR)
-endif()
+cpdef utils.dpnp_descriptor dpnp_count_nonzero(utils.dpnp_descriptor x1):
+    return call_fptr_1in_1out(DPNP_FN_COUNT_NONZERO_EXT, x1, (1,))

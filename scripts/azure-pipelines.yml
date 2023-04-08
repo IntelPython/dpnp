@@ -40,7 +40,7 @@ jobs:
       echo ========================= CI ENV ==========================================
       . ./scripts/set_ci_env.sh
       echo ========================= build DPNP ======================================
-      ./0.build.sh
+      python scripts/build_locally.py
       echo ========================= run valgrind ====================================
       export PYTHONMALLOC=malloc
       valgrind --show-leak-kinds=definite --log-file=/tmp/valgrind-output            \
