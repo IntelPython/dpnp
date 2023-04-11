@@ -1,7 +1,8 @@
 # cython: language_level=3
+# cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,7 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Module Backend (Counting part)
+"""Module Backend (Special part)
 
 This module contains interface functions between C backend layer
 and the rest of the library
@@ -35,9 +36,9 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_count_nonzero"
+    'dpnp_erf',
 ]
 
 
-cpdef utils.dpnp_descriptor dpnp_count_nonzero(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_COUNT_NONZERO_EXT, x1, (1,))
+cpdef utils.dpnp_descriptor dpnp_erf(utils.dpnp_descriptor x1):
+    return call_fptr_1in_1out_strides(DPNP_FN_ERF_EXT, x1)

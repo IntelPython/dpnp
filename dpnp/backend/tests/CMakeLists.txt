@@ -51,7 +51,7 @@ add_executable(dpnpc_tests
                test_random.cpp
                test_utils.cpp
                test_utils_iterator.cpp)
-target_link_libraries(dpnpc_tests GTest::GTest GTest::Main pthread dpnp_backend_c)
+target_link_libraries(dpnpc_tests GTest::GTest GTest::Main pthread dpnp_backend_library)
 
 # TODO split
 add_test(dpnpc_tests dpnpc_tests)

@@ -1,5 +1,5 @@
 # CMake build and local install directory
-build
+_skbuild
 build_cython
 dpnp.egg-info
 
