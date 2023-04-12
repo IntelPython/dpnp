@@ -347,7 +347,7 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    return_type = kernel_data.return_type
 
     cdef shape_type_c x1_shape = x1.shape
     cdef shape_type_c x1_strides = utils.strides_to_vector(x1.strides, x1_shape)
@@ -355,24 +355,33 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
     cdef shape_type_c result_shape = x1_shape
     cdef utils.dpnp_descriptor result
 
-    if out is None:
-        """ Create result array with type given by FPTR data """
+    """" Check `out` parameter data """
+    if out is not None:
+        if out.shape != result_shape:
+            utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
+
+        utils.get_common_usm_allocation(x1, out)    #check USM allocation is common
+
+    if out is None or out.is_array_overlapped(x1) or not out.match_ctype(return_type):
+        """"
+        Create result array with type given by FPTR data.
+        If 'out' array has another dtype than expected or overlaps a memory from any input array,
+        we have to create a temporary array and to copy data from the temporary into 'out' array,
+        once the computation is completed.
+        Otherwise simultaneously access to the same memory may cause a race condition issue
+        which will result into undefined behaviour.
+        """
+        is_result_memory_allocated = True
         x1_obj = x1.get_array()
         result = utils.create_output_descriptor(result_shape,
-                                                kernel_data.return_type,
+                                                return_type,
                                                 None,
                                                 device=x1_obj.sycl_device,
                                                 usm_type=x1_obj.usm_type,
                                                 sycl_queue=x1_obj.sycl_queue)
     else:
-        if out.dtype != result_type:
-            utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
-        if out.shape != result_shape:
-            utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
-
+        is_result_memory_allocated = False
         result = out
-
-        utils.get_common_usm_allocation(x1, result)  # check USM allocation is common
 
     result_sycl_queue = result.get_array().sycl_queue
 
@@ -400,7 +409,10 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
-    return result
+    if out is not None and is_result_memory_allocated:
+        return out.get_result_desc(result)
+
+    return result.get_result_desc()
 
 
 cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
