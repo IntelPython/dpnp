@@ -2,6 +2,7 @@ import pytest
 from .helper import (
     get_all_dtypes,
     get_float_complex_dtypes,
+    get_float_dtypes,
     is_cpu_device,
     is_win_platform
 )
@@ -387,7 +388,7 @@ class TestEdiff1d:
         expected = numpy.ediff1d(np_a)
         assert_array_equal(expected, result)
 
-    
+
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_ediff1d_args(self):
         np_a = numpy.array([1, 2, 4, 7, 0])
@@ -532,16 +533,19 @@ class TestCeil:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
-                             [numpy.float32, numpy.int64, numpy.int32],
-                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
-    def test_invalid_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    @pytest.mark.parametrize("dtype_out", get_float_dtypes())
+    def test_out_dtype(self, dtype, dtype_out):
 
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=dtype_out)
+        expected = numpy.ceil(np_array, np_out)
 
-        with pytest.raises(ValueError):
-            dpnp.ceil(dp_array, out=dp_out)
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(10, dtype=dtype_out)
+        result = dpnp.ceil(dp_array, dp_out)
+
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -572,16 +576,19 @@ class TestFloor:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
-                             [numpy.float32, numpy.int64, numpy.int32],
-                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
-    def test_invalid_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    @pytest.mark.parametrize("dtype_out", get_float_dtypes())
+    def test_out_dtype(self, dtype, dtype_out):
 
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=dtype_out)
+        expected = numpy.floor(np_array, np_out)
 
-        with pytest.raises(ValueError):
-            dpnp.floor(dp_array, out=dp_out)
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(10, dtype=dtype_out)
+        result = dpnp.floor(dp_array, dp_out)
+
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -612,16 +619,19 @@ class TestTrunc:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
-                             [numpy.float32, numpy.int64, numpy.int32],
-                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
-    def test_invalid_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    @pytest.mark.parametrize("dtype_out", get_float_dtypes())
+    def test_out_dtype(self, dtype, dtype_out):
 
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=dtype_out)
+        expected = numpy.trunc(np_array, np_out)
 
-        with pytest.raises(ValueError):
-            dpnp.trunc(dp_array, out=dp_out)
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(10, dtype=dtype_out)
+        result = dpnp.trunc(dp_array, dp_out)
+
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],

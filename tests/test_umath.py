@@ -100,16 +100,19 @@ class TestSin:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
-                             [numpy.float32, numpy.int64, numpy.int32],
-                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
-    def test_invalid_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    @pytest.mark.parametrize("dtype_out", get_float_dtypes())
+    def test_out_dtype(self, dtype, dtype_out):
 
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=dtype_out)
+        expected = numpy.sin(np_array, np_out)
 
-        with pytest.raises(ValueError):
-            dpnp.sin(dp_array, out=dp_out)
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(10, dtype=dtype_out)
+        result = dpnp.sin(dp_array, dp_out)
+
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -140,16 +143,19 @@ class TestCos:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
-                             [numpy.float32, numpy.int64, numpy.int32],
-                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
-    def test_invalid_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    @pytest.mark.parametrize("dtype_out", get_float_dtypes())
+    def test_out_dtype(self, dtype, dtype_out):
 
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=dtype_out)
+        expected = numpy.cos(np_array, np_out)
 
-        with pytest.raises(ValueError):
-            dpnp.cos(dp_array, out=dp_out)
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(10, dtype=dtype_out)
+        result = dpnp.cos(dp_array, dp_out)
+
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -163,7 +169,7 @@ class TestCos:
             dpnp.cos(dp_array, out=dp_out)
 
 
-class TestsLog:
+class TestLog:
 
     def test_log(self):
         array_data = numpy.arange(10)
@@ -180,16 +186,19 @@ class TestsLog:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
-                             [numpy.float32, numpy.int64, numpy.int32],
-                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
-    def test_invalid_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    @pytest.mark.parametrize("dtype_out", get_float_dtypes())
+    def test_out_dtype(self, dtype, dtype_out):
 
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=dtype_out)
+        expected = numpy.log(np_array, np_out)
 
-        with pytest.raises(ValueError):
-            dpnp.log(dp_array, out=dp_out)
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(10, dtype=dtype_out)
+        result = dpnp.log(dp_array, dp_out)
+
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -220,16 +229,19 @@ class TestExp:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
-                             [numpy.float32, numpy.int64, numpy.int32],
-                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
-    def test_invalid_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    @pytest.mark.parametrize("dtype_out", get_float_dtypes())
+    def test_out_dtype(self, dtype, dtype_out):
 
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=dtype_out)
+        expected = numpy.exp(np_array, np_out)
 
-        with pytest.raises(ValueError):
-            dpnp.exp(dp_array, out=dp_out)
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(10, dtype=dtype_out)
+        result = dpnp.exp(dp_array, dp_out)
+
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -260,16 +272,19 @@ class TestArcsin:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
-                             [numpy.float32, numpy.int64, numpy.int32],
-                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
-    def test_invalid_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    @pytest.mark.parametrize("dtype_out", get_float_dtypes())
+    def test_out_dtype(self, dtype, dtype_out):
 
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=dtype_out)
+        expected = numpy.arcsin(np_array, np_out)
 
-        with pytest.raises(ValueError):
-            dpnp.arcsin(dp_array, out=dp_out)
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(10, dtype=dtype_out)
+        result = dpnp.arcsin(dp_array, dp_out)
+
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -300,16 +315,19 @@ class TestArctan:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
-                             [numpy.float32, numpy.int64, numpy.int32],
-                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
-    def test_invalid_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    @pytest.mark.parametrize("dtype_out", get_float_dtypes())
+    def test_out_dtype(self, dtype, dtype_out):
 
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=dtype_out)
+        expected = numpy.arctan(np_array, np_out)
 
-        with pytest.raises(ValueError):
-            dpnp.arctan(dp_array, out=dp_out)
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(10, dtype=dtype_out)
+        result = dpnp.arctan(dp_array, dp_out)
+
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -340,16 +358,19 @@ class TestTan:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
-                             [numpy.float32, numpy.int64, numpy.int32],
-                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
-    def test_invalid_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    @pytest.mark.parametrize("dtype_out", get_float_dtypes())
+    def test_out_dtype(self, dtype, dtype_out):
 
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=dtype_out)
+        expected = numpy.tan(np_array, np_out)
 
-        with pytest.raises(ValueError):
-            dpnp.tan(dp_array, out=dp_out)
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(10, dtype=dtype_out)
+        result = dpnp.tan(dp_array, dp_out)
+
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
