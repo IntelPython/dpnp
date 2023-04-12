@@ -1,6 +1,6 @@
 import math
 import pytest
-from .helper import get_all_dtypes, is_cpu_device
+from .helper import get_all_dtypes, get_float_dtypes
 
 import dpnp
 
@@ -214,6 +214,59 @@ def test_strides_true_devide(dtype, shape):
     expected = numpy.fmod(a, b)
 
     assert_allclose(result, expected)
+
+@pytest.mark.parametrize("func_name",
+                         ["sqrt",])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_strided_out_1args(func_name, dtype):
+    np_out = numpy.ones((5, 3, 2))[::3]
+    np_a = numpy.arange(numpy.prod(np_out.shape), dtype=dtype).reshape(np_out.shape)
+
+    dp_out = dpnp.ones((5, 3, 2))[::3]
+    dp_a = dpnp.array(np_a)
+
+    np_res = _getattr(numpy, func_name)(np_a, out=np_out)
+    dp_res = _getattr(dpnp, func_name)(dp_a, out=dp_out)
+
+    assert_allclose(dp_res.asnumpy(), np_res)
+    assert_allclose(dp_out.asnumpy(), np_out)
+
+@pytest.mark.parametrize("func_name",
+                         ["sqrt",])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_strided_in_out_1args(func_name, dtype):
+    sh = (3, 4, 2)
+    prod = numpy.prod(sh)
+
+    np_out = numpy.ones(sh, dtype=numpy.float64)[::2]
+    np_a = numpy.arange(prod, dtype=dtype).reshape(sh)[::2].T
+
+    dp_out = dpnp.ones(sh, dtype=dpnp.float64)[::2]
+    dp_a = dpnp.arange(prod, dtype=dtype).reshape(sh)[::2].T
+
+    np_res = _getattr(numpy, func_name)(np_a, out=np_out)
+    dp_res = _getattr(dpnp, func_name)(dp_a, out=dp_out)
+
+    assert_allclose(dp_res.asnumpy(), np_res, rtol=1e-06)
+    assert_allclose(dp_out.asnumpy(), np_out, rtol=1e-06)
+
+
+@pytest.mark.parametrize("func_name",
+                         ["sqrt",])
+@pytest.mark.parametrize("dtype", get_float_dtypes())
+def test_strided_in_out_1args_overlap(func_name, dtype):
+    sh = (4, 3, 2)
+    prod = numpy.prod(sh)
+
+    np_a = numpy.arange(prod, dtype=dtype).reshape(sh)
+
+    dp_a = dpnp.arange(prod, dtype=dtype).reshape(sh)
+
+    np_res = _getattr(numpy, func_name)(np_a[:3:], out=np_a[1::])
+    dp_res = _getattr(dpnp, func_name)(dp_a[:3:], out=dp_a[1::])
+
+    assert_allclose(dp_res.asnumpy(), np_res, rtol=1e-06)
+    assert_allclose(dp_a.asnumpy(), np_a, rtol=1e-06)
 
 
 @pytest.mark.parametrize("func_name",

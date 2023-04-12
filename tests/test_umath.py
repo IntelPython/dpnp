@@ -423,16 +423,29 @@ class TestSqrt:
         numpy.testing.assert_allclose(expected, result)
         numpy.testing.assert_allclose(out, dp_out)
 
-    @pytest.mark.parametrize("dtype",
-                             [numpy.int64, numpy.int32],
-                             ids=['numpy.int64', 'numpy.int32'])
-    def test_invalid_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    def test_out_dtype(self, dtype):
 
-        dp_array = dpnp.arange(10, dtype=dpnp.float32)
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=numpy.float32)
+        expected = numpy.sqrt(np_array, np_out)
 
-        with pytest.raises(ValueError):
-            dpnp.sqrt(dp_array, out=dp_out)
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(10, dtype=dpnp.float32)
+        result = dpnp.sqrt(dp_array, dp_out)
+
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_out_equal_array(self, dtype):
+
+        np_array = numpy.arange(10, dtype=dtype)
+        expected = numpy.sqrt(np_array, np_array)
+
+        dp_array = dpnp.arange(10, dtype=dtype)
+        result = dpnp.sqrt(dp_array, dp_array)
+
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
