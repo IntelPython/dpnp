@@ -107,9 +107,7 @@ def _check_nd_call(origin_func, dpnp_func, x1, out=None, where=True, dtype=None,
                 out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
             else:
                 out_desc = None
-            print("DPNP")
             return dpnp_func(x1_desc, out=out_desc).get_pyobj()
-    print("NUMPY")
     return call_origin(origin_func, x1, dtype=dtype, out=out, where=where, subok=subok, **kwargs)
 
 def arccos(x1):
