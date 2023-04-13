@@ -130,9 +130,18 @@
                     gws, kernel_parallel_for_func);                                                                    \
             };                                                                                                         \
                                                                                                                        \
-            q.submit(kernel_func).wait();                                                                              \
+            /*q.submit(kernel_func).wait();*/                                                                          \
+            /*sycl::free(dev_strides_data, q);*/                                                                       \
+            q.submit(kernel_func);                                                                                     \
                                                                                                                        \
-            sycl::free(dev_strides_data, q);                                                                           \
+            q.submit([&](sycl::handler &cgh) {                                                                         \
+                auto ctx = q.get_context();                                                                            \
+                cgh.host_task(                                                                                         \
+                    [strides_host_packed, dev_strides_data, ctx]() {                                                   \
+                        sycl::free(dev_strides_data, ctx);                                                             \
+                });                                                                                                    \
+            });                                                                                                        \
+                                                                                                                       \
             return event_ref;                                                                                          \
         }                                                                                                              \
         else                                                                                                           \
@@ -193,8 +202,8 @@
                                                                                   input1_strides,                      \
                                                                                   where,                               \
                                                                                   dep_event_vec_ref);                  \
-        DPCTLEvent_WaitAndThrow(event_ref);                                                                            \
-        DPCTLEvent_Delete(event_ref);                                                                                  \
+        /*DPCTLEvent_WaitAndThrow(event_ref);*/                                                                        \
+        /*DPCTLEvent_Delete(event_ref);*/                                                                              \
     }                                                                                                                  \
                                                                                                                        \
     template <typename _DataType_input, typename _DataType_output>                                                     \
@@ -653,9 +662,17 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
                 cgh.parallel_for<class __name__##_strides_kernel<_DataType>>(gws, kernel_parallel_for_func);           \
             };                                                                                                         \
                                                                                                                        \
-            q.submit(kernel_func).wait();                                                                              \
+            /*q.submit(kernel_func).wait();*/                                                                          \
+            /*sycl::free(dev_strides_data, q);*/                                                                       \
+            q.submit(kernel_func);                                                                                     \
                                                                                                                        \
-            sycl::free(dev_strides_data, q);                                                                           \
+            q.submit([&](sycl::handler &cgh) {                                                                         \
+                auto ctx = q.get_context();                                                                            \
+                cgh.host_task(                                                                                         \
+                    [strides_host_packed, dev_strides_data, ctx]() {                                                   \
+                        sycl::free(dev_strides_data, ctx);                                                             \
+                });                                                                                                    \
+            });                                                                                                        \
             return event_ref;                                                                                          \
         }                                                                                                              \
         else                                                                                                           \
@@ -713,8 +730,8 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
                                                           input1_strides,                                              \
                                                           where,                                                       \
                                                           dep_event_vec_ref);                                          \
-        DPCTLEvent_WaitAndThrow(event_ref);                                                                            \
-        DPCTLEvent_Delete(event_ref);                                                                                  \
+        /*DPCTLEvent_WaitAndThrow(event_ref);*/                                                                        \
+        /*DPCTLEvent_Delete(event_ref);*/                                                                              \
     }                                                                                                                  \
                                                                                                                        \
     template <typename _DataType>                                                                                      \
@@ -957,10 +974,20 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                     gws, kernel_parallel_for_func);                                                                    \
             };                                                                                                         \
                                                                                                                        \
-            q.submit(kernel_func).wait();                                                                              \
+            /*q.submit(kernel_func).wait();*/                                                                          \
+            /*input1_it->~DPNPC_id();*/                                                                                \
+            /*input2_it->~DPNPC_id();*/                                                                                \
                                                                                                                        \
-            input1_it->~DPNPC_id();                                                                                    \
-            input2_it->~DPNPC_id();                                                                                    \
+            q.submit(kernel_func);                                                                                     \
+                                                                                                                       \
+            q.submit([&](sycl::handler &cgh) {                                                                         \
+                auto ctx = q.get_context();                                                                            \
+                cgh.host_task(                                                                                         \
+                    [input1_it, input2_it, ctx]() {                                                                    \
+                        sycl::free(input1_it, ctx);                                                                    \
+                        sycl::free(input2_it, ctx);                                                                    \
+                });                                                                                                    \
+            });                                                                                                        \
                                                                                                                        \
             return event_ref;                                                                                          \
         }                                                                                                              \
@@ -1021,9 +1048,17 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                     gws, kernel_parallel_for_func);                                                                    \
             };                                                                                                         \
                                                                                                                        \
-            q.submit(kernel_func).wait();                                                                              \
+            /*q.submit(kernel_func).wait();*/                                                                          \
+            /*sycl::free(dev_strides_data, q);*/                                                                       \
+            q.submit(kernel_func);                                                                                     \
                                                                                                                        \
-            sycl::free(dev_strides_data, q);                                                                           \
+            q.submit([&](sycl::handler &cgh) {                                                                         \
+                auto ctx = q.get_context();                                                                            \
+                cgh.host_task(                                                                                         \
+                    [strides_host_packed, dev_strides_data, ctx]() {                                                   \
+                        sycl::free(dev_strides_data, ctx);                                                             \
+                });                                                                                                    \
+            });                                                                                                        \
             return event_ref;                                                                                          \
         }                                                                                                              \
         else                                                                                                           \
@@ -1175,8 +1210,8 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                                                                            input2_strides,                             \
                                                                            where,                                      \
                                                                            dep_event_vec_ref);                         \
-        DPCTLEvent_WaitAndThrow(event_ref);                                                                            \
-        DPCTLEvent_Delete(event_ref);                                                                                  \
+        /*DPCTLEvent_WaitAndThrow(event_ref);*/                                                                        \
+        /*DPCTLEvent_Delete(event_ref);*/                                                                              \
     }                                                                                                                  \
                                                                                                                        \
     template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>                         \

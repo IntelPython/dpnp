@@ -116,8 +116,8 @@ cpdef utils.dpnp_descriptor dpnp_astype(utils.dpnp_descriptor x1, dtype):
     cdef fptr_dpnp_astype_t func = <fptr_dpnp_astype_t > kernel_data.ptr
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, x1.get_data(), result.get_data(), x1.size, NULL)
 
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
+    #with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    #c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -163,8 +163,8 @@ cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1):
                                                     NULL,
                                                     NULL)  # dep_events_ref
 
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
+    #with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    #c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -196,8 +196,8 @@ cpdef utils.dpnp_descriptor dpnp_init_val(shape, dtype, value):
     cdef fptr_dpnp_initval_t func = <fptr_dpnp_initval_t > kernel_data.ptr
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), val_arr.get_data(), result.size, NULL)
 
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
+    #with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    #c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -328,8 +328,8 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out(DPNPFuncName fptr_name,
 
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, x1.get_data(), result.get_data(), x1.size, NULL)
 
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
+    #with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    #c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -397,8 +397,8 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
                                                     NULL,
                                                     NULL)  # dep_events_ref
 
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
+    #with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    #c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -464,8 +464,8 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
                                                     NULL,
                                                     NULL)  # dep_events_ref)
 
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
+    #with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    #c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -560,8 +560,8 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
                                                     NULL,
                                                     NULL)  # dep_events_ref)
 
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
+    #with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    #c_dpctl.DPCTLEvent_Delete(event_ref)
 
     if out is not None and is_result_memory_allocated:
         return out.get_result_desc(result)
