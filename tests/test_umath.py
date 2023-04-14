@@ -445,14 +445,15 @@ class TestSqrt:
         numpy.testing.assert_allclose(out, dp_out)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
-    def test_out_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype_out", get_float_dtypes())
+    def test_out_dtype(self, dtype, dtype_out):
 
         np_array = numpy.arange(10, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.float32)
+        np_out = numpy.empty(10, dtype=dtype_out)
         expected = numpy.sqrt(np_array, np_out)
 
         dp_array = dpnp.arange(10, dtype=dtype)
-        dp_out = dpnp.empty(10, dtype=dpnp.float32)
+        dp_out = dpnp.empty(10, dtype=dtype_out)
         result = dpnp.sqrt(dp_array, dp_out)
 
         assert_allclose(expected, result)
