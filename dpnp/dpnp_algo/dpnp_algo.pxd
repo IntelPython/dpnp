@@ -354,7 +354,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_VANDER_EXT
         DPNP_FN_VAR
         DPNP_FN_VAR_EXT
-        DPNP_FN_WHERE_EXT
         DPNP_FN_ZEROS
         DPNP_FN_ZEROS_LIKE
 
@@ -577,7 +576,6 @@ Searching functions
 """
 cpdef dpnp_descriptor dpnp_argmax(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_argmin(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_where(dpnp_descriptor cond_obj, dpnp_descriptor x_obj, dpnp_descriptor y_obj)
 
 """
 Trigonometric functions
