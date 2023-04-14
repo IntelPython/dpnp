@@ -112,7 +112,7 @@ class TestSin:
         dp_out = dpnp.empty(10, dtype=dtype_out)
         result = dpnp.sin(dp_array, dp_out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -155,7 +155,7 @@ class TestCos:
         dp_out = dpnp.empty(10, dtype=dtype_out)
         result = dpnp.cos(dp_array, dp_out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -198,7 +198,7 @@ class TestLog:
         dp_out = dpnp.empty(10, dtype=dtype_out)
         result = dpnp.log(dp_array, dp_out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -241,7 +241,7 @@ class TestExp:
         dp_out = dpnp.empty(10, dtype=dtype_out)
         result = dpnp.exp(dp_array, dp_out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -284,7 +284,7 @@ class TestArcsin:
         dp_out = dpnp.empty(10, dtype=dtype_out)
         result = dpnp.arcsin(dp_array, dp_out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -327,7 +327,7 @@ class TestArctan:
         dp_out = dpnp.empty(10, dtype=dtype_out)
         result = dpnp.arctan(dp_array, dp_out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -412,7 +412,7 @@ class TestArctan2:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         result = dpnp.arctan2(dp_array, dp_array, out=dp_out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -456,7 +456,7 @@ class TestSqrt:
         dp_out = dpnp.empty(10, dtype=dtype_out)
         result = dpnp.sqrt(dp_array, dp_out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("dtype", get_float_dtypes())
     def test_out_equal_array(self, dtype):

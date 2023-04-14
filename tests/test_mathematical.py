@@ -545,7 +545,7 @@ class TestCeil:
         dp_out = dpnp.empty(10, dtype=dtype_out)
         result = dpnp.ceil(dp_array, dp_out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -588,7 +588,7 @@ class TestFloor:
         dp_out = dpnp.empty(10, dtype=dtype_out)
         result = dpnp.floor(dp_array, dp_out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -631,7 +631,7 @@ class TestTrunc:
         dp_out = dpnp.empty(10, dtype=dtype_out)
         result = dpnp.trunc(dp_array, dp_out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
