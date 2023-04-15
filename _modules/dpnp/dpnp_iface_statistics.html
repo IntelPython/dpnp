@@ -127,6 +127,7 @@
 
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
 
@@ -320,7 +321,8 @@
 
 
 <div class="viewcode-block" id="cov"><a class="viewcode-back" href="../../reference/generated/dpnp.cov.html#dpnp.cov">[docs]</a><span class="k">def</span> <span class="nf">cov</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fweights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aweights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):</span>
+
 <span class="sd">    Estimate a covariance matrix, given data and weights.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.cov`.</span>
@@ -331,7 +333,6 @@
 <span class="sd">    Dimension of input array ``m`` is limited by ``m.ndim &gt; 2``.</span>
 <span class="sd">    Size and shape of input arrays are supported to be equal.</span>
 <span class="sd">    Prameters ``y`` is supported only with default value ``None``.</span>
-<span class="sd">    Prameters ``rowvar`` is supported only with default value ``True``.</span>
 <span class="sd">    Prameters ``bias`` is supported only with default value ``False``.</span>
 <span class="sd">    Prameters ``ddof`` is supported only with default value ``None``.</span>
 <span class="sd">    Prameters ``fweights`` is supported only with default value ``None``.</span>
@@ -363,8 +364,6 @@
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">rowvar</span><span class="p">:</span>
-            <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">bias</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">ddof</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -374,8 +373,14 @@
         <span class="k">elif</span> <span class="n">aweights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
-                <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">rowvar</span> <span class="ow">and</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">x1</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">mT</span><span class="p">)</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span> <span class="k">else</span> <span class="n">x1</span>
+                <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">dpnp_cov</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
