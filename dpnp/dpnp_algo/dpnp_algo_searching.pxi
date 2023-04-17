@@ -37,7 +37,7 @@ and the rest of the library
 
 __all__ += [
     "dpnp_argmax",
-    "dpnp_argmin",
+    "dpnp_argmin"
 ]
 
 
