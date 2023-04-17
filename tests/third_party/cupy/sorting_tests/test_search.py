@@ -262,7 +262,6 @@ class TestArgMinMaxDtype(unittest.TestCase):
     {'cond_shape': (2, 3, 4), 'x_shape': (2, 3, 4), 'y_shape': (3, 4)},
     {'cond_shape': (3, 4), 'x_shape': (2, 3, 4), 'y_shape': (4,)},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestWhereTwoArrays(unittest.TestCase):
 
@@ -274,8 +273,6 @@ class TestWhereTwoArrays(unittest.TestCase):
         # Almost all values of a matrix `shaped_random` makes are not zero.
         # To make a sparse matrix, we need multiply `m`.
         cond = testing.shaped_random(self.cond_shape, xp, cond_type) * m
-        if xp is cupy:
-            cond = cond.astype(cupy.bool)
         x = testing.shaped_random(self.x_shape, xp, x_type, seed=0)
         y = testing.shaped_random(self.y_shape, xp, y_type, seed=1)
         return xp.where(cond, x, y)
