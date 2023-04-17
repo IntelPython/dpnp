@@ -583,11 +583,27 @@ def rollaxis(x1, axis, start=0):
     return call_origin(numpy.rollaxis, x1, axis, start)
 
 
-def squeeze(x1, axis=None):
+def squeeze(x, axis=None):
     """
     Remove single-dimensional entries from the shape of an array.
 
     For full documentation refer to :obj:`numpy.squeeze`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array is a view, if possible,
+        and a copy otherwise, but with all or a subset of the
+        dimensions of length 1 removed. Output has the same data
+        type as the input, is allocated on the same device as the
+        input and has the same USM allocation type as the input
+        array `x`.
+
+    Limitations
+    -----------
+    Parameters `x` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -602,26 +618,17 @@ def squeeze(x1, axis=None):
     >>> np.squeeze(x, axis=1).shape
     Traceback (most recent call last):
     ...
-    ValueError: cannot select an axis to squeeze out which has size not equal to one
+    ValueError: Cannot select an axis to squeeze out which has size not equal to one
     >>> np.squeeze(x, axis=2).shape
     (1, 3)
-    >>> x = np.array([[1234]])
-    >>> x.shape
-    (1, 1)
-    >>> np.squeeze(x)
-    array(1234)  # 0d array
-    >>> np.squeeze(x).shape
-    ()
-    >>> np.squeeze(x)[()]
-    1234
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        return dpnp_squeeze(x1_desc, axis).get_pyobj()
+    if isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
+        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+        return dpnp_array._create_from_usm_ndarray(dpt.squeeze(dpt_array, axis))
 
-    return call_origin(numpy.squeeze, x1, axis)
+    return call_origin(numpy.squeeze, x, axis)
 
 
 def stack(arrays, axis=0, out=None):
