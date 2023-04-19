@@ -405,6 +405,8 @@ tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction:
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_multiple_axes
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_multiple_axes_keepdims
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan_imag
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan_real
 
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_max
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_min
@@ -645,11 +647,14 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_choicelist_condlist_broadcast
+tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_complex
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default
+tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default_complex
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default_scalar
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_empty_lists
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_length_error
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable
+tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable_complex
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_non_broadcastable
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_type_error_condlist
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal
@@ -992,9 +997,14 @@ tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_5_{de
 tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_5_{decimals=99}::test_round_small
 tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_6_{decimals=100}::test_round_large
 tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_6_{decimals=100}::test_round_small
+tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_around
+tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_ceil
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
+tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_floor
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint_negative
+tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_round_
+tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_trunc
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes
@@ -1430,6 +1440,8 @@ tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_b
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_array_bins
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_bins_not_ordered
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_complex_weights
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_complex_weights_uneven_bins 
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_density
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_empty
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_float_weights
