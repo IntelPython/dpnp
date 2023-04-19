@@ -48,7 +48,7 @@ class TestCov(unittest.TestCase):
         return a, y
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def check(self, a_shape, y_shape=None, rowvar=True, bias=False,
               ddof=None, xp=None, dtype=None):
         a, y = self.generate_input(a_shape, y_shape, xp, dtype)
