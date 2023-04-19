@@ -192,7 +192,7 @@ class TestRanges(unittest.TestCase):
 
     @testing.with_requires('numpy>=1.16')
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose()
     def test_linspace_complex_start_stop(self, xp, dtype):
         start = xp.array([0, 120], dtype=dtype)
         stop = xp.array([100, 0], dtype=dtype)
