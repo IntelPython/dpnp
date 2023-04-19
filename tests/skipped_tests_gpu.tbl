@@ -893,8 +893,6 @@ tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_2_{reps
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_3_{reps=(0, 1)}::test_array_tile
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_4_{reps=(2, 3)}::test_array_tile
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_5_{reps=(2, 3, 4, 5)}::test_array_tile
-tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_2
-tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_3
 
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_279_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0., 1., 2.],       [3., 4., 5.]], dtype=float32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_287_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
