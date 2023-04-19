@@ -769,6 +769,38 @@ def test_eig(device):
     assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.parametrize("device",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+def test_eigh(device):
+    size = 4
+    a = numpy.arange(size * size, dtype=numpy.float64).reshape((size, size))
+    symm_orig = numpy.tril(a) + numpy.tril(a, -1).T + numpy.diag(numpy.full((size,), size * size, dtype=numpy.float64))
+    numpy_data = symm_orig
+    dpnp_symm_orig = dpnp.array(numpy_data, device=device)
+    dpnp_data = dpnp_symm_orig
+
+    dpnp_val, dpnp_vec = dpnp.linalg.eigh(dpnp_data)
+    numpy_val, numpy_vec = numpy.linalg.eigh(numpy_data)
+
+    assert_allclose(dpnp_val, numpy_val, rtol=1e-05, atol=1e-05)
+    assert_allclose(dpnp_vec, numpy_vec, rtol=1e-05, atol=1e-05)
+
+    assert (dpnp_val.dtype == numpy_val.dtype)
+    assert (dpnp_vec.dtype == numpy_vec.dtype)
+    assert (dpnp_val.shape == numpy_val.shape)
+    assert (dpnp_vec.shape == numpy_vec.shape)
+
+    expected_queue = dpnp_data.get_array().sycl_queue
+    dpnp_val_queue = dpnp_val.get_array().sycl_queue
+    dpnp_vec_queue = dpnp_vec.get_array().sycl_queue
+
+    # compare queue and device
+    assert_sycl_queue_equal(dpnp_val_queue, expected_queue)
+    assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
+
+
 @pytest.mark.parametrize("device",
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
