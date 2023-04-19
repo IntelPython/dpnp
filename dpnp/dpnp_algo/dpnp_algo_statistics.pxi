@@ -179,7 +179,6 @@ cpdef utils.dpnp_descriptor dpnp_correlate(utils.dpnp_descriptor x1, utils.dpnp_
     return result
 
 
-# supports "double" input only
 cpdef utils.dpnp_descriptor dpnp_cov(utils.dpnp_descriptor array1):
     cdef shape_type_c input_shape = array1.shape
 
