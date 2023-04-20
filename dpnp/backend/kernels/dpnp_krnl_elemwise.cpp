@@ -138,7 +138,7 @@
         else                                                                                                           \
         {                                                                                                              \
             auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                                               \
-                size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                          \
+                size_t output_id = global_id[0]; /* for (size_t i = 0; i < result_size; ++i) */                        \
                 {                                                                                                      \
                     const _DataType_output input_elem = input1_data[output_id];                                        \
                     result[output_id] = __operation1__;                                                                \
@@ -149,16 +149,17 @@
                     gws, kernel_parallel_for_func);                                                                    \
             };                                                                                                         \
                                                                                                                        \
-            if constexpr ((std::is_same<_DataType_input, double>::value ||                                             \
-                           std::is_same<_DataType_input, float>::value) &&                                             \
-                          std::is_same<_DataType_input, _DataType_output>::value)                                      \
+            if constexpr (both_types_are_same<_DataType_input, _DataType_output, float, double>)                       \
             {                                                                                                          \
-                event = __operation2__;                                                                                \
+                if (q.get_device().has(sycl::aspect::fp64))                                                            \
+                {                                                                                                      \
+                    event = __operation2__;                                                                            \
+                                                                                                                       \
+                    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                           \
+                    return DPCTLEvent_Copy(event_ref);                                                                 \
+                }                                                                                                      \
             }                                                                                                          \
-            else                                                                                                       \
-            {                                                                                                          \
-                event = q.submit(kernel_func);                                                                         \
-            }                                                                                                          \
+            event = q.submit(kernel_func);                                                                             \
         }                                                                                                              \
                                                                                                                        \
         event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                                       \
@@ -671,14 +672,17 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
                 cgh.parallel_for<class __name__##_kernel<_DataType>>(gws, kernel_parallel_for_func);                   \
             };                                                                                                         \
                                                                                                                        \
-            if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)             \
+            if constexpr (is_any_v<_DataType, float, double>)                                                          \
             {                                                                                                          \
-                event = __operation2__;                                                                                \
+                if (q.get_device().has(sycl::aspect::fp64))                                                            \
+                {                                                                                                      \
+                    event = __operation2__;                                                                            \
+                                                                                                                       \
+                    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                           \
+                    return DPCTLEvent_Copy(event_ref);                                                                 \
+                }                                                                                                      \
             }                                                                                                          \
-            else                                                                                                       \
-            {                                                                                                          \
-                event = q.submit(kernel_func);                                                                         \
-            }                                                                                                          \
+            event = q.submit(kernel_func);                                                                             \
         }                                                                                                              \
                                                                                                                        \
         event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                                       \
@@ -847,7 +851,6 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
 
     return;
 }
-
 
 #define MACRO_2ARG_3TYPES_OP(                                                                                          \
     __name__, __operation__, __vec_operation__, __vec_types__, __mkl_operation__, __mkl_types__)                       \
@@ -1030,12 +1033,19 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
         {                                                                                                              \
             if constexpr (both_types_are_same<_DataType_input1, _DataType_input2, __mkl_types__>)                      \
             {                                                                                                          \
-                event = __mkl_operation__(q, result_size, input1_data, input2_data, result);                           \
+                if (q.get_device().has(sycl::aspect::fp64))                                                            \
+                {                                                                                                      \
+                    event = __mkl_operation__(q, result_size, input1_data, input2_data, result);                       \
+                                                                                                                       \
+                    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                                           \
+                    return DPCTLEvent_Copy(event_ref);                                                                 \
+                }                                                                                                      \
             }                                                                                                          \
-            else if constexpr (none_of_both_types<_DataType_input1,                                                    \
-                                                  _DataType_input2,                                                    \
-                                                  std::complex<float>,                                                 \
-                                                  std::complex<double>>)                                               \
+                                                                                                                       \
+            if constexpr (none_of_both_types<_DataType_input1,                                                         \
+                                             _DataType_input2,                                                         \
+                                             std::complex<float>,                                                      \
+                                             std::complex<double>>)                                                    \
             {                                                                                                          \
                 constexpr size_t lws = 64;                                                                             \
                 constexpr unsigned int vec_sz = 8;                                                                     \
