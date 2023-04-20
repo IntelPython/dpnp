@@ -96,11 +96,8 @@ def dpnp_eigh(a, UPLO):
             # call LAPACK extension function to get eigenvalues and eigenvectors of a portion of matrix A
             ht_lapack_ev[i], _ = getattr(li, lapack_func)(a_sycl_queue, jobz, uplo, eig_vecs[i].get_array(), w[i].get_array(), depends=[copy_ev])
 
-            # TODO: remove once dpctl fix is available
-            ht_lapack_ev[i].wait()
-
         for i in range(op_count):
-            # ht_lapack_ev[i].wait()
+            ht_lapack_ev[i].wait()
             ht_copy_ev[i].wait()
 
         # combine the list of eigenvectors into a single array
