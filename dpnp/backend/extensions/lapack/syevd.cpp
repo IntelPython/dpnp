@@ -44,14 +44,14 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 
 template <typename T>
-static inline sycl::event call_syevd(sycl::queue exec_q,
-                                     const oneapi::mkl::job jobz,
-                                     const oneapi::mkl::uplo upper_lower,
-                                     const std::int64_t n,
-                                     T* a,
-                                     T* w,
-                                     std::vector<sycl::event> &host_task_events,
-                                     const std::vector<sycl::event>& depends)
+static sycl::event call_syevd(sycl::queue exec_q,
+                              const oneapi::mkl::job jobz,
+                              const oneapi::mkl::uplo upper_lower,
+                              const std::int64_t n,
+                              T* a,
+                              T* w,
+                              std::vector<sycl::event>& host_task_events,
+                              const std::vector<sycl::event>& depends)
 {
     validate_type_for_device<T>(exec_q);
 
@@ -169,6 +169,17 @@ std::pair<sycl::event, sycl::event> syevd(sycl::queue exec_q,
     // {
     //     throw py::value_error("Arrays index overlapping segments of memory");
     // }
+
+    bool is_eig_vecs_f_contig = eig_vecs.is_f_contiguous();
+    bool is_eig_vals_c_contig = eig_vals.is_c_contiguous();
+    if (!is_eig_vecs_f_contig)
+    {
+        throw py::value_error("An array with input matrix / ouput eigenvectors must be F-contiguous");
+    }
+    else if (!is_eig_vals_c_contig)
+    {
+        throw py::value_error("An array with output eigenvalues must be C-contiguous");
+    }
 
     int eig_vecs_typenum = eig_vecs.get_typenum();
     int eig_vals_typenum = eig_vals.get_typenum();
