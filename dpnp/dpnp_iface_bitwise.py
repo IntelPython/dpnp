@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,19 +40,20 @@ it contains:
 """
 
 
-import numpy
-
-
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 import dpnp
 
+import numpy
+import dpctl.tensor as dpt
+
+
 __all__ = [
     'bitwise_and',
+    'bitwise_not',
     'bitwise_or',
     'bitwise_xor',
     'invert',
-    'bitwise_not',
     'left_shift',
     'right_shift',
 ]
@@ -61,37 +62,36 @@ __all__ = [
 def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=True, **kwargs):
     """Choose function to call based on input and call chosen fucntion."""
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
-
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif x1_desc and x2_desc and x1_desc.size != x2_desc.size:
-            pass
-        elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
+    if kwargs:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        if dpnp.isscalar(x1) or dpnp.isscalar(x2):
+            usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+            dtype = x1.dtype if not dpnp.isscalar(x1) else x2.dtype
         else:
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            return dpnp_func(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
+            dtype, usm_type, queue = (None, None, None)
+
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
+                                           alloc_dtype=dtype, alloc_usm_type=usm_type, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
+                                           alloc_dtype=dtype, alloc_usm_type=usm_type, alloc_queue=queue)
+        if x1_desc and x2_desc:
+            if out is not None:
+                if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
+                    raise TypeError("return array must be of supported array type")
+                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
+            else:
+                out_desc = None
+
+            return dpnp_func(x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where).get_pyobj()
 
     return call_origin(origin_func, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -102,14 +102,20 @@ def bitwise_and(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     For full documentation refer to :obj:`numpy.bitwise_and`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        An array containing the element-wise results.
+    
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
-    Sizes, shapes and data types of input arrays are supported to be equal.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `dtype` and `where` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input data is supported as integer only.
+    Data type of input arrays `x` and `y` are limited by :obj:`dpnp.bool`, :obj:`dpnp.int32`
+    and :obj:`dpnp.int64`.
 
     See Also
     --------
@@ -136,14 +142,20 @@ def bitwise_or(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     For full documentation refer to :obj:`numpy.bitwise_or`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        An array containing the element-wise results.
+    
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
-    Sizes, shapes and data types of input arrays are supported to be equal.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `dtype` and `where` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input data is supported as integer only.
+    Data type of input arrays `x` and `y` are limited by :obj:`dpnp.bool`, :obj:`dpnp.int32`
+    and :obj:`dpnp.int64`.
 
     See Also
     --------
@@ -170,14 +182,20 @@ def bitwise_xor(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     For full documentation refer to :obj:`numpy.bitwise_xor`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        An array containing the element-wise results.
+    
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
-    Sizes, shapes and data types of input arrays are supported to be equal.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `dtype` and `where` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input data is supported as integer only.
+    Data type of input arrays `x` and `y` are limited by :obj:`dpnp.bool`, :obj:`dpnp.int32`
+    and :obj:`dpnp.int64`.
 
     See Also
     --------
@@ -198,18 +216,33 @@ def bitwise_xor(x1, x2, dtype=None, out=None, where=True, **kwargs):
     return _check_nd_call(numpy.bitwise_xor, dpnp_bitwise_xor, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def invert(x, **kwargs):
+def invert(x,
+           /,
+           out=None,
+           *,
+           where=True,
+           dtype=None,
+           subok=True,
+           **kwargs):
     """
     Compute bit-wise inversion, or bit-wise NOT, element-wise.
 
     For full documentation refer to :obj:`numpy.invert`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        An array containing the element-wise results.
+    
     Limitations
     -----------
-    Parameters ``x`` is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameter `x` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array ``x`` is supported as integer :obj:`dpnp.ndarray` only.
+    Data type of input array `x` is limited by :obj:`dpnp.bool`, :obj:`dpnp.int32`
+    and :obj:`dpnp.int64`.
 
     See Also
     --------
@@ -220,19 +253,34 @@ def invert(x, **kwargs):
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> x = np.array([13])
-    >>> out = np.invert(x)
+    >>> import dpnp as dp
+    >>> x = dp.array([13])
+    >>> out = dp.invert(x)
     >>> out[0]
     -14
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_invert(x1_desc).get_pyobj()
+    if kwargs:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    else:
+        x1_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+        if x1_desc:
+            if out is not None:
+                if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
+                    raise TypeError("return array must be of supported array type")
+                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
+            else:
+                out_desc = None
+        return dpnp_invert(x1_desc, out_desc).get_pyobj()
 
-    return call_origin(numpy.invert, x, **kwargs)
+    return call_origin(numpy.invert, x, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
 
 
 bitwise_not = invert  # bitwise_not is an alias for invert
@@ -244,12 +292,17 @@ def left_shift(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     For full documentation refer to :obj:`numpy.left_shift`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        An array containing the element-wise results.
+    
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
-    Sizes, shapes and data types of input arrays are supported to be equal.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `dtype` and `where` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input data is supported as integer only.
 
@@ -276,12 +329,17 @@ def right_shift(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     For full documentation refer to :obj:`numpy.right_shift`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        An array containing the element-wise results.
+    
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
-    Sizes, shapes and data types of input arrays are supported to be equal.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `dtype` and `where` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input data is supported as integer only.
 

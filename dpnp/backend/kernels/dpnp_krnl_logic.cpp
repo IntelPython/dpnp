@@ -41,6 +41,8 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
                              const size_t size,
                              const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    static_assert(std::is_same_v<_ResultType, bool>, "Boolean result type is required");
+
     // avoid warning unused variable
     (void)dep_event_vec_ref;
 
@@ -52,38 +54,50 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-    sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
-    DPNPC_ptr_adapter<_ResultType> result1_ptr(q_ref, result1, 1, true, true);
-    const _DataType* array_in = input1_ptr.get_ptr();
-    _ResultType* result = result1_ptr.get_ptr();
+    const _DataType* array_in = static_cast<const _DataType*>(array1_in);
+    bool* result = static_cast<bool*>(result1);
 
-    result[0] = true;
+    auto fill_event = q.fill(result, true, 1);
 
     if (!size)
     {
-        return event_ref;
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&fill_event);
+        return DPCTLEvent_Copy(event_ref);
     }
 
-    sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
-        size_t i = global_id[0];
+    constexpr size_t lws = 64;
+    constexpr size_t vec_sz = 8;
 
-        if (!array_in[i])
+    auto gws_range = sycl::range<1>(((size + lws * vec_sz - 1) / (lws * vec_sz)) * lws);
+    auto lws_range = sycl::range<1>(lws);
+    sycl::nd_range<1> gws(gws_range, lws_range);
+
+    auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {
+        auto gr = nd_it.get_group();
+        const auto max_gr_size = gr.get_max_local_range()[0];
+        const size_t start =
+            vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) + gr.get_group_id()[0] * max_gr_size);
+        const size_t end = sycl::min(start + vec_sz * max_gr_size, size);
+
+        // each work-item reduces over "vec_sz" elements in the input array
+        bool local_reduction = sycl::joint_none_of(
+            gr, &array_in[start], &array_in[end], [&](_DataType elem) { return elem == static_cast<_DataType>(0); });
+
+        if (gr.leader() && (local_reduction == false))
         {
             result[0] = false;
         }
     };
 
     auto kernel_func = [&](sycl::handler& cgh) {
+        cgh.depends_on(fill_event);
         cgh.parallel_for<class dpnp_all_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
-    event = q.submit(kernel_func);
+    auto event = q.submit(kernel_func);
 
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
-
     return DPCTLEvent_Copy(event_ref);
 }
 
@@ -98,6 +112,7 @@ void dpnp_all_c(const void* array1_in, void* result1, const size_t size)
                                                                      size,
                                                                      dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -218,6 +233,8 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
                              const size_t size,
                              const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    static_assert(std::is_same_v<_ResultType, bool>, "Boolean result type is required");
+
     // avoid warning unused variable
     (void)dep_event_vec_ref;
 
@@ -229,38 +246,50 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
     }
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
-    sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
-    DPNPC_ptr_adapter<_ResultType> result1_ptr(q_ref, result1, 1, true, true);
-    const _DataType* array_in = input1_ptr.get_ptr();
-    _ResultType* result = result1_ptr.get_ptr();
+    const _DataType* array_in = static_cast<const _DataType*>(array1_in);
+    bool* result = static_cast<bool*>(result1);
 
-    result[0] = false;
+    auto fill_event = q.fill(result, false, 1);
 
     if (!size)
     {
-        return event_ref;
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&fill_event);
+        return DPCTLEvent_Copy(event_ref);
     }
 
-    sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
-        size_t i = global_id[0];
+    constexpr size_t lws = 64;
+    constexpr size_t vec_sz = 8;
 
-        if (array_in[i])
+    auto gws_range = sycl::range<1>(((size + lws * vec_sz - 1) / (lws * vec_sz)) * lws);
+    auto lws_range = sycl::range<1>(lws);
+    sycl::nd_range<1> gws(gws_range, lws_range);
+
+    auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {
+        auto gr = nd_it.get_group();
+        const auto max_gr_size = gr.get_max_local_range()[0];
+        const size_t start =
+            vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) + gr.get_group_id()[0] * max_gr_size);
+        const size_t end = sycl::min(start + vec_sz * max_gr_size, size);
+
+        // each work-item reduces over "vec_sz" elements in the input array
+        bool local_reduction = sycl::joint_any_of(
+            gr, &array_in[start], &array_in[end], [&](_DataType elem) { return elem != static_cast<_DataType>(0); });
+
+        if (gr.leader() && (local_reduction == true))
         {
             result[0] = true;
         }
     };
 
     auto kernel_func = [&](sycl::handler& cgh) {
+        cgh.depends_on(fill_event);
         cgh.parallel_for<class dpnp_any_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
-    event = q.submit(kernel_func);
+    auto event = q.submit(kernel_func);
 
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
-
     return DPCTLEvent_Copy(event_ref);
 }
 
@@ -275,6 +304,7 @@ void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
                                                                      size,
                                                                      dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType, typename _ResultType>
@@ -366,7 +396,7 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
                 const size_t output_id = global_id[0]; /* for (size_t i = 0; i < result_size; ++i) */                  \
                 {                                                                                                      \
                     const shape_elem_type *result_strides_data = &dev_strides_data[0];                                 \
-                    const shape_elem_type *input1_strides_data = &dev_strides_data[1];                                 \
+                    const shape_elem_type *input1_strides_data = &dev_strides_data[result_ndim];                       \
                                                                                                                        \
                     size_t input1_id = 0;                                                                              \
                                                                                                                        \
@@ -605,8 +635,8 @@ static void func_map_logic_1arg_1type_helper(func_map_t& fmap)
                 const size_t output_id = global_id[0]; /* for (size_t i = 0; i < result_size; ++i) */                  \
                 {                                                                                                      \
                     const shape_elem_type *result_strides_data = &dev_strides_data[0];                                 \
-                    const shape_elem_type *input1_strides_data = &dev_strides_data[1];                                 \
-                    const shape_elem_type *input2_strides_data = &dev_strides_data[2];                                 \
+                    const shape_elem_type *input1_strides_data = &dev_strides_data[result_ndim];                       \
+                    const shape_elem_type *input2_strides_data = &dev_strides_data[2 * result_ndim];                   \
                                                                                                                        \
                     size_t input1_id = 0;                                                                              \
                     size_t input2_id = 0;                                                                              \
@@ -751,6 +781,8 @@ void func_map_init_logic(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_all_ext_c<int64_t, bool>};
     fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_all_ext_c<float, bool>};
     fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_all_ext_c<double, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_C64][eft_C64] = {eft_C64, (void*)dpnp_all_ext_c<std::complex<float>, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_all_ext_c<std::complex<double>, bool>};
 
     fmap[DPNPFuncName::DPNP_FN_ALLCLOSE][eft_INT][eft_INT] = {eft_BLN,
                                                               (void*)dpnp_allclose_default_c<int32_t, int32_t, bool>};
@@ -829,6 +861,8 @@ void func_map_init_logic(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ANY_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_any_ext_c<int64_t, bool>};
     fmap[DPNPFuncName::DPNP_FN_ANY_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_any_ext_c<float, bool>};
     fmap[DPNPFuncName::DPNP_FN_ANY_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_any_ext_c<double, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ANY_EXT][eft_C64][eft_C64] = {eft_C64, (void*)dpnp_any_ext_c<std::complex<float>, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ANY_EXT][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_any_ext_c<std::complex<double>, bool>};
 
     func_map_logic_1arg_1type_helper<eft_BLN, eft_INT, eft_LNG, eft_FLT, eft_DBL>(fmap);
     func_map_logic_2arg_2type_helper<eft_BLN, eft_INT, eft_LNG, eft_FLT, eft_DBL>(fmap);

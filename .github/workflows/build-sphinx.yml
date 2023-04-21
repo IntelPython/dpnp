@@ -54,7 +54,7 @@ jobs:
           sudo apt-get install -y nvidia-cuda-toolkit clinfo
 
       - name: Checkout repo
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       # https://github.com/marketplace/actions/setup-miniconda
       - name: Setup miniconda
@@ -67,26 +67,27 @@ jobs:
           channels: intel, conda-forge
 
       - name: Install sphinx dependencies
-        run: conda install sphinx sphinx_rtd_theme
+        run: |
+          conda install sphinx sphinx_rtd_theme
+          pip install sphinxcontrib-googleanalytics
 
       - name: Install dpnp dependencies
         run: |
           conda install dpctl mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
-              cmake cython pytest -c dppy/label/dev -c intel -c conda-forge
+              cmake cython pytest ninja scikit-build -c dppy/label/dev -c intel -c conda-forge
 
       - name: Install cuPy dependencies
         run: conda install -c conda-forge cupy cudatoolkit=10.0
 
       - name: Conda info
-        run: |
-          conda info
-          conda list
+        run: conda info
+
+      - name: Conda list
+        run: conda list
 
       - name: Build library
         run: |
-          python setup.py build_clib
-          CC=icpx python setup.py build_ext --inplace
-          python setup.py develop
+          CC=icx CXX=icpx python setup.py develop -G Ninja -- -DDPCTL_MODULE_PATH=$(python -m dpctl --cmakedir)
 
       - name: Build docs
         run: make html
@@ -94,7 +95,7 @@ jobs:
 
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
-        uses: mattnotmitt/doxygen-action@v1.9.4
+        uses: mattnotmitt/doxygen-action@v1.9.5
         with:
             working-directory: 'dpnp/backend/doc'
 
@@ -106,7 +107,7 @@ jobs:
         if: |
           !github.event.pull_request.head.repo.fork  &&
           (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
-        uses: peaceiris/actions-gh-pages@v3.9.0
+        uses: peaceiris/actions-gh-pages@v3.9.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: doc/_build/html/

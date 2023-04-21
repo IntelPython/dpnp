@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2022, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,10 @@ from dpnp.dpnp_utils import *
 from dpnp.dpnp_iface_arraycreation import array
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
+
 import numpy
+import dpctl.tensor as dpt
 
 
 __all__ = [
@@ -55,6 +58,7 @@ __all__ = [
     "atleast_1d",
     "atleast_2d",
     "atleast_3d",
+    "broadcast_to",
     "concatenate",
     "copyto",
     "expand_dims",
@@ -73,7 +77,7 @@ __all__ = [
 ]
 
 
-def asfarray(x1, dtype=numpy.float64):
+def asfarray(x1, dtype=None):
     """
     Return an array converted to a float type.
 
@@ -82,14 +86,15 @@ def asfarray(x1, dtype=numpy.float64):
     Notes
     -----
     This function works exactly the same as :obj:`dpnp.array`.
+    If dtype is `None`, `bool` or one of the `int` dtypes, it is replaced with
+    the default floating type in DPNP depending on device capabilities.
 
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
-        # behavior of original function: int types replaced with float64
-        if numpy.issubdtype(dtype, numpy.integer):
-            dtype = numpy.float64
+        if dtype is None or not numpy.issubdtype(dtype, dpnp.inexact):
+            dtype = dpnp.default_float_type(sycl_queue=x1.sycl_queue)
 
         # if type is the same then same object should be returned
         if x1_desc.dtype == dtype:
@@ -187,6 +192,46 @@ def atleast_3d(*arys):
             return result
 
     return call_origin(numpy.atleast_3d, *arys)
+
+
+def broadcast_to(x, /, shape, subok=False):
+    """
+    Broadcast an array to a new shape.
+
+    For full documentation refer to :obj:`numpy.broadcast_to`.
+
+    Returns
+    -------
+    y : dpnp.ndarray
+        An array having a specified shape. Must have the same data type as `x`.
+
+    Limitations
+    -----------
+    Parameter `x` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `subok` is supported with default value.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types of `x` is limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as dp
+    >>> x = dp.array([1, 2, 3])
+    >>> dp.broadcast_to(x, (3, 3))
+    array([[1, 2, 3],
+           [1, 2, 3],
+           [1, 2, 3]])
+
+    """
+
+    if subok is not False:
+        pass
+    elif isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
+        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+        new_array = dpt.broadcast_to(dpt_array, shape)
+        return dpnp_array._create_from_usm_ndarray(new_array)
+
+    return call_origin(numpy.broadcast_to, x, shape=shape, subok=subok)
 
 
 def concatenate(arrs, axis=0, out=None, dtype=None, casting="same_kind"):

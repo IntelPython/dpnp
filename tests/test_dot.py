@@ -1,13 +1,16 @@
 import pytest
+from .helper import get_all_dtypes
 
 import dpnp as inp
 
 import numpy
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal
+)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_dot_ones(type):
     n = 10**5
     a = numpy.ones(n, dtype=type)
@@ -17,12 +20,10 @@ def test_dot_ones(type):
 
     result = inp.dot(ia, ib)
     expected = numpy.dot(a, b)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_dot_arange(type):
     n = 10**2
     m = 10**3
@@ -33,12 +34,10 @@ def test_dot_arange(type):
 
     result = inp.dot(ia, ib)
     expected = numpy.dot(a, b)
-    numpy.testing.assert_allclose(expected, result)
+    assert_allclose(expected, result)
 
 
-@pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_multi_dot(type):
     n = 16
     a = inp.reshape(inp.arange(n, dtype=type), (4, 4))
@@ -53,4 +52,4 @@ def test_multi_dot(type):
 
     result = inp.linalg.multi_dot([a, b, c, d])
     expected = numpy.linalg.multi_dot([a1, b1, c1, d1])
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)

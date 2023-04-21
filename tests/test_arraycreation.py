@@ -15,6 +15,7 @@ from numpy.testing import (
 )
 
 import tempfile
+import operator
 
 
 @pytest.mark.parametrize("start",
@@ -29,7 +30,7 @@ import tempfile
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_float16=False))
 def test_arange(start, stop, step, dtype):
     rtol_mult = 2
-    if numpy.issubdtype(dtype, numpy.float16):
+    if dpnp.issubdtype(dtype, dpnp.float16):
         # numpy casts to float32 type when computes float16 data
         rtol_mult = 4
 
@@ -50,7 +51,7 @@ def test_arange(start, stop, step, dtype):
     else:
         _dtype = dtype
 
-    if numpy.issubdtype(_dtype, numpy.floating) or numpy.issubdtype(_dtype, numpy.complexfloating):
+    if dpnp.issubdtype(_dtype, dpnp.floating) or dpnp.issubdtype(_dtype, dpnp.complexfloating):
         assert_allclose(exp_array, res_array, rtol=rtol_mult*numpy.finfo(_dtype).eps)
     else:
         assert_array_equal(exp_array, res_array)
@@ -109,7 +110,7 @@ def test_frombuffer(dtype):
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_fromfile(dtype):
     with tempfile.TemporaryFile() as fh:
         fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
@@ -258,48 +259,50 @@ def test_tri_default_dtype():
 
 
 @pytest.mark.parametrize("k",
-                         [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
-                         ids=['-6', '-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5', '6'])
+                         [-3, -2, -1, 0, 1, 2, 3, 4, 5,
+                          numpy.array(1), dpnp.array(2), dpt.asarray(3)],
+                         ids=['-3', '-2', '-1', '0', '1', '2', '3', '4', '5',
+                              'np.array(1)', 'dpnp.array(2)', 'dpt.asarray(3)'])
 @pytest.mark.parametrize("m",
-                         [[0, 1, 2, 3, 4],
-                          [1, 1, 1, 1, 1],
-                          [[0, 0], [0, 0]],
+                         [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
                           [[1, 2], [3, 4]],
                           [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
                           [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
-                         ids=['[0, 1, 2, 3, 4]',
-                              '[1, 1, 1, 1, 1]',
-                              '[[0, 0], [0, 0]]',
+                         ids=['[[0, 0], [0, 0]]',
                               '[[1, 2], [1, 2]]',
                               '[[1, 2], [3, 4]]',
                               '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
                               '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
-def test_tril(m, k):
-    a = numpy.array(m)
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+def test_tril(m, k, dtype):
+    a = numpy.array(m, dtype=dtype)
     ia = dpnp.array(a)
-    expected = numpy.tril(a, k)
-    result = dpnp.tril(ia, k)
+    expected = numpy.tril(a, k=k)
+    result = dpnp.tril(ia, k=k)
     assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("k",
-                         [-4, -3, -2, -1, 0, 1, 2, 3, 4],
-                         ids=['-4', '-3', '-2', '-1', '0', '1', '2', '3', '4'])
+                         [-3, -2, -1, 0, 1, 2, 3, 4, 5,
+                          numpy.array(1), dpnp.array(2), dpt.asarray(3)],
+                         ids=['-3', '-2', '-1', '0', '1', '2', '3', '4', '5',
+                              'np.array(1)', 'dpnp.array(2)', 'dpt.asarray(3)'])
 @pytest.mark.parametrize("m",
-                         [[0, 1, 2, 3, 4],
-                          [[1, 2], [3, 4]],
+                         [[[1, 2], [3, 4]],
                           [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
                           [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
-                         ids=['[0, 1, 2, 3, 4]',
-                              '[[1, 2], [3, 4]]',
+                         ids=['[[1, 2], [3, 4]]',
                               '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
                               '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
-def test_triu(m, k):
-    a = numpy.array(m)
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+def test_triu(m, k, dtype):
+    a = numpy.array(m, dtype=dtype)
     ia = dpnp.array(a)
-    expected = numpy.triu(a, k)
-    result = dpnp.triu(ia, k)
+    expected = numpy.triu(a, k=k)
+    result = dpnp.triu(ia, k=k)
     assert_array_equal(expected, result)
 
 
@@ -309,8 +312,8 @@ def test_triu(m, k):
 def test_triu_size_null(k):
     a = numpy.ones(shape=(1, 2, 0))
     ia = dpnp.array(a)
-    expected = numpy.triu(a, k)
-    result = dpnp.triu(ia, k)
+    expected = numpy.triu(a, k=k)
+    result = dpnp.triu(ia, k=k)
     assert_array_equal(expected, result)
 
 
@@ -504,7 +507,66 @@ def test_dpctl_tensor_input(func, args):
     new_args = [eval(val, {'x0' : x0}) for val in args]
     X = getattr(dpt, func)(*new_args)
     Y = getattr(dpnp, func)(*new_args)
-    if func is 'empty_like':
+    if func == 'empty_like':
         assert X.shape == Y.shape
     else:
         assert_array_equal(X, Y)
+
+
+@pytest.mark.parametrize("start",
+                         [0, -5, 10, -2.5, 9.7],
+                         ids=['0', '-5', '10', '-2.5', '9.7'])
+@pytest.mark.parametrize("stop",
+                         [0, 10, -2, 20.5, 1000],
+                         ids=['0', '10', '-2', '20.5', '1000'])
+@pytest.mark.parametrize("num",
+                         [5, numpy.array(10), dpnp.array(17), dpt.asarray(100)],
+                         ids=['5', 'numpy.array(10)', 'dpnp.array(17)', 'dpt.asarray(100)'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_float16=False))
+def test_linspace(start, stop, num, dtype):
+    func = lambda xp: xp.linspace(start, stop, num, dtype=dtype)
+
+    if numpy.issubdtype(dtype, dpnp.integer):
+        assert_allclose(func(numpy), func(dpnp), rtol=1)
+    else:
+        assert_allclose(func(numpy), func(dpnp), atol=numpy.finfo(dtype).eps)
+
+
+@pytest.mark.parametrize("start_dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("stop_dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+def test_linspace_dtype(start_dtype, stop_dtype):
+    start = numpy.array([1, 2, 3], dtype=start_dtype)
+    stop = numpy.array([11, 7, -2], dtype=stop_dtype)
+    dpnp.linspace(start, stop, 10)
+
+
+@pytest.mark.parametrize("start",
+                         [dpnp.array(1), dpnp.array([2.6]), numpy.array([[-6.7, 3]]), [1, -4], (3, 5)])
+@pytest.mark.parametrize("stop",
+                         [dpnp.array([-4]), dpnp.array([[2.6], [- 4]]), numpy.array(2), [[-4.6]], (3,)])
+def test_linspace_arrays(start, stop):
+    func = lambda xp: xp.linspace(start, stop, 10)
+    assert func(numpy).shape == func(dpnp).shape
+
+
+def test_linspace_complex():
+    func = lambda xp: xp.linspace(0, 3 + 2j, num=1000)
+    assert_allclose(func(numpy), func(dpnp))
+
+
+@pytest.mark.parametrize("arrays",
+                         [[], [[1]], [[1, 2, 3], [4, 5, 6]], [[1, 2], [3, 4], [5, 6]]],
+                         ids=['[]', '[[1]]', '[[1, 2, 3], [4, 5, 6]]', '[[1, 2], [3, 4], [5, 6]]'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize("indexing",
+                         ["ij", "xy"],
+                         ids=["ij", "xy"])
+def test_meshgrid(arrays, dtype, indexing):
+    func = lambda xp, xi: xp.meshgrid(*xi, indexing=indexing)
+    a = tuple(numpy.array(array, dtype=dtype) for array in arrays)
+    ia = tuple(dpnp.array(array, dtype=dtype) for array in arrays)
+    assert_array_equal(func(numpy, a), func(dpnp, ia))

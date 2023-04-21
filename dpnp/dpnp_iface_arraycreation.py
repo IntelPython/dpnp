@@ -42,6 +42,7 @@ it contains:
 
 import numpy
 import dpnp
+import operator
 
 import dpnp.config as config
 from dpnp.dpnp_algo import *
@@ -49,6 +50,7 @@ from dpnp.dpnp_utils import *
 
 import dpnp.dpnp_container as dpnp_container
 import dpctl.tensor as dpt
+import dpctl
 
 
 __all__ = [
@@ -878,7 +880,18 @@ def identity(n, dtype=None, *, like=None):
     return call_origin(numpy.identity, n, dtype=dtype, like=like)
 
 
-def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0):
+def linspace(start,
+             stop,
+             /,
+             num,
+             *,
+             dtype=None,
+             device=None,
+             usm_type=None,
+             sycl_queue=None,
+             endpoint=True,
+             retstep=False,
+             axis=0):
     """
     Return evenly spaced numbers over a specified interval.
 
@@ -887,6 +900,8 @@ def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis
     Limitations
     -----------
     Parameter ``axis`` is supported only with default value ``0``.
+    Parameter ``retstep`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -912,16 +927,19 @@ def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis
 
     """
 
-    if not use_origin_backend():
-        if axis != 0:
-            checker_throw_value_error("linspace", "axis", axis, 0)
-
-        res = dpnp_linspace(start, stop, num, endpoint, retstep, dtype, axis)
-
-        if retstep:
-            return res
-        else:
-            return res[0]
+    if retstep is not False:
+        pass
+    elif axis != 0:
+        pass
+    else:
+        return dpnp_linspace(start,
+                             stop,
+                             num,
+                             dtype=dtype,
+                             device=device,
+                             usm_type=usm_type,
+                             sycl_queue=sycl_queue,
+                             endpoint=endpoint)
 
     return call_origin(numpy.linspace, start, stop, num, endpoint, retstep, dtype, axis)
 
@@ -1009,8 +1027,10 @@ def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
 
     Limitations
     -----------
+    Each array instance from `xi` is supported as either :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
     Parameter ``copy`` is supported only with default value ``True``.
     Parameter ``sparse`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -1044,17 +1064,16 @@ def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
 
     """
 
-    if not use_origin_backend():
-        # original limitation
-        if indexing not in ["ij", "xy"]:
-            checker_throw_value_error("meshgrid", "indexing", indexing, "'ij' or 'xy'")
-
-        if copy is not True:
-            checker_throw_value_error("meshgrid", "copy", copy, True)
-        if sparse is not False:
-            checker_throw_value_error("meshgrid", "sparse", sparse, False)
-
-        return dpnp_meshgrid(xi, copy, sparse, indexing)
+    if not all((isinstance(x, (dpnp.ndarray, dpt.usm_ndarray)) for x in xi)):
+        pass
+    elif indexing not in ["ij", "xy"]:
+        pass
+    elif copy is not True:
+        pass
+    elif sparse is not False:
+        pass
+    else:
+        return dpnp_container.meshgrid(*xi, indexing=indexing)
 
     return call_origin(numpy.meshgrid, xi, copy, sparse, indexing)
 
@@ -1332,13 +1351,19 @@ def tri(N, M=None, k=0, dtype=dpnp.float, **kwargs):
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
 
-def tril(x1, k=0):
+def tril(x1, /, *, k=0):
     """
     Lower triangle of an array.
 
     Return a copy of an array with elements above the `k`-th diagonal zeroed.
 
     For full documentation refer to :obj:`numpy.tril`.
+
+    Limitations
+    -----------
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
+    Parameter `k` is supported only of integer data type.
+    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -1351,17 +1376,25 @@ def tril(x1, k=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not isinstance(k, int):
-            pass
-        else:
-            return dpnp_tril(x1_desc, k).get_pyobj()
+    _k = None
+    try:
+        _k = operator.index(k)
+    except TypeError:
+        pass
+
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
+        pass
+    elif x1.ndim < 2:
+        pass
+    elif _k is None:
+        pass
+    else:
+        return dpnp_container.tril(x1, k=_k)
 
     return call_origin(numpy.tril, x1, k)
 
 
-def triu(x1, k=0):
+def triu(x1, /, *, k=0):
     """
     Upper triangle of an array.
 
@@ -1369,6 +1402,12 @@ def triu(x1, k=0):
     zeroed.
 
     For full documentation refer to :obj:`numpy.triu`.
+
+    Limitations
+    -----------
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
+    Parameter `k` is supported only of integer data type.
+    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -1381,12 +1420,20 @@ def triu(x1, k=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not isinstance(k, int):
-            pass
-        else:
-            return dpnp_triu(x1_desc, k).get_pyobj()
+    _k = None
+    try:
+        _k = operator.index(k)
+    except TypeError:
+        pass
+
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
+        pass
+    elif x1.ndim < 2:
+        pass
+    elif _k is None:
+        pass
+    else:
+        return dpnp_container.triu(x1, k=_k)
 
     return call_origin(numpy.triu, x1, k)
 

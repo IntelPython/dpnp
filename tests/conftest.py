@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -77,3 +77,22 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture
 def allow_fall_back_on_numpy(monkeypatch):
     monkeypatch.setattr(dpnp.config, '__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__', 0)
+
+@pytest.fixture
+def suppress_divide_numpy_warnings():
+    # divide: treatment for division by zero (infinite result obtained from finite numbers)
+    old_settings = numpy.seterr(divide='ignore')
+    yield
+    numpy.seterr(**old_settings)  # reset to default
+
+@pytest.fixture
+def suppress_invalid_numpy_warnings():
+    # invalid: treatment for invalid floating-point operation
+    # (result is not an expressible number, typically indicates that a NaN was produced)
+    old_settings = numpy.seterr(invalid='ignore')
+    yield
+    numpy.seterr(**old_settings)  # reset to default
+
+@pytest.fixture
+def suppress_divide_invalid_numpy_warnings(suppress_divide_numpy_warnings, suppress_invalid_numpy_warnings):
+    yield

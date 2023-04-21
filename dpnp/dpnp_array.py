@@ -29,6 +29,23 @@ import numpy
 
 import dpnp
 
+
+def _get_unwrapped_index_key(key):
+    """
+    Return a key where each nested instance of DPNP array is unwrapped into USM ndarray
+    for futher processing in DPCTL advanced indexing functions.
+
+    """
+
+    if isinstance(key, tuple):
+        if any(isinstance(x, dpnp_array) for x in key):
+            # create a new tuple from the input key with unwrapped DPNP arrays
+            return tuple(x.get_array() if isinstance(x, dpnp_array) else x for x in key)
+    elif isinstance(key, dpnp_array):
+        return key.get_array()
+    return key
+
+
 class dpnp_array:
     """
     Multi-dimensional array object.
@@ -125,7 +142,9 @@ class dpnp_array:
     def __add__(self, other):
         return dpnp.add(self, other)
 
- # '__and__',
+    def __and__(self, other):
+        return dpnp.bitwise_and(self, other)
+
  # '__array__',
  # '__array_finalize__',
  # '__array_function__',
@@ -140,7 +159,7 @@ class dpnp_array:
         return self._array_obj.__bool__()
 
  # '__class__',
- 
+
     def __complex__(self):
         return self._array_obj.__complex__()
 
@@ -152,6 +171,12 @@ class dpnp_array:
  # '__dir__',
  # '__divmod__',
  # '__doc__',
+
+    def __dlpack__(self, stream=None):
+        return self._array_obj.__dlpack__(stream=stream)
+
+    def __dlpack_device__(self):
+        return self._array_obj.__dlpack_device__()
 
     def __eq__(self, other):
         return dpnp.equal(self, other)
@@ -168,6 +193,8 @@ class dpnp_array:
  # '__getattribute__',
 
     def __getitem__(self, key):
+        key = _get_unwrapped_index_key(key)
+
         item = self._array_obj.__getitem__(key)
         if not isinstance(item, dpt.usm_ndarray):
             raise RuntimeError(
@@ -183,14 +210,28 @@ class dpnp_array:
         return dpnp.greater(self, other)
 
  # '__hash__',
- # '__iadd__',
- # '__iand__',
+
+    def __iadd__(self, other):
+        dpnp.add(self, other, out=self)
+        return self
+
+    def __iand__(self, other):
+        dpnp.bitwise_and(self, other, out=self)
+        return self
+
  # '__ifloordiv__',
- # '__ilshift__',
+
+    def __ilshift__(self, other):
+        dpnp.left_shift(self, other, out=self)
+        return self
+
  # '__imatmul__',
  # '__imod__',
- # '__imul__',
- 
+
+    def __imul__(self, other):
+        dpnp.multiply(self, other, out=self)
+        return self
+
     def __index__(self):
         return self._array_obj.__index__()
 
@@ -200,14 +241,28 @@ class dpnp_array:
     def __int__(self):
         return self._array_obj.__int__()
 
- # '__invert__',
- # '__ior__',
- # '__ipow__',
- # '__irshift__',
+    def __invert__(self):
+        return dpnp.invert(self)
+
+    def __ior__(self, other):
+        dpnp.bitwise_or(self, other, out=self)
+        return self
+
+    def __ipow__(self, other):
+        dpnp.power(self, other, out=self)
+        return self
+
+    def __irshift__(self, other):
+        dpnp.right_shift(self, other, out=self)
+        return self
+
  # '__isub__',
  # '__iter__',
  # '__itruediv__',
- # '__ixor__',
+
+    def __ixor__(self, other):
+        dpnp.bitwise_xor(self, other, out=self)
+        return self
 
     def __le__(self, other):
         return dpnp.less_equal(self, other)
@@ -219,7 +274,8 @@ class dpnp_array:
 
         return self._array_obj.__len__()
 
- # '__lshift__',
+    def __lshift__(self, other):
+        return dpnp.left_shift(self, other)
 
     def __lt__(self, other):
         return dpnp.less(self, other)
@@ -240,7 +296,10 @@ class dpnp_array:
         return dpnp.negative(self)
 
  # '__new__',
- # '__or__',
+
+    def __or__(self, other):
+        return dpnp.bitwise_or(self, other)
+
  # '__pos__',
 
     def __pow__(self, other):
@@ -249,7 +308,9 @@ class dpnp_array:
     def __radd__(self, other):
         return dpnp.add(other, self)
 
- # '__rand__',
+    def __rand__(self, other):
+        return dpnp.bitwise_and(other, self)
+
  # '__rdivmod__',
  # '__reduce__',
  # '__reduce_ex__',
@@ -258,7 +319,9 @@ class dpnp_array:
         return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
 
  # '__rfloordiv__',
- # '__rlshift__',
+
+    def __rlshift__(self, other):
+        return dpnp.left_shift(other, self)
 
     def __rmatmul__(self, other):
         return dpnp.matmul(other, self)
@@ -269,19 +332,35 @@ class dpnp_array:
     def __rmul__(self, other):
         return dpnp.multiply(other, self)
 
- # '__ror__',
- # '__rpow__',
- # '__rrshift__',
- # '__rshift__',
- # '__rsub__',
+    def __ror__(self, other):
+        return dpnp.bitwise_or(other, self)
+
+    def __rpow__(self, other):
+        return dpnp.power(other, self)
+
+    def __rrshift__(self, other):
+        return dpnp.right_shift(other, self)
+
+    def __rshift__(self, other):
+        return dpnp.right_shift(self, other)
+
+    def __rsub__(self, other):
+        return dpnp.subtract(other, self)
 
     def __rtruediv__(self, other):
         return dpnp.true_divide(other, self)
 
- # '__rxor__',
+    def __rxor__(self, other):
+        return dpnp.bitwise_xor(other, self)
+
  # '__setattr__',
 
     def __setitem__(self, key, val):
+        key = _get_unwrapped_index_key(key)
+
+        if isinstance(val, dpnp_array):
+            val = val.get_array()
+
         self._array_obj.__setitem__(key, val)
 
  # '__setstate__',
@@ -311,35 +390,56 @@ class dpnp_array:
     def __truediv__(self, other):
         return dpnp.true_divide(self, other)
 
- # '__xor__',
+    def __xor__(self, other):
+        return dpnp.bitwise_xor(self, other)
 
-    def all(self, axis=None, out=None, keepdims=False):
+    @staticmethod
+    def _create_from_usm_ndarray(usm_ary : dpt.usm_ndarray):
+        if not isinstance(usm_ary, dpt.usm_ndarray):
+            raise TypeError(
+                f"Expected dpctl.tensor.usm_ndarray, got {type(usm_ary)}"
+                )
+        res = dpnp_array.__new__(dpnp_array)
+        res._array_obj = usm_ary
+        return res
+
+    def all(self,
+            axis=None,
+            out=None,
+            keepdims=False,
+            *,
+            where=True):
         """
         Returns True if all elements evaluate to True.
 
-        Refer to `numpy.all` for full documentation.
+        Refer to :obj:`dpnp.all` for full documentation.
 
         See Also
         --------
-        :obj:`numpy.all` : equivalent function
+        :obj:`dpnp.all` : equivalent function
 
         """
 
-        return dpnp.all(self, axis, out, keepdims)
+        return dpnp.all(self, axis=axis, out=out, keepdims=keepdims, where=where)
 
-    def any(self, axis=None, out=None, keepdims=False):
+    def any(self,
+            axis=None,
+            out=None,
+            keepdims=False,
+            *,
+            where=True):
         """
         Returns True if any of the elements of `a` evaluate to True.
 
-        Refer to `numpy.any` for full documentation.
+        Refer to :obj:`dpnp.any` for full documentation.
 
         See Also
         --------
-        :obj:`numpy.any` : equivalent function
+        :obj:`dpnp.any` : equivalent function
 
         """
 
-        return dpnp.any(self, axis, out, keepdims)
+        return dpnp.any(self, axis=axis, out=out, keepdims=keepdims, where=where)
 
     def argmax(self, axis=None, out=None):
         """
@@ -501,7 +601,7 @@ class dpnp_array:
 
         """
 
-        if not numpy.issubsctype(self.dtype, numpy.complex_):
+        if not dpnp.issubsctype(self.dtype, dpnp.complex_):
             return self
         else:
             return dpnp.conjugate(self)
@@ -514,7 +614,7 @@ class dpnp_array:
 
         """
 
-        if not numpy.issubsctype(self.dtype, numpy.complex_):
+        if not dpnp.issubsctype(self.dtype, dpnp.complex_):
             return self
         else:
             return dpnp.conjugate(self)
@@ -549,7 +649,8 @@ class dpnp_array:
 
         return dpnp.diagonal(input, offset, axis1, axis2)
 
- # 'dot',
+    def dot(self, other, out=None):
+        return dpnp.dot(self, other, out)
 
     @property
     def dtype(self):
@@ -681,6 +782,8 @@ class dpnp_array:
     @property
     def itemsize(self):
         """
+        Size of one array element in bytes.
+
         """
 
         return self._array_obj.itemsize
@@ -706,17 +809,29 @@ class dpnp_array:
 
         return dpnp.min(self, axis, out, keepdims, initial, where)
 
- # 'nbytes',
+    @property
+    def nbytes(self):
+        """
+        Total bytes consumed by the elements of the array.
+
+        """
+
+        return self._array_obj.nbytes
 
     @property
     def ndim(self):
         """
+        Number of array dimensions.
+
         """
 
         return self._array_obj.ndim
 
  # 'newbyteorder',
- # 'nonzero',
+
+    def nonzero(self):
+        return dpnp.nonzero(self)
+
  # 'partition',
 
     def prod(self, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):

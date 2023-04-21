@@ -234,14 +234,12 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NEGATIVE,                     /**< Used in numpy.negative() impl  */
     DPNP_FN_NEGATIVE_EXT,                 /**< Used in numpy.negative() impl, requires extra parameters */
     DPNP_FN_NONZERO,                      /**< Used in numpy.nonzero() impl  */
-    DPNP_FN_NONZERO_EXT,                  /**< Used in numpy.nonzero() impl, requires extra parameters */
     DPNP_FN_NOT_EQUAL_EXT,                /**< Used in numpy.not_equal() impl, requires extra parameters */
     DPNP_FN_ONES,                         /**< Used in numpy.ones() impl */
     DPNP_FN_ONES_LIKE,                    /**< Used in numpy.ones_like() impl */
     DPNP_FN_PARTITION,                    /**< Used in numpy.partition() impl */
     DPNP_FN_PARTITION_EXT,                /**< Used in numpy.partition() impl, requires extra parameters */
     DPNP_FN_PLACE,                        /**< Used in numpy.place() impl  */
-    DPNP_FN_PLACE_EXT,                    /**< Used in numpy.place() impl, requires extra parameters */
     DPNP_FN_POWER,                        /**< Used in numpy.power() impl  */
     DPNP_FN_POWER_EXT,                    /**< Used in numpy.power() impl, requires extra parameters */
     DPNP_FN_PROD,                         /**< Used in numpy.prod() impl  */
@@ -370,15 +368,14 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TRI,                          /**< Used in numpy.tri() impl  */
     DPNP_FN_TRI_EXT,                      /**< Used in numpy.tri() impl, requires extra parameters */
     DPNP_FN_TRIL,                         /**< Used in numpy.tril() impl  */
-    DPNP_FN_TRIL_EXT,                     /**< Used in numpy.tril() impl, requires extra parameters */
     DPNP_FN_TRIU,                         /**< Used in numpy.triu() impl  */
-    DPNP_FN_TRIU_EXT,                     /**< Used in numpy.triu() impl, requires extra parameters */
     DPNP_FN_TRUNC,                        /**< Used in numpy.trunc() impl  */
     DPNP_FN_TRUNC_EXT,                    /**< Used in numpy.trunc() impl, requires extra parameters */
     DPNP_FN_VANDER,                       /**< Used in numpy.vander() impl  */
     DPNP_FN_VANDER_EXT,                   /**< Used in numpy.vander() impl, requires extra parameters */
     DPNP_FN_VAR,                          /**< Used in numpy.var() impl  */
     DPNP_FN_VAR_EXT,                      /**< Used in numpy.var() impl, requires extra parameters */
+    DPNP_FN_WHERE_EXT,                    /**< Used in numpy.where() impl, requires extra parameters */
     DPNP_FN_ZEROS,                        /**< Used in numpy.zeros() impl */
     DPNP_FN_ZEROS_LIKE,                   /**< Used in numpy.zeros_like() impl */
     DPNP_FN_LAST,                         /**< The latest element of the enumeration */
@@ -419,8 +416,26 @@ size_t operator-(DPNPFuncType lhs, DPNPFuncType rhs);
  */
 typedef struct DPNPFuncData
 {
-    DPNPFuncType return_type; /**< return type identifier which expected by the @ref ptr function */
-    void* ptr;                /**< C++ backend function pointer */
+    DPNPFuncData(const DPNPFuncType gen_type, void* gen_ptr, const DPNPFuncType type_no_fp64, void* ptr_no_fp64)
+        : return_type(gen_type)
+        , ptr(gen_ptr)
+        , return_type_no_fp64(type_no_fp64)
+        , ptr_no_fp64(ptr_no_fp64)
+    {
+    }
+    DPNPFuncData(const DPNPFuncType gen_type, void* gen_ptr)
+        : DPNPFuncData(gen_type, gen_ptr, DPNPFuncType::DPNP_FT_NONE, nullptr)
+    {
+    }
+    DPNPFuncData()
+        : DPNPFuncData(DPNPFuncType::DPNP_FT_NONE, nullptr)
+    {
+    }
+
+    DPNPFuncType return_type;         /**< return type identifier which expected by the @ref ptr function */
+    void* ptr;                        /**< C++ backend function pointer */
+    DPNPFuncType return_type_no_fp64; /**< alternative return type identifier when no fp64 support by device */
+    void* ptr_no_fp64;                /**< alternative C++ backend function pointer when no fp64 support by device */
 } DPNPFuncData_t;
 
 /**

@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -111,7 +111,7 @@ def cond(input, p=None):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter p=[None, 1, -1, 2, -2, numpy.inf, -numpy.inf, 'fro'] is supported.
+    Parameter p=[None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, 'fro'] is supported.
 
     See Also
     --------
@@ -119,7 +119,7 @@ def cond(input, p=None):
     """
 
     if (not use_origin_backend(input)):
-        if p in [None, 1, -1, 2, -2, numpy.inf, -numpy.inf, 'fro']:
+        if p in [None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, 'fro']:
             result_obj = dpnp_cond(input, p)
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 

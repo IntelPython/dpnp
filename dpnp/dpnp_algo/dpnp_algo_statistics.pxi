@@ -1,7 +1,8 @@
 # cython: language_level=3
+# cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -129,7 +130,7 @@ cpdef dpnp_average(utils.dpnp_descriptor x1):
     array_sum = dpnp_sum(x1).get_pyobj()
 
     """ Numpy interface inconsistency """
-    return_type = numpy.float32 if (x1.dtype == numpy.float32) else numpy.float64
+    return_type = dpnp.float32 if (x1.dtype == dpnp.float32) else dpnp.float64
 
     return (return_type(array_sum / x1.size))
 

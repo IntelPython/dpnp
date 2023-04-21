@@ -1,4 +1,5 @@
 # cython: language_level=3
+# cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -48,6 +49,8 @@ cimport dpnp.dpnp_utils as utils
 cimport numpy
 import numpy
 
+import operator
+
 
 __all__ = [
     "dpnp_astype",
@@ -58,19 +61,19 @@ __all__ = [
 ]
 
 
-include "dpnp_algo_arraycreation.pyx"
-include "dpnp_algo_bitwise.pyx"
-include "dpnp_algo_counting.pyx"
-include "dpnp_algo_indexing.pyx"
-include "dpnp_algo_linearalgebra.pyx"
-include "dpnp_algo_logic.pyx"
-include "dpnp_algo_manipulation.pyx"
-include "dpnp_algo_mathematical.pyx"
-include "dpnp_algo_searching.pyx"
-include "dpnp_algo_sorting.pyx"
-include "dpnp_algo_special.pyx"
-include "dpnp_algo_statistics.pyx"
-include "dpnp_algo_trigonometric.pyx"
+include "dpnp_algo_arraycreation.pxi"
+include "dpnp_algo_bitwise.pxi"
+include "dpnp_algo_counting.pxi"
+include "dpnp_algo_indexing.pxi"
+include "dpnp_algo_linearalgebra.pxi"
+include "dpnp_algo_logic.pxi"
+include "dpnp_algo_manipulation.pxi"
+include "dpnp_algo_mathematical.pxi"
+include "dpnp_algo_searching.pxi"
+include "dpnp_algo_sorting.pxi"
+include "dpnp_algo_special.pxi"
+include "dpnp_algo_statistics.pxi"
+include "dpnp_algo_trigonometric.pxi"
 
 
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_astype_t)(c_dpctl.DPCTLSyclQueueRef,
@@ -231,11 +234,11 @@ cpdef dpnp_queue_is_cpu():
 Internal functions
 """
 cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
-    dt_c = numpy.dtype(dtype).char
-    kind = numpy.dtype(dtype).kind
+    dt_c = dpnp.dtype(dtype).char
+    kind = dpnp.dtype(dtype).kind
     if isinstance(kind, int):
         kind = chr(kind)
-    itemsize = numpy.dtype(dtype).itemsize
+    itemsize = dpnp.dtype(dtype).itemsize
 
     if dt_c == 'd':
         return DPNP_FT_DOUBLE
@@ -264,19 +267,19 @@ cdef dpnp_DPNPFuncType_to_dtype(size_t type):
     TODO needs to use DPNPFuncType here
     """
     if type == <size_t > DPNP_FT_DOUBLE:
-        return numpy.float64
+        return dpnp.float64
     elif type == <size_t > DPNP_FT_FLOAT:
-        return numpy.float32
+        return dpnp.float32
     elif type == <size_t > DPNP_FT_LONG:
-        return numpy.int64
+        return dpnp.int64
     elif type == <size_t > DPNP_FT_INT:
-        return numpy.int32
+        return dpnp.int32
     elif type == <size_t > DPNP_FT_CMPLX64:
-        return numpy.complex64
+        return dpnp.complex64
     elif type == <size_t > DPNP_FT_CMPLX128:
-        return numpy.complex128
+        return dpnp.complex128
     elif type == <size_t > DPNP_FT_BOOL:
-        return numpy.bool_
+        return dpnp.bool
     else:
         utils.checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
 
@@ -481,8 +484,6 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, x1_c_type, x2_c_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-
     # Create result array
     cdef shape_type_c x1_shape = x1_obj.shape
 
@@ -495,33 +496,51 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
 
     result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
 
-    if out is None:
-        """ Create result array with type given by FPTR data """
+    # get FPTR function and return type
+    cdef fptr_2in_1out_strides_t func = NULL
+    cdef DPNPFuncType return_type = DPNP_FT_NONE
+    if fptr_name != DPNP_FN_DIVIDE_EXT or result_sycl_device.has_aspect_fp64:
+        return_type = kernel_data.return_type
+        func = < fptr_2in_1out_strides_t > kernel_data.ptr
+    else:
+        return_type = kernel_data.return_type_no_fp64
+        func = < fptr_2in_1out_strides_t > kernel_data.ptr_no_fp64
+
+    # check 'out' parameter data
+    if out is not None:
+        if out.shape != result_shape:
+            utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
+
+        utils.get_common_usm_allocation(x1_obj, out)  # check USM allocation is common
+
+    if out is None or out.is_array_overlapped(x1_obj) or out.is_array_overlapped(x2_obj) or not out.match_ctype(return_type):
+        """
+        Create result array with type given by FPTR data.
+        If 'out' array has another dtype than expected or overlaps a memory from any input array,
+        we have to create a temporary array and to copy data from the temporary into 'out' array,
+        once the computation is completed.
+        Otherwise simultaneously access to the same memory may cause a race condition issue
+        which will result into undefined behaviour.
+        """
+        is_result_memory_allocated = True
         result = utils.create_output_descriptor(result_shape,
-                                                kernel_data.return_type,
+                                                return_type,
                                                 None,
                                                 device=result_sycl_device,
                                                 usm_type=result_usm_type,
                                                 sycl_queue=result_sycl_queue)
     else:
-        if out.dtype != result_type:
-            utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
-        if out.shape != result_shape:
-            utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
-
+        is_result_memory_allocated = False
         result = out
-
-        utils.get_common_usm_allocation(x1_obj, result)  # check USM allocation is common
 
     cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result_shape)
 
     result_obj = result.get_array()
 
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_obj.sycl_queue
+    cdef c_dpctl.SyclQueue q = < c_dpctl.SyclQueue > result_obj.sycl_queue
     cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
     """ Call FPTR function """
-    cdef fptr_2in_1out_strides_t func = <fptr_2in_1out_strides_t > kernel_data.ptr
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
                                                     result.get_data(),
                                                     result.size,
@@ -544,4 +563,7 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
-    return result
+    if out is not None and is_result_memory_allocated:
+        return out.get_result_desc(result)
+
+    return result.get_result_desc()

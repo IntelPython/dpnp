@@ -1,7 +1,8 @@
 # cython: language_level=3
+# cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -630,6 +631,9 @@ cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor x1,
                                                                        device=x1_obj.sycl_device,
                                                                        usm_type=x1_obj.usm_type,
                                                                        sycl_queue=x1_obj.sycl_queue)
+
+    if x1.size == 0 and axis is None:
+        return result
 
     result_sycl_queue = result.get_array().sycl_queue
 

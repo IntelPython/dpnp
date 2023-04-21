@@ -1,4 +1,5 @@
 # cython: language_level=3
+# cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -35,6 +36,8 @@ import numpy
 
 import dpctl
 import dpctl.utils as dpu
+import dpctl.tensor._copy_utils as dpt_cu
+import dpctl.tensor._tensor_impl as dpt_ti
 
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
@@ -257,7 +260,7 @@ def get_usm_allocations(objects):
 
     if not isinstance(objects, (list, tuple)):
         raise TypeError("Expected a list or a tuple, got {}".format(type(objects)))
-    
+
     if len(objects) == 0:
         return (None, None)
     return (_get_coerced_usm_type(objects), _get_common_allocation_queue(objects))
@@ -268,18 +271,18 @@ def map_dtype_to_device(dtype, device):
     Map an input ``dtype`` with type ``device`` may use
     """
 
-    dtype = numpy.dtype(dtype)
+    dtype = dpnp.dtype(dtype)
     if not hasattr(dtype, 'char'):
         raise TypeError(f"Invalid type of input dtype={dtype}")
     elif not isinstance(device, dpctl.SyclDevice):
         raise TypeError(f"Invalid type of input device={device}")
 
     dtc = dtype.char
-    if dtc == "?" or numpy.issubdtype(dtype, numpy.integer):
+    if dtc == "?" or dpnp.issubdtype(dtype, dpnp.integer):
         # bool or integer type
         return dtype
 
-    if numpy.issubdtype(dtype, numpy.floating):
+    if dpnp.issubdtype(dtype, dpnp.floating):
         if dtc == "f":
             # float32 type
             return dtype
@@ -294,7 +297,7 @@ def map_dtype_to_device(dtype, device):
         # float32 is default floating type
         return dpnp.dtype("f4")
 
-    if numpy.issubdtype(dtype, numpy.complexfloating):
+    if dpnp.issubdtype(dtype, dpnp.complexfloating):
         if dtc == "F":
             # complex64 type
             return dtype
@@ -418,14 +421,14 @@ cdef tuple get_shape_dtype(object input_obj):
 
             # shape and dtype does not match with siblings.
             if ((return_shape != elem_shape) or (return_dtype != elem_dtype)):
-                return (elem_shape, numpy.dtype(numpy.object_))
+                return (elem_shape, dpnp.dtype(numpy.object_))
 
         list_shape.push_back(len(input_obj))
         list_shape.insert(list_shape.end(), return_shape.begin(), return_shape.end())
         return (list_shape, return_dtype)
 
     # assume scalar or object
-    return (return_shape, numpy.dtype(type(input_obj)))
+    return (return_shape, dpnp.dtype(type(input_obj)))
 
 
 cpdef find_common_type(object x1_obj, object x2_obj):
@@ -651,9 +654,6 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
             "".format(array1_obj.usm_type, array2_obj.usm_type))
 
     common_sycl_queue = dpu.get_execution_queue((array1_obj.sycl_queue, array2_obj.sycl_queue))
-    # TODO: refactor, remove when CFD is implemented in all array constructors
-    if common_sycl_queue is None and array1_obj.sycl_context == array2_obj.sycl_context:
-        common_sycl_queue = array1_obj.sycl_queue
     if common_sycl_queue is None:
         raise ValueError(
             "could not recognize common SYCL queue for inputs in SYCL queues {} and {}"
@@ -663,9 +663,10 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
 
 
 cdef class dpnp_descriptor:
-    def __init__(self, obj):
+    def __init__(self, obj, dpnp_descriptor orig_desc=None):
         """ Initialze variables """
         self.origin_pyobj = None
+        self.origin_desc = None
         self.descriptor = None
         self.dpnp_descriptor_data_size = 0
         self.dpnp_descriptor_is_scalar = True
@@ -683,6 +684,10 @@ cdef class dpnp_descriptor:
                 return
 
         self.origin_pyobj = obj
+
+        """ Keep track of a descriptor with original data """
+        if orig_desc is not None and orig_desc.is_valid:
+            self.origin_desc = orig_desc
 
         """ array size calculation """
         cdef Py_ssize_t shape_it = 0
@@ -744,6 +749,14 @@ cdef class dpnp_descriptor:
         return self.dpnp_descriptor_is_scalar
 
     @property
+    def is_temporary(self):
+        """
+        Non-none descriptor of original data means the current descriptor
+        holds a temporary allocated data.
+        """
+        return self.origin_desc is not None
+
+    @property
     def data(self):
         if self.is_valid:
             data_tuple = self.descriptor["data"]
@@ -774,6 +787,15 @@ cdef class dpnp_descriptor:
 
         return interface_dict
 
+    def _copy_array_from(self, other_desc):
+        """
+        Fill array data with usm_ndarray of the same shape from other DPNP descriptor
+        """
+        if not isinstance(other_desc, dpnp_descriptor):
+            raise TypeError("expected dpnp_descriptor, got {}".format(type(other_desc)))
+
+        dpt_cu._copy_same_shape(self.get_array(), other_desc.get_array())
+
     def get_pyobj(self):
         return self.origin_pyobj
 
@@ -786,6 +808,29 @@ cdef class dpnp_descriptor:
         raise TypeError(
             "expected either dpctl.tensor.usm_ndarray or dpnp.dpnp_array.dpnp_array, got {}"
             "".format(type(self.origin_pyobj)))
+
+    def get_result_desc(self, result_desc=None):
+        """
+        Copy the result data into an original array
+        """
+        if self.is_temporary:
+            # Original descriptor is not None, so copy the array data into it and return
+            from_desc = self if result_desc is None else result_desc
+            self.origin_desc._copy_array_from(from_desc)
+            return self.origin_desc
+        elif result_desc is not None:
+            # A temporary result descriptor was allocated, needs to copy data back into 'out' descriptor
+            self._copy_array_from(result_desc)
+        return self
+
+    def is_array_overlapped(self, other_desc):
+        """
+        Check if usm_ndarray overlaps an array from other DPNP descriptor
+        """
+        if not isinstance(other_desc, dpnp_descriptor):
+            raise TypeError("expected dpnp_descriptor, got {}".format(type(other_desc)))
+
+        return dpt_ti._array_overlap(self.get_array(), other_desc.get_array())
 
     cdef void * get_data(self):
         cdef Py_ssize_t item_size = 0
@@ -800,6 +845,9 @@ cdef class dpnp_descriptor:
             return < void * > data_ptr
 
         return < void * > val
+
+    cdef cpp_bool match_ctype(self, DPNPFuncType ctype):
+        return self.dtype == dpnp_DPNPFuncType_to_dtype(< size_t > ctype)
 
     def __bool__(self):
         return self.is_valid

@@ -1,6 +1,15 @@
 import pytest
+from .helper import (
+    get_all_dtypes,
+    get_float_dtypes
+)
 
 import numpy
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal
+)
+
 import dpnp
 
 # full list of umaths
@@ -71,7 +80,7 @@ def test_umaths(test_cases):
     # DPNP
     result = getattr(dpnp, umath)(*iargs)
 
-    numpy.testing.assert_allclose(result, expected, rtol=1e-6)
+    assert_allclose(result, expected, rtol=1e-6)
 
 
 class TestSin:
@@ -89,7 +98,7 @@ class TestSin:
         np_array = numpy.array(array_data, dtype=numpy.float64)
         expected = numpy.sin(np_array, out=out)
 
-        numpy.testing.assert_array_equal(expected, result)
+        assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
                              [numpy.float32, numpy.int64, numpy.int32],
@@ -129,7 +138,7 @@ class TestCos:
         np_array = numpy.array(array_data, dtype=numpy.float64)
         expected = numpy.cos(np_array, out=out)
 
-        numpy.testing.assert_array_equal(expected, result)
+        assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
                              [numpy.float32, numpy.int64, numpy.int32],
@@ -169,7 +178,7 @@ class TestsLog:
         np_array = numpy.array(array_data, dtype=numpy.float64)
         expected = numpy.log(np_array, out=out)
 
-        numpy.testing.assert_array_equal(expected, result)
+        assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
                              [numpy.float32, numpy.int64, numpy.int32],
@@ -209,7 +218,7 @@ class TestExp:
         np_array = numpy.array(array_data, dtype=numpy.float64)
         expected = numpy.exp(np_array, out=out)
 
-        numpy.testing.assert_array_equal(expected, result)
+        assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
                              [numpy.float32, numpy.int64, numpy.int32],
@@ -249,7 +258,7 @@ class TestArcsin:
         np_array = numpy.array(array_data, dtype=numpy.float64)
         expected = numpy.arcsin(np_array, out=out)
 
-        numpy.testing.assert_array_equal(expected, result)
+        assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
                              [numpy.float32, numpy.int64, numpy.int32],
@@ -289,7 +298,7 @@ class TestArctan:
         np_array = numpy.array(array_data, dtype=numpy.float64)
         expected = numpy.arctan(np_array, out=out)
 
-        numpy.testing.assert_array_equal(expected, result)
+        assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
                              [numpy.float32, numpy.int64, numpy.int32],
@@ -329,7 +338,7 @@ class TestTan:
         np_array = numpy.array(array_data, dtype=numpy.float64)
         expected = numpy.tan(np_array, out=out)
 
-        numpy.testing.assert_array_equal(expected, result)
+        assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
                              [numpy.float32, numpy.int64, numpy.int32],
@@ -355,7 +364,6 @@ class TestTan:
 
 
 class TestArctan2:
-
     def test_arctan2(self):
         array_data = numpy.arange(10)
         out = numpy.empty(10, dtype=numpy.float64)
@@ -369,18 +377,21 @@ class TestArctan2:
         np_array = numpy.array(array_data, dtype=numpy.float64)
         expected = numpy.arctan2(np_array, np_array, out=out)
 
-        numpy.testing.assert_array_equal(expected, result)
+        assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
-                             [numpy.float32, numpy.int64, numpy.int32],
-                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
-    def test_invalid_dtype(self, dtype):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    def test_out_dtypes(self, dtype):
+        size = 2 if dtype == dpnp.bool else 10
 
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_array = numpy.arange(size, dtype=dtype)
+        np_out = numpy.empty(size, dtype=numpy.complex64)
+        expected = numpy.arctan2(np_array, np_array, out=np_out)
 
-        with pytest.raises(ValueError):
-            dpnp.arctan2(dp_array, dp_array, out=dp_out)
+        dp_array = dpnp.arange(size, dtype=dtype)
+        dp_out = dpnp.empty(size, dtype=dpnp.complex64)
+        result = dpnp.arctan2(dp_array, dp_array, out=dp_out)
+
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize("shape",
                              [(0,), (15, ), (2, 2)],
@@ -392,3 +403,53 @@ class TestArctan2:
 
         with pytest.raises(ValueError):
             dpnp.arctan2(dp_array, dp_array, out=dp_out)
+
+
+class TestSqrt:
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_sqrt_ordinary(self, dtype):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=dtype)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
+        result = dpnp.sqrt(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=dtype)
+        expected = numpy.sqrt(np_array, out=out)
+
+        numpy.testing.assert_allclose(expected, result)
+        numpy.testing.assert_allclose(out, dp_out)
+
+    @pytest.mark.parametrize("dtype",
+                             [numpy.int64, numpy.int32],
+                             ids=['numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float32)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.sqrt(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float32)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float32)
+
+        with pytest.raises(ValueError):
+            dpnp.sqrt(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("out",
+                             [4, (), [], (3, 7), [2, 4]],
+                             ids=['4', '()', '[]', '(3, 7)', '[2, 4]'])
+    def test_invalid_out(self, out):
+        a = dpnp.arange(10)
+
+        numpy.testing.assert_raises(TypeError, dpnp.sqrt, a, out)
+        numpy.testing.assert_raises(TypeError, numpy.sqrt, a.asnumpy(), out)

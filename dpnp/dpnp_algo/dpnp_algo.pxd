@@ -211,14 +211,12 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_NEGATIVE
         DPNP_FN_NEGATIVE_EXT
         DPNP_FN_NONZERO
-        DPNP_FN_NONZERO_EXT
         DPNP_FN_NOT_EQUAL_EXT
         DPNP_FN_ONES
         DPNP_FN_ONES_LIKE
         DPNP_FN_PARTITION
         DPNP_FN_PARTITION_EXT
         DPNP_FN_PLACE
-        DPNP_FN_PLACE_EXT
         DPNP_FN_POWER
         DPNP_FN_POWER_EXT
         DPNP_FN_PROD
@@ -356,6 +354,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_VANDER_EXT
         DPNP_FN_VAR
         DPNP_FN_VAR_EXT
+        DPNP_FN_WHERE_EXT
         DPNP_FN_ZEROS
         DPNP_FN_ZEROS_LIKE
 
@@ -374,6 +373,8 @@ cdef extern from "dpnp_iface_fptr.hpp":
     struct DPNPFuncData:
         DPNPFuncType return_type
         void * ptr
+        DPNPFuncType return_type_no_fp64
+        void *ptr_no_fp64
 
     DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
 
@@ -389,7 +390,7 @@ cdef extern from "constants.hpp":
 
 cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
-    size_t dpnp_queue_is_cpu_c()
+    size_t dpnp_queue_is_cpu_c() except +
 
     char * dpnp_memory_alloc_c(size_t size_in_bytes) except +
     void dpnp_memory_free_c(void * ptr)
@@ -576,6 +577,7 @@ Searching functions
 """
 cpdef dpnp_descriptor dpnp_argmax(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_argmin(dpnp_descriptor array1)
+cpdef dpnp_descriptor dpnp_where(dpnp_descriptor cond_obj, dpnp_descriptor x_obj, dpnp_descriptor y_obj)
 
 """
 Trigonometric functions
@@ -601,7 +603,7 @@ cpdef dpnp_descriptor dpnp_radians(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_recip(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_sin(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_sinh(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_sqrt(dpnp_descriptor array1)
+cpdef dpnp_descriptor dpnp_sqrt(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_square(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_tan(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_tanh(dpnp_descriptor array1)
