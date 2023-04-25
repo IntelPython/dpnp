@@ -559,6 +559,37 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
     return;
 }
 
+template <typename T>
+constexpr auto dispatch_erf_op(T elem)
+{
+    if constexpr (is_any_v<T, std::int32_t, std::int64_t>)
+    {
+        // TODO: need to convert to double when possible?
+        return sycl::erf((float)elem);
+    }
+    else
+    {
+        return sycl::erf(elem);
+    }
+}
+
+template <typename T>
+constexpr auto dispatch_sign_op(T elem)
+{
+    if constexpr (is_any_v<T, std::int32_t, std::int64_t>)
+    {
+        if (elem > 0)
+            return T(1);
+        if (elem < 0)
+            return T(-1);
+        return elem; // elem is 0
+    }
+    else
+    {
+        return sycl::sign(elem);
+    }
+}
+
 #define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                                  \
     template <typename _KernelNameSpecialization>                                                                      \
     class __name__##_kernel;                                                                                           \
@@ -594,6 +625,7 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
         }                                                                                                              \
                                                                                                                        \
         sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));                                                      \
+        const bool has_fp64_aspect = q.get_device().has(sycl::aspect::fp64);                                           \
                                                                                                                        \
         _DataType* input1_data = static_cast<_DataType*>(const_cast<void*>(input1_in));                                \
         _DataType* result = static_cast<_DataType*>(result_out);                                                       \
@@ -674,7 +706,7 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
                                                                                                                        \
             if constexpr (is_any_v<_DataType, float, double>)                                                          \
             {                                                                                                          \
-                if (q.get_device().has(sycl::aspect::fp64))                                                            \
+                if (has_fp64_aspect)                                                                                   \
                 {                                                                                                      \
                     event = __operation2__;                                                                            \
                                                                                                                        \
