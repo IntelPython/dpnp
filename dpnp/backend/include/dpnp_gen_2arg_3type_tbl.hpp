@@ -138,9 +138,9 @@ MACRO_2ARG_3TYPES_OP(dpnp_divide_c,
                      MACRO_UNPACK_TYPES(float, double, std::complex<float>, std::complex<double>))
 
 MACRO_2ARG_3TYPES_OP(dpnp_fmod_c,
-                     sycl::fmod((double)input1_elem, (double)input2_elem),
-                     nullptr,
-                     std::false_type,
+                     dispatch_fmod_op(input1_elem, input2_elem),
+                     x1 % x2,
+                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
                      oneapi::mkl::vm::fmod,
                      MACRO_UNPACK_TYPES(float, double))
 

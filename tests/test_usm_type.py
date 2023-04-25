@@ -201,6 +201,9 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("dot",
                      [[0., 1., 2.], [3., 4., 5.]],
                      [[4., 4.], [4., 4.], [4., 4.]]),
+        pytest.param("fmod",
+                     [-3., -2., -1., 1., 2., 3.],
+                     [2., 2., 2., 2., 2., 2.]),
     ],
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)

@@ -203,15 +203,15 @@ def test_strides_fmod(dtype, shape):
 @pytest.mark.parametrize("shape",
                          [(3, 3)],
                          ids=["(3, 3)"])
-def test_strides_true_devide(dtype, shape):
+def test_strides_true_divide(dtype, shape):
     a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
     b = a.T + 1
 
     dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
     dpb = dpa.T + 1
 
-    result = dpnp.fmod(dpa, dpb)
-    expected = numpy.fmod(a, b)
+    result = dpnp.true_divide(dpa, dpb)
+    expected = numpy.true_divide(a, b)
 
     assert_allclose(result, expected)
 
