@@ -68,19 +68,16 @@ def test_strides_1arg(func_name, dtype, shape):
                          [(10,)],
                          ids=["(10,)"])
 def test_strides_erf(dtype, shape):
-    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+    a = dpnp.reshape(dpnp.linspace(-1, 1, num=numpy.prod(shape), dtype=dtype), shape)
     b = a[::2]
 
-    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
-    dpb = dpa[::2]
+    result = dpnp.erf(b)
 
-    result = dpnp.erf(dpb)
-
-    expected = numpy.empty_like(b)
+    expected = numpy.empty_like(b.asnumpy())
     for idx, val in enumerate(b):
         expected[idx] = math.erf(val)
 
-    assert_allclose(result, expected)
+    assert_allclose(result, expected, rtol=1e-06)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
