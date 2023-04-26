@@ -560,11 +560,11 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
 }
 
 template <typename T>
-constexpr auto dispatch_erf_op(T elem)
+constexpr T dispatch_erf_op(T elem)
 {
     if constexpr (is_any_v<T, std::int32_t, std::int64_t>)
     {
-        // TODO: need to convert to double when possible?
+        // TODO: need to convert to double when possible
         return sycl::erf((float)elem);
     }
     else
@@ -574,7 +574,7 @@ constexpr auto dispatch_erf_op(T elem)
 }
 
 template <typename T>
-constexpr auto dispatch_sign_op(T elem)
+constexpr T dispatch_sign_op(T elem)
 {
     if constexpr (is_any_v<T, std::int32_t, std::int64_t>)
     {
@@ -625,7 +625,6 @@ constexpr auto dispatch_sign_op(T elem)
         }                                                                                                              \
                                                                                                                        \
         sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));                                                      \
-        const bool has_fp64_aspect = q.get_device().has(sycl::aspect::fp64);                                           \
                                                                                                                        \
         _DataType* input1_data = static_cast<_DataType*>(const_cast<void*>(input1_in));                                \
         _DataType* result = static_cast<_DataType*>(result_out);                                                       \
@@ -706,7 +705,7 @@ constexpr auto dispatch_sign_op(T elem)
                                                                                                                        \
             if constexpr (is_any_v<_DataType, float, double>)                                                          \
             {                                                                                                          \
-                if (has_fp64_aspect)                                                                                   \
+                if (q.get_device().has(sycl::aspect::fp64))                                                            \
                 {                                                                                                      \
                     event = __operation2__;                                                                            \
                                                                                                                        \
