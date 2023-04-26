@@ -57,15 +57,15 @@ class TestNormal:
 
         # default dtype depends on fp64 support by the device
         dtype = get_default_floating() if dtype is None else dtype
-        desired = numpy.array([[0.428205496031286, -0.55383273779227 ],
-                               [2.027017795643378,  4.318888073163015],
-                               [2.69080893259102,  -1.047967253719708]], dtype=dtype)
+        expected = numpy.array([[0.428205496031286, -0.55383273779227 ],
+                                [2.027017795643378,  4.318888073163015],
+                                [2.69080893259102,  -1.047967253719708]], dtype=dtype)
 
         # TODO: discuss with opneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
         # precision = numpy.finfo(dtype=dtype).precision
         precision = 8 if dtype == dpnp.float64 else numpy.finfo(dtype=dtype).precision
-        assert_array_almost_equal(dpnp_data.asnumpy(), desired, decimal=precision)
+        assert_array_almost_equal(dpnp_data.asnumpy(), expected, decimal=precision)
 
         # check if compute follows data isn't broken
         assert_cfd(dpnp_data, sycl_queue, usm_type)
@@ -162,11 +162,11 @@ class TestNormal:
 
         # dpnp accepts only scalar as low and/or high, in other cases it will be a fallback to numpy
         actual = data.asnumpy()
-        desired = numpy.random.RandomState(seed).normal(loc=loc, scale=scale, size=size)
+        expected = numpy.random.RandomState(seed).normal(loc=loc, scale=scale, size=size)
 
         dtype = get_default_floating()
         precision = numpy.finfo(dtype=dtype).precision
-        assert_array_almost_equal(actual, desired, decimal=precision)
+        assert_array_almost_equal(actual, expected, decimal=precision)
 
         # check if compute follows data isn't broken
         assert_cfd(data, sycl_queue)
@@ -200,22 +200,22 @@ class TestRand:
         dtype = get_default_floating()
 
         data = RandomState(seed, sycl_queue=sycl_queue).rand(3, 2, usm_type=usm_type)
-        desired = numpy.array([[0.7592552667483687, 0.5937560645397753],
-                               [0.257010098779574 , 0.749422621447593 ],
-                               [0.6316644293256104, 0.7411410815548152]], dtype=dtype)
+        expected = numpy.array([[0.7592552667483687, 0.5937560645397753],
+                                [0.257010098779574 , 0.749422621447593 ],
+                                [0.6316644293256104, 0.7411410815548152]], dtype=dtype)
 
         precision = numpy.finfo(dtype=numpy.float64).precision
-        assert_array_almost_equal(data.asnumpy(), desired, decimal=precision)
+        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
         assert_cfd(data, sycl_queue, usm_type)
 
         # call with the same seed has to draw the same values
         data = RandomState(seed, sycl_queue=sycl_queue).rand(3, 2, usm_type=usm_type)
-        assert_array_almost_equal(data.asnumpy(), desired, decimal=precision)
+        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
         assert_cfd(data, sycl_queue, usm_type)
 
-        # call with omitted dimensions has to draw the first element from desired
+        # call with omitted dimensions has to draw the first element from expected
         data = RandomState(seed, sycl_queue=sycl_queue).rand(usm_type=usm_type)
-        assert_array_almost_equal(data.asnumpy(), desired[0, 0], decimal=precision)
+        assert_array_almost_equal(data.asnumpy(), expected[0, 0], decimal=precision)
         assert_cfd(data, sycl_queue, usm_type)
 
         # rand() is an alias on random_sample(), map arguments
@@ -276,10 +276,10 @@ class TestRandInt:
                                                                 size=(3, 2),
                                                                 dtype=dtype,
                                                                 usm_type=usm_type)
-        desired = numpy.array([[4, 1],
-                               [5, 3],
-                               [5, 7]], dtype=numpy.int32)
-        assert_array_equal(data.asnumpy(), desired)
+        expected = numpy.array([[4, 1],
+                                [5, 3],
+                                [5, 7]], dtype=numpy.int32)
+        assert_array_equal(data.asnumpy(), expected)
         assert_cfd(data, sycl_queue, usm_type)
 
         # call with the same seed has to draw the same values
@@ -288,15 +288,15 @@ class TestRandInt:
                                                                 size=(3, 2),
                                                                 dtype=dtype,
                                                                 usm_type=usm_type)
-        assert_array_equal(data.asnumpy(), desired)
+        assert_array_equal(data.asnumpy(), expected)
         assert_cfd(data, sycl_queue, usm_type)
 
-        # call with omitted dimensions has to draw the first element from desired
+        # call with omitted dimensions has to draw the first element from expected
         data = RandomState(seed, sycl_queue=sycl_queue).randint(low=low,
                                                                 high=high,
                                                                 dtype=dtype,
                                                                 usm_type=usm_type)
-        assert_array_equal(data.asnumpy(), desired[0, 0])
+        assert_array_equal(data.asnumpy(), expected[0, 0])
         assert_cfd(data, sycl_queue, usm_type)
 
         # rand() is an alias on random_sample(), map arguments
@@ -311,15 +311,15 @@ class TestRandInt:
 
     def test_float_bounds(self):
         actual = RandomState(365852).randint(low=0.6, high=6.789102534, size=(7,)).asnumpy()
-        desired = numpy.array([4, 4, 3, 3, 1, 0, 3], dtype=numpy.int32)
-        assert_array_equal(actual, desired)
+        expected = numpy.array([4, 4, 3, 3, 1, 0, 3], dtype=numpy.int32)
+        assert_array_equal(actual, expected)
 
 
     def test_negative_bounds(self):
         actual = RandomState(5143).randint(low=-15.74, high=-3, size=(2, 7)).asnumpy()
-        desired = numpy.array([[-9, -12, -4,  -12, -5, -13, -9],
-                               [-4, -6,  -13, -9,  -9,  -6, -15]], dtype=numpy.int32)
-        assert_array_equal(actual, desired)
+        expected = numpy.array([[-9, -12, -4,  -12, -5, -13, -9],
+                                [-4, -6,  -13, -9,  -9,  -6, -15]], dtype=numpy.int32)
+        assert_array_equal(actual, expected)
 
 
     def test_negative_interval(self):
@@ -417,8 +417,8 @@ class TestRandInt:
 
         # dpnp accepts only scalar as low and/or high, in other cases it will be a fallback to numpy
         actual = RandomState(seed).randint(low=low, high=high, size=size).asnumpy()
-        desired = numpy.random.RandomState(seed).randint(low=low, high=high, size=size)
-        assert_equal(actual, desired)
+        expected = numpy.random.RandomState(seed).randint(low=low, high=high, size=size)
+        assert_equal(actual, expected)
 
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -436,8 +436,8 @@ class TestRandInt:
 
         # dtype must be int or dpnp.int32, in other cases it will be a fallback to numpy
         actual = RandomState(seed).randint(low=low, high=high, size=size, dtype=dtype).asnumpy()
-        desired = numpy.random.RandomState(seed).randint(low=low, high=high, size=size, dtype=dtype)
-        assert_equal(actual, desired)
+        expected = numpy.random.RandomState(seed).randint(low=low, high=high, size=size, dtype=dtype)
+        assert_equal(actual, expected)
         assert_raises(TypeError, RandomState().randint, dtype=dtype)
 
 
@@ -459,7 +459,7 @@ class TestRandN:
         dtype = get_default_floating()
 
         data = RandomState(seed, sycl_queue=sycl_queue).randn(3, 2, usm_type=usm_type)
-        desired = numpy.array([[-0.862485623762009,  1.169492612490272],
+        expected = numpy.array([[-0.862485623762009,  1.169492612490272],
                                 [-0.405876118480338,  0.939006537666719],
                                 [-0.615075625641019,  0.555260469834381]], dtype=dtype)
 
@@ -467,15 +467,15 @@ class TestRandN:
         # generated samples since 9 digit while precision=15 for float64
         # precision = numpy.finfo(dtype=numpy.float64).precision
         precision = numpy.finfo(dtype=numpy.float32).precision
-        assert_array_almost_equal(data.asnumpy(), desired, decimal=precision)
+        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
 
         # call with the same seed has to draw the same values
         data = RandomState(seed, sycl_queue=sycl_queue).randn(3, 2, usm_type=usm_type)
-        assert_array_almost_equal(data.asnumpy(), desired, decimal=precision)
+        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
 
-        # call with omitted dimensions has to draw the first element from desired
+        # call with omitted dimensions has to draw the first element from expected
         actual = dpnp.asnumpy(RandomState(seed).randn(usm_type=usm_type))
-        assert_array_almost_equal(actual, desired[0, 0], decimal=precision)
+        assert_array_almost_equal(actual, expected[0, 0], decimal=precision)
 
         # randn() is an alias on standard_normal(), map arguments
         with mock.patch('dpnp.random.RandomState.standard_normal') as m:
@@ -610,24 +610,24 @@ class TestStandardNormal:
         dtype = get_default_floating()
 
         data = RandomState(seed, sycl_queue=sycl_queue).standard_normal(size=(4, 2), usm_type=usm_type)
-        desired = numpy.array([[0.112455902594571, -0.249919829443642],
-                               [0.702423540827815,  1.548132130318456],
-                               [0.947364919775284, -0.432257289195464],
-                               [0.736848611436872,  1.557284323302839]], dtype=dtype)
+        expected = numpy.array([[0.112455902594571, -0.249919829443642],
+                                [0.702423540827815,  1.548132130318456],
+                                [0.947364919775284, -0.432257289195464],
+                                [0.736848611436872,  1.557284323302839]], dtype=dtype)
 
         # TODO: discuss with opneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
         # precision = numpy.finfo(dtype=numpy.float64).precision
         precision = numpy.finfo(dtype=numpy.float32).precision
-        assert_array_almost_equal(data.asnumpy(), desired, decimal=precision)
+        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
 
         # call with the same seed has to draw the same values
         data = RandomState(seed, sycl_queue=sycl_queue).standard_normal(size=(4, 2), usm_type=usm_type)
-        assert_array_almost_equal(data.asnumpy(), desired, decimal=precision)
+        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
 
-        # call with omitted dimensions has to draw the first element from desired
+        # call with omitted dimensions has to draw the first element from expected
         actual = dpnp.asnumpy(RandomState(seed).standard_normal(usm_type=usm_type))
-        assert_array_almost_equal(actual, desired[0, 0], decimal=precision)
+        assert_array_almost_equal(actual, expected[0, 0], decimal=precision)
 
         # random_sample() is an alias on uniform(), map arguments
         with mock.patch('dpnp.random.RandomState.normal') as m:
@@ -670,17 +670,17 @@ class TestRandSample:
         dtype = get_default_floating()
 
         data = RandomState(seed, sycl_queue=sycl_queue).random_sample(size=(4, 2), usm_type=usm_type)
-        desired = numpy.array([[0.1887628440745175, 0.2763057765550911],
-                               [0.3973943444434553, 0.2975987731479108],
-                               [0.4144027342554182, 0.2636592474300414],
-                               [0.6129623607266694, 0.2596735346596688]], dtype=dtype)
+        expected = numpy.array([[0.1887628440745175, 0.2763057765550911],
+                                [0.3973943444434553, 0.2975987731479108],
+                                [0.4144027342554182, 0.2636592474300414],
+                                [0.6129623607266694, 0.2596735346596688]], dtype=dtype)
         
         precision = numpy.finfo(dtype=dtype).precision
-        assert_array_almost_equal(data.asnumpy(), desired, decimal=precision)
+        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
 
-        # call with omitted dimensions has to draw the first element from desired
+        # call with omitted dimensions has to draw the first element from expected
         data = RandomState(seed, sycl_queue=sycl_queue).random_sample(usm_type=usm_type)
-        assert_array_almost_equal(data.asnumpy(), desired[0, 0], decimal=precision)
+        assert_array_almost_equal(data.asnumpy(), expected[0, 0], decimal=precision)
 
         # random_sample() is an alias on uniform(), map arguments
         with mock.patch('dpnp.random.RandomState.uniform') as m:
@@ -747,15 +747,15 @@ class TestUniform:
         # default dtype depends on fp64 support by the device
         dtype = get_default_floating() if dtype is None else dtype
         if dtype != dpnp.int32:
-            desired = numpy.array([[4.023770128630567, 8.87456423597643 ],
-                                   [2.888630247435067, 4.823004481580574],
-                                   [2.030351535445079, 4.533497077834326]])
-            assert_array_almost_equal(actual, desired, decimal=numpy.finfo(dtype=dtype).precision)
+            expected = numpy.array([[4.023770128630567, 8.87456423597643 ],
+                                    [2.888630247435067, 4.823004481580574],
+                                    [2.030351535445079, 4.533497077834326]])
+            assert_array_almost_equal(actual, expected, decimal=numpy.finfo(dtype=dtype).precision)
         else:
-            desired = numpy.array([[3, 8],
+            expected = numpy.array([[3, 8],
                                    [2, 4],
                                    [1, 4]])
-            assert_array_equal(actual, desired)
+            assert_array_equal(actual, expected)
 
         # check if compute follows data isn't broken
         assert_cfd(dpnp_data, sycl_queue, usm_type)
@@ -784,12 +784,12 @@ class TestUniform:
 
         # default dtype depends on fp64 support by the device
         dtype = get_default_floating() if dtype is None else dtype
-        desired = numpy.full(shape=shape, fill_value=low, dtype=dtype)
+        expected = numpy.full(shape=shape, fill_value=low, dtype=dtype)
 
         if dtype == dpnp.int32:
-            assert_array_equal(actual, desired)
+            assert_array_equal(actual, expected)
         else:
-            assert_array_almost_equal(actual, desired, decimal=numpy.finfo(dtype=dtype).precision)
+            assert_array_almost_equal(actual, expected, decimal=numpy.finfo(dtype=dtype).precision)
 
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -824,11 +824,11 @@ class TestUniform:
 
         # dpnp accepts only scalar as low and/or high, in other cases it will be a fallback to numpy
         actual = data.asnumpy()
-        desired = numpy.random.RandomState(seed).uniform(low=low, high=high, size=size)
+        expected = numpy.random.RandomState(seed).uniform(low=low, high=high, size=size)
 
         dtype = get_default_floating()
         precision = numpy.finfo(dtype=dtype).precision
-        assert_array_almost_equal(actual, desired, decimal=precision)
+        assert_array_almost_equal(actual, expected, decimal=precision)
 
         # check if compute follows data isn't broken
         assert_cfd(data, sycl_queue)
