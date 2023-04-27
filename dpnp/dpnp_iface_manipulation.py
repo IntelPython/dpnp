@@ -571,9 +571,9 @@ def rollaxis(x1, axis, start=0):
     return call_origin(numpy.rollaxis, x1, axis, start)
 
 
-def squeeze(x, axis=None):
+def squeeze(x, /, axis=None):
     """
-    Remove single-dimensional entries from the shape of an array.
+    Removes singleton dimensions (axes) from array `x`.
 
     For full documentation refer to :obj:`numpy.squeeze`.
 
@@ -606,7 +606,7 @@ def squeeze(x, axis=None):
     >>> np.squeeze(x, axis=1).shape
     Traceback (most recent call last):
     ...
-    ValueError: Cannot select an axis to squeeze out which has size not equal to one
+    ValueError: Cannot select an axis to squeeze out which has size not equal to one.
     >>> np.squeeze(x, axis=2).shape
     (1, 3)
 
