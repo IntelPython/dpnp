@@ -125,7 +125,7 @@
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.cov.html#numpy.cov" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.cov</span></code></a>.</p>
 <p class="rubric">Limitations</p>
 <p>Input array <code class="docutils literal notranslate"><span class="pre">m</span></code> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Dimension of input array <code class="docutils literal notranslate"><span class="pre">m</span></code> is limited by <code class="docutils literal notranslate"><span class="pre">m.ndim</span> <span class="pre">&gt;</span> <span class="pre">2</span></code>.
+Dimension of input array <code class="docutils literal notranslate"><span class="pre">m</span></code> is limited by <code class="docutils literal notranslate"><span class="pre">m.ndim</span> <span class="pre">&lt;=</span> <span class="pre">2</span></code>.
 Size and shape of input arrays are supported to be equal.
 Prameters <code class="docutils literal notranslate"><span class="pre">y</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 Prameters <code class="docutils literal notranslate"><span class="pre">bias</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">False</span></code>.
@@ -134,10 +134,6 @@ Prameters <code class="docutils literal notranslate"><span class="pre">fweights<
 Prameters <code class="docutils literal notranslate"><span class="pre">aweights</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 Otherwise the function will be executed sequentially on CPU.
 Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.corrcoef</span></code> normalized covariance matrix.</p>
-</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
