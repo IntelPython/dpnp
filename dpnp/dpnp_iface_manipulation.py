@@ -398,9 +398,8 @@ def moveaxis(x, source, destination):
     -------
     out : dpnp.ndarray
         Array with moved axes.
-        The returned array must has the same data type as `x`,
-        is created on the same device as `x` and has the same
-        USM allocation type as `x`.
+        The returned array will have the same data and
+        the same USM allocation type as `x`.
 
     Limitations
     -----------
