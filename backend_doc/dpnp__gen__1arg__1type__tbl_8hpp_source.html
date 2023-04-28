@@ -186,14 +186,14 @@ $(document).ready(function(){initNavTree('dpnp__gen__1arg__1type__tbl_8hpp_sourc
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>MACRO_1ARG_1TYPE_OP(dpnp_conjugate_c, std::conj(input_elem), q.submit(kernel_func))</div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>MACRO_1ARG_1TYPE_OP(dpnp_copy_c, input_elem, q.submit(kernel_func))</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>MACRO_1ARG_1TYPE_OP(dpnp_erf_c,</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                    sycl::erf((<span class="keywordtype">double</span>)input_elem),</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                    oneapi::mkl::vm::erf(q, input1_size, input1_data, result)) <span class="comment">// no sycl::erf for int and long</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                    dispatch_erf_op(input_elem),</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                    oneapi::mkl::vm::erf(q, input1_size, input1_data, result))</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>MACRO_1ARG_1TYPE_OP(dpnp_negative_c, -input_elem, q.submit(kernel_func))</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>MACRO_1ARG_1TYPE_OP(dpnp_recip_c,</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                    _DataType(1) / input_elem,</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                    q.submit(kernel_func)) <span class="comment">// error: no member named &#39;recip&#39; in namespace &#39;sycl&#39;</span></div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>MACRO_1ARG_1TYPE_OP(dpnp_sign_c,</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                    sycl::sign((<span class="keywordtype">double</span>)input_elem),</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                    dispatch_sign_op(input_elem),</div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                    q.submit(kernel_func)) <span class="comment">// no sycl::sign for int and long</span></div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>MACRO_1ARG_1TYPE_OP(dpnp_square_c,</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                    input_elem* input_elem,</div>
