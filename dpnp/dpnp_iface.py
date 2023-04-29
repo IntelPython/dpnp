@@ -390,9 +390,18 @@ def get_usm_ndarray(a):
     out : usm_ndarray
         A dpctl USM ndarray of input array `a`.
 
+    Raises
+    ------
+    TypeError
+        If input parameter `a` is of unsupported array type.
+
     """
 
-    return a.get_array() if isinstance(a, dpnp_array) else a
+    if isinstance(a, dpnp_array):
+        return a.get_array()
+    if isinstance(a, dpt.usm_ndarray):
+        return a
+    raise TypeError("An array must be any of supported type, but got {}".format(type(a)))
 
 
 def is_supported_array_type(a):
