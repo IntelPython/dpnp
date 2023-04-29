@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.eig &mdash; dpnp 0.11.1 documentation</title>
+  <title>dpnp.linalg.eigh &mdash; dpnp 0.11.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.linalg.eigh" href="dpnp.linalg.eigh.html" />
-    <link rel="prev" title="dpnp.linalg.svd" href="dpnp.linalg.svd.html" /> 
+    <link rel="next" title="dpnp.linalg.eigvals" href="dpnp.linalg.eigvals.html" />
+    <link rel="prev" title="dpnp.linalg.eig" href="dpnp.linalg.eig.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -107,9 +107,9 @@
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
           <li class="breadcrumb-item"><a href="../linalg.html">Linear Algebra</a></li>
-      <li class="breadcrumb-item active">dpnp.linalg.eig</li>
+      <li class="breadcrumb-item active">dpnp.linalg.eigh</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/reference/generated/dpnp.linalg.eig.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.linalg.eigh.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -117,15 +117,52 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dpnp-linalg-eig">
-<h1>dpnp.linalg.eig<a class="headerlink" href="#dpnp-linalg-eig" title="Permalink to this heading"></a></h1>
+  <section id="dpnp-linalg-eigh">
+<h1>dpnp.linalg.eigh<a class="headerlink" href="#dpnp-linalg-eigh" title="Permalink to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpnp.linalg.eig">
-<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">eig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#eig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.eig" title="Permalink to this definition"></a></dt>
-<dd><p>Compute the eigenvalues and right eigenvectors of a square array.</p>
+<dt class="sig sig-object py" id="dpnp.linalg.eigh">
+<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">eigh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UPLO</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'L'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#eigh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.eigh" title="Permalink to this definition"></a></dt>
+<dd><p>Return the eigenvalues and eigenvectors of a complex Hermitian
+(conjugate symmetric) or a real symmetric matrix.</p>
+<p>Returns two objects, a 1-D array containing the eigenvalues of <cite>a</cite>, and
+a 2-D square array or matrix (depending on the input type) of the
+corresponding eigenvectors (in columns).</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigh.html#numpy.linalg.eigh" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.eigh</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>w</strong> (<em>(…, M) dpnp.ndarray</em>) – The eigenvalues in ascending order, each repeated according to
+its multiplicity.</p></li>
+<li><p><strong>v</strong> (<em>(…, M, M) dpnp.ndarray</em>) – The column <code class="docutils literal notranslate"><span class="pre">v[:,</span> <span class="pre">i]</span></code> is the normalized eigenvector corresponding
+to the eigenvalue <code class="docutils literal notranslate"><span class="pre">w[i]</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Limitations</p>
+<p>Parameter <cite>a</cite> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.eig.html#numpy.linalg.eig" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.eig</span></code></a></p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.eig</span></code></dt><dd><p>eigenvalues and right eigenvectors for non-symmetric arrays.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.eigvals</span></code></dt><dd><p>eigenvalues of non-symmetric arrays.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">dp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="n">j</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="n">j</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([[ 1.+0.j, -0.-2.j],</span>
+<span class="go">       [ 0.+2.j,  5.+0.j]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">;</span> <span class="n">v</span>
+<span class="go">array([0.17157288, 5.82842712]),</span>
+<span class="go">array([[-0.92387953-0.j        , -0.38268343+0.j        ], # may vary</span>
+<span class="go">       [ 0.        +0.38268343j,  0.        -0.92387953j]]))</span>
+</pre></div>
 </div>
 </dd></dl>
 
@@ -135,8 +172,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.linalg.svd.html" class="btn btn-neutral float-left" title="dpnp.linalg.svd" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.linalg.eigh.html" class="btn btn-neutral float-right" title="dpnp.linalg.eigh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.linalg.eig.html" class="btn btn-neutral float-left" title="dpnp.linalg.eig" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.linalg.eigvals.html" class="btn btn-neutral float-right" title="dpnp.linalg.eigvals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

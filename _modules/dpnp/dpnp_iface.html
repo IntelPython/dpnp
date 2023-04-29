@@ -150,7 +150,9 @@
     <span class="s2">&quot;from_dlpack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_dpnp_descriptor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_include&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_normalized_queue_device&quot;</span>
+    <span class="s2">&quot;get_normalized_queue_device&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_usm_ndarray&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_supported_array_type&quot;</span>
 <span class="p">]</span>
 
 <span class="kn">from</span> <span class="nn">dpnp</span> <span class="kn">import</span> <span class="p">(</span>
@@ -454,6 +456,56 @@
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="s1">&#39;normalize_queue_device&#39;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">_device</span><span class="o">.</span><span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">sycl_queue</span>
+
+
+<span class="k">def</span> <span class="nf">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return :class:`dpctl.tensor.usm_ndarray` from input array `a`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        Input array of supported type :class:`dpnp.ndarray`</span>
+<span class="sd">        or :class:`dpctl.tensor.usm_ndarray`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : usm_ndarray</span>
+<span class="sd">        A dpctl USM ndarray of input array `a`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If input parameter `a` is of unsupported array type.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">a</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+
+
+<span class="k">def</span> <span class="nf">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return ``True`` if an array of either type :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray` type, ``False`` otherwise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : array</span>
+<span class="sd">        An input array to check the type.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : bool</span>
+<span class="sd">        ``True`` if type of array `a` is supported array type,</span>
+<span class="sd">        ``False`` otherwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span>
 </pre></div>
 
            </div>
