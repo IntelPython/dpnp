@@ -33,25 +33,45 @@
 #include "heevd.hpp"
 #include "syevd.hpp"
 
+namespace lapack_ext = dpnp::backend::ext::lapack;
 namespace py = pybind11;
+
+// populate dispatch vectors
+void init_dispatch_vectors(void)
+{
+    lapack_ext::init_syevd_dispatch_vector();
+}
+
+// populate dispatch tables
+void init_dispatch_tables(void)
+{
+    lapack_ext::init_heevd_dispatch_table();
+}
 
 PYBIND11_MODULE(_lapack_impl, m)
 {
+    init_dispatch_vectors();
+    init_dispatch_tables();
+
     m.def("_heevd",
-          &dpnp::backend::ext::lapack::heevd,
+          &lapack_ext::heevd,
           "Call `heevd` from OneMKL LAPACK library to return "
           "the eigenvalues and eigenvectors of a complex Hermitian matrix",
           py::arg("sycl_queue"),
-          py::arg("jobz"), py::arg("upper_lower"),
-          py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("jobz"),
+          py::arg("upper_lower"),
+          py::arg("eig_vecs"),
+          py::arg("eig_vals"),
           py::arg("depends") = py::list());
 
     m.def("_syevd",
-          &dpnp::backend::ext::lapack::syevd,
+          &lapack_ext::syevd,
           "Call `syevd` from OneMKL LAPACK library to return "
           "the eigenvalues and eigenvectors of a real symmetric matrix",
           py::arg("sycl_queue"),
-          py::arg("jobz"), py::arg("upper_lower"),
-          py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("jobz"),
+          py::arg("upper_lower"),
+          py::arg("eig_vecs"),
+          py::arg("eig_vals"),
           py::arg("depends") = py::list());
 }
