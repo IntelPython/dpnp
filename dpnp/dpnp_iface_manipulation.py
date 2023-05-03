@@ -678,54 +678,65 @@ def swapaxes(x1, axis1, axis2):
     return call_origin(numpy.swapaxes, x1, axis1, axis2)
 
 
-def transpose(x1, axes=None):
+def transpose(a, axes=None):
     """
-    Reverse or permute the axes of an array; returns the modified array.
+    Returns an array with axes transposed.
 
     For full documentation refer to :obj:`numpy.transpose`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        `a` with its axes permuted. A view is returned whenever possible.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Value of the parameter ``axes`` likely to be replaced with ``None``.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Input array is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
 
     See Also
     --------
+    :obj:`dpnp.ndarray.transpose` : Equivalent method.
     :obj:`dpnp.moveaxis` : Move array axes to new positions.
     :obj:`dpnp.argsort` : Returns the indices that would sort an array.
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> x = np.arange(4).reshape((2,2))
-    >>> x.shape
-    (2, 2)
-    >>> [i for i in x]
-    [0, 1, 2, 3]
-    >>> out = np.transpose(x)
-    >>> out.shape
-    (2, 2)
-    >>> [i for i in out]
-    [0, 2, 1, 3]
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> a
+    array([[1, 2],
+           [3, 4]])
+    >>> dp.transpose(a)
+    array([[1, 3],
+           [2, 4]])
+
+    >>> a = dp.array([1, 2, 3, 4])
+    >>> a
+    array([1, 2, 3, 4])
+    >>> dp.transpose(a)
+    array([1, 2, 3, 4])
+
+    >>> a = dp.ones((1, 2, 3))
+    >>> dp.transpose(a, (1, 0, 2)).shape
+    (2, 1, 3)
+
+    >>> a = dp.ones((2, 3, 4, 5))
+    >>> dp.transpose(a).shape
+    (5, 4, 3, 2)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axes is not None:
-            if not any(axes):
-                """
-                pytest tests/third_party/cupy/manipulation_tests/test_transpose.py
-                """
-                axes = None
+    if isinstance(a, dpnp_array):
+        array = a
+    elif isinstance(a, dpt.usm_ndarray):
+        array = dpnp_array._create_from_usm_ndarray(a.get_array())
+    else:
+        raise TypeError("An array must be any of supported type, but got {}".format(type(a)))
 
-        result = dpnp_transpose(x1_desc, axes).get_pyobj()
-
-        return result
-
-    return call_origin(numpy.transpose, x1, axes=axes)
+    if axes is None:
+        return array.transpose()
+    return array.transpose(*axes)
 
 
 def unique(x1, **kwargs):

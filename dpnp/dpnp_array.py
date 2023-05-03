@@ -99,15 +99,8 @@ class dpnp_array:
 
     @property
     def T(self):
-        """Shape-reversed view of the array.
-
-        If ndim < 2, then this is just a reference to the array itself.
-
-        """
-        if self.ndim < 2:
-            return self
-        else:
-            return dpnp.transpose(self)
+        """View of the transposed array."""
+        return self.transpose()
 
     def to_device(self, target_device):
         """
@@ -1000,15 +993,61 @@ class dpnp_array:
 
     def transpose(self, *axes):
         """
-        Returns a view of the array with axes permuted.
+        Returns a view of the array with axes transposed.
 
-        .. seealso::
-           :obj:`dpnp.transpose` for full documentation,
-           :meth:`numpy.ndarray.reshape`
+        For full documentation refer to :obj:`numpy.ndarray.transpose`.
 
+        Returns
+        -------
+        y : dpnp.ndarray
+            View of the array with its axes suitably permuted.
+
+        See Also
+        --------
+            :obj:`dpnp.transpose` : Equivalent function.
+            :obj:`dpnp.ndarray.ndarray.T` : Array property returning the array transposed.
+            :obj:`dpnp.ndarray.reshape` : Give a new shape to an array without changing its data.
+
+        Examples
+        --------
+        >>> import dpnp as dp
+        >>> a = dp.array([[1, 2], [3, 4]])
+        >>> a
+        array([[1, 2],
+               [3, 4]])
+        >>> a.transpose()
+        array([[1, 3],
+               [2, 4]])
+        >>> a.transpose((1, 0))
+        array([[1, 3],
+               [2, 4]])
+        >>> a.transpose(1, 0)
+        array([[1, 3],
+               [2, 4]])
+
+        >>> a = dp.array([1, 2, 3, 4])
+        >>> a
+        array([1, 2, 3, 4])
+        >>> a.transpose()
+        array([1, 2, 3, 4])
+            
         """
 
-        return dpnp.transpose(self, axes)
+        ndim = self.ndim
+        if ndim < 2:
+            return self
+
+        res = self.__new__(dpnp_array)
+        if ndim == 2:
+            res._array_obj = self._array_obj.T
+        else:
+            if len(axes) == 0 or len(axes) == 1 and axes[0] is None:
+                # self.transpose().shape == self.shape[::-1]
+                # self.transpose(None).shape == self.shape[::-1]
+                axes = tuple((ndim - x - 1) for x in range(ndim))
+
+            res._array_obj = dpt.permute_dims(self._array_obj, axes)
+        return res
 
     def var(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
         """

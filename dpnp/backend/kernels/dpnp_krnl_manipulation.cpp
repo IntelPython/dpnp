@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -211,6 +211,7 @@ void dpnp_elemwise_transpose_c(void* array1_in,
                                                                        size,
                                                                        dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
@@ -221,17 +222,6 @@ void (*dpnp_elemwise_transpose_default_c)(void*,
                                           size_t,
                                           void*,
                                           size_t) = dpnp_elemwise_transpose_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_elemwise_transpose_ext_c)(DPCTLSyclQueueRef,
-                                                   void*,
-                                                   const shape_elem_type*,
-                                                   const shape_elem_type*,
-                                                   const shape_elem_type*,
-                                                   size_t,
-                                                   void*,
-                                                   size_t,
-                                                   const DPCTLEventVectorRef) = dpnp_elemwise_transpose_c<_DataType>;
 
 void func_map_init_manipulation(func_map_t& fmap)
 {
@@ -253,15 +243,5 @@ void func_map_init_manipulation(func_map_t& fmap)
                                                                (void*)dpnp_elemwise_transpose_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_DBL][eft_DBL] = {eft_DBL,
                                                                (void*)dpnp_elemwise_transpose_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE_EXT][eft_INT][eft_INT] = {eft_INT,
-                                                                   (void*)dpnp_elemwise_transpose_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE_EXT][eft_LNG][eft_LNG] = {eft_LNG,
-                                                                   (void*)dpnp_elemwise_transpose_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE_EXT][eft_FLT][eft_FLT] = {eft_FLT,
-                                                                   (void*)dpnp_elemwise_transpose_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE_EXT][eft_DBL][eft_DBL] = {eft_DBL,
-                                                                   (void*)dpnp_elemwise_transpose_ext_c<double>};
-
     return;
 }

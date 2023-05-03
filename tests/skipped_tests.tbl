@@ -234,8 +234,6 @@ tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAn
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides_swapped
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type_c_contiguous_no_copy
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type_f_contiguous_no_copy
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_transposed_fill
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_transposed_flatten
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_flatten
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_flatten_copied
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_isinstance_numpy_copy
@@ -837,7 +835,6 @@ tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint_nega
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_keepdims
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes2
@@ -886,7 +883,6 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_1
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_axis_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all2
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed2
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_axis

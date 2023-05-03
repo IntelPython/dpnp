@@ -360,7 +360,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TANH,                         /**< Used in numpy.tanh() impl  */
     DPNP_FN_TANH_EXT,                     /**< Used in numpy.tanh() impl, requires extra parameters */
     DPNP_FN_TRANSPOSE,                    /**< Used in numpy.transpose() impl  */
-    DPNP_FN_TRANSPOSE_EXT,                /**< Used in numpy.transpose() impl, requires extra parameters */
     DPNP_FN_TRACE,                        /**< Used in numpy.trace() impl  */
     DPNP_FN_TRACE_EXT,                    /**< Used in numpy.trace() impl, requires extra parameters */
     DPNP_FN_TRAPZ,                        /**< Used in numpy.trapz() impl  */

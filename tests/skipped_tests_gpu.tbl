@@ -142,7 +142,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPois
 
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([[i, i] for i in x])]
 
-tests/test_arraymanipulation.py::TestConcatenate::test_concatenate
 tests/test_histograms.py::TestHistogram::test_density
 
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)]
@@ -376,8 +375,6 @@ tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAn
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides_swapped
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type_c_contiguous_no_copy
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type_f_contiguous_no_copy
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_transposed_fill
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_transposed_flatten
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_flatten_copied
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_flatten
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_isinstance_numpy_copy
@@ -783,15 +780,11 @@ tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumLarge_param_9_{opt
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperationWithScalar::test_scalar_float
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperationWithScalar::test_scalar_int
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_invalid_sub1
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot
 tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_invlarge
 tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_large
 tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_of_two
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec2
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_vdot
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot_with_out
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_higher_order_inner
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot_with_int_axes
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot_with_list_axes
@@ -1005,7 +998,7 @@ tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint_negative
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_round_
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_trunc
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed
+
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes2
