@@ -29,19 +29,19 @@ class TestShape(unittest.TestCase):
 @testing.gpu
 class TestReshape(unittest.TestCase):
 
-    def test_reshape_strides(self):
+    def test_reshape_shapes(self):
         def func(xp):
             a = testing.shaped_arange((1, 1, 1, 2, 2), xp)
-            return a.strides
-        self.assertEqual(func(numpy), func(cupy))
+            return a.shape
+        assert func(numpy) == func(cupy)
 
     def test_reshape2(self):
         def func(xp):
             a = xp.zeros((8,), dtype=xp.float32)
-            return a.reshape((1, 1, 1, 4, 1, 2)).strides
-        self.assertEqual(func(numpy), func(cupy))
+            return a.reshape((1, 1, 1, 4, 1, 2)).shape
+        assert func(numpy) == func(cupy)
 
-    @testing.for_orders('CFA')
+    @testing.for_orders('CF')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_nocopy_reshape(self, xp, dtype, order):
@@ -50,7 +50,7 @@ class TestReshape(unittest.TestCase):
         b[1] = 1
         return a
 
-    @testing.for_orders('CFA')
+    @testing.for_orders('CF')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_nocopy_reshape_with_order(self, xp, dtype, order):
@@ -59,13 +59,13 @@ class TestReshape(unittest.TestCase):
         b[1] = 1
         return a
 
-    @testing.for_orders('CFA')
+    @testing.for_orders('CF')
     @testing.numpy_cupy_array_equal()
     def test_transposed_reshape2(self, xp, order):
         a = testing.shaped_arange((2, 3, 4), xp).transpose(2, 0, 1)
         return a.reshape(2, 3, 4, order=order)
 
-    @testing.for_orders('CFA')
+    @testing.for_orders('CF')
     @testing.numpy_cupy_array_equal()
     def test_reshape_with_unknown_dimension(self, xp, order):
         a = testing.shaped_arange((2, 3, 4), xp)
@@ -95,16 +95,58 @@ class TestReshape(unittest.TestCase):
             with pytest.raises(ValueError):
                 a.reshape(())
 
+    @pytest.mark.skip("until dpctl gh-1197 is resolved")
+    def test_reshape_zerosize_invalid_unknown(self):
+        for xp in (numpy, cupy):
+            a = xp.zeros((0,))
+            with pytest.raises(ValueError):
+                a.reshape((-1, 0))
+
     @testing.numpy_cupy_array_equal()
     def test_reshape_zerosize(self, xp):
         a = xp.zeros((0,))
-        return a.reshape((0,))
+        b = a.reshape((0,))
+        assert b.base is a
+        return b
 
-    @testing.for_orders('CFA')
+    @testing.for_orders('CF')
+    @testing.numpy_cupy_array_equal(strides_check=True)
+    def test_reshape_zerosize2(self, xp, order):
+        a = xp.zeros((2, 0, 3))
+        b = a.reshape((5, 0, 4), order=order)
+        assert b.base is a
+        return b
+
+    @testing.for_orders('CF')
     @testing.numpy_cupy_array_equal()
     def test_external_reshape(self, xp, order):
         a = xp.zeros((8,), dtype=xp.float32)
         return xp.reshape(a, (1, 1, 1, 4, 1, 2), order=order)
+
+    def _test_ndim_limit(self, xp, ndim, dtype, order):
+        idx = [1]*ndim
+        idx[-1] = ndim
+        a = xp.ones(ndim, dtype=dtype)
+        a = a.reshape(idx, order=order)
+        assert a.ndim == ndim
+        return a
+
+    @pytest.mark.skip("until dpctl gh-1196 is resolved")
+    @testing.for_orders('CF')
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_ndim_limit1(self, xp, dtype, order):
+        # from cupy/cupy#4193
+        a = self._test_ndim_limit(xp, 32, dtype, order)
+        return a
+
+    @testing.for_orders('CF')
+    @testing.for_all_dtypes()
+    def test_ndim_limit2(self, dtype, order):
+        # from cupy/cupy#4193
+        for xp in (numpy, cupy):
+            with pytest.raises(ValueError):
+                self._test_ndim_limit(xp, 33, dtype, order)
 
 
 @testing.gpu

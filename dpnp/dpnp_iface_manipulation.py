@@ -68,6 +68,7 @@ __all__ = [
     "repeat",
     "reshape",
     "rollaxis",
+    "shape",
     "squeeze",
     "stack",
     "swapaxes",
@@ -636,6 +637,49 @@ def rollaxis(x1, axis, start=0):
             return dpnp.moveaxis(x1_desc.get_pyobj(), axis, destination)
 
     return call_origin(numpy.rollaxis, x1, axis, start)
+
+
+def shape(a):
+    """
+    Return the shape of an array.
+
+    For full documentation refer to :obj:`numpy.shape`.
+    
+    Parameters
+    ----------
+    a : array_like
+        Input array.
+
+    Returns
+    -------
+    shape : tuple of ints
+        The elements of the shape tuple give the lengths of the
+        corresponding array dimensions.
+
+    See Also
+    --------
+    len : ``len(a)`` is equivalent to ``np.shape(a)[0]`` for N-D arrays with
+          ``N>=1``.
+    :obj:`dpnp.ndarray.shape` : Equivalent array method.
+
+    Examples
+    --------
+    >>> import dpnp as dp
+    >>> dp.shape(dp.eye(3))
+    (3, 3)
+    >>> dp.shape([[1, 3]])
+    (1, 2)
+    >>> dp.shape([0])
+    (1,)
+    >>> dp.shape(0)
+    ()
+
+    """
+
+    if dpnp.is_supported_array_type(a):
+        return a.shape
+    else:
+        return numpy.shape(a)
 
 
 def squeeze(x1, axis=None):

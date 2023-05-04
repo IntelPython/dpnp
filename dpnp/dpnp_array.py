@@ -1013,9 +1013,6 @@ class dpnp_array:
         >>> a.transpose((1, 0))
         array([[1, 3],
                [2, 4]])
-        >>> a.transpose(1, 0)
-        array([[1, 3],
-               [2, 4]])
 
         >>> a = dp.array([1, 2, 3, 4])
         >>> a
@@ -1029,11 +1026,15 @@ class dpnp_array:
         if ndim < 2:
             return self
 
+        axes_len = len(axes)
+        if axes_len == 1 and isinstance(axes[0], tuple):
+            axes = axes[0]
+
         res = self.__new__(dpnp_array)
-        if ndim == 2:
+        if ndim == 2 and axes_len == 0:
             res._array_obj = self._array_obj.T
         else:
-            if len(axes) == 0 or len(axes) == 1 and axes[0] is None:
+            if len(axes) == 0 or axes[0] is None:
                 # self.transpose().shape == self.shape[::-1]
                 # self.transpose(None).shape == self.shape[::-1]
                 axes = tuple((ndim - x - 1) for x in range(ndim))
