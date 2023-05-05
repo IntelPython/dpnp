@@ -50,6 +50,14 @@
 #endif
 
 /**
+ * Version of SYCL DPC++ 2023 compiler where a return type of sycl::abs() is changed
+ * from unsinged integer to signed one of input vector.
+ */
+#ifndef __SYCL_COMPILER_VECTOR_ABS_CHANGED
+#define __SYCL_COMPILER_VECTOR_ABS_CHANGED 20230503L
+#endif
+
+/**
  * Version of Intel MKL at which transition to OneMKL release 2023.0.0 occurs.
  */
 #ifndef __INTEL_MKL_2023_VERSION_REQUIRED
