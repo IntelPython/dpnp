@@ -170,10 +170,14 @@ DPCTLSyclEventRef dpnp_elemwise_absolute_c(DPCTLSyclQueueRef q_ref,
 
                 sycl::vec<_DataType_input, vec_sz> data_vec = sg.load<vec_sz>(input_ptrT(&array1[start]));
 
+#if (__SYCL_COMPILER_VERSION < __SYCL_COMPILER_VECTOR_ABS_CHANGED)
                 // sycl::abs() returns unsigned integers only, so explicit casting to signed ones is required
                 using result_absT = typename cl::sycl::detail::make_unsigned<_DataType_output>::type;
                 sycl::vec<_DataType_output, vec_sz> res_vec =
                     dpnp_vec_cast<_DataType_output, result_absT, vec_sz>(sycl::abs(data_vec));
+#else
+                sycl::vec<_DataType_output, vec_sz> res_vec = sycl::abs(data_vec);
+#endif
 
                 sg.store<vec_sz>(result_ptrT(&result[start]), res_vec);
             }
