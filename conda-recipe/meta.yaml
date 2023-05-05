@@ -18,7 +18,7 @@ requirements:
       - wheel
     build:
       - {{ compiler('cxx') }}
-      - {{ compiler('dpcpp') }}  >=2023.0  # [not osx]
+      - {{ compiler('dpcpp') }}  =2023.1.0  # [not osx]
     run:
       - python
       - dpctl >=0.14
