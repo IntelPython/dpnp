@@ -44,6 +44,9 @@ import numpy
 import dpctl.tensor as dpt
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
+from dpnp.dpnp_utils.dpnp_utils_statistics import (
+    dpnp_cov
+)
 from dpnp.dpnp_array import dpnp_array
 import dpnp
 
@@ -237,12 +240,17 @@ def correlate(x1, x2, mode='valid'):
     return call_origin(numpy.correlate, x1, x2, mode=mode)
 
 
-def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
-    """cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
+def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None, *, dtype=None):
+    """cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None, *, dtype=None):
 
     Estimate a covariance matrix, given data and weights.
 
     For full documentation refer to :obj:`numpy.cov`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The covariance matrix of the variables.
 
     Limitations
     -----------
@@ -257,7 +265,9 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    .. see also:: :obj:`dpnp.corrcoef` normalized covariance matrix.
+    See Also
+    --------
+    :obj:`dpnp.corrcoef` : Normalized covariance matrix
 
     Examples
     --------
@@ -274,11 +284,10 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
     [1.0, -1.0, -1.0, 1.0]
 
     """
-    if not isinstance(x1, (dpnp_array, dpt.usm_ndarray)):
+
+    if not isinstance(m, (dpnp_array, dpt.usm_ndarray)):
         pass
-    elif x1.ndim > 2:
-        pass
-    elif y is not None:
+    elif m.ndim > 2:
         pass
     elif bias:
         pass
@@ -289,18 +298,13 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
     elif aweights is not None:
         pass
     else:
-        if not rowvar and x1.shape[0] != 1:
-            x1 = x1.get_array() if isinstance(x1, dpnp_array) else x1
-            x1 = dpnp_array._create_from_usm_ndarray(x1.mT)
+        return dpnp_cov(m, y=y, rowvar=rowvar, dtype=dtype)
 
-        if not x1.dtype in (dpnp.float32, dpnp.float64):
-            x1 = dpnp.astype(x1, dpnp.default_float_type(sycl_queue=x1.sycl_queue))
+        # x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+        # if x1_desc:
+        #     return dpnp_cov(x1_desc).get_pyobj()
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-        if x1_desc:
-            return dpnp_cov(x1_desc).get_pyobj()
-
-    return call_origin(numpy.cov, x1, y, rowvar, bias, ddof, fweights, aweights)
+    return call_origin(numpy.cov, m, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype)
 
 
 def histogram(a, bins=10, range=None, density=None, weights=None):
