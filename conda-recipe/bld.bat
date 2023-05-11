@@ -29,13 +29,11 @@ FOR %%V IN (14.0.0 14 15.0.0 15 16.0.0 16) DO @(
   )
 )
 
-@echo off
 for /f "tokens=3" %%a in ('cmake --version ^| find "cmake version"') do set CMAKE_VERSION=%%a
 for /f "tokens=1-3 delims=." %%a in ("%CMAKE_VERSION%") do (
     set CMAKE_VERSION_MAJOR=%%a
     set CMAKE_VERSION_MINOR=%%b
 )
-@echo on
 
 set "PLATFORM_DIR=%PREFIX%\Library\share\cmake-%CMAKE_VERSION_MAJOR%.%CMAKE_VERSION_MINOR%\Modules\Platform"
 set "FN=Windows-IntelLLVM.cmake"
