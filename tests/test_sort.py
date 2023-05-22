@@ -30,8 +30,11 @@ def test_partition(array, dtype, kth):
     a = dpnp.array(array, dtype)
     p = dpnp.partition(a, kth)
 
-    assert (p[0:kth] <= p[kth]).all()
-    assert (p[kth] <= p[kth + 1:]).all()
+    # TODO: remove once dpnp.less_equal() support complex types
+    p = p.asnumpy()
+
+    assert (p[..., 0:kth] <= p[..., kth:kth + 1]).all()
+    assert (p[..., kth:kth + 1] <= p[..., kth + 1:]).all()
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")

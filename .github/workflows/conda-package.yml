@@ -18,6 +18,7 @@ env:
       test_linalg.py
       test_mathematical.py
       test_random_state.py
+      test_sort.py
       test_special.py
       test_usm_type.py
   VER_JSON_NAME: 'version.json'
