@@ -1,16 +1,18 @@
 import pytest
+from .helper import get_all_dtypes
 
 import dpnp
 
 import numpy
+from numpy.testing import (
+    assert_array_equal
+)
 
 
 @pytest.mark.parametrize("kth",
                          [0, 1],
                          ids=['0', '1'])
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
 @pytest.mark.parametrize("array",
                          [[3, 4, 2, 1],
                           [[1, 0], [3, 0]],
@@ -25,11 +27,11 @@ import numpy
                               '[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]',
                               '[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]'])
 def test_partition(array, dtype, kth):
-    a = numpy.array(array, dtype)
-    ia = dpnp.array(array, dtype)
-    expected = numpy.partition(a, kth)
-    result = dpnp.partition(ia, kth)
-    numpy.testing.assert_array_equal(expected, result)
+    a = dpnp.array(array, dtype)
+    p = dpnp.partition(a, kth)
+
+    assert (p[0:kth] <= p[kth]).all()
+    assert (p[kth] <= p[kth + 1:]).all()
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -77,4 +79,4 @@ def test_searchsorted(array, dtype, v_, side):
     iv = dpnp.array(v_, dtype)
     expected = numpy.searchsorted(a, v, side=side)
     result = dpnp.searchsorted(ia, iv, side=side)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
