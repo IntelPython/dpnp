@@ -832,7 +832,32 @@ class dpnp_array:
     def nonzero(self):
         return dpnp.nonzero(self)
 
- # 'partition',
+    def partition(self, kth, axis=-1, kind='introselect', order=None):
+        """
+        Rearranges the elements in the array in such a way that the value of the
+        element in kth position is in the position it would be in a sorted array.
+
+        All elements smaller than the kth element are moved before this element and
+        all equal or greater are moved behind it. The ordering of the elements in
+        the two partitions is undefined.
+
+        Refer to `dpnp.partition` for full documentation.
+
+        See Also
+        --------
+        :obj:`dpnp.partition` : Return a partitioned copy of an array.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([3, 4, 2, 1])
+        >>> a.partition(3)
+        >>> a
+        array([1, 2, 3, 4])
+
+        """
+
+        self._array_obj = dpnp.partition(self, kth, axis=axis, kind=kind, order=order).get_array()
 
     def prod(self, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
         """
