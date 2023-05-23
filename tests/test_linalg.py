@@ -1,5 +1,8 @@
 import pytest
-from .helper import get_all_dtypes
+from .helper import (
+    get_all_dtypes,
+    get_complex_dtypes
+)
 
 import dpnp as inp
 
@@ -33,12 +36,12 @@ def vvsort(val, vec, size, xp):
         unravel_imax = numpy.unravel_index(imax, val.shape)
 
         # swap elements in val array
-        temp = xp.array(val[unravel_i], dtype=vec.dtype, **val_kwargs)
+        temp = xp.array(val[unravel_i], dtype=val.dtype, **val_kwargs)
         val[unravel_i] = val[unravel_imax]
         val[unravel_imax] = temp
 
         # swap corresponding columns in vec matrix
-        temp = xp.array(vec[:, i], dtype=val.dtype, **vec_kwargs)
+        temp = xp.array(vec[:, i], dtype=vec.dtype, **vec_kwargs)
         vec[:, i] = vec[:, imax]
         vec[:, imax] = temp
 
@@ -126,9 +129,47 @@ def test_eig_arange(type, size):
     assert (dpnp_vec.dtype == np_vec.dtype)
     assert (dpnp_val.shape == np_val.shape)
     assert (dpnp_vec.shape == np_vec.shape)
+    assert (dpnp_val.usm_type == dpnp_symm.usm_type)
+    assert (dpnp_vec.usm_type == dpnp_symm.usm_type)
 
     assert_allclose(dpnp_val, np_val, rtol=1e-05, atol=1e-05)
     assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
+
+
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_none=True))
+@pytest.mark.parametrize("size", [2, 4, 8])
+def test_eigh_arange(type, size):
+    a = numpy.arange(size * size, dtype=type).reshape((size, size))
+    symm_orig = numpy.tril(a) + numpy.tril(a, -1).T + numpy.diag(numpy.full((size,), size * size, dtype=type))
+    symm = symm_orig
+    dpnp_symm_orig = inp.array(symm)
+    dpnp_symm = dpnp_symm_orig
+
+    dpnp_val, dpnp_vec = inp.linalg.eigh(dpnp_symm)
+    np_val, np_vec = numpy.linalg.eigh(symm)
+
+    # DPNP sort val/vec by abs value
+    vvsort(dpnp_val, dpnp_vec, size, inp)
+
+    # NP sort val/vec by abs value
+    vvsort(np_val, np_vec, size, numpy)
+
+    # NP change sign of vectors
+    for i in range(np_vec.shape[1]):
+        if (np_vec[0, i] * dpnp_vec[0, i]).asnumpy() < 0:
+            np_vec[:, i] = -np_vec[:, i]
+
+    assert_array_equal(symm_orig, symm)
+    assert_array_equal(dpnp_symm_orig, dpnp_symm)
+
+    assert (dpnp_val.shape == np_val.shape)
+    assert (dpnp_vec.shape == np_vec.shape)
+    assert (dpnp_val.usm_type == dpnp_symm.usm_type)
+    assert (dpnp_vec.usm_type == dpnp_symm.usm_type)
+
+    assert_allclose(dpnp_val, np_val, rtol=1e-05, atol=1e-04)
+    assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-04)
 
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))

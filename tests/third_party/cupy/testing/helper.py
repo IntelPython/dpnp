@@ -200,6 +200,16 @@ def _contains_signed_and_unsigned(kw):
         any(d in vs for d in _float_dtypes + _signed_dtypes)
 
 
+def _wraps_partial(wrapped, *names):
+    # Only `wrapped` function have args of `names`.
+    def decorator(impl):
+        impl = functools.wraps(wrapped)(impl)
+        impl.__signature__ = inspect.signature(
+            functools.partial(wrapped, **{name: None for name in names}))
+        return impl
+    return decorator
+
+
 def _make_decorator(check_func, name, type_check, accept_error, sp_name=None,
                     scipy_name=None):
     assert isinstance(name, str)
@@ -640,16 +650,16 @@ def for_dtypes(dtypes, name='dtype'):
     argument.
     """
     def decorator(impl):
-        @functools.wraps(impl)
-        def test_func(self, *args, **kw):
+        @_wraps_partial(impl, name)
+        def test_func(*args, **kw):
             for dtype in dtypes:
                 try:
                     kw[name] = numpy.dtype(dtype).type
-                    impl(self, *args, **kw)
+                    impl(*args, **kw)
                 except unittest.SkipTest as e:
-                    pass  # print(f"Function decorator(): skipped: name={name} dtype={dtype} error={e}")
+                    print('skipped: {} = {} ({})'.format(name, dtype, e))
                 except Exception:
-                    # print(f"Function decorator(): name={name} dtype={dtype}")
+                    print(name, 'is', dtype)
                     raise
 
         return test_func
@@ -661,8 +671,14 @@ def _get_supported_float_dtypes():
     else:
         return (numpy.float32,)
 
+def _get_supported_complex_dtypes():
+    if select_default_device().has_aspect_fp64:
+        return (numpy.complex128, numpy.complex64)
+    else:
+        return (numpy.complex64,)
 
-_complex_dtypes = ()
+
+_complex_dtypes = _get_supported_complex_dtypes()
 _regular_float_dtypes = _get_supported_float_dtypes()
 _float_dtypes = _regular_float_dtypes
 _signed_dtypes = ()
