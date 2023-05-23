@@ -48,26 +48,26 @@ __all__ = [
 def dpnp_cov(m, y=None, rowvar=True, dtype=None):
     """
     Estimate a covariance matrix based on passed data.
-    No support for given wights is provided now.
+    No support for given weights is provided now.
 
-    The implementation is done though existing dpnp and dpctl methods
-    instead of separate function call of dnpn backend.
+    The implementation is done through existing dpnp and dpctl methods
+    instead of separate function call of dpnp backend.
 
     """
 
     def _get_2dmin_array(x, dtype):
         """
-        Transfor an input array to a form required for building a covariance matrix.
+        Transform an input array to a form required for building a covariance matrix.
 
-        If applicable, it resahpes the imput array to have 2 dimensions or greater.
-        If applicable, it transposes the imput array when 'rowvar' is False.
+        If applicable, it reshapes the input array to have 2 dimensions or greater.
+        If applicable, it transposes the input array when 'rowvar' is False.
         It casts to another dtype, if the input array differs from requested one.
 
         """
 
         if x.ndim == 0:
             x = x.reshape((1, 1))
-        elif m.ndim == 1:
+        elif x.ndim == 1:
             x = x[dpnp.newaxis, :]
 
         if not rowvar and x.shape[0] != 1:
