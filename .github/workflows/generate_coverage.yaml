@@ -2,7 +2,7 @@ name: Generate coverage data for dpnp
 on:
   pull_request:
   push:
-    branches: [use-skbuild-and-cmake]
+    branches: [master]
 
 jobs:
   generate-coverage:
