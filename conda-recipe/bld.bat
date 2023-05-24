@@ -29,7 +29,16 @@ FOR %%V IN (14.0.0 14 15.0.0 15 16.0.0 16) DO @(
   )
 )
 
-set "PLATFORM_DIR=%PREFIX%\Library\share\cmake-3.22\Modules\Platform"
+for /f "tokens=*" %%p in ('where cmake') do set CMAKE_PATH=%%p & goto :continue
+:continue
+for /f "tokens=3" %%a in ('%CMAKE_PATH% --version') do set CMAKE_VERSION=%%a & goto :continue
+:continue
+for /f "tokens=1-2 delims=." %%a in ("%CMAKE_VERSION%") do (
+    set CMAKE_VERSION_MAJOR=%%a
+    set CMAKE_VERSION_MINOR=%%b
+)
+
+set "PLATFORM_DIR=%PREFIX%\Library\share\cmake-%CMAKE_VERSION_MAJOR%.%CMAKE_VERSION_MINOR%\Modules\Platform"
 set "FN=Windows-IntelLLVM.cmake"
 
 rem Save the original file, and copy patched file to
