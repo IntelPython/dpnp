@@ -217,23 +217,66 @@ $(document).ready(function(){initNavTree('dpnp__fptr_8hpp_source.html',''); init
 <div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T1, <span class="keyword">typename</span> T2, <span class="keyword">typename</span>... Ts&gt;</div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span><span class="keyword">constexpr</span> <span class="keyword">auto</span> none_of_both_types = !std::disjunction_v&lt;<a class="code hl_struct" href="structis__any.html">is_any</a>&lt;T1, Ts...&gt;, <a class="code hl_struct" href="structis__any.html">is_any</a>&lt;T2, Ts...&gt;&gt;;</div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span><span class="keywordtype">void</span> func_map_init_arraycreation(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="keywordtype">void</span> func_map_init_bitwise(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span><span class="keywordtype">void</span> func_map_init_elemwise(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="keywordtype">void</span> func_map_init_fft_func(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="keywordtype">void</span> func_map_init_indexing_func(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="keywordtype">void</span> func_map_init_linalg(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span><span class="keywordtype">void</span> func_map_init_linalg_func(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span><span class="keywordtype">void</span> func_map_init_logic(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span><span class="keywordtype">void</span> func_map_init_manipulation(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span><span class="keywordtype">void</span> func_map_init_mathematical(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><span class="keywordtype">void</span> func_map_init_random(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><span class="keywordtype">void</span> func_map_init_reduction(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span><span class="keywordtype">void</span> func_map_init_searching(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span><span class="keywordtype">void</span> func_map_init_sorting(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="keywordtype">void</span> func_map_init_statistics(func_map_t&amp; fmap);</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span><span class="preprocessor">#endif </span><span class="comment">// BACKEND_FPTR_H</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> _Tp&gt;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="keyword">using </span>dpnp_remove_cvref_t = <span class="keyword">typename</span> std::remove_cv_t&lt;typename std::remove_reference_t&lt;_Tp&gt;&gt;;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno"><a class="line" href="classdpnp__less__comp.html">  206</a></span><span class="keyword">class </span><a class="code hl_class" href="classdpnp__less__comp.html">dpnp_less_comp</a></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>{</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> _Xp, <span class="keyword">typename</span> _Yp&gt;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keywordtype">bool</span> operator()(_Xp&amp;&amp; __x, _Yp&amp;&amp; __y)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (both_types_are_same&lt;dpnp_remove_cvref_t&lt;_Xp&gt;, dpnp_remove_cvref_t&lt;_Yp&gt;, std::complex&lt;float&gt;, std::complex&lt;double&gt;&gt;)</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        {</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            <span class="keywordtype">bool</span> ret = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            _Xp a = std::forward&lt;_Xp&gt;(__x);</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>            _Yp b = std::forward&lt;_Yp&gt;(__y);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            <span class="keywordflow">if</span> (a.real() &lt; b.real())</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            {</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>                ret = (a.imag() == a.imag() || b.imag() != b.imag());</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            }</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (a.real() &gt; b.real())</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            {</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>                ret = (b.imag() != b.imag() &amp;&amp; a.imag() == a.imag());</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>            }</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (a.real() == b.real() || (a.real() != a.real() &amp;&amp; b.real() != b.real()))</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>            {</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>                ret = (a.imag() &lt; b.imag() || (b.imag() != b.imag() &amp;&amp; a.imag() == a.imag()));</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>            }</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>                ret = (b.real() != b.real());</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            }</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>            <span class="keywordflow">return</span> ret;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        }</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        {</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>            <span class="keywordflow">return</span> std::forward&lt;_Xp&gt;(__x) &lt; std::forward&lt;_Yp&gt;(__y);</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        }</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    }</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>};</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span><span class="keywordtype">void</span> func_map_init_arraycreation(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span><span class="keywordtype">void</span> func_map_init_bitwise(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span><span class="keywordtype">void</span> func_map_init_elemwise(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span><span class="keywordtype">void</span> func_map_init_fft_func(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span><span class="keywordtype">void</span> func_map_init_indexing_func(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span><span class="keywordtype">void</span> func_map_init_linalg(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span><span class="keywordtype">void</span> func_map_init_linalg_func(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span><span class="keywordtype">void</span> func_map_init_logic(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span><span class="keywordtype">void</span> func_map_init_manipulation(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span><span class="keywordtype">void</span> func_map_init_mathematical(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span><span class="keywordtype">void</span> func_map_init_random(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span><span class="keywordtype">void</span> func_map_init_reduction(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span><span class="keywordtype">void</span> func_map_init_searching(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span><span class="keywordtype">void</span> func_map_init_sorting(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span><span class="keywordtype">void</span> func_map_init_statistics(func_map_t&amp; fmap);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span><span class="preprocessor">#endif </span><span class="comment">// BACKEND_FPTR_H</span></div>
+<div class="ttc" id="aclassdpnp__less__comp_html"><div class="ttname"><a href="classdpnp__less__comp.html">dpnp_less_comp</a></div><div class="ttdoc">&quot;&lt;&quot; comparison with complex types support.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__fptr_8hpp_source.html#l00206">dpnp_fptr.hpp:207</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i_html_gaec54569b58e937e84099479f078bce15"><div class="ttname"><a href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15">DPNPFuncType</a></div><div class="ttdeci">DPNPFuncType</div><div class="ttdoc">Template types which are used in this interface.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iface__fptr_8hpp_source.html#l00391">dpnp_iface_fptr.hpp:392</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i_html_ggaec54569b58e937e84099479f078bce15a1d41c2373d33a46bb47a6791a876c103"><div class="ttname"><a href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a1d41c2373d33a46bb47a6791a876c103">DPNPFuncType::DPNP_FT_BOOL</a></div><div class="ttdeci">@ DPNP_FT_BOOL</div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i_html_ggaec54569b58e937e84099479f078bce15a2ca75eef4ff62b379b29390b6efe736f"><div class="ttname"><a href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a2ca75eef4ff62b379b29390b6efe736f">DPNPFuncType::DPNP_FT_INT</a></div><div class="ttdeci">@ DPNP_FT_INT</div></div>

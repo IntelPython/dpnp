@@ -917,7 +917,32 @@
 <div class="viewcode-block" id="dpnp_array.nonzero"><a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.nonzero">[docs]</a>    <span class="k">def</span> <span class="nf">nonzero</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
- <span class="c1"># &#39;partition&#39;,</span>
+<div class="viewcode-block" id="dpnp_array.partition"><a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.partition">[docs]</a>    <span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;introselect&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rearranges the elements in the array in such a way that the value of the</span>
+<span class="sd">        element in kth position is in the position it would be in a sorted array.</span>
+
+<span class="sd">        All elements smaller than the kth element are moved before this element and</span>
+<span class="sd">        all equal or greater are moved behind it. The ordering of the elements in</span>
+<span class="sd">        the two partitions is undefined.</span>
+
+<span class="sd">        Refer to `dpnp.partition` for full documentation.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.partition` : Return a partitioned copy of an array.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; a = np.array([3, 4, 2, 1])</span>
+<span class="sd">        &gt;&gt;&gt; a.partition(3)</span>
+<span class="sd">        &gt;&gt;&gt; a</span>
+<span class="sd">        array([1, 2, 3, 4])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="dpnp_array.prod"><a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.prod">[docs]</a>    <span class="k">def</span> <span class="nf">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
