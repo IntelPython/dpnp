@@ -21,7 +21,8 @@ requirements:
       - scikit-build
     build:
       - {{ compiler('cxx') }}
-      - {{ compiler('dpcpp') }}  >=2023.0  # [not osx]
+      - {{ compiler('dpcpp') }}  =2023.1.0  # [not osx]
+      - sysroot_linux-64 >=2.17  # [linux]
     run:
       - python
       - dpctl >=0.14.2
