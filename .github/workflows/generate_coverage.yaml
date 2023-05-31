@@ -15,6 +15,7 @@ jobs:
 
     env:
       python-ver: '3.10'
+      CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
 
     steps:
       - name: Cancel Previous Runs
@@ -41,7 +42,7 @@ jobs:
       - name: Install dpnp dependencies
         run: |
           conda install cython llvm cmake scikit-build ninja pytest pytest-cov coverage[toml] \
-              dpctl dpcpp_linux-64 sysroot_linux-64">=2.28" mkl-devel-dpcpp tbb-devel onedpl-devel -c dppy/label/dev -c intel -c conda-forge --override-channels
+              dpctl dpcpp_linux-64 sysroot_linux-64">=2.28" mkl-devel-dpcpp tbb-devel onedpl-devel ${{ env.CHANNELS }}
       - name: Conda info
         run: |
           conda info
