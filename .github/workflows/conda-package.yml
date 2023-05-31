@@ -9,7 +9,7 @@ on:
 env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
-  CHANNELS: '-c dppy/label/dev -c intel -c main --override-channels'
+  CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   TEST_SCOPE: >-
       test_arraycreation.py
       test_dot.py
@@ -18,8 +18,10 @@ env:
       test_linalg.py
       test_mathematical.py
       test_random_state.py
+      test_sort.py
       test_special.py
       test_usm_type.py
+      third_party/cupy/sorting_tests/test_sort.py
   VER_JSON_NAME: 'version.json'
   VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
@@ -59,7 +61,6 @@ jobs:
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
           activate-environment: 'build'
-          use-only-tar-bz2: true
 
       - if: matrix.os == 'ubuntu-20.04'
         name: Store conda paths as envs on Linux
@@ -170,7 +171,7 @@ jobs:
       - name: Cache conda packages
         uses: actions/cache@v3.2.6
         env:
-          CACHE_NUMBER: 1  # Increase to reset cache
+          CACHE_NUMBER: 1 # Increase to reset cache
         with:
           path: ${{ env.conda-pkgs }}
           key:
