@@ -32,7 +32,7 @@ pybind11_add_module(${python_module_name} MODULE
 )
 
 if (WIN32)
-    if (${CMAKE_VERSION} VERSION_LESS "3.23")
+    if (${CMAKE_VERSION} VERSION_LESS "3.27")
         # this is a work-around for target_link_options inserting option after -link option, cause
         # linker to ignore it.
         set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -fsycl-device-code-split=per_kernel")
@@ -45,7 +45,7 @@ target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_
 target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../src)
 
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
-target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS}/../tensor/libtensor/include)
+target_include_directories(${py_module_name} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})
 
 if (WIN32)
   target_compile_options(${python_module_name} PRIVATE

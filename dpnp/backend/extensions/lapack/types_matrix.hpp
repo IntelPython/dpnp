@@ -37,20 +37,6 @@ namespace lapack
 {
 namespace types
 {
-// TODO: to remove, will be provided by dpctl tensor headers
-template <typename Ty1, typename ArgTy1, typename Ty2 = Ty1, typename ArgTy2 = ArgTy1>
-struct TypePairEntry : std::bool_constant<std::conjunction_v<std::is_same<Ty1, ArgTy1>, std::is_same<Ty2, ArgTy2>>>
-{
-    static constexpr bool is_defined = true;
-};
-
-
-// TODO: to remove, will be provided by dpctl tensor headers
-struct NotFoundEntry : std::true_type
-{
-    static constexpr bool is_defined = false;
-};
-
 /**
  * @brief A factory to define pairs of supported types for which
  * MKL LAPACK library provides support in oneapi::mkl::lapack::heevd<T, RealT> function.
@@ -61,10 +47,10 @@ struct NotFoundEntry : std::true_type
 template <typename T, typename RealT>
 struct HeevdTypePairSupportFactory
 {
-    static constexpr bool is_defined = std::disjunction<TypePairEntry<T, std::complex<double>, RealT, double>,
-                                                        TypePairEntry<T, std::complex<float>, RealT, float>,
+    static constexpr bool is_defined = std::disjunction<TypePairDefinedEntry<T, std::complex<double>, RealT, double>,
+                                                        TypePairDefinedEntry<T, std::complex<float>, RealT, float>,
                                                         // fall-through
-                                                        NotFoundEntry>::is_defined;
+                                                        NotDefinedEntry>::is_defined;
 };
 
 /**
@@ -76,10 +62,10 @@ struct HeevdTypePairSupportFactory
 template <typename T>
 struct SyevdTypePairSupportFactory
 {
-    static constexpr bool is_defined = std::disjunction<TypePairEntry<T, double>,
-                                                        TypePairEntry<T, float>,
+    static constexpr bool is_defined = std::disjunction<TypePairDefinedEntry<T, double, T, double>,
+                                                        TypePairDefinedEntry<T, float, T, float>,
                                                         // fall-through
-                                                        NotFoundEntry>::is_defined;
+                                                        NotDefinedEntry>::is_defined;
 };
 }
 }
