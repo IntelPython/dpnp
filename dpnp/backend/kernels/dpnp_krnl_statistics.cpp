@@ -192,7 +192,7 @@ DPCTLSyclEventRef dpnp_cov_c(DPCTLSyclQueueRef q_ref,
                                 nrows,                            // std::int64_t n,
                                 ncols,                            // std::int64_t k,
                                 alpha,                            // T alpha,
-                                temp,                             //const T* a,
+                                temp,                             // const T* a,
                                 ncols,                            // std::int64_t lda,
                                 beta,                             // T beta,
                                 result,                           // T* c,
@@ -1384,7 +1384,7 @@ void func_map_init_statistics(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_COV_EXT][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_cov_ext_c<double>};
     fmap[DPNPFuncName::DPNP_FN_COV_EXT][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_cov_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_COV_EXT][eft_FLT][eft_FLT] = {eft_DBL, (void*)dpnp_cov_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_COV_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cov_ext_c<float>};
     fmap[DPNPFuncName::DPNP_FN_COV_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cov_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_MAX][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_max_default_c<int32_t>};
