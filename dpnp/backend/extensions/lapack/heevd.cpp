@@ -28,7 +28,6 @@
 
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
-#include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
 #include "heevd.hpp"
@@ -48,7 +47,6 @@ namespace lapack
 
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
-namespace type_dispatch = dpctl::tensor::type_dispatch;
 namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*heevd_impl_fn_ptr_t)(sycl::queue,
@@ -60,7 +58,7 @@ typedef sycl::event (*heevd_impl_fn_ptr_t)(sycl::queue,
                                            std::vector<sycl::event>&,
                                            const std::vector<sycl::event>&);
 
-static heevd_impl_fn_ptr_t heevd_dispatch_table[type_dispatch::num_types][type_dispatch::num_types];
+static heevd_impl_fn_ptr_t heevd_dispatch_table[dpctl_td_ns::num_types][dpctl_td_ns::num_types];
 
 template <typename T, typename RealT>
 static sycl::event heevd_impl(sycl::queue exec_q,
@@ -202,7 +200,7 @@ std::pair<sycl::event, sycl::event> heevd(sycl::queue exec_q,
         throw py::value_error("An array with output eigenvalues must be C-contiguous");
     }
 
-    auto array_types = type_dispatch::usm_ndarray_types();
+    auto array_types = dpctl_td_ns::usm_ndarray_types();
     int eig_vecs_type_id = array_types.typenum_to_lookup_id(eig_vecs.get_typenum());
     int eig_vals_type_id = array_types.typenum_to_lookup_id(eig_vals.get_typenum());
 
@@ -245,7 +243,7 @@ struct HeevdContigFactory
 
 void init_heevd_dispatch_table(void)
 {
-    type_dispatch::DispatchTableBuilder<heevd_impl_fn_ptr_t, HeevdContigFactory, type_dispatch::num_types> contig;
+    dpctl_td_ns::DispatchTableBuilder<heevd_impl_fn_ptr_t, HeevdContigFactory, dpctl_td_ns::num_types> contig;
     contig.populate_dispatch_table(heevd_dispatch_table);
 }
 }

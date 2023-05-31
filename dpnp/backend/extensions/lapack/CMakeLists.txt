@@ -45,7 +45,7 @@ target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_
 target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../src)
 
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
-target_include_directories(${py_module_name} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})
+target_include_directories(${python_module_name} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})
 
 if (WIN32)
   target_compile_options(${python_module_name} PRIVATE

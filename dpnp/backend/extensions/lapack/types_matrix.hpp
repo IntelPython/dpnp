@@ -27,6 +27,10 @@
 
 #include <type_traits>
 
+#include "utils/type_dispatch.hpp"
+
+namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+
 namespace dpnp
 {
 namespace backend
@@ -47,10 +51,10 @@ namespace types
 template <typename T, typename RealT>
 struct HeevdTypePairSupportFactory
 {
-    static constexpr bool is_defined = std::disjunction<TypePairDefinedEntry<T, std::complex<double>, RealT, double>,
-                                                        TypePairDefinedEntry<T, std::complex<float>, RealT, float>,
+    static constexpr bool is_defined = std::disjunction<dpctl_td_ns::TypePairDefinedEntry<T, std::complex<double>, RealT, double>,
+                                                        dpctl_td_ns::TypePairDefinedEntry<T, std::complex<float>, RealT, float>,
                                                         // fall-through
-                                                        NotDefinedEntry>::is_defined;
+                                                        dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
 
 /**
@@ -62,10 +66,10 @@ struct HeevdTypePairSupportFactory
 template <typename T>
 struct SyevdTypePairSupportFactory
 {
-    static constexpr bool is_defined = std::disjunction<TypePairDefinedEntry<T, double, T, double>,
-                                                        TypePairDefinedEntry<T, float, T, float>,
+    static constexpr bool is_defined = std::disjunction<dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
+                                                        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
                                                         // fall-through
-                                                        NotDefinedEntry>::is_defined;
+                                                        dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
 }
 }
