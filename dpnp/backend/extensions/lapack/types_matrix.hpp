@@ -27,8 +27,10 @@
 
 #include <type_traits>
 
+// dpctl tensor headers
 #include "utils/type_dispatch.hpp"
 
+// dpctl namespace for operations with types
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
 namespace dpnp
