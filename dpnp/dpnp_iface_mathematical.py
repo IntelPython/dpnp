@@ -40,8 +40,11 @@ it contains:
 """
 
 
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
+from .dpnp_algo import *
+from .dpnp_algo.dpnp_elementwise_common import (
+    dpnp_divide
+)
+from .dpnp_utils import *
 
 import dpnp
 
@@ -586,6 +589,7 @@ def divide(x1,
            out=None,
            *,
            where=True,
+           order='K',
            dtype=None,
            subok=True,
            **kwargs):
@@ -617,28 +621,24 @@ def divide(x1,
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
+    if where is not True:
         pass
     elif dtype is not None:
         pass
     elif subok is not True:
         pass
+    elif kwargs:
+        pass
     elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
         # at least either x1 or x2 has to be an array
         pass
     else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        if order in "afkcAFKC":
+            order = order.upper()
+        else:
+            raise ValueError("order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(order))
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        if x1_desc and x2_desc:
-            return dpnp_divide(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
-
+        return dpnp_divide(x1, x2, out=out, order=order)
     return call_origin(numpy.divide, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
 
 
