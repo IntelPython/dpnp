@@ -43,7 +43,6 @@ __all__ += [
     "dpnp_repeat",
     "dpnp_reshape",
     "dpnp_transpose",
-    "dpnp_squeeze",
 ]
 
 
@@ -294,23 +293,3 @@ cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=No
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_squeeze(utils.dpnp_descriptor in_array, axis):
-    cdef shape_type_c shape_list
-    if axis is None:
-        for i in range(in_array.ndim):
-            if in_array.shape[i] != 1:
-                shape_list.push_back(in_array.shape[i])
-    else:
-        axis_norm = utils._object_to_tuple(utils.normalize_axis(utils._object_to_tuple(axis), in_array.ndim))
-        for i in range(in_array.ndim):
-            if i in axis_norm:
-                if in_array.shape[i] != 1:
-                    utils.checker_throw_value_error("dpnp_squeeze", "axis", axis, "axis has size not equal to one")
-            else:
-                shape_list.push_back(in_array.shape[i])
-
-    in_array_obj = in_array.get_array()
-
-    return dpnp_reshape(dpnp_copy(in_array), shape_list)

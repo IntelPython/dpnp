@@ -67,7 +67,9 @@ __all__ = [
     "from_dlpack",
     "get_dpnp_descriptor",
     "get_include",
-    "get_normalized_queue_device"
+    "get_normalized_queue_device",
+    "get_usm_ndarray",
+    "is_supported_array_type"
 ]
 
 from dpnp import (
@@ -371,3 +373,53 @@ def get_normalized_queue_device(obj=None,
     if hasattr(dpt._device, 'normalize_queue_device'):
         return dpt._device.normalize_queue_device(sycl_queue=sycl_queue, device=device)
     return sycl_queue
+
+
+def get_usm_ndarray(a):
+    """
+    Return :class:`dpctl.tensor.usm_ndarray` from input array `a`.
+
+    Parameters
+    ----------
+    a : {dpnp_array, usm_ndarray}
+        Input array of supported type :class:`dpnp.ndarray`
+        or :class:`dpctl.tensor.usm_ndarray`.
+
+    Returns
+    -------
+    out : usm_ndarray
+        A dpctl USM ndarray of input array `a`.
+
+    Raises
+    ------
+    TypeError
+        If input parameter `a` is of unsupported array type.
+
+    """
+
+    if isinstance(a, dpnp_array):
+        return a.get_array()
+    if isinstance(a, dpt.usm_ndarray):
+        return a
+    raise TypeError("An array must be any of supported type, but got {}".format(type(a)))
+
+
+def is_supported_array_type(a):
+    """
+    Return ``True`` if an array of either type :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray` type, ``False`` otherwise.
+
+    Parameters
+    ----------
+    a : array
+        An input array to check the type.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if type of array `a` is supported array type,
+        ``False`` otherwise.
+
+    """
+
+    return isinstance(a, (dpnp_array, dpt.usm_ndarray))
