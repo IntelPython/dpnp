@@ -473,17 +473,24 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">hstack</span><span class="p">,</span> <span class="n">tup_new</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="moveaxis"><a class="viewcode-back" href="../../reference/generated/dpnp.moveaxis.html#dpnp.moveaxis">[docs]</a><span class="k">def</span> <span class="nf">moveaxis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<div class="viewcode-block" id="moveaxis"><a class="viewcode-back" href="../../reference/generated/dpnp.moveaxis.html#dpnp.moveaxis">[docs]</a><span class="k">def</span> <span class="nf">moveaxis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Move axes of an array to new positions. Other axes remain in their original order.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.moveaxis`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Array with moved axes.</span>
+<span class="sd">        The returned array will have the same data and</span>
+<span class="sd">        the same USM allocation type as `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array ``x1`` is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `x` is supported as either :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Sizes of normalized input arrays are supported to be equal.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
@@ -502,30 +509,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="n">source_norm</span> <span class="o">=</span> <span class="n">normalize_axis</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
-        <span class="n">destination_norm</span> <span class="o">=</span> <span class="n">normalize_axis</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
+        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_norm</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">destination_norm</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># &#39;do nothing&#39; pattern for transpose() with no elements in &#39;source&#39;</span>
-            <span class="n">input_permute</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">source_norm</span><span class="p">:</span>
-                    <span class="n">input_permute</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-
-            <span class="c1"># insert moving axes into proper positions</span>
-            <span class="k">for</span> <span class="n">destination_id</span><span class="p">,</span> <span class="n">source_id</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">destination_norm</span><span class="p">,</span> <span class="n">source_norm</span><span class="p">)):</span>
-                <span class="c1"># if destination_id in input_permute:</span>
-                <span class="c1"># pytest tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_3</span>
-                <span class="c1"># checker_throw_value_error(&quot;swapaxes&quot;, &quot;source_id exists&quot;, source_id, input_permute)</span>
-                <span class="n">input_permute</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">destination_id</span><span class="p">,</span> <span class="n">source_id</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">transpose</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">axes</span><span class="o">=</span><span class="n">input_permute</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ravel"><a class="viewcode-back" href="../../reference/generated/dpnp.ravel.html#dpnp.ravel">[docs]</a><span class="k">def</span> <span class="nf">ravel</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
