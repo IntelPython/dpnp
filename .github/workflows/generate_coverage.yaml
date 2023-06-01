@@ -15,6 +15,7 @@ jobs:
 
     env:
       python-ver: '3.10'
+      CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
 
     steps:
       - name: Cancel Previous Runs
@@ -34,7 +35,6 @@ jobs:
           python-version: ${{ env.python-ver }}
           miniconda-version: 'latest'
           activate-environment: 'coverage'
-          channels: intel, conda-forge
 
       - name: Install Lcov
         run: |
@@ -42,7 +42,7 @@ jobs:
       - name: Install dpnp dependencies
         run: |
           conda install cython llvm cmake scikit-build ninja pytest pytest-cov coverage[toml] \
-              dppy/label/dev::dpctl dpcpp_linux-64  mkl-devel-dpcpp  tbb-devel  onedpl-devel
+              dpctl dpcpp_linux-64 sysroot_linux-64">=2.28" mkl-devel-dpcpp tbb-devel onedpl-devel ${{ env.CHANNELS }}
       - name: Conda info
         run: |
           conda info
@@ -54,7 +54,7 @@ jobs:
       - name: Install coverall dependencies
         run: |
           sudo gem install coveralls-lcov
-          conda install coveralls
+          pip install coveralls==3.2.0
       - name: Upload coverage data to coveralls.io
         run: |
           echo "Processing pytest-coverage"
