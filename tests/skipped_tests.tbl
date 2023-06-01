@@ -202,8 +202,6 @@ tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: (dpnp
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray(x).astype(dpnp.int8)]
 
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-float32-1]
-
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestAngle::test_angle
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_inplace
@@ -269,6 +267,8 @@ tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction:
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_multiple_axes
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_multiple_axes_keepdims
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan_imag
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan_real
 
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_max
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_min
@@ -486,11 +486,14 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_choicelist_condlist_broadcast
+tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_complex
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default
+tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default_complex
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default_scalar
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_empty_lists
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_length_error
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable
+tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable_complex
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_non_broadcastable
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_type_error_condlist
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal
@@ -738,8 +741,6 @@ tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_2_{reps
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_3_{reps=(0, 1)}::test_array_tile
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_4_{reps=(2, 3)}::test_array_tile
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_5_{reps=(2, 3, 4, 5)}::test_array_tile
-tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_2
-tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_3
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_455_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_457_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='fmod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_459_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='remainder', use_dtype=False}::test_binary
@@ -822,9 +823,14 @@ tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_5_{de
 tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_5_{decimals=99}::test_round_small
 tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_6_{decimals=100}::test_round_large
 tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_6_{decimals=100}::test_round_small
+tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_around
+tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_ceil
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
+tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_floor
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint_negative
+tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_round_
+tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_trunc
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_keepdims
@@ -1172,18 +1178,7 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_original_array_not_modified_multi_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_original_array_not_modified_one_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_zero_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_kth
+
 tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_F_order
 tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_lexsort_dtype
 tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_lexsort_three_or_more_dim
@@ -1193,30 +1188,7 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_nan3
 tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_view
 tests/third_party/cupy/sorting_tests/test_sort.py::TestMsort::test_msort_multi_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestMsort::test_msort_one_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_multi_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_non_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_one_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_sequence_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_zero_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_multi_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_non_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_one_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_sequence_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_zero_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_multi_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_one_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_zero_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_multi_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_one_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_zero_dim
+
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort_complex::test_sort_complex_1dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort_complex::test_sort_complex_nan
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort_complex::test_sort_complex_ndim
@@ -1310,6 +1282,8 @@ tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_b
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_array_bins
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_bins_not_ordered
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_complex_weights
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_complex_weights_uneven_bins
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_density
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_empty
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_float_weights

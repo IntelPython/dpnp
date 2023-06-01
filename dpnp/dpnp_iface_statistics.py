@@ -41,7 +41,7 @@ it contains:
 
 
 import numpy
-
+import dpctl.tensor as dpt
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.dpnp_array import dpnp_array
@@ -247,7 +247,7 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
     Limitations
     -----------
     Input array ``m`` is supported as :obj:`dpnp.ndarray`.
-    Dimension of input array ``m`` is limited by ``m.ndim > 2``.
+    Dimension of input array ``m`` is limited by ``m.ndim <= 2``.
     Size and shape of input arrays are supported to be equal.
     Prameters ``y`` is supported only with default value ``None``.
     Prameters ``bias`` is supported only with default value ``False``.
@@ -257,7 +257,7 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    .. seealso:: :obj:`dpnp.corrcoef` normalized covariance matrix.
+    .. see also:: :obj:`dpnp.corrcoef` normalized covariance matrix.
 
     Examples
     --------
@@ -274,31 +274,30 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
     [1.0, -1.0, -1.0, 1.0]
 
     """
+    if not isinstance(x1, (dpnp_array, dpt.usm_ndarray)):
+        pass
+    elif x1.ndim > 2:
+        pass
+    elif y is not None:
+        pass
+    elif bias:
+        pass
+    elif ddof is not None:
+        pass
+    elif fweights is not None:
+        pass
+    elif aweights is not None:
+        pass
+    else:
+        if not rowvar and x1.shape[0] != 1:
+            x1 = x1.get_array() if isinstance(x1, dpnp_array) else x1
+            x1 = dpnp_array._create_from_usm_ndarray(x1.mT)
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.ndim > 2:
-            pass
-        elif y is not None:
-            pass
-        elif bias:
-            pass
-        elif ddof is not None:
-            pass
-        elif fweights is not None:
-            pass
-        elif aweights is not None:
-            pass
-        else:
-            if not rowvar and x1.shape[0] != 1:
-                x1 = x1.get_array() if isinstance(x1, dpnp_array) else x1
-                x1 = dpnp_array._create_from_usm_ndarray(x1.mT)
-                x1 = dpnp.astype(x1, dpnp.float64) if x1_desc.dtype != dpnp.float64 else x1
-                x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-            elif x1_desc.dtype != dpnp.float64:
-                x1 = dpnp.astype(x1, dpnp.float64)
-                x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+        if not x1.dtype in (dpnp.float32, dpnp.float64):
+            x1 = dpnp.astype(x1, dpnp.default_float_type(sycl_queue=x1.sycl_queue))
 
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+        if x1_desc:
             return dpnp_cov(x1_desc).get_pyobj()
 
     return call_origin(numpy.cov, x1, y, rowvar, bias, ddof, fweights, aweights)
