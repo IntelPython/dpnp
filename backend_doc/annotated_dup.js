@@ -1,5 +1,17 @@
 var annotated_dup =
 [
+    [ "dpnp", null, [
+      [ "backend", null, [
+        [ "ext", null, [
+          [ "lapack", null, [
+            [ "types", null, [
+              [ "HeevdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
+              [ "SyevdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ]
+            ] ]
+          ] ]
+        ] ]
+      ] ]
+    ] ],
     [ "are_same", "structare__same.html", null ],
     [ "backend_sycl", "classbackend__sycl.html", "classbackend__sycl" ],
     [ "dpnp_less_comp", "classdpnp__less__comp.html", null ],
