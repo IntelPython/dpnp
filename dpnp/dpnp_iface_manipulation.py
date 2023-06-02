@@ -388,17 +388,24 @@ def hstack(tup):
     return call_origin(numpy.hstack, tup_new)
 
 
-def moveaxis(x1, source, destination):
+def moveaxis(x, source, destination):
     """
     Move axes of an array to new positions. Other axes remain in their original order.
 
     For full documentation refer to :obj:`numpy.moveaxis`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array with moved axes.
+        The returned array will have the same data and
+        the same USM allocation type as `x`.
+
     Limitations
     -----------
-    Input array ``x1`` is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
     Otherwise the function will be executed sequentially on CPU.
-    Sizes of normalized input arrays are supported to be equal.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -417,30 +424,11 @@ def moveaxis(x1, source, destination):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        source_norm = normalize_axis(source, x1_desc.ndim)
-        destination_norm = normalize_axis(destination, x1_desc.ndim)
+    if isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
+        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+        return dpnp_array._create_from_usm_ndarray(dpt.moveaxis(dpt_array, source, destination))
 
-        if len(source_norm) != len(destination_norm):
-            pass
-        else:
-            # 'do nothing' pattern for transpose() with no elements in 'source'
-            input_permute = []
-            for i in range(x1_desc.ndim):
-                if i not in source_norm:
-                    input_permute.append(i)
-
-            # insert moving axes into proper positions
-            for destination_id, source_id in sorted(zip(destination_norm, source_norm)):
-                # if destination_id in input_permute:
-                # pytest tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_3
-                # checker_throw_value_error("swapaxes", "source_id exists", source_id, input_permute)
-                input_permute.insert(destination_id, source_id)
-
-            return transpose(x1_desc.get_pyobj(), axes=input_permute)
-
-    return call_origin(numpy.moveaxis, x1, source, destination)
+    return call_origin(numpy.moveaxis, x, source, destination)
 
 
 def ravel(x1, order='C'):
@@ -583,11 +571,27 @@ def rollaxis(x1, axis, start=0):
     return call_origin(numpy.rollaxis, x1, axis, start)
 
 
-def squeeze(x1, axis=None):
+def squeeze(x, /, axis=None):
     """
-    Remove single-dimensional entries from the shape of an array.
+    Removes singleton dimensions (axes) from array `x`.
 
     For full documentation refer to :obj:`numpy.squeeze`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array is a view, if possible,
+        and a copy otherwise, but with all or a subset of the
+        dimensions of length 1 removed. Output has the same data
+        type as the input, is allocated on the same device as the
+        input and has the same USM allocation type as the input
+        array `x`.
+
+    Limitations
+    -----------
+    Parameters `x` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -602,26 +606,17 @@ def squeeze(x1, axis=None):
     >>> np.squeeze(x, axis=1).shape
     Traceback (most recent call last):
     ...
-    ValueError: cannot select an axis to squeeze out which has size not equal to one
+    ValueError: Cannot select an axis to squeeze out which has size not equal to one.
     >>> np.squeeze(x, axis=2).shape
     (1, 3)
-    >>> x = np.array([[1234]])
-    >>> x.shape
-    (1, 1)
-    >>> np.squeeze(x)
-    array(1234)  # 0d array
-    >>> np.squeeze(x).shape
-    ()
-    >>> np.squeeze(x)[()]
-    1234
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        return dpnp_squeeze(x1_desc, axis).get_pyobj()
+    if isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
+        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+        return dpnp_array._create_from_usm_ndarray(dpt.squeeze(dpt_array, axis))
 
-    return call_origin(numpy.squeeze, x1, axis)
+    return call_origin(numpy.squeeze, x, axis)
 
 
 def stack(arrays, axis=0, out=None):
