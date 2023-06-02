@@ -48,6 +48,7 @@ test:
       - python -c "import dpnp"
       - pytest -s
 
+
 about:
     home: https://github.com/IntelPython/dpnp
     license: BSD-2-Clause
