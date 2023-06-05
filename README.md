@@ -113,4 +113,4 @@ asv run --python=python --bench Elementwise.time_square
 |8  |Valgrind                            |Linux|Ubuntu 20.04|           |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace                                        |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
 |9  |Code coverage                       |Linux|Ubuntu 20.04|Python 3.8 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace                                        |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis, conda-verify, pycodestyle, autopep8, pytest-cov|
 
-[comment]: <> (This is a dummy comment. )
+[comment]: <> (This is a dummy comment. Update comment)
