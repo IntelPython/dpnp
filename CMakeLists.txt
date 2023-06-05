@@ -146,4 +146,4 @@ if(DEFINED SKBUILD)
 endif()
 
 add_subdirectory(dpnp)
-message(STATUS "Build is done!! Completely!")
+message(STATUS "Build is done!! Completely!!")
