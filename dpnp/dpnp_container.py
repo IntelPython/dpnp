@@ -86,22 +86,34 @@ def asarray(x1,
             usm_type=None,
             sycl_queue=None):
     """Converts `x1` to `dpnp_array`."""
-    if isinstance(x1, dpnp_array):
-        x1_obj = x1.get_array()
-    else:
-        x1_obj = x1
+    dpu.validate_usm_type(usm_type, allow_none=True)
 
-    sycl_queue_normalized = dpnp.get_normalized_queue_device(x1_obj, device=device, sycl_queue=sycl_queue)
     if order is None:
         order = 'C'
 
     """Converts incoming 'x1' object to 'dpnp_array'."""
-    array_obj = dpt.asarray(x1_obj,
-                            dtype=dtype,
-                            copy=copy,
-                            order=order,
-                            usm_type=usm_type,
-                            sycl_queue=sycl_queue_normalized)
+    if isinstance(x1, (list, tuple, range)):
+        array_obj = dpt.asarray(x1,
+                                dtype=dtype,
+                                copy=copy,
+                                order=order,
+                                device=device,
+                                usm_type=usm_type,
+                                sycl_queue=sycl_queue)
+    else:
+        if isinstance(x1, dpnp_array):
+            x1_obj = x1.get_array()
+        else:
+            x1_obj = x1
+
+        sycl_queue_normalized = dpnp.get_normalized_queue_device(x1_obj, device=device, sycl_queue=sycl_queue)
+
+        array_obj = dpt.asarray(x1_obj,
+                                dtype=dtype,
+                                copy=copy,
+                                order=order,
+                                usm_type=usm_type,
+                                sycl_queue=sycl_queue_normalized)
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
 

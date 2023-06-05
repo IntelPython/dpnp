@@ -1,11 +1,73 @@
 import pytest
+from .helper import get_all_dtypes
+
 
 import dpnp
 
 import numpy
 from numpy.testing import (
-    assert_array_equal
+    assert_,
+    assert_array_equal,
+    assert_equal
 )
+
+
+class TestIndexing:
+    def test_ellipsis_index(self):
+        a = dpnp.array([[1, 2, 3],
+                        [4, 5, 6],
+                        [7, 8, 9]])
+        assert_(a[...] is not a)
+        assert_equal(a[...], a)
+
+        # test that slicing with ellipsis doesn't skip an arbitrary number of dimensions
+        assert_equal(a[0, ...], a[0])
+        assert_equal(a[0, ...], a[0,:])
+        assert_equal(a[..., 0], a[:, 0])
+
+        # test that slicing with ellipsis always results in an array
+        assert_equal(a[0, ..., 1], dpnp.array(2))
+
+        # assignment with `(Ellipsis,)` on 0-d arrays
+        b = dpnp.array(1)
+        b[(Ellipsis,)] = 2
+        assert_equal(b, 2)
+
+    def test_boolean_indexing_list(self):
+        a = dpnp.array([1, 2, 3])
+        b = dpnp.array([True, False, True])
+
+        assert_equal(a[b], [1, 3])
+        assert_equal(a[None, b], [[1, 3]])
+
+    def test_indexing_array_weird_strides(self):
+        np_x = numpy.ones(10)
+        dp_x = dpnp.ones(10)
+
+        np_ind = numpy.arange(10)[:, None, None, None]
+        np_ind = numpy.broadcast_to(np_ind, (10, 55, 4, 4))
+
+        dp_ind = dpnp.arange(10)[:, None, None, None]
+        dp_ind = dpnp.broadcast_to(dp_ind, (10, 55, 4, 4))
+
+        # single advanced index case
+        assert_array_equal(dp_x[dp_ind], np_x[np_ind])
+
+        np_x2 = numpy.ones((10, 2))
+        dp_x2 = dpnp.ones((10, 2))
+
+        np_zind = numpy.zeros(4, dtype=np_ind.dtype)
+        dp_zind = dpnp.zeros(4, dtype=dp_ind.dtype)
+
+        # higher dimensional advanced index
+        assert_array_equal(dp_x2[dp_ind, dp_zind], np_x2[np_ind, np_zind])
+
+    def test_indexing_array_negative_strides(self):
+        arr = dpnp.zeros((4, 4))[::-1, ::-1]
+
+        slices = (slice(None), dpnp.array([0, 1, 2, 3]))
+        arr[slices] = 10
+        assert_array_equal(arr, 10.)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -50,6 +112,18 @@ def test_diagonal(array, offset):
     ia = dpnp.array(a)
     expected = numpy.diagonal(a, offset)
     result = dpnp.diagonal(ia, offset)
+    assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("arr_dtype", get_all_dtypes())
+@pytest.mark.parametrize("cond_dtype", get_all_dtypes())
+def test_extract_1d(arr_dtype, cond_dtype):
+    a = numpy.array([-2, -1, 0, 1, 2, 3], dtype=arr_dtype)
+    ia = dpnp.array(a)
+    cond = numpy.array([1, -1, 2, 0, -2, 3], dtype=cond_dtype)
+    icond = dpnp.array(cond)
+    expected = numpy.extract(cond, a)
+    result = dpnp.extract(icond, ia)
     assert_array_equal(expected, result)
 
 
@@ -113,7 +187,6 @@ def test_nonzero(array):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("vals",
                          [[100, 200],
                           (100, 200)],
@@ -138,12 +211,12 @@ def test_place1(arr, mask, vals):
     ia = dpnp.array(a)
     m = numpy.array(mask)
     im = dpnp.array(m)
+    iv = dpnp.array(vals)
     numpy.place(a, m, vals)
-    dpnp.place(ia, im, vals)
+    dpnp.place(ia, im, iv)
     assert_array_equal(a, ia)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("vals",
                          [[100, 200],
                           [100, 200, 300, 400, 500, 600],
@@ -162,12 +235,12 @@ def test_place2(arr, mask, vals):
     ia = dpnp.array(a)
     m = numpy.array(mask)
     im = dpnp.array(m)
+    iv = dpnp.array(vals)
     numpy.place(a, m, vals)
-    dpnp.place(ia, im, vals)
+    dpnp.place(ia, im, iv)
     assert_array_equal(a, ia)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("vals",
                          [[100, 200],
                           [100, 200, 300, 400, 500, 600],
@@ -187,8 +260,9 @@ def test_place3(arr, mask, vals):
     ia = dpnp.array(a)
     m = numpy.array(mask)
     im = dpnp.array(m)
+    iv = dpnp.array(vals)
     numpy.place(a, m, vals)
-    dpnp.place(ia, im, vals)
+    dpnp.place(ia, im, iv)
     assert_array_equal(a, ia)
 
 
@@ -506,4 +580,23 @@ def test_triu_indices_from(array, k):
     ia = dpnp.array(a)
     result = dpnp.triu_indices_from(ia, k)
     expected = numpy.triu_indices_from(a, k)
+    assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("cond_dtype", get_all_dtypes())
+@pytest.mark.parametrize("scalar_dtype", get_all_dtypes(no_none=True))
+def test_where_with_scalars(cond_dtype, scalar_dtype):
+    a = numpy.array([-1, 0, 1, 0], dtype=cond_dtype)
+    ia = dpnp.array(a)
+
+    result = dpnp.where(ia, scalar_dtype(1), scalar_dtype(0))
+    expected = numpy.where(a, scalar_dtype(1), scalar_dtype(0))
+    assert_array_equal(expected, result)
+
+    result = dpnp.where(ia, ia*2, scalar_dtype(0))
+    expected = numpy.where(a, a*2, scalar_dtype(0))
+    assert_array_equal(expected, result)
+
+    result = dpnp.where(ia, scalar_dtype(1), dpnp.array(0))
+    expected = numpy.where(a, scalar_dtype(1), numpy.array(0))
     assert_array_equal(expected, result)

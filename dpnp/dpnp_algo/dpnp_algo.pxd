@@ -217,7 +217,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_PARTITION
         DPNP_FN_PARTITION_EXT
         DPNP_FN_PLACE
-        DPNP_FN_PLACE_EXT
         DPNP_FN_POWER
         DPNP_FN_POWER_EXT
         DPNP_FN_PROD
@@ -355,7 +354,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_VANDER_EXT
         DPNP_FN_VAR
         DPNP_FN_VAR_EXT
-        DPNP_FN_WHERE_EXT
         DPNP_FN_ZEROS
         DPNP_FN_ZEROS_LIKE
 
@@ -578,7 +576,6 @@ Searching functions
 """
 cpdef dpnp_descriptor dpnp_argmax(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_argmin(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_where(dpnp_descriptor cond_obj, dpnp_descriptor x_obj, dpnp_descriptor y_obj)
 
 """
 Trigonometric functions
@@ -604,7 +601,7 @@ cpdef dpnp_descriptor dpnp_radians(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_recip(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_sin(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_sinh(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_sqrt(dpnp_descriptor array1)
+cpdef dpnp_descriptor dpnp_sqrt(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_square(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_tan(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_tanh(dpnp_descriptor array1)

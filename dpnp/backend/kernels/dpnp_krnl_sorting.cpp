@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -160,6 +160,24 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
 
+    if (ndim == 1) // 1d array with C-contiguous data
+    {
+        _DataType* arr = static_cast<_DataType*>(array1_in);
+        _DataType* result = static_cast<_DataType*>(result1);
+
+        auto policy = oneapi::dpl::execution::make_device_policy<dpnp_partition_c_kernel<_DataType>>(q);
+
+        // fill the result array with data from input one
+        q.memcpy(result, arr, size * sizeof(_DataType)).wait();
+
+        // make a partial sorting such that:
+        // 1. result[0 <= i < kth]    <= result[kth]
+        // 2. result[kth <= i < size] >= result[kth]
+        // event-blocking call, no need for wait()
+        std::nth_element(policy, result, result + kth, result + size, dpnp_less_comp());
+        return event_ref;
+    }
+
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size, true);
     DPNPC_ptr_adapter<_DataType> input2_ptr(q_ref, array2_in, size, true);
     DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result1, size, true, true);
@@ -181,7 +199,7 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
             size_t ind = j - ind_begin;
             matrix[ind] = arr2[j];
         }
-        std::partial_sort(matrix, matrix + shape_[ndim - 1], matrix + shape_[ndim - 1]);
+        std::partial_sort(matrix, matrix + shape_[ndim - 1], matrix + shape_[ndim - 1], dpnp_less_comp());
         for (size_t j = ind_begin; j < ind_end + 1; ++j)
         {
             size_t ind = j - ind_begin;
@@ -492,10 +510,13 @@ void func_map_init_sorting(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_partition_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_partition_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_PARTITION_EXT][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_partition_ext_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_partition_ext_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_partition_ext_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_partition_ext_c<float>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_partition_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_PARTITION_EXT][eft_C64][eft_C64] = {eft_C64, (void*)dpnp_partition_ext_c<std::complex<float>>};
+    fmap[DPNPFuncName::DPNP_FN_PARTITION_EXT][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_partition_ext_c<std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_INT][eft_INT] = {
         eft_INT, (void*)dpnp_searchsorted_default_c<int32_t, int64_t>};

@@ -1,5 +1,5 @@
 import pytest
-
+from .helper import get_all_dtypes
 import dpnp
 
 import numpy
@@ -114,3 +114,18 @@ class TestBincount:
         expected = numpy.bincount(np_a, weights=weights)
         result = dpnp.bincount(dpnp_a, weights=weights)
         numpy.testing.assert_array_equal(expected, result)
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True))
+def test_cov_rowvar(dtype):
+    a = dpnp.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
+    b = numpy.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
+    numpy.testing.assert_array_equal(dpnp.cov(a.T), dpnp.cov(a,rowvar=False))
+    numpy.testing.assert_array_equal(numpy.cov(b,rowvar=False), dpnp.cov(a,rowvar=False))
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True))
+def test_cov_1D_rowvar(dtype):
+    a = dpnp.array([[0, 1, 2]], dtype=dtype)
+    b = numpy.array([[0, 1, 2]], dtype=dtype)
+    numpy.testing.assert_array_equal(numpy.cov(b,rowvar=False), dpnp.cov(a,rowvar=False))
+
+

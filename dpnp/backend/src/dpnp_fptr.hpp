@@ -164,7 +164,7 @@ template <typename T, typename... Ts>
 struct are_same : std::conjunction<std::is_same<T, Ts>...> {};
 
 /**
- * A template constant to check if type T matces any type from Ts.
+ * A template constant to check if type T matches any type from Ts.
  */
 template <typename T, typename... Ts>
 constexpr auto is_any_v = is_any<T, Ts...>::value;
@@ -186,6 +186,59 @@ constexpr auto both_types_are_any_of = std::conjunction_v<is_any<T1, Ts...>, is_
  */
 template <typename T1, typename T2, typename... Ts>
 constexpr auto none_of_both_types = !std::disjunction_v<is_any<T1, Ts...>, is_any<T2, Ts...>>;
+
+
+/**
+ * @brief If the type _Tp is a reference type, provides the member typedef type which is the type referred to by _Tp
+ * with its topmost cv-qualifiers removed. Otherwise type is _Tp with its topmost cv-qualifiers removed.
+ *
+ * @note std::remove_cvref is only available since c++20
+ */
+template<typename _Tp>
+using dpnp_remove_cvref_t = typename std::remove_cv_t<typename std::remove_reference_t<_Tp>>;
+
+
+/**
+ * @brief "<" comparison with complex types support.
+ *
+ * @note return a result of lexicographical "<" comparison for complex types.
+ */
+class dpnp_less_comp
+{
+public:
+    template <typename _Xp, typename _Yp>
+    bool operator()(_Xp&& __x, _Yp&& __y) const
+    {
+        if constexpr (both_types_are_same<dpnp_remove_cvref_t<_Xp>, dpnp_remove_cvref_t<_Yp>, std::complex<float>, std::complex<double>>)
+        {
+            bool ret = false;
+            _Xp a = std::forward<_Xp>(__x);
+            _Yp b = std::forward<_Yp>(__y);
+
+            if (a.real() < b.real())
+            {
+                ret = (a.imag() == a.imag() || b.imag() != b.imag());
+            }
+            else if (a.real() > b.real())
+            {
+                ret = (b.imag() != b.imag() && a.imag() == a.imag());
+            }
+            else if (a.real() == b.real() || (a.real() != a.real() && b.real() != b.real()))
+            {
+                ret = (a.imag() < b.imag() || (b.imag() != b.imag() && a.imag() == a.imag()));
+            }
+            else
+            {
+                ret = (b.real() != b.real());
+            }
+            return ret;
+        }
+        else
+        {
+            return std::forward<_Xp>(__x) < std::forward<_Yp>(__y);
+        }
+    }
+};
 
 /**
  * FPTR interface initialization functions

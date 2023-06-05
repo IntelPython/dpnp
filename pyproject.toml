@@ -1,0 +1,34 @@
+[tool.coverage.run]
+plugins = [
+    "Cython.Coverage"
+]
+branch = true
+source = [
+    "dpnp",
+]
+omit = [
+    "tests/*",
+    "dpnp/_version.py",
+]
+
+[tool.coverage.report]
+omit = [
+    "tests/*",
+    "dpnp/_version.py",
+]
+
+[tool.pytest.ini.options]
+minversion = "6.0"
+norecursedirs= [
+    ".*", "*.egg*", "build", "dist", "conda-recipe",
+]
+addopts = [
+    "--junitxml=junit.xml",
+    "--ignore setup.py",
+    "--ignore run_test.py",
+    "--cov-report term-missing",
+    "--tb native",
+    "--strict",
+    "--durations=20",
+    "-q -ra",
+]

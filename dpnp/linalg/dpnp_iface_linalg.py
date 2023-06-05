@@ -41,6 +41,10 @@ it contains:
 
 
 import dpnp
+from .dpnp_utils_linalg import (
+    dpnp_eigh
+)
+
 import numpy
 
 from dpnp.dpnp_utils import *
@@ -53,6 +57,7 @@ __all__ = [
     "cond",
     "det",
     "eig",
+    "eigh",
     "eigvals",
     "inv",
     "matrix_power",
@@ -170,6 +175,68 @@ def eig(x1):
             return dpnp_eig(x1_desc)
 
     return call_origin(numpy.linalg.eig, x1)
+
+
+def eigh(a, UPLO='L'):
+    """
+    Return the eigenvalues and eigenvectors of a complex Hermitian
+    (conjugate symmetric) or a real symmetric matrix.
+
+    Returns two objects, a 1-D array containing the eigenvalues of `a`, and
+    a 2-D square array or matrix (depending on the input type) of the
+    corresponding eigenvectors (in columns).
+
+    For full documentation refer to :obj:`numpy.linalg.eigh`.
+
+    Returns
+    -------
+    w : (..., M) dpnp.ndarray
+        The eigenvalues in ascending order, each repeated according to
+        its multiplicity.
+    v : (..., M, M) dpnp.ndarray
+        The column ``v[:, i]`` is the normalized eigenvector corresponding
+        to the eigenvalue ``w[i]``.
+
+    Limitations
+    -----------
+    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.eig` : eigenvalues and right eigenvectors for non-symmetric arrays.
+    :obj:`dpnp.eigvals` : eigenvalues of non-symmetric arrays.
+
+    Examples
+    --------
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, -2j], [2j, 5]])
+    >>> a
+    array([[ 1.+0.j, -0.-2.j],
+           [ 0.+2.j,  5.+0.j]])
+    >>> w, v = dp.linalg.eigh(a)
+    >>> w; v
+    array([0.17157288, 5.82842712]),
+    array([[-0.92387953-0.j        , -0.38268343+0.j        ], # may vary
+           [ 0.        +0.38268343j,  0.        -0.92387953j]]))
+    
+    """
+
+    if UPLO not in ('L', 'U'):
+        raise ValueError("UPLO argument must be 'L' or 'U'")
+
+    if not dpnp.is_supported_array_type(a):
+        raise TypeError("An array must be any of supported type, but got {}".format(type(a)))
+
+    if a.ndim < 2:
+        raise ValueError("%d-dimensional array given. Array must be "
+                         "at least two-dimensional" % a.ndim)
+
+    m, n = a.shape[-2:]
+    if m != n:
+        raise ValueError("Last 2 dimensions of the array must be square")
+
+    return dpnp_eigh(a, UPLO=UPLO)
 
 
 def eigvals(input):

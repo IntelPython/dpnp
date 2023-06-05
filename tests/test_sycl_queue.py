@@ -9,6 +9,7 @@ import dpctl
 import numpy
 
 from numpy.testing import (
+    assert_allclose,
     assert_array_equal,
     assert_raises
 )
@@ -218,7 +219,7 @@ def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
 
     dpnp_kwargs = dict(kwargs)
     dpnp_kwargs['device'] = device_y
-    
+
     y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
     numpy.testing.assert_allclose(y_orig, y)
 
@@ -279,6 +280,8 @@ def test_meshgrid(device_x, device_y):
                      [1., 2.]),
         pytest.param("sign",
                      [-5., 4.5]),
+        pytest.param("sqrt",
+                     [1., 3., 9.]),
         pytest.param("sum",
                      [1., 2.]),
         pytest.param("trapz",
@@ -297,7 +300,7 @@ def test_1in_1out(func, data, device):
     x = dpnp.array(data, device=device)
     result = getattr(dpnp, func)(x)
 
-    assert_array_equal(result, expected)
+    assert_allclose(result, expected)
 
     expected_queue = x.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -531,6 +534,33 @@ def test_random_state(func, args, kwargs, device, usm_type):
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
+    "func,data",
+    [
+        pytest.param("sqrt",
+                     [0., 1., 2., 3., 4., 5., 6., 7., 8.]),
+    ],
+)
+@pytest.mark.parametrize("device",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+def test_out_1in_1out(func, data, device):
+    x_orig = numpy.array(data)
+    np_out = getattr(numpy, func)(x_orig)
+    expected = numpy.empty_like(np_out)
+    getattr(numpy, func)(x_orig, out=expected)
+
+    x = dpnp.array(data, device=device)
+    dp_out = getattr(dpnp, func)(x)
+    result = dpnp.empty_like(dp_out)
+    getattr(dpnp, func)(x, out=result)
+
+    assert_allclose(result, expected)
+
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.parametrize(
     "func,data1,data2",
     [
         pytest.param("add",
@@ -574,7 +604,7 @@ def test_random_state(func, args, kwargs, device, usm_type):
 @pytest.mark.parametrize("device",
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
-def test_out(func, data1, data2, device):
+def test_out_2in_1out(func, data1, data2, device):
     x1_orig = numpy.array(data1)
     x2_orig = numpy.array(data2)
     np_out = getattr(numpy, func)(x1_orig, x2_orig)
@@ -724,6 +754,38 @@ def test_eig(device):
 
     numpy.testing.assert_allclose(dpnp_val, numpy_val, rtol=1e-05, atol=1e-05)
     numpy.testing.assert_allclose(dpnp_vec, numpy_vec, rtol=1e-05, atol=1e-05)
+
+    assert (dpnp_val.dtype == numpy_val.dtype)
+    assert (dpnp_vec.dtype == numpy_vec.dtype)
+    assert (dpnp_val.shape == numpy_val.shape)
+    assert (dpnp_vec.shape == numpy_vec.shape)
+
+    expected_queue = dpnp_data.get_array().sycl_queue
+    dpnp_val_queue = dpnp_val.get_array().sycl_queue
+    dpnp_vec_queue = dpnp_vec.get_array().sycl_queue
+
+    # compare queue and device
+    assert_sycl_queue_equal(dpnp_val_queue, expected_queue)
+    assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
+
+
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.parametrize("device",
+                          valid_devices,
+                          ids=[device.filter_string for device in valid_devices])
+def test_eigh(device):
+    size = 4
+    a = numpy.arange(size * size, dtype=numpy.float64).reshape((size, size))
+    symm_orig = numpy.tril(a) + numpy.tril(a, -1).T + numpy.diag(numpy.full((size,), size * size, dtype=numpy.float64))
+    numpy_data = symm_orig
+    dpnp_symm_orig = dpnp.array(numpy_data, device=device)
+    dpnp_data = dpnp_symm_orig
+
+    dpnp_val, dpnp_vec = dpnp.linalg.eigh(dpnp_data)
+    numpy_val, numpy_vec = numpy.linalg.eigh(numpy_data)
+
+    assert_allclose(dpnp_val, numpy_val, rtol=1e-05, atol=1e-05)
+    assert_allclose(dpnp_vec, numpy_vec, rtol=1e-05, atol=1e-05)
 
     assert (dpnp_val.dtype == numpy_val.dtype)
     assert (dpnp_vec.dtype == numpy_vec.dtype)
@@ -945,3 +1007,15 @@ def test_broadcast_to(device):
     x = dpnp.arange(5, device=device)
     y = dpnp.broadcast_to(x, (3, 5))
     assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
+
+
+@pytest.mark.parametrize("device_x",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+@pytest.mark.parametrize("device_y",
+                         valid_devices,
+                         ids=[device.filter_string for device in valid_devices])
+def test_asarray(device_x, device_y):
+    x = dpnp.array([1, 2, 3], device=device_x)
+    y = dpnp.asarray([x, x, x], device=device_y)
+    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)

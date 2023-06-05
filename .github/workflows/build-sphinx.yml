@@ -17,6 +17,7 @@ jobs:
 
     env:
       python-ver: '3.9'
+      CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
 
     steps:
       - name: Cancel Previous Runs
@@ -74,21 +75,20 @@ jobs:
       - name: Install dpnp dependencies
         run: |
           conda install dpctl mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
-              cmake cython pytest -c dppy/label/dev -c intel -c conda-forge
+              cmake cython pytest ninja scikit-build sysroot_linux-64">=2.28" ${{ env.CHANNELS }}
 
       - name: Install cuPy dependencies
-        run: conda install -c conda-forge cupy cudatoolkit=10.0
+        run: conda install cupy cudatoolkit=10.0
 
       - name: Conda info
-        run: |
-          conda info
-          conda list
+        run: conda info
+
+      - name: Conda list
+        run: conda list
 
       - name: Build library
         run: |
-          python setup.py build_clib
-          CC=icpx python setup.py build_ext --inplace
-          python setup.py develop
+          CC=icx CXX=icpx python setup.py develop -G Ninja -- -DDPCTL_MODULE_PATH=$(python -m dpctl --cmakedir)
 
       - name: Build docs
         run: make html

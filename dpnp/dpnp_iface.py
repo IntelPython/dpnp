@@ -67,7 +67,9 @@ __all__ = [
     "from_dlpack",
     "get_dpnp_descriptor",
     "get_include",
-    "get_normalized_queue_device"
+    "get_normalized_queue_device",
+    "get_usm_ndarray",
+    "is_supported_array_type"
 ]
 
 from dpnp import (
@@ -272,6 +274,10 @@ def get_dpnp_descriptor(ext_obj,
     if use_origin_backend():
         return False
 
+    # It's required to keep track of input object if a non-strided copy is going to be created.
+    # Thus there will be an extra descriptor allocated to refer on original input.
+    orig_desc = None
+
     # If input object is a scalar, it means it was allocated on host memory.
     # We need to copy it to USM memory according to compute follows data paradigm.
     if isscalar(ext_obj):
@@ -291,6 +297,7 @@ def get_dpnp_descriptor(ext_obj,
             ext_obj_offset = 0
 
         if ext_obj.strides != shape_offsets or ext_obj_offset != 0:
+            orig_desc = dpnp_descriptor(ext_obj)
             ext_obj = array(ext_obj)
 
     # while dpnp functions are based on DPNP_QUEUE
@@ -304,7 +311,7 @@ def get_dpnp_descriptor(ext_obj,
         if not queue_is_default:
             ext_obj = array(ext_obj, sycl_queue=default_queue)
 
-    dpnp_desc = dpnp_descriptor(ext_obj)
+    dpnp_desc = dpnp_descriptor(ext_obj, orig_desc)
     if dpnp_desc.is_valid:
         return dpnp_desc
 
@@ -366,3 +373,53 @@ def get_normalized_queue_device(obj=None,
     if hasattr(dpt._device, 'normalize_queue_device'):
         return dpt._device.normalize_queue_device(sycl_queue=sycl_queue, device=device)
     return sycl_queue
+
+
+def get_usm_ndarray(a):
+    """
+    Return :class:`dpctl.tensor.usm_ndarray` from input array `a`.
+
+    Parameters
+    ----------
+    a : {dpnp_array, usm_ndarray}
+        Input array of supported type :class:`dpnp.ndarray`
+        or :class:`dpctl.tensor.usm_ndarray`.
+
+    Returns
+    -------
+    out : usm_ndarray
+        A dpctl USM ndarray of input array `a`.
+
+    Raises
+    ------
+    TypeError
+        If input parameter `a` is of unsupported array type.
+
+    """
+
+    if isinstance(a, dpnp_array):
+        return a.get_array()
+    if isinstance(a, dpt.usm_ndarray):
+        return a
+    raise TypeError("An array must be any of supported type, but got {}".format(type(a)))
+
+
+def is_supported_array_type(a):
+    """
+    Return ``True`` if an array of either type :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray` type, ``False`` otherwise.
+
+    Parameters
+    ----------
+    a : array
+        An input array to check the type.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if type of array `a` is supported array type,
+        ``False`` otherwise.
+
+    """
+
+    return isinstance(a, (dpnp_array, dpt.usm_ndarray))

@@ -29,6 +29,23 @@ import numpy
 
 import dpnp
 
+
+def _get_unwrapped_index_key(key):
+    """
+    Return a key where each nested instance of DPNP array is unwrapped into USM ndarray
+    for futher processing in DPCTL advanced indexing functions.
+
+    """
+
+    if isinstance(key, tuple):
+        if any(isinstance(x, dpnp_array) for x in key):
+            # create a new tuple from the input key with unwrapped DPNP arrays
+            return tuple(x.get_array() if isinstance(x, dpnp_array) else x for x in key)
+    elif isinstance(key, dpnp_array):
+        return key.get_array()
+    return key
+
+
 class dpnp_array:
     """
     Multi-dimensional array object.
@@ -176,8 +193,7 @@ class dpnp_array:
  # '__getattribute__',
 
     def __getitem__(self, key):
-        if isinstance(key, dpnp_array):
-            key = key.get_array()
+        key = _get_unwrapped_index_key(key)
 
         item = self._array_obj.__getitem__(key)
         if not isinstance(item, dpt.usm_ndarray):
@@ -194,7 +210,10 @@ class dpnp_array:
         return dpnp.greater(self, other)
 
  # '__hash__',
- # '__iadd__',
+
+    def __iadd__(self, other):
+        dpnp.add(self, other, out=self)
+        return self
 
     def __iand__(self, other):
         dpnp.bitwise_and(self, other, out=self)
@@ -208,7 +227,10 @@ class dpnp_array:
 
  # '__imatmul__',
  # '__imod__',
- # '__imul__',
+
+    def __imul__(self, other):
+        dpnp.multiply(self, other, out=self)
+        return self
 
     def __index__(self):
         return self._array_obj.__index__()
@@ -334,8 +356,8 @@ class dpnp_array:
  # '__setattr__',
 
     def __setitem__(self, key, val):
-        if isinstance(key, dpnp_array):
-            key = key.get_array()
+        key = _get_unwrapped_index_key(key)
+
         if isinstance(val, dpnp_array):
             val = val.get_array()
 
@@ -760,6 +782,8 @@ class dpnp_array:
     @property
     def itemsize(self):
         """
+        Size of one array element in bytes.
+
         """
 
         return self._array_obj.itemsize
@@ -785,11 +809,20 @@ class dpnp_array:
 
         return dpnp.min(self, axis, out, keepdims, initial, where)
 
- # 'nbytes',
+    @property
+    def nbytes(self):
+        """
+        Total bytes consumed by the elements of the array.
+
+        """
+
+        return self._array_obj.nbytes
 
     @property
     def ndim(self):
         """
+        Number of array dimensions.
+
         """
 
         return self._array_obj.ndim
@@ -799,7 +832,32 @@ class dpnp_array:
     def nonzero(self):
         return dpnp.nonzero(self)
 
- # 'partition',
+    def partition(self, kth, axis=-1, kind='introselect', order=None):
+        """
+        Rearranges the elements in the array in such a way that the value of the
+        element in kth position is in the position it would be in a sorted array.
+
+        All elements smaller than the kth element are moved before this element and
+        all equal or greater are moved behind it. The ordering of the elements in
+        the two partitions is undefined.
+
+        Refer to `dpnp.partition` for full documentation.
+
+        See Also
+        --------
+        :obj:`dpnp.partition` : Return a partitioned copy of an array.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([3, 4, 2, 1])
+        >>> a.partition(3)
+        >>> a
+        array([1, 2, 3, 4])
+
+        """
+
+        self._array_obj = dpnp.partition(self, kth, axis=axis, kind=kind, order=order).get_array()
 
     def prod(self, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
         """
