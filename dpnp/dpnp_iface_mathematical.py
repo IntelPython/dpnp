@@ -635,6 +635,8 @@ def divide(x1,
     else:
         if order in "afkcAFKC":
             order = order.upper()
+        elif order is None:
+            order = 'K'
         else:
             raise ValueError("order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(order))
 
