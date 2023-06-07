@@ -53,6 +53,12 @@ Args:
         First input array, expected to have numeric data type.
     x2 (dpnp.ndarray):
         Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
 Returns:
     dpnp.ndarray:
         an array containing the result of element-wise division. The data type
