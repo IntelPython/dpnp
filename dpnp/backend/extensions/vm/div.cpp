@@ -219,6 +219,11 @@ bool can_call_div(sycl::queue exec_q,
     {
         return false;
     }
+    else if (dst_nd == 0)
+    {
+        // don't call OneMKL for 0d arrays
+        return false;
+    }
 
     // shapes must be the same
     const py::ssize_t* src1_shape = src1.get_shape_raw();
