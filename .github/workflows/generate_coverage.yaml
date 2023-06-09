@@ -66,6 +66,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_PARALLEL: true
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
 
   coveralls:
     name: Indicate completion to coveralls.io
