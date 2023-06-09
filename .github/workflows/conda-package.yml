@@ -194,8 +194,10 @@ jobs:
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
         run: |
-          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+          python -m pytest -q -ra --disable-warnings -vv -s ${{ env.TEST_SCOPE }}
         working-directory: ${{ env.tests-path }}
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 16
 
   test_windows:
     name: Test ['windows-latest', python='${{ matrix.python }}']
@@ -331,8 +333,10 @@ jobs:
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
         run: |
-          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+          python -m pytest -q -ra --disable-warnings -vv -s ${{ env.TEST_SCOPE }}
         working-directory: ${{ env.tests-path }}
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 16
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
