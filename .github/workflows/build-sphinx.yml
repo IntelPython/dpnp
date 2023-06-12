@@ -55,7 +55,7 @@ jobs:
           sudo apt-get install -y nvidia-cuda-toolkit clinfo
 
       - name: Checkout repo
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.2
 
       # https://github.com/marketplace/actions/setup-miniconda
       - name: Setup miniconda
@@ -108,7 +108,7 @@ jobs:
         if: |
           !github.event.pull_request.head.repo.fork  &&
           (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
-        uses: peaceiris/actions-gh-pages@v3.9.2
+        uses: peaceiris/actions-gh-pages@v3.9.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: doc/_build/html/

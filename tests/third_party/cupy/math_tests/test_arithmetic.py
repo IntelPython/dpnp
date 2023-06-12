@@ -168,13 +168,6 @@ class ArithmeticBinaryBase:
                         y = y.astype(dtype1)
                     elif is_array_arg2 and not is_array_arg1:
                         y = y.astype(dtype2)
-            elif self.name in ('divide', 'true_divide'):
-                # If one input is an array of float32 and another - an integer or floating scalar,
-                # NumPy will return an output array of float32, while DPNP will return the array of float64,
-                # since NumPy would use the same float64 type when instead of scalar here is array of integer of floating type.
-                if not (is_array_arg1 and is_array_arg2):
-                    if (is_array_arg1 and arg1.dtype == numpy.float32) ^ (is_array_arg2 and arg2.dtype == numpy.float32):
-                        y = y.astype(numpy.float32)
 
         # NumPy returns different values (nan/inf) on division by zero
         # depending on the architecture.

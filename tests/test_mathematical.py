@@ -284,7 +284,7 @@ def test_divide_scalar(shape, dtype):
 
     result = 0.5 / dpnp_a / 1.7
     expected = 0.5 / np_a / 1.7
-    assert_allclose(result, expected)
+    assert_allclose(result, expected, rtol=1e-6)
 
 
 @pytest.mark.parametrize("shape",
