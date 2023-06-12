@@ -118,7 +118,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_DIAGONAL
         DPNP_FN_DIAGONAL_EXT
         DPNP_FN_DIVIDE
-        DPNP_FN_DIVIDE_EXT
         DPNP_FN_DOT
         DPNP_FN_DOT_EXT
         DPNP_FN_EDIFF1D
@@ -531,8 +530,6 @@ cpdef dpnp_descriptor dpnp_add(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, o
                                dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_arctan2(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
-cpdef dpnp_descriptor dpnp_divide(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                  dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_hypot(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                  dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_maximum(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
