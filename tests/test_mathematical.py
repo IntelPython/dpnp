@@ -387,7 +387,7 @@ class TestEdiff1d:
         expected = numpy.ediff1d(np_a)
         assert_array_equal(expected, result)
 
-    
+
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_ediff1d_args(self):
         np_a = numpy.array([1, 2, 4, 7, 0])
@@ -934,6 +934,7 @@ def test_sum_empty(dtype, axis):
     assert_array_equal(numpy_res, dpnp_res.asnumpy())
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_bool=True))
 def test_sum_empty_out(dtype):
     a = dpnp.empty((1, 2, 0, 4), dtype=dtype)
