@@ -55,9 +55,7 @@ else()
   target_compile_options(${python_module_name} PRIVATE
     -fno-approx-func
     -fno-finite-math-only
-    -no-ipo
     )
-    target_link_options(${python_module_name} PRIVATE -no-ipo)
 endif()
 
 target_link_options(${python_module_name} PUBLIC -fsycl-device-code-split=per_kernel)
@@ -71,17 +69,6 @@ if (DPNP_GENERATE_COVERAGE)
 endif()
 
 target_link_libraries(${python_module_name} PUBLIC MKL::MKL_DPCPP)
-
-target_link_libraries(${python_module_name} PUBLIC oneDPL)
-
-if (UNIX)
-  # needed for STL headers with GCC < 11
-  target_compile_definitions(${python_module_name} PUBLIC _GLIBCXX_USE_TBB_PAR_BACKEND=0)
-endif()
-
-target_compile_definitions(${python_module_name} PUBLIC PSTL_USE_PARALLEL_POLICIES=0)
-# work-around for Windows at exit crash with predefined policies
-target_compile_definitions(${python_module_name} PUBLIC ONEDPL_USE_PREDEFINED_POLICIES=0)
 
 install(TARGETS ${python_module_name}
   DESTINATION "dpnp/backend/extensions/vm"

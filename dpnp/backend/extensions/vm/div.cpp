@@ -64,46 +64,16 @@ static sycl::event div_impl(sycl::queue exec_q,
 {
     type_utils::validate_type_for_device<T>(exec_q);
 
-    std::cerr << "enter div_impl" << std::endl;
+    const T* a = reinterpret_cast<const T*>(in_a);
+    const T* b = reinterpret_cast<const T*>(in_b);
+    T* y = reinterpret_cast<T*>(out_y);
 
-    const T* _a = reinterpret_cast<const T*>(in_a);
-    const T* _b = reinterpret_cast<const T*>(in_b);
-    T* _y = reinterpret_cast<T*>(out_y);
-
-    std::cerr << "casting is done" << std::endl;
-
-    T* a = sycl::malloc_device<T>(n, exec_q);
-    T* b = sycl::malloc_device<T>(n, exec_q);
-    T* y = sycl::malloc_device<T>(n, exec_q);
-
-    std::cerr << "malloc is done" << std::endl;
-
-    exec_q.copy(_a, a, n).wait();
-    exec_q.copy(_b, b, n).wait();
-    exec_q.copy(_y, y, n).wait();
-
-    std::cerr << "copy is done" << std::endl;
-
-    sycl::event ev = mkl_vm::div(exec_q,
+    return mkl_vm::div(exec_q,
                        n, // number of elements to be calculated
                        a, // pointer `a` containing 1st input vector of size n
                        b, // pointer `b` containing 2nd input vector of size n
                        y, // pointer `y` to the output vector of size n
                        depends);
-    ev.wait();
-
-    std::cerr << "div is done" << std::endl;
-
-    exec_q.copy(y, _y, n).wait();
-
-    std::cerr << "copy is done" << std::endl;
-
-    sycl::free(a, exec_q);
-    sycl::free(b, exec_q);
-    sycl::free(y, exec_q);
-
-    std::cerr << "leaving div_impl" << std::endl;
-    return sycl::event();
 }
 
 std::pair<sycl::event, sycl::event> div(sycl::queue exec_q,
@@ -205,20 +175,9 @@ std::pair<sycl::event, sycl::event> div(sycl::queue exec_q,
         throw py::value_error("No div implementation defined");
     }
     sycl::event sum_ev = div_fn(exec_q, src_nelems, src1_data, src2_data, dst_data, depends);
-    // sum_ev.wait();
 
-    // int* dummy = sycl::malloc_device<int>(1, exec_q);
-    // sycl::event cleanup_ev = exec_q.submit([&](sycl::handler& cgh) {
-    //     // cgh.depends_on(sum_ev);
-    //     auto ctx = exec_q.get_context();
-    //     cgh.host_task([dummy, ctx]() {
-    //         // dummy host task to pass into keep_args_alive
-    //         sycl::free(dummy, ctx);
-    //     });
-    // });
-
-    // sycl::event ht_ev = dpctl::utils::keep_args_alive(exec_q, {src1, src2, dst}, {sum_ev});
-    // return std::make_pair(ht_ev, sum_ev);
+    sycl::event ht_ev = dpctl::utils::keep_args_alive(exec_q, {src1, src2, dst}, {sum_ev});
+    return std::make_pair(ht_ev, sum_ev);
     return std::make_pair(sycl::event(), sycl::event());
 }
 
@@ -227,6 +186,7 @@ bool can_call_div(sycl::queue exec_q,
                   dpctl::tensor::usm_ndarray src2,
                   dpctl::tensor::usm_ndarray dst)
 {
+#if INTEL_MKL_VERSION >= 20230002
     // check type_nums
     int src1_typenum = src1.get_typenum();
     int src2_typenum = src2.get_typenum();
@@ -325,6 +285,16 @@ bool can_call_div(sycl::queue exec_q,
         return false;
     }
     return true;
+#else
+    // In OneMKL 2023.1.0 the call of oneapi::mkl::vm::div() is going to dead lock
+    // inside ~usm_wrapper_to_host()->{...; q_->wait_and_throw(); ...}
+
+    (void)exec_q;
+    (void)src1;
+    (void)src2;
+    (void)dst;
+    return false;
+#endif // INTEL_MKL_VERSION >= 20230002
 }
 
 template <typename fnT, typename T>
