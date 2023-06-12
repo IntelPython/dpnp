@@ -106,9 +106,10 @@ def dot(x1, x2, out=None, **kwargs):
         # get USM type and queue to copy scalar from the host memory into a USM allocation
         usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
+        # TODO: copy_when_strides=False (now it's done for faster implementation with transpose arrays)
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=True, copy_when_nondefault_queue=False,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=True, copy_when_nondefault_queue=False,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         if x1_desc and x2_desc:
             if out is not None:
