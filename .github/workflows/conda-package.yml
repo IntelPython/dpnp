@@ -196,6 +196,8 @@ jobs:
         run: |
           python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
         working-directory: ${{ env.tests-path }}
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
 
   test_windows:
     name: Test ['windows-latest', python='${{ matrix.python }}']
@@ -333,6 +335,8 @@ jobs:
         run: |
           python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
         working-directory: ${{ env.tests-path }}
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
