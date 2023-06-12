@@ -44,6 +44,7 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
 
 import numpy
 import dpctl.tensor as dpt
@@ -172,7 +173,7 @@ def absolute(x,
     -------
     y : dpnp.ndarray
         An array containing the absolute value of each element in `x`.
-    
+
     Limitations
     -----------
     Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
@@ -598,7 +599,7 @@ def divide(x1,
     -------
     y : dpnp.ndarray
         The quotient ``x1/x2``, element-wise.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -1360,7 +1361,7 @@ def power(x1,
     -------
     y : dpnp.ndarray
         The bases in `x1` raised to the exponents in `x2`.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -1556,7 +1557,7 @@ def subtract(x1,
     -------
     y : dpnp.ndarray
         The difference of `x1` and `x2`, element-wise.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -1603,16 +1604,27 @@ def subtract(x1,
     return call_origin(numpy.subtract, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
 
 
-def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
+def sum(x, /, axis=None, dtype=None, keepdims=False, *, out=None, initial=False, where=True):
     """
     Sum of array elements over a given axis.
 
     For full documentation refer to :obj:`numpy.sum`.
 
+    Returns
+    -------
+        y : dpnp.ndarray
+            an array containing the sums. If the sum was computed over the
+            entire array, a zero-dimensional array is returned. The returned
+            array has the data type as described in the `dtype` parameter
+            description above.
+
     Limitations
     -----------
-        Parameter `where`` is unsupported.
-        Input array data types are limited by DPNP :ref:`Data types`.
+        Parameters `x` is supported as either :class:`dpnp.ndarray`
+        or :class:`dpctl.tensor.usm_ndarray`.
+        Parameters `out`, `initial` and `where` are supported with their default values.
+        Otherwise the function will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -1624,24 +1636,19 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if where is not True:
-            pass
-        else:
-            if dpnp.isscalar(out):
-                raise TypeError("output must be an array")
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            result_obj = dpnp_sum(x1_desc, axis, dtype, out_desc, keepdims, initial, where).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
 
-            if x1_desc.size == 0 and axis is None:
-                result = dpnp.zeros_like(result)
-                if out is not None:
-                    out[...] = result
-            return result
+    if out is not None:
+        pass
+    elif initial is not False:
+        pass
+    elif where is not True:
+        pass
+    else:
+        if isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
+            dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+            return dpnp_array._create_from_usm_ndarray(dpt.sum(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims))
 
-    return call_origin(numpy.sum, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
+    return call_origin(numpy.sum, x, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
 
 def trapz(y1, x1=None, dx=1.0, axis=-1):

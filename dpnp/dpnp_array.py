@@ -993,7 +993,7 @@ class dpnp_array:
 
         return self._array_obj.strides
 
-    def sum(self, axis=None, dtype=None, out=None, keepdims=False, initial=0, where=True):
+    def sum(self, /, axis=None, dtype=None, keepdims=False, *, out=None, initial=False, where=True):
         """
         Returns the sum along a given axis.
 
@@ -1003,7 +1003,7 @@ class dpnp_array:
 
         """
 
-        return dpnp.sum(self, axis, dtype, out, keepdims, initial, where)
+        return dpnp.sum(self, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
  # 'swapaxes',
 
