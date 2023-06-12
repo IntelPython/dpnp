@@ -50,7 +50,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.2
         with:
           fetch-depth: 0
 
@@ -76,7 +76,7 @@ jobs:
         run: conda install conda-build
 
       - name: Cache conda packages
-        uses: actions/cache@v3.2.6
+        uses: actions/cache@v3.3.0
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -169,7 +169,7 @@ jobs:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
       - name: Cache conda packages
-        uses: actions/cache@v3.2.6
+        uses: actions/cache@v3.3.0
         env:
           CACHE_NUMBER: 1 # Increase to reset cache
         with:
@@ -196,6 +196,8 @@ jobs:
         run: |
           python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
         working-directory: ${{ env.tests-path }}
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
 
   test_windows:
     name: Test ['windows-latest', python='${{ matrix.python }}']
@@ -292,7 +294,7 @@ jobs:
         run: more lockfile
 
       - name: Cache conda packages
-        uses: actions/cache@v3.2.6
+        uses: actions/cache@v3.3.0
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -333,6 +335,8 @@ jobs:
         run: |
           python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
         working-directory: ${{ env.tests-path }}
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']

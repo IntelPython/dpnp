@@ -69,6 +69,7 @@ __all__ = [
     "get_include",
     "get_normalized_queue_device",
     "get_usm_ndarray",
+    "get_usm_ndarray_or_scalar",
     "is_supported_array_type"
 ]
 
@@ -402,6 +403,32 @@ def get_usm_ndarray(a):
     if isinstance(a, dpt.usm_ndarray):
         return a
     raise TypeError("An array must be any of supported type, but got {}".format(type(a)))
+
+
+def get_usm_ndarray_or_scalar(a):
+    """
+    Return scalar or :class:`dpctl.tensor.usm_ndarray` from input object `a`.
+
+    Parameters
+    ----------
+    a : {scalar, dpnp_array, usm_ndarray}
+        Input of any supported type: scalar, :class:`dpnp.ndarray`
+        or :class:`dpctl.tensor.usm_ndarray`.
+
+    Returns
+    -------
+    out : scalar, usm_ndarray
+        A scalar if the input `a` is scalar.
+        A dpctl USM ndarray if the input `a` is array.
+
+    Raises
+    ------
+    TypeError
+        If input parameter `a` is of unsupported object type.
+
+    """
+
+    return a if isscalar(a) else get_usm_ndarray(a)
 
 
 def is_supported_array_type(a):

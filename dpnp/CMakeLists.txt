@@ -48,6 +48,7 @@ endfunction()
 build_dpnp_cython_ext_with_backend(dparray ${CMAKE_CURRENT_SOURCE_DIR}/dparray.pyx dpnp)
 add_subdirectory(backend)
 add_subdirectory(backend/extensions/lapack)
+add_subdirectory(backend/extensions/vm)
 
 add_subdirectory(dpnp_algo)
 add_subdirectory(dpnp_utils)
