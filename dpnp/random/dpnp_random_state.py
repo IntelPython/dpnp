@@ -44,7 +44,10 @@ from dpnp.dpnp_utils.dpnp_algo_utils import (
     map_dtype_to_device,
     use_origin_backend
 )
-from dpnp.random.dpnp_algo_random import MT19937
+from dpnp.random.dpnp_algo_random import (
+    MCG59,
+    MT19937
+)
 
 
 __all__ = [
@@ -76,19 +79,29 @@ class RandomState:
     """
 
     def __init__(self, seed=None, device=None, sycl_queue=None):
-        if seed is None:
-            # ask NumPy to generate an array of three random integers as default seed value
-            self._seed = numpy.random.randint(low=0, high=numpy.iinfo(numpy.int32).max + 1, size=3)
-        else:
-            self._seed = seed
-
         self._sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
         self._sycl_device = self._sycl_queue.sycl_device
+
+        is_cpu = self._sycl_device.is_cpu
+        if seed is None:
+            if is_cpu:
+                # ask NumPy to generate an array of three random integers as default seed value
+                self._seed = numpy.random.randint(low=0, high=numpy.iinfo(numpy.int32).max + 1, size=3)
+            else:
+                # ask NumPy to generate a random 64-bit integer as default seed value
+                self._seed = numpy.random.randint(low=0, high=numpy.iinfo(numpy.int64).max + 1, size=1)[0]
+        else:
+            self._seed = seed
 
         # 'float32' is default floating data type if device doesn't support 'float64'
         self._def_float_type = map_dtype_to_device(dpnp.float64, self._sycl_device)
 
-        self._random_state = MT19937(self._seed, self._sycl_queue)
+        # TODO: rework through pybind11 extension for MKL engine and distribution classes
+        if is_cpu:
+            self._random_state = MT19937(self._seed, self._sycl_queue)
+        else:
+            # MCG59 is assumed to provide a better performance on GPU than MT19937
+            self._random_state = MCG59(self._seed, self._sycl_queue)
         self._fallback_random_state = call_origin(numpy.random.RandomState, seed, allow_fallback=True)
 
 
