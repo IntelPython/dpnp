@@ -993,7 +993,7 @@ class dpnp_array:
 
         return self._array_obj.strides
 
-    def sum(self, /, axis=None, dtype=None, keepdims=False, *, out=None, initial=False, where=True):
+    def sum(self, /, *, axis=None, dtype=None, keepdims=False, out=None, initial=0, where=True):
         """
         Returns the sum along a given axis.
 

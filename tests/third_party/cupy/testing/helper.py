@@ -278,7 +278,7 @@ def _make_decorator(check_func, name, type_check, accept_error, sp_name=None,
     return decorator
 
 
-def numpy_cupy_allclose(rtol=1e-6, atol=0, err_msg='', verbose=True,
+def numpy_cupy_allclose(rtol=1e-7, atol=0, err_msg='', verbose=True,
                         name='xp', type_check=True, accept_error=False,
                         sp_name=None, scipy_name=None, contiguous_check=True):
     """Decorator that checks NumPy results and CuPy ones are close.
@@ -1165,11 +1165,6 @@ def shaped_random(shape, xp=dpnp, dtype=numpy.float64, scale=10, seed=0):
     """
     numpy.random.seed(seed)
     dtype = numpy.dtype(dtype)
-    if not has_support_aspect64():
-        if dtype.type is numpy.float64:
-            dtype = numpy.dtype('float32')
-        elif dtype.type is numpy.complex128:
-            dtype = numpy.dtype('complex64')
 
     if dtype == '?':
         return xp.asarray(numpy.random.randint(2, size=shape), dtype=dtype)

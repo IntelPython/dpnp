@@ -1606,7 +1606,7 @@ def subtract(x1,
     return call_origin(numpy.subtract, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
 
 
-def sum(x, /, axis=None, dtype=None, keepdims=False, *, out=None, initial=False, where=True):
+def sum(x, /, *, axis=None, dtype=None, keepdims=False, out=None, initial=0, where=True):
     """
     Sum of array elements over a given axis.
 
@@ -1614,11 +1614,11 @@ def sum(x, /, axis=None, dtype=None, keepdims=False, *, out=None, initial=False,
 
     Returns
     -------
-        y : dpnp.ndarray
-            an array containing the sums. If the sum was computed over the
-            entire array, a zero-dimensional array is returned. The returned
-            array has the data type as described in the `dtype` parameter
-            description above.
+    y : dpnp.ndarray
+        an array containing the sums. If the sum was computed over the
+        entire array, a zero-dimensional array is returned. The returned
+        array has the data type as described in the `dtype` parameter
+        of the Python Array API standard for the `sum` function.
 
     Limitations
     -----------
@@ -1632,23 +1632,24 @@ def sum(x, /, axis=None, dtype=None, keepdims=False, *, out=None, initial=False,
     --------
     >>> import dpnp as np
     >>> np.sum(np.array([1, 2, 3, 4, 5]))
-    15
-    >>> result = np.sum([[0, 1], [0, 5]], axis=0)
-    [0, 6]
+    array(15)
+    >>> np.sum(np.array(5))
+    array(5)
+    >>> result = np.sum(np.array([[0, 1], [0, 5]]), axis=0)
+    array([0, 6])
 
     """
 
 
     if out is not None:
         pass
-    elif initial is not False:
+    elif initial != 0:
         pass
     elif where is not True:
         pass
     else:
-        if isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
-            dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
-            return dpnp_array._create_from_usm_ndarray(dpt.sum(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims))
+        y = dpt.sum(dpnp.get_usm_ndarray(x), axis=axis, dtype=dtype, keepdims=keepdims)
+        return dpnp_array._create_from_usm_ndarray(y)
 
     return call_origin(numpy.sum, x, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
