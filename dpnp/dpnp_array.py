@@ -876,14 +876,21 @@ class dpnp_array:
  # 'real',
  # 'repeat',
 
-    def reshape(self, d0, *dn, order=b'C'):
+    def reshape(self, *sh, **kwargs):
         """
         Returns an array containing the same data with a new shape.
 
-        Refer to `dpnp.reshape` for full documentation.
+        For full documentation refer to :obj:`numpy.ndarray.reshape`.
 
-        .. seealso::
-           :meth:`numpy.ndarray.reshape`
+        Returns
+        -------
+        y : dpnp.ndarray
+            This will be a new view object if possible;
+            otherwise, it will be a copy.
+
+        See Also
+        --------
+        :obj:`dpnp.reshape` : Equivalent function.
 
         Notes
         -----
@@ -894,17 +901,9 @@ class dpnp_array:
 
         """
 
-        if dn:
-            if not isinstance(d0, int):
-                msg_tmpl = "'{}' object cannot be interpreted as an integer"
-                raise TypeError(msg_tmpl.format(type(d0).__name__))
-            shape = [d0, *dn]
-        else:
-            shape = d0
-
-        shape_tup = dpnp.dpnp_utils._object_to_tuple(shape)
-
-        return dpnp.reshape(self, shape_tup)
+        if len(sh) == 1:
+            sh = sh[0]
+        return dpnp.reshape(self, sh, **kwargs)
 
  # 'resize',
 
@@ -946,14 +945,7 @@ class dpnp_array:
 
         """
 
-        dpnp.reshape(self, newshape)
-
-    @property
-    def shape(self):
-        """
-        """
-
-        return self._array_obj.shape
+        dpnp.reshape(self, newshape=newshape)
 
     @property
     def size(self):
