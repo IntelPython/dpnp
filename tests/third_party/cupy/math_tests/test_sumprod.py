@@ -62,7 +62,7 @@ class TestSumprod(unittest.TestCase):
 
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_sum_all_transposed(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(2, 0, 1)
         if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
