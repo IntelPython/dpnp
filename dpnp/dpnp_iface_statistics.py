@@ -290,8 +290,7 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
         pass
     else:
         if not rowvar and x1.shape[0] != 1:
-            x1 = x1.get_array() if isinstance(x1, dpnp_array) else x1
-            x1 = dpnp_array._create_from_usm_ndarray(x1.mT)
+            x1 = x1.T
 
         if not x1.dtype in (dpnp.float32, dpnp.float64):
             x1 = dpnp.astype(x1, dpnp.default_float_type(sycl_queue=x1.sycl_queue))

@@ -338,7 +338,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TRACE
         DPNP_FN_TRACE_EXT
         DPNP_FN_TRANSPOSE
-        DPNP_FN_TRANSPOSE_EXT
         DPNP_FN_TRAPZ
         DPNP_FN_TRAPZ_EXT
         DPNP_FN_TRI
@@ -549,7 +548,6 @@ cpdef dpnp_descriptor dpnp_subtract(dpnp_descriptor x1_obj, dpnp_descriptor x2_o
 Array manipulation routines
 """
 cpdef dpnp_descriptor dpnp_repeat(dpnp_descriptor array1, repeats, axes=*)
-cpdef dpnp_descriptor dpnp_transpose(dpnp_descriptor array1, axes=*)
 
 
 """
