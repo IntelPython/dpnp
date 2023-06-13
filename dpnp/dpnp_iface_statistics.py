@@ -394,18 +394,23 @@ def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
     return call_origin(numpy.max, x1, axis, out, keepdims, initial, where)
 
 
-def mean(x1, axis=None, **kwargs):
+def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
     """
     Compute the arithmetic mean along the specified axis.
 
     For full documentation refer to :obj:`numpy.mean`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        an array containing the mean values of the elements along the specified axis(axes).
+        If the input array is empty, an array containing a single NaN value is returned.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Prameters ``axis`` is supported only with default value ``None``.
-    Keyword arguments ``kwargs`` are currently unsupported.
-    Size of input array is limited by ``x1.size > 0``.
+    Parameters `x` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `keepdims`, `out` and `where` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -426,23 +431,46 @@ def mean(x1, axis=None, **kwargs):
     >>> import dpnp as np
     >>> a = np.array([[1, 2], [3, 4]])
     >>> np.mean(a)
-    2.5
-
+    array(2.5)
+    >>> np.mean(a, axis=0)
+    array([2., 3.])
+    >>> np.mean(a, axis=1)
+    array([1.5, 3.5])
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        if x1_desc.size == 0:
-            pass
-        elif axis is not None:
-            pass
+    if keepdims is not False:
+        pass
+    elif out is not None:
+        pass
+    elif where is not True:
+        pass
+    else:
+        x_size = x.size
+        x_shape = x.shape
+
+        if isinstance(axis, int):
+            axis_ = (axis,)
         else:
-            result_obj = dpnp_mean(x1_desc, axis)
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+            axis_ = axis
 
-            return result
+        if dtype is None and not numpy.issubdtype(x.dtype, numpy.integer):
+            dtype = x.dtype
 
-    return call_origin(numpy.mean, x1, axis=axis, **kwargs)
+        res_sum = dpnp.sum(x, axis=axis, dtype=dtype)
+
+        if x_size == 0:
+            return dpnp.array([dpnp.nan], dtype=x.dtype)
+
+        del_ = x_size
+        if axis_ is not None:
+            for i in range(len(x_shape)):
+                if i not in axis_:
+                    del_ = del_ / x_shape[i]
+
+        result = res_sum / del_
+        return result.astype(dtype) if dtype else result
+
+    return call_origin(numpy.mean, x, axis=axis, dtype=dtype, out=out, keepdims=keepdims, where=where)
 
 
 def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):

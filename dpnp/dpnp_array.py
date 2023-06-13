@@ -788,12 +788,12 @@ class dpnp_array:
 
         return dpnp.max(self, axis, out, keepdims, initial, where)
 
-    def mean(self, axis=None):
+    def mean(self, axis=None, **kwargs):
         """
         Returns the average of the array elements.
         """
 
-        return dpnp.mean(self, axis)
+        return dpnp.mean(self, axis=axis, **kwargs)
 
     def min(self, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoValue, where=numpy._NoValue):
         """
@@ -1052,7 +1052,7 @@ class dpnp_array:
         array([1, 2, 3, 4])
         >>> a.transpose()
         array([1, 2, 3, 4])
-            
+
         """
 
         ndim = self.ndim
