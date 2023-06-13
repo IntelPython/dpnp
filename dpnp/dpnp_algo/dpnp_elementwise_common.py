@@ -38,8 +38,52 @@ import dpctl.tensor._tensor_impl as ti
 
 
 __all__ = [
-    "dpnp_divide"
+    "dpnp_add",
+    "dpnp_divide",
+    "dpnp_multiply",
+    "dpnp_subtract"
 ]
+
+
+_add_docstring_ = """
+add(x1, x2, out=None, order='K')
+
+Calculates the sum for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the result of element-wise division. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+def dpnp_add(x1, x2, out=None, order='K'):
+    """
+    Invokes add() from dpctl.tensor implementation for add() function.
+    TODO: add a pybind11 extension of add() from OneMKL VM where possible
+    and would be performance effective.
+
+    """
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc("add", ti._add_result_type, ti._add, _add_docstring_)
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
 _divide_docstring_ = """
@@ -86,5 +130,87 @@ def dpnp_divide(x1, x2, out=None, order='K'):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     func = BinaryElementwiseFunc("divide", ti._divide_result_type, _call_divide, _divide_docstring_)
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_multiply_docstring_ = """
+multiply(x1, x2, out=None, order='K')
+
+Calculates the product for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the result of element-wise division. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+def dpnp_multiply(x1, x2, out=None, order='K'):
+    """
+    Invokes multiply() from dpctl.tensor implementation for multiply() function.
+    TODO: add a pybind11 extension of mul() from OneMKL VM where possible
+    and would be performance effective.
+
+    """
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc("multiply", ti._multiply_result_type, ti._multiply, _multiply_docstring_)
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_subtract_docstring_ = """
+subtract(x1, x2, out=None, order='K')
+
+Calculates the difference bewteen each element `x1_i` of the input
+array `x1` and the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the result of element-wise division. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+def dpnp_subtract(x1, x2, out=None, order='K'):
+    """
+    Invokes subtract() from dpctl.tensor implementation for subtract() function.
+    TODO: add a pybind11 extension of sub() from OneMKL VM where possible
+    and would be performance effective.
+
+    """
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc("subtract", ti._subtract_result_type, ti._subtract, _subtract_docstring_)
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)

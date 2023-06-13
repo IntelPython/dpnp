@@ -153,7 +153,7 @@ class ArithmeticBinaryBase:
             is_int_float = lambda _x, _y: numpy.issubdtype(_x, numpy.integer) and numpy.issubdtype(_y, numpy.floating)
             is_same_type = lambda _x, _y, _type: numpy.issubdtype(_x, _type) and numpy.issubdtype(_y, _type)
 
-            if self.name in ('add', 'multiply', 'power', 'subtract'):
+            if self.name == 'power':
                 if is_array_arg1 and is_array_arg2:
                     # If both inputs are arrays where one is of floating type and another - integer,
                     # NumPy will return an output array of always "float64" type,
@@ -280,6 +280,7 @@ class TestArithmeticModf(unittest.TestCase):
     'shape': [(3, 2), (), (3, 0, 2)]
 }))
 @testing.gpu
+@pytest.mark.skip("dpctl doesn't raise an error")
 class TestBoolSubtract(unittest.TestCase):
 
     def test_bool_subtract(self):

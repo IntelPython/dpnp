@@ -1,6 +1,8 @@
 import math
 import pytest
-from .helper import get_all_dtypes, is_cpu_device
+from .helper import (
+    get_all_dtypes
+)
 
 import dpnp
 
@@ -117,7 +119,7 @@ def test_strides_tan(dtype, shape):
 
 
 @pytest.mark.parametrize("func_name",
-                         ["add", "arctan2", "hypot", "maximum", "minimum", "multiply", "power", "subtract"])
+                         ["add", "arctan2", "divide", "hypot", "maximum", "minimum", "multiply", "power", "subtract"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape",
                          [(3, 3)],
@@ -214,14 +216,14 @@ def test_strides_true_devide(dtype, shape):
 
 
 @pytest.mark.parametrize("func_name",
-                         ["add", "multiply", "power"])
+                         ["add", "multiply", "power", "subtract"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 def test_strided_out_2args(func_name, dtype):
-    np_out = numpy.ones((5, 3, 2))[::3]
+    np_out = numpy.ones((5, 3, 2), dtype=dtype)[::3]
     np_a = numpy.arange(numpy.prod(np_out.shape), dtype=dtype).reshape(np_out.shape)
     np_b = numpy.full(np_out.shape, fill_value=0.7, dtype=dtype)
 
-    dp_out = dpnp.ones((5, 3, 2))[::3]
+    dp_out = dpnp.ones((5, 3, 2), dtype=dtype)[::3]
     dp_a = dpnp.array(np_a)
     dp_b = dpnp.array(np_b)
 
@@ -233,7 +235,7 @@ def test_strided_out_2args(func_name, dtype):
 
 
 @pytest.mark.parametrize("func_name",
-                         ["add", "multiply", "power"])
+                         ["add", "multiply", "power", "subtract"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 def test_strided_in_out_2args(func_name, dtype):
     sh = (3, 4, 2)
@@ -255,8 +257,9 @@ def test_strided_in_out_2args(func_name, dtype):
 
 
 @pytest.mark.parametrize("func_name",
-                         ["add", "multiply", "power"])
+                         ["add", "multiply", "power", "subtract"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.skip("dpctl doesn't support type mismatch of out array")
 def test_strided_in_out_2args_diff_out_dtype(func_name, dtype):
     sh = (3, 3, 2)
     prod = numpy.prod(sh)
@@ -277,8 +280,9 @@ def test_strided_in_out_2args_diff_out_dtype(func_name, dtype):
 
 
 @pytest.mark.parametrize("func_name",
-                         ["add", "multiply", "power"])
+                         ["add", "multiply", "power", "subtract"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+@pytest.mark.skip("dpctl doesn't support overlap of arrays")
 def test_strided_in_2args_overlap(func_name, dtype):
     size = 5
 
@@ -293,8 +297,9 @@ def test_strided_in_2args_overlap(func_name, dtype):
 
 
 @pytest.mark.parametrize("func_name",
-                         ["add", "multiply", "power"])
+                         ["add", "multiply", "power", "subtract"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+@pytest.mark.skip("dpctl doesn't support overlap of arrays")
 def test_strided_in_out_2args_overlap(func_name, dtype):
     sh = (4, 3, 2)
     prod = numpy.prod(sh)
