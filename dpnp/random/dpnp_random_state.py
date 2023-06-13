@@ -84,12 +84,15 @@ class RandomState:
 
         is_cpu = self._sycl_device.is_cpu
         if seed is None:
+            low = 0
+            high = numpy.iinfo(numpy.int32).max + 1
+
             if is_cpu:
                 # ask NumPy to generate an array of three random integers as default seed value
-                self._seed = numpy.random.randint(low=0, high=numpy.iinfo(numpy.int32).max + 1, size=3)
+                self._seed = numpy.random.randint(low=low, high=high, size=3)
             else:
-                # ask NumPy to generate a random 64-bit integer as default seed value
-                self._seed = numpy.random.randint(low=0, high=numpy.iinfo(numpy.int64).max + 1, size=1)[0]
+                # ask NumPy to generate a random 32-bit integer as default seed value
+                self._seed = numpy.random.randint(low=low, high=high, size=1)[0]
         else:
             self._seed = seed
 
