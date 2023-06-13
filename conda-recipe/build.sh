@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Workaround to Klocwork overwriting LD_LIBRARY_PATH that was modified
+# by DPC++ compiler conda packages. Will need to be added to DPC++ compiler
+# activation scripts.
+export LDFLAGS="$LDFLAGS -Wl,-rpath,$PREFIX/lib"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PREFIX/compiler/lib/intel64_lin:$PREFIX/compiler/lib:$PREFIX/lib"
+
 # Intel LLVM must cooperate with compiler and sysroot from conda
 echo "--gcc-toolchain=${BUILD_PREFIX} --sysroot=${BUILD_PREFIX}/${HOST}/sysroot -target ${HOST}" > icpx_for_conda.cfg
 export ICPXCFG="$(pwd)/icpx_for_conda.cfg"
