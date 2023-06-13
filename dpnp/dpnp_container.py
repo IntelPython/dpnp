@@ -39,6 +39,7 @@ import dpctl.tensor as dpt
 
 from dpnp.dpnp_array import dpnp_array
 import dpnp
+import dpctl.tensor._tensor_impl as ti
 
 
 __all__ = [
@@ -46,6 +47,7 @@ __all__ = [
     "asarray",
     "empty",
     "eye",
+    "floor_divide",
     "full",
     "linspace",
     "ones"
@@ -164,6 +166,26 @@ def eye(N,
                         usm_type=usm_type,
                         sycl_queue=sycl_queue_normalized)
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+
+
+def floor_divide(x1, x2, /, out, order='K'):
+    if order in "afkcAFKC":
+        order = order.upper()
+    elif order is None:
+        order = 'K'
+    else:
+        raise ValueError("order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(order))
+    a1 = x1 if dpnp.isscalar(x1) else x1.get_array()
+    a2 = x2 if dpnp.isscalar(x2) else x2.get_array()
+    if out is not None:
+        out_a = out.get_array()
+        if ti._array_overlap(a1, out_a) or ti._array_overlap(a2, out_a):
+            out[...] = dpnp_array._create_from_usm_ndarray(dpt.floor_divide(a1, a2, order=order))
+        else:
+            dpt.floor_divide(a1, a2, out_a, order=order)
+            out[...] = dpnp_array._create_from_usm_ndarray(out_a)
+        return out
+    return dpnp_array._create_from_usm_ndarray(dpt.floor_divide(a1, a2, order=order))
 
 
 def full(shape,

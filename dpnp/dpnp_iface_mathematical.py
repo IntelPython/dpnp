@@ -50,6 +50,7 @@ import dpnp
 
 import numpy
 import dpctl.tensor as dpt
+import dpnp.dpnp_container as dpnp_container
 
 
 __all__ = [
@@ -757,7 +758,7 @@ def floor(x1, out=None, **kwargs):
     return call_origin(numpy.floor, x1, out=out, **kwargs)
 
 
-def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def floor_divide(x1, x2, /, out=None, *, dtype=None, where=True, order='K', **kwargs):
     """
     Compute the largest integer smaller or equal to the division of the inputs.
 
@@ -787,40 +788,17 @@ def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif x2_is_scalar and not x2_desc:
-            pass
-        elif x1_desc and x2_desc and x1_desc.size != x2_desc.size:
-            # TODO: enable broadcasting
-            pass
-        elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        elif x1_is_scalar and x2_desc.ndim > 1:
-            pass
-        else:
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            return dpnp_floor_divide(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
+    if where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif kwargs:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        return dpnp_container.floor_divide(x1, x2, out=out, order=order)
 
     return call_origin(numpy.floor_divide, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
 
