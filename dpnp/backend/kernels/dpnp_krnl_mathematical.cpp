@@ -177,6 +177,7 @@ DPCTLSyclEventRef dpnp_elemwise_absolute_c(DPCTLSyclQueueRef q_ref,
                     dpnp_vec_cast<_DataType_output, result_absT, vec_sz>(sycl::abs(data_vec));
 #else
                 sycl::vec<_DataType_output, vec_sz> res_vec = sycl::abs(data_vec);
+#endif
 
                 sg.store<vec_sz>(result_ptrT(&result[start]), res_vec);
             }
