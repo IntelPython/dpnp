@@ -497,14 +497,8 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
     result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
 
     # get FPTR function and return type
-    cdef fptr_2in_1out_strides_t func = NULL
-    cdef DPNPFuncType return_type = DPNP_FT_NONE
-    if fptr_name != DPNP_FN_DIVIDE_EXT or result_sycl_device.has_aspect_fp64:
-        return_type = kernel_data.return_type
-        func = < fptr_2in_1out_strides_t > kernel_data.ptr
-    else:
-        return_type = kernel_data.return_type_no_fp64
-        func = < fptr_2in_1out_strides_t > kernel_data.ptr_no_fp64
+    cdef fptr_2in_1out_strides_t func = < fptr_2in_1out_strides_t > kernel_data.ptr
+    cdef DPNPFuncType return_type = kernel_data.return_type
 
     # check 'out' parameter data
     if out is not None:

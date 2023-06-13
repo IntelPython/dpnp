@@ -45,6 +45,8 @@ namespace lapack
                                                      dpctl::tensor::usm_ndarray eig_vecs,
                                                      dpctl::tensor::usm_ndarray eig_vals,
                                                      const std::vector<sycl::event>& depends = {});
+
+    extern void init_syevd_dispatch_vector(void);
 }
 }
 }

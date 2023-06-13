@@ -44,7 +44,10 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
+
 import numpy
+import dpctl.tensor as dpt
 
 
 __all__ = [
@@ -181,7 +184,7 @@ def where(condition, x=None, y=None, /):
     Return elements chosen from `x` or `y` depending on `condition`.
 
     When only `condition` is provided, this function is a shorthand for
-    :obj:`dpnp.nonzero(condition)`. 
+    :obj:`dpnp.nonzero(condition)`.
 
     For full documentation refer to :obj:`numpy.where`.
 
@@ -193,12 +196,13 @@ def where(condition, x=None, y=None, /):
 
     Limitations
     -----------
-    Parameters `condition`, `x` and `y` are supported as either scalar, :class:`dpnp.ndarray`
+    Parameter `condition` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `x` and `y` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`
     Otherwise the function will be executed sequentially on CPU.
-    Data type of `condition` parameter is limited by :obj:`dpnp.bool`.
     Input array data types of `x` and `y` are limited by supported DPNP :ref:`Data types`.
-        
+
     See Also
     --------
     :obj:`nonzero` : The function that is called when `x` and `y`are omitted.
@@ -220,18 +224,17 @@ def where(condition, x=None, y=None, /):
     elif missing == 2:
         return dpnp.nonzero(condition)
     elif missing == 0:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([condition, x, y])
-
-        c_desc = dpnp.get_dpnp_descriptor(condition, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                          alloc_usm_type=usm_type, alloc_queue=queue)
-        x_desc = dpnp.get_dpnp_descriptor(x, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                          alloc_usm_type=usm_type, alloc_queue=queue)
-        y_desc = dpnp.get_dpnp_descriptor(y, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                          alloc_usm_type=usm_type, alloc_queue=queue)
-        if c_desc and x_desc and y_desc:
-            if c_desc.dtype != dpnp.bool:
-                raise TypeError("condition must be a boolean array")
-            return dpnp_where(c_desc, x_desc, y_desc).get_pyobj()
+        check_input_type = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
+        if check_input_type(condition):
+            if numpy.isscalar(x) or numpy.isscalar(y):
+                # get USM type and queue to copy scalar from the host memory into a USM allocation
+                usm_type, queue = get_usm_allocations([condition, x, y])
+                x = dpt.asarray(x, usm_type=usm_type, sycl_queue=queue) if numpy.isscalar(x) else x
+                y = dpt.asarray(y, usm_type=usm_type, sycl_queue=queue) if numpy.isscalar(y) else y
+            if check_input_type(x) and check_input_type(y):
+                dpt_condition = condition.get_array() if isinstance(condition, dpnp_array) else condition
+                dpt_x = x.get_array() if isinstance(x, dpnp_array) else x
+                dpt_y = y.get_array() if isinstance(y, dpnp_array) else y
+                return dpnp_array._create_from_usm_ndarray(dpt.where(dpt_condition, dpt_x, dpt_y))
 
     return call_origin(numpy.where, condition, x, y)

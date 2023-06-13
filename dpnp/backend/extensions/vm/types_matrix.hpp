@@ -25,11 +25,13 @@
 
 #pragma once
 
-#include <CL/sycl.hpp>
-#include <oneapi/mkl.hpp>
+#include <type_traits>
 
-#include <dpctl4pybind11.hpp>
+// dpctl tensor headers
+#include "utils/type_dispatch.hpp"
 
+// dpctl namespace for operations with types
+namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
 namespace dpnp
 {
@@ -37,17 +39,29 @@ namespace backend
 {
 namespace ext
 {
-namespace lapack
+namespace vm
 {
-    extern std::pair<sycl::event, sycl::event> heevd(sycl::queue exec_q,
-                                                     const std::int8_t jobz,
-                                                     const std::int8_t upper_lower,
-                                                     dpctl::tensor::usm_ndarray eig_vecs,
-                                                     dpctl::tensor::usm_ndarray eig_vals,
-                                                     const std::vector<sycl::event>& depends);
-
-    extern void init_heevd_dispatch_table(void);
-}
-}
-}
-}
+namespace types
+{
+    /**
+     * @brief A factory to define pairs of supported types for which
+     * MKL VM library provides support in oneapi::mkl::vm::div<T> function.
+     *
+     * @tparam T Type of input vectors `a` and `b` and of result vector `y`.
+     */
+    template <typename T>
+    struct DivTypePairSupportFactory
+    {
+        static constexpr bool is_defined = std::disjunction<
+            dpctl_td_ns::TypePairDefinedEntry<T, std::complex<double>, T, std::complex<double>>,
+            dpctl_td_ns::TypePairDefinedEntry<T, std::complex<float>, T, std::complex<float>>,
+            dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
+            dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+            // fall-through
+            dpctl_td_ns::NotDefinedEntry>::is_defined;
+    };
+} // namespace types
+} // namespace vm
+} // namespace ext
+} // namespace backend
+} // namespace dpnp

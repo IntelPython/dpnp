@@ -41,6 +41,14 @@
         (__LIBSYCL_MAJOR_VERSION == major and __LIBSYCL_MINOR_VERSION == minor and __LIBSYCL_PATCH_VERSION >= patch)
 
 /**
+ * Version of SYCL DPC++ 2023 compiler where a return type of sycl::abs() is changed
+ * from unsinged integer to signed one of input vector.
+ */
+#ifndef __SYCL_COMPILER_VECTOR_ABS_CHANGED
+#define __SYCL_COMPILER_VECTOR_ABS_CHANGED 20230503L
+#endif
+
+/**
  * Version of SYCL DPC++ 2023 compiler at which transition to SYCL 2020 occurs.
  * Intel(R) oneAPI DPC++ 2022.2.1 compiler has version 20221020L on Linux and
  * 20221101L on Windows.

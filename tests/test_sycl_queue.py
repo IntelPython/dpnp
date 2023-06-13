@@ -6,6 +6,9 @@ from .helper import (
 
 import dpnp
 import dpctl
+from dpctl.utils import (
+    ExecutionPlacementError
+)
 import numpy
 
 from numpy.testing import (
@@ -431,7 +434,7 @@ def test_broadcasting(func, data1, data2, device):
 def test_2in_1out_diff_queue_but_equal_context(func, device):
     x1 = dpnp.arange(10)
     x2 = dpnp.arange(10, sycl_queue=dpctl.SyclQueue(device))[::-1]
-    with assert_raises(ValueError):
+    with assert_raises((ValueError, ExecutionPlacementError)):
         getattr(dpnp, func)(x1, x2)
 
 
