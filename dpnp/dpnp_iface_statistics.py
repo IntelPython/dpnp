@@ -445,30 +445,28 @@ def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
     elif where is not True:
         pass
     else:
-        x_size = x.size
-        x_shape = x.shape
+
+        if dtype is None and not numpy.issubdtype(x.dtype, numpy.integer):
+            dtype = x.dtype
+
+        if axis is None:
+            if x.size == 0:
+                return dpnp.array([dpnp.nan], dtype=x.dtype)
+            else:
+                result = dpnp.sum(x, dtype=dtype) / x.size
+                return result.astype(dtype) if dtype else result
 
         if isinstance(axis, int):
             axis_ = (axis,)
         else:
             axis_ = axis
 
-        if dtype is None and not numpy.issubdtype(x.dtype, numpy.integer):
-            dtype = x.dtype
-
         res_sum = dpnp.sum(x, axis=axis, dtype=dtype)
 
-        if x_size == 0:
-            return dpnp.array([dpnp.nan], dtype=x.dtype)
+        for axis_value in axis_:
+            res_sum /= x.shape[axis_value]
 
-        del_ = x_size
-        if axis_ is not None:
-            for i in range(len(x_shape)):
-                if i not in axis_:
-                    del_ = del_ / x_shape[i]
-
-        result = res_sum / del_
-        return result.astype(dtype) if dtype else result
+        return res_sum.astype(dtype) if dtype else res_sum
 
     return call_origin(numpy.mean, x, axis=axis, dtype=dtype, out=out, keepdims=keepdims, where=where)
 
