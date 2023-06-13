@@ -22,32 +22,50 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
+//
+// This file defines functions of dpnp.backend._lapack_impl extensions
+//
+//*****************************************************************************
 
-#pragma once
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
-#include <CL/sycl.hpp>
-#include <oneapi/mkl.hpp>
+#include "div.hpp"
 
-#include <dpctl4pybind11.hpp>
+namespace vm_ext = dpnp::backend::ext::vm;
+namespace py = pybind11;
 
-
-namespace dpnp
+// populate dispatch vectors
+void init_dispatch_vectors(void)
 {
-namespace backend
-{
-namespace ext
-{
-namespace lapack
-{
-    extern std::pair<sycl::event, sycl::event> heevd(sycl::queue exec_q,
-                                                     const std::int8_t jobz,
-                                                     const std::int8_t upper_lower,
-                                                     dpctl::tensor::usm_ndarray eig_vecs,
-                                                     dpctl::tensor::usm_ndarray eig_vals,
-                                                     const std::vector<sycl::event>& depends);
-
-    extern void init_heevd_dispatch_table(void);
+    vm_ext::init_div_dispatch_vector();
 }
+
+// populate dispatch tables
+void init_dispatch_tables(void)
+{
 }
-}
+
+PYBIND11_MODULE(_vm_impl, m)
+{
+    init_dispatch_vectors();
+    init_dispatch_tables();
+
+    m.def("_div",
+          &vm_ext::div,
+          "Call `div` from OneMKL VM library to performs element by element division "
+          "of vector `src1` by vector `src2` to resulting vector `dst`",
+          py::arg("sycl_queue"),
+          py::arg("src1"),
+          py::arg("src2"),
+          py::arg("dst"),
+          py::arg("depends") = py::list());
+
+    m.def("_can_call_div",
+          &vm_ext::can_call_div,
+          "Check input arrays to answer if `div` function from OneMKL VM library can be used",
+          py::arg("sycl_queue"),
+          py::arg("src1"),
+          py::arg("src2"),
+          py::arg("dst"));
 }

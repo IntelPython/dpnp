@@ -1,6 +1,6 @@
 [![Pre-commit](https://github.com/IntelPython/dpnp/actions/workflows/pre-commit.yml/badge.svg?branch=master&event=push)](https://github.com/IntelPython/dpnp/actions/workflows/pre-commit.yml)
 [![Conda package](https://github.com/IntelPython/dpnp/actions/workflows/conda-package.yml/badge.svg?branch=master&event=push)](https://github.com/IntelPython/dpnp/actions/workflows/conda-package.yml)
-[![codecov](https://codecov.io/gh/IntelPython/dpnp/branch/master/graph/badge.svg)](https://codecov.io/gh/IntelPython/dpnp)
+[![Coverage Status](https://coveralls.io/repos/github/IntelPython/dpnp/badge.svg?branch=master)](https://coveralls.io/github/IntelPython/dpnp?branch=master)
 [![Build Sphinx](https://github.com/IntelPython/dpnp/workflows/Build%20Sphinx/badge.svg)](https://intelpython.github.io/dpnp)
 
 # DPNP - Data Parallel Extension for NumPy*

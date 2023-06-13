@@ -26,7 +26,12 @@
 
 #include <pybind11/pybind11.h>
 
+// dpctl tensor headers
+#include "utils/memory_overlap.hpp"
+#include "utils/type_utils.hpp"
+
 #include "heevd.hpp"
+#include "types_matrix.hpp"
 
 #include "dpnp_utils.hpp"
 
@@ -42,19 +47,34 @@ namespace lapack
 
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
+namespace type_utils = dpctl::tensor::type_utils;
+
+typedef sycl::event (*heevd_impl_fn_ptr_t)(sycl::queue,
+                                           const oneapi::mkl::job,
+                                           const oneapi::mkl::uplo,
+                                           const std::int64_t,
+                                           char*,
+                                           char*,
+                                           std::vector<sycl::event>&,
+                                           const std::vector<sycl::event>&);
+
+static heevd_impl_fn_ptr_t heevd_dispatch_table[dpctl_td_ns::num_types][dpctl_td_ns::num_types];
 
 template <typename T, typename RealT>
-static sycl::event call_heevd(sycl::queue exec_q,
+static sycl::event heevd_impl(sycl::queue exec_q,
                               const oneapi::mkl::job jobz,
                               const oneapi::mkl::uplo upper_lower,
                               const std::int64_t n,
-                              T* a,
-                              RealT* w,
+                              char* in_a,
+                              char* out_w,
                               std::vector<sycl::event>& host_task_events,
                               const std::vector<sycl::event>& depends)
 {
-    validate_type_for_device<T>(exec_q);
-    validate_type_for_device<RealT>(exec_q);
+    type_utils::validate_type_for_device<T>(exec_q);
+    type_utils::validate_type_for_device<RealT>(exec_q);
+
+    T* a = reinterpret_cast<T*>(in_a);
+    RealT* w = reinterpret_cast<RealT*>(out_w);
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t scratchpad_size = mkl_lapack::heevd_scratchpad_size<T>(exec_q, jobz, upper_lower, n, lda);
@@ -163,13 +183,11 @@ std::pair<sycl::event, sycl::event> heevd(sycl::queue exec_q,
         throw py::value_error("Execution queue is not compatible with allocation queues");
     }
 
-    // check that arrays do not overlap, and concurrent access is safe.
-    // TODO: need to be exposed by DPCTL headers
-    // auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    // if (overlap(eig_vecs, eig_vals))
-    // {
-    //     throw py::value_error("Arrays index overlapping segments of memory");
-    // }
+    auto const& overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(eig_vecs, eig_vals))
+    {
+        throw py::value_error("Arrays with eigenvectors and eigenvalues are overlapping segments of memory");
+    }
 
     bool is_eig_vecs_f_contig = eig_vecs.is_f_contiguous();
     bool is_eig_vals_c_contig = eig_vals.is_c_contiguous();
@@ -182,38 +200,51 @@ std::pair<sycl::event, sycl::event> heevd(sycl::queue exec_q,
         throw py::value_error("An array with output eigenvalues must be C-contiguous");
     }
 
-    int eig_vecs_typenum = eig_vecs.get_typenum();
-    int eig_vals_typenum = eig_vals.get_typenum();
-    auto const& dpctl_capi = dpctl::detail::dpctl_capi::get();
+    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    int eig_vecs_type_id = array_types.typenum_to_lookup_id(eig_vecs.get_typenum());
+    int eig_vals_type_id = array_types.typenum_to_lookup_id(eig_vals.get_typenum());
 
-    sycl::event heevd_ev;
-    std::vector<sycl::event> host_task_events;
+    heevd_impl_fn_ptr_t heevd_fn = heevd_dispatch_table[eig_vecs_type_id][eig_vals_type_id];
+    if (heevd_fn == nullptr)
+    {
+        throw py::value_error("No heevd implementation defined for a pair of type for eigenvectors and eigenvalues");
+    }
+
+    char* eig_vecs_data = eig_vecs.get_data();
+    char* eig_vals_data = eig_vals.get_data();
 
     const std::int64_t n = eig_vecs_shape[0];
     const oneapi::mkl::job jobz_val = static_cast<oneapi::mkl::job>(jobz);
     const oneapi::mkl::uplo uplo_val = static_cast<oneapi::mkl::uplo>(upper_lower);
 
-    if ((eig_vecs_typenum == dpctl_capi.UAR_CDOUBLE_) && (eig_vals_typenum == dpctl_capi.UAR_DOUBLE_))
-    {
-        std::complex<double>* a = reinterpret_cast<std::complex<double>*>(eig_vecs.get_data());
-        double* w = reinterpret_cast<double*>(eig_vals.get_data());
-
-        heevd_ev = call_heevd(exec_q, jobz_val, uplo_val, n, a, w, host_task_events, depends);
-    }
-    else if ((eig_vecs_typenum == dpctl_capi.UAR_CFLOAT_) && (eig_vals_typenum == dpctl_capi.UAR_FLOAT_))
-    {
-        std::complex<float>* a = reinterpret_cast<std::complex<float>*>(eig_vecs.get_data());
-        float* w = reinterpret_cast<float*>(eig_vals.get_data());
-
-        heevd_ev = call_heevd(exec_q, jobz_val, uplo_val, n, a, w, host_task_events, depends);
-    }
-    else
-    {
-        throw py::value_error("Unexpected types of either eigenvectors or eigenvalues");
-    }
+    std::vector<sycl::event> host_task_events;
+    sycl::event heevd_ev =
+        heevd_fn(exec_q, jobz_val, uplo_val, n, eig_vecs_data, eig_vals_data, host_task_events, depends);
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(exec_q, {eig_vecs, eig_vals}, host_task_events);
     return std::make_pair(args_ev, heevd_ev);
+}
+
+template <typename fnT, typename T, typename RealT>
+struct HeevdContigFactory
+{
+    fnT get()
+    {
+        if constexpr (types::HeevdTypePairSupportFactory<T, RealT>::is_defined)
+        {
+            return heevd_impl<T, RealT>;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+};
+
+void init_heevd_dispatch_table(void)
+{
+    dpctl_td_ns::DispatchTableBuilder<heevd_impl_fn_ptr_t, HeevdContigFactory, dpctl_td_ns::num_types> contig;
+    contig.populate_dispatch_table(heevd_dispatch_table);
 }
 }
 }
