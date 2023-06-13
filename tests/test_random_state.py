@@ -500,7 +500,7 @@ class TestRandN:
         # TODO: discuss with opneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
         # precision = numpy.finfo(dtype=numpy.float64).precision
-        precision = numpy.finfo(dtype=dtype).precision
+        precision = numpy.finfo(dtype=numpy.float32).precision
         assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
 
         # call with the same seed has to draw the same values
@@ -676,7 +676,7 @@ class TestStandardNormal:
         # TODO: discuss with opneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
         # precision = numpy.finfo(dtype=numpy.float64).precision
-        precision = numpy.finfo(dtype=dtype).precision
+        precision = numpy.finfo(dtype=numpy.float32).precision
         assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
 
         # call with the same seed has to draw the same values
