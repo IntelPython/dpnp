@@ -84,6 +84,10 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_para
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_535_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int64), arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_543_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int64), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int64), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
 
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_external_prod_all
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_external_prod_axis
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_all
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out_wrong_shape
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_1dim
