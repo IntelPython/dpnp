@@ -451,7 +451,7 @@ def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
 
         if axis is None:
             if x.size == 0:
-                return dpnp.array([dpnp.nan], dtype=dtype)
+                return dpnp.array(dpnp.nan, dtype=dtype)
             else:
                 result = dpnp.sum(x, dtype=dtype) / x.size
                 return result.astype(dtype) if result.dtype != dtype else result
