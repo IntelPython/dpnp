@@ -40,6 +40,25 @@ def test_repeat(arr):
     assert_array_equal(expected, result)
 
 
+def test_result_type():
+    X = [dpnp.ones((2), dtype=dpnp.int64), dpnp.int32, "float16"]
+    X_np = [numpy.ones((2), dtype=numpy.int64), numpy.int32, "float16"]
+
+    assert dpnp.result_type(*X) == numpy.result_type(*X_np)
+
+def test_result_type_only_dtypes():
+    X = [dpnp.int64, dpnp.int32, dpnp.bool, dpnp.float32]
+    X_np = [numpy.int64, numpy.int32, numpy.bool_, numpy.float32]
+
+    assert dpnp.result_type(*X) == numpy.result_type(*X_np)
+
+def test_result_type_only_arrays():
+    X = [dpnp.ones((2), dtype=dpnp.int64), dpnp.ones((7, 4), dtype=dpnp.int32)]
+    X_np = [numpy.ones((2), dtype=numpy.int64), numpy.ones((7, 4), dtype=numpy.int32)]
+
+    assert dpnp.result_type(*X) == numpy.result_type(*X_np)
+
+
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("array",
                          [[1, 2, 3],
