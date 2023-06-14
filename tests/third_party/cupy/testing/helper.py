@@ -13,7 +13,6 @@ import dpnp
 import dpnp as cupy
 import dpnp as cupyx
 # from dpnp.core import internal
-from tests.helper import has_support_aspect64
 from tests.third_party.cupy.testing import array
 from tests.third_party.cupy.testing import parameterized
 from dpctl import select_default_device
