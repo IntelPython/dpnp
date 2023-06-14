@@ -3,6 +3,7 @@ from tests.third_party.cupy import testing
 
 import dpnp as dp
 import numpy as np
+import pytest
 
 from numpy.testing import assert_raises
 
@@ -40,23 +41,21 @@ class TestOuter(unittest.TestCase):
 
 class TestScalarOuter(unittest.TestCase):
 
-    @unittest.skip("A scalar isn't currently supported as input")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_first_is_scalar(self, xp, dtype):
         scalar = xp.int64(4)
         a = xp.arange(5**3, dtype=dtype).reshape(5, 5, 5)
         return xp.outer(scalar, a)
 
-    @unittest.skip("A scalar isn't currently supported as input")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_second_is_scalar(self, xp, dtype):
         scalar = xp.int32(7)
         a = xp.arange(5**3, dtype=dtype).reshape(5, 5, 5)
         return xp.outer(a, scalar)
 
-    @unittest.skip("A scalar isn't currently supported as input")
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_both_inputs_as_scalar(self, xp):
         a = xp.int64(4)
@@ -71,7 +70,7 @@ class TestListOuter(unittest.TestCase):
         b: list[list[list[int]]] = a.tolist()
         dp_a = dp.array(a)
 
-        with assert_raises(NotImplementedError):
+        with assert_raises(TypeError):
             dp.outer(b, dp_a)
             dp.outer(dp_a, b)
             dp.outer(b, b)

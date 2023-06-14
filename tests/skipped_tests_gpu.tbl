@@ -206,7 +206,6 @@ tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumError::test_too_ma
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_dim_mismatch3
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_too_many_dims3
 
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_outer
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_vdot
 tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_7_{dst_shape=(0,), src=3.2}::test_copyto_where
 tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_8_{dst_shape=(0,), src=0}::test_copyto_where

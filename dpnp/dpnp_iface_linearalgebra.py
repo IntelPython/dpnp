@@ -73,7 +73,7 @@ def dot(x1, x2, out=None, **kwargs):
     y : dpnp.ndarray
         Returns the dot product of `x1` and `x2`.
         If `out` is given, then it is returned.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -298,7 +298,7 @@ def matmul(x1, x2, out=None, **kwargs):
     return call_origin(numpy.matmul, x1, x2, out=out, **kwargs)
 
 
-def outer(x1, x2, **kwargs):
+def outer(x1, x2, out=None):
     """
     Returns the outer product of two arrays.
 
@@ -306,8 +306,8 @@ def outer(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
+        Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+        or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -323,21 +323,31 @@ def outer(x1, x2, **kwargs):
     >>> b = np.array([1, 2, 3])
     >>> result = np.outer(a, b)
     >>> [x for x in result]
-    [1, 2, 3, 1, 2, 3, 1, 2, 3]
+    array([[1, 2, 3],
+           [1, 2, 3],
+           [1, 2, 3]])
 
     """
+    check_input_type = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
 
-    if not kwargs:
-        if isinstance(x1, dpnp_array) and isinstance(x2, dpnp_array):
-            ravel = lambda x: x.flatten() if x.ndim > 1 else x
-            return ravel(x1)[:, None] * ravel(x2)[None, :]
+    if dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        pass
+    elif not check_input_type(x1) and not check_input_type(x2):
+        pass
+    else:
+        if check_input_type(x1):
+            x1_in = (x1.reshape(-1) if x1.ndim > 1 else x1)[:, None]
+        else:
+            x1_in = x1
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-        if x1_desc and x2_desc:
-            return dpnp_outer(x1_desc, x2_desc).get_pyobj()
+        if check_input_type(x2):
+            x2_in = (x2.reshape(-1) if x2.ndim > 1 else x2)[None, :]
+        else:
+            x2_in = x2
 
-    return call_origin(numpy.outer, x1, x2, **kwargs)
+        return dpnp.multiply(x1_in, x2_in, out=out)
+
+    return call_origin(numpy.outer, x1, x2, out=out)
 
 
 def tensordot(x1, x2, axes=2):
