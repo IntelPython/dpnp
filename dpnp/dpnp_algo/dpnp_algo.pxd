@@ -149,8 +149,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FLATTEN_EXT
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_EXT
-        DPNP_FN_FLOOR_DIVIDE
-        DPNP_FN_FLOOR_DIVIDE_EXT
         DPNP_FN_FMOD
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL

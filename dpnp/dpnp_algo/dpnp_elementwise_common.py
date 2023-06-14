@@ -38,7 +38,8 @@ import dpctl.tensor._tensor_impl as ti
 
 
 __all__ = [
-    "dpnp_divide"
+    "dpnp_divide",
+    "dpnp_floor_divide"
 ]
 
 
@@ -86,5 +87,41 @@ def dpnp_divide(x1, x2, out=None, order='K'):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     func = BinaryElementwiseFunc("divide", ti._divide_result_type, _call_divide, _divide_docstring_)
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_floor_divide_docstring_ = """
+floor_divide(x1, x2, out=None, order='K')
+
+Calculates the ratio for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2` to the greatest
+integer-value number that is not greater than the division result.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the result of element-wise floor division.
+        The data type of the returned array is determined by the Type
+        Promotion Rules
+"""
+
+def dpnp_floor_divide(x1, x2, out=None, order='K'):
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc("floor_divide", ti._floor_divide_result_type, ti._floor_divide, _floor_divide_docstring_)
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)

@@ -42,7 +42,8 @@ it contains:
 
 from .dpnp_algo import *
 from .dpnp_algo.dpnp_elementwise_common import (
-    dpnp_divide
+    dpnp_divide,
+    dpnp_floor_divide
 )
 from .dpnp_utils import *
 
@@ -50,7 +51,6 @@ import dpnp
 
 import numpy
 import dpctl.tensor as dpt
-import dpnp.dpnp_container as dpnp_container
 
 
 __all__ = [
@@ -99,8 +99,11 @@ __all__ = [
 ]
 
 
-def _check_nd_call(origin_func, dpnp_func, x1, x2, out=None, where=True, dtype=None, subok=True, **kwargs):
-    """Choose function to call based on input and call chosen fucntion."""
+def _check_nd_call(origin_func, dpnp_func, x1, x2, out=None, where=True, order='K', dtype=None, subok=True, **kwargs):
+    """
+    Chooses a common internal elementwise function to call in DPNP based on input arguments
+    or to fallback on NumPy call if any passed argument is not currently supported.
+    """
 
     if kwargs:
         pass
@@ -114,24 +117,15 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, out=None, where=True, dtype=N
         # at least either x1 or x2 has to be an array
         pass
     else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        if order in "afkcAFKC":
+            order = order.upper()
+        elif order is None:
+            order = 'K'
+        else:
+            raise ValueError("order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(order))
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        if x1_desc and x2_desc:
-            if out is not None:
-                if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError("return array must be of supported array type")
-                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
-            else:
-                out_desc = None
-
-            return dpnp_func(x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where).get_pyobj()
-
-    return call_origin(origin_func, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+        return dpnp_func(x1, x2, out=out, order=order)
+    return call_origin(origin_func, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
 
 
 def abs(*args, **kwargs):
@@ -758,7 +752,7 @@ def floor(x1, out=None, **kwargs):
     return call_origin(numpy.floor, x1, out=out, **kwargs)
 
 
-def floor_divide(x1, x2, /, out=None, *, dtype=None, where=True, order='K', **kwargs):
+def floor_divide(x1, x2, /, out=None, *, where=True, order='K', dtype=None, subok=True, **kwargs):
     """
     Compute the largest integer smaller or equal to the division of the inputs.
 
@@ -767,7 +761,7 @@ def floor_divide(x1, x2, /, out=None, *, dtype=None, where=True, order='K', **kw
     Limitations
     -----------
         Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-        Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+        Parameters ``where``, ``dtype``, and ``subok`` are supported with their default values.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -788,19 +782,7 @@ def floor_divide(x1, x2, /, out=None, *, dtype=None, where=True, order='K', **kw
 
     """
 
-    if where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif kwargs:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        return dpnp_container.floor_divide(x1, x2, out=out, order=order)
-
-    return call_origin(numpy.floor_divide, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
+    return _check_nd_call(numpy.floor_divide, dpnp_floor_divide, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
 
 
 def fmax(*args, **kwargs):
