@@ -44,14 +44,14 @@ import numpy
 __all__ = [
     "dpnp_add",
     "dpnp_divide",
-    "dpnp_multiply",
-    "dpnp_subtract",
-    "dpnp_less",
-    "dpnp_less_equal",
+    "dpnp_equal",
     "dpnp_greater",
     "dpnp_greater_equal",
-    "dpnp_equal",
+    "dpnp_less",
+    "dpnp_less_equal",
+    "dpnp_multiply",
     "dpnp_not_equal",
+    "dpnp_subtract",
 ]
 
 
