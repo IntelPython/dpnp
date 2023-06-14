@@ -81,7 +81,8 @@ def dpnp_add(x1, x2, out=None, order='K'):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc("add", ti._add_result_type, ti._add, _add_docstring_)
+    func = BinaryElementwiseFunc("add", ti._add_result_type, ti._add,
+                                 _add_docstring_, ti._add_inplace)
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
@@ -170,7 +171,8 @@ def dpnp_multiply(x1, x2, out=None, order='K'):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc("multiply", ti._multiply_result_type, ti._multiply, _multiply_docstring_)
+    func = BinaryElementwiseFunc("multiply", ti._multiply_result_type, ti._multiply,
+                                 _multiply_docstring_, ti._multiply_inplace)
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
@@ -211,6 +213,7 @@ def dpnp_subtract(x1, x2, out=None, order='K'):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc("subtract", ti._subtract_result_type, ti._subtract, _subtract_docstring_)
+    func = BinaryElementwiseFunc("subtract", ti._subtract_result_type, ti._subtract,
+                                 _subtract_docstring_, ti._subtract_inplace)
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
