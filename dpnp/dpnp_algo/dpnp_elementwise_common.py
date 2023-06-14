@@ -133,7 +133,7 @@ def dpnp_divide(x1, x2, out=None, order='K'):
         """In place workaround until dpctl.tensor provides the functionality."""
 
         # allocate temporary memory for out array
-        out = dpt.empty_like(lhs, dtype=numpy.result_type((lhs.dtype, rhs.dtype)))
+        out = dpt.empty_like(lhs, dtype=dpnp.result_type(lhs.dtype, rhs.dtype))
 
         # call a general callback
         div_ht_, div_ev_ = _call_divide(lhs, rhs, out, sycl_queue, depends)
