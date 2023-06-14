@@ -249,9 +249,15 @@ class dpnp_array:
         dpnp.right_shift(self, other, out=self)
         return self
 
- # '__isub__',
+    def __isub__(self, other):
+        dpnp.subtract(self, other, out=self)
+        return self
+
  # '__iter__',
- # '__itruediv__',
+
+    def __itruediv__(self, other):
+        dpnp.true_divide(self, other, out=self)
+        return self
 
     def __ixor__(self, other):
         dpnp.bitwise_xor(self, other, out=self)

@@ -228,6 +228,7 @@ class TestProduct(unittest.TestCase):
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
+    @pytest.mark.skip("mute until dpctl support in-place add")
     def test_inner(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)
         b = testing.shaped_reverse_arange((5,), xp, dtype)
@@ -236,6 +237,7 @@ class TestProduct(unittest.TestCase):
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
+    @pytest.mark.skip("mute until dpctl support in-place add")
     def test_reversed_inner(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)[::-1]
         b = testing.shaped_reverse_arange((5,), xp, dtype)[::-1]
@@ -244,6 +246,7 @@ class TestProduct(unittest.TestCase):
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
+    @pytest.mark.skip("mute until dpctl support in-place add")
     def test_multidim_inner(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         b = testing.shaped_arange((3, 2, 4), xp, dtype)
@@ -251,6 +254,7 @@ class TestProduct(unittest.TestCase):
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
+    @pytest.mark.skip("mute until dpctl support in-place add")
     def test_transposed_higher_order_inner(self, xp, dtype):
         a = testing.shaped_arange((2, 4, 3), xp, dtype).transpose(2, 0, 1)
         b = testing.shaped_arange((4, 2, 3), xp, dtype).transpose(1, 2, 0)
