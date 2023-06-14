@@ -328,23 +328,18 @@ def outer(x1, x2, out=None):
            [1, 2, 3]])
 
     """
-    check_input_type = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
 
-    if dpnp.isscalar(x1) and dpnp.isscalar(x2):
+    if x1_is_scalar and x2_is_scalar:
         pass
-    elif not check_input_type(x1) and not check_input_type(x2):
+    elif not (x1_is_scalar or dpnp.is_supported_array_type(x1)):
+        pass
+    elif not (x2_is_scalar or dpnp.is_supported_array_type(x2)):
         pass
     else:
-        if check_input_type(x1):
-            x1_in = (x1.reshape(-1) if x1.ndim > 1 else x1)[:, None]
-        else:
-            x1_in = x1
-
-        if check_input_type(x2):
-            x2_in = (x2.reshape(-1) if x2.ndim > 1 else x2)[None, :]
-        else:
-            x2_in = x2
-
+        x1_in = x1 if x1_is_scalar else (x1.reshape(-1) if x1.ndim > 1 else x1)[:, None]
+        x2_in = x2 if x2_is_scalar else (x2.reshape(-1) if x2.ndim > 1 else x2)[None, :]
         return dpnp.multiply(x1_in, x2_in, out=out)
 
     return call_origin(numpy.outer, x1, x2, out=out)

@@ -70,7 +70,7 @@ class TestListOuter(unittest.TestCase):
         b: list[list[list[int]]] = a.tolist()
         dp_a = dp.array(a)
 
-        with assert_raises(TypeError):
+        with assert_raises(NotImplementedError):
             dp.outer(b, dp_a)
             dp.outer(dp_a, b)
             dp.outer(b, b)
