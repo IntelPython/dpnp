@@ -473,9 +473,9 @@ def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
             res_sum /= del_
         else:
             new_res_sum = res_sum / del_
-            return new_res_sum.astype(dtype) if dtype else new_res_sum
+            return new_res_sum.astype(dtype) if new_res_sum.dtype != dtype else new_res_sum
 
-        return res_sum.astype(dtype) if dtype else res_sum
+        return res_sum.astype(dtype) if res_sum.dtype != dtype else res_sum
 
     return call_origin(numpy.mean, x, axis=axis, dtype=dtype, out=out, keepdims=keepdims, where=where)
 
