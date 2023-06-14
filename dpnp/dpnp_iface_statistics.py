@@ -42,6 +42,7 @@ it contains:
 
 import numpy
 import dpctl.tensor as dpt
+from numpy.core.numeric import normalize_axis_tuple
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.dpnp_array import dpnp_array
@@ -394,18 +395,23 @@ def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
     return call_origin(numpy.max, x1, axis, out, keepdims, initial, where)
 
 
-def mean(x1, axis=None, **kwargs):
+def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
     """
     Compute the arithmetic mean along the specified axis.
 
     For full documentation refer to :obj:`numpy.mean`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        an array containing the mean values of the elements along the specified axis(axes).
+        If the input array is empty, an array containing a single NaN value is returned.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Prameters ``axis`` is supported only with default value ``None``.
-    Keyword arguments ``kwargs`` are currently unsupported.
-    Size of input array is limited by ``x1.size > 0``.
+    Parameters `x` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `keepdims`, `out` and `where` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -426,23 +432,52 @@ def mean(x1, axis=None, **kwargs):
     >>> import dpnp as np
     >>> a = np.array([[1, 2], [3, 4]])
     >>> np.mean(a)
-    2.5
-
+    array(2.5)
+    >>> np.mean(a, axis=0)
+    array([2., 3.])
+    >>> np.mean(a, axis=1)
+    array([1.5, 3.5])
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        if x1_desc.size == 0:
-            pass
-        elif axis is not None:
-            pass
+    if keepdims is not False:
+        pass
+    elif out is not None:
+        pass
+    elif where is not True:
+        pass
+    else:
+        if dtype is None and dpnp.issubdtype(x.dtype, dpnp.inexact):
+            dtype = x.dtype
+
+        if axis is None:
+            if x.size == 0:
+                return dpnp.array(dpnp.nan, dtype=dtype)
+            else:
+                result = dpnp.sum(x, dtype=dtype) / x.size
+                return result.astype(dtype) if result.dtype != dtype else result
+
+        if not isinstance(axis,(tuple,list)):
+            axis = (axis,)
+
+        axis = normalize_axis_tuple(axis, x.ndim, "axis")
+        res_sum = dpnp.sum(x, axis=axis, dtype=dtype)
+
+        del_ = 1.0
+        for axis_value in axis:
+            del_ *= x.shape[axis_value]
+
+        #performing an inplace operation on arrays of bool or integer types
+        #is not possible due to incompatible data types because
+        #it returns a floating value
+        if dpnp.issubdtype(res_sum.dtype, dpnp.inexact):
+            res_sum /= del_
         else:
-            result_obj = dpnp_mean(x1_desc, axis)
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+            new_res_sum = res_sum / del_
+            return new_res_sum.astype(dtype) if new_res_sum.dtype != dtype else new_res_sum
 
-            return result
+        return res_sum.astype(dtype) if res_sum.dtype != dtype else res_sum
 
-    return call_origin(numpy.mean, x1, axis=axis, **kwargs)
+    return call_origin(numpy.mean, x, axis=axis, dtype=dtype, out=out, keepdims=keepdims, where=where)
 
 
 def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):

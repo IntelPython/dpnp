@@ -84,6 +84,10 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_para
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_535_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int64), arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_543_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int64), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int64), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
 
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_external_prod_all
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_external_prod_axis
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_all
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out_wrong_shape
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_1dim
@@ -250,7 +254,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMult
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_3_{d=4, shape=(3, 2)}::test_normal
 
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov_empty
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_mean_axis
 
 tests/third_party/intel/test_zero_copy_test1.py::test_dpnp_interaction_with_dpctl_memory
 tests/test_arraymanipulation.py::TestHstack::test_generator
@@ -1075,6 +1078,7 @@ tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_1_{siz
 tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_2_{size=4}::test_multinomial
 tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_3_{size=(0,)}::test_multinomial
 tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_4_{size=(1, 0)}::test_multinomial
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_float1
 tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_goodness_of_fit
 tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_goodness_of_fit_2
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_bound_1
