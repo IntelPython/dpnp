@@ -1074,6 +1074,7 @@ tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_1_{siz
 tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_2_{size=4}::test_multinomial
 tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_3_{size=(0,)}::test_multinomial
 tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_4_{size=(1, 0)}::test_multinomial
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_float1
 tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_goodness_of_fit
 tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_goodness_of_fit_2
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_bound_1
