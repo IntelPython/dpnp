@@ -13,7 +13,7 @@ requirements:
       - cmake >=3.21
       - ninja
       - git
-      - dpctl >=0.14.2
+      - dpctl >=0.14.3
       - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2023.1.0') }}
       - onedpl-devel
       - tbb-devel
@@ -25,7 +25,7 @@ requirements:
       - sysroot_linux-64 >=2.28 # [linux]
     run:
       - python
-      - dpctl >=0.14.2
+      - dpctl >=0.14.3
       - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('mkl-dpcpp', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
