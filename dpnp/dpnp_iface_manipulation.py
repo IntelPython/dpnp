@@ -67,6 +67,7 @@ __all__ = [
     "ravel",
     "repeat",
     "reshape",
+    "result_type",
     "rollaxis",
     "shape",
     "squeeze",
@@ -577,6 +578,49 @@ def reshape(x, /, newshape, order='C', copy=None):
     usm_arr = dpnp.get_usm_ndarray(x)
     usm_arr = dpt.reshape(usm_arr, shape=newshape, order=order, copy=copy)
     return dpnp_array._create_from_usm_ndarray(usm_arr)
+
+
+def result_type(*arrays_and_dtypes):
+    """
+    Returns the type that results from applying the NumPy
+    type promotion rules to the arguments.
+
+    For full documentation refer to :obj:`numpy.result_type`.
+
+    Parameters
+    ----------
+    arrays_and_dtypes : list of arrays and dtypes
+        An arbitrary length sequence of arrays or dtypes.
+
+    Returns
+    -------
+    out : dtype
+        The result type.
+
+    Limitations
+    -----------
+    An array in the input list is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+
+    Examples
+    --------
+    >>> import dpnp as dp
+    >>> dp.result_type(dp.arange(3, dtype=dp.int64), dp.arange(7, dtype=dp.int32))
+    dtype('int64')
+
+    >>> dp.result_type(dp.int64, dp.complex128)
+    dtype('complex128')
+
+    >>> dp.result_type(dp.ones(10, dtype=dp.float32), dp.float64)
+    dtype('float64')
+
+    """
+
+    usm_arrays_and_dtypes = [
+        X.dtype if isinstance(X, (dpnp_array, dpt.usm_ndarray)) else X
+        for X in arrays_and_dtypes
+    ]
+    return dpt.result_type(*usm_arrays_and_dtypes)
 
 
 def rollaxis(x1, axis, start=0):
