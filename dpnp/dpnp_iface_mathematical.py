@@ -42,12 +42,16 @@ it contains:
 
 from .dpnp_algo import *
 from .dpnp_algo.dpnp_elementwise_common import (
+    dpnp_add,
     dpnp_divide,
-    dpnp_floor_divide
+    dpnp_floor_divide,
+    dpnp_multiply,
+    dpnp_subtract
 )
 from .dpnp_utils import *
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
 
 import numpy
 import dpctl.tensor as dpt
@@ -103,6 +107,7 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, out=None, where=True, order='
     """
     Chooses a common internal elementwise function to call in DPNP based on input arguments
     or to fallback on NumPy call if any passed argument is not currently supported.
+
     """
 
     if kwargs:
@@ -170,7 +175,7 @@ def absolute(x,
     -------
     y : dpnp.ndarray
         An array containing the absolute value of each element in `x`.
-    
+
     Limitations
     -----------
     Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
@@ -216,6 +221,7 @@ def add(x1,
         out=None,
         *,
         where=True,
+        order='K',
         dtype=None,
         subok=True,
         **kwargs):
@@ -249,7 +255,7 @@ def add(x1,
 
     """
 
-    return _check_nd_call(numpy.add, dpnp_add, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
+    return _check_nd_call(numpy.add, dpnp_add, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
 
 
 def around(x1, decimals=0, out=None):
@@ -597,7 +603,7 @@ def divide(x1,
     -------
     y : dpnp.ndarray
         The quotient ``x1/x2``, element-wise.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -616,27 +622,7 @@ def divide(x1,
 
     """
 
-    if where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif kwargs:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        if order in "afkcAFKC":
-            order = order.upper()
-        elif order is None:
-            order = 'K'
-        else:
-            raise ValueError("order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(order))
-
-        return dpnp_divide(x1, x2, out=out, order=order)
-    return call_origin(numpy.divide, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
+    return _check_nd_call(numpy.divide, dpnp_divide, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
 
 
 def ediff1d(x1, to_end=None, to_begin=None):
@@ -1100,6 +1086,7 @@ def multiply(x1,
              out=None,
              *,
              where=True,
+             order='K',
              dtype=None,
              subok=True,
              **kwargs):
@@ -1132,7 +1119,7 @@ def multiply(x1,
 
     """
 
-    return _check_nd_call(numpy.multiply, dpnp_multiply, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
+    return _check_nd_call(numpy.multiply, dpnp_multiply, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
 
 
 def nancumprod(x1, **kwargs):
@@ -1322,7 +1309,7 @@ def power(x1,
     -------
     y : dpnp.ndarray
         The bases in `x1` raised to the exponents in `x2`.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -1350,7 +1337,36 @@ def power(x1,
 
     """
 
-    return _check_nd_call(numpy.power, dpnp_power, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
+    if kwargs:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
+                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
+                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        if x1_desc and x2_desc:
+            if out is not None:
+                if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
+                    raise TypeError("return array must be of supported array type")
+                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
+            else:
+                out_desc = None
+
+            return dpnp_power(x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where).get_pyobj()
+
+    return call_origin(numpy.power, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
 def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
@@ -1506,6 +1522,7 @@ def subtract(x1,
              out=None,
              *,
              where=True,
+             order='K',
              dtype=None,
              subok=True,
              **kwargs):
@@ -1518,7 +1535,7 @@ def subtract(x1,
     -------
     y : dpnp.ndarray
         The difference of `x1` and `x2`, element-wise.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -1537,73 +1554,55 @@ def subtract(x1,
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
-
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        if x1_desc and x2_desc:
-            if x1_desc.dtype == x2_desc.dtype == dpnp.bool:
-                raise TypeError("DPNP boolean subtract, the `-` operator, is not supported, "
-                                "use the bitwise_xor, the `^` operator, or the logical_xor function instead.")
-            return dpnp_subtract(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
-
-    return call_origin(numpy.subtract, x1, x2, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
+    return _check_nd_call(numpy.subtract, dpnp_subtract, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
 
 
-def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
+def sum(x, /, *, axis=None, dtype=None, keepdims=False, out=None, initial=0, where=True):
     """
     Sum of array elements over a given axis.
 
     For full documentation refer to :obj:`numpy.sum`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        an array containing the sums. If the sum was computed over the
+        entire array, a zero-dimensional array is returned. The returned
+        array has the data type as described in the `dtype` parameter
+        of the Python Array API standard for the `sum` function.
+
     Limitations
     -----------
-        Parameter `where`` is unsupported.
-        Input array data types are limited by DPNP :ref:`Data types`.
+        Parameters `x` is supported as either :class:`dpnp.ndarray`
+        or :class:`dpctl.tensor.usm_ndarray`.
+        Parameters `out`, `initial` and `where` are supported with their default values.
+        Otherwise the function will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
     >>> import dpnp as np
     >>> np.sum(np.array([1, 2, 3, 4, 5]))
-    15
-    >>> result = np.sum([[0, 1], [0, 5]], axis=0)
-    [0, 6]
+    array(15)
+    >>> np.sum(np.array(5))
+    array(5)
+    >>> result = np.sum(np.array([[0, 1], [0, 5]]), axis=0)
+    array([0, 6])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if where is not True:
-            pass
-        else:
-            if dpnp.isscalar(out):
-                raise TypeError("output must be an array")
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            result_obj = dpnp_sum(x1_desc, axis, dtype, out_desc, keepdims, initial, where).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
 
-            if x1_desc.size == 0 and axis is None:
-                result = dpnp.zeros_like(result)
-                if out is not None:
-                    out[...] = result
-            return result
+    if out is not None:
+        pass
+    elif initial != 0:
+        pass
+    elif where is not True:
+        pass
+    else:
+        y = dpt.sum(dpnp.get_usm_ndarray(x), axis=axis, dtype=dtype, keepdims=keepdims)
+        return dpnp_array._create_from_usm_ndarray(y)
 
-    return call_origin(numpy.sum, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
+    return call_origin(numpy.sum, x, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
 
 def trapz(y1, x1=None, dx=1.0, axis=-1):

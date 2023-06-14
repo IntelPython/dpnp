@@ -36,8 +36,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_ABSOLUTE
         DPNP_FN_ABSOLUTE_EXT
-        DPNP_FN_ADD
-        DPNP_FN_ADD_EXT
         DPNP_FN_ALL
         DPNP_FN_ALL_EXT
         DPNP_FN_ALLCLOSE
@@ -117,7 +115,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_DIAG_INDICES_EXT
         DPNP_FN_DIAGONAL
         DPNP_FN_DIAGONAL_EXT
-        DPNP_FN_DIVIDE
         DPNP_FN_DOT
         DPNP_FN_DOT_EXT
         DPNP_FN_EDIFF1D
@@ -201,8 +198,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MINIMUM_EXT
         DPNP_FN_MODF
         DPNP_FN_MODF_EXT
-        DPNP_FN_MULTIPLY
-        DPNP_FN_MULTIPLY_EXT
         DPNP_FN_NANVAR
         DPNP_FN_NANVAR_EXT
         DPNP_FN_NEGATIVE
@@ -321,8 +316,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SQUARE_EXT
         DPNP_FN_STD
         DPNP_FN_STD_EXT
-        DPNP_FN_SUBTRACT
-        DPNP_FN_SUBTRACT_EXT
         DPNP_FN_SUM
         DPNP_FN_SUM_EXT
         DPNP_FN_SVD
@@ -336,7 +329,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TRACE
         DPNP_FN_TRACE_EXT
         DPNP_FN_TRANSPOSE
-        DPNP_FN_TRANSPOSE_EXT
         DPNP_FN_TRAPZ
         DPNP_FN_TRAPZ_EXT
         DPNP_FN_TRI
@@ -369,8 +361,6 @@ cdef extern from "dpnp_iface_fptr.hpp":
     struct DPNPFuncData:
         DPNPFuncType return_type
         void * ptr
-        DPNPFuncType return_type_no_fp64
-        void *ptr_no_fp64
 
     DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
 
@@ -524,8 +514,6 @@ cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 """
 Mathematical functions
 """
-cpdef dpnp_descriptor dpnp_add(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                               dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_arctan2(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_hypot(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
@@ -534,22 +522,17 @@ cpdef dpnp_descriptor dpnp_maximum(dpnp_descriptor x1_obj, dpnp_descriptor x2_ob
                                    dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_minimum(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
-cpdef dpnp_descriptor dpnp_multiply(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                    dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_negative(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_power(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                  dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_remainder(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                      dpnp_descriptor out=*, object where=*)
-cpdef dpnp_descriptor dpnp_subtract(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                    dpnp_descriptor out=*, object where=*)
 
 
 """
 Array manipulation routines
 """
 cpdef dpnp_descriptor dpnp_repeat(dpnp_descriptor array1, repeats, axes=*)
-cpdef dpnp_descriptor dpnp_transpose(dpnp_descriptor array1, axes=*)
 
 
 """
