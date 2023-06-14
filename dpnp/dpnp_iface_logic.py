@@ -42,9 +42,16 @@ it contains:
 
 import numpy
 import dpnp
-
-import dpnp.config as config
 from dpnp.dpnp_algo import *
+from .dpnp_algo.dpnp_elementwise_common import (
+    dpnp_equal,
+    dpnp_greater,
+    dpnp_greater_equal,
+    dpnp_less,
+    dpnp_less_equal,
+    dpnp_not_equal
+)
+from .dpnp_iface_mathematical import _check_nd_call
 from dpnp.dpnp_utils import *
 
 
@@ -238,9 +245,11 @@ def equal(x1,
           /,
           out=None,
           *,
+          order='K',
           where=True,
           dtype=None,
-          subok=True):
+          subok=True,
+          **kwargs):
     """
     Return the truth value of (x1 == x2) element-wise.
 
@@ -257,8 +266,7 @@ def equal(x1,
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`,
-    excluding `dpnp.complex64` and `dpnp.complex128`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -273,35 +281,12 @@ def equal(x1,
     >>> import dpnp as np
     >>> x1 = np.array([0, 1, 3])
     >>> x2 = np.arange(3)
-    >>> out = np.equal(x1, x2)
-    >>> [i for i in out]
-    [True, True, False]
+    >>> np.equal(x1, x2)
+    array([ True,  True, False])
 
     """
-    
-    if out is not None:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        if x1_desc and x2_desc:
-            return dpnp_equal(x1_desc, x2_desc).get_pyobj()
-
-    return call_origin(numpy.equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return _check_nd_call(numpy.equal, dpnp_equal, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
 
 
 def greater(x1,
@@ -309,9 +294,11 @@ def greater(x1,
             /,
             out=None,
             *,
+            order='K',
             where=True,
             dtype=None,
-            subok=True):
+            subok=True,
+            **kwargs):
     """
     Return the truth value of (x1 > x2) element-wise.
 
@@ -328,8 +315,7 @@ def greater(x1,
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`,
-    excluding `dpnp.complex64` and `dpnp.complex128`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -344,45 +330,24 @@ def greater(x1,
     >>> import dpnp as np
     >>> x1 = np.array([4, 2])
     >>> x2 = np.array([2, 2])
-    >>> out = np.greater(x1, x2)
-    >>> [i for i in out]
-    [True, False]
+    >>> np.greater(x1, x2)
+    array([ True, False])
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
-
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        if x1_desc and x2_desc:
-            return dpnp_greater(x1_desc, x2_desc).get_pyobj()
-
-    return call_origin(numpy.greater, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return _check_nd_call(numpy.greater, dpnp_greater, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
 
 
 def greater_equal(x1,
-                  x2,
-                  /,
-                  out=None,
-                  *,
-                  where=True,
-                  dtype=None,
-                  subok=True):
+               x2,
+               /,
+               out=None,
+               *,
+               order='K',
+               where=True,
+               dtype=None,
+               subok=True,
+               **kwargs):
     """
     Return the truth value of (x1 >= x2) element-wise.
 
@@ -415,35 +380,12 @@ def greater_equal(x1,
     >>> import dpnp as np
     >>> x1 = np.array([4, 2, 1])
     >>> x2 = np.array([2, 2, 2])
-    >>> out = np.greater_equal(x1, x2)
-    >>> [i for i in out]
-    [True, True, False]
+    >>> np.greater_equal(x1, x2)
+    array([ True,  True, False])
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
-
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        if x1_desc and x2_desc:
-            return dpnp_greater_equal(x1_desc, x2_desc).get_pyobj()
-
-    return call_origin(numpy.greater_equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return _check_nd_call(numpy.greater_equal, dpnp_greater_equal, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
 
 
 def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
@@ -626,9 +568,11 @@ def less(x1,
          /,
          out=None,
          *,
+         order='K',
          where=True,
          dtype=None,
-         subok=True):
+         subok=True,
+         **kwargs):
     """
     Return the truth value of (x1 < x2) element-wise.
 
@@ -645,8 +589,7 @@ def less(x1,
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`,
-    excluding `dpnp.complex64` and `dpnp.complex128`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -661,35 +604,12 @@ def less(x1,
     >>> import dpnp as np
     >>> x1 = np.array([1, 2])
     >>> x2 = np.array([2, 2])
-    >>> out = np.less(x1, x2)
-    >>> [i for i in out]
-    [True, False]
+    >>> np.less(x1, x2)
+    array([ True, False])
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
-
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        if x1_desc and x2_desc:
-            return dpnp_less(x1_desc, x2_desc).get_pyobj()
-
-    return call_origin(numpy.less, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return _check_nd_call(numpy.less, dpnp_less, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
 
 
 def less_equal(x1,
@@ -697,9 +617,11 @@ def less_equal(x1,
                /,
                out=None,
                *,
+               order='K',
                where=True,
                dtype=None,
-               subok=True):
+               subok=True,
+               **kwargs):
     """
     Return the truth value of (x1 <= x2) element-wise.
 
@@ -716,8 +638,7 @@ def less_equal(x1,
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`,
-    excluding `dpnp.complex64` and `dpnp.complex128`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -733,34 +654,11 @@ def less_equal(x1,
     >>> x1 = np.array([4, 2, 1])
     >>> x2 = np.array([2, 2, 2])
     >>> out = np.less_equal(x1, x2)
-    >>> [i for i in out]
-    [False, True, True]
+    array([False,  True,  True])
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
-
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        if x1_desc and x2_desc:
-            return dpnp_less_equal(x1_desc, x2_desc).get_pyobj()
-
-    return call_origin(numpy.less_equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return _check_nd_call(numpy.less_equal, dpnp_less_equal, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
 
 
 def logical_and(x1,
@@ -1036,9 +934,11 @@ def not_equal(x1,
               /,
               out=None,
               *,
+              order='K',
               where=True,
               dtype=None,
-              subok=True):
+              subok=True,
+              **kwargs):
     """
     Return the truth value of (x1 != x2) element-wise.
 
@@ -1055,8 +955,7 @@ def not_equal(x1,
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`,
-    excluding `dpnp.complex64` and `dpnp.complex128`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -1071,32 +970,9 @@ def not_equal(x1,
     >>> import dpnp as np
     >>> x1 = np.array([1., 2.])
     >>> x2 = np.arange(1., 3.)
-    >>> out = np.not_equal(x1, x2)
-    >>> [i for i in out]
-    [False, False]
+    >>> np.not_equal(x1, x2)
+    array([False, False])
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
-
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        if x1_desc and x2_desc:
-            return dpnp_not_equal(x1_desc, x2_desc).get_pyobj()
-
-    return call_origin(numpy.not_equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return _check_nd_call(numpy.not_equal, dpnp_not_equal, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
