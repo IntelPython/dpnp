@@ -446,8 +446,7 @@ def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
     elif where is not True:
         pass
     else:
-        if dtype is None and not (dpnp.issubdtype(x.dtype, dpnp.integer)
-                                  or dpnp.issubdtype(x.dtype, dpnp.bool_)):
+        if dtype is None and dpnp.issubdtype(x.dtype, dpnp.inexact):
             dtype = x.dtype
 
         if axis is None:
@@ -455,7 +454,7 @@ def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
                 return dpnp.array([dpnp.nan], dtype=dtype)
             else:
                 result = dpnp.sum(x, dtype=dtype) / x.size
-                return result.astype(dtype) if dtype else result
+                return result.astype(dtype) if result.dtype != dtype else result
 
         if not isinstance(axis,(tuple,list)):
             axis = (axis,)
