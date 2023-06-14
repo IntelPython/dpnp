@@ -37,7 +37,6 @@ and the rest of the library
 
 __all__ += [
     "dpnp_absolute",
-    "dpnp_add",
     "dpnp_arctan2",
     "dpnp_around",
     "dpnp_ceil",
@@ -47,7 +46,6 @@ __all__ += [
     "dpnp_cumprod",
     "dpnp_cumsum",
     "dpnp_diff",
-    "dpnp_divide",
     "dpnp_ediff1d",
     "dpnp_fabs",
     "dpnp_floor",
@@ -58,7 +56,6 @@ __all__ += [
     "dpnp_maximum",
     "dpnp_minimum",
     "dpnp_modf",
-    "dpnp_multiply",
     "dpnp_nancumprod",
     "dpnp_nancumsum",
     "dpnp_nanprod",
@@ -68,7 +65,6 @@ __all__ += [
     "dpnp_prod",
     "dpnp_remainder",
     "dpnp_sign",
-    "dpnp_subtract",
     "dpnp_sum",
     "dpnp_trapz",
     "dpnp_trunc"
@@ -122,14 +118,6 @@ cpdef utils.dpnp_descriptor dpnp_absolute(utils.dpnp_descriptor x1):
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_add(utils.dpnp_descriptor x1_obj,
-                                     utils.dpnp_descriptor x2_obj,
-                                     object dtype=None,
-                                     utils.dpnp_descriptor out=None,
-                                     object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_ADD_EXT, x1_obj, x2_obj, dtype, out, where)
 
 
 cpdef utils.dpnp_descriptor dpnp_arctan2(utils.dpnp_descriptor x1_obj,
@@ -247,14 +235,6 @@ cpdef utils.dpnp_descriptor dpnp_diff(utils.dpnp_descriptor x1, int n):
         return res
 
     return dpnp_diff(res, n - 1)
-
-
-cpdef utils.dpnp_descriptor dpnp_divide(utils.dpnp_descriptor x1_obj,
-                                        utils.dpnp_descriptor x2_obj,
-                                        object dtype=None,
-                                        utils.dpnp_descriptor out=None,
-                                        object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_DIVIDE_EXT, x1_obj, x2_obj, dtype, out, where)
 
 
 cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):
@@ -435,14 +415,6 @@ cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
     return (result1.get_pyobj(), result2.get_pyobj())
 
 
-cpdef utils.dpnp_descriptor dpnp_multiply(utils.dpnp_descriptor x1_obj,
-                                          utils.dpnp_descriptor x2_obj,
-                                          object dtype=None,
-                                          utils.dpnp_descriptor out=None,
-                                          object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_MULTIPLY_EXT, x1_obj, x2_obj, dtype, out, where)
-
-
 cpdef utils.dpnp_descriptor dpnp_nancumprod(utils.dpnp_descriptor x1):
     cur_x1 = dpnp_copy(x1).get_pyobj()
 
@@ -593,14 +565,6 @@ cpdef utils.dpnp_descriptor dpnp_remainder(utils.dpnp_descriptor x1_obj,
 
 cpdef utils.dpnp_descriptor dpnp_sign(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_SIGN_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_subtract(utils.dpnp_descriptor x1_obj,
-                                          utils.dpnp_descriptor x2_obj,
-                                          object dtype=None,
-                                          utils.dpnp_descriptor out=None,
-                                          object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_SUBTRACT_EXT, x1_obj, x2_obj, dtype, out, where)
 
 
 cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor x1,

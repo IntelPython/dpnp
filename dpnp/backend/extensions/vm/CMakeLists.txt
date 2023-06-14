@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,11 +24,10 @@
 # *****************************************************************************
 
 
-set(python_module_name _lapack_impl)
+set(python_module_name _vm_impl)
 pybind11_add_module(${python_module_name} MODULE
-    lapack_py.cpp
-    heevd.cpp
-    syevd.cpp
+    vm_py.cpp
+    div.cpp
 )
 
 if (WIN32)
@@ -72,5 +71,5 @@ endif()
 target_link_libraries(${python_module_name} PUBLIC MKL::MKL_DPCPP)
 
 install(TARGETS ${python_module_name}
-  DESTINATION "dpnp/backend/extensions/lapack"
+  DESTINATION "dpnp/backend/extensions/vm"
 )

@@ -99,15 +99,8 @@ class dpnp_array:
 
     @property
     def T(self):
-        """Shape-reversed view of the array.
-
-        If ndim < 2, then this is just a reference to the array itself.
-
-        """
-        if self.ndim < 2:
-            return self
-        else:
-            return dpnp.transpose(self)
+        """View of the transposed array."""
+        return self.transpose()
 
     def to_device(self, target_device):
         """
@@ -256,9 +249,15 @@ class dpnp_array:
         dpnp.right_shift(self, other, out=self)
         return self
 
- # '__isub__',
+    def __isub__(self, other):
+        dpnp.subtract(self, other, out=self)
+        return self
+
  # '__iter__',
- # '__itruediv__',
+
+    def __itruediv__(self, other):
+        dpnp.true_divide(self, other, out=self)
+        return self
 
     def __ixor__(self, other):
         dpnp.bitwise_xor(self, other, out=self)
@@ -832,7 +831,32 @@ class dpnp_array:
     def nonzero(self):
         return dpnp.nonzero(self)
 
- # 'partition',
+    def partition(self, kth, axis=-1, kind='introselect', order=None):
+        """
+        Rearranges the elements in the array in such a way that the value of the
+        element in kth position is in the position it would be in a sorted array.
+
+        All elements smaller than the kth element are moved before this element and
+        all equal or greater are moved behind it. The ordering of the elements in
+        the two partitions is undefined.
+
+        Refer to `dpnp.partition` for full documentation.
+
+        See Also
+        --------
+        :obj:`dpnp.partition` : Return a partitioned copy of an array.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([3, 4, 2, 1])
+        >>> a.partition(3)
+        >>> a
+        array([1, 2, 3, 4])
+
+        """
+
+        self._array_obj = dpnp.partition(self, kth, axis=axis, kind=kind, order=order).get_array()
 
     def prod(self, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
         """
@@ -852,14 +876,21 @@ class dpnp_array:
  # 'real',
  # 'repeat',
 
-    def reshape(self, d0, *dn, order=b'C'):
+    def reshape(self, *sh, **kwargs):
         """
         Returns an array containing the same data with a new shape.
 
-        Refer to `dpnp.reshape` for full documentation.
+        For full documentation refer to :obj:`numpy.ndarray.reshape`.
 
-        .. seealso::
-           :meth:`numpy.ndarray.reshape`
+        Returns
+        -------
+        y : dpnp.ndarray
+            This will be a new view object if possible;
+            otherwise, it will be a copy.
+
+        See Also
+        --------
+        :obj:`dpnp.reshape` : Equivalent function.
 
         Notes
         -----
@@ -870,17 +901,9 @@ class dpnp_array:
 
         """
 
-        if dn:
-            if not isinstance(d0, int):
-                msg_tmpl = "'{}' object cannot be interpreted as an integer"
-                raise TypeError(msg_tmpl.format(type(d0).__name__))
-            shape = [d0, *dn]
-        else:
-            shape = d0
-
-        shape_tup = dpnp.dpnp_utils._object_to_tuple(shape)
-
-        return dpnp.reshape(self, shape_tup)
+        if len(sh) == 1:
+            sh = sh[0]
+        return dpnp.reshape(self, sh, **kwargs)
 
  # 'resize',
 
@@ -922,14 +945,7 @@ class dpnp_array:
 
         """
 
-        dpnp.reshape(self, newshape)
-
-    @property
-    def shape(self):
-        """
-        """
-
-        return self._array_obj.shape
+        dpnp.reshape(self, newshape=newshape)
 
     @property
     def size(self):
@@ -1000,15 +1016,62 @@ class dpnp_array:
 
     def transpose(self, *axes):
         """
-        Returns a view of the array with axes permuted.
+        Returns a view of the array with axes transposed.
 
-        .. seealso::
-           :obj:`dpnp.transpose` for full documentation,
-           :meth:`numpy.ndarray.reshape`
+        For full documentation refer to :obj:`numpy.ndarray.transpose`.
 
+        Returns
+        -------
+        y : dpnp.ndarray
+            View of the array with its axes suitably permuted.
+
+        See Also
+        --------
+            :obj:`dpnp.transpose` : Equivalent function.
+            :obj:`dpnp.ndarray.ndarray.T` : Array property returning the array transposed.
+            :obj:`dpnp.ndarray.reshape` : Give a new shape to an array without changing its data.
+
+        Examples
+        --------
+        >>> import dpnp as dp
+        >>> a = dp.array([[1, 2], [3, 4]])
+        >>> a
+        array([[1, 2],
+               [3, 4]])
+        >>> a.transpose()
+        array([[1, 3],
+               [2, 4]])
+        >>> a.transpose((1, 0))
+        array([[1, 3],
+               [2, 4]])
+
+        >>> a = dp.array([1, 2, 3, 4])
+        >>> a
+        array([1, 2, 3, 4])
+        >>> a.transpose()
+        array([1, 2, 3, 4])
+            
         """
 
-        return dpnp.transpose(self, axes)
+        ndim = self.ndim
+        if ndim < 2:
+            return self
+
+        axes_len = len(axes)
+        if axes_len == 1 and isinstance(axes[0], tuple):
+            axes = axes[0]
+
+        res = self.__new__(dpnp_array)
+        if ndim == 2 and axes_len == 0:
+            res._array_obj = self._array_obj.T
+        else:
+            if len(axes) == 0 or axes[0] is None:
+                # self.transpose().shape == self.shape[::-1]
+                # self.transpose(None).shape == self.shape[::-1]
+                axes = tuple((ndim - x - 1) for x in range(ndim))
+
+            res._array_obj = dpt.permute_dims(self._array_obj, axes)
+        return res
 
     def var(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
         """

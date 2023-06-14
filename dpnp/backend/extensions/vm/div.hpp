@@ -29,7 +29,7 @@
 #include <oneapi/mkl.hpp>
 
 #include <dpctl4pybind11.hpp>
-
+#include <pybind11/numpy.h>
 
 namespace dpnp
 {
@@ -37,17 +37,21 @@ namespace backend
 {
 namespace ext
 {
-namespace lapack
+namespace vm
 {
-    extern std::pair<sycl::event, sycl::event> heevd(sycl::queue exec_q,
-                                                     const std::int8_t jobz,
-                                                     const std::int8_t upper_lower,
-                                                     dpctl::tensor::usm_ndarray eig_vecs,
-                                                     dpctl::tensor::usm_ndarray eig_vals,
-                                                     const std::vector<sycl::event>& depends);
+    extern std::pair<sycl::event, sycl::event> div(sycl::queue exec_q,
+                                                   dpctl::tensor::usm_ndarray src1,
+                                                   dpctl::tensor::usm_ndarray src2,
+                                                   dpctl::tensor::usm_ndarray dst,
+                                                   const std::vector<sycl::event>& depends);
 
-    extern void init_heevd_dispatch_table(void);
-}
-}
-}
-}
+    extern bool can_call_div(sycl::queue exec_q,
+                             dpctl::tensor::usm_ndarray src1,
+                             dpctl::tensor::usm_ndarray src2,
+                             dpctl::tensor::usm_ndarray dst);
+
+    extern void init_div_dispatch_vector(void);
+} // namespace vm
+} // namespace ext
+} // namespace backend
+} // namespace dpnp

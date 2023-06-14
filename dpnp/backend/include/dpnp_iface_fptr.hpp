@@ -359,7 +359,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TANH,                         /**< Used in numpy.tanh() impl  */
     DPNP_FN_TANH_EXT,                     /**< Used in numpy.tanh() impl, requires extra parameters */
     DPNP_FN_TRANSPOSE,                    /**< Used in numpy.transpose() impl  */
-    DPNP_FN_TRANSPOSE_EXT,                /**< Used in numpy.transpose() impl, requires extra parameters */
     DPNP_FN_TRACE,                        /**< Used in numpy.trace() impl  */
     DPNP_FN_TRACE_EXT,                    /**< Used in numpy.trace() impl, requires extra parameters */
     DPNP_FN_TRAPZ,                        /**< Used in numpy.trapz() impl  */
@@ -374,7 +373,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_VANDER_EXT,                   /**< Used in numpy.vander() impl, requires extra parameters */
     DPNP_FN_VAR,                          /**< Used in numpy.var() impl  */
     DPNP_FN_VAR_EXT,                      /**< Used in numpy.var() impl, requires extra parameters */
-    DPNP_FN_WHERE_EXT,                    /**< Used in numpy.where() impl, requires extra parameters */
     DPNP_FN_ZEROS,                        /**< Used in numpy.zeros() impl */
     DPNP_FN_ZEROS_LIKE,                   /**< Used in numpy.zeros_like() impl */
     DPNP_FN_LAST,                         /**< The latest element of the enumeration */

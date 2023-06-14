@@ -8,8 +8,7 @@ from tests.third_party.cupy import testing
 
 
 def _get_hermitian(xp, a, UPLO):
-    # TODO: fix this, currently dpnp.transpose() doesn't support complex types
-    # and no dpnp_array.swapaxes()
+    # TODO: remove wrapping, but now there is no dpnp_array.swapaxes()
     a = _wrap_as_numpy_array(xp, a)
     _xp = numpy
 
@@ -85,7 +84,6 @@ class TestEigenvalue(unittest.TestCase):
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4, contiguous_check=False)
     def test_eigh_complex_batched(self, xp, dtype):
-        print()
         a = xp.array([[[1, 2j, 3], [4j, 5, 6j], [7, 8j, 9]],
                       [[0, 2j, 3], [4j, 4, 6j], [7, 8j, 8]]], dtype)
         w, v = xp.linalg.eigh(a, UPLO=self.UPLO)
