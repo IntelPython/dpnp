@@ -218,7 +218,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MAXIMUM,                      /**< Used in numpy.maximum() impl  */
     DPNP_FN_MAXIMUM_EXT,                  /**< Used in numpy.maximum() impl , requires extra parameters */
     DPNP_FN_MEAN,                         /**< Used in numpy.mean() impl  */
-    DPNP_FN_MEAN_EXT,                     /**< Used in numpy.mean() impl, requires extra parameters */
     DPNP_FN_MEDIAN,                       /**< Used in numpy.median() impl  */
     DPNP_FN_MEDIAN_EXT,                   /**< Used in numpy.median() impl, requires extra parameters */
     DPNP_FN_MIN,                          /**< Used in numpy.min() impl  */

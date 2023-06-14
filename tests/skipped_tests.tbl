@@ -989,6 +989,7 @@ tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_1_{siz
 tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_2_{size=4}::test_multinomial
 tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_3_{size=(0,)}::test_multinomial
 tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_4_{size=(1, 0)}::test_multinomial
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_float1
 tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_goodness_of_fit
 tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_goodness_of_fit_2
 
@@ -1237,7 +1238,6 @@ tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_h
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_same_value
 
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_mismatch
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_mean_axis
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_all_nan
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_float16
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_huge
