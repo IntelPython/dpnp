@@ -188,8 +188,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MAX_EXT
         DPNP_FN_MAXIMUM
         DPNP_FN_MAXIMUM_EXT
-        DPNP_FN_MEAN
-        DPNP_FN_MEAN_EXT
         DPNP_FN_MEDIAN
         DPNP_FN_MEDIAN_EXT
         DPNP_FN_MIN
@@ -538,7 +536,6 @@ cpdef dpnp_descriptor dpnp_repeat(dpnp_descriptor array1, repeats, axes=*)
 """
 Statistics functions
 """
-cpdef object dpnp_mean(dpnp_descriptor a, axis)
 cpdef dpnp_descriptor dpnp_min(dpnp_descriptor a, axis)
 
 

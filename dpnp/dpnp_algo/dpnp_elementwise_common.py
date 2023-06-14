@@ -35,6 +35,10 @@ from dpctl.tensor._elementwise_common import (
     BinaryElementwiseFunc
 )
 import dpctl.tensor._tensor_impl as ti
+import dpctl.tensor as dpt
+import dpctl
+
+import numpy
 
 
 __all__ = [
@@ -125,12 +129,27 @@ def dpnp_divide(x1, x2, out=None, order='K'):
             return vmi._div(sycl_queue, src1, src2, dst, depends)
         return ti._divide(src1, src2, dst, sycl_queue, depends)
 
+    def _call_divide_inplace(lhs, rhs, sycl_queue, depends=[]):
+        """In place workaround until dpctl.tensor provides the functionality."""
+
+        # allocate temporary memory for out array
+        out = dpt.empty_like(lhs, dtype=dpnp.result_type(lhs.dtype, rhs.dtype))
+
+        # call a general callback
+        div_ht_, div_ev_ = _call_divide(lhs, rhs, out, sycl_queue, depends)
+
+        # store the result into left input array and return events
+        cp_ht_, cp_ev_ = ti._copy_usm_ndarray_into_usm_ndarray(src=out, dst=lhs, sycl_queue=sycl_queue, depends=[div_ev_])
+        dpctl.SyclEvent.wait_for([div_ht_])
+        return (cp_ht_, cp_ev_)
+
     # dpctl.tensor only works with usm_ndarray or scalar
     x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc("divide", ti._divide_result_type, _call_divide, _divide_docstring_)
+    func = BinaryElementwiseFunc("divide", ti._divide_result_type, _call_divide,
+                                 _divide_docstring_, _call_divide_inplace)
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
@@ -207,6 +226,11 @@ def dpnp_subtract(x1, x2, out=None, order='K'):
     and would be performance effective.
 
     """
+
+    # TODO: discuss with dpctl if the check is needed to be moved there
+    if not dpnp.isscalar(x1) and not dpnp.isscalar(x2) and x1.dtype == x2.dtype == dpnp.bool:
+        raise TypeError("DPNP boolean subtract, the `-` operator, is not supported, "
+                        "use the bitwise_xor, the `^` operator, or the logical_xor function instead.")
 
     # dpctl.tensor only works with usm_ndarray or scalar
     x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)

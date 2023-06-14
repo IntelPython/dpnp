@@ -280,7 +280,6 @@ class TestArithmeticModf(unittest.TestCase):
     'shape': [(3, 2), (), (3, 0, 2)]
 }))
 @testing.gpu
-@pytest.mark.skip("dpctl doesn't raise an error")
 class TestBoolSubtract(unittest.TestCase):
 
     def test_bool_subtract(self):
