@@ -1164,6 +1164,7 @@ def shaped_random(shape, xp=dpnp, dtype=numpy.float64, scale=10, seed=0):
     """
     numpy.random.seed(seed)
     dtype = numpy.dtype(dtype)
+
     if dtype == '?':
         return xp.asarray(numpy.random.randint(2, size=shape), dtype=dtype)
     elif dtype.kind == 'c':
