@@ -42,6 +42,7 @@ it contains:
 
 import numpy
 import dpctl.tensor as dpt
+from numpy.core.numeric import normalize_axis_tuple
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.dpnp_array import dpnp_array
@@ -445,27 +446,28 @@ def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
     elif where is not True:
         pass
     else:
-
-        if dtype is None and not numpy.issubdtype(x.dtype, numpy.integer):
+        if dtype is None and not (dpnp.issubdtype(x.dtype, dpnp.integer)
+                                  or dpnp.issubdtype(x.dtype, dpnp.bool_)):
             dtype = x.dtype
 
         if axis is None:
             if x.size == 0:
-                return dpnp.array([dpnp.nan], dtype=x.dtype)
+                return dpnp.array([dpnp.nan], dtype=dtype)
             else:
                 result = dpnp.sum(x, dtype=dtype) / x.size
                 return result.astype(dtype) if dtype else result
 
-        if isinstance(axis, int):
-            axis_ = (axis,)
-        else:
-            axis_ = axis
+        if not isinstance(axis,(tuple,list)):
+            axis = (axis,)
 
+        axis = normalize_axis_tuple(axis, x.ndim, "axis")
         res_sum = dpnp.sum(x, axis=axis, dtype=dtype)
 
-        for axis_value in axis_:
-            res_sum /= x.shape[axis_value]
+        del_ = 1.0
+        for axis_value in axis:
+            del_ *= x.shape[axis_value]
 
+        res_sum /= del_
         return res_sum.astype(dtype) if dtype else res_sum
 
     return call_origin(numpy.mean, x, axis=axis, dtype=dtype, out=out, keepdims=keepdims, where=where)
