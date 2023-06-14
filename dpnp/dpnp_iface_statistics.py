@@ -300,10 +300,6 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
     else:
         return dpnp_cov(m, y=y, rowvar=rowvar, dtype=dtype)
 
-        # x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-        # if x1_desc:
-        #     return dpnp_cov(x1_desc).get_pyobj()
-
     return call_origin(numpy.cov, m, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype)
 
 

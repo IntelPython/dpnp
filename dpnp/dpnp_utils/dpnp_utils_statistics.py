@@ -71,9 +71,7 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
             x = x[dpnp.newaxis, :]
 
         if not rowvar and x.shape[0] != 1:
-            # TODO: replace once ready with
-            # x = x.T
-            x = dpnp_array._create_from_usm_ndarray(x.get_array().T)
+            x = x.T
 
         if x.dtype != dtype:
             x = dpnp.astype(x, dtype)
@@ -113,18 +111,12 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
 
     # TODO: replace once ready with
     # avg = X.mean(axis=1)
-    # avg = X.sum(axis=1) / X.shape[1]
-    avg = unary_fns.sum(X.get_array(), axis=1) / X.shape[1]
+    avg = X.sum(axis=1) / X.shape[1]
 
     fact = X.shape[1] - 1
     X -= avg[:, None]
 
-    # TODO: replace once ready with
-    # c = dpnp.dot(X, X.T.conj())
-    c = dpnp.dot(X, dpnp_array._create_from_usm_ndarray(X.get_array().T).conj())
+    c = dpnp.dot(X, X.T.conj())
     c *= 1 / fact if fact != 0 else dpnp.nan
 
-    # TODO: replace with dpnp.squeeze(c) once ready
-    usm_c = dpnp.get_usm_ndarray(c)
-    usm_c = dpt.squeeze(usm_c)
-    return dpnp_array._create_from_usm_ndarray(usm_c)
+    return dpnp.squeeze(c)

@@ -38,7 +38,6 @@ and the rest of the library
 __all__ += [
     "dpnp_average",
     "dpnp_correlate",
-    "dpnp_cov",
     "dpnp_max",
     "dpnp_mean",
     "dpnp_median",
@@ -171,49 +170,6 @@ cpdef utils.dpnp_descriptor dpnp_correlate(utils.dpnp_descriptor x1, utils.dpnp_
                                                     x2_shape.data(),
                                                     x2_shape.size(),
                                                     NULL,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_cov(utils.dpnp_descriptor array1):
-    cdef shape_type_c input_shape = array1.shape
-
-    if array1.ndim == 1:
-        input_shape.insert(input_shape.begin(), 1)
-
-    # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
-
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COV_EXT, param1_type, param1_type)
-
-    array1_obj = array1.get_array()
-
-    # ceate result array with type given by FPTR data
-    cdef shape_type_c result_shape = (input_shape[0], input_shape[0])
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=array1_obj.sycl_device,
-                                                                       usm_type=array1_obj.usm_type,
-                                                                       sycl_queue=array1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_custom_cov_1in_1out_t func = <fptr_custom_cov_1in_1out_t > kernel_data.ptr
-    # call FPTR function
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    array1.get_data(),
-                                                    result.get_data(),
-                                                    input_shape[0],
-                                                    input_shape[1],
                                                     NULL)  # dep_events_ref
 
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
