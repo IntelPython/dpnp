@@ -37,9 +37,6 @@ import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 
-# TODO: replace with calls from dpctl module
-import unary_fns
-
 
 __all__ = [
     "dpnp_cov"
@@ -109,9 +106,7 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
 
         X = dpnp_array._create_from_usm_ndarray(res_usm)
 
-    # TODO: replace once ready with
-    # avg = X.mean(axis=1)
-    avg = X.sum(axis=1) / X.shape[1]
+    avg = X.mean(axis=1)
 
     fact = X.shape[1] - 1
     X -= avg[:, None]
