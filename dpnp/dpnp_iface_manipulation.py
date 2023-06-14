@@ -617,7 +617,7 @@ def result_type(*arrays_and_dtypes):
     """
 
     usm_arrays_and_dtypes = [
-        dpnp.get_usm_ndarray(X) if isinstance(X, (dpnp_array, dpt.usm_ndarray)) else X
+        X.dtype if isinstance(X, (dpnp_array, dpt.usm_ndarray)) else X
         for X in arrays_and_dtypes
     ]
     return dpt.result_type(*usm_arrays_and_dtypes)
