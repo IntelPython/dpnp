@@ -40,7 +40,6 @@ __all__ += [
     "dpnp_inner",
     "dpnp_kron",
     "dpnp_matmul",
-    "dpnp_outer"
 ]
 
 
@@ -376,29 +375,5 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
                                                     NULL)  # dep_event_vec_ref
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_outer(utils.dpnp_descriptor array1, utils.dpnp_descriptor array2):
-    cdef shape_type_c result_shape = (array1.size, array2.size)
-    result_type = numpy.promote_types(array1.dtype, array1.dtype)
-
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(array1, array2)
-
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape,
-                                                                             result_type,
-                                                                             None,
-                                                                             device=result_sycl_device,
-                                                                             usm_type=result_usm_type,
-                                                                             sycl_queue=result_sycl_queue)
-
-    result_flatiter = result.get_pyobj().flat
-    array1_flatiter = array1.get_pyobj().flat
-    array2_flatiter = array2.get_pyobj().flat
-
-    for idx1 in range(array1.size):
-        for idx2 in range(array2.size):
-            result_flatiter[idx1 * array2.size + idx2] = array1_flatiter[idx1] * array2_flatiter[idx2]
 
     return result
