@@ -35,6 +35,7 @@
 sycl::queue* backend_sycl::queue = nullptr;
 #endif
 mkl_rng::mt19937* backend_sycl::rng_engine = nullptr;
+mkl_rng::mcg59* backend_sycl::rng_mcg59_engine = nullptr;
 
 static void dpnpc_show_mathlib_version()
 {
@@ -226,6 +227,7 @@ void backend_sycl::backend_sycl_rng_engine_init(size_t seed)
         backend_sycl::destroy_rng_engine();
     }
     rng_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
+    rng_mcg59_engine = new mkl_rng::mcg59(DPNP_QUEUE, seed);
 }
 
 void dpnp_queue_initialize_c(QueueOptions selector)
