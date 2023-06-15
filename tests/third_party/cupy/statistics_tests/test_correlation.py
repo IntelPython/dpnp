@@ -1,9 +1,11 @@
+import sys
 import unittest
 
 import numpy
 import pytest
 
 import dpnp as cupy
+from dpctl import select_default_device
 from tests.third_party.cupy import testing
 
 
@@ -37,8 +39,10 @@ class TestCorrcoef(unittest.TestCase):
         return xp.corrcoef(a, y=y, rowvar=False)
 
 
-@testing.gpu
 class TestCov(unittest.TestCase):
+
+    # resulting dtype will differ with numpy if no fp64 support by a default device
+    _has_fp64 = select_default_device().has_aspect_fp64
 
     def generate_input(self, a_shape, y_shape, xp, dtype):
         a = testing.shaped_arange(a_shape, xp, dtype)
@@ -48,27 +52,40 @@ class TestCov(unittest.TestCase):
         return a, y
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose(type_check=_has_fp64, accept_error=True)
     def check(self, a_shape, y_shape=None, rowvar=True, bias=False,
-              ddof=None, xp=None, dtype=None):
+              ddof=None, xp=None, dtype=None,
+              fweights=None, aweights=None, name=None):
         a, y = self.generate_input(a_shape, y_shape, xp, dtype)
-        return xp.cov(a, y, rowvar, bias, ddof)
+        if fweights is not None:
+            fweights = name.asarray(fweights)
+        if aweights is not None:
+            aweights = name.asarray(aweights)
+        # print(type(fweights))
+        # return xp.cov(a, y, rowvar, bias, ddof,
+        #               fweights, aweights, dtype=dtype)
+        return xp.cov(a, y, rowvar, bias, ddof,
+                      fweights, aweights)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(accept_error=True)
     def check_warns(self, a_shape, y_shape=None, rowvar=True, bias=False,
-                    ddof=None, xp=None, dtype=None):
+                    ddof=None, xp=None, dtype=None,
+                    fweights=None, aweights=None):
         with testing.assert_warns(RuntimeWarning):
             a, y = self.generate_input(a_shape, y_shape, xp, dtype)
-            return xp.cov(a, y, rowvar, bias, ddof)
+            return xp.cov(a, y, rowvar, bias, ddof,
+                          fweights, aweights, dtype=dtype)
 
     @testing.for_all_dtypes()
-    def check_raises(self, a_shape, y_shape=None, rowvar=True, bias=False,
-                     ddof=None, dtype=None):
+    def check_raises(self, a_shape, y_shape=None,
+                     rowvar=True, bias=False, ddof=None,
+                     dtype=None, fweights=None, aweights=None):
         for xp in (numpy, cupy):
             a, y = self.generate_input(a_shape, y_shape, xp, dtype)
             with pytest.raises(ValueError):
-                xp.cov(a, y, rowvar, bias, ddof)
+                xp.cov(a, y, rowvar, bias, ddof,
+                       fweights, aweights, dtype=dtype)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_cov(self):
@@ -78,6 +95,12 @@ class TestCov(unittest.TestCase):
         self.check((2, 3), (2, 3), rowvar=False)
         self.check((2, 3), bias=True)
         self.check((2, 3), ddof=2)
+        self.check((2, 3))
+        self.check((1, 3), fweights=(1, 4, 1))
+        self.check((1, 3), aweights=(1.0, 4.0, 1.0))
+        self.check((1, 3), bias=True, aweights=(1.0, 4.0, 1.0))
+        self.check((1, 3), fweights=(1, 4, 1),
+                   aweights=(1.0, 4.0, 1.0))
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_cov_warns(self):
