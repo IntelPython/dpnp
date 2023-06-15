@@ -124,6 +124,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_COUNT_NONZERO,                /**< Used in numpy.count_nonzero() impl  */
     DPNP_FN_COUNT_NONZERO_EXT,            /**< Used in numpy.count_nonzero() impl, requires extra parameters */
     DPNP_FN_COV,                          /**< Used in numpy.cov() impl  */
+    DPNP_FN_COV_EXT,                      /**< Used in numpy.cov() impl, requires extra parameters */
     DPNP_FN_CROSS,                        /**< Used in numpy.cross() impl  */
     DPNP_FN_CROSS_EXT,                    /**< Used in numpy.cross() impl, requires extra parameters */
     DPNP_FN_CUMPROD,                      /**< Used in numpy.cumprod() impl  */
@@ -217,6 +218,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MAXIMUM,                      /**< Used in numpy.maximum() impl  */
     DPNP_FN_MAXIMUM_EXT,                  /**< Used in numpy.maximum() impl , requires extra parameters */
     DPNP_FN_MEAN,                         /**< Used in numpy.mean() impl  */
+    DPNP_FN_MEAN_EXT,                     /**< Used in numpy.mean() impl, requires extra parameters */
     DPNP_FN_MEDIAN,                       /**< Used in numpy.median() impl  */
     DPNP_FN_MEDIAN_EXT,                   /**< Used in numpy.median() impl, requires extra parameters */
     DPNP_FN_MIN,                          /**< Used in numpy.min() impl  */
@@ -358,6 +360,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TANH,                         /**< Used in numpy.tanh() impl  */
     DPNP_FN_TANH_EXT,                     /**< Used in numpy.tanh() impl, requires extra parameters */
     DPNP_FN_TRANSPOSE,                    /**< Used in numpy.transpose() impl  */
+    DPNP_FN_TRANSPOSE_EXT,                /**< Used in numpy.transpose() impl, requires extra parameters */
     DPNP_FN_TRACE,                        /**< Used in numpy.trace() impl  */
     DPNP_FN_TRACE_EXT,                    /**< Used in numpy.trace() impl, requires extra parameters */
     DPNP_FN_TRAPZ,                        /**< Used in numpy.trapz() impl  */

@@ -243,6 +243,14 @@ void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
 template <typename _DataType>
 void (*dpnp_cov_default_c)(void*, void*, size_t, size_t) = dpnp_cov_c<_DataType>;
 
+template <typename _DataType>
+DPCTLSyclEventRef (*dpnp_cov_ext_c)(DPCTLSyclQueueRef,
+                                    void*,
+                                    void*,
+                                    size_t,
+                                    size_t,
+                                    const DPCTLEventVectorRef) = dpnp_cov_c<_DataType>;
+
 template <typename _DataType_input, typename _DataType_output>
 DPCTLSyclEventRef dpnp_count_nonzero_c(DPCTLSyclQueueRef q_ref,
                                        void* array1_in,
@@ -642,6 +650,15 @@ void (*dpnp_mean_default_c)(void*,
                             const shape_elem_type*,
                             size_t) = dpnp_mean_c<_DataType, _ResultType>;
 
+template <typename _DataType, typename _ResultType>
+DPCTLSyclEventRef (*dpnp_mean_ext_c)(DPCTLSyclQueueRef,
+                                     void*,
+                                     void*,
+                                     const shape_elem_type*,
+                                     const size_t,
+                                     const shape_elem_type*,
+                                     const size_t,
+                                     const DPCTLEventVectorRef) = dpnp_mean_c<_DataType, _ResultType>;
 
 template <typename _DataType, typename _ResultType>
 DPCTLSyclEventRef dpnp_median_c(DPCTLSyclQueueRef q_ref,
@@ -1365,6 +1382,11 @@ void func_map_init_statistics(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_COV][eft_FLT][eft_FLT] = {eft_DBL, (void*)dpnp_cov_default_c<double>};
     fmap[DPNPFuncName::DPNP_FN_COV][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cov_default_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_COV_EXT][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_cov_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_COV_EXT][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_cov_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_COV_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cov_ext_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_COV_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cov_ext_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_MAX][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_max_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_MAX][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_max_default_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_MAX][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_max_default_c<float>};
@@ -1379,6 +1401,11 @@ void func_map_init_statistics(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MEAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_mean_default_c<int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_MEAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_mean_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_MEAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_mean_default_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_MEAN_EXT][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_mean_ext_c<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEAN_EXT][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_mean_ext_c<int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEAN_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_mean_ext_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_MEAN_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_mean_ext_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_median_default_c<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_median_default_c<int64_t, double>};

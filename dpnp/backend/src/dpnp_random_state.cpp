@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2022-2023, Intel Corporation
+// Copyright (c) 2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -50,18 +50,5 @@ void MT19937_InitVectorSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, ui
 void MT19937_Delete(mt19937_struct *mt19937) {
     mkl_rng::mt19937 *engine = static_cast<mkl_rng::mt19937 *>(mt19937->engine);
     mt19937->engine = nullptr;
-    delete engine;
-}
-
-void MCG59_InitScalarSeed(mcg59_struct* mcg59, DPCTLSyclQueueRef q_ref, uint64_t seed)
-{
-    sycl::queue* q = reinterpret_cast<sycl::queue*>(q_ref);
-    mcg59->engine = new mkl_rng::mcg59(*q, seed);
-}
-
-void MCG59_Delete(mcg59_struct* mcg59)
-{
-    mkl_rng::mcg59* engine = static_cast<mkl_rng::mcg59*>(mcg59->engine);
-    mcg59->engine = nullptr;
     delete engine;
 }

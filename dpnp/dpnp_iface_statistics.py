@@ -42,12 +42,8 @@ it contains:
 
 import numpy
 import dpctl.tensor as dpt
-from numpy.core.numeric import normalize_axis_tuple
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-from dpnp.dpnp_utils.dpnp_utils_statistics import (
-    dpnp_cov
-)
 from dpnp.dpnp_array import dpnp_array
 import dpnp
 
@@ -241,17 +237,12 @@ def correlate(x1, x2, mode='valid'):
     return call_origin(numpy.correlate, x1, x2, mode=mode)
 
 
-def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None, *, dtype=None):
-    """cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None, *, dtype=None):
+def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
+    """cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
 
     Estimate a covariance matrix, given data and weights.
 
     For full documentation refer to :obj:`numpy.cov`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The covariance matrix of the variables.
 
     Limitations
     -----------
@@ -266,9 +257,7 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    See Also
-    --------
-    :obj:`dpnp.corrcoef` : Normalized covariance matrix
+    .. see also:: :obj:`dpnp.corrcoef` normalized covariance matrix.
 
     Examples
     --------
@@ -285,10 +274,11 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
     [1.0, -1.0, -1.0, 1.0]
 
     """
-
-    if not isinstance(m, (dpnp_array, dpt.usm_ndarray)):
+    if not isinstance(x1, (dpnp_array, dpt.usm_ndarray)):
         pass
-    elif m.ndim > 2:
+    elif x1.ndim > 2:
+        pass
+    elif y is not None:
         pass
     elif bias:
         pass
@@ -299,9 +289,18 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
     elif aweights is not None:
         pass
     else:
-        return dpnp_cov(m, y=y, rowvar=rowvar, dtype=dtype)
+        if not rowvar and x1.shape[0] != 1:
+            x1 = x1.get_array() if isinstance(x1, dpnp_array) else x1
+            x1 = dpnp_array._create_from_usm_ndarray(x1.mT)
 
-    return call_origin(numpy.cov, m, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype)
+        if not x1.dtype in (dpnp.float32, dpnp.float64):
+            x1 = dpnp.astype(x1, dpnp.default_float_type(sycl_queue=x1.sycl_queue))
+
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+        if x1_desc:
+            return dpnp_cov(x1_desc).get_pyobj()
+
+    return call_origin(numpy.cov, x1, y, rowvar, bias, ddof, fweights, aweights)
 
 
 def histogram(a, bins=10, range=None, density=None, weights=None):
@@ -396,23 +395,18 @@ def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
     return call_origin(numpy.max, x1, axis, out, keepdims, initial, where)
 
 
-def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
+def mean(x1, axis=None, **kwargs):
     """
     Compute the arithmetic mean along the specified axis.
 
     For full documentation refer to :obj:`numpy.mean`.
 
-    Returns
-    -------
-    y : dpnp.ndarray
-        an array containing the mean values of the elements along the specified axis(axes).
-        If the input array is empty, an array containing a single NaN value is returned.
-
     Limitations
     -----------
-    Parameters `x` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `keepdims`, `out` and `where` are supported with their default values.
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Prameters ``axis`` is supported only with default value ``None``.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Size of input array is limited by ``x1.size > 0``.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -433,52 +427,23 @@ def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
     >>> import dpnp as np
     >>> a = np.array([[1, 2], [3, 4]])
     >>> np.mean(a)
-    array(2.5)
-    >>> np.mean(a, axis=0)
-    array([2., 3.])
-    >>> np.mean(a, axis=1)
-    array([1.5, 3.5])
+    2.5
+
     """
 
-    if keepdims is not False:
-        pass
-    elif out is not None:
-        pass
-    elif where is not True:
-        pass
-    else:
-        if dtype is None and dpnp.issubdtype(x.dtype, dpnp.inexact):
-            dtype = x.dtype
-
-        if axis is None:
-            if x.size == 0:
-                return dpnp.array(dpnp.nan, dtype=dtype)
-            else:
-                result = dpnp.sum(x, dtype=dtype) / x.size
-                return result.astype(dtype) if result.dtype != dtype else result
-
-        if not isinstance(axis,(tuple,list)):
-            axis = (axis,)
-
-        axis = normalize_axis_tuple(axis, x.ndim, "axis")
-        res_sum = dpnp.sum(x, axis=axis, dtype=dtype)
-
-        del_ = 1.0
-        for axis_value in axis:
-            del_ *= x.shape[axis_value]
-
-        #performing an inplace operation on arrays of bool or integer types
-        #is not possible due to incompatible data types because
-        #it returns a floating value
-        if dpnp.issubdtype(res_sum.dtype, dpnp.inexact):
-            res_sum /= del_
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    if x1_desc and not kwargs:
+        if x1_desc.size == 0:
+            pass
+        elif axis is not None:
+            pass
         else:
-            new_res_sum = res_sum / del_
-            return new_res_sum.astype(dtype) if new_res_sum.dtype != dtype else new_res_sum
+            result_obj = dpnp_mean(x1_desc, axis)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-        return res_sum.astype(dtype) if res_sum.dtype != dtype else res_sum
+            return result
 
-    return call_origin(numpy.mean, x, axis=axis, dtype=dtype, out=out, keepdims=keepdims, where=where)
+    return call_origin(numpy.mean, x1, axis=axis, **kwargs)
 
 
 def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
