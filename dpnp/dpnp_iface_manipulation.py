@@ -67,7 +67,9 @@ __all__ = [
     "ravel",
     "repeat",
     "reshape",
+    "result_type",
     "rollaxis",
+    "shape",
     "squeeze",
     "stack",
     "swapaxes",
@@ -501,26 +503,124 @@ def repeat(x1, repeats, axis=None):
     return call_origin(numpy.repeat, x1, repeats, axis)
 
 
-def reshape(x1, newshape, order='C'):
+def reshape(x, /, newshape, order='C', copy=None):
     """
     Gives a new shape to an array without changing its data.
 
     For full documentation refer to :obj:`numpy.reshape`.
 
+    Parameters
+    ----------
+    x : {dpnp_array, usm_ndarray}
+        Array to be reshaped.
+    newshape : int or tuple of ints
+        The new shape should be compatible with the original shape. If
+        an integer, then the result will be a 1-D array of that length.
+        One shape dimension can be -1. In this case, the value is
+        inferred from the length of the array and remaining dimensions.
+    order : {'C', 'F'}, optional
+        Read the elements of `x` using this index order, and place the
+        elements into the reshaped array using this index order.  'C'
+        means to read / write the elements using C-like index order,
+        with the last axis index changing fastest, back to the first
+        axis index changing slowest. 'F' means to read / write the
+        elements using Fortran-like index order, with the first index
+        changing fastest, and the last index changing slowest. Note that
+        the 'C' and 'F' options take no account of the memory layout of
+        the underlying array, and only refer to the order of indexing.
+    copy : bool, optional
+        Boolean indicating whether or not to copy the input array.
+        If ``True``, the result array will always be a copy of input `x`.
+        If ``False``, the result array can never be a copy
+        and a ValueError exception will be raised in case the copy is necessary.
+        If ``None``, the result array will reuse existing memory buffer of `x`
+        if possible and copy otherwise. Default: None.
+
+    Returns
+    -------
+    y : dpnp.ndarray
+        This will be a new view object if possible; otherwise, it will
+        be a copy.  Note there is no guarantee of the *memory layout* (C- or
+        Fortran- contiguous) of the returned array.
+    
     Limitations
     -----------
-    Only 'C' order is supported.
+    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.reshape` : Equivalent method.
+
+    Examples
+    --------
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2, 3], [4, 5, 6]])
+    >>> dp.reshape(a, 6)
+    array([1, 2, 3, 4, 5, 6])
+    >>> dp.reshape(a, 6, order='F')
+    array([1, 4, 2, 5, 3, 6])
+
+    >>> dp.reshape(a, (3, -1))       # the unspecified value is inferred to be 2
+    array([[1, 2],
+           [3, 4],
+           [5, 6]])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if order != 'C':
-            pass
-        else:
-            return dpnp_reshape(x1_desc, newshape, order).get_pyobj()
+    if newshape is None:
+        newshape = x.shape
 
-    return call_origin(numpy.reshape, x1, newshape, order)
+    if order is None:
+        order = 'C'
+    elif not order in "cfCF":
+        raise ValueError(f"order must be one of 'C' or 'F' (got {order})")
+
+    usm_arr = dpnp.get_usm_ndarray(x)
+    usm_arr = dpt.reshape(usm_arr, shape=newshape, order=order, copy=copy)
+    return dpnp_array._create_from_usm_ndarray(usm_arr)
+
+
+def result_type(*arrays_and_dtypes):
+    """
+    Returns the type that results from applying the NumPy
+    type promotion rules to the arguments.
+
+    For full documentation refer to :obj:`numpy.result_type`.
+
+    Parameters
+    ----------
+    arrays_and_dtypes : list of arrays and dtypes
+        An arbitrary length sequence of arrays or dtypes.
+
+    Returns
+    -------
+    out : dtype
+        The result type.
+
+    Limitations
+    -----------
+    An array in the input list is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+
+    Examples
+    --------
+    >>> import dpnp as dp
+    >>> dp.result_type(dp.arange(3, dtype=dp.int64), dp.arange(7, dtype=dp.int32))
+    dtype('int64')
+
+    >>> dp.result_type(dp.int64, dp.complex128)
+    dtype('complex128')
+
+    >>> dp.result_type(dp.ones(10, dtype=dp.float32), dp.float64)
+    dtype('float64')
+
+    """
+
+    usm_arrays_and_dtypes = [
+        X.dtype if isinstance(X, (dpnp_array, dpt.usm_ndarray)) else X
+        for X in arrays_and_dtypes
+    ]
+    return dpt.result_type(*usm_arrays_and_dtypes)
 
 
 def rollaxis(x1, axis, start=0):
@@ -569,6 +669,49 @@ def rollaxis(x1, axis, start=0):
             return dpnp.moveaxis(x1_desc.get_pyobj(), axis, destination)
 
     return call_origin(numpy.rollaxis, x1, axis, start)
+
+
+def shape(a):
+    """
+    Return the shape of an array.
+
+    For full documentation refer to :obj:`numpy.shape`.
+    
+    Parameters
+    ----------
+    a : array_like
+        Input array.
+
+    Returns
+    -------
+    shape : tuple of ints
+        The elements of the shape tuple give the lengths of the
+        corresponding array dimensions.
+
+    See Also
+    --------
+    len : ``len(a)`` is equivalent to ``np.shape(a)[0]`` for N-D arrays with
+          ``N>=1``.
+    :obj:`dpnp.ndarray.shape` : Equivalent array method.
+
+    Examples
+    --------
+    >>> import dpnp as dp
+    >>> dp.shape(dp.eye(3))
+    (3, 3)
+    >>> dp.shape([[1, 3]])
+    (1, 2)
+    >>> dp.shape([0])
+    (1,)
+    >>> dp.shape(0)
+    ()
+
+    """
+
+    if dpnp.is_supported_array_type(a):
+        return a.shape
+    else:
+        return numpy.shape(a)
 
 
 def squeeze(x, /, axis=None):
@@ -673,54 +816,65 @@ def swapaxes(x1, axis1, axis2):
     return call_origin(numpy.swapaxes, x1, axis1, axis2)
 
 
-def transpose(x1, axes=None):
+def transpose(a, axes=None):
     """
-    Reverse or permute the axes of an array; returns the modified array.
+    Returns an array with axes transposed.
 
     For full documentation refer to :obj:`numpy.transpose`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        `a` with its axes permuted. A view is returned whenever possible.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Value of the parameter ``axes`` likely to be replaced with ``None``.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Input array is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
 
     See Also
     --------
+    :obj:`dpnp.ndarray.transpose` : Equivalent method.
     :obj:`dpnp.moveaxis` : Move array axes to new positions.
     :obj:`dpnp.argsort` : Returns the indices that would sort an array.
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> x = np.arange(4).reshape((2,2))
-    >>> x.shape
-    (2, 2)
-    >>> [i for i in x]
-    [0, 1, 2, 3]
-    >>> out = np.transpose(x)
-    >>> out.shape
-    (2, 2)
-    >>> [i for i in out]
-    [0, 2, 1, 3]
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> a
+    array([[1, 2],
+           [3, 4]])
+    >>> dp.transpose(a)
+    array([[1, 3],
+           [2, 4]])
+
+    >>> a = dp.array([1, 2, 3, 4])
+    >>> a
+    array([1, 2, 3, 4])
+    >>> dp.transpose(a)
+    array([1, 2, 3, 4])
+
+    >>> a = dp.ones((1, 2, 3))
+    >>> dp.transpose(a, (1, 0, 2)).shape
+    (2, 1, 3)
+
+    >>> a = dp.ones((2, 3, 4, 5))
+    >>> dp.transpose(a).shape
+    (5, 4, 3, 2)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axes is not None:
-            if not any(axes):
-                """
-                pytest tests/third_party/cupy/manipulation_tests/test_transpose.py
-                """
-                axes = None
+    if isinstance(a, dpnp_array):
+        array = a
+    elif isinstance(a, dpt.usm_ndarray):
+        array = dpnp_array._create_from_usm_ndarray(a.get_array())
+    else:
+        raise TypeError("An array must be any of supported type, but got {}".format(type(a)))
 
-        result = dpnp_transpose(x1_desc, axes).get_pyobj()
-
-        return result
-
-    return call_origin(numpy.transpose, x1, axes=axes)
+    if axes is None:
+        return array.transpose()
+    return array.transpose(*axes)
 
 
 def unique(x1, **kwargs):

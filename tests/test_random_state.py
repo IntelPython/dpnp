@@ -1,4 +1,7 @@
 import pytest
+from .helper import (
+    is_cpu_device
+)
 from unittest import mock
 
 import dpnp
@@ -57,10 +60,19 @@ class TestNormal:
 
         # default dtype depends on fp64 support by the device
         dtype = get_default_floating() if dtype is None else dtype
-        expected = numpy.array([[0.428205496031286, -0.55383273779227 ],
-                                [2.027017795643378,  4.318888073163015],
-                                [2.69080893259102,  -1.047967253719708]], dtype=dtype)
-
+        if sycl_queue.sycl_device.is_cpu:
+            expected = numpy.array([[0.428205496031286, -0.55383273779227 ],
+                                    [2.027017795643378,  4.318888073163015],
+                                    [2.69080893259102,  -1.047967253719708]], dtype=dtype)
+        else:
+            if dtype == dpnp.float64:
+                expected = numpy.array([[-15.73532523, -11.84163022],
+                                        [  0.548032,     1.41296207],
+                                        [-2.63250381,    2.77542322]], dtype=dtype)
+            else:
+                expected = numpy.array([[-15.735329, -11.841626],
+                                        [  0.548032,   1.4129621],
+                                        [-2.6325033,   2.7754242]], dtype=dtype)
         # TODO: discuss with opneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
         # precision = numpy.finfo(dtype=dtype).precision
@@ -200,11 +212,16 @@ class TestRand:
         dtype = get_default_floating()
 
         data = RandomState(seed, sycl_queue=sycl_queue).rand(3, 2, usm_type=usm_type)
-        expected = numpy.array([[0.7592552667483687, 0.5937560645397753],
-                                [0.257010098779574 , 0.749422621447593 ],
-                                [0.6316644293256104, 0.7411410815548152]], dtype=dtype)
+        if sycl_queue.sycl_device.is_cpu:
+            expected = numpy.array([[0.7592552667483687, 0.5937560645397753],
+                                    [0.257010098779574 , 0.749422621447593 ],
+                                    [0.6316644293256104, 0.7411410815548152]], dtype=dtype)
+        else:
+            expected = numpy.array([[4.864511571334162e-14, 7.333946068708259e-01],
+                                    [8.679067575689537e-01, 5.627257087965376e-01],
+                                    [4.413379518222594e-01, 4.334482843514076e-01]], dtype=dtype)
 
-        precision = numpy.finfo(dtype=numpy.float64).precision
+        precision = numpy.finfo(dtype=dtype).precision
         assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
         assert_cfd(data, sycl_queue, usm_type)
 
@@ -276,9 +293,14 @@ class TestRandInt:
                                                                 size=(3, 2),
                                                                 dtype=dtype,
                                                                 usm_type=usm_type)
-        expected = numpy.array([[4, 1],
-                                [5, 3],
-                                [5, 7]], dtype=numpy.int32)
+        if sycl_queue.sycl_device.is_cpu:
+            expected = numpy.array([[4, 1],
+                                    [5, 3],
+                                    [5, 7]], dtype=numpy.int32)
+        else:
+            expected = numpy.array([[1, 2],
+                                    [1, 5],
+                                    [3, 7]], dtype=numpy.int32)
         assert_array_equal(data.asnumpy(), expected)
         assert_cfd(data, sycl_queue, usm_type)
 
@@ -310,16 +332,23 @@ class TestRandInt:
 
 
     def test_float_bounds(self):
-        actual = RandomState(365852).randint(low=0.6, high=6.789102534, size=(7,)).asnumpy()
-        expected = numpy.array([4, 4, 3, 3, 1, 0, 3], dtype=numpy.int32)
-        assert_array_equal(actual, expected)
+        actual = RandomState(365852).randint(low=0.6, high=6.789102534, size=(7,))
+        if actual.sycl_device.is_cpu:
+            expected = numpy.array([4, 4, 3, 3, 1, 0, 3], dtype=numpy.int32)
+        else:
+            expected = numpy.array([0, 1, 4, 0, 3, 3, 3], dtype=numpy.int32)
+        assert_array_equal(actual.asnumpy(), expected)
 
 
     def test_negative_bounds(self):
-        actual = RandomState(5143).randint(low=-15.74, high=-3, size=(2, 7)).asnumpy()
-        expected = numpy.array([[-9, -12, -4,  -12, -5, -13, -9],
-                                [-4, -6,  -13, -9,  -9,  -6, -15]], dtype=numpy.int32)
-        assert_array_equal(actual, expected)
+        actual = RandomState(5143).randint(low=-15.74, high=-3, size=(2, 7))
+        if actual.sycl_device.is_cpu:
+            expected = numpy.array([[-9, -12, -4,  -12, -5, -13, -9],
+                                    [-4, -6,  -13, -9,  -9,  -6, -15]], dtype=numpy.int32)
+        else:
+            expected = numpy.array([[-15,  -7, -12,  -5, -10, -11, -11],
+                                    [-14,  -7,  -7, -10, -14,  -9,  -6]], dtype=numpy.int32)
+        assert_array_equal(actual.asnumpy(), expected)
 
 
     def test_negative_interval(self):
@@ -459,9 +488,14 @@ class TestRandN:
         dtype = get_default_floating()
 
         data = RandomState(seed, sycl_queue=sycl_queue).randn(3, 2, usm_type=usm_type)
-        expected = numpy.array([[-0.862485623762009,  1.169492612490272],
-                                [-0.405876118480338,  0.939006537666719],
-                                [-0.615075625641019,  0.555260469834381]], dtype=dtype)
+        if sycl_queue.sycl_device.is_cpu:
+            expected = numpy.array([[-0.862485623762009,  1.169492612490272],
+                                    [-0.405876118480338,  0.939006537666719],
+                                    [-0.615075625641019,  0.555260469834381]], dtype=dtype)
+        else:
+            expected = numpy.array([[-4.019566117504177,  7.016412093100934],
+                                    [-1.044015254820266, -0.839721616192757],
+                                    [ 0.545079768980527,  0.380676324099473]], dtype=dtype)
 
         # TODO: discuss with opneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
@@ -543,6 +577,9 @@ class TestSeed:
                                   'dpnp.arange(2)',
                                   '[0]', '[4294967295]', '[2, 7, 15]', '(1,)', '(85, 6, 17)'])
     def test_array_range(self, seed):
+        if not is_cpu_device():
+            pytest.skip("seed as a scalar is only supported on GPU")
+
         size = 15
         a1 = RandomState(seed).uniform(size=size).asnumpy()
         a2 = RandomState(seed).uniform(size=size).asnumpy()
@@ -580,9 +617,16 @@ class TestSeed:
                                   'numpy.iinfo(numpy.uint32).max + 1',
                                   '(1, 7, numpy.iinfo(numpy.uint32).max + 1)'])
     def test_invalid_value(self, seed):
-        # seed must be an unsigned 32-bit integer
-        assert_raises(ValueError, RandomState, seed)
-
+        if is_cpu_device():
+            # seed must be an unsigned 32-bit integer
+            assert_raises(ValueError, RandomState, seed)
+        else:
+            if dpnp.isscalar(seed):
+                # seed must be an unsigned 64-bit integer
+                assert_raises(ValueError, RandomState, seed)
+            else:
+                # seed must be a scalar
+                assert_raises(TypeError, RandomState, seed)
 
     @pytest.mark.parametrize("seed",
                              [[], (),
@@ -596,8 +640,16 @@ class TestSeed:
                                   'numpy.array([], dtype=numpy.int64)',
                                   'dpnp.array([], dtype=numpy.int64)'])
     def test_invalid_shape(self, seed):
-        # seed must be an unsigned or 1-D array
-        assert_raises(ValueError, RandomState, seed)
+        if is_cpu_device():
+            # seed must be an unsigned or 1-D array
+            assert_raises(ValueError, RandomState, seed)
+        else:
+            if dpnp.isscalar(seed):
+                # seed must be an unsigned 64-bit scalar
+                assert_raises(ValueError, RandomState, seed)
+            else:
+                # seed must be a scalar
+                assert_raises(TypeError, RandomState, seed)
 
 
 class TestStandardNormal:
@@ -610,10 +662,16 @@ class TestStandardNormal:
         dtype = get_default_floating()
 
         data = RandomState(seed, sycl_queue=sycl_queue).standard_normal(size=(4, 2), usm_type=usm_type)
-        expected = numpy.array([[0.112455902594571, -0.249919829443642],
-                                [0.702423540827815,  1.548132130318456],
-                                [0.947364919775284, -0.432257289195464],
-                                [0.736848611436872,  1.557284323302839]], dtype=dtype)
+        if sycl_queue.sycl_device.is_cpu:
+            expected = numpy.array([[0.112455902594571, -0.249919829443642],
+                                    [0.702423540827815,  1.548132130318456],
+                                    [0.947364919775284, -0.432257289195464],
+                                    [0.736848611436872,  1.557284323302839]], dtype=dtype)
+        else:
+            expected = numpy.array([[-5.851946579836138, -4.415158753007455],
+                                    [ 0.156672323326223,  0.475834711471613],
+                                    [-1.016957125278234,  0.978587902851975],
+                                    [-0.295425067084912,  1.438622345507964]], dtype=dtype)
 
         # TODO: discuss with opneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
@@ -670,11 +728,18 @@ class TestRandSample:
         dtype = get_default_floating()
 
         data = RandomState(seed, sycl_queue=sycl_queue).random_sample(size=(4, 2), usm_type=usm_type)
-        expected = numpy.array([[0.1887628440745175, 0.2763057765550911],
-                                [0.3973943444434553, 0.2975987731479108],
-                                [0.4144027342554182, 0.2636592474300414],
-                                [0.6129623607266694, 0.2596735346596688]], dtype=dtype)
-        
+        if sycl_queue.sycl_device.is_cpu:
+            expected = numpy.array([[0.1887628440745175, 0.2763057765550911],
+                                    [0.3973943444434553, 0.2975987731479108],
+                                    [0.4144027342554182, 0.2636592474300414],
+                                    [0.6129623607266694, 0.2596735346596688]], dtype=dtype)
+        else:
+            expected = numpy.array([[0.219563950354e-13, 0.6500454867400344],
+                                    [0.8847833902913576, 0.9030532521302965],
+                                    [0.2943803743033427, 0.2688879158061396],
+                                    [0.2730219631925900, 0.8695396883048091]], dtype=dtype)
+
+
         precision = numpy.finfo(dtype=dtype).precision
         assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
 
@@ -746,16 +811,28 @@ class TestUniform:
 
         # default dtype depends on fp64 support by the device
         dtype = get_default_floating() if dtype is None else dtype
-        if dtype != dpnp.int32:
-            expected = numpy.array([[4.023770128630567, 8.87456423597643 ],
-                                    [2.888630247435067, 4.823004481580574],
-                                    [2.030351535445079, 4.533497077834326]])
-            assert_array_almost_equal(actual, expected, decimal=numpy.finfo(dtype=dtype).precision)
+        if sycl_queue.sycl_device.is_cpu:
+            if dtype != dpnp.int32:
+                expected = numpy.array([[4.023770128630567, 8.87456423597643 ],
+                                        [2.888630247435067, 4.823004481580574],
+                                        [2.030351535445079, 4.533497077834326]])
+                assert_array_almost_equal(actual, expected, decimal=numpy.finfo(dtype=dtype).precision)
+            else:
+                expected = numpy.array([[3, 8],
+                                        [2, 4],
+                                        [1, 4]])
+                assert_array_equal(actual, expected)
         else:
-            expected = numpy.array([[3, 8],
-                                   [2, 4],
-                                   [1, 4]])
-            assert_array_equal(actual, expected)
+            if dtype != dpnp.int32:
+                expected = numpy.array([[1.230000000452886, 4.889115418092382],
+                                        [6.084098950993071, 1.682066500463302],
+                                        [3.316473517549554, 8.428297791221597]])
+                assert_array_almost_equal(actual, expected, decimal=numpy.finfo(dtype=dtype).precision)
+            else:
+                expected = numpy.array([[1, 4],
+                                        [5, 1],
+                                        [3, 7]])
+                assert_array_equal(actual, expected)
 
         # check if compute follows data isn't broken
         assert_cfd(dpnp_data, sycl_queue, usm_type)
