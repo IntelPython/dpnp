@@ -95,8 +95,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_COS_EXT
         DPNP_FN_COSH
         DPNP_FN_COSH_EXT
-        DPNP_FN_COV
-        DPNP_FN_COV_EXT
         DPNP_FN_COUNT_NONZERO
         DPNP_FN_COUNT_NONZERO_EXT
         DPNP_FN_CROSS
@@ -538,7 +536,6 @@ cpdef dpnp_descriptor dpnp_repeat(dpnp_descriptor array1, repeats, axes=*)
 """
 Statistics functions
 """
-cpdef dpnp_descriptor dpnp_cov(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_min(dpnp_descriptor a, axis)
 
 
