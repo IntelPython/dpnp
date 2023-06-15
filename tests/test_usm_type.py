@@ -18,6 +18,8 @@ def test_coerced_usm_types_sum(usm_type_x, usm_type_y):
     y = dp.arange(1000, usm_type = usm_type_y)
 
     z = 1.3 + x + y + 2
+
+    # inplace add
     z += x
     z += 7.4
 
@@ -33,6 +35,8 @@ def test_coerced_usm_types_mul(usm_type_x, usm_type_y):
     y = dp.arange(10, usm_type = usm_type_y)
 
     z = 3 * x * y * 1.5
+
+    # inplace multiply
     z *= x
     z *= 4.8
 
@@ -49,6 +53,10 @@ def test_coerced_usm_types_subtract(usm_type_x, usm_type_y):
 
     z = 20 - x - y - 7.4
 
+    # inplace subtract
+    z -= x
+    z -= -3.4
+
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
@@ -61,6 +69,10 @@ def test_coerced_usm_types_divide(usm_type_x, usm_type_y):
     y = dp.arange(120, usm_type = usm_type_y)
 
     z = 2 / x / y / 1.5
+
+    # inplace divide
+    z /= x
+    z /= -2.4
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
