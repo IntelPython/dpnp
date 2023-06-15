@@ -252,8 +252,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMult
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_2_{d=4, shape=(4, 3, 2)}::test_normal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_3_{d=4, shape=(3, 2)}::test_normal
 
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov_empty
-
 tests/third_party/intel/test_zero_copy_test1.py::test_dpnp_interaction_with_dpctl_memory
 tests/test_arraymanipulation.py::TestHstack::test_generator
 tests/test_arraymanipulation.py::TestVstack::test_generator
