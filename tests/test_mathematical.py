@@ -387,7 +387,7 @@ class TestEdiff1d:
         expected = numpy.ediff1d(np_a)
         assert_array_equal(expected, result)
 
-    
+
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_ediff1d_args(self):
         np_a = numpy.array([1, 2, 4, 7, 0])
@@ -667,25 +667,28 @@ class TestAdd:
 
         dp_array1 = dpnp.arange(size, 2 * size, dtype=dtype)
         dp_array2 = dpnp.arange(size, dtype=dtype)
-        dp_out = dpnp.empty(size, dtype=dpnp.complex64)
-        result = dpnp.add(dp_array1, dp_array2, out=dp_out)
 
+        dp_out = dpnp.empty(size, dtype=dpnp.complex64)
+        if dtype != dpnp.complex64:
+            # dtype of out mismatches types of input arrays
+            with pytest.raises(TypeError):
+                dpnp.add(dp_array1, dp_array2, out=dp_out)
+
+            # allocate new out with expected type
+            dp_out = dpnp.empty(size, dtype=dtype)
+
+        result = dpnp.add(dp_array1, dp_array2, out=dp_out)
         assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_out_overlap(self, dtype):
         size = 1 if dtype == dpnp.bool else 15
-
-        np_a = numpy.arange(2 * size, dtype=dtype)
-        expected = numpy.add(np_a[size::], np_a[::2], out=np_a[:size:])
-
         dp_a = dpnp.arange(2 * size, dtype=dtype)
-        result = dpnp.add(dp_a[size::], dp_a[::2], out=dp_a[:size:])
-
-        assert_allclose(expected, result)
-        assert_allclose(dp_a, np_a)
+        with pytest.raises(TypeError):
+            dpnp.add(dp_a[size::], dp_a[::2], out=dp_a[:size:])
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_none=True))
+    @pytest.mark.skip("mute unttil in-place support in dpctl is done")
     def test_inplace_strided_out(self, dtype):
         size = 21
 
@@ -705,7 +708,7 @@ class TestAdd:
         dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float64)
         dp_out = dpnp.empty(shape, dtype=dpnp.float64)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.add(dp_array1, dp_array2, out=dp_out)
 
     @pytest.mark.parametrize("out",
@@ -750,25 +753,28 @@ class TestMultiply:
 
         dp_array1 = dpnp.arange(size, 2 * size, dtype=dtype)
         dp_array2 = dpnp.arange(size, dtype=dtype)
-        dp_out = dpnp.empty(size, dtype=dpnp.complex64)
-        result = dpnp.multiply(dp_array1, dp_array2, out=dp_out)
 
+        dp_out = dpnp.empty(size, dtype=dpnp.complex64)
+        if dtype != dpnp.complex64:
+            # dtype of out mismatches types of input arrays
+            with pytest.raises(TypeError):
+                dpnp.multiply(dp_array1, dp_array2, out=dp_out)
+
+            # allocate new out with expected type
+            dp_out = dpnp.empty(size, dtype=dtype)
+
+        result = dpnp.multiply(dp_array1, dp_array2, out=dp_out)
         assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_out_overlap(self, dtype):
         size = 1 if dtype == dpnp.bool else 15
-
-        np_a = numpy.arange(2 * size, dtype=dtype)
-        expected = numpy.multiply(np_a[size::], np_a[::2], out=np_a[:size:])
-
         dp_a = dpnp.arange(2 * size, dtype=dtype)
-        result = dpnp.multiply(dp_a[size::], dp_a[::2], out=dp_a[:size:])
-
-        assert_allclose(expected, result)
-        assert_allclose(dp_a, np_a)
+        with pytest.raises(TypeError):
+            dpnp.multiply(dp_a[size::], dp_a[::2], out=dp_a[:size:])
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_none=True))
+    @pytest.mark.skip("mute unttil in-place support in dpctl is done")
     def test_inplace_strided_out(self, dtype):
         size = 21
 
@@ -788,7 +794,7 @@ class TestMultiply:
         dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float64)
         dp_out = dpnp.empty(shape, dtype=dpnp.float64)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.multiply(dp_array1, dp_array2, out=dp_out)
 
     @pytest.mark.parametrize("out",
@@ -934,6 +940,7 @@ def test_sum_empty(dtype, axis):
     assert_array_equal(numpy_res, dpnp_res.asnumpy())
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_bool=True))
 def test_sum_empty_out(dtype):
     a = dpnp.empty((1, 2, 0, 4), dtype=dtype)
@@ -955,3 +962,44 @@ def test_sum(shape, dtype_in, dtype_out):
             numpy_res = a_np.sum(axis=axis, dtype=dtype_out)
             dpnp_res = a.sum(axis=axis, dtype=dtype_out)
             assert_array_equal(numpy_res, dpnp_res.asnumpy())
+
+class TestMean:
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_mean_axis_tuple(self, dtype):
+        dp_array = dpnp.array([[0,1,2],[3,4,0]], dtype=dtype)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dpnp.mean(dp_array, axis=(0,1))
+        expected = numpy.mean(np_array, axis=(0,1))
+        assert_allclose(expected, result)
+
+
+    def test_mean_axis_zero_size(self):
+        dp_array = dpnp.array([], dtype='int64')
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dpnp.mean(dp_array)
+        expected = numpy.mean(np_array)
+        assert_allclose(expected, result)
+
+
+    def test_mean_strided(self):
+        dp_array = dpnp.array([-2,-1,0,1,0,2], dtype='f4')
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dpnp.mean(dp_array[::-1])
+        expected = numpy.mean(np_array[::-1])
+        assert_allclose(expected, result)
+
+        result = dpnp.mean(dp_array[::2])
+        expected = numpy.mean(np_array[::2])
+        assert_allclose(expected, result)
+
+    def test_mean_scalar(self):
+        dp_array = dpnp.array(5)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dp_array.mean()
+        expected = np_array.mean()
+        assert_allclose(expected, result)

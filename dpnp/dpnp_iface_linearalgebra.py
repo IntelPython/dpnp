@@ -73,7 +73,7 @@ def dot(x1, x2, out=None, **kwargs):
     y : dpnp.ndarray
         Returns the dot product of `x1` and `x2`.
         If `out` is given, then it is returned.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -106,9 +106,10 @@ def dot(x1, x2, out=None, **kwargs):
         # get USM type and queue to copy scalar from the host memory into a USM allocation
         usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
+        # TODO: copy_when_strides=False (now it's done for faster implementation with transpose arrays)
+        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=True, copy_when_nondefault_queue=False,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
+        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=True, copy_when_nondefault_queue=False,
                                            alloc_usm_type=usm_type, alloc_queue=queue)
         if x1_desc and x2_desc:
             if out is not None:
@@ -297,7 +298,7 @@ def matmul(x1, x2, out=None, **kwargs):
     return call_origin(numpy.matmul, x1, x2, out=out, **kwargs)
 
 
-def outer(x1, x2, **kwargs):
+def outer(x1, x2, out=None):
     """
     Returns the outer product of two arrays.
 
@@ -305,8 +306,8 @@ def outer(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
+        Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+        or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -322,21 +323,26 @@ def outer(x1, x2, **kwargs):
     >>> b = np.array([1, 2, 3])
     >>> result = np.outer(a, b)
     >>> [x for x in result]
-    [1, 2, 3, 1, 2, 3, 1, 2, 3]
+    array([[1, 2, 3],
+           [1, 2, 3],
+           [1, 2, 3]])
 
     """
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
 
-    if not kwargs:
-        if isinstance(x1, dpnp_array) and isinstance(x2, dpnp_array):
-            ravel = lambda x: x.flatten() if x.ndim > 1 else x
-            return ravel(x1)[:, None] * ravel(x2)[None, :]
+    if x1_is_scalar and x2_is_scalar:
+        pass
+    elif not (x1_is_scalar or dpnp.is_supported_array_type(x1)):
+        pass
+    elif not (x2_is_scalar or dpnp.is_supported_array_type(x2)):
+        pass
+    else:
+        x1_in = x1 if x1_is_scalar else (x1.reshape(-1) if x1.ndim > 1 else x1)[:, None]
+        x2_in = x2 if x2_is_scalar else (x2.reshape(-1) if x2.ndim > 1 else x2)[None, :]
+        return dpnp.multiply(x1_in, x2_in, out=out)
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-        if x1_desc and x2_desc:
-            return dpnp_outer(x1_desc, x2_desc).get_pyobj()
-
-    return call_origin(numpy.outer, x1, x2, **kwargs)
+    return call_origin(numpy.outer, x1, x2, out=out)
 
 
 def tensordot(x1, x2, axes=2):

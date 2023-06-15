@@ -56,8 +56,9 @@
 
 namespace mkl_rng = oneapi::mkl::rng;
 
-#define DPNP_QUEUE      backend_sycl::get_queue()
-#define DPNP_RNG_ENGINE backend_sycl::get_rng_engine()
+#define DPNP_QUEUE            backend_sycl::get_queue()
+#define DPNP_RNG_ENGINE       backend_sycl::get_rng_engine()
+#define DPNP_RNG_MCG59_ENGINE backend_sycl::get_rng_mcg59_engine()
 
 /**
  * This is container for the SYCL queue, random number generation engine and related functions like queue and engine
@@ -70,7 +71,10 @@ class backend_sycl
 #if defined(DPNP_LOCAL_QUEUE)
     static sycl::queue* queue; /**< contains SYCL queue pointer initialized in @ref backend_sycl_queue_init */
 #endif
-    static mkl_rng::mt19937* rng_engine; /**< RNG engine ptr. initialized in @ref backend_sycl_rng_engine_init */
+    static mkl_rng::mt19937*
+        rng_engine;       /**< RNG MT19937 engine ptr. initialized in @ref backend_sycl_rng_engine_init */
+    static mkl_rng::mcg59*
+        rng_mcg59_engine; /**< RNG MCG59 engine ptr. initialized in @ref backend_sycl_rng_engine_init */
 
     static void destroy()
     {
@@ -84,7 +88,10 @@ class backend_sycl
     static void destroy_rng_engine()
     {
         delete rng_engine;
+        delete rng_mcg59_engine;
+
         rng_engine = nullptr;
+        rng_mcg59_engine = nullptr;
     }
 
 public:
@@ -118,7 +125,7 @@ public:
     static bool backend_sycl_is_cpu();
 
     /**
-     * Initialize @ref rng_engine
+     * Initialize @ref rng_engine and @ref rng_mcg59_engine
      */
     static void backend_sycl_rng_engine_init(size_t seed = 1);
 
@@ -158,6 +165,18 @@ public:
             backend_sycl_rng_engine_init();
         }
         return *rng_engine;
+    }
+
+    /**
+     * Return the @ref rng_mcg59_engine to the user
+     */
+    static mkl_rng::mcg59& get_rng_mcg59_engine()
+    {
+        if (!rng_engine)
+        {
+            backend_sycl_rng_engine_init();
+        }
+        return *rng_mcg59_engine;
     }
 };
 
