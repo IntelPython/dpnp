@@ -38,7 +38,9 @@ and the rest of the library
 __all__ += [
     "dpnp_average",
     "dpnp_correlate",
+    "dpnp_cov",
     "dpnp_max",
+    "dpnp_mean",
     "dpnp_median",
     "dpnp_min",
     "dpnp_nanvar",
@@ -177,6 +179,49 @@ cpdef utils.dpnp_descriptor dpnp_correlate(utils.dpnp_descriptor x1, utils.dpnp_
     return result
 
 
+cpdef utils.dpnp_descriptor dpnp_cov(utils.dpnp_descriptor array1):
+    cdef shape_type_c input_shape = array1.shape
+
+    if array1.ndim == 1:
+        input_shape.insert(input_shape.begin(), 1)
+
+    # convert string type names (array.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COV_EXT, param1_type, param1_type)
+
+    array1_obj = array1.get_array()
+
+    # ceate result array with type given by FPTR data
+    cdef shape_type_c result_shape = (input_shape[0], input_shape[0])
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=array1_obj.sycl_device,
+                                                                       usm_type=array1_obj.usm_type,
+                                                                       sycl_queue=array1_obj.sycl_queue)
+
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
+    cdef fptr_custom_cov_1in_1out_t func = <fptr_custom_cov_1in_1out_t > kernel_data.ptr
+    # call FPTR function
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    array1.get_data(),
+                                                    result.get_data(),
+                                                    input_shape[0],
+                                                    input_shape[1],
+                                                    NULL)  # dep_events_ref
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
+
+    return result
+
+
 cdef utils.dpnp_descriptor _dpnp_max(utils.dpnp_descriptor x1, _axis_, shape_type_c result_shape):
     cdef shape_type_c x1_shape = x1.shape
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
@@ -256,6 +301,152 @@ cpdef utils.dpnp_descriptor dpnp_max(utils.dpnp_descriptor x1, axis):
                 ind += 1
 
     return _dpnp_max(x1, axis_, output_shape)
+
+
+cpdef utils.dpnp_descriptor _dpnp_mean(utils.dpnp_descriptor x1):
+    cdef shape_type_c x1_shape = x1.shape
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MEAN_EXT, param1_type, param1_type)
+
+    x1_obj = x1.get_array()
+
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor((1,),
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=x1_obj.sycl_device,
+                                                                       usm_type=x1_obj.usm_type,
+                                                                       sycl_queue=x1_obj.sycl_queue)
+
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
+    cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
+
+    # stub for interface support
+    cdef shape_type_c axis
+    cdef Py_ssize_t axis_size = 0
+
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    x1.get_data(),
+                                                    result.get_data(),
+                                                    x1_shape.data(),
+                                                    x1.ndim,
+                                                    axis.data(),
+                                                    axis_size,
+                                                    NULL)  # dep_events_ref
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
+
+    return result
+
+
+cpdef object dpnp_mean(utils.dpnp_descriptor x1, axis):
+    cdef shape_type_c output_shape
+
+    if axis is None:
+        return _dpnp_mean(x1).get_pyobj()
+
+    cdef long x1_size = x1.size
+    cdef shape_type_c x1_shape = x1.shape
+
+    if x1.dtype == dpnp.float32:
+        res_type = dpnp.float32
+    else:
+        res_type = dpnp.float64
+
+    if x1_size == 0:
+        return dpnp.array([dpnp.nan], dtype=res_type)
+
+    if isinstance(axis, int):
+        axis_ = tuple([axis])
+    else:
+        axis_ = axis
+
+    if axis_ is None:
+        output_shape.push_back(1)
+    else:
+        output_shape = (0, ) * (len(x1_shape) - len(axis_))
+        ind = 0
+        for id, shape_axis in enumerate(x1_shape):
+            if id not in axis_:
+                output_shape[ind] = shape_axis
+                ind += 1
+
+    cdef long prod = 1
+    for i in range(len(output_shape)):
+        if output_shape[i] != 0:
+            prod *= output_shape[i]
+
+    result_array = [None] * prod
+    input_shape_offsets = [None] * len(x1_shape)
+    acc = 1
+
+    for i in range(len(x1_shape)):
+        ind = len(x1_shape) - 1 - i
+        input_shape_offsets[ind] = acc
+        acc *= x1_shape[ind]
+
+    output_shape_offsets = [None] * len(x1_shape)
+    acc = 1
+
+    if axis_ is not None:
+        for i in range(len(output_shape)):
+            ind = len(output_shape) - 1 - i
+            output_shape_offsets[ind] = acc
+            acc *= output_shape[ind]
+            result_offsets = input_shape_offsets[:]  # need copy. not a reference
+        for i in axis_:
+            result_offsets[i] = 0
+
+    for source_idx in range(x1_size):
+
+        # reconstruct x,y,z from linear source_idx
+        xyz = []
+        remainder = source_idx
+        for i in input_shape_offsets:
+            quotient, remainder = divmod(remainder, i)
+            xyz.append(quotient)
+
+        # extract result axis
+        result_axis = []
+        if axis_ is None:
+            result_axis = xyz
+        else:
+            for idx, offset in enumerate(xyz):
+                if idx not in axis_:
+                    result_axis.append(offset)
+
+        # Construct result offset
+        result_offset = 0
+        if axis_ is not None:
+            for i, result_axis_val in enumerate(result_axis):
+                result_offset += (output_shape_offsets[i] * result_axis_val)
+
+        input_elem = input.get_pyobj().item(source_idx)
+        if axis_ is None:
+            if result_array[0] is None:
+                result_array[0] = input_elem
+            else:
+                result_array[0] += input_elem
+        else:
+            if result_array[result_offset] is None:
+                result_array[result_offset] = input_elem
+            else:
+                result_array[result_offset] += input_elem
+
+    del_ = x1_size
+    if axis_ is not None:
+        for i in range(len(x1_shape)):
+            if i not in axis_:
+                del_ = del_ / x1_shape[i]
+    dpnp_array = dpnp.array(result_array, dtype=input.dtype)
+    dpnp_result_array = dpnp.reshape(dpnp_array, output_shape)
+    return dpnp_result_array / del_
+
 
 cpdef utils.dpnp_descriptor dpnp_median(utils.dpnp_descriptor array1):
     cdef shape_type_c x1_shape = array1.shape

@@ -42,10 +42,20 @@ __all__ += [
     "dpnp_expand_dims",
     "dpnp_repeat",
     "dpnp_reshape",
+    "dpnp_transpose",
 ]
 
 
 # C function pointer to the C library template functions
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_custom_elemwise_transpose_1in_1out_t)(c_dpctl.DPCTLSyclQueueRef,
+                                                                               void * ,
+                                                                               shape_elem_type * ,
+                                                                               shape_elem_type * ,
+                                                                               shape_elem_type * ,
+                                                                               size_t,
+                                                                               void * ,
+                                                                               size_t,
+                                                                               const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_repeat_t)(c_dpctl.DPCTLSyclQueueRef,
                                                         const void *, void * , const size_t , const size_t,
                                                         const c_dpctl.DPCTLEventVectorRef)
@@ -219,3 +229,67 @@ cpdef utils.dpnp_descriptor dpnp_reshape(utils.dpnp_descriptor array1, newshape,
                                                usm_type=array1_obj.usm_type,
                                                sycl_queue=array1_obj.sycl_queue),
                                     copy_when_nondefault_queue=False)
+
+
+cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
+    cdef shape_type_c input_shape = array1.shape
+    cdef size_t input_shape_size = array1.ndim
+    cdef shape_type_c result_shape = shape_type_c(input_shape_size, 1)
+
+    cdef shape_type_c permute_axes
+    if axes is None:
+        """
+        template to do transpose a tensor
+        input_shape=[2, 3, 4]
+        permute_axes=[2, 1, 0]
+        after application `permute_axes` to `input_shape` result:
+        result_shape=[4, 3, 2]
+
+        'do nothing' axes variable is `permute_axes=[0, 1, 2]`
+
+        test: pytest tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_external_transpose_all
+        """
+        permute_axes = list(reversed([i for i in range(input_shape_size)]))
+    else:
+        permute_axes = utils.normalize_axis(axes, input_shape_size)
+
+    for i in range(input_shape_size):
+        """ construct output shape """
+        result_shape[i] = input_shape[permute_axes[i]]
+
+    # convert string type names (array.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRANSPOSE_EXT, param1_type, param1_type)
+
+    array1_obj = array1.get_array()
+
+    # ceate result array with type given by FPTR data
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=array1_obj.sycl_device,
+                                                                       usm_type=array1_obj.usm_type,
+                                                                       sycl_queue=array1_obj.sycl_queue)
+    result_sycl_queue = result.get_array().sycl_queue
+
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
+    cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
+    # call FPTR function
+    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
+                                                    array1.get_data(),
+                                                    input_shape.data(),
+                                                    result_shape.data(),
+                                                    permute_axes.data(),
+                                                    input_shape_size,
+                                                    result.get_data(),
+                                                    array1.size,
+                                                    NULL)  # dep_events_ref
+
+    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    c_dpctl.DPCTLEvent_Delete(event_ref)
+
+    return result

@@ -42,7 +42,7 @@ import dpnp.config as config
 from dpnp.dpnp_array import dpnp_array
 
 from libc.stdlib cimport free, malloc
-from libc.stdint cimport uint32_t, uint64_t, int64_t
+from libc.stdint cimport uint32_t, int64_t
 
 from dpnp.dpnp_algo cimport *
 cimport dpctl as c_dpctl
@@ -53,7 +53,6 @@ cimport numpy
 
 
 __all__ = [
-    "MCG59",
     "MT19937",
     "dpnp_rng_beta",
     "dpnp_rng_binomial",
@@ -272,28 +271,28 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_zipf_c_1out_t)(c_dpctl.DPCTLSy
 
 
 cdef extern from "dpnp_random_state.hpp":
-    cdef struct engine_struct:
-        pass
-
     cdef struct mt19937_struct:
         pass
     void MT19937_InitScalarSeed(mt19937_struct *, c_dpctl.DPCTLSyclQueueRef, uint32_t)
     void MT19937_InitVectorSeed(mt19937_struct *, c_dpctl.DPCTLSyclQueueRef, uint32_t *, unsigned int)
     void MT19937_Delete(mt19937_struct *)
 
-    cdef struct mcg59_struct:
-        pass
-    void MCG59_InitScalarSeed(mcg59_struct *, c_dpctl.DPCTLSyclQueueRef, uint64_t)
-    void MCG59_Delete(mcg59_struct *)
 
+cdef class MT19937:
+    """
+    Class storing MKL engine for MT199374x32x10 algorithm.
+    """
 
-cdef class _Engine:
-    cdef engine_struct* engine_base
+    cdef mt19937_struct mt19937
     cdef c_dpctl.DPCTLSyclQueueRef q_ref
     cdef c_dpctl.SyclQueue q
 
     def __cinit__(self, seed, sycl_queue):
-        self.engine_base = NULL
+        cdef bint is_vector_seed = False
+        cdef uint32_t scalar_seed = 0
+        cdef unsigned int vector_seed_len = 0
+        cdef unsigned int *vector_seed = NULL
+
         self.q_ref = NULL
         if sycl_queue is None:
             raise ValueError("SyclQueue isn't defined")
@@ -303,113 +302,6 @@ cdef class _Engine:
         self.q_ref = c_dpctl.DPCTLQueue_Copy((self.q).get_queue_ref())
         if self.q_ref is NULL:
             raise ValueError("SyclQueue copy failed")
-
-    def __dealloc__(self):
-        self.engine_base = NULL
-        c_dpctl.DPCTLQueue_Delete(self.q_ref)
-
-    cdef bint is_integer(self, value):
-        if isinstance(value, numbers.Number):
-            return isinstance(value, int) or isinstance(value, dpnp.integer)
-        # cover an element of dpnp array:
-        return numpy.ndim(value) == 0 and hasattr(value, "dtype") and dpnp.issubdtype(value, dpnp.integer)
-
-    cdef void set_engine(self, engine_struct* engine):
-        self.engine_base = engine
-
-    cdef engine_struct* get_engine(self):
-        return self.engine_base
-
-    cdef c_dpctl.SyclQueue get_queue(self):
-        return self.q
-
-    cdef c_dpctl.DPCTLSyclQueueRef get_queue_ref(self):
-        return self.q_ref
-
-    cpdef utils.dpnp_descriptor normal(self, loc, scale, size, dtype, usm_type):
-        cdef shape_type_c result_shape
-        cdef utils.dpnp_descriptor result
-        cdef DPNPFuncType param1_type
-        cdef DPNPFuncData kernel_data
-        cdef fptr_dpnp_rng_normal_c_1out_t func
-        cdef c_dpctl.DPCTLSyclEventRef event_ref
-
-        result_shape = utils._object_to_tuple(size)
-        if scale == 0.0:
-            return utils.dpnp_descriptor(dpnp.full(result_shape, loc, dtype=dtype))
-
-        # convert string type names (array.dtype) to C enum DPNPFuncType
-        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
-
-        # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NORMAL_EXT, param1_type, param1_type)
-
-        # ceate result array with type given by FPTR data
-        result = utils.create_output_descriptor(result_shape,
-                                                kernel_data.return_type,
-                                                None,
-                                                device=None,
-                                                usm_type=usm_type,
-                                                sycl_queue=self.get_queue())
-
-        func = <fptr_dpnp_rng_normal_c_1out_t > kernel_data.ptr
-        # call FPTR function
-        event_ref = func(self.get_queue_ref(), result.get_data(), loc, scale, result.size, self.get_engine(), NULL)
-
-        if event_ref != NULL:
-            with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-            c_dpctl.DPCTLEvent_Delete(event_ref)
-        return result
-
-    cpdef utils.dpnp_descriptor uniform(self, low, high, size, dtype, usm_type):
-        cdef shape_type_c result_shape
-        cdef utils.dpnp_descriptor result
-        cdef DPNPFuncType param1_type
-        cdef DPNPFuncData kernel_data
-        cdef fptr_dpnp_rng_uniform_c_1out_t func
-        cdef c_dpctl.DPCTLSyclEventRef event_ref
-
-        result_shape = utils._object_to_tuple(size)
-        if low == high:
-            return utils.dpnp_descriptor(dpnp.full(result_shape, low, dtype=dtype))
-
-        # convert string type names (array.dtype) to C enum DPNPFuncType
-        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
-
-        # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM_EXT, param1_type, param1_type)
-
-        # ceate result array with type given by FPTR data
-        result = utils.create_output_descriptor(result_shape,
-                                                kernel_data.return_type,
-                                                None,
-                                                device=None,
-                                                usm_type=usm_type,
-                                                sycl_queue=self.get_queue())
-
-        func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
-        # call FPTR function
-        event_ref = func(self.get_queue_ref(), result.get_data(), low, high, result.size, self.get_engine(), NULL)
-
-        if event_ref != NULL:
-            with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-            c_dpctl.DPCTLEvent_Delete(event_ref)
-        return result
-
-
-cdef class MT19937(_Engine):
-    """
-    Class storing MKL engine for MT199374x32x10 (The Mersenne Twister pseudorandom number generator).
-
-    """
-
-    cdef mt19937_struct mt19937
-
-    def __cinit__(self, seed, sycl_queue):
-        cdef bint is_vector_seed = False
-        cdef uint32_t scalar_seed = 0
-        cdef unsigned int vector_seed_len = 0
-        cdef unsigned int *vector_seed = NULL
 
         # get a scalar seed value or a vector of seeds
         if self.is_integer(seed):
@@ -453,44 +345,106 @@ cdef class MT19937(_Engine):
             free(vector_seed)
         else:
             MT19937_InitScalarSeed(&self.mt19937, self.q_ref, scalar_seed)
-        self.set_engine(<engine_struct*> &self.mt19937)
+
 
     def __dealloc__(self):
         MT19937_Delete(&self.mt19937)
+        c_dpctl.DPCTLQueue_Delete(self.q_ref)
+
+
+    cdef bint is_integer(self, value):
+        if isinstance(value, numbers.Number):
+            return isinstance(value, int) or isinstance(value, dpnp.integer)
+        # cover an element of dpnp array:
+        return numpy.ndim(value) == 0 and hasattr(value, "dtype") and dpnp.issubdtype(value, dpnp.integer)
+
 
     cdef bint is_uint_range(self, value):
         return value >= 0 and value <= numpy.iinfo(numpy.uint32).max
 
 
-cdef class MCG59(_Engine):
-    """
-    Class storing MKL engine for MCG59
-    (the 59-bit multiplicative congruential pseudorandom number generator).
+    cdef mt19937_struct * get_mt19937(self):
+        return &self.mt19937
 
-    """
 
-    cdef mcg59_struct mcg59
+    cdef c_dpctl.SyclQueue get_queue(self):
+        return self.q
 
-    def __cinit__(self, seed, sycl_queue):
-        cdef uint64_t scalar_seed = 1
 
-        # get a scalar seed value or a vector of seeds
-        if self.is_integer(seed):
-            if self.is_uint64_range(seed):
-                scalar_seed = <uint64_t> seed
-            else:
-                raise ValueError("Seed must be between 0 and 2**64 - 1")
-        else:
-            raise TypeError("Seed must be an integer")
+    cdef c_dpctl.DPCTLSyclQueueRef get_queue_ref(self):
+        return self.q_ref
 
-        MCG59_InitScalarSeed(&self.mcg59, self.q_ref, scalar_seed)
-        self.set_engine(<engine_struct*> &self.mcg59)
 
-    def __dealloc__(self):
-        MCG59_Delete(&self.mcg59)
+    cpdef utils.dpnp_descriptor normal(self, loc, scale, size, dtype, usm_type):
+        cdef shape_type_c result_shape
+        cdef utils.dpnp_descriptor result
+        cdef DPNPFuncType param1_type
+        cdef DPNPFuncData kernel_data
+        cdef fptr_dpnp_rng_normal_c_1out_t func
+        cdef c_dpctl.DPCTLSyclEventRef event_ref
 
-    cdef bint is_uint64_range(self, value):
-        return value >= 0 and value <= numpy.iinfo(numpy.uint64).max
+        result_shape = utils._object_to_tuple(size)
+        if scale == 0.0:
+            return utils.dpnp_descriptor(dpnp.full(result_shape, loc, dtype=dtype))
+
+        # convert string type names (array.dtype) to C enum DPNPFuncType
+        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+        # get the FPTR data structure
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NORMAL_EXT, param1_type, param1_type)
+
+        # ceate result array with type given by FPTR data
+        result = utils.create_output_descriptor(result_shape,
+                                                kernel_data.return_type,
+                                                None,
+                                                device=None,
+                                                usm_type=usm_type,
+                                                sycl_queue=self.get_queue())
+
+        func = <fptr_dpnp_rng_normal_c_1out_t > kernel_data.ptr
+        # call FPTR function
+        event_ref = func(self.get_queue_ref(), result.get_data(), loc, scale, result.size, self.get_mt19937(), NULL)
+
+        if event_ref != NULL:
+            with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+            c_dpctl.DPCTLEvent_Delete(event_ref)
+        return result
+
+
+    cpdef utils.dpnp_descriptor uniform(self, low, high, size, dtype, usm_type):
+        cdef shape_type_c result_shape
+        cdef utils.dpnp_descriptor result
+        cdef DPNPFuncType param1_type
+        cdef DPNPFuncData kernel_data
+        cdef fptr_dpnp_rng_uniform_c_1out_t func
+        cdef c_dpctl.DPCTLSyclEventRef event_ref
+
+        result_shape = utils._object_to_tuple(size)
+        if low == high:
+            return utils.dpnp_descriptor(dpnp.full(result_shape, low, dtype=dtype))
+
+        # convert string type names (array.dtype) to C enum DPNPFuncType
+        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+        # get the FPTR data structure
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM_EXT, param1_type, param1_type)
+
+        # ceate result array with type given by FPTR data
+        result = utils.create_output_descriptor(result_shape,
+                                                kernel_data.return_type,
+                                                None,
+                                                device=None,
+                                                usm_type=usm_type,
+                                                sycl_queue=self.get_queue())
+
+        func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
+        # call FPTR function
+        event_ref = func(self.get_queue_ref(), result.get_data(), low, high, result.size, self.get_mt19937(), NULL)
+
+        if event_ref != NULL:
+            with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+            c_dpctl.DPCTLEvent_Delete(event_ref)
+        return result
 
 
 cpdef utils.dpnp_descriptor dpnp_rng_beta(double a, double b, size):

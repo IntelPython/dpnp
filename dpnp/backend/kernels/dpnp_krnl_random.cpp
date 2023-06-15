@@ -77,76 +77,22 @@ void dpnp_rng_srand_c(size_t seed)
 }
 
 template <typename _DistrType, typename _EngineType, typename _DataType>
-static inline DPCTLSyclEventRef
-    dpnp_rng_generate(const _DistrType& distr, _EngineType& engine, const int64_t size, _DataType* result)
-{
+static inline DPCTLSyclEventRef dpnp_rng_generate(const _DistrType& distr,
+                                                  _EngineType& engine,
+                                                  const int64_t size,
+                                                  _DataType* result) {
     DPCTLSyclEventRef event_ref = nullptr;
     sycl::event event;
 
     // perform rng generation
-    try
-    {
+    try {
         event = mkl_rng::generate<_DistrType, _EngineType>(distr, engine, size, result);
         event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
-    }
-    catch (const std::exception& e)
-    {
+    } catch (const std::exception &e) {
         // TODO: add error reporting
         return event_ref;
     }
     return DPCTLEvent_Copy(event_ref);
-}
-
-template <typename _EngineType, typename _DataType>
-static inline DPCTLSyclEventRef dpnp_rng_generate_uniform(
-    _EngineType& engine, sycl::queue* q, const _DataType a, const _DataType b, const int64_t size, _DataType* result)
-{
-    DPCTLSyclEventRef event_ref = nullptr;
-
-    if constexpr (std::is_same<_DataType, int32_t>::value)
-    {
-        if (q->get_device().has(sycl::aspect::fp64))
-        {
-            /**
-             * A note from oneMKL for oneapi::mkl::rng::uniform (Discrete):
-             * The oneapi::mkl::rng::uniform_method::standard uses the s BRNG type on GPU devices.
-             * This might cause the produced numbers to have incorrect statistics (due to rounding error)
-             * when abs(b-a) > 2^23 || abs(b) > 2^23 || abs(a) > 2^23. To get proper statistics for this case,
-             * use the oneapi::mkl::rng::uniform_method::accurate method instead.
-             */
-            using method_type = mkl_rng::uniform_method::accurate;
-            mkl_rng::uniform<_DataType, method_type> distribution(a, b);
-
-            // perform generation
-            try
-            {
-                sycl::event event = mkl_rng::generate(distribution, engine, size, result);
-
-                event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
-                return DPCTLEvent_Copy(event_ref);
-            }
-            catch (const oneapi::mkl::unsupported_device&)
-            {
-                // fall through to try with uniform_method::standard
-            }
-            catch (const oneapi::mkl::unimplemented&)
-            {
-                // fall through to try with uniform_method::standard
-            }
-            catch (const std::exception& e)
-            {
-                // TODO: add error reporting
-                return event_ref;
-            }
-        }
-    }
-
-    // uniform_method::standard is a method used by default
-    using method_type = mkl_rng::uniform_method::standard;
-    mkl_rng::uniform<_DataType, method_type> distribution(a, b);
-
-    // perform generation
-    return dpnp_rng_generate(distribution, engine, size, result);
 }
 
 template <typename _DataType>
@@ -1446,17 +1392,17 @@ DPCTLSyclEventRef dpnp_rng_normal_c(DPCTLSyclQueueRef q_ref,
 {
     // avoid warning unused variable
     (void)dep_event_vec_ref;
+    (void)q_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue* q = reinterpret_cast<sycl::queue*>(q_ref);
 
     if (!size)
     {
         return event_ref;
     }
-    assert(q != nullptr);
 
-    _DataType* result = static_cast<_DataType*>(result_out);
+    mt19937_struct* random_state = static_cast<mt19937_struct *>(random_state_in);
+    _DataType* result = static_cast<_DataType *>(result_out);
 
     // set mean of distribution
     const _DataType mean = static_cast<_DataType>(mean_in);
@@ -1464,57 +1410,31 @@ DPCTLSyclEventRef dpnp_rng_normal_c(DPCTLSyclQueueRef q_ref,
     const _DataType stddev = static_cast<_DataType>(stddev_in);
 
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
+    mkl_rng::mt19937 *engine = static_cast<mkl_rng::mt19937 *>(random_state->engine);
 
-    if (q->get_device().is_cpu())
-    {
-        mt19937_struct* random_state = static_cast<mt19937_struct*>(random_state_in);
-        mkl_rng::mt19937* engine = static_cast<mkl_rng::mt19937*>(random_state->engine);
-
-        // perform generation with MT19937 engine
-        event_ref = dpnp_rng_generate(distribution, *engine, size, result);
-    }
-    else
-    {
-        mcg59_struct* random_state = static_cast<mcg59_struct*>(random_state_in);
-        mkl_rng::mcg59* engine = static_cast<mkl_rng::mcg59*>(random_state->engine);
-
-        // perform generation with MCG59 engine
-        event_ref = dpnp_rng_generate(distribution, *engine, size, result);
-    }
-    return event_ref;
+    // perform generation
+    return dpnp_rng_generate<mkl_rng::gaussian<_DataType>, mkl_rng::mt19937, _DataType>(
+        distribution, *engine, size, result);
 }
 
 template <typename _DataType>
 void dpnp_rng_normal_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
 {
-    sycl::queue* q = &DPNP_QUEUE;
-    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(q);
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = nullptr;
+    mt19937_struct* mt19937 = new mt19937_struct();
+    mt19937->engine = &DPNP_RNG_ENGINE;
 
-    if (q->get_device().is_cpu())
-    {
-        mt19937_struct* mt19937 = new mt19937_struct();
-        mt19937->engine = &DPNP_RNG_ENGINE;
-
-        event_ref = dpnp_rng_normal_c<_DataType>(
-            q_ref, result, mean, stddev, static_cast<int64_t>(size), mt19937, dep_event_vec_ref);
-        DPCTLEvent_WaitAndThrow(event_ref);
-        DPCTLEvent_Delete(event_ref);
-        delete mt19937;
-    }
-    else
-    {
-        // MCG59 engine is assumed to provide a better performance on GPU than MT19937
-        mcg59_struct* mcg59 = new mcg59_struct();
-        mcg59->engine = &DPNP_RNG_MCG59_ENGINE;
-
-        event_ref = dpnp_rng_normal_c<_DataType>(
-            q_ref, result, mean, stddev, static_cast<int64_t>(size), mcg59, dep_event_vec_ref);
-        DPCTLEvent_WaitAndThrow(event_ref);
-        DPCTLEvent_Delete(event_ref);
-        delete mcg59;
-    }
+    DPCTLSyclEventRef event_ref = dpnp_rng_normal_c<_DataType>(q_ref,
+                                                               result,
+                                                               mean,
+                                                               stddev,
+                                                               static_cast<int64_t>(size),
+                                                               mt19937,
+                                                               dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
+    delete mt19937;
 }
 
 template <typename _DataType>
@@ -2229,75 +2149,74 @@ DPCTLSyclEventRef dpnp_rng_uniform_c(DPCTLSyclQueueRef q_ref,
         return event_ref;
     }
 
-    sycl::queue* q = reinterpret_cast<sycl::queue*>(q_ref);
+    sycl::queue *q = reinterpret_cast<sycl::queue *>(q_ref);
 
-    _DataType* result = static_cast<_DataType*>(result_out);
+    mt19937_struct* random_state = static_cast<mt19937_struct *>(random_state_in);
+    _DataType* result = static_cast<_DataType *>(result_out);
 
     // set left bound of distribution
     const _DataType a = static_cast<_DataType>(low);
     // set right bound of distribution
     const _DataType b = static_cast<_DataType>(high);
 
-    if (q->get_device().is_cpu())
-    {
-        mt19937_struct* random_state = static_cast<mt19937_struct*>(random_state_in);
-        mkl_rng::mt19937* engine = static_cast<mkl_rng::mt19937*>(random_state->engine);
+    mkl_rng::mt19937 *engine = static_cast<mkl_rng::mt19937 *>(random_state->engine);
 
-        // perform generation with MT19937 engine
-        event_ref = dpnp_rng_generate_uniform(*engine, q, a, b, size, result);
-    }
-    else
-    {
-        mcg59_struct* random_state = static_cast<mcg59_struct*>(random_state_in);
-        mkl_rng::mcg59* engine = static_cast<mkl_rng::mcg59*>(random_state->engine);
+    if constexpr (std::is_same<_DataType, int32_t>::value) {
+        if (q->get_device().has(sycl::aspect::fp64)) {
+            /**
+             * A note from oneMKL for oneapi::mkl::rng::uniform (Discrete):
+             * The oneapi::mkl::rng::uniform_method::standard uses the s BRNG type on GPU devices.
+             * This might cause the produced numbers to have incorrect statistics (due to rounding error)
+             * when abs(b-a) > 2^23 || abs(b) > 2^23 || abs(a) > 2^23. To get proper statistics for this case,
+             * use the oneapi::mkl::rng::uniform_method::accurate method instead.
+             */
+            using method_type = mkl_rng::uniform_method::accurate;
+            mkl_rng::uniform<_DataType, method_type> distribution(a, b);
 
-        // perform generation with MCG59 engine
-        event_ref = dpnp_rng_generate_uniform(*engine, q, a, b, size, result);
+            // perform generation
+            try {
+                auto event = mkl_rng::generate<mkl_rng::uniform<_DataType, method_type>, mkl_rng::mt19937>(
+                    distribution, *engine, size, result);
+                event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+                return DPCTLEvent_Copy(event_ref);
+            } catch (const oneapi::mkl::unsupported_device&) {
+                // fall through to try with uniform_method::standard
+            } catch (const oneapi::mkl::unimplemented&) {
+                // fall through to try with uniform_method::standard
+            } catch (const std::exception &e) {
+                // TODO: add error reporting
+                return event_ref;
+            }
+        }
     }
-    return event_ref;
+
+    // uniform_method::standard is a method used by default
+    using method_type = mkl_rng::uniform_method::standard;
+    mkl_rng::uniform<_DataType, method_type> distribution(a, b);
+
+    // perform generation
+    return dpnp_rng_generate<mkl_rng::uniform<_DataType, method_type>, mkl_rng::mt19937, _DataType>(
+        distribution, *engine, size, result);
 }
 
 template <typename _DataType>
 void dpnp_rng_uniform_c(void* result, const long low, const long high, const size_t size)
 {
-    sycl::queue* q = &DPNP_QUEUE;
-    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(q);
+    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = nullptr;
+    mt19937_struct* mt19937 = new mt19937_struct();
+    mt19937->engine = &DPNP_RNG_ENGINE;
 
-    if (q->get_device().is_cpu())
-    {
-        mt19937_struct* mt19937 = new mt19937_struct();
-        mt19937->engine = &DPNP_RNG_ENGINE;
-
-        event_ref = dpnp_rng_uniform_c<_DataType>(q_ref,
-                                                  result,
-                                                  static_cast<double>(low),
-                                                  static_cast<double>(high),
-                                                  static_cast<int64_t>(size),
-                                                  mt19937,
-                                                  dep_event_vec_ref);
-        DPCTLEvent_WaitAndThrow(event_ref);
-        DPCTLEvent_Delete(event_ref);
-        delete mt19937;
-    }
-    else
-    {
-        // MCG59 engine is assumed to provide a better performance on GPU than MT19937
-        mcg59_struct* mcg59 = new mcg59_struct();
-        mcg59->engine = &DPNP_RNG_MCG59_ENGINE;
-
-        event_ref = dpnp_rng_uniform_c<_DataType>(q_ref,
-                                                  result,
-                                                  static_cast<double>(low),
-                                                  static_cast<double>(high),
-                                                  static_cast<int64_t>(size),
-                                                  mcg59,
-                                                  dep_event_vec_ref);
-        DPCTLEvent_WaitAndThrow(event_ref);
-        DPCTLEvent_Delete(event_ref);
-        delete mcg59;
-    }
+    DPCTLSyclEventRef event_ref = dpnp_rng_uniform_c<_DataType>(q_ref,
+                                                                result,
+                                                                static_cast<double>(low),
+                                                                static_cast<double>(high),
+                                                                static_cast<int64_t>(size),
+                                                                mt19937,
+                                                                dep_event_vec_ref);
+    DPCTLEvent_WaitAndThrow(event_ref);
+    DPCTLEvent_Delete(event_ref);
+    delete mt19937;
 }
 
 template <typename _DataType>

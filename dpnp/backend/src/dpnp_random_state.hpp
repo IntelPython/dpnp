@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2022-2023, Intel Corporation
+// Copyright (c) 2022, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -47,20 +47,10 @@
 
 #include <dpctl_sycl_interface.h>
 
-// Structure storing a base MKL engine
-struct engine_struct
+// Structure storing MKL engine for MT199374x32x10 algorithm
+struct mt19937_struct
 {
     void* engine;
-};
-
-// Structure storing MKL engine for MT199374x32x10 generator
-struct mt19937_struct : engine_struct
-{
-};
-
-// Structure storing MKL engine for MCG59 generator
-struct mcg59_struct : engine_struct
-{
 };
 
 /**
@@ -97,27 +87,5 @@ INP_DLLEXPORT void MT19937_InitVectorSeed(mt19937_struct *mt19937, DPCTLSyclQueu
  * @param [in]  mt19937       A structure with the MKL engine.
  */
 INP_DLLEXPORT void MT19937_Delete(mt19937_struct *mt19937);
-
-/**
- * @ingroup BACKEND_API
- * @brief Create a MKL engine from scalar seed.
- *
- * Invoke a common seed initialization of the engine for MCG59 algorithm.
- *
- * @param [in]  mcg59         A structure with MKL engine which will be filled with generated value by MKL.
- * @param [in]  q_ref         A refference on SYCL queue which will be used to obtain random numbers.
- * @param [in]  seed          An initial condition of the generator state.
- */
-INP_DLLEXPORT void MCG59_InitScalarSeed(mcg59_struct* mcg59, DPCTLSyclQueueRef q_ref, uint64_t seed);
-
-/**
- * @ingroup BACKEND_API
- * @brief Release a MKL engine.
- *
- * Release all resource required for storing of the MKL engine.
- *
- * @param [in]  mcg59         A structure with the MKL engine.
- */
-INP_DLLEXPORT void MCG59_Delete(mcg59_struct* mcg59);
 
 #endif // BACKEND_RANDOM_STATE_H

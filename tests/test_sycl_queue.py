@@ -529,8 +529,7 @@ def test_random_state(func, args, kwargs, device, usm_type):
     sycl_queue = dpctl.SyclQueue(device, property="in_order")
 
     # test with in-order SYCL queue per a device and passed as argument
-    seed = (147, 56, 896) if device.is_cpu else 987654
-    rs = dpnp.random.RandomState(seed, sycl_queue=sycl_queue)
+    rs = dpnp.random.RandomState((147, 56, 896), sycl_queue=sycl_queue)
     res_array = getattr(rs, func)(*args, **kwargs)
     assert usm_type == res_array.usm_type
     assert_sycl_queue_equal(res_array.sycl_queue, sycl_queue)

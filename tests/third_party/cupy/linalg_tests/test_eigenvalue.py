@@ -8,7 +8,8 @@ from tests.third_party.cupy import testing
 
 
 def _get_hermitian(xp, a, UPLO):
-    # TODO: remove wrapping, but now there is no dpnp_array.swapaxes()
+    # TODO: fix this, currently dpnp.transpose() doesn't support complex types
+    # and no dpnp_array.swapaxes()
     a = _wrap_as_numpy_array(xp, a)
     _xp = numpy
 

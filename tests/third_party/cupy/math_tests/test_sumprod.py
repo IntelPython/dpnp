@@ -4,7 +4,6 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -17,95 +16,59 @@ class TestSumprod(unittest.TestCase):
         # cupy.get_default_pinned_memory_pool().free_all_blocks()
         pass
 
-    # Note: numpy.sum() always upcast integers to (u)int64 and float32 to
-    # float64 for dtype=None. `np.sum` does that too for integers, but not for
-    # float32, so we need to special-case it for these tests
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_sum_all(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(dtype=dtype)
-        else:
-            return a.sum()
+        return a.sum()
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_sum_all_keepdims(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(dtype=dtype, keepdims=True)
-        else:
-            return a.sum(keepdims=True)
+        return a.sum(keepdims=True)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_external_sum_all(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return xp.sum(a, dtype=dtype)
-        else:
-            return xp.sum(a)
+        return xp.sum(a)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-06)
+    @testing.numpy_cupy_allclose()
     def test_sum_all2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40), xp, dtype)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(dtype=dtype)
-        else:
-            return a.sum()
-
+        return a.sum()
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose()
     def test_sum_all_transposed(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(2, 0, 1)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(dtype=dtype)
-        else:
-            return a.sum()
+        return a.sum()
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-06)
+    @testing.numpy_cupy_allclose()
     def test_sum_all_transposed2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40), xp, dtype).transpose(2, 0, 1)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(dtype=dtype)
-        else:
-            return a.sum()
+        return a.sum()
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_sum_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(dtype=dtype, axis=1)
-        else:
-            return a.sum(axis=1)
+        return a.sum(axis=1)
 
     @testing.slow
     @testing.numpy_cupy_allclose()
     def test_sum_axis_huge(self, xp):
-        a = testing.shaped_random((204, 102, 102), xp, 'i4')
+        a = testing.shaped_random((204, 102, 102), xp, 'd')
         return a.sum(axis=2)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_external_sum_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return xp.sum(a, axis=1, dtype=dtype)
-        else:
-            return xp.sum(a, axis=1)
+        return xp.sum(a, axis=1)
 
     # float16 is omitted, since NumPy's sum on float16 arrays has more error
     # than CuPy's.
@@ -113,71 +76,43 @@ class TestSumprod(unittest.TestCase):
     @testing.numpy_cupy_allclose()
     def test_sum_axis2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40), xp, dtype)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(axis=1, dtype=dtype)
-        else:
-            return a.sum(axis=1)
+        return a.sum(axis=1)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_sum_axis_transposed(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(2, 0, 1)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(axis=1, dtype=dtype)
-        else:
-            return a.sum(axis=1)
+        return a.sum(axis=1)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_sum_axis_transposed2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40), xp, dtype).transpose(2, 0, 1)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(axis=1, dtype=dtype)
-        else:
-            return a.sum(axis=1)
+        return a.sum(axis=1)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_sum_axes(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4, 5), xp, dtype)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(axis=(1, 3), dtype=dtype)
-        else:
-            return a.sum(axis=(1, 3))
+        return a.sum(axis=(1, 3))
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_sum_axes2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40, 50), xp, dtype)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(axis=(1, 3), dtype=dtype)
-        else:
-            return a.sum(axis=(1, 3))
+        return a.sum(axis=(1, 3))
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_sum_axes3(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4, 5), xp, dtype)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(axis=(0, 2, 3), dtype=dtype)
-        else:
-            return a.sum(axis=(0, 2, 3))
+        return a.sum(axis=(0, 2, 3))
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_sum_axes4(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40, 50), xp, dtype)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(axis=(0, 2, 3), dtype=dtype)
-        else:
-            return a.sum(axis=(0, 2, 3))
+        return a.sum(axis=(0, 2, 3))
 
     @testing.for_all_dtypes_combination(names=['src_dtype', 'dst_dtype'])
     @testing.numpy_cupy_allclose()
@@ -195,11 +130,7 @@ class TestSumprod(unittest.TestCase):
     @testing.numpy_cupy_allclose()
     def test_sum_keepdims_multiple_axes(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            dtype=numpy.float64
-            return a.sum(axis=(1, 2), keepdims=True, dtype=dtype)
-        else:
-            return a.sum(axis=(1, 2), keepdims=True)
+        return a.sum(axis=(1, 2), keepdims=True)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()

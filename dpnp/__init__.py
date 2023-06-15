@@ -27,9 +27,6 @@
 import os
 mypath = os.path.dirname(os.path.realpath(__file__))
 
-# workaround against hanging in OneMKL calls and in DPCTL
-os.environ.setdefault('SYCL_QUEUE_THREAD_POOL_SIZE', '6')
-
 import dpctl
 dpctlpath = os.path.dirname(dpctl.__file__)
 
@@ -43,6 +40,9 @@ if system() == 'Windows':
         os.add_dll_directory(mypath)
         os.add_dll_directory(dpctlpath)
     os.environ["PATH"] = os.pathsep.join([os.getenv("PATH", ""), mypath, dpctlpath])
+
+# workaround against hanging in OneMKL calls
+os.environ.setdefault('SYCL_QUEUE_THREAD_POOL_SIZE', '6')
 
 from dpnp.dpnp_array import dpnp_array as ndarray
 from dpnp.dpnp_flatiter import flatiter as flatiter

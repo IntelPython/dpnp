@@ -1,10 +1,5 @@
 import pytest
-
 import numpy
-from numpy.testing import (
-    assert_array_equal
-)
-
 import dpnp
 
 
@@ -25,7 +20,7 @@ def test_copyto_dtype(in_obj, out_dtype):
     result = dpnp.empty(dparr.size, dtype=out_dtype)
     dpnp.copyto(result, dparr)
 
-    assert_array_equal(result, expected)
+    numpy.testing.assert_array_equal(result, expected)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -37,26 +32,7 @@ def test_repeat(arr):
     dpnp_a = dpnp.array(arr)
     expected = numpy.repeat(a, 2)
     result = dpnp.repeat(dpnp_a, 2)
-    assert_array_equal(expected, result)
-
-
-def test_result_type():
-    X = [dpnp.ones((2), dtype=dpnp.int64), dpnp.int32, "float16"]
-    X_np = [numpy.ones((2), dtype=numpy.int64), numpy.int32, "float16"]
-
-    assert dpnp.result_type(*X) == numpy.result_type(*X_np)
-
-def test_result_type_only_dtypes():
-    X = [dpnp.int64, dpnp.int32, dpnp.bool, dpnp.float32]
-    X_np = [numpy.int64, numpy.int32, numpy.bool_, numpy.float32]
-
-    assert dpnp.result_type(*X) == numpy.result_type(*X_np)
-
-def test_result_type_only_arrays():
-    X = [dpnp.ones((2), dtype=dpnp.int64), dpnp.ones((7, 4), dtype=dpnp.int32)]
-    X_np = [numpy.ones((2), dtype=numpy.int64), numpy.ones((7, 4), dtype=numpy.int32)]
-
-    assert dpnp.result_type(*X) == numpy.result_type(*X_np)
+    numpy.testing.assert_array_equal(expected, result)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -75,32 +51,4 @@ def test_unique(array):
 
     expected = numpy.unique(np_a)
     result = dpnp.unique(dpnp_a)
-    assert_array_equal(expected, result)
-
-
-class TestTranspose:
-    @pytest.mark.parametrize("axes", [(0, 1), (1, 0)])
-    def test_2d_with_axes(self, axes):
-        na = numpy.array([[1, 2], [3, 4]])
-        da = dpnp.array(na)
-
-        expected = numpy.transpose(na, axes)
-        result = dpnp.transpose(da, axes)
-        assert_array_equal(expected, result)
-
-    @pytest.mark.parametrize("axes", [(1, 0, 2), ((1, 0, 2),)])
-    def test_3d_with_packed_axes(self, axes):
-        na = numpy.ones((1, 2, 3))
-        da = dpnp.array(na)
-
-        expected = na.transpose(*axes)
-        result = da.transpose(*axes)
-        assert_array_equal(expected, result)
-
-    @pytest.mark.parametrize("shape", [(10,), (2, 4), (5, 3, 7), (3, 8, 4, 1)])
-    def test_none_axes(self, shape):
-        na = numpy.ones(shape)
-        da = dpnp.ones(shape)
-
-        assert_array_equal(na.transpose(), da.transpose())
-        assert_array_equal(na.transpose(None), da.transpose(None))
+    numpy.testing.assert_array_equal(expected, result)

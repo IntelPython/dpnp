@@ -159,6 +159,7 @@ class TestMeanVar(unittest.TestCase):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return xp.mean(a)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_mean_axis(self, xp, dtype):
@@ -171,18 +172,21 @@ class TestMeanVar(unittest.TestCase):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.mean(a, axis=1)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(rtol=1e-06)
-    def test_mean_all_float32_dtype(self, xp, dtype):
+    @testing.numpy_cupy_allclose()
+    def test_mean_all_float64_dtype(self, xp, dtype):
         a = xp.full((2, 3, 4), 123456789, dtype=dtype)
-        return xp.mean(a, dtype=numpy.float32)
+        return xp.mean(a, dtype=numpy.float64)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_mean_all_int64_dtype(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.mean(a, dtype=numpy.int64)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_mean_all_complex_dtype(self, xp, dtype):
