@@ -404,7 +404,7 @@ def dpnp_greater_equal(x1, x2, out=None, order='K'):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     func = BinaryElementwiseFunc("greater_equal", ti._greater_equal_result_type,
-                                  ti._greater_equal, _greater_docstring_)
+                                  ti._greater_equal, _greater_equal_docstring_)
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
