@@ -369,8 +369,8 @@ def dpnp_greater(x1, x2, out=None, order='K'):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_greater_docstring_ = """
-greater(x1, x2, out=None, order='K')
+_greater_equal_docstring_ = """
+greater_equal(x1, x2, out=None, order='K')
 
 Calculates the greater-than or equal-to results for each element `x1_i` of
 the input array `x1` the respective element `x2_i` of the input array `x2`.
