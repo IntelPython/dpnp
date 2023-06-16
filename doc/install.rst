@@ -39,5 +39,5 @@ You can install the latest development version of DPNP from a cloned Git reposit
 .. note::
 
    To build the source tree downloaded from GitHub, you need to install
-   `Intel oneAPI Toolkit <https://software.intel.com/content/www/us/en/develop/tools/oneapi.html>`_
+   `Intel oneAPI Toolkit <https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview.html>`_
    and Cython (``pip install cython`` or ``conda install cython``).
