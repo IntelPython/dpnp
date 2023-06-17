@@ -133,6 +133,8 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_zeros_like_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga701ba350a76dc444f53a7e7d59c7a143", null ],
     [ "get_dpnp_function_ptr", "group___b_a_c_k_e_n_d___a_p_i.html#ga5d37203d4448c22f7b046710d639fd4e", null ],
     [ "get_dpnp_function_ptr1", "group___b_a_c_k_e_n_d___a_p_i.html#ga77f60af228fba6ec73c66217bd7a4ee7", null ],
+    [ "MCG59_Delete", "group___b_a_c_k_e_n_d___a_p_i.html#gad658fb513fc4ab24115573d8bdbf38df", null ],
+    [ "MCG59_InitScalarSeed", "group___b_a_c_k_e_n_d___a_p_i.html#ga8d41fc0affbac587992402c23ff9b930", null ],
     [ "MT19937_Delete", "group___b_a_c_k_e_n_d___a_p_i.html#gaff33ecfcdcc418196d3361d37c53f5f0", null ],
     [ "MT19937_InitScalarSeed", "group___b_a_c_k_e_n_d___a_p_i.html#ga27e7a066bbe9e7bb42ea0bb4aa80fa5a", null ],
     [ "MT19937_InitVectorSeed", "group___b_a_c_k_e_n_d___a_p_i.html#ga5aa43f73b2b057034fd5f29cd86ea246", null ]

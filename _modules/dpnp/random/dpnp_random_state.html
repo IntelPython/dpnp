@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.random.dpnp_random_state &mdash; dpnp 0.11.1 documentation</title>
+  <title>dpnp.random.dpnp_random_state &mdash; dpnp 0.12.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             dpnp
           </a>
               <div class="version">
-                0.11
+                0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -129,7 +129,10 @@
     <span class="n">map_dtype_to_device</span><span class="p">,</span>
     <span class="n">use_origin_backend</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">dpnp.random.dpnp_algo_random</span> <span class="kn">import</span> <span class="n">MT19937</span>
+<span class="kn">from</span> <span class="nn">dpnp.random.dpnp_algo_random</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MCG59</span><span class="p">,</span>
+    <span class="n">MT19937</span>
+<span class="p">)</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -161,19 +164,32 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># ask NumPy to generate an array of three random integers as default seed value</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="o">=</span> <span class="n">seed</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span>
+
+        <span class="n">is_cpu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span><span class="o">.</span><span class="n">is_cpu</span>
+        <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">high</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">is_cpu</span><span class="p">:</span>
+                <span class="c1"># ask NumPy to generate an array of three random integers as default seed value</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># ask NumPy to generate a random 32-bit integer as default seed value</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="o">=</span> <span class="n">seed</span>
 
         <span class="c1"># &#39;float32&#39; is default floating data type if device doesn&#39;t support &#39;float64&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_def_float_type</span> <span class="o">=</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">MT19937</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">)</span>
+        <span class="c1"># TODO: rework through pybind11 extension for MKL engine and distribution classes</span>
+        <span class="k">if</span> <span class="n">is_cpu</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">MT19937</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># MCG59 is assumed to provide a better performance on GPU than MT19937</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">MCG59</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_random_state</span> <span class="o">=</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">allow_fallback</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 

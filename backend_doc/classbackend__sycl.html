@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.11.1</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.12.0</span>
    </div>
    <div id="projectbrief">NumPy-like API accelerated with SYCL</div>
   </td>
@@ -120,11 +120,13 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:aaf630c30c2f39dfbc40aa66d12e43b52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a342eff9e8b2a3bef4c6ca8a0ab7c1b1c"><td class="memItemLeft" align="right" valign="top">static mkl_rng::mt19937 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#a342eff9e8b2a3bef4c6ca8a0ab7c1b1c">get_rng_engine</a> ()</td></tr>
 <tr class="separator:a342eff9e8b2a3bef4c6ca8a0ab7c1b1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d34fff3e524483abb54d1eda0b781eb"><td class="memItemLeft" align="right" valign="top">static mkl_rng::mcg59 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#a5d34fff3e524483abb54d1eda0b781eb">get_rng_mcg59_engine</a> ()</td></tr>
+<tr class="separator:a5d34fff3e524483abb54d1eda0b781eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >This is container for the SYCL queue, random number generation engine and related functions like queue and engine initialization and maintenance. The queue could not be initialized as a global object. Global object initialization order is undefined. This class postpone initialization of the SYCL queue and mt19937 random number generation engine. </p>
 
-<p class="definition">Definition at line <a class="el" href="queue__sycl_8hpp_source.html#l00068">68</a> of file <a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="queue__sycl_8hpp_source.html#l00069">69</a> of file <a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad6017327aed78183cb1a6fc013208b3f" name="ad6017327aed78183cb1a6fc013208b3f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad6017327aed78183cb1a6fc013208b3f">&#9670;&#160;</a></span>backend_sycl() <span class="overload">[1/2]</span></h2>
@@ -149,7 +151,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="queue__sycl_8hpp_source.html#l00091">91</a> of file <a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="queue__sycl_8hpp_source.html#l00098">98</a> of file <a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a>.</p>
 
 </div>
 </div>
@@ -176,7 +178,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="queue__sycl_8hpp_source.html#l00099">99</a> of file <a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="queue__sycl_8hpp_source.html#l00106">106</a> of file <a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a>.</p>
 
 </div>
 </div>
@@ -293,14 +295,15 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Initialize rng_engine </p>
+<p >Initialize rng_engine and rng_mcg59_engine </p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classbackend__sycl_a1e1c099a21299e72a2b8fc9e4414c78d_icgraph.png" border="0" usemap="#aclassbackend__sycl_a1e1c099a21299e72a2b8fc9e4414c78d_icgraph" alt=""/></div>
 <map name="aclassbackend__sycl_a1e1c099a21299e72a2b8fc9e4414c78d_icgraph" id="aclassbackend__sycl_a1e1c099a21299e72a2b8fc9e4414c78d_icgraph">
-<area shape="rect" title=" " alt="" coords="204,5,360,45"/>
+<area shape="rect" title=" " alt="" coords="204,37,360,77"/>
 <area shape="rect" href="classbackend__sycl.html#a342eff9e8b2a3bef4c6ca8a0ab7c1b1c" title=" " alt="" coords="5,5,156,45"/>
+<area shape="rect" href="classbackend__sycl.html#a5d34fff3e524483abb54d1eda0b781eb" title=" " alt="" coords="5,69,156,109"/>
 </map>
 </div>
 
@@ -330,7 +333,7 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 <p >Return the queue to the user </p>
 
-<p class="definition">Definition at line <a class="el" href="queue__sycl_8hpp_source.html#l00128">128</a> of file <a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="queue__sycl_8hpp_source.html#l00135">135</a> of file <a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -367,12 +370,49 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 <p >Return the rng_engine to the user </p>
 
-<p class="definition">Definition at line <a class="el" href="queue__sycl_8hpp_source.html#l00154">154</a> of file <a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="queue__sycl_8hpp_source.html#l00161">161</a> of file <a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classbackend__sycl_a342eff9e8b2a3bef4c6ca8a0ab7c1b1c_cgraph.png" border="0" usemap="#aclassbackend__sycl_a342eff9e8b2a3bef4c6ca8a0ab7c1b1c_cgraph" alt=""/></div>
 <map name="aclassbackend__sycl_a342eff9e8b2a3bef4c6ca8a0ab7c1b1c_cgraph" id="aclassbackend__sycl_a342eff9e8b2a3bef4c6ca8a0ab7c1b1c_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,156,45"/>
+<area shape="rect" href="classbackend__sycl.html#a1e1c099a21299e72a2b8fc9e4414c78d" title=" " alt="" coords="204,5,360,45"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a5d34fff3e524483abb54d1eda0b781eb" name="a5d34fff3e524483abb54d1eda0b781eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d34fff3e524483abb54d1eda0b781eb">&#9670;&#160;</a></span>get_rng_mcg59_engine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static mkl_rng::mcg59 &amp; backend_sycl::get_rng_mcg59_engine </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Return the rng_mcg59_engine to the user </p>
+
+<p class="definition">Definition at line <a class="el" href="queue__sycl_8hpp_source.html#l00173">173</a> of file <a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classbackend__sycl_a5d34fff3e524483abb54d1eda0b781eb_cgraph.png" border="0" usemap="#aclassbackend__sycl_a5d34fff3e524483abb54d1eda0b781eb_cgraph" alt=""/></div>
+<map name="aclassbackend__sycl_a5d34fff3e524483abb54d1eda0b781eb_cgraph" id="aclassbackend__sycl_a5d34fff3e524483abb54d1eda0b781eb_cgraph">
 <area shape="rect" title=" " alt="" coords="5,5,156,45"/>
 <area shape="rect" href="classbackend__sycl.html#a1e1c099a21299e72a2b8fc9e4414c78d" title=" " alt="" coords="204,5,360,45"/>
 </map>

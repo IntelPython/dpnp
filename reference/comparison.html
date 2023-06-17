@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comparison Table &mdash; dpnp 0.11.1 documentation</title>
+  <title>Comparison Table &mdash; dpnp 0.12.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -44,7 +44,7 @@
             dpnp
           </a>
               <div class="version">
-                0.11
+                0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -107,7 +107,7 @@
 <h1>Comparison Table<a class="headerlink" href="#comparison-table" title="Permalink to this heading"></a></h1>
 <p>Here is a list of NumPy APIs and its corresponding DPNP implementations.</p>
 <p><code class="docutils literal notranslate"><span class="pre">-</span></code> in DPNP column means that DPNP implementation is not provided yet.</p>
-<p><strong>NumPy(v1.23.5) / DPNP(v0.11.1) / CuPy(v8.3.0) APIs</strong></p>
+<p><strong>NumPy(v1.23.5) / DPNP(v0.12.0) / CuPy(v8.3.0) APIs</strong></p>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading"></a></h2>
 <table class="docutils align-default">
@@ -119,7 +119,7 @@
 </tr>
 <tr class="row-even"><td><p>Module-Level</p></td>
 <td><p>397</p></td>
-<td><p>206</p></td>
+<td><p>208</p></td>
 <td><p>286</p></td>
 </tr>
 <tr class="row-odd"><td><p>Multi-Dimensional Array</p></td>
@@ -144,7 +144,7 @@
 </tr>
 <tr class="row-odd"><td><p>Total</p></td>
 <td><p>545</p></td>
-<td><p>314</p></td>
+<td><p>316</p></td>
 <td><p>415</p></td>
 </tr>
 </tbody>
@@ -1413,7 +1413,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.result_type.html#numpy.result_type" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.result_type</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.result_type</span></code></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.result_type</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.right_shift.html#numpy.right_shift" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.right_shift</span></code></a></p></td>
@@ -1521,7 +1521,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.shape.html#numpy.shape" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.shape</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.shape</span></code></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.shape</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.shares_memory.html#numpy.shares_memory" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.shares_memory</span></code></a></p></td>
@@ -1753,7 +1753,7 @@
 <td><p><strong>CuPy Total</strong></p></td>
 </tr>
 <tr class="row-even"><td><p>397</p></td>
-<td><p>206</p></td>
+<td><p>208</p></td>
 <td><p>286</p></td>
 </tr>
 </tbody>

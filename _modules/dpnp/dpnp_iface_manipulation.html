@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; dpnp 0.11.1 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; dpnp 0.12.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             dpnp
           </a>
               <div class="version">
-                0.11
+                0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -152,7 +152,9 @@
     <span class="s2">&quot;ravel&quot;</span><span class="p">,</span>
     <span class="s2">&quot;repeat&quot;</span><span class="p">,</span>
     <span class="s2">&quot;reshape&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;result_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rollaxis&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;shape&quot;</span><span class="p">,</span>
     <span class="s2">&quot;squeeze&quot;</span><span class="p">,</span>
     <span class="s2">&quot;stack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;swapaxes&quot;</span><span class="p">,</span>
@@ -586,26 +588,124 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">repeat</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="reshape"><a class="viewcode-back" href="../../reference/generated/dpnp.reshape.html#dpnp.reshape">[docs]</a><span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="reshape"><a class="viewcode-back" href="../../reference/generated/dpnp.reshape.html#dpnp.reshape">[docs]</a><span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gives a new shape to an array without changing its data.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.reshape`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        Array to be reshaped.</span>
+<span class="sd">    newshape : int or tuple of ints</span>
+<span class="sd">        The new shape should be compatible with the original shape. If</span>
+<span class="sd">        an integer, then the result will be a 1-D array of that length.</span>
+<span class="sd">        One shape dimension can be -1. In this case, the value is</span>
+<span class="sd">        inferred from the length of the array and remaining dimensions.</span>
+<span class="sd">    order : {&#39;C&#39;, &#39;F&#39;}, optional</span>
+<span class="sd">        Read the elements of `x` using this index order, and place the</span>
+<span class="sd">        elements into the reshaped array using this index order.  &#39;C&#39;</span>
+<span class="sd">        means to read / write the elements using C-like index order,</span>
+<span class="sd">        with the last axis index changing fastest, back to the first</span>
+<span class="sd">        axis index changing slowest. &#39;F&#39; means to read / write the</span>
+<span class="sd">        elements using Fortran-like index order, with the first index</span>
+<span class="sd">        changing fastest, and the last index changing slowest. Note that</span>
+<span class="sd">        the &#39;C&#39; and &#39;F&#39; options take no account of the memory layout of</span>
+<span class="sd">        the underlying array, and only refer to the order of indexing.</span>
+<span class="sd">    copy : bool, optional</span>
+<span class="sd">        Boolean indicating whether or not to copy the input array.</span>
+<span class="sd">        If ``True``, the result array will always be a copy of input `x`.</span>
+<span class="sd">        If ``False``, the result array can never be a copy</span>
+<span class="sd">        and a ValueError exception will be raised in case the copy is necessary.</span>
+<span class="sd">        If ``None``, the result array will reuse existing memory buffer of `x`</span>
+<span class="sd">        if possible and copy otherwise. Default: None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">        This will be a new view object if possible; otherwise, it will</span>
+<span class="sd">        be a copy.  Note there is no guarantee of the *memory layout* (C- or</span>
+<span class="sd">        Fortran- contiguous) of the returned array.</span>
+<span class="sd">    </span>
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Only &#39;C&#39; order is supported.</span>
+<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;`` and ``&quot;F&quot;``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ndarray.reshape` : Equivalent method.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
+<span class="sd">    &gt;&gt;&gt; a = dp.array([[1, 2, 3], [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; dp.reshape(a, 6)</span>
+<span class="sd">    array([1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; dp.reshape(a, 6, order=&#39;F&#39;)</span>
+<span class="sd">    array([1, 4, 2, 5, 3, 6])</span>
+
+<span class="sd">    &gt;&gt;&gt; dp.reshape(a, (3, -1))       # the unspecified value is inferred to be 2</span>
+<span class="sd">    array([[1, 2],</span>
+<span class="sd">           [3, 4],</span>
+<span class="sd">           [5, 6]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">order</span> <span class="o">!=</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_reshape</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">newshape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">newshape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">reshape</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="s1">&#39;C&#39;</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">order</span> <span class="ow">in</span> <span class="s2">&quot;cfCF&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;order must be one of &#39;C&#39; or &#39;F&#39; (got </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+    <span class="n">usm_arr</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">usm_arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_arr</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">newshape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_arr</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays_and_dtypes</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the type that results from applying the NumPy</span>
+<span class="sd">    type promotion rules to the arguments.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.result_type`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arrays_and_dtypes : list of arrays and dtypes</span>
+<span class="sd">        An arbitrary length sequence of arrays or dtypes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dtype</span>
+<span class="sd">        The result type.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    An array in the input list is supported as either :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
+<span class="sd">    &gt;&gt;&gt; dp.result_type(dp.arange(3, dtype=dp.int64), dp.arange(7, dtype=dp.int32))</span>
+<span class="sd">    dtype(&#39;int64&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; dp.result_type(dp.int64, dp.complex128)</span>
+<span class="sd">    dtype(&#39;complex128&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; dp.result_type(dp.ones(10, dtype=dp.float32), dp.float64)</span>
+<span class="sd">    dtype(&#39;float64&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">usm_arrays_and_dtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">X</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span> <span class="k">else</span> <span class="n">X</span>
+        <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">arrays_and_dtypes</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">usm_arrays_and_dtypes</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="rollaxis"><a class="viewcode-back" href="../../reference/generated/dpnp.rollaxis.html#dpnp.rollaxis">[docs]</a><span class="k">def</span> <span class="nf">rollaxis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -654,6 +754,49 @@
             <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">axis</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the shape of an array.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.shape`.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : array_like</span>
+<span class="sd">        Input array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    shape : tuple of ints</span>
+<span class="sd">        The elements of the shape tuple give the lengths of the</span>
+<span class="sd">        corresponding array dimensions.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    len : ``len(a)`` is equivalent to ``np.shape(a)[0]`` for N-D arrays with</span>
+<span class="sd">          ``N&gt;=1``.</span>
+<span class="sd">    :obj:`dpnp.ndarray.shape` : Equivalent array method.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
+<span class="sd">    &gt;&gt;&gt; dp.shape(dp.eye(3))</span>
+<span class="sd">    (3, 3)</span>
+<span class="sd">    &gt;&gt;&gt; dp.shape([[1, 3]])</span>
+<span class="sd">    (1, 2)</span>
+<span class="sd">    &gt;&gt;&gt; dp.shape([0])</span>
+<span class="sd">    (1,)</span>
+<span class="sd">    &gt;&gt;&gt; dp.shape(0)</span>
+<span class="sd">    ()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="squeeze"><a class="viewcode-back" href="../../reference/generated/dpnp.squeeze.html#dpnp.squeeze">[docs]</a><span class="k">def</span> <span class="nf">squeeze</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -758,54 +901,65 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="transpose"><a class="viewcode-back" href="../../reference/generated/dpnp.transpose.html#dpnp.transpose">[docs]</a><span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="transpose"><a class="viewcode-back" href="../../reference/generated/dpnp.transpose.html#dpnp.transpose">[docs]</a><span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Reverse or permute the axes of an array; returns the modified array.</span>
+<span class="sd">    Returns an array with axes transposed.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.transpose`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">        `a` with its axes permuted. A view is returned whenever possible.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Value of the parameter ``axes`` likely to be replaced with ``None``.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Input array is supported as either :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ndarray.transpose` : Equivalent method.</span>
 <span class="sd">    :obj:`dpnp.moveaxis` : Move array axes to new positions.</span>
 <span class="sd">    :obj:`dpnp.argsort` : Returns the indices that would sort an array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.arange(4).reshape((2,2))</span>
-<span class="sd">    &gt;&gt;&gt; x.shape</span>
-<span class="sd">    (2, 2)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in x]</span>
-<span class="sd">    [0, 1, 2, 3]</span>
-<span class="sd">    &gt;&gt;&gt; out = np.transpose(x)</span>
-<span class="sd">    &gt;&gt;&gt; out.shape</span>
-<span class="sd">    (2, 2)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [0, 2, 1, 3]</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
+<span class="sd">    &gt;&gt;&gt; a = dp.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[1, 2],</span>
+<span class="sd">           [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; dp.transpose(a)</span>
+<span class="sd">    array([[1, 3],</span>
+<span class="sd">           [2, 4]])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = dp.array([1, 2, 3, 4])</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([1, 2, 3, 4])</span>
+<span class="sd">    &gt;&gt;&gt; dp.transpose(a)</span>
+<span class="sd">    array([1, 2, 3, 4])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = dp.ones((1, 2, 3))</span>
+<span class="sd">    &gt;&gt;&gt; dp.transpose(a, (1, 0, 2)).shape</span>
+<span class="sd">    (2, 1, 3)</span>
+
+<span class="sd">    &gt;&gt;&gt; a = dp.ones((2, 3, 4, 5))</span>
+<span class="sd">    &gt;&gt;&gt; dp.transpose(a).shape</span>
+<span class="sd">    (5, 4, 3, 2)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">axes</span><span class="p">):</span>
-<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                pytest tests/third_party/cupy/manipulation_tests/test_transpose.py</span>
-<span class="sd">                &quot;&quot;&quot;</span>
-                <span class="n">axes</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
 
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_transpose</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-        <span class="k">return</span> <span class="n">result</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">transpose</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">array</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">array</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">*</span><span class="n">axes</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="unique"><a class="viewcode-back" href="../../reference/generated/dpnp.unique.html#dpnp.unique">[docs]</a><span class="k">def</span> <span class="nf">unique</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

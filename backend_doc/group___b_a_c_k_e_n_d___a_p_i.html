@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.11.1</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.12.0</span>
    </div>
    <div id="projectbrief">NumPy-like API accelerated with SYCL</div>
   </td>
@@ -676,6 +676,12 @@ Functions</h2></td></tr>
 <tr class="memitem:gaff33ecfcdcc418196d3361d37c53f5f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaff33ecfcdcc418196d3361d37c53f5f0">MT19937_Delete</a> (<a class="el" href="structmt19937__struct.html">mt19937_struct</a> *mt19937)</td></tr>
 <tr class="memdesc:gaff33ecfcdcc418196d3361d37c53f5f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release a MKL engine.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaff33ecfcdcc418196d3361d37c53f5f0">More...</a><br /></td></tr>
 <tr class="separator:gaff33ecfcdcc418196d3361d37c53f5f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8d41fc0affbac587992402c23ff9b930"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga8d41fc0affbac587992402c23ff9b930">MCG59_InitScalarSeed</a> (<a class="el" href="structmcg59__struct.html">mcg59_struct</a> *mcg59, DPCTLSyclQueueRef q_ref, uint64_t seed)</td></tr>
+<tr class="memdesc:ga8d41fc0affbac587992402c23ff9b930"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a MKL engine from scalar seed.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga8d41fc0affbac587992402c23ff9b930">More...</a><br /></td></tr>
+<tr class="separator:ga8d41fc0affbac587992402c23ff9b930"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad658fb513fc4ab24115573d8bdbf38df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gad658fb513fc4ab24115573d8bdbf38df">MCG59_Delete</a> (<a class="el" href="structmcg59__struct.html">mcg59_struct</a> *mcg59)</td></tr>
+<tr class="memdesc:gad658fb513fc4ab24115573d8bdbf38df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release a MKL engine.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gad658fb513fc4ab24115573d8bdbf38df">More...</a><br /></td></tr>
+<tr class="separator:gad658fb513fc4ab24115573d8bdbf38df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p >This section describes Backend API. </p>
@@ -14049,6 +14055,78 @@ template&lt;typename _DataType &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>pointer to the backend API function. </dd></dl>
+
+</div>
+</div>
+<a id="gad658fb513fc4ab24115573d8bdbf38df" name="gad658fb513fc4ab24115573d8bdbf38df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad658fb513fc4ab24115573d8bdbf38df">&#9670;&#160;</a></span>MCG59_Delete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MCG59_Delete </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmcg59__struct.html">mcg59_struct</a> *&#160;</td>
+          <td class="paramname"><em>mcg59</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Release a MKL engine. </p>
+<p >Release all resource required for storing of the MKL engine.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mcg59</td><td>A structure with the MKL engine. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga8d41fc0affbac587992402c23ff9b930" name="ga8d41fc0affbac587992402c23ff9b930"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8d41fc0affbac587992402c23ff9b930">&#9670;&#160;</a></span>MCG59_InitScalarSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MCG59_InitScalarSeed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmcg59__struct.html">mcg59_struct</a> *&#160;</td>
+          <td class="paramname"><em>mcg59</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
+          <td class="paramname"><em>q_ref</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>seed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a MKL engine from scalar seed. </p>
+<p >Invoke a common seed initialization of the engine for MCG59 algorithm.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mcg59</td><td>A structure with MKL engine which will be filled with generated value by MKL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>A refference on SYCL queue which will be used to obtain random numbers. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">seed</td><td>An initial condition of the generator state. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

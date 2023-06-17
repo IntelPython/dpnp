@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; dpnp 0.11.1 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; dpnp 0.12.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             dpnp
           </a>
               <div class="version">
-                0.11
+                0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -154,6 +154,7 @@
     <span class="s2">&quot;get_include&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_normalized_queue_device&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_usm_ndarray&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_usm_ndarray_or_scalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_supported_array_type&quot;</span>
 <span class="p">]</span>
 
@@ -487,6 +488,32 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">a</span>
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+
+
+<span class="k">def</span> <span class="nf">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return scalar or :class:`dpctl.tensor.usm_ndarray` from input object `a`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {scalar, dpnp_array, usm_ndarray}</span>
+<span class="sd">        Input of any supported type: scalar, :class:`dpnp.ndarray`</span>
+<span class="sd">        or :class:`dpctl.tensor.usm_ndarray`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : scalar, usm_ndarray</span>
+<span class="sd">        A scalar if the input `a` is scalar.</span>
+<span class="sd">        A dpctl USM ndarray if the input `a` is array.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If input parameter `a` is of unsupported object type.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">a</span> <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">else</span> <span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
