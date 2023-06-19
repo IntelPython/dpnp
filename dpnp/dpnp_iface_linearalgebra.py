@@ -50,15 +50,15 @@ import dpctl.tensor as dpt
 
 
 __all__ = [
-    "dot",
-    "einsum",
-    "einsum_path",
-    "inner",
-    "kron",
-    "matmul",
-    "outer",
-    "tensordot",
-    "vdot"
+    'dot',
+    'einsum',
+    'einsum_path',
+    'inner',
+    'kron',
+    'matmul',
+    'outer',
+    'tensordot',
+    'vdot'
 ]
 
 
@@ -114,7 +114,7 @@ def dot(x1, x2, out=None, **kwargs):
         if x1_desc and x2_desc:
             if out is not None:
                 if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError("return array must be of supported array type")
+                    raise TypeError('return array must be of supported array type')
                 out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
             else:
                 out_desc = None

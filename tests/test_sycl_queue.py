@@ -19,15 +19,15 @@ from numpy.testing import (
 
 
 list_of_backend_str = [
-    "host",
-    "level_zero",
-    "opencl",
+    'host',
+    'level_zero',
+    'opencl',
 ]
 
 list_of_device_type_str = [
-    "host",
-    "gpu",
-    "cpu",
+    'host',
+    'gpu',
+    'cpu',
 ]
 
 available_devices = [d for d in dpctl.get_devices() if not getattr(d, 'has_aspect_host', False)]
@@ -55,13 +55,13 @@ def assert_sycl_queue_equal(result, expected):
 
 
 def vvsort(val, vec, size, xp):
-    val_kwargs = dict()
+    val_kwargs = {}
     if hasattr(val, 'sycl_queue'):
-        val_kwargs['sycl_queue'] = getattr(val, "sycl_queue", None)
+        val_kwargs['sycl_queue'] = getattr(val, 'sycl_queue', None)
 
-    vec_kwargs = dict()
+    vec_kwargs = {}
     if hasattr(vec, 'sycl_queue'):
-        vec_kwargs['sycl_queue'] = getattr(vec, "sycl_queue", None)
+        vec_kwargs['sycl_queue'] = getattr(vec, 'sycl_queue', None)
 
     for i in range(size):
         imax = i
@@ -86,28 +86,28 @@ def vvsort(val, vec, size, xp):
 
 
 @pytest.mark.parametrize(
-    "func, arg, kwargs",
+    'func, arg, kwargs',
     [
-        pytest.param("arange",
+        pytest.param('arange',
                      [-25.7],
                      {'stop': 10**8, 'step': 15}),
-        pytest.param("full",
+        pytest.param('full',
                      [(2,2)],
                      {'fill_value': 5}),
-        pytest.param("eye",
+        pytest.param('eye',
                      [4, 2],
                      {}),
-        pytest.param("linspace",
+        pytest.param('linspace',
                      [0, 4, 8],
                      {}),
-        pytest.param("ones",
+        pytest.param('ones',
                      [(2,2)],
                      {}),
-        pytest.param("zeros",
+        pytest.param('zeros',
                      [(2,2)],
                      {})
     ])
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_array_creation(func, arg, kwargs, device):
@@ -121,7 +121,7 @@ def test_array_creation(func, arg, kwargs, device):
     assert dpnp_array.sycl_device == device
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_empty(device):
@@ -129,10 +129,10 @@ def test_empty(device):
     assert dpnp_array.sycl_device == device
 
 
-@pytest.mark.parametrize("device_x",
+@pytest.mark.parametrize('device_x',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
-@pytest.mark.parametrize("device_y",
+@pytest.mark.parametrize('device_y',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_empty_like(device_x, device_y):
@@ -144,31 +144,31 @@ def test_empty_like(device_x, device_y):
 
 
 @pytest.mark.parametrize(
-    "func, args, kwargs",
+    'func, args, kwargs',
     [
-        pytest.param("full_like",
+        pytest.param('full_like',
                      ['x0'],
                      {'fill_value': 5}),
-        pytest.param("ones_like",
+        pytest.param('ones_like',
                      ['x0'],
                      {}),
-        pytest.param("zeros_like",
+        pytest.param('zeros_like',
                      ['x0'],
                      {}),
-        pytest.param("tril",
+        pytest.param('tril',
                      ['x0.reshape((2,2))'],
                      {}),
-        pytest.param("triu",
+        pytest.param('triu',
                      ['x0.reshape((2,2))'],
                      {}),
-        pytest.param("linspace",
+        pytest.param('linspace',
                      ['x0', '4', '4'],
                      {}),
-        pytest.param("linspace",
+        pytest.param('linspace',
                      ['1', 'x0', '4'],
                      {})
     ])
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_array_creation_follow_device(func, args, kwargs, device):
@@ -185,33 +185,33 @@ def test_array_creation_follow_device(func, args, kwargs, device):
 
 
 @pytest.mark.parametrize(
-    "func, args, kwargs",
+    'func, args, kwargs',
     [
-        pytest.param("full_like",
+        pytest.param('full_like',
                      ['x0'],
                      {'fill_value': 5}),
-        pytest.param("ones_like",
+        pytest.param('ones_like',
                      ['x0'],
                      {}),
-        pytest.param("zeros_like",
+        pytest.param('zeros_like',
                      ['x0'],
                      {}),
-        pytest.param("linspace",
+        pytest.param('linspace',
                      ['x0', '4', '4'],
                      {}),
-        pytest.param("linspace",
+        pytest.param('linspace',
                      ['1', 'x0', '4'],
                      {})
     ])
-@pytest.mark.parametrize("device_x",
+@pytest.mark.parametrize('device_x',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
-@pytest.mark.parametrize("device_y",
+@pytest.mark.parametrize('device_y',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
     if func is 'linspace' and is_win_platform():
-        pytest.skip("CPU driver experiences an instability on Windows.")
+        pytest.skip('CPU driver experiences an instability on Windows.')
 
     x_orig = numpy.array([1, 2, 3, 4])
     numpy_args = [eval(val, {'x0' : x_orig}) for val in args]
@@ -229,10 +229,10 @@ def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
-@pytest.mark.parametrize("device_x",
+@pytest.mark.parametrize('device_x',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
-@pytest.mark.parametrize("device_y",
+@pytest.mark.parametrize('device_y',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_meshgrid(device_x, device_y):
@@ -243,57 +243,57 @@ def test_meshgrid(device_x, device_y):
     assert_sycl_queue_equal(z[1].sycl_queue, y.sycl_queue)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @pytest.mark.parametrize(
-    "func,data",
+    'func,data',
     [
-        pytest.param("abs",
+        pytest.param('abs',
                      [-1.2, 1.2]),
-        pytest.param("ceil",
+        pytest.param('ceil',
                      [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
-        pytest.param("conjugate",
+        pytest.param('conjugate',
                      [[1.+1.j, 0.], [0., 1.+1.j]]),
-        pytest.param("copy",
+        pytest.param('copy',
                      [1., 2., 3.]),
-        pytest.param("cumprod",
+        pytest.param('cumprod',
                      [[1., 2., 3.], [4., 5., 6.]]),
-        pytest.param("cumsum",
+        pytest.param('cumsum',
                      [[1., 2., 3.], [4., 5., 6.]]),
-        pytest.param("diff",
+        pytest.param('diff',
                      [1., 2., 4., 7., 0.]),
-        pytest.param("ediff1d",
+        pytest.param('ediff1d',
                      [1., 2., 4., 7., 0.]),
-        pytest.param("fabs",
+        pytest.param('fabs',
                      [-1.2, 1.2]),
-        pytest.param("floor",
+        pytest.param('floor',
                      [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
-        pytest.param("gradient",
+        pytest.param('gradient',
                      [1., 2., 4., 7., 11., 16.]),
-        pytest.param("nancumprod",
+        pytest.param('nancumprod',
                      [1., dpnp.nan]),
-        pytest.param("nancumsum",
+        pytest.param('nancumsum',
                      [1., dpnp.nan]),
-        pytest.param("nanprod",
+        pytest.param('nanprod',
                      [1., dpnp.nan]),
-        pytest.param("nansum",
+        pytest.param('nansum',
                      [1., dpnp.nan]),
-        pytest.param("negative",
+        pytest.param('negative',
                      [1., -1.]),
-        pytest.param("prod",
+        pytest.param('prod',
                      [1., 2.]),
-        pytest.param("sign",
+        pytest.param('sign',
                      [-5., 4.5]),
-        pytest.param("sqrt",
+        pytest.param('sqrt',
                      [1., 3., 9.]),
-        pytest.param("sum",
+        pytest.param('sum',
                      [1., 2.]),
-        pytest.param("trapz",
+        pytest.param('trapz',
                      [[0., 1., 2.], [3., 4., 5.]]),
-        pytest.param("trunc",
+        pytest.param('trunc',
                      [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
     ],
 )
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 def test_1in_1out(func, data, device):
@@ -312,56 +312,56 @@ def test_1in_1out(func, data, device):
 
 
 @pytest.mark.parametrize(
-    "func,data1,data2",
+    'func,data1,data2',
     [
-        pytest.param("add",
+        pytest.param('add',
                      [0., 1., 2., 3., 4., 5., 6., 7., 8.],
                      [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
-        pytest.param("copysign",
+        pytest.param('copysign',
                      [0., 1., 2.],
                      [-1., 0., 1.]),
-        pytest.param("cross",
+        pytest.param('cross',
                      [1., 2., 3.],
                      [4., 5., 6.]),
-        pytest.param("divide",
+        pytest.param('divide',
                      [0., 1., 2., 3., 4.],
                      [4., 4., 4., 4., 4.]),
-        pytest.param("dot",
+        pytest.param('dot',
                      [[0., 1., 2.], [3., 4., 5.]],
                      [[4., 4.], [4., 4.], [4., 4.]]),
-        pytest.param("floor_divide",
+        pytest.param('floor_divide',
                      [1., 2., 3., 4.],
                      [2.5, 2.5, 2.5, 2.5]),
-        pytest.param("fmod",
+        pytest.param('fmod',
                      [-3., -2., -1., 1., 2., 3.],
                      [2., 2., 2., 2., 2., 2.]),
-        pytest.param("matmul",
+        pytest.param('matmul',
                      [[1., 0.], [0., 1.]],
                      [[4., 1.], [1., 2.]]),
-        pytest.param("maximum",
+        pytest.param('maximum',
                      [2., 3., 4.],
                      [1., 5., 2.]),
-        pytest.param("minimum",
+        pytest.param('minimum',
                      [2., 3., 4.],
                      [1., 5., 2.]),
-        pytest.param("multiply",
+        pytest.param('multiply',
                      [0., 1., 2., 3., 4., 5., 6., 7., 8.],
                      [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
-        pytest.param("outer",
+        pytest.param('outer',
                      [0., 1., 2., 3., 4., 5.],
                      [0., 1., 2., 0.]),
-        pytest.param("power",
+        pytest.param('power',
                      [0., 1., 2., 3., 4., 5.],
                      [1., 2., 3., 3., 2., 1.]),
-        pytest.param("remainder",
+        pytest.param('remainder',
                      [0., 1., 2., 3., 4., 5., 6.],
                      [5., 5., 5., 5., 5., 5., 5.]),
-        pytest.param("subtract",
+        pytest.param('subtract',
                      [0., 1., 2., 3., 4., 5., 6., 7., 8.],
                      [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
     ],
 )
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 def test_2in_1out(func, data1, data2, device):
@@ -380,32 +380,32 @@ def test_2in_1out(func, data1, data2, device):
 
 
 @pytest.mark.parametrize(
-    "func,data1,data2",
+    'func,data1,data2',
     [
-        pytest.param("add",
+        pytest.param('add',
                      [[0., 1., 2.], [3., 4., 5.], [6., 7., 8.]],
                      [0., 1., 2.]),
-        pytest.param("divide",
+        pytest.param('divide',
                      [0., 1., 2., 3., 4.],
                      [4.]),
-        pytest.param("floor_divide",
+        pytest.param('floor_divide',
                      [1., 2., 3., 4.],
                      [2.5]),
-        pytest.param("fmod",
+        pytest.param('fmod',
                      [-3., -2., -1., 1., 2., 3.],
                      [2.]),
-        pytest.param("multiply",
+        pytest.param('multiply',
                      [[0., 1., 2.], [3., 4., 5.], [6., 7., 8.]],
                      [0., 1., 2.]),
-        pytest.param("remainder",
+        pytest.param('remainder',
                      [0., 1., 2., 3., 4., 5., 6.],
                      [5.]),
-        pytest.param("subtract",
+        pytest.param('subtract',
                      [[0., 1., 2.], [3., 4., 5.], [6., 7., 8.]],
                      [0., 1., 2.]),
     ],
 )
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 def test_broadcasting(func, data1, data2, device):
@@ -425,10 +425,10 @@ def test_broadcasting(func, data1, data2, device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.parametrize("func", ["add", "copysign", "divide", "floor_divide", "fmod",
-                                  "maximum", "minimum", "multiply", "outer", "power",
-                                  "remainder", "subtract"])
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('func', ['add', 'copysign', 'divide', 'floor_divide', 'fmod',
+                                  'maximum', 'minimum', 'multiply', 'outer', 'power',
+                                  'remainder', 'subtract'])
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 def test_2in_1out_diff_queue_but_equal_context(func, device):
@@ -439,36 +439,36 @@ def test_2in_1out_diff_queue_but_equal_context(func, device):
 
 
 @pytest.mark.parametrize(
-    "func, kwargs",
+    'func, kwargs',
     [
-        pytest.param("normal",
+        pytest.param('normal',
                      {'loc': 1.0, 'scale': 3.4, 'size': (5, 12)}),
-        pytest.param("rand",
+        pytest.param('rand',
                      {'d0': 20}),
-        pytest.param("randint",
+        pytest.param('randint',
                      {'low': 2, 'high': 15, 'size': (4, 8, 16), 'dtype': dpnp.int32}),
-        pytest.param("randn",
+        pytest.param('randn',
                      {'d0': 20}),
-        pytest.param("random",
+        pytest.param('random',
                      {'size': (35, 45)}),
-        pytest.param("random_integers",
+        pytest.param('random_integers',
                      {'low': -17, 'high': 3, 'size': (12, 16)}),
-        pytest.param("random_sample",
+        pytest.param('random_sample',
                      {'size': (7, 7)}),
-        pytest.param("ranf",
+        pytest.param('ranf',
                      {'size': (10, 7, 12)}),
-        pytest.param("sample",
+        pytest.param('sample',
                      {'size': (7, 9)}),
-        pytest.param("standard_normal",
+        pytest.param('standard_normal',
                      {'size': (4, 4, 8)}),
-        pytest.param("uniform",
+        pytest.param('uniform',
                      {'low': 1.0, 'high': 2.0, 'size': (4, 2, 5)})
     ])
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
-@pytest.mark.parametrize("usm_type",
-                         ["host", "device", "shared"])
+@pytest.mark.parametrize('usm_type',
+                         ['host', 'device', 'shared'])
 def test_random(func, kwargs, device, usm_type):
     kwargs = {**kwargs, 'device': device, 'usm_type': usm_type}
 
@@ -477,7 +477,7 @@ def test_random(func, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    sycl_queue = dpctl.SyclQueue(device, property='in_order')
     kwargs['device'] = None
     kwargs['sycl_queue'] = sycl_queue
 
@@ -488,35 +488,35 @@ def test_random(func, kwargs, device, usm_type):
 
 
 @pytest.mark.parametrize(
-    "func, args, kwargs",
+    'func, args, kwargs',
     [
-        pytest.param("normal",
+        pytest.param('normal',
                      [],
                      {'loc': 1.0, 'scale': 3.4, 'size': (5, 12)}),
-        pytest.param("rand",
+        pytest.param('rand',
                      [15, 30, 5],
                      {}),
-        pytest.param("randint",
+        pytest.param('randint',
                      [],
                      {'low': 2, 'high': 15, 'size': (4, 8, 16), 'dtype': dpnp.int32}),
-        pytest.param("randn",
+        pytest.param('randn',
                      [20, 5, 40],
                      {}),
-        pytest.param("random_sample",
+        pytest.param('random_sample',
                      [],
                      {'size': (7, 7)}),
-        pytest.param("standard_normal",
+        pytest.param('standard_normal',
                      [],
                      {'size': (4, 4, 8)}),
-        pytest.param("uniform",
+        pytest.param('uniform',
                      [],
                      {'low': 1.0, 'high': 2.0, 'size': (4, 2, 5)})
     ])
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
-@pytest.mark.parametrize("usm_type",
-                         ["host", "device", "shared"])
+@pytest.mark.parametrize('usm_type',
+                         ['host', 'device', 'shared'])
 def test_random_state(func, args, kwargs, device, usm_type):
     kwargs = {**kwargs, 'usm_type': usm_type}
 
@@ -526,7 +526,7 @@ def test_random_state(func, args, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    sycl_queue = dpctl.SyclQueue(device, property='in_order')
 
     # test with in-order SYCL queue per a device and passed as argument
     seed = (147, 56, 896) if device.is_cpu else 987654
@@ -536,15 +536,15 @@ def test_random_state(func, args, kwargs, device, usm_type):
     assert_sycl_queue_equal(res_array.sycl_queue, sycl_queue)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @pytest.mark.parametrize(
-    "func,data",
+    'func,data',
     [
-        pytest.param("sqrt",
+        pytest.param('sqrt',
                      [0., 1., 2., 3., 4., 5., 6., 7., 8.]),
     ],
 )
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 def test_out_1in_1out(func, data, device):
@@ -563,49 +563,49 @@ def test_out_1in_1out(func, data, device):
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @pytest.mark.parametrize(
-    "func,data1,data2",
+    'func,data1,data2',
     [
-        pytest.param("add",
+        pytest.param('add',
                      [0., 1., 2., 3., 4., 5., 6., 7., 8.],
                      [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
-        pytest.param("copysign",
+        pytest.param('copysign',
                      [0., 1., 2.],
                      [-1., 0., 1.]),
-        pytest.param("divide",
+        pytest.param('divide',
                      [0., 1., 2., 3., 4.],
                      [4., 4., 4., 4., 4.]),
-        pytest.param("dot",
+        pytest.param('dot',
                      [[0., 1., 2.], [3., 4., 5.]],
                      [[4., 4.], [4., 4.], [4., 4.]]),
-        pytest.param("floor_divide",
+        pytest.param('floor_divide',
                      [1., 2., 3., 4.],
                      [2.5, 2.5, 2.5, 2.5]),
-        pytest.param("fmod",
+        pytest.param('fmod',
                      [-3., -2., -1., 1., 2., 3.],
                      [2., 2., 2., 2., 2., 2.]),
-        pytest.param("maximum",
+        pytest.param('maximum',
                      [2., 3., 4.],
                      [1., 5., 2.]),
-        pytest.param("minimum",
+        pytest.param('minimum',
                      [2., 3., 4.],
                      [1., 5., 2.]),
-        pytest.param("multiply",
+        pytest.param('multiply',
                      [0., 1., 2., 3., 4., 5., 6., 7., 8.],
                      [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
-        pytest.param("power",
+        pytest.param('power',
                      [0., 1., 2., 3., 4., 5.],
                      [1., 2., 3., 3., 2., 1.]),
-        pytest.param("remainder",
+        pytest.param('remainder',
                      [0., 1., 2., 3., 4., 5., 6.],
                      [5., 5., 5., 5., 5., 5., 5.]),
-        pytest.param("subtract",
+        pytest.param('subtract',
                      [0., 1., 2., 3., 4., 5., 6., 7., 8.],
                      [0., 1., 2., 0., 1., 2., 0., 1., 2.]),
     ],
 )
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 def test_out_2in_1out(func, data1, data2, device):
@@ -627,7 +627,7 @@ def test_out_2in_1out(func, data1, data2, device):
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 def test_modf(device):
@@ -650,8 +650,8 @@ def test_modf(device):
     assert_sycl_queue_equal(result2_queue, expected_queue)
 
 
-@pytest.mark.parametrize("type", ['complex128'])
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('type', ['complex128'])
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 def test_fft(type, device):
@@ -670,9 +670,9 @@ def test_fft(type, device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.parametrize("type", ['float32'])
-@pytest.mark.parametrize("shape", [(8,8)])
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('type', ['float32'])
+@pytest.mark.parametrize('shape', [(8,8)])
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 def test_fft_rfft(type, shape, device):
@@ -691,7 +691,7 @@ def test_fft_rfft(type, shape, device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_cholesky(device):
@@ -709,7 +709,7 @@ def test_cholesky(device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_det(device):
@@ -727,8 +727,8 @@ def test_det(device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("device",
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.parametrize('device',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_eig(device):
@@ -773,8 +773,8 @@ def test_eig(device):
     assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("device",
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.parametrize('device',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_eigh(device):
@@ -805,7 +805,7 @@ def test_eigh(device):
     assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_eigvals(device):
@@ -826,7 +826,7 @@ def test_eigvals(device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_inv(device):
@@ -844,7 +844,7 @@ def test_inv(device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_matrix_rank(device):
@@ -857,7 +857,7 @@ def test_matrix_rank(device):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                           valid_devices,
                           ids=[device.filter_string for device in valid_devices])
 def test_qr(device):
@@ -866,8 +866,8 @@ def test_qr(device):
     numpy_data = numpy.array(data)
     dpnp_data = dpnp.array(data, device=device)
 
-    np_q, np_r = numpy.linalg.qr(numpy_data, "reduced")
-    dpnp_q, dpnp_r = dpnp.linalg.qr(dpnp_data, "reduced")
+    np_q, np_r = numpy.linalg.qr(numpy_data, 'reduced')
+    dpnp_q, dpnp_r = dpnp.linalg.qr(dpnp_data, 'reduced')
 
     assert (dpnp_q.dtype == np_q.dtype)
     assert (dpnp_r.dtype == np_r.dtype)
@@ -886,7 +886,7 @@ def test_qr(device):
     assert_sycl_queue_equal(dpnp_r_queue, expected_queue)
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                         valid_devices,
                         ids=[device.filter_string for device in valid_devices])
 def test_svd(device):
@@ -933,10 +933,10 @@ def test_svd(device):
     assert_sycl_queue_equal(dpnp_vt_queue, expected_queue)
 
 
-@pytest.mark.parametrize("device_from",
+@pytest.mark.parametrize('device_from',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
-@pytest.mark.parametrize("device_to",
+@pytest.mark.parametrize('device_to',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 def test_to_device(device_from, device_to):
@@ -948,35 +948,35 @@ def test_to_device(device_from, device_to):
     assert y.get_array().sycl_device == device_to
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
-@pytest.mark.parametrize("func",
-                         ["array", "asarray"])
-@pytest.mark.parametrize("device_param",
-                         ["", "None", "sycl_device"],
-                         ids=['Empty', 'None', "device"])
-@pytest.mark.parametrize("queue_param",
-                         ["", "None", "sycl_queue"],
-                         ids=['Empty', 'None', "queue"])
+@pytest.mark.parametrize('func',
+                         ['array', 'asarray'])
+@pytest.mark.parametrize('device_param',
+                         ['', 'None', 'sycl_device'],
+                         ids=['Empty', 'None', 'device'])
+@pytest.mark.parametrize('queue_param',
+                         ['', 'None', 'sycl_queue'],
+                         ids=['Empty', 'None', 'queue'])
 def test_array_copy(device, func, device_param, queue_param):
     data = numpy.ones(100)
     dpnp_data = getattr(dpnp, func)(data, device=device)
 
     kwargs_items = {'device': device_param, 'sycl_queue': queue_param}.items()
-    kwargs = {k: getattr(dpnp_data, v, None) for k,v in kwargs_items if v != ""}
+    kwargs = {k: getattr(dpnp_data, v, None) for k,v in kwargs_items if v != ''}
 
     result = dpnp.array(dpnp_data, **kwargs)
 
     assert_sycl_queue_equal(result.sycl_queue, dpnp_data.sycl_queue)
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 #TODO need to delete no_bool=True when use dlpack > 0.7 version
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True, no_bool=True))
-@pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
+@pytest.mark.parametrize('arr_dtype', get_all_dtypes(no_float16=True, no_bool=True))
+@pytest.mark.parametrize('shape', [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
 def test_from_dlpack(arr_dtype, shape, device):
     X = dpnp.empty(shape=shape, dtype=arr_dtype, device=device)
     Y = dpnp.from_dlpack(X)
@@ -990,10 +990,10 @@ def test_from_dlpack(arr_dtype, shape, device):
         assert V.strides == W.strides
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
+@pytest.mark.parametrize('arr_dtype', get_all_dtypes(no_float16=True))
 def test_from_dlpack_with_dpt(arr_dtype, device):
     X = dpctl.tensor.empty((64,), dtype=arr_dtype, device=device)
     Y = dpnp.from_dlpack(X)
@@ -1004,7 +1004,7 @@ def test_from_dlpack_with_dpt(arr_dtype, device):
     assert_sycl_queue_equal(X.sycl_queue, Y.sycl_queue)
 
 
-@pytest.mark.parametrize("device",
+@pytest.mark.parametrize('device',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 def test_broadcast_to(device):
@@ -1013,10 +1013,10 @@ def test_broadcast_to(device):
     assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
 
 
-@pytest.mark.parametrize("device_x",
+@pytest.mark.parametrize('device_x',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
-@pytest.mark.parametrize("device_y",
+@pytest.mark.parametrize('device_y',
                          valid_devices,
                          ids=[device.filter_string for device in valid_devices])
 def test_asarray(device_x, device_y):

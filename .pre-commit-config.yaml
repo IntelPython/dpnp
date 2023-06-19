@@ -2,8 +2,25 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
 -   repo: https://github.com/PyCQA/bandit
-    rev: '1.7.0'
+    rev: '1.7.5'
     hooks:
     -   id: bandit
         pass_filenames: false
         args: ["-r", "dpnp", "-lll"]
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: check-ast
+    -   id: check-builtin-literals
+    -   id: check-case-conflict
+    -   id: check-executables-have-shebangs
+    -   id: check-merge-conflict
+    -   id: check-shebang-scripts-are-executable
+    -   id: check-toml
+    -   id: debug-statements
+    -   id: destroyed-symlinks
+    -   id: double-quote-string-fixer
+    -   id: end-of-file-fixer
+    -   id: fix-byte-order-marker
+    -   id: mixed-line-ending
+    -   id: trailing-whitespace

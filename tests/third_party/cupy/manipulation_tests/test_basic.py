@@ -28,7 +28,7 @@ class TestBasic(unittest.TestCase):
         xp.copyto(b, a)
         return b
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_copyto_broadcast(self, xp, dtype):
@@ -37,7 +37,7 @@ class TestBasic(unittest.TestCase):
         xp.copyto(b, a)
         return b
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_copyto_where(self, xp, dtype):
@@ -110,7 +110,7 @@ class TestBasic(unittest.TestCase):
     *testing.product(
         {'src': [float(3.2), int(0), int(4), int(-4), True, False, 1 + 1j],
          'dst_shape': [(), (0,), (1,), (1, 1), (2, 2)]}))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestCopytoFromScalar(unittest.TestCase):
 

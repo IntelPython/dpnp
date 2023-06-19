@@ -60,19 +60,19 @@ class TestMatrix(unittest.TestCase):
         self.assertIsInstance(r, xp.ndarray)
         return r
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_diag_scaler(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
                 xp.diag(1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_diag_0dim(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
                 xp.diag(xp.zeros(()))
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_diag_3dim(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
@@ -93,17 +93,17 @@ class TestMatrix(unittest.TestCase):
         a = testing.shaped_arange((3, 3), xp)
         return xp.diagflat(a, -2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_diagflat_from_scalar(self, xp):
         return xp.diagflat(3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_diagflat_from_scalar_with_k0(self, xp):
         return xp.diagflat(3, 0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_diagflat_from_scalar_with_k1(self, xp):
         return xp.diagflat(3, 1)
@@ -140,7 +140,7 @@ class TestTri(unittest.TestCase):
     {'shape': (2, 3, 4)},
 )
 @testing.gpu
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 class TestTriLowerAndUpper(unittest.TestCase):
 
     @testing.for_all_dtypes(no_complex=True)

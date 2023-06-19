@@ -57,48 +57,48 @@ import dpctl.tensor as dpt
 
 
 __all__ = [
-    "abs",
-    "absolute",
-    "add",
-    "around",
-    "ceil",
-    "conj",
-    "conjugate",
-    "convolve",
-    "copysign",
-    "cross",
-    "cumprod",
-    "cumsum",
-    "diff",
-    "divide",
-    "ediff1d",
-    "fabs",
-    "floor",
-    "floor_divide",
-    "fmax",
-    "fmin",
-    "fmod",
-    "gradient",
-    "maximum",
-    "minimum",
-    "mod",
-    "modf",
-    "multiply",
-    "nancumprod",
-    "nancumsum",
-    "nanprod",
-    "nansum",
-    "negative",
-    "power",
-    "prod",
-    "remainder",
-    "round_",
-    "sign",
-    "subtract",
-    "sum",
-    "trapz",
-    "true_divide",
-    "trunc"
+    'abs',
+    'absolute',
+    'add',
+    'around',
+    'ceil',
+    'conj',
+    'conjugate',
+    'convolve',
+    'copysign',
+    'cross',
+    'cumprod',
+    'cumsum',
+    'diff',
+    'divide',
+    'ediff1d',
+    'fabs',
+    'floor',
+    'floor_divide',
+    'fmax',
+    'fmin',
+    'fmod',
+    'gradient',
+    'maximum',
+    'minimum',
+    'mod',
+    'modf',
+    'multiply',
+    'nancumprod',
+    'nancumsum',
+    'nanprod',
+    'nansum',
+    'negative',
+    'power',
+    'prod',
+    'remainder',
+    'round_',
+    'sign',
+    'subtract',
+    'sum',
+    'trapz',
+    'true_divide',
+    'trunc'
 ]
 
 
@@ -121,7 +121,7 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, out=None, where=True, order='
         # at least either x1 or x2 has to be an array
         pass
     else:
-        if order in "afkcAFKC":
+        if order in 'afkcAFKC':
             order = order.upper()
         elif order is None:
             order = 'K'
@@ -1393,7 +1393,7 @@ def power(x1,
         if x1_desc and x2_desc:
             if out is not None:
                 if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError("return array must be of supported array type")
+                    raise TypeError('return array must be of supported array type')
                 out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
             else:
                 out_desc = None

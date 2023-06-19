@@ -414,7 +414,7 @@ class TestFromData(unittest.TestCase):
         return xp.ascontiguousarray(a, dtype=numpy.int64)
 
     # @testing.for_CF_orders()
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_orders('C')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -454,14 +454,14 @@ class TestFromData(unittest.TestCase):
         a = xp.ones((), dtype=dtype_a)
         return xp.asfortranarray(a, dtype=dtype_b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_fromfile(self, xp):
         with tempfile.TemporaryFile() as fh:
-            fh.write(b"\x00\x01\x02\x03\x04")
+            fh.write(b'\x00\x01\x02\x03\x04')
             fh.flush()
             fh.seek(0)
-            return xp.fromfile(fh, dtype="u1")
+            return xp.fromfile(fh, dtype='u1')
 
 
 ###############################################################################

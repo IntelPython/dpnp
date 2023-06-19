@@ -8,7 +8,7 @@ import numpy
 # Note: numpy.sum() always upcast integers to (u)int64 and float32 to
 # float64 for dtype=None. `np.sum` does that too for integers, but not for
 # float32, so we need to special-case it for these tests
-@pytest.mark.parametrize("dtype", get_float_dtypes())
+@pytest.mark.parametrize('dtype', get_float_dtypes())
 def test_sum_float(dtype):
     a = numpy.array([[[-2., 3.], [9.1, 0.2]], [[-2., 5.0], [-2, -1.2]], [[1.0, -2.], [5.0, -1.1]]], dtype=dtype)
     ia = dpnp.array(a)

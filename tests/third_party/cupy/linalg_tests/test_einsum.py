@@ -13,7 +13,7 @@ def _dec_shape(shape, dec):
     return tuple(1 if s == 1 else max(0, s - dec) for s in shape)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 class TestEinSumError(unittest.TestCase):
 
     def test_irregular_ellipsis1(self):
@@ -195,25 +195,25 @@ class TestListArgEinSumError(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.einsum(xp.arange(2), [None])
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_invalid_sub2(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
                 xp.einsum(xp.arange(2), [0], [1])
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_invalid_sub3(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
                 xp.einsum(xp.arange(2), [Ellipsis, 0, Ellipsis])
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_dim_mismatch1(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
                 xp.einsum(xp.arange(2), [0], xp.arange(3), [0])
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_dim_mismatch2(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
@@ -224,13 +224,13 @@ class TestListArgEinSumError(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.einsum(xp.arange(6).reshape(2, 3), [0, 0])
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_too_many_dims1(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
                 xp.einsum(3, [0])
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_too_many_dims2(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
@@ -305,7 +305,7 @@ class TestEinSumLarge(unittest.TestCase):
 
         self.operands = operands
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_einsum(self, xp):
         # TODO(kataoka): support memory efficient cupy.einsum

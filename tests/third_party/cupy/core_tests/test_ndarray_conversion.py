@@ -12,7 +12,7 @@ from tests.third_party.cupy import testing
     {'shape': (1,)},
     {'shape': (1, 1, 1)},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 class TestNdarrayItem(unittest.TestCase):
 
     @testing.for_all_dtypes()

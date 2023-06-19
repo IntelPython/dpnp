@@ -11,10 +11,10 @@ sys.modules['numba_dppy'] = dummymodule
 
 module_not_found = False
 
-reason = ""
+reason = ''
 
 try:
-    zero_copy_test1 = importlib.import_module("zero-copy-test1")
+    zero_copy_test1 = importlib.import_module('zero-copy-test1')
 except ModuleNotFoundError as e:
     module_not_found = True
     reason = str(e)

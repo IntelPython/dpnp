@@ -87,7 +87,7 @@ class TestCov(unittest.TestCase):
                 xp.cov(a, y, rowvar, bias, ddof,
                        fweights, aweights, dtype=dtype)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_cov(self):
         self.check((2, 3))
         self.check((2,), (2,))
@@ -102,12 +102,12 @@ class TestCov(unittest.TestCase):
         self.check((1, 3), fweights=(1, 4, 1),
                    aweights=(1.0, 4.0, 1.0))
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_cov_warns(self):
         self.check_warns((2, 3), ddof=3)
         self.check_warns((2, 3), ddof=4)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_cov_raises(self):
         self.check_raises((2, 3), ddof=1.2)
         self.check_raises((3, 4, 2))
@@ -123,7 +123,7 @@ class TestCov(unittest.TestCase):
     'shape1': [(5,), (6,), (20,), (21,)],
     'shape2': [(5,), (6,), (20,), (21,)],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 class TestCorrelateShapeCombination(unittest.TestCase):
 
     @testing.for_all_dtypes(no_float16=True)
@@ -138,7 +138,7 @@ class TestCorrelateShapeCombination(unittest.TestCase):
 @testing.parameterize(*testing.product({
     'mode': ['valid', 'full', 'same']
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 class TestCorrelate(unittest.TestCase):
 
     @testing.for_all_dtypes()
@@ -167,7 +167,7 @@ class TestCorrelate(unittest.TestCase):
 @testing.parameterize(*testing.product({
     'mode': ['valid', 'same', 'full']
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 class TestCorrelateInvalid(unittest.TestCase):
 
     @testing.with_requires('numpy>=1.18')

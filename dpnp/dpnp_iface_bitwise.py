@@ -86,7 +86,7 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
         if x1_desc and x2_desc:
             if out is not None:
                 if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError("return array must be of supported array type")
+                    raise TypeError('return array must be of supported array type')
                 out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
             else:
                 out_desc = None
@@ -106,7 +106,7 @@ def bitwise_and(x1, x2, dtype=None, out=None, where=True, **kwargs):
     -------
     y : dpnp.ndarray
         An array containing the element-wise results.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -146,7 +146,7 @@ def bitwise_or(x1, x2, dtype=None, out=None, where=True, **kwargs):
     -------
     y : dpnp.ndarray
         An array containing the element-wise results.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -186,7 +186,7 @@ def bitwise_xor(x1, x2, dtype=None, out=None, where=True, **kwargs):
     -------
     y : dpnp.ndarray
         An array containing the element-wise results.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -233,7 +233,7 @@ def invert(x,
     -------
     y : dpnp.ndarray
         An array containing the element-wise results.
-    
+
     Limitations
     -----------
     Parameter `x` is supported as either :class:`dpnp.ndarray`
@@ -274,7 +274,7 @@ def invert(x,
         if x1_desc:
             if out is not None:
                 if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError("return array must be of supported array type")
+                    raise TypeError('return array must be of supported array type')
                 out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
             else:
                 out_desc = None
@@ -296,7 +296,7 @@ def left_shift(x1, x2, dtype=None, out=None, where=True, **kwargs):
     -------
     y : dpnp.ndarray
         An array containing the element-wise results.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -333,7 +333,7 @@ def right_shift(x1, x2, dtype=None, out=None, where=True, **kwargs):
     -------
     y : dpnp.ndarray
         An array containing the element-wise results.
-    
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`

@@ -54,28 +54,28 @@ import dpctl.tensor as dpt
 
 
 __all__ = [
-    "asfarray",
-    "atleast_1d",
-    "atleast_2d",
-    "atleast_3d",
-    "broadcast_to",
-    "concatenate",
-    "copyto",
-    "expand_dims",
-    "hstack",
-    "moveaxis",
-    "ravel",
-    "repeat",
-    "reshape",
-    "result_type",
-    "rollaxis",
-    "shape",
-    "squeeze",
-    "stack",
-    "swapaxes",
-    "transpose",
-    "unique",
-    "vstack"
+    'asfarray',
+    'atleast_1d',
+    'atleast_2d',
+    'atleast_3d',
+    'broadcast_to',
+    'concatenate',
+    'copyto',
+    'expand_dims',
+    'hstack',
+    'moveaxis',
+    'ravel',
+    'repeat',
+    'reshape',
+    'result_type',
+    'rollaxis',
+    'shape',
+    'squeeze',
+    'stack',
+    'swapaxes',
+    'transpose',
+    'unique',
+    'vstack'
 ]
 
 
@@ -236,7 +236,7 @@ def broadcast_to(x, /, shape, subok=False):
     return call_origin(numpy.broadcast_to, x, shape=shape, subok=subok)
 
 
-def concatenate(arrs, axis=0, out=None, dtype=None, casting="same_kind"):
+def concatenate(arrs, axis=0, out=None, dtype=None, casting='same_kind'):
     """
     Join a sequence of arrays along an existing axis.
 
@@ -542,7 +542,7 @@ def reshape(x, /, newshape, order='C', copy=None):
         This will be a new view object if possible; otherwise, it will
         be a copy.  Note there is no guarantee of the *memory layout* (C- or
         Fortran- contiguous) of the returned array.
-    
+
     Limitations
     -----------
     Parameter `order` is supported only with values ``"C"`` and ``"F"``.
@@ -572,7 +572,7 @@ def reshape(x, /, newshape, order='C', copy=None):
 
     if order is None:
         order = 'C'
-    elif not order in "cfCF":
+    elif not order in 'cfCF':
         raise ValueError(f"order must be one of 'C' or 'F' (got {order})")
 
     usm_arr = dpnp.get_usm_ndarray(x)
@@ -676,7 +676,7 @@ def shape(a):
     Return the shape of an array.
 
     For full documentation refer to :obj:`numpy.shape`.
-    
+
     Parameters
     ----------
     a : array_like
@@ -870,7 +870,7 @@ def transpose(a, axes=None):
     elif isinstance(a, dpt.usm_ndarray):
         array = dpnp_array._create_from_usm_ndarray(a.get_array())
     else:
-        raise TypeError("An array must be any of supported type, but got {}".format(type(a)))
+        raise TypeError('An array must be any of supported type, but got {}'.format(type(a)))
 
     if axes is None:
         return array.transpose()

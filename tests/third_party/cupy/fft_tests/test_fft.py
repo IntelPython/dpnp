@@ -14,7 +14,7 @@ from tests.third_party.cupy import testing
     'shape': [(0,), (10, 0), (10,), (10, 10)],
     'norm': [None, 'ortho', ''],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestFft(unittest.TestCase):
 
@@ -62,7 +62,7 @@ class TestFft(unittest.TestCase):
     {'shape': (3, 4), 's': (0, 5), 'axes': None, 'norm': None},
     {'shape': (3, 4), 's': (1, 0), 'axes': None, 'norm': None},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestFft2(unittest.TestCase):
 
@@ -111,7 +111,7 @@ class TestFft2(unittest.TestCase):
     {'shape': (2, 0, 5), 's': None, 'axes': None, 'norm': None},
     {'shape': (0, 0, 5), 's': None, 'axes': None, 'norm': None},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestFftn(unittest.TestCase):
 
@@ -139,7 +139,7 @@ class TestFftn(unittest.TestCase):
     'shape': [(10,), (10, 10)],
     'norm': [None, 'ortho'],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestRfft(unittest.TestCase):
 
@@ -164,7 +164,7 @@ class TestRfft(unittest.TestCase):
     {'shape': (3, 4), 's': None, 'axes': (), 'norm': None},
     {'shape': (2, 3, 4), 's': None, 'axes': (), 'norm': None},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestRfft2EmptyAxes(unittest.TestCase):
 
@@ -187,7 +187,7 @@ class TestRfft2EmptyAxes(unittest.TestCase):
     {'shape': (3, 4), 's': None, 'axes': (), 'norm': None},
     {'shape': (2, 3, 4), 's': None, 'axes': (), 'norm': None},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestRfftnEmptyAxes(unittest.TestCase):
 
@@ -211,7 +211,7 @@ class TestRfftnEmptyAxes(unittest.TestCase):
     'shape': [(10,), (10, 10)],
     'norm': [None, 'ortho'],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestHfft(unittest.TestCase):
 
@@ -237,7 +237,7 @@ class TestHfft(unittest.TestCase):
     {'n': 10, 'd': 0.5},
     {'n': 100, 'd': 2},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestFftfreq(unittest.TestCase):
 
@@ -265,7 +265,7 @@ class TestFftfreq(unittest.TestCase):
     {'shape': (10, 10), 'axes': 0},
     {'shape': (10, 10), 'axes': (0, 1)},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestFftshift(unittest.TestCase):
 

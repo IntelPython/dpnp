@@ -8,12 +8,12 @@ import dpctl.tensor.numpy_usm_shared as usmarray
 
 
 class DuckUSMArray:
-    def __init__(self, shape, dtype="d", host_buffer=None):
+    def __init__(self, shape, dtype='d', host_buffer=None):
         nelems = np.prod(shape)
         bytes = nelems * np.dtype(dtype).itemsize
         shmem = dpmem.MemoryUSMShared(bytes)
         if isinstance(host_buffer, np.ndarray):
-            shmem.copy_from_host(host_buffer.view(dtype="|u1"))
+            shmem.copy_from_host(host_buffer.view(dtype='|u1'))
         self.arr = np.ndarray(shape, dtype=dtype, buffer=shmem)
 
     def __getitem__(self, indx):
@@ -26,8 +26,8 @@ class DuckUSMArray:
     def __sycl_usm_array_interface__(self):
         iface = self.arr.__array_interface__
         b = self.arr.base
-        iface["syclobj"] = b.__sycl_usm_array_interface__["syclobj"]
-        iface["version"] = 1
+        iface['syclobj'] = b.__sycl_usm_array_interface__['syclobj']
+        iface['version'] = 1
         return iface
 
 
@@ -58,15 +58,15 @@ def test_dppy_array_pass():
         array_like_obj[i] = 10
 
     global_size = 100
-    hb = np.arange(0, global_size, dtype="i4")
+    hb = np.arange(0, global_size, dtype='i4')
     da = DuckUSMArray(hb.shape, dtype=hb.dtype, host_buffer=hb)
 
     if dpctl.has_gpu_queues(dpctl.backend_type.level_zero):
-        print("\nScheduling on OpenCL GPU\n")
-        with dpctl.device_context("opencl:gpu") as gpu_queue:
+        print('\nScheduling on OpenCL GPU\n')
+        with dpctl.device_context('opencl:gpu') as gpu_queue:
             dppy_f[global_size, dppy.DEFAULT_LOCAL_SIZE](da)
     else:
-        print("\nSkip scheduling on OpenCL GPU\n")
+        print('\nSkip scheduling on OpenCL GPU\n')
 
     assert da[0] == 10
 
@@ -74,10 +74,10 @@ def test_dppy_array_pass():
 def test_dpctl_dparray_has_iface():
     """Tests if dpctl.dptensor.numpy_usm_shared defines '__sycl_usm_array_interface__'"""
     X = usmarray.ones(10)
-    assert type(getattr(X, "__sycl_usm_array_interface__", None) is dict)
+    assert type(getattr(X, '__sycl_usm_array_interface__', None) is dict)
 
 
 def test_dpnp_array_has_iface():
     """Tests if dpnp.ndarray defines '__sycl_usm_array_interface__'"""
     X = dpnp.array([1])
-    assert type(getattr(X, "__sycl_usm_array_interface__", None) is dict)
+    assert type(getattr(X, '__sycl_usm_array_interface__', None) is dict)

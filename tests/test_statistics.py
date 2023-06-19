@@ -5,10 +5,10 @@ import dpnp
 import numpy
 
 
-@pytest.mark.parametrize("type",
+@pytest.mark.parametrize('type',
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
-@pytest.mark.parametrize("size",
+@pytest.mark.parametrize('size',
                          [2, 4, 8, 16, 3, 9, 27, 81])
 def test_median(type, size):
     a = numpy.arange(size, dtype=type)
@@ -20,8 +20,8 @@ def test_median(type, size):
     numpy.testing.assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("axis",
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.parametrize('axis',
                          [0, 1, -1, 2, -2, (1, 2), (0, -2)])
 def test_max(axis):
     a = numpy.arange(768, dtype=numpy.float64).reshape((4, 4, 6, 8))
@@ -33,8 +33,8 @@ def test_max(axis):
     numpy.testing.assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("array",
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.parametrize('array',
                          [[2, 0, 6, 2],
                           [2, 0, 6, 2, 5, 6, 7, 8],
                           [],
@@ -76,17 +76,17 @@ def test_nanvar(array):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 class TestBincount:
 
-    @pytest.mark.parametrize("array",
+    @pytest.mark.parametrize('array',
                              [[1, 2, 3],
                               [1, 2, 2, 1, 2, 4],
                               [2, 2, 2, 2]],
                              ids=['[1, 2, 3]',
                                   '[1, 2, 2, 1, 2, 4]',
                                   '[2, 2, 2, 2]'])
-    @pytest.mark.parametrize("minlength",
+    @pytest.mark.parametrize('minlength',
                              [0, 1, 3, 5],
                              ids=['0', '1', '3', '5'])
     def test_bincount_minlength(self, array, minlength):
@@ -97,10 +97,10 @@ class TestBincount:
         result = dpnp.bincount(dpnp_a, minlength=minlength)
         numpy.testing.assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("array",
+    @pytest.mark.parametrize('array',
                              [[1, 2, 2, 1, 2, 4]],
                              ids=['[1, 2, 2, 1, 2, 4]'])
-    @pytest.mark.parametrize("weights",
+    @pytest.mark.parametrize('weights',
                              [None,
                               [0.3, 0.5, 0.2, 0.7, 1., -0.6],
                               [2, 2, 2, 2, 2, 2]],
@@ -115,17 +115,15 @@ class TestBincount:
         result = dpnp.bincount(dpnp_a, weights=weights)
         numpy.testing.assert_array_equal(expected, result)
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True))
+@pytest.mark.parametrize('dtype', get_all_dtypes(no_bool=True, no_none=True, no_complex=True))
 def test_cov_rowvar(dtype):
     a = dpnp.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
     b = numpy.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
     numpy.testing.assert_array_equal(dpnp.cov(a.T), dpnp.cov(a,rowvar=False))
     numpy.testing.assert_array_equal(numpy.cov(b,rowvar=False), dpnp.cov(a,rowvar=False))
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True))
+@pytest.mark.parametrize('dtype', get_all_dtypes(no_bool=True, no_none=True, no_complex=True))
 def test_cov_1D_rowvar(dtype):
     a = dpnp.array([[0, 1, 2]], dtype=dtype)
     b = numpy.array([[0, 1, 2]], dtype=dtype)
     numpy.testing.assert_array_equal(numpy.cov(b,rowvar=False), dpnp.cov(a,rowvar=False))
-
-

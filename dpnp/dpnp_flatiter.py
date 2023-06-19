@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ class flatiter:
     def __init__(self, X):
         if type(X) is not dpnp.ndarray:
             raise TypeError(
-                "Argument must be of type dpnp.ndarray, got {}".format(
+                'Argument must be of type dpnp.ndarray, got {}'.format(
                     type(X)
                 )
             )
@@ -48,7 +48,7 @@ class flatiter:
         nd = self.arr_.ndim
         if nd == 0:
             if i == 0:
-                return tuple()
+                return ()
             raise KeyError
         elif nd == 1:
             return (i,)
@@ -64,7 +64,7 @@ class flatiter:
         return tuple(multi_index)
 
     def __getitem__(self, key):
-        idx = getattr(key, "__index__", None)
+        idx = getattr(key, '__index__', None)
         if not callable(idx):
             raise TypeError(key)
         i = idx()
@@ -72,7 +72,7 @@ class flatiter:
         return self.arr_.__getitem__(mi)
 
     def __setitem__(self, key, val):
-        idx = getattr(key, "__index__", None)
+        idx = getattr(key, '__index__', None)
         if not callable(idx):
             raise TypeError(key)
         i = idx()

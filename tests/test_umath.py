@@ -67,7 +67,7 @@ def get_id(val):
     return val.__str__()
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @pytest.mark.parametrize('test_cases', test_cases, ids=get_id)
 def test_umaths(test_cases):
     umath, args_str = test_cases
@@ -100,7 +100,7 @@ class TestSin:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [numpy.float32, numpy.int64, numpy.int32],
                              ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
@@ -111,7 +111,7 @@ class TestSin:
         with pytest.raises(ValueError):
             dpnp.sin(dp_array, out=dp_out)
 
-    @pytest.mark.parametrize("shape",
+    @pytest.mark.parametrize('shape',
                              [(0,), (15, ), (2, 2)],
                              ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
@@ -140,7 +140,7 @@ class TestCos:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [numpy.float32, numpy.int64, numpy.int32],
                              ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
@@ -151,7 +151,7 @@ class TestCos:
         with pytest.raises(ValueError):
             dpnp.cos(dp_array, out=dp_out)
 
-    @pytest.mark.parametrize("shape",
+    @pytest.mark.parametrize('shape',
                              [(0,), (15, ), (2, 2)],
                              ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
@@ -180,7 +180,7 @@ class TestsLog:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [numpy.float32, numpy.int64, numpy.int32],
                              ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
@@ -191,7 +191,7 @@ class TestsLog:
         with pytest.raises(ValueError):
             dpnp.log(dp_array, out=dp_out)
 
-    @pytest.mark.parametrize("shape",
+    @pytest.mark.parametrize('shape',
                              [(0,), (15, ), (2, 2)],
                              ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
@@ -220,7 +220,7 @@ class TestExp:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [numpy.float32, numpy.int64, numpy.int32],
                              ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
@@ -231,7 +231,7 @@ class TestExp:
         with pytest.raises(ValueError):
             dpnp.exp(dp_array, out=dp_out)
 
-    @pytest.mark.parametrize("shape",
+    @pytest.mark.parametrize('shape',
                              [(0,), (15, ), (2, 2)],
                              ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
@@ -260,7 +260,7 @@ class TestArcsin:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [numpy.float32, numpy.int64, numpy.int32],
                              ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
@@ -271,7 +271,7 @@ class TestArcsin:
         with pytest.raises(ValueError):
             dpnp.arcsin(dp_array, out=dp_out)
 
-    @pytest.mark.parametrize("shape",
+    @pytest.mark.parametrize('shape',
                              [(0,), (15, ), (2, 2)],
                              ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
@@ -300,7 +300,7 @@ class TestArctan:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [numpy.float32, numpy.int64, numpy.int32],
                              ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
@@ -311,7 +311,7 @@ class TestArctan:
         with pytest.raises(ValueError):
             dpnp.arctan(dp_array, out=dp_out)
 
-    @pytest.mark.parametrize("shape",
+    @pytest.mark.parametrize('shape',
                              [(0,), (15, ), (2, 2)],
                              ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
@@ -340,7 +340,7 @@ class TestTan:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [numpy.float32, numpy.int64, numpy.int32],
                              ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
@@ -351,7 +351,7 @@ class TestTan:
         with pytest.raises(ValueError):
             dpnp.tan(dp_array, out=dp_out)
 
-    @pytest.mark.parametrize("shape",
+    @pytest.mark.parametrize('shape',
                              [(0,), (15, ), (2, 2)],
                              ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
@@ -379,7 +379,7 @@ class TestArctan2:
 
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+    @pytest.mark.parametrize('dtype', get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
     def test_out_dtypes(self, dtype):
         size = 2 if dtype == dpnp.bool else 10
 
@@ -393,7 +393,7 @@ class TestArctan2:
 
         assert_allclose(expected, result)
 
-    @pytest.mark.parametrize("shape",
+    @pytest.mark.parametrize('shape',
                              [(0,), (15, ), (2, 2)],
                              ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
@@ -406,7 +406,7 @@ class TestArctan2:
 
 
 class TestSqrt:
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize('dtype', get_float_dtypes())
     def test_sqrt_ordinary(self, dtype):
         array_data = numpy.arange(10)
         out = numpy.empty(10, dtype=dtype)
@@ -423,7 +423,7 @@ class TestSqrt:
         numpy.testing.assert_allclose(expected, result)
         numpy.testing.assert_allclose(out, dp_out)
 
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [numpy.int64, numpy.int32],
                              ids=['numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
@@ -434,7 +434,7 @@ class TestSqrt:
         with pytest.raises(ValueError):
             dpnp.sqrt(dp_array, out=dp_out)
 
-    @pytest.mark.parametrize("shape",
+    @pytest.mark.parametrize('shape',
                              [(0,), (15, ), (2, 2)],
                              ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
@@ -445,7 +445,7 @@ class TestSqrt:
         with pytest.raises(ValueError):
             dpnp.sqrt(dp_array, out=dp_out)
 
-    @pytest.mark.parametrize("out",
+    @pytest.mark.parametrize('out',
                              [4, (), [], (3, 7), [2, 4]],
                              ids=['4', '()', '[]', '(3, 7)', '[2, 4]'])
     def test_invalid_out(self, out):

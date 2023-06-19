@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -76,10 +76,10 @@ if __name__ == '__main__':
     test_repetition = 5
     for input_type in [numpy, dpnp]:
         type_name = input_type.__name__
-        print(f"...Test data type is {type_name}, each test repetitions {test_repetition}")
+        print(f'...Test data type is {type_name}, each test repetitions {test_repetition}')
 
         for size in [2048, 4096, 8192, 16384, 32768, 65536]:
             input_data = get_package_specific_input_data_type(input_type, size)
             result_time, result = run_third_party_function(input_data, test_repetition)
 
-            print(f"type:{type_name}:N:{size:6}:Time:{result_time:.3e}:result:{result:.3e}")
+            print(f'type:{type_name}:N:{size:6}:Time:{result_time:.3e}:result:{result:.3e}')

@@ -70,7 +70,7 @@ class TestIndexing:
         assert_array_equal(arr, 10.)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 def test_choose():
     a = numpy.r_[:4]
     ia = dpnp.array(a)
@@ -84,10 +84,10 @@ def test_choose():
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("offset",
+@pytest.mark.parametrize('offset',
                          [0, 1],
                          ids=['0', '1'])
-@pytest.mark.parametrize("array",
+@pytest.mark.parametrize('array',
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
                           [[1, 2], [3, 4]],
@@ -115,8 +115,8 @@ def test_diagonal(array, offset):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes())
-@pytest.mark.parametrize("cond_dtype", get_all_dtypes())
+@pytest.mark.parametrize('arr_dtype', get_all_dtypes())
+@pytest.mark.parametrize('cond_dtype', get_all_dtypes())
 def test_extract_1d(arr_dtype, cond_dtype):
     a = numpy.array([-2, -1, 0, 1, 2, 3], dtype=arr_dtype)
     ia = dpnp.array(a)
@@ -127,10 +127,10 @@ def test_extract_1d(arr_dtype, cond_dtype):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("val",
+@pytest.mark.parametrize('val',
                          [-1, 0, 1],
                          ids=['-1', '0', '1'])
-@pytest.mark.parametrize("array",
+@pytest.mark.parametrize('array',
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
                           [[1, 2], [3, 4]],
@@ -151,7 +151,7 @@ def test_fill_diagonal(array, val):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("dimension",
+@pytest.mark.parametrize('dimension',
                          [(1, ), (2, ), (1, 2), (2, 3), (3, 2), [1], [2], [1, 2], [2, 3], [3, 2]],
                          ids=['(1, )', '(2, )', '(1, 2)', '(2, 3)', '(3, 2)',
                               '[1]', '[2]', '[1, 2]', '[2, 3]', '[3, 2]'])
@@ -161,7 +161,7 @@ def test_indices(dimension):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("array",
+@pytest.mark.parametrize('array',
                          [[],
                           [[0, 0], [0, 0]],
                           [[1, 0], [1, 0]],
@@ -187,19 +187,19 @@ def test_nonzero(array):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("vals",
+@pytest.mark.parametrize('vals',
                          [[100, 200],
                           (100, 200)],
                          ids=['[100, 200]',
                               '(100, 200)'])
-@pytest.mark.parametrize("mask",
+@pytest.mark.parametrize('mask',
                          [[[True, False], [False, True]],
                           [[False, True], [True, False]],
                           [[False, False], [True, True]]],
                          ids=['[[True, False], [False, True]]',
                               '[[False, True], [True, False]]',
                               '[[False, False], [True, True]]'])
-@pytest.mark.parametrize("arr",
+@pytest.mark.parametrize('arr',
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
                           [[1, 2], [3, 4]]],
@@ -217,17 +217,17 @@ def test_place1(arr, mask, vals):
     assert_array_equal(a, ia)
 
 
-@pytest.mark.parametrize("vals",
+@pytest.mark.parametrize('vals',
                          [[100, 200],
                           [100, 200, 300, 400, 500, 600],
                           [100, 200, 300, 400, 500, 600, 800, 900]],
                          ids=['[100, 200]',
                               '[100, 200, 300, 400, 500, 600]',
                               '[100, 200, 300, 400, 500, 600, 800, 900]'])
-@pytest.mark.parametrize("mask",
+@pytest.mark.parametrize('mask',
                          [[[[True, False], [False, True]], [[False, True], [True, False]], [[False, False], [True, True]]]],
                          ids=['[[[True, False], [False, True]], [[False, True], [True, False]], [[False, False], [True, True]]]'])
-@pytest.mark.parametrize("arr",
+@pytest.mark.parametrize('arr',
                          [[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]],
                          ids=['[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]'])
 def test_place2(arr, mask, vals):
@@ -241,18 +241,18 @@ def test_place2(arr, mask, vals):
     assert_array_equal(a, ia)
 
 
-@pytest.mark.parametrize("vals",
+@pytest.mark.parametrize('vals',
                          [[100, 200],
                           [100, 200, 300, 400, 500, 600],
                           [100, 200, 300, 400, 500, 600, 800, 900]],
                          ids=['[100, 200]',
                               '[100, 200, 300, 400, 500, 600]',
                               '[100, 200, 300, 400, 500, 600, 800, 900]'])
-@pytest.mark.parametrize("mask",
+@pytest.mark.parametrize('mask',
                          [[[[[False, False], [True, True]], [[True, True], [True, True]]], [
                              [[False, False], [True, True]], [[False, False], [False, False]]]]],
                          ids=['[[[[False, False], [True, True]], [[True, True], [True, True]]], [[[False, False], [True, True]], [[False, False], [False, False]]]]'])
-@pytest.mark.parametrize("arr",
+@pytest.mark.parametrize('arr',
                          [[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]],
                          ids=['[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
 def test_place3(arr, mask, vals):
@@ -266,13 +266,13 @@ def test_place3(arr, mask, vals):
     assert_array_equal(a, ia)
 
 
-@pytest.mark.parametrize("v",
+@pytest.mark.parametrize('v',
                          [0, 1, 2, 3, 4],
                          ids=['0', '1', '2', '3', '4'])
-@pytest.mark.parametrize("ind",
+@pytest.mark.parametrize('ind',
                          [0, 1, 2, 3],
                          ids=['0', '1', '2', '3'])
-@pytest.mark.parametrize("array",
+@pytest.mark.parametrize('array',
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
                           [[1, 2], [3, 4]],
@@ -291,13 +291,13 @@ def test_put(array, ind, v):
     assert_array_equal(a, ia)
 
 
-@pytest.mark.parametrize("v",
+@pytest.mark.parametrize('v',
                          [[10, 20], [30, 40]],
                          ids=['[10, 20]', '[30, 40]'])
-@pytest.mark.parametrize("ind",
+@pytest.mark.parametrize('ind',
                          [[0, 1], [2, 3]],
                          ids=['[0, 1]', '[2, 3]'])
-@pytest.mark.parametrize("array",
+@pytest.mark.parametrize('array',
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
                           [[1, 2], [3, 4]],
@@ -324,7 +324,7 @@ def test_put3():
     assert_array_equal(a, ia)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 def test_put_along_axis_val_int():
     a = numpy.arange(16).reshape(4, 4)
     ai = dpnp.array(a)
@@ -336,7 +336,7 @@ def test_put_along_axis_val_int():
         assert_array_equal(a, ai)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 def test_put_along_axis1():
     a = numpy.arange(64).reshape(4, 4, 4)
     ai = dpnp.array(a)
@@ -348,7 +348,7 @@ def test_put_along_axis1():
         assert_array_equal(a, ai)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 def test_put_along_axis2():
     a = numpy.arange(64).reshape(4, 4, 4)
     ai = dpnp.array(a)
@@ -360,17 +360,17 @@ def test_put_along_axis2():
         assert_array_equal(a, ai)
 
 
-@pytest.mark.parametrize("vals",
+@pytest.mark.parametrize('vals',
                          [[100, 200]],
                          ids=['[100, 200]'])
-@pytest.mark.parametrize("mask",
+@pytest.mark.parametrize('mask',
                          [[[True, False], [False, True]],
                           [[False, True], [True, False]],
                           [[False, False], [True, True]]],
                          ids=['[[True, False], [False, True]]',
                               '[[False, True], [True, False]]',
                               '[[False, False], [True, True]]'])
-@pytest.mark.parametrize("arr",
+@pytest.mark.parametrize('arr',
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
                           [[1, 2], [3, 4]]],
@@ -389,17 +389,17 @@ def test_putmask1(arr, mask, vals):
     assert_array_equal(a, ia)
 
 
-@pytest.mark.parametrize("vals",
+@pytest.mark.parametrize('vals',
                          [[100, 200],
                           [100, 200, 300, 400, 500, 600],
                           [100, 200, 300, 400, 500, 600, 800, 900]],
                          ids=['[100, 200]',
                               '[100, 200, 300, 400, 500, 600]',
                               '[100, 200, 300, 400, 500, 600, 800, 900]'])
-@pytest.mark.parametrize("mask",
+@pytest.mark.parametrize('mask',
                          [[[[True, False], [False, True]], [[False, True], [True, False]], [[False, False], [True, True]]]],
                          ids=['[[[True, False], [False, True]], [[False, True], [True, False]], [[False, False], [True, True]]]'])
-@pytest.mark.parametrize("arr",
+@pytest.mark.parametrize('arr',
                          [[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]],
                          ids=['[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]'])
 def test_putmask2(arr, mask, vals):
@@ -414,18 +414,18 @@ def test_putmask2(arr, mask, vals):
     assert_array_equal(a, ia)
 
 
-@pytest.mark.parametrize("vals",
+@pytest.mark.parametrize('vals',
                          [[100, 200],
                           [100, 200, 300, 400, 500, 600],
                           [100, 200, 300, 400, 500, 600, 800, 900]],
                          ids=['[100, 200]',
                               '[100, 200, 300, 400, 500, 600]',
                               '[100, 200, 300, 400, 500, 600, 800, 900]'])
-@pytest.mark.parametrize("mask",
+@pytest.mark.parametrize('mask',
                          [[[[[False, False], [True, True]], [[True, True], [True, True]]], [
                              [[False, False], [True, True]], [[False, False], [False, False]]]]],
                          ids=['[[[[False, False], [True, True]], [[True, True], [True, True]]], [[[False, False], [True, True]], [[False, False], [False, False]]]]'])
-@pytest.mark.parametrize("arr",
+@pytest.mark.parametrize('arr',
                          [[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]],
                          ids=['[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
 def test_putmask3(arr, mask, vals):
@@ -458,20 +458,20 @@ def test_select():
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("array_type",
+@pytest.mark.parametrize('array_type',
                          [numpy.bool8, numpy.int32, numpy.int64, numpy.float32, numpy.float64, numpy.complex128],
                          ids=['bool8', 'int32', 'int64', 'float32', 'float64', 'complex128'])
-@pytest.mark.parametrize("indices_type",
+@pytest.mark.parametrize('indices_type',
                          [numpy.int32, numpy.int64],
                          ids=['int32', 'int64'])
-@pytest.mark.parametrize("indices",
+@pytest.mark.parametrize('indices',
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
                           [[1, 2], [3, 4]]],
                          ids=['[[0, 0], [0, 0]]',
                               '[[1, 2], [1, 2]]',
                               '[[1, 2], [3, 4]]'])
-@pytest.mark.parametrize("array",
+@pytest.mark.parametrize('array',
                          [[[0, 1, 2], [3, 4, 5], [6, 7, 8]],
                           [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
                           [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
@@ -517,13 +517,13 @@ def test_take_along_axis1():
         assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("m",
+@pytest.mark.parametrize('m',
                          [None, 0, 1, 2, 3, 4],
                          ids=['None', '0', '1', '2', '3', '4'])
-@pytest.mark.parametrize("k",
+@pytest.mark.parametrize('k',
                          [0, 1, 2, 3, 4, 5],
                          ids=['0', '1', '2', '3', '4', '5'])
-@pytest.mark.parametrize("n",
+@pytest.mark.parametrize('n',
                          [1, 2, 3, 4, 5, 6],
                          ids=['1', '2', '3', '4', '5', '6'])
 def test_tril_indices(n, k, m):
@@ -532,10 +532,10 @@ def test_tril_indices(n, k, m):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("k",
+@pytest.mark.parametrize('k',
                          [0, 1, 2, 3, 4, 5],
                          ids=['0', '1', '2', '3', '4', '5'])
-@pytest.mark.parametrize("array",
+@pytest.mark.parametrize('array',
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
                           [[1, 2], [3, 4]], ],
@@ -550,13 +550,13 @@ def test_tril_indices_from(array, k):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("m",
+@pytest.mark.parametrize('m',
                          [None, 0, 1, 2, 3, 4],
                          ids=['None', '0', '1', '2', '3', '4'])
-@pytest.mark.parametrize("k",
+@pytest.mark.parametrize('k',
                          [0, 1, 2, 3, 4, 5],
                          ids=['0', '1', '2', '3', '4', '5'])
-@pytest.mark.parametrize("n",
+@pytest.mark.parametrize('n',
                          [1, 2, 3, 4, 5, 6],
                          ids=['1', '2', '3', '4', '5', '6'])
 def test_triu_indices(n, k, m):
@@ -565,10 +565,10 @@ def test_triu_indices(n, k, m):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("k",
+@pytest.mark.parametrize('k',
                          [0, 1, 2, 3, 4, 5],
                          ids=['0', '1', '2', '3', '4', '5'])
-@pytest.mark.parametrize("array",
+@pytest.mark.parametrize('array',
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
                           [[1, 2], [3, 4]], ],
@@ -583,8 +583,8 @@ def test_triu_indices_from(array, k):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("cond_dtype", get_all_dtypes())
-@pytest.mark.parametrize("scalar_dtype", get_all_dtypes(no_none=True))
+@pytest.mark.parametrize('cond_dtype', get_all_dtypes())
+@pytest.mark.parametrize('scalar_dtype', get_all_dtypes(no_none=True))
 def test_where_with_scalars(cond_dtype, scalar_dtype):
     a = numpy.array([-1, 0, 1, 0], dtype=cond_dtype)
     ia = dpnp.array(a)

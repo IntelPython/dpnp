@@ -36,11 +36,11 @@ def get_default_floating():
 
 
 class TestNormal:
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [dpnp.float32, dpnp.float64, dpnp.float, None],
                              ids=['float32', 'float64', 'float', 'None'])
-    @pytest.mark.parametrize("usm_type",
-                             ["host", "device", "shared"],
+    @pytest.mark.parametrize('usm_type',
+                             ['host', 'device', 'shared'],
                              ids=['host', 'device', 'shared'])
     def test_distr(self, dtype, usm_type):
         seed = 1234567
@@ -83,11 +83,11 @@ class TestNormal:
         assert_cfd(dpnp_data, sycl_queue, usm_type)
 
 
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [dpnp.float32, dpnp.float64, None],
                              ids=['float32', 'float64', 'None'])
-    @pytest.mark.parametrize("usm_type",
-                             ["host", "device", "shared"],
+    @pytest.mark.parametrize('usm_type',
+                             ['host', 'device', 'shared'],
                              ids=['host', 'device', 'shared'])
     def test_scale(self, dtype, usm_type):
         mean = 7
@@ -107,7 +107,7 @@ class TestNormal:
         assert_raises(ValueError, func, scale=-3.71)
 
 
-    @pytest.mark.parametrize("loc",
+    @pytest.mark.parametrize('loc',
                              [numpy.inf, -numpy.inf,
                               numpy.nextafter(numpy.finfo(get_default_floating()).max, 0),
                               numpy.nextafter(numpy.finfo(get_default_floating()).min, 0)],
@@ -124,7 +124,7 @@ class TestNormal:
         assert_equal(a.min(), -numpy.inf)
 
 
-    @pytest.mark.parametrize("loc",
+    @pytest.mark.parametrize('loc',
                              [numpy.inf, -numpy.inf],
                              ids=['numpy.inf', '-numpy.inf'])
     def test_inf_loc_scale(self, loc):
@@ -154,15 +154,15 @@ class TestNormal:
             func(loc=numpy.nextafter(fmin, 0), scale=numpy.nextafter(fmax, 0), size=size)
             func(loc=numpy.nextafter(fmax, 0), scale=numpy.nextafter(fmax, 0), size=size)
         except Exception as e:
-            raise AssertionError("No error should have been raised, but one was "
-                                 "with the following message:\n\n%s" % str(e))
+            raise AssertionError('No error should have been raised, but one was '
+                                 'with the following message:\n\n%s' % str(e))
 
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize("scale",
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
+    @pytest.mark.parametrize('scale',
                              [dpnp.array([3]), numpy.array([3])],
                              ids=['dpnp.array([3])', 'numpy.array([3])'])
-    @pytest.mark.parametrize("loc",
+    @pytest.mark.parametrize('loc',
                              [[2], dpnp.array([2]), numpy.array([2])],
                              ids=['[2]', 'dpnp.array([2])', 'numpy.array([2])'])
     def test_fallback(self, loc, scale):
@@ -184,7 +184,7 @@ class TestNormal:
         assert_cfd(data, sycl_queue)
 
 
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [dpnp.float16, float, dpnp.integer, dpnp.int64, dpnp.int32, dpnp.int, int,
                               numpy.longcomplex, dpnp.complex128, dpnp.complex64, dpnp.bool, dpnp.bool_],
                              ids=['dpnp.float16', 'float', 'dpnp.integer', 'dpnp.int64', 'dpnp.int32', 'dpnp.int', 'int',
@@ -194,8 +194,8 @@ class TestNormal:
         assert_raises(TypeError, RandomState().normal, dtype=dtype)
 
 
-    @pytest.mark.parametrize("usm_type",
-                             ["", "unknown"],
+    @pytest.mark.parametrize('usm_type',
+                             ['', 'unknown'],
                              ids=['Empty', 'Unknown'])
     def test_invalid_usm_type(self, usm_type):
         # dtype must be float32 or float64
@@ -203,8 +203,8 @@ class TestNormal:
 
 
 class TestRand:
-    @pytest.mark.parametrize("usm_type",
-                             ["host", "device", "shared"],
+    @pytest.mark.parametrize('usm_type',
+                             ['host', 'device', 'shared'],
                              ids=['host', 'device', 'shared'])
     def test_distr(self, usm_type):
         seed = 28042
@@ -242,7 +242,7 @@ class TestRand:
                                       usm_type=usm_type)
 
 
-    @pytest.mark.parametrize("dims",
+    @pytest.mark.parametrize('dims',
                              [(), (5,), (10, 2, 7), (0,)],
                              ids=['()', '(5,)', '(10, 2, 7)', '(0,)'])
     def test_dims(self, dims):
@@ -254,10 +254,10 @@ class TestRand:
                                       high=1.0,
                                       size=size,
                                       dtype=None,
-                                      usm_type="device")
+                                      usm_type='device')
 
 
-    @pytest.mark.parametrize("zero_dims",
+    @pytest.mark.parametrize('zero_dims',
                              [(0,), (3, 0), (3, 0, 10), ()],
                              ids=['(0,)', '(3, 0)', '(3, 0, 10)', '()'])
     def test_zero_dims(self, zero_dims):
@@ -273,11 +273,11 @@ class TestRand:
 
 
 class TestRandInt:
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [int, dpnp.int32, dpnp.int, dpnp.integer],
                              ids=['int', 'dpnp.int32', 'dpnp.int', 'dpnp.integer'])
-    @pytest.mark.parametrize("usm_type",
-                             ["host", "device", "shared"],
+    @pytest.mark.parametrize('usm_type',
+                             ['host', 'device', 'shared'],
                              ids=['host', 'device', 'shared'])
     def test_distr(self, dtype, usm_type):
         seed = 9864
@@ -358,7 +358,7 @@ class TestRandInt:
 
         x = rs.randint(-7, -1, 5)
         assert_equal(-7 <= x, True)
-        assert_equal(x < -1, True)        
+        assert_equal(x < -1, True)
 
 
     def test_bounds_checking(self):
@@ -393,7 +393,7 @@ class TestRandInt:
         sycl_device = dpctl.SyclQueue().sycl_device
         if sycl_device.has_aspect_gpu and not sycl_device.has_aspect_fp64:
             # TODO: discuss with opneMKL
-            pytest.skip(f"Due to some reason, oneMKL wrongly returns high value instead of low")
+            pytest.skip(f'Due to some reason, oneMKL wrongly returns high value instead of low')
 
         tgt = high - 1
         assert_equal(func(tgt, tgt + 1, size=1000), tgt)
@@ -413,11 +413,11 @@ class TestRandInt:
         try:
             RandomState().randint(low, high)
         except Exception as e:
-            raise AssertionError("No error should have been raised, but one was "
-                                 "with the following message:\n\n%s" % str(e))
+            raise AssertionError('No error should have been raised, but one was '
+                                 'with the following message:\n\n%s' % str(e))
 
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_in_bounds_fuzz(self):
         for high in [4, 8, 16]:
             vals = RandomState().randint(2, high, size=2**16)
@@ -425,7 +425,7 @@ class TestRandInt:
             assert_equal(vals.min() >= 2, True)
 
 
-    @pytest.mark.parametrize("zero_size",
+    @pytest.mark.parametrize('zero_size',
                              [(3, 0, 4), 0, (0,), ()],
                              ids=['(3, 0, 4)', '0', '(0,)', '()'])
     def test_zero_size(self, zero_size):
@@ -433,11 +433,11 @@ class TestRandInt:
         assert_equal(RandomState().randint(0, 10, size=zero_size).shape, exp_shape)
 
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize("high",
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
+    @pytest.mark.parametrize('high',
                              [dpnp.array([3]), numpy.array([3])],
                              ids=['dpnp.array([3])', 'numpy.array([3])'])
-    @pytest.mark.parametrize("low",
+    @pytest.mark.parametrize('low',
                              [[2], dpnp.array([2]), numpy.array([2])],
                              ids=['[2]', 'dpnp.array([2])', 'numpy.array([2])'])
     def test_bounds_fallback(self, low, high):
@@ -450,8 +450,8 @@ class TestRandInt:
         assert_equal(actual, expected)
 
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
+    @pytest.mark.parametrize('dtype',
                              [dpnp.int64, dpnp.int, dpnp.integer, dpnp.bool, dpnp.bool_, bool],
                              ids=['dpnp.int64', 'dpnp.int', 'dpnp.integer', 'dpnp.bool', 'dpnp.bool_', 'bool'])
     def test_dtype_fallback(self, dtype):
@@ -461,7 +461,7 @@ class TestRandInt:
         size = (3, 2, 5)
 
         if dtype in (dpnp.int, dpnp.integer) and dtype == dpnp.dtype('int32'):
-            pytest.skip("dtype is alias on dpnp.int32 on the target OS, so no fallback here")
+            pytest.skip('dtype is alias on dpnp.int32 on the target OS, so no fallback here')
 
         # dtype must be int or dpnp.int32, in other cases it will be a fallback to numpy
         actual = RandomState(seed).randint(low=low, high=high, size=size, dtype=dtype).asnumpy()
@@ -470,8 +470,8 @@ class TestRandInt:
         assert_raises(TypeError, RandomState().randint, dtype=dtype)
 
 
-    @pytest.mark.parametrize("usm_type",
-                             ["", "unknown"],
+    @pytest.mark.parametrize('usm_type',
+                             ['', 'unknown'],
                              ids=['Empty', 'Unknown'])
     def test_invalid_usm_type(self, usm_type):
         # dtype must be float32 or float64
@@ -479,8 +479,8 @@ class TestRandInt:
 
 
 class TestRandN:
-    @pytest.mark.parametrize("usm_type",
-                             ["host", "device", "shared"],
+    @pytest.mark.parametrize('usm_type',
+                             ['host', 'device', 'shared'],
                              ids=['host', 'device', 'shared'])
     def test_distr(self, usm_type):
         seed = 3649
@@ -518,7 +518,7 @@ class TestRandN:
                                       usm_type=usm_type)
 
 
-    @pytest.mark.parametrize("dims",
+    @pytest.mark.parametrize('dims',
                              [(), (5,), (10, 2, 7), (0,)],
                              ids=['()', '(5,)', '(10, 2, 7)', '(0,)'])
     def test_dims(self, dims):
@@ -530,10 +530,10 @@ class TestRandN:
                                       scale=1.0,
                                       size=size,
                                       dtype=None,
-                                      usm_type="device")
+                                      usm_type='device')
 
 
-    @pytest.mark.parametrize("zero_dims",
+    @pytest.mark.parametrize('zero_dims',
                              [(0,), (3, 0), (3, 0, 10), ()],
                              ids=['(0,)', '(3, 0)', '(3, 0, 10)', '()'])
     def test_zero_dims(self, zero_dims):
@@ -549,7 +549,7 @@ class TestRandN:
 
 
 class TestSeed:
-    @pytest.mark.parametrize("func",
+    @pytest.mark.parametrize('func',
                              ['normal', 'standard_normal', 'random_sample', 'uniform'],
                              ids=['normal', 'standard_normal', 'random_sample', 'uniform'])
     def test_scalar(self, func):
@@ -566,8 +566,8 @@ class TestSeed:
         assert_array_almost_equal(a1, a2, decimal=precision)
 
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize("seed",
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
+    @pytest.mark.parametrize('seed',
                              [range(3),
                               numpy.arange(3, dtype=numpy.int32),
                               dpnp.arange(3, dtype=numpy.int32),
@@ -578,7 +578,7 @@ class TestSeed:
                                   '[0]', '[4294967295]', '[2, 7, 15]', '(1,)', '(85, 6, 17)'])
     def test_array_range(self, seed):
         if not is_cpu_device():
-            pytest.skip("seed as a scalar is only supported on GPU")
+            pytest.skip('seed as a scalar is only supported on GPU')
 
         size = 15
         a1 = RandomState(seed).uniform(size=size).asnumpy()
@@ -586,7 +586,7 @@ class TestSeed:
         assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-    @pytest.mark.parametrize("seed",
+    @pytest.mark.parametrize('seed',
                              [0.5, -1.5, [-0.3], (1.7, 3),
                               'text',
                               numpy.arange(0, 1, 0.5),
@@ -602,8 +602,8 @@ class TestSeed:
         assert_raises(TypeError, RandomState, seed)
 
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize("seed",
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
+    @pytest.mark.parametrize('seed',
                              [-1, [-3, 7], (17, 3, -5), [4, 3, 2, 1], (7, 6, 5, 1),
                               range(-1, -11, -1),
                               numpy.arange(4, dtype=numpy.int32),
@@ -628,7 +628,7 @@ class TestSeed:
                 # seed must be a scalar
                 assert_raises(TypeError, RandomState, seed)
 
-    @pytest.mark.parametrize("seed",
+    @pytest.mark.parametrize('seed',
                              [[], (),
                               [[1, 2, 3]],
                               [[1, 2, 3], [4, 5, 6]],
@@ -653,8 +653,8 @@ class TestSeed:
 
 
 class TestStandardNormal:
-    @pytest.mark.parametrize("usm_type",
-                             ["host", "device", "shared"],
+    @pytest.mark.parametrize('usm_type',
+                             ['host', 'device', 'shared'],
                              ids=['host', 'device', 'shared'])
     def test_distr(self, usm_type):
         seed = 1234567
@@ -697,7 +697,7 @@ class TestStandardNormal:
                                       usm_type=usm_type)
 
 
-    @pytest.mark.parametrize("size",
+    @pytest.mark.parametrize('size',
                              [(), (5,), (10, 2, 7), (0,)],
                              ids=['()', '(5,)', '(10, 2, 7)', '(0,)'])
     def test_sizes(self, size):
@@ -707,7 +707,7 @@ class TestStandardNormal:
                                       scale=1.0,
                                       size=size,
                                       dtype=None,
-                                      usm_type="device")
+                                      usm_type='device')
 
 
     def test_wrong_dims(self):
@@ -719,8 +719,8 @@ class TestStandardNormal:
 
 
 class TestRandSample:
-    @pytest.mark.parametrize("usm_type",
-                             ["host", "device", "shared"],
+    @pytest.mark.parametrize('usm_type',
+                             ['host', 'device', 'shared'],
                              ids=['host', 'device', 'shared'])
     def test_distr(self, usm_type):
         seed = 12657
@@ -757,7 +757,7 @@ class TestRandSample:
                                       usm_type=usm_type)
 
 
-    @pytest.mark.parametrize("size",
+    @pytest.mark.parametrize('size',
                              [(), (5,), (10, 2, 7), (0,)],
                              ids=['()', '(5,)', '(10, 2, 7)', '(0,)'])
     def test_sizes(self, size):
@@ -767,7 +767,7 @@ class TestRandSample:
                                       high=1.0,
                                       size=size,
                                       dtype=None,
-                                      usm_type="device")
+                                      usm_type='device')
 
 
     def test_wrong_dims(self):
@@ -779,14 +779,14 @@ class TestRandSample:
 
 
 class TestUniform:
-    @pytest.mark.parametrize("bounds",
+    @pytest.mark.parametrize('bounds',
                              [[1.23, 10.54], [10.54, 1.23]],
                              ids=['(low, high)=[1.23, 10.54]', '(low, high)=[10.54, 1.23]'])
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [dpnp.float32, dpnp.float64, dpnp.float, dpnp.int32, None],
                              ids=['float32', 'float64', 'float', 'int32', 'None'])
-    @pytest.mark.parametrize("usm_type",
-                             ["host", "device", "shared"],
+    @pytest.mark.parametrize('usm_type',
+                             ['host', 'device', 'shared'],
                              ids=['host', 'device', 'shared'])
     def test_distr(self, bounds, dtype, usm_type):
         seed = 28041997
@@ -838,11 +838,11 @@ class TestUniform:
         assert_cfd(dpnp_data, sycl_queue, usm_type)
 
 
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [dpnp.float32, dpnp.float64, dpnp.int32, None],
                              ids=['float32', 'float64', 'int32', 'None'])
-    @pytest.mark.parametrize("usm_type",
-                             ["host", "device", "shared"],
+    @pytest.mark.parametrize('usm_type',
+                             ['host', 'device', 'shared'],
                              ids=['host', 'device', 'shared'])
     def test_low_high_equal(self, dtype, usm_type):
         seed = 28045
@@ -869,7 +869,7 @@ class TestUniform:
             assert_array_almost_equal(actual, expected, decimal=numpy.finfo(dtype=dtype).precision)
 
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_range_bounds(self):
         fmin = numpy.finfo('double').min
         fmax = numpy.finfo('double').max
@@ -885,11 +885,11 @@ class TestUniform:
         func(low=numpy.nextafter(fmin, 0), high=numpy.nextafter(fmax, 0))
 
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize("high",
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
+    @pytest.mark.parametrize('high',
                              [dpnp.array([3]), numpy.array([3])],
                              ids=['dpnp.array([3])', 'numpy.array([3])'])
-    @pytest.mark.parametrize("low",
+    @pytest.mark.parametrize('low',
                              [[2], dpnp.array([2]), numpy.array([2])],
                              ids=['[2]', 'dpnp.array([2])', 'numpy.array([2])'])
     def test_fallback(self, low, high):
@@ -911,21 +911,21 @@ class TestUniform:
         assert_cfd(data, sycl_queue)
 
 
-    @pytest.mark.parametrize("dtype",
+    @pytest.mark.parametrize('dtype',
                              [dpnp.float16, float, dpnp.integer, dpnp.int64, dpnp.int, int,
                               numpy.longcomplex, dpnp.complex128, dpnp.complex64, dpnp.bool, dpnp.bool_],
                              ids=['dpnp.float16', 'float', 'dpnp.integer', 'dpnp.int64', 'dpnp.int', 'int',
                                   'numpy.longcomplex', 'dpnp.complex128', 'dpnp.complex64', 'dpnp.bool', 'dpnp.bool_'])
     def test_invalid_dtype(self, dtype):
         if dtype in (dpnp.int, dpnp.integer) and dtype == dpnp.dtype('int32'):
-            pytest.skip("dtype is alias on dpnp.int32 on the target OS, so no error here")
+            pytest.skip('dtype is alias on dpnp.int32 on the target OS, so no error here')
 
         # dtype must be int32, float32 or float64
         assert_raises(TypeError, RandomState().uniform, dtype=dtype)
 
 
-    @pytest.mark.parametrize("usm_type",
-                             ["", "unknown"],
+    @pytest.mark.parametrize('usm_type',
+                             ['', 'unknown'],
                              ids=['Empty', 'Unknown'])
     def test_invalid_usm_type(self, usm_type):
         # dtype must be float32 or float64

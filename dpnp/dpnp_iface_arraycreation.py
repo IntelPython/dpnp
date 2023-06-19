@@ -54,42 +54,42 @@ import dpctl
 
 
 __all__ = [
-    "arange",
-    "array",
-    "asanyarray",
-    "asarray",
-    "ascontiguousarray",
-    "copy",
-    "diag",
-    "diagflat",
-    "empty",
-    "empty_like",
-    "eye",
-    "frombuffer",
-    "fromfile",
-    "fromfunction",
-    "fromiter",
-    "fromstring",
-    "full",
-    "full_like",
-    "geomspace",
-    "identity",
-    "linspace",
-    "loadtxt",
-    "logspace",
-    "meshgrid",
-    "mgrid",
-    "ogrid",
-    "ones",
-    "ones_like",
-    "ptp",
-    "trace",
-    "tri",
-    "tril",
-    "triu",
-    "vander",
-    "zeros",
-    "zeros_like"
+    'arange',
+    'array',
+    'asanyarray',
+    'asarray',
+    'ascontiguousarray',
+    'copy',
+    'diag',
+    'diagflat',
+    'empty',
+    'empty_like',
+    'eye',
+    'frombuffer',
+    'fromfile',
+    'fromfunction',
+    'fromiter',
+    'fromstring',
+    'full',
+    'full_like',
+    'geomspace',
+    'identity',
+    'linspace',
+    'loadtxt',
+    'logspace',
+    'meshgrid',
+    'mgrid',
+    'ogrid',
+    'ones',
+    'ones_like',
+    'ptp',
+    'trace',
+    'tri',
+    'tril',
+    'triu',
+    'vander',
+    'zeros',
+    'zeros_like'
 ]
 
 
@@ -101,7 +101,7 @@ def arange(start,
            dtype=None,
            like=None,
            device=None,
-           usm_type="device",
+           usm_type='device',
            sycl_queue=None):
     """
     Returns an array with evenly spaced values within a given interval.
@@ -149,7 +149,7 @@ def arange(start,
 def array(x1,
           dtype=None,
           copy=True,
-          order="C",
+          order='C',
           subok=False,
           ndmin=0,
           like=None,
@@ -270,7 +270,7 @@ def asanyarray(a, dtype=None, order='C'):
 
 def asarray(x1,
             dtype=None,
-            order="C",
+            order='C',
             like=None,
             device=None,
             usm_type=None,
@@ -469,10 +469,10 @@ def diagflat(x1, k=0):
 def empty(shape,
           *,
           dtype=None,
-          order="C",
+          order='C',
           like=None,
           device=None,
-          usm_type="device",
+          usm_type='device',
           sycl_queue=None):
     """
     Return a new array of given shape and type, without initializing entries.
@@ -520,7 +520,7 @@ def empty_like(x1,
                /,
                *,
                dtype=None,
-               order="C",
+               order='C',
                subok=False,
                shape=None,
                device=None,
@@ -581,10 +581,10 @@ def eye(N,
         *,
         k=0,
         dtype=None,
-        order="C",
+        order='C',
         like=None,
         device=None,
-        usm_type="device",
+        usm_type='device',
         sycl_queue=None):
     """
     Return a 2-D array with ones on the diagonal and zeros elsewhere.
@@ -700,7 +700,7 @@ def full(shape,
          fill_value,
          *,
          dtype=None,
-         order="C",
+         order='C',
          like=None,
          device=None,
          usm_type=None,
@@ -1008,7 +1008,7 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
 
     if not use_origin_backend():
         if axis != 0:
-            checker_throw_value_error("linspace", "axis", axis, 0)
+            checker_throw_value_error('linspace', 'axis', axis, 0)
 
         return dpnp_logspace(start, stop, num, endpoint, base, dtype, axis).get_pyobj()
 
@@ -1066,7 +1066,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
 
     if not all((isinstance(x, (dpnp.ndarray, dpt.usm_ndarray)) for x in xi)):
         pass
-    elif indexing not in ["ij", "xy"]:
+    elif indexing not in ['ij', 'xy']:
         pass
     elif copy is not True:
         pass
@@ -1141,10 +1141,10 @@ ogrid = OGridClass()
 def ones(shape,
          *,
          dtype=None,
-         order="C",
+         order='C',
          like=None,
          device=None,
-         usm_type="device",
+         usm_type='device',
          sycl_queue=None):
     """
     Return a new array of given shape and type, filled with ones.
@@ -1196,7 +1196,7 @@ def ones_like(x1,
               /,
               *,
               dtype=None,
-              order="C",
+              order='C',
               subok=False,
               shape=None,
               device=None,
@@ -1483,10 +1483,10 @@ def vander(x1, N=None, increasing=False):
 def zeros(shape,
           *,
           dtype=None,
-          order="C",
+          order='C',
           like=None,
           device=None,
-          usm_type="device",
+          usm_type='device',
           sycl_queue=None):
     """
     Return a new array of given shape and type, filled with zeros.
@@ -1537,7 +1537,7 @@ def zeros_like(x1,
                /,
                *,
                dtype=None,
-               order="C",
+               order='C',
                subok=False,
                shape=None,
                device=None,

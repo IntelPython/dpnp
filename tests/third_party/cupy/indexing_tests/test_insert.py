@@ -39,7 +39,7 @@ class TestPlaceRaises(unittest.TestCase):
     # https://github.com/numpy/numpy/pull/5821
     @testing.with_requires('numpy>=1.10')
     @testing.for_all_dtypes()
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_place_empty_value_error(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange(self.shape, xp, dtype)
@@ -65,7 +65,7 @@ class TestPlaceRaises(unittest.TestCase):
     'mode': ['raise', 'wrap', 'clip'],
     'n_vals': [0, 1, 3, 4, 5],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestPut(unittest.TestCase):
 
@@ -86,7 +86,7 @@ class TestPut(unittest.TestCase):
 @testing.parameterize(*testing.product({
     'shape': [(7,), (2, 3), (4, 3, 2)],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestPutScalars(unittest.TestCase):
 
@@ -113,7 +113,7 @@ class TestPutScalars(unittest.TestCase):
 @testing.parameterize(*testing.product({
     'shape': [(7,), (2, 3)],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestPutRaises(unittest.TestCase):
 
@@ -182,7 +182,7 @@ class TestPutmaskDifferentShapes(unittest.TestCase):
         return a
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestPutmask(unittest.TestCase):
 
@@ -237,7 +237,7 @@ class TestPutmaskDifferentDtypes(unittest.TestCase):
     'val': [1, 0, (2,), (2, 2)],
     'wrap': [True, False],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestFillDiagonal(unittest.TestCase):
 
@@ -314,7 +314,7 @@ class TestDiagIndicesFrom(unittest.TestCase):
 @testing.parameterize(*testing.product({
     'shape': [(3, 5), (3, 3, 4), (5,), (0,), (-1,)],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDiagIndicesFromRaises(unittest.TestCase):
 

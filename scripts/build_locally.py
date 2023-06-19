@@ -32,111 +32,111 @@ import dpctl
 
 def run(
     use_oneapi=True,
-    build_type="Release",
+    build_type='Release',
     c_compiler=None,
     cxx_compiler=None,
     compiler_root=None,
     cmake_executable=None,
     verbose=False,
-    cmake_opts="",
+    cmake_opts='',
 ):
     build_system = None
 
-    if "linux" in sys.platform:
-        build_system = "Ninja"
-    elif sys.platform in ["win32", "cygwin"]:
-        build_system = "Ninja"
+    if 'linux' in sys.platform:
+        build_system = 'Ninja'
+    elif sys.platform in ['win32', 'cygwin']:
+        build_system = 'Ninja'
     else:
-        assert False, sys.platform + " not supported"
+        assert False, sys.platform + ' not supported'
 
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     cmake_args = [
         sys.executable,
-        "setup.py",
-        "develop",
+        'setup.py',
+        'develop',
     ]
     if cmake_executable:
         cmake_args += [
-            "--cmake-executable=" + cmake_executable,
+            '--cmake-executable=' + cmake_executable,
         ]
-    dpctl_module_path = os.path.join(dpctl.get_include(), "..", "resources", "cmake")
+    dpctl_module_path = os.path.join(dpctl.get_include(), '..', 'resources', 'cmake')
     cmake_args += [
-        "--build-type=" + build_type,
-        "--generator=" + build_system,
-        "--",
-        "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
-        "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
-        "-DDPCTL_MODULE_PATH:PATH=" + dpctl_module_path,
+        '--build-type=' + build_type,
+        '--generator=' + build_system,
+        '--',
+        '-DCMAKE_C_COMPILER:PATH=' + c_compiler,
+        '-DCMAKE_CXX_COMPILER:PATH=' + cxx_compiler,
+        '-DDPCTL_MODULE_PATH:PATH=' + dpctl_module_path,
     ]
     if verbose:
         cmake_args += [
-            "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
+            '-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON',
         ]
     if cmake_opts:
         cmake_args += cmake_opts.split()
     if use_oneapi:
-        if "DPL_ROOT" in os.environ:
-            os.environ["DPL_ROOT_HINT"] = os.environ["DPL_ROOT"]
+        if 'DPL_ROOT' in os.environ:
+            os.environ['DPL_ROOT_HINT'] = os.environ['DPL_ROOT']
     subprocess.check_call(
         cmake_args, shell=False, cwd=setup_dir, env=os.environ
     )
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Driver to build dpnp for in-place installation"
+        description='Driver to build dpnp for in-place installation'
     )
-    driver = parser.add_argument_group(title="Coverage driver arguments")
-    driver.add_argument("--c-compiler", help="Name of C compiler", default=None)
+    driver = parser.add_argument_group(title='Coverage driver arguments')
+    driver.add_argument('--c-compiler', help='Name of C compiler', default=None)
     driver.add_argument(
-        "--cxx-compiler", help="Name of C++ compiler", default=None
-    )
-    driver.add_argument(
-        "--oneapi",
-        help="Set if using one-API installation",
-        dest="oneapi",
-        action="store_true",
+        '--cxx-compiler', help='Name of C++ compiler', default=None
     )
     driver.add_argument(
-        "--debug",
-        default="Release",
-        const="Debug",
-        action="store_const",
-        help="Set the compilation mode to debugging",
+        '--oneapi',
+        help='Set if using one-API installation',
+        dest='oneapi',
+        action='store_true',
     )
     driver.add_argument(
-        "--compiler-root",
+        '--debug',
+        default='Release',
+        const='Debug',
+        action='store_const',
+        help='Set the compilation mode to debugging',
+    )
+    driver.add_argument(
+        '--compiler-root',
         type=str,
-        help="Path to compiler home directory",
+        help='Path to compiler home directory',
         default=None,
     )
     driver.add_argument(
-        "--cmake-executable",
+        '--cmake-executable',
         type=str,
-        help="Path to cmake executable",
+        help='Path to cmake executable',
         default=None,
     )
     driver.add_argument(
-        "--verbose",
-        help="Build using vebose makefile mode",
-        dest="verbose",
-        action="store_true",
+        '--verbose',
+        help='Build using vebose makefile mode',
+        dest='verbose',
+        action='store_true',
     )
     driver.add_argument(
-        "--cmake-opts",
-        help="Channels through additional cmake options",
-        dest="cmake_opts",
-        default="",
+        '--cmake-opts',
+        help='Channels through additional cmake options',
+        dest='cmake_opts',
+        default='',
         type=str,
     )
     args = parser.parse_args()
 
     args_to_validate = [
-        "c_compiler",
-        "cxx_compiler",
-        "compiler_root",
+        'c_compiler',
+        'cxx_compiler',
+        'compiler_root',
     ]
 
     if args.oneapi or (
@@ -144,24 +144,24 @@ if __name__ == "__main__":
         and args.cxx_compiler is None
         and args.compiler_root is None
     ):
-        args.c_compiler = "icx"
-        args.cxx_compiler = "icpx" if "linux" in sys.platform else "icx"
+        args.c_compiler = 'icx'
+        args.cxx_compiler = 'icpx' if 'linux' in sys.platform else 'icx'
         args.compiler_root = None
     else:
         cr = args.compiler_root
         if isinstance(cr, str) and os.path.exists(cr):
             if args.c_compiler is None:
-                args.c_compiler = "icx"
+                args.c_compiler = 'icx'
             if args.cxx_compiler is None:
-                args.cxx_compiler = "icpx" if "linux" in sys.platform else "icx"
+                args.cxx_compiler = 'icpx' if 'linux' in sys.platform else 'icx'
         else:
             raise RuntimeError(
                 "Option 'compiler-root' must be provided when "
-                "using non-default DPC++ layout."
+                'using non-default DPC++ layout.'
             )
         args_to_validate = [
-            "c_compiler",
-            "cxx_compiler",
+            'c_compiler',
+            'cxx_compiler',
         ]
         for p in args_to_validate:
             arg = getattr(args, p)
@@ -172,8 +172,8 @@ if __name__ == "__main__":
                     arg = arg2
                     setattr(args, p, arg)
             if not os.path.exists(arg):
-                opt_name = p.replace("_", "-")
-                raise RuntimeError(f"Option {opt_name} value {arg} must exist.")
+                opt_name = p.replace('_', '-')
+                raise RuntimeError(f'Option {opt_name} value {arg} must exist.')
 
     run(
         use_oneapi=args.oneapi,

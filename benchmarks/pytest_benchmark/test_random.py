@@ -2,7 +2,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -37,36 +37,36 @@ ITERATIONS = 4
 NNUMBERS = 2**26
 
 
-@pytest.mark.parametrize("function", [dpnp.random.beta, np.random.beta],
-                         ids=["dpnp", "numpy"])
+@pytest.mark.parametrize('function', [dpnp.random.beta, np.random.beta],
+                         ids=['dpnp', 'numpy'])
 def test_beta(benchmark, function):
     result = benchmark.pedantic(target=function, args=(4.0, 5.0, NNUMBERS,),
                                 rounds=ROUNDS, iterations=ITERATIONS)
 
 
-@pytest.mark.parametrize("function", [dpnp.random.exponential, np.random.exponential],
-                         ids=["dpnp", "numpy"])
+@pytest.mark.parametrize('function', [dpnp.random.exponential, np.random.exponential],
+                         ids=['dpnp', 'numpy'])
 def test_exponential(benchmark, function):
     result = benchmark.pedantic(target=function, args=(4.0, NNUMBERS,),
                                 rounds=ROUNDS, iterations=ITERATIONS)
 
 
-@pytest.mark.parametrize("function", [dpnp.random.gamma, np.random.gamma],
-                         ids=["dpnp", "numpy"])
+@pytest.mark.parametrize('function', [dpnp.random.gamma, np.random.gamma],
+                         ids=['dpnp', 'numpy'])
 def test_gamma(benchmark, function):
     result = benchmark.pedantic(target=function, args=(2.0, 4.0, NNUMBERS,),
                                 rounds=ROUNDS, iterations=ITERATIONS)
 
 
-@pytest.mark.parametrize("function", [dpnp.random.normal, np.random.normal],
-                         ids=["dpnp", "numpy"])
+@pytest.mark.parametrize('function', [dpnp.random.normal, np.random.normal],
+                         ids=['dpnp', 'numpy'])
 def test_normal(benchmark, function):
     result = benchmark.pedantic(target=function, args=(0.0, 1.0, NNUMBERS,),
                                 rounds=ROUNDS, iterations=ITERATIONS)
 
 
-@pytest.mark.parametrize("function", [dpnp.random.uniform, np.random.uniform],
-                         ids=["dpnp", "numpy"])
+@pytest.mark.parametrize('function', [dpnp.random.uniform, np.random.uniform],
+                         ids=['dpnp', 'numpy'])
 def test_uniform(benchmark, function):
     result = benchmark.pedantic(target=function, args=(0.0, 1.0, NNUMBERS,),
                                 rounds=ROUNDS, iterations=ITERATIONS)

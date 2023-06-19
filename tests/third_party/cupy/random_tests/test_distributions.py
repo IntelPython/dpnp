@@ -32,7 +32,7 @@ class RandomDistributionsTestCase(unittest.TestCase):
     'b_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsBeta(RandomDistributionsTestCase):
 
@@ -70,7 +70,7 @@ class TestDistributionsBinomial(RandomDistributionsTestCase):
     'df_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsChisquare(unittest.TestCase):
 
@@ -91,7 +91,7 @@ class TestDistributionsChisquare(unittest.TestCase):
     'alpha_shape': [(3,)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsDirichlet(RandomDistributionsTestCase):
 
@@ -107,7 +107,7 @@ class TestDistributionsDirichlet(RandomDistributionsTestCase):
     'scale_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsExponential(RandomDistributionsTestCase):
 
@@ -117,7 +117,7 @@ class TestDistributionsExponential(RandomDistributionsTestCase):
         self.check_distribution('exponential', {'scale': scale})
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsExponentialError(RandomDistributionsTestCase):
 
@@ -133,7 +133,7 @@ class TestDistributionsExponentialError(RandomDistributionsTestCase):
     'dfden_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsF(unittest.TestCase):
 
@@ -158,7 +158,7 @@ class TestDistributionsF(unittest.TestCase):
     'scale_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsGamma(unittest.TestCase):
 
@@ -202,7 +202,7 @@ class TestDistributionsGeometric(unittest.TestCase):
     'scale_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsGumbel(RandomDistributionsTestCase):
 
@@ -248,7 +248,7 @@ class TestDistributionsHyperGeometric(unittest.TestCase):
     'scale_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsuLaplace(RandomDistributionsTestCase):
 
@@ -266,7 +266,7 @@ class TestDistributionsuLaplace(RandomDistributionsTestCase):
     'scale_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsLogistic(RandomDistributionsTestCase):
 
@@ -353,7 +353,7 @@ class TestDistributionsMultivariateNormal(unittest.TestCase):
     'p_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsNegativeBinomial(RandomDistributionsTestCase):
 
@@ -380,7 +380,7 @@ class TestDistributionsNegativeBinomial(RandomDistributionsTestCase):
     'nonc_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
 
@@ -414,7 +414,7 @@ class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
     'nonc_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsNoncentralF(RandomDistributionsTestCase):
 
@@ -458,7 +458,7 @@ class TestDistributionsNoncentralF(RandomDistributionsTestCase):
     'scale_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsNormal(RandomDistributionsTestCase):
 
@@ -475,7 +475,7 @@ class TestDistributionsNormal(RandomDistributionsTestCase):
     'a_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsPareto(unittest.TestCase):
 
@@ -539,7 +539,7 @@ class TestDistributionsPower(RandomDistributionsTestCase):
     'scale_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsRayleigh(RandomDistributionsTestCase):
 
@@ -588,7 +588,7 @@ class TestDistributionsStandardExponential(RandomDistributionsTestCase):
     'shape_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsStandardGamma(RandomDistributionsTestCase):
 
@@ -615,7 +615,7 @@ class TestDistributionsStandardNormal(RandomDistributionsTestCase):
     'df_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsStandardT(unittest.TestCase):
 
@@ -638,7 +638,7 @@ class TestDistributionsStandardT(unittest.TestCase):
     'right_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsTriangular(RandomDistributionsTestCase):
 
@@ -682,7 +682,7 @@ class TestDistributionsTriangular(RandomDistributionsTestCase):
     'high_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsUniform(RandomDistributionsTestCase):
 
@@ -700,7 +700,7 @@ class TestDistributionsUniform(RandomDistributionsTestCase):
     'kappa_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsVonmises(unittest.TestCase):
 
@@ -725,7 +725,7 @@ class TestDistributionsVonmises(unittest.TestCase):
     'scale_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsWald(RandomDistributionsTestCase):
 
@@ -743,7 +743,7 @@ class TestDistributionsWald(RandomDistributionsTestCase):
     'a_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsWeibull(RandomDistributionsTestCase):
 
@@ -770,7 +770,7 @@ class TestDistributionsWeibull(RandomDistributionsTestCase):
     'a_shape': [(), (3, 2)],
 })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestDistributionsZipf(RandomDistributionsTestCase):
 

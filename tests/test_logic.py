@@ -10,8 +10,8 @@ from numpy.testing import (
 )
 
 
-@pytest.mark.parametrize("type", get_all_dtypes())
-@pytest.mark.parametrize("shape",
+@pytest.mark.parametrize('type', get_all_dtypes())
+@pytest.mark.parametrize('shape',
                          [(0,), (4,), (2, 3), (2, 2, 2)],
                          ids=['(0,)', '(4,)', '(2,3)', '(2,2,2)'])
 def test_all(type, shape):
@@ -41,7 +41,7 @@ def test_all(type, shape):
         assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize('type', get_all_dtypes(no_bool=True, no_complex=True))
 def test_allclose(type):
 
     a = numpy.random.rand(10)
@@ -63,8 +63,8 @@ def test_allclose(type):
     assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes())
-@pytest.mark.parametrize("shape",
+@pytest.mark.parametrize('type', get_all_dtypes())
+@pytest.mark.parametrize('shape',
                          [(0,), (4,), (2, 3), (2, 2, 2)],
                          ids=['(0,)', '(4,)', '(2,3)', '(2,2,2)'])
 def test_any(type, shape):
@@ -148,8 +148,8 @@ def test_not_equal():
         assert_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
-@pytest.mark.parametrize("op",
+@pytest.mark.parametrize('dtype', get_all_dtypes(no_complex=True))
+@pytest.mark.parametrize('op',
                         ['logical_and', 'logical_or', 'logical_xor'],
                         ids=['logical_and', 'logical_or', 'logical_xor'])
 def test_logic_comparison(op, dtype):
@@ -179,7 +179,7 @@ def test_logic_comparison(op, dtype):
     assert_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+@pytest.mark.parametrize('dtype', get_all_dtypes(no_complex=True))
 def test_logical_not(dtype):
     a = dpnp.array([0, 4, 0, 2], dtype=dtype)
 
@@ -188,18 +188,18 @@ def test_logical_not(dtype):
     assert_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("op",
+@pytest.mark.parametrize('op',
                          ['equal', 'greater', 'greater_equal', 'less', 'less_equal',
                           'logical_and', 'logical_or', 'logical_xor', 'not_equal'],
                          ids=['equal', 'greater', 'greater_equal', 'less', 'less_equal',
                               'logical_and', 'logical_or', 'logical_xor', 'not_equal'])
-@pytest.mark.parametrize("x1",
+@pytest.mark.parametrize('x1',
                          [[3, 4, 5, 6], [[1, 2, 3, 4], [5, 6, 7, 8]], [[1, 2, 5, 6], [3, 4, 7, 8], [1, 2, 7, 8]]],
                          ids=['[3, 4, 5, 6]', '[[1, 2, 3, 4], [5, 6, 7, 8]]', '[[1, 2, 5, 6], [3, 4, 7, 8], [1, 2, 7, 8]]'])
-@pytest.mark.parametrize("x2",
+@pytest.mark.parametrize('x2',
                          [5, [1, 2, 5, 6]],
                          ids=['5', '[1, 2, 5, 6]'])
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+@pytest.mark.parametrize('dtype', get_all_dtypes(no_complex=True))
 def test_elemwise_comparison(op, x1, x2, dtype):
     create_func = lambda xp, a: xp.asarray(a, dtype=dtype) if not numpy.isscalar(a) else numpy.dtype(dtype=dtype).type(a)
 
@@ -222,15 +222,15 @@ def test_elemwise_comparison(op, x1, x2, dtype):
     assert_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("op",
+@pytest.mark.parametrize('op',
                          ['equal', 'greater', 'greater_equal', 'less', 'less_equal',
                           'logical_and', 'logical_or', 'logical_xor', 'not_equal'],
                          ids=['equal', 'greater', 'greater_equal', 'less', 'less_equal',
                               'logical_and', 'logical_or', 'logical_xor', 'not_equal'])
-@pytest.mark.parametrize("sh1",
+@pytest.mark.parametrize('sh1',
                          [[10], [8, 4], [4, 1, 2]],
                          ids=['(10,)', '(8, 4)', '(4, 1, 2)'])
-@pytest.mark.parametrize("sh2",
+@pytest.mark.parametrize('sh2',
                          [[12], [4, 8], [1, 8, 6]],
                          ids=['(12,)', '(4, 8)', '(1, 8, 6)'])
 def test_comparison_no_broadcast_with_shapes(op, sh1, sh2):

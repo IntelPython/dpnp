@@ -161,7 +161,7 @@ class TestAllclose(unittest.TestCase):
         return xp.allclose(a, b)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 class TestIsclose(unittest.TestCase):
 
     @testing.for_all_dtypes(no_complex=True)

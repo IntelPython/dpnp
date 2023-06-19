@@ -159,14 +159,14 @@ class TestArrayCopyAndView(unittest.TestCase):
         return numpy.array(
             astype_without_warning(src, dst_dtype, order='K').strides)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_diagonal1(self, xp, dtype):
         a = testing.shaped_arange((3, 4, 5), xp, dtype)
         return a.diagonal(1, 2, 0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_diagonal2(self, xp, dtype):

@@ -296,7 +296,7 @@ class TestNansumNanprodLong(unittest.TestCase):
         'shape': [(2, 3, 4), (20, 30, 40)],
     })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestNansumNanprodExtra(unittest.TestCase):
 
@@ -324,7 +324,7 @@ class TestNansumNanprodExtra(unittest.TestCase):
         'axis': [(1, 3), (0, 2, 3)],
     })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestNansumNanprodAxes(unittest.TestCase):
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
@@ -340,7 +340,7 @@ axes = [0, 1, 2]
 
 
 @testing.parameterize(*testing.product({'axis': axes}))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestCumsum(unittest.TestCase):
 
@@ -459,7 +459,7 @@ class TestCumprod(unittest.TestCase):
         a = testing.shaped_arange((5,), xp, dtype)
         return xp.cumprod(a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_cumprod_out(self, xp, dtype):
@@ -482,7 +482,7 @@ class TestCumprod(unittest.TestCase):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return xp.cumprod(a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_cumprod_2dim_with_axis(self, xp, dtype):
@@ -508,7 +508,7 @@ class TestCumprod(unittest.TestCase):
         del result
         cupy.get_default_memory_pool().free_all_blocks()
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     def test_invalid_axis_lower1(self, dtype):
         for xp in (numpy, cupy):
@@ -516,7 +516,7 @@ class TestCumprod(unittest.TestCase):
             with pytest.raises(numpy.AxisError):
                 xp.cumprod(a, axis=-a.ndim - 1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     def test_invalid_axis_lower2(self, dtype):
         for xp in (numpy, cupy):
@@ -524,7 +524,7 @@ class TestCumprod(unittest.TestCase):
             with pytest.raises(numpy.AxisError):
                 xp.cumprod(a, axis=-a.ndim - 1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     def test_invalid_axis_upper1(self, dtype):
         for xp in (numpy, cupy):
@@ -532,7 +532,7 @@ class TestCumprod(unittest.TestCase):
             with pytest.raises(numpy.AxisError):
                 return xp.cumprod(a, axis=a.ndim)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     def test_invalid_axis_upper2(self, dtype):
         a = testing.shaped_arange((4, 5), cupy, dtype)
@@ -599,7 +599,7 @@ class TestDiff(unittest.TestCase):
         b = testing.shaped_arange((1, 5), xp, dtype)
         return xp.diff(a, axis=0, append=b, n=2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.with_requires('numpy>=1.16')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
@@ -607,7 +607,7 @@ class TestDiff(unittest.TestCase):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return xp.diff(a, prepend=1, append=0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.with_requires('numpy>=1.16')
     def test_diff_invalid_axis(self):
         for xp in (numpy, cupy):

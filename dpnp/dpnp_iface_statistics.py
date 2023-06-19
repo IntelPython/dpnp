@@ -460,7 +460,7 @@ def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
         if not isinstance(axis,(tuple,list)):
             axis = (axis,)
 
-        axis = normalize_axis_tuple(axis, x.ndim, "axis")
+        axis = normalize_axis_tuple(axis, x.ndim, 'axis')
         res_sum = dpnp.sum(x, axis=axis, dtype=dtype)
 
         del_ = 1.0

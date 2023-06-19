@@ -42,16 +42,16 @@ import dpnp
 
 
 __all__ = [
-    "arange",
-    "asarray",
-    "empty",
-    "eye",
-    "full",
-    "linspace",
-    "ones"
-    "tril",
-    "triu",
-    "zeros",
+    'arange',
+    'asarray',
+    'empty',
+    'eye',
+    'full',
+    'linspace',
+    'ones'
+    'tril',
+    'triu',
+    'zeros',
 ]
 
 
@@ -62,7 +62,7 @@ def arange(start,
            *,
            dtype=None,
            device=None,
-           usm_type="device",
+           usm_type='device',
            sycl_queue=None):
     """Validate input parameters before passing them into `dpctl.tensor` module"""
     dpu.validate_usm_type(usm_type, allow_none=False)
@@ -81,7 +81,7 @@ def arange(start,
 def asarray(x1,
             dtype=None,
             copy=False,
-            order="C",
+            order='C',
             device=None,
             usm_type=None,
             sycl_queue=None):
@@ -120,9 +120,9 @@ def asarray(x1,
 def empty(shape,
           *,
           dtype=None,
-          order="C",
+          order='C',
           device=None,
-          usm_type="device",
+          usm_type='device',
           sycl_queue=None):
     """Validate input parameters before passing them into `dpctl.tensor` module"""
     dpu.validate_usm_type(usm_type, allow_none=False)
@@ -145,9 +145,9 @@ def eye(N,
         *,
         k=0,
         dtype=None,
-        order="C",
+        order='C',
         device=None,
-        usm_type="device",
+        usm_type='device',
         sycl_queue=None):
     """Validate input parameters before passing them into `dpctl.tensor` module"""
     dpu.validate_usm_type(usm_type, allow_none=False)
@@ -170,7 +170,7 @@ def full(shape,
          fill_value,
          *,
          dtype=None,
-         order="C",
+         order='C',
          device=None,
          usm_type=None,
          sycl_queue=None):
@@ -200,7 +200,7 @@ def linspace(start,
              *,
              dtype=None,
              device=None,
-             usm_type="device",
+             usm_type='device',
              sycl_queue=None,
              endpoint=True):
     """Validate input parameters before passing them into `dpctl.tensor` module"""
@@ -218,7 +218,7 @@ def linspace(start,
     return dpnp_array(array_obj.shape, buffer=array_obj)
 
 
-def meshgrid(*xi, indexing="xy"):
+def meshgrid(*xi, indexing='xy'):
     """Creates list of `dpnp_array` coordinate matrices from vectors."""
     if len(xi) == 0:
         return []
@@ -230,9 +230,9 @@ def meshgrid(*xi, indexing="xy"):
 def ones(shape,
          *,
          dtype=None,
-         order="C",
+         order='C',
          device=None,
-         usm_type="device",
+         usm_type='device',
          sycl_queue=None):
     """Validate input parameters before passing them into `dpctl.tensor` module"""
     dpu.validate_usm_type(usm_type, allow_none=False)
@@ -252,21 +252,21 @@ def ones(shape,
 def tril(x1, /, *, k=0):
     """"Creates `dpnp_array` as lower triangular part of an input array."""
     array_obj = dpt.tril(x1.get_array() if isinstance(x1, dpnp_array) else x1, k)
-    return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
+    return dpnp_array(array_obj.shape, buffer=array_obj, order='K')
 
 
 def triu(x1, /, *, k=0):
     """"Creates `dpnp_array` as upper triangular part of an input array."""
     array_obj = dpt.triu(x1.get_array() if isinstance(x1, dpnp_array) else x1, k)
-    return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
+    return dpnp_array(array_obj.shape, buffer=array_obj, order='K')
 
 
 def zeros(shape,
           *,
           dtype=None,
-          order="C",
+          order='C',
           device=None,
-          usm_type="device",
+          usm_type='device',
           sycl_queue=None):
     """Validate input parameters before passing them into `dpctl.tensor` module"""
     dpu.validate_usm_type(usm_type, allow_none=False)

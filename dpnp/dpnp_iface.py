@@ -57,20 +57,20 @@ from dpnp.linalg import *
 from dpnp.random import *
 
 __all__ = [
-    "array_equal",
-    "asnumpy",
-    "astype",
-    "convert_single_elem_array_to_scalar",
-    "default_float_type",
-    "dpnp_queue_initialize",
-    "dpnp_queue_is_cpu",
-    "from_dlpack",
-    "get_dpnp_descriptor",
-    "get_include",
-    "get_normalized_queue_device",
-    "get_usm_ndarray",
-    "get_usm_ndarray_or_scalar",
-    "is_supported_array_type"
+    'array_equal',
+    'asnumpy',
+    'astype',
+    'convert_single_elem_array_to_scalar',
+    'default_float_type',
+    'dpnp_queue_initialize',
+    'dpnp_queue_is_cpu',
+    'from_dlpack',
+    'get_dpnp_descriptor',
+    'get_include',
+    'get_normalized_queue_device',
+    'get_usm_ndarray',
+    'get_usm_ndarray_or_scalar',
+    'is_supported_array_type'
 ]
 
 from dpnp import (
@@ -288,12 +288,12 @@ def get_dpnp_descriptor(ext_obj,
     # we need to create a non-strided copy
     # if function get implementation for strides case
     # then this behavior can be disabled with setting "copy_when_strides"
-    if copy_when_strides and getattr(ext_obj, "strides", None) is not None:
+    if copy_when_strides and getattr(ext_obj, 'strides', None) is not None:
         # TODO: replace this workaround when usm_ndarray will provide such functionality
         shape_offsets = tuple(numpy.prod(ext_obj.shape[i + 1:], dtype=numpy.int64) for i in range(ext_obj.ndim))
 
-        if hasattr(ext_obj, "__sycl_usm_array_interface__"):
-            ext_obj_offset = ext_obj.__sycl_usm_array_interface__.get("offset", 0)
+        if hasattr(ext_obj, '__sycl_usm_array_interface__'):
+            ext_obj_offset = ext_obj.__sycl_usm_array_interface__.get('offset', 0)
         else:
             ext_obj_offset = 0
 
@@ -305,7 +305,7 @@ def get_dpnp_descriptor(ext_obj,
     # we need to create a copy on device associated with DPNP_QUEUE
     # if function get implementation for different queue
     # then this behavior can be disabled with setting "copy_when_nondefault_queue"
-    queue = getattr(ext_obj, "sycl_queue", None)
+    queue = getattr(ext_obj, 'sycl_queue', None)
     if queue is not None and copy_when_nondefault_queue:
         default_queue = dpctl.SyclQueue()
         queue_is_default = dpctl.utils.get_execution_queue([queue, default_queue]) is not None
@@ -324,7 +324,7 @@ def get_include():
     Return the directory that contains the DPNP C++ backend \\*.h header files.
     """
 
-    dpnp_path = os.path.join(os.path.dirname(__file__), "backend", "include")
+    dpnp_path = os.path.join(os.path.dirname(__file__), 'backend', 'include')
 
     return dpnp_path
 
@@ -402,7 +402,7 @@ def get_usm_ndarray(a):
         return a.get_array()
     if isinstance(a, dpt.usm_ndarray):
         return a
-    raise TypeError("An array must be any of supported type, but got {}".format(type(a)))
+    raise TypeError('An array must be any of supported type, but got {}'.format(type(a)))
 
 
 def get_usm_ndarray_or_scalar(a):

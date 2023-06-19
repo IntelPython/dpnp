@@ -5,7 +5,7 @@ import dpnp
 import numpy
 
 
-@pytest.mark.parametrize("type",
+@pytest.mark.parametrize('type',
                          [numpy.float64],
                          ids=['float64'])
 def test_amax_float64(type):
@@ -18,7 +18,7 @@ def test_amax_float64(type):
         numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("type",
+@pytest.mark.parametrize('type',
                          [numpy.int64],
                          ids=['int64'])
 def test_amax_int(type):
@@ -30,7 +30,7 @@ def test_amax_int(type):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("type",
+@pytest.mark.parametrize('type',
                          [numpy.float64],
                          ids=['float64'])
 def test_amin_float64(type):
@@ -43,7 +43,7 @@ def test_amin_float64(type):
         numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("type",
+@pytest.mark.parametrize('type',
                          [numpy.int64],
                          ids=['int64'])
 def test_amin_int(type):
@@ -67,11 +67,11 @@ def _get_min_max_input(type, shape):
     return a.reshape(shape)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("type",
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.parametrize('type',
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
-@pytest.mark.parametrize("shape",
+@pytest.mark.parametrize('shape',
                          [(4,), (2, 3), (4, 5, 6)],
                          ids=['(4,)', '(2,3)', '(4,5,6)'])
 def test_amax(type, shape):
@@ -88,11 +88,11 @@ def test_amax(type, shape):
     numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("type",
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.parametrize('type',
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
-@pytest.mark.parametrize("shape",
+@pytest.mark.parametrize('shape',
                          [(4,), (2, 3), (4, 5, 6)],
                          ids=['(4,)', '(2,3)', '(4,5,6)'])
 def test_amin(type, shape):
