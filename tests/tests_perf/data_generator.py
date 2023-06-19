@@ -31,8 +31,8 @@ import numpy
 
 
 __all__ = [
-    "gen_array_1d",
-    "gen_array_2d"
+    'gen_array_1d',
+    'gen_array_2d'
 ]
 
 
@@ -70,7 +70,7 @@ def gen_ndarray(size, dtype=numpy.float64, low=None, high=None, seed=None):
 
         return numpy.random.randint(low, high, size=size, dtype=dtype)
 
-    raise NotImplementedError(f"Generator of ndarray of type {dtype.__name__} not found.")
+    raise NotImplementedError(f'Generator of ndarray of type {dtype.__name__} not found.')
 
 
 def gen_dparray(size, dtype=numpy.float64, low=None, high=None, seed=None):
@@ -134,7 +134,7 @@ def gen_array_1d(lib, size, dtype=numpy.float64, low=None, high=None, seed=None)
     if lib is dpnp:
         return gen_dparray(size, dtype=dtype, low=low, high=high, seed=seed)
 
-    raise NotImplementedError(f"{lib.__name__} array generator not found.")
+    raise NotImplementedError(f'{lib.__name__} array generator not found.')
 
 
 def gen_array_2d(lib, size_x, size_y, dtype=numpy.float64, low=None, high=None, seed=None):

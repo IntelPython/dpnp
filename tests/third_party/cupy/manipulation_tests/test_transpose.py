@@ -104,7 +104,7 @@ class TestTranspose(unittest.TestCase):
         a = testing.shaped_arange((2, 3, 4), xp)
         return xp.rollaxis(a, 2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_rollaxis_failure(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3, 4), xp)
@@ -116,7 +116,7 @@ class TestTranspose(unittest.TestCase):
         a = testing.shaped_arange((2, 3, 4), xp)
         return xp.swapaxes(a, 2, 0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_swapaxes_failure(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3, 4), xp)

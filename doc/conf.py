@@ -94,10 +94,10 @@ pygments_style = 'sphinx'
 # a list of builtin themes.
 #
 # html_theme = 'alabaster'
-html_theme = "sphinx_rtd_theme"
+html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
-    "sidebarwidth": 30,
-    "nosidebar": False,
+    'sidebarwidth': 30,
+    'nosidebar': False,
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme

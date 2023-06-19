@@ -53,19 +53,19 @@ from dpnp.linalg.dpnp_algo_linalg import *
 
 
 __all__ = [
-    "cholesky",
-    "cond",
-    "det",
-    "eig",
-    "eigh",
-    "eigvals",
-    "inv",
-    "matrix_power",
-    "matrix_rank",
-    "multi_dot",
-    "norm",
-    "qr",
-    "svd",
+    'cholesky',
+    'cond',
+    'det',
+    'eig',
+    'eigh',
+    'eigvals',
+    'inv',
+    'matrix_power',
+    'matrix_rank',
+    'multi_dot',
+    'norm',
+    'qr',
+    'svd',
 ]
 
 
@@ -219,22 +219,22 @@ def eigh(a, UPLO='L'):
     array([0.17157288, 5.82842712]),
     array([[-0.92387953-0.j        , -0.38268343+0.j        ], # may vary
            [ 0.        +0.38268343j,  0.        -0.92387953j]]))
-    
+
     """
 
     if UPLO not in ('L', 'U'):
         raise ValueError("UPLO argument must be 'L' or 'U'")
 
     if not dpnp.is_supported_array_type(a):
-        raise TypeError("An array must be any of supported type, but got {}".format(type(a)))
+        raise TypeError('An array must be any of supported type, but got {}'.format(type(a)))
 
     if a.ndim < 2:
-        raise ValueError("%d-dimensional array given. Array must be "
-                         "at least two-dimensional" % a.ndim)
+        raise ValueError('%d-dimensional array given. Array must be '
+                         'at least two-dimensional' % a.ndim)
 
     m, n = a.shape[-2:]
     if m != n:
-        raise ValueError("Last 2 dimensions of the array must be square")
+        raise ValueError('Last 2 dimensions of the array must be square')
 
     return dpnp_eigh(a, UPLO=UPLO)
 
@@ -386,7 +386,7 @@ def multi_dot(arrays, out=None):
     n = len(arrays)
 
     if n < 2:
-        checker_throw_value_error("multi_dot", "arrays", n, ">1")
+        checker_throw_value_error('multi_dot', 'arrays', n, '>1')
 
     result = arrays[0]
     for id in range(1, n):

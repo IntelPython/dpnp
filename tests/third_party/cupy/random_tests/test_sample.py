@@ -45,7 +45,7 @@ class TestRandint(unittest.TestCase):
 @testing.gpu
 class TestRandint2(unittest.TestCase):
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @condition.repeat(3, 10)
     def test_bound_1(self):
         vals = [random.randint(0, 10, (2, 3)) for _ in range(10)]
@@ -54,7 +54,7 @@ class TestRandint2(unittest.TestCase):
         self.assertEqual(min(_.min() for _ in vals), 0)
         self.assertEqual(max(_.max() for _ in vals), 9)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @condition.repeat(3, 10)
     def test_bound_2(self):
         vals = [random.randint(0, 2) for _ in range(20)]
@@ -63,7 +63,7 @@ class TestRandint2(unittest.TestCase):
         self.assertEqual(min(_.min() for _ in vals), 0)
         self.assertEqual(max(_.max() for _ in vals), 1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @condition.repeat(3, 10)
     def test_bound_overflow(self):
         # 100 - (-100) exceeds the range of int8
@@ -72,7 +72,7 @@ class TestRandint2(unittest.TestCase):
         self.assertGreaterEqual(val.min(), -100)
         self.assertLess(val.max(), 100)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @condition.repeat(3, 10)
     def test_bound_float1(self):
         # generate floats s.t. int(low) < int(high)
@@ -85,7 +85,7 @@ class TestRandint2(unittest.TestCase):
         self.assertEqual(min(_.min() for _ in vals), int(low))
         self.assertEqual(max(_.max() for _ in vals), int(high) - 1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_bound_float2(self):
         vals = [random.randint(-1.0, 1.0, (2, 3)) for _ in range(10)]
         for val in vals:
@@ -152,17 +152,17 @@ class TestRandomIntegers(unittest.TestCase):
     def test_normal(self):
         with mock.patch('dpnp.random.RandomState.randint') as m:
             random.random_integers(3, 5)
-        m.assert_called_with(low=3, high=6, size=None, dtype=int, usm_type="device")
+        m.assert_called_with(low=3, high=6, size=None, dtype=int, usm_type='device')
 
     def test_high_is_none(self):
         with mock.patch('dpnp.random.RandomState.randint') as m:
             random.random_integers(3, None)
-        m.assert_called_with(low=0, high=4, size=None, dtype=int, usm_type="device")
+        m.assert_called_with(low=0, high=4, size=None, dtype=int, usm_type='device')
 
     def test_size_is_not_none(self):
         with mock.patch('dpnp.random.RandomState.randint') as m:
             random.random_integers(3, 5, (1, 2, 3))
-        m.assert_called_with(low=3, high=6, size=(1, 2, 3), dtype=int, usm_type="device")
+        m.assert_called_with(low=3, high=6, size=(1, 2, 3), dtype=int, usm_type='device')
 
 
 @testing.fix_random()
@@ -261,7 +261,7 @@ class TestRandomSample(unittest.TestCase):
         with mock.patch('dpnp.random.RandomState.random_sample') as m:
             random.rand(1, 2, 3)
         m.assert_called_once_with(
-            size=(1, 2, 3), usm_type="device")
+            size=(1, 2, 3), usm_type='device')
 
     def test_rand_invalid_argument(self):
         with self.assertRaises(TypeError):
@@ -270,12 +270,12 @@ class TestRandomSample(unittest.TestCase):
     def test_randn(self):
         with mock.patch('dpnp.random.RandomState.standard_normal') as m:
             random.randn(1, 2, 3)
-        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
+        m.assert_called_once_with(size=(1, 2, 3), usm_type='device')
 
     def test_randn_default_dtype(self):
         with mock.patch('dpnp.random.RandomState.standard_normal') as m:
             random.randn(1, 2, 3)
-        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
+        m.assert_called_once_with(size=(1, 2, 3), usm_type='device')
 
     def test_randn_invalid_argument(self):
         with self.assertRaises(TypeError):

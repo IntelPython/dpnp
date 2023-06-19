@@ -140,7 +140,7 @@ class TestReshape(unittest.TestCase):
         a = self._test_ndim_limit(xp, 32, dtype, order)
         return a
 
-    @pytest.mark.skip("no max ndim limit for reshape in dpctl")
+    @pytest.mark.skip('no max ndim limit for reshape in dpctl')
     @testing.for_orders(_supported_orders)
     @testing.for_all_dtypes()
     def test_ndim_limit2(self, dtype, order):

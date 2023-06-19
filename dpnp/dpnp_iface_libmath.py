@@ -46,7 +46,7 @@ from dpnp.dpnp_utils import *
 import dpnp
 
 __all__ = [
-    "erf"
+    'erf'
 ]
 
 

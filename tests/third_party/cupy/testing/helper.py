@@ -277,12 +277,12 @@ def _make_decorator(check_func, name, type_check, accept_error, sp_name=None,
             if type_check:
                 for cupy_r, numpy_r in zip(cupy_result, numpy_result):
                     if cupy_r.dtype != numpy_r.dtype:
-                        print(f"\nERROR:\n\tcupy_r.dtype={cupy_r.dtype},\n\tnumpy_r.dtype={numpy_r.dtype}")
+                        print(f'\nERROR:\n\tcupy_r.dtype={cupy_r.dtype},\n\tnumpy_r.dtype={numpy_r.dtype}')
                     assert cupy_r.dtype == numpy_r.dtype
 
             for cupy_r, numpy_r in zip(cupy_result, numpy_result):
                 if cupy_r.shape != numpy_r.shape:
-                    print(f"\nERROR:\n\tcupy_r.shape={cupy_r.shape},\n\tnumpy_r.shape={numpy_r.shape}")
+                    print(f'\nERROR:\n\tcupy_r.shape={cupy_r.shape},\n\tnumpy_r.shape={numpy_r.shape}')
                 assert cupy_r.shape == numpy_r.shape
 
                 # Behavior of assigning a negative value to an unsigned integer

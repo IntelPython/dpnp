@@ -89,7 +89,7 @@ class TestDot(unittest.TestCase):
         ((2, 4, 5, 2), (2, 4, 5, 2), 0, 0, -1),
     ],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestCrossProduct(unittest.TestCase):
 
@@ -225,7 +225,7 @@ class TestProduct(unittest.TestCase):
             (2, 2, 2, 3), xp, dtype).transpose(1, 3, 0, 2)
         return xp.vdot(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_inner(self, xp, dtype):
@@ -233,7 +233,7 @@ class TestProduct(unittest.TestCase):
         b = testing.shaped_reverse_arange((5,), xp, dtype)
         return xp.inner(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_reversed_inner(self, xp, dtype):
@@ -241,7 +241,7 @@ class TestProduct(unittest.TestCase):
         b = testing.shaped_reverse_arange((5,), xp, dtype)[::-1]
         return xp.inner(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_multidim_inner(self, xp, dtype):
@@ -277,7 +277,7 @@ class TestProduct(unittest.TestCase):
         b = testing.shaped_arange((4, 5), xp, dtype)
         return xp.outer(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot(self, xp, dtype):
@@ -292,7 +292,7 @@ class TestProduct(unittest.TestCase):
         b = testing.shaped_arange((4, 3, 2), xp, dtype).transpose(2, 0, 1)
         return xp.tensordot(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot_with_int_axes(self, xp, dtype):
@@ -322,7 +322,7 @@ class TestProduct(unittest.TestCase):
                 (5, 4, 3, 2), xp, dtype).transpose(3, 0, 2, 1)
             return xp.tensordot(a, b, axes=3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot_with_list_axes(self, xp, dtype):
@@ -399,7 +399,7 @@ class TestProduct(unittest.TestCase):
         ((0, 0, 0), ([0, 2, 1], [1, 2, 0])),
     ],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestProductZeroLength(unittest.TestCase):
 
@@ -412,7 +412,7 @@ class TestProductZeroLength(unittest.TestCase):
 
 
 class TestMatrixPower(unittest.TestCase):
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_matrix_power_0(self, xp, dtype):
@@ -437,7 +437,7 @@ class TestMatrixPower(unittest.TestCase):
         a = testing.shaped_arange((3, 3), xp, dtype)
         return xp.linalg.matrix_power(a, 3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-5)
     def test_matrix_power_inv1(self, xp, dtype):
@@ -445,7 +445,7 @@ class TestMatrixPower(unittest.TestCase):
         a = a * a % 30
         return xp.linalg.matrix_power(a, -1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-5)
     def test_matrix_power_inv2(self, xp, dtype):
@@ -453,7 +453,7 @@ class TestMatrixPower(unittest.TestCase):
         a = a * a % 30
         return xp.linalg.matrix_power(a, -2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_matrix_power_inv3(self, xp, dtype):

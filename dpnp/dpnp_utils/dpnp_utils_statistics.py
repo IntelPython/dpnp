@@ -39,7 +39,7 @@ import dpctl.tensor._tensor_impl as ti
 
 
 __all__ = [
-    "dpnp_cov"
+    'dpnp_cov'
 ]
 
 def dpnp_cov(m, y=None, rowvar=True, dtype=None):
@@ -91,10 +91,10 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
 
         # TODO: replace with dpnp.concatenate((X, y), axis=0) once dpctl implementation is ready
         if X.ndim != y.ndim:
-            raise ValueError("all the input arrays must have same number of dimensions")
+            raise ValueError('all the input arrays must have same number of dimensions')
 
         if X.shape[1:] != y.shape[1:]:
-            raise ValueError("all the input array dimensions for the concatenation axis must match exactly")
+            raise ValueError('all the input array dimensions for the concatenation axis must match exactly')
 
         res_shape = tuple(X.shape[i] if i > 0 else (X.shape[i] + y.shape[i]) for i in range(X.ndim))
         res_usm = dpt.empty(res_shape, dtype=dtype, usm_type=usm_type, sycl_queue=queue)

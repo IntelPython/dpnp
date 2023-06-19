@@ -7,7 +7,7 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 ignore_runtime_warnings = pytest.mark.filterwarnings(
-    "ignore", category=RuntimeWarning)
+    'ignore', category=RuntimeWarning)
 
 
 @testing.gpu
@@ -19,42 +19,42 @@ class TestMedian(unittest.TestCase):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_median_axis1(self, xp, dtype):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a, axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_median_axis2(self, xp, dtype):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a, axis=2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_median_overwrite_input(self, xp, dtype):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a, overwrite_input=True)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_median_keepdims_axis1(self, xp, dtype):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a, axis=1, keepdims=True)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_median_keepdims_noaxis(self, xp, dtype):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a, keepdims=True)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_median_invalid_axis(self):
         for xp in [numpy, cupy]:
             a = testing.shaped_random((3, 4, 5), xp)
@@ -78,7 +78,7 @@ class TestMedian(unittest.TestCase):
         'keepdims': [True, False]
     })
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestMedianAxis(unittest.TestCase):
 
@@ -100,14 +100,14 @@ class TestAverage(unittest.TestCase):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return xp.average(a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_average_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.average(a, axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_average_weights(self, xp, dtype):
@@ -115,7 +115,7 @@ class TestAverage(unittest.TestCase):
         w = testing.shaped_arange((2, 3), xp, dtype)
         return xp.average(a, weights=w)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_average_axis_weights(self, xp, dtype):
@@ -134,7 +134,7 @@ class TestAverage(unittest.TestCase):
         testing.assert_allclose(average_cpu, average_gpu)
         testing.assert_allclose(sum_weights_cpu, sum_weights_gpu)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     def test_returned(self, dtype):
         a = testing.shaped_arange((2, 3), numpy, dtype)
@@ -213,28 +213,28 @@ class TestMeanVar(unittest.TestCase):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return xp.var(a, ddof=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_var_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.var(axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_external_var_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.var(a, axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_var_axis_ddof(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.var(axis=1, ddof=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_external_var_axis_ddof(self, xp, dtype):
@@ -265,28 +265,28 @@ class TestMeanVar(unittest.TestCase):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return xp.std(a, ddof=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_std_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.std(axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_external_std_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.std(a, axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_std_axis_ddof(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.std(axis=1, ddof=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_external_std_axis_ddof(self, xp, dtype):
@@ -473,7 +473,7 @@ class TestNanVarStdAdditional(unittest.TestCase):
     ],
     'func': ['mean', 'std', 'var'],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestProductZeroLength(unittest.TestCase):
 

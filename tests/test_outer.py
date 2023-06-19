@@ -55,7 +55,7 @@ class TestScalarOuter(unittest.TestCase):
         a = xp.arange(5**3, dtype=dtype).reshape(5, 5, 5)
         return xp.outer(a, scalar)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_both_inputs_as_scalar(self, xp):
         a = xp.int64(4)

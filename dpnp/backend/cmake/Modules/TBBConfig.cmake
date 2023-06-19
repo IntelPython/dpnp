@@ -32,7 +32,7 @@ endif()
 
 get_filename_component(_tbb_root "${CMAKE_CURRENT_LIST_DIR}" REALPATH)
 get_filename_component(_tbb_root "${_tbb_root}/../../.." ABSOLUTE)
-         
+
 set(TBB_INTERFACE_VERSION )
 
 set(_tbb_bin_version 12)
@@ -60,7 +60,7 @@ if (UNIX)
   set(_tbb_lib_prefix "lib")
   set(_tbb_lib_dir_conda "lib")
   set(_bin_version "")
-elseif (WIN32) 
+elseif (WIN32)
   set(_bin_version "")
   set(_tbb_lib_prefix "")
   set(_tbb_lib_ext ".dll")
@@ -82,21 +82,21 @@ if(WIN32)
 endif()
 
     if(UNIX)
-       find_library(_tbb_release_lib 
+       find_library(_tbb_release_lib
                     NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_lib_ext}
                     PATHS ${_tbb_root}
                     HINTS ENV TBB_ROOT_HINT
                     PATH_SUFFIXES "${_tbb_lib_dir_conda}" "lib/${_tbb_subdir}")
 
     else()
-       find_file(_tbb_release_lib 
+       find_file(_tbb_release_lib
                  NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_lib_ext}
                  PATHS ${_tbb_root}
                  HINTS ENV TBB_ROOT_HINT
                  PATH_SUFFIXES "${_tbb_lib_dir_conda}" "lib/${_tbb_subdir}")
 
        if (EXISTS "${_tbb_release_lib}")
-          find_library(_tbb_release_impllib 
+          find_library(_tbb_release_impllib
                        NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_impllib_ext}
                        PATHS ${_tbb_root}
                        HINTS ENV TBB_ROOT_HINT
@@ -105,13 +105,13 @@ endif()
     endif()
 
     if (NOT TBB_FIND_RELEASE_ONLY)
-        find_library(_tbb_debug_lib 
+        find_library(_tbb_debug_lib
                      NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}_debug.${_tbb_lib_ext}
                      PATHS ${_tbb_root}
                      HINTS ENV TBB_ROOT_HINT
                      PATH_SUFFIXES "${_tbb_lib_dir_conda}" "lib/${_tbb_subdir}")
         if(WIN32  AND EXISTS "${_tbb_debug_lib}")
-           find_library(_tbb_debug_impllib 
+           find_library(_tbb_debug_impllib
                         NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}_debug.${_tbb_impllib_ext}
                         PATHS ${_tbb_root}
                         HINTS ENV TBB_ROOT_HINT

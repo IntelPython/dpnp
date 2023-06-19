@@ -36,7 +36,7 @@ void MT19937_InitScalarSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, ui
 
 void MT19937_InitVectorSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, uint32_t *seed, unsigned int n) {
     sycl::queue *q = reinterpret_cast<sycl::queue *>(q_ref);
-    
+
     switch (n) {
         case 1: mt19937->engine = new mkl_rng::mt19937(*q, {seed[0]}); break;
         case 2: mt19937->engine = new mkl_rng::mt19937(*q, {seed[0], seed[1]}); break;

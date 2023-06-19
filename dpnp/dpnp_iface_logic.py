@@ -49,23 +49,23 @@ from dpnp.dpnp_utils import *
 
 
 __all__ = [
-    "all",
-    "allclose",
-    "any",
-    "equal",
-    "greater",
-    "greater_equal",
-    "isclose",
-    "isfinite",
-    "isinf",
-    "isnan",
-    "less",
-    "less_equal",
-    "logical_and",
-    "logical_not",
-    "logical_or",
-    "logical_xor",
-    "not_equal"
+    'all',
+    'allclose',
+    'any',
+    'equal',
+    'greater',
+    'greater_equal',
+    'isclose',
+    'isfinite',
+    'isinf',
+    'isnan',
+    'less',
+    'less_equal',
+    'logical_and',
+    'logical_not',
+    'logical_or',
+    'logical_xor',
+    'not_equal'
 ]
 
 
@@ -278,7 +278,7 @@ def equal(x1,
     [True, True, False]
 
     """
-    
+
     if out is not None:
         pass
     elif where is not True:

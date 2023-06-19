@@ -129,7 +129,7 @@ static auto dpnp_vec_cast_impl(const Vec& v, std::index_sequence<I...>)
 
 /**
  * @brief A casting function for SYCL vector.
- * 
+ *
  * @tparam dstT A result type upon casting.
  * @tparam srcT An incoming type of the vector.
  * @tparam N A number of elements with the vector.

@@ -44,14 +44,14 @@ def black_scholes_put(lib, S, K, T, r, sigma):
 
 class TestBlackScholes(DPNPTestPerfBase):
 
-    @pytest.mark.parametrize("dtype", [numpy.float64])
-    @pytest.mark.parametrize("size", [1024, 2048, 4096, 8192])
+    @pytest.mark.parametrize('dtype', [numpy.float64])
+    @pytest.mark.parametrize('size', [1024, 2048, 4096, 8192])
     def test_bs_put(self, lib, dtype, size):
         numpy.random.seed(SEED)
         S = gen_data(lib, SL, SH, size)
         K = gen_data(lib, KL, KH, size)
         T = gen_data(lib, TL, TH, size)
 
-        self.dpnp_benchmark("bs_put", lib, dtype, size,
+        self.dpnp_benchmark('bs_put', lib, dtype, size,
                             lib, S, K, T, RISK_FREE, VOLATILITY,
                             custom_fptr=black_scholes_put)

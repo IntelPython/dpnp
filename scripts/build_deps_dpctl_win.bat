@@ -1,4 +1,4 @@
-rem git clone --branch 0.5.0rc2 https://github.com/IntelPython/dpctl.git 
+rem git clone --branch 0.5.0rc2 https://github.com/IntelPython/dpctl.git
 rem for /f "tokens=* delims=" %%a in ('git tag -l') do git tag -d %%a
 rem git tag 0.5.0rc2
 
@@ -11,7 +11,7 @@ set DPCTL_DIST=%CD%\dist_dpctl
 call conda uninstall -y dpctl
 
 echo +++++++++++++++++++++++++ Downlowd DPCTL +++++++++++++++++++++++++++
-call git clone https://github.com/IntelPython/dpctl.git 
+call git clone https://github.com/IntelPython/dpctl.git
 cd dpctl
 
 set "ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"

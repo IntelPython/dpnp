@@ -57,24 +57,24 @@ class dpnp_array:
 
     def __init__(self,
                  shape,
-                 dtype="f8",
+                 dtype='f8',
                  buffer=None,
                  offset=0,
                  strides=None,
-                 order="C",
+                 order='C',
                  device=None,
-                 usm_type="device",
+                 usm_type='device',
                  sycl_queue=None):
         if buffer is not None:
             if not isinstance(buffer, dpt.usm_ndarray):
                 raise TypeError(
-                    "Expected dpctl.tensor.usm_ndarray, got {}"
-                    "".format(type(buffer))
+                    'Expected dpctl.tensor.usm_ndarray, got {}'
+                    ''.format(type(buffer))
                 )
             if buffer.shape != shape:
                 raise ValueError(
-                    "Expected buffer.shape={}, got {}"
-                    "".format(shape, buffer.shape)
+                    'Expected buffer.shape={}, got {}'
+                    ''.format(shape, buffer.shape)
                 )
             self._array_obj = dpt.asarray(buffer,
                                           copy=False,
@@ -87,7 +87,7 @@ class dpnp_array:
                                               buffer=usm_type,
                                               offset=offset,
                                               order=order,
-                                              buffer_ctor_kwargs={"queue": sycl_queue_normalized})
+                                              buffer_ctor_kwargs={'queue': sycl_queue_normalized})
 
     @property
     def __sycl_usm_array_interface__(self):
@@ -191,8 +191,8 @@ class dpnp_array:
         item = self._array_obj.__getitem__(key)
         if not isinstance(item, dpt.usm_ndarray):
             raise RuntimeError(
-                "Expected dpctl.tensor.usm_ndarray, got {}"
-                "".format(type(item)))
+                'Expected dpctl.tensor.usm_ndarray, got {}'
+                ''.format(type(item)))
 
         res = self.__new__(dpnp_array)
         res._array_obj = item
@@ -315,7 +315,7 @@ class dpnp_array:
  # '__reduce_ex__',
 
     def __repr__(self):
-        return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
+        return dpt.usm_ndarray_repr(self._array_obj, prefix='array')
 
  # '__rfloordiv__',
 
@@ -396,7 +396,7 @@ class dpnp_array:
     def _create_from_usm_ndarray(usm_ary : dpt.usm_ndarray):
         if not isinstance(usm_ary, dpt.usm_ndarray):
             raise TypeError(
-                f"Expected dpctl.tensor.usm_ndarray, got {type(usm_ary)}"
+                f'Expected dpctl.tensor.usm_ndarray, got {type(usm_ary)}'
                 )
         res = dpnp_array.__new__(dpnp_array)
         res._array_obj = usm_ary
@@ -770,7 +770,7 @@ class dpnp_array:
 
         if id is None:
             if self.size != 1:
-                raise ValueError("DPNP dparray::item(): can only convert an array of size 1 to a Python scalar")
+                raise ValueError('DPNP dparray::item(): can only convert an array of size 1 to a Python scalar')
             else:
                 id = 0
 

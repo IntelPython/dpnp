@@ -70,17 +70,17 @@ if __name__ == '__main__':
     test_repetition = 5
     for test_type in [numpy.float64, numpy.float32, numpy.int64, numpy.int32]:
         type_name = numpy.dtype(test_type).name
-        print(f"...Test data type is {test_type}, each test repetitions {test_repetition}")
+        print(f'...Test data type is {test_type}, each test repetitions {test_repetition}')
 
         for size in [16, 32, 64, 128, 256, 512, 1024, 2048, 4096]:
-            time_python, result_python = run_function(numpy, "<NumPy>", size, test_type, test_repetition)
-            time_mkl, result_mkl = run_function(dpnp, " <DPNP>", size, test_type, test_repetition)
+            time_python, result_python = run_function(numpy, '<NumPy>', size, test_type, test_repetition)
+            time_mkl, result_mkl = run_function(dpnp, ' <DPNP>', size, test_type, test_repetition)
 
             if result_mkl == result_python:
                 verification = True
             else:
-                verification = f"({result_mkl} != {result_python})"
+                verification = f'({result_mkl} != {result_python})'
 
-            msg = f"type:{type_name}:N:{size:4}:NumPy:{time_python:.3e}:SYCL:{time_mkl:.3e}"
-            msg += f":ratio:{time_python/time_mkl:6.2f}:verification:{verification}"
+            msg = f'type:{type_name}:N:{size:4}:NumPy:{time_python:.3e}:SYCL:{time_mkl:.3e}'
+            msg += f':ratio:{time_python/time_mkl:6.2f}:verification:{verification}'
             print(msg)

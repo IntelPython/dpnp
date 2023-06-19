@@ -105,7 +105,7 @@ class TestEigenvalue(unittest.TestCase):
                 A[i].dot(v[i]), w[i]*v[i], rtol=1e-5, atol=1e-5)
         return w
 
-    @pytest.mark.skip("No support of dpnp.eigvalsh()")
+    @pytest.mark.skip('No support of dpnp.eigvalsh()')
     @testing.for_all_dtypes(no_float16=True, no_complex=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_eigvalsh(self, xp, dtype):
@@ -115,7 +115,7 @@ class TestEigenvalue(unittest.TestCase):
         # so they should be directly comparable
         return w
 
-    @pytest.mark.skip("No support of dpnp.eigvalsh()")
+    @pytest.mark.skip('No support of dpnp.eigvalsh()')
     @testing.for_all_dtypes(no_float16=True, no_complex=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_eigvalsh_batched(self, xp, dtype):
@@ -126,7 +126,7 @@ class TestEigenvalue(unittest.TestCase):
         # so they should be directly comparable
         return w
 
-    @pytest.mark.skip("No support of dpnp.eigvalsh()")
+    @pytest.mark.skip('No support of dpnp.eigvalsh()')
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_eigvalsh_complex(self, xp, dtype):
@@ -136,7 +136,7 @@ class TestEigenvalue(unittest.TestCase):
         # so they should be directly comparable
         return w
 
-    @pytest.mark.skip("No support of dpnp.eigvalsh()")
+    @pytest.mark.skip('No support of dpnp.eigvalsh()')
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_eigvalsh_complex_batched(self, xp, dtype):
@@ -163,7 +163,7 @@ class TestEigenvalueEmpty(unittest.TestCase):
         assert a.size == 0
         return xp.linalg.eigh(a, UPLO=self.UPLO)
 
-    @pytest.mark.skip("No support of dpnp.eigvalsh()")
+    @pytest.mark.skip('No support of dpnp.eigvalsh()')
     @testing.for_dtypes('ifdFD')
     @testing.numpy_cupy_allclose()
     def test_eigvalsh(self, xp, dtype):
@@ -189,7 +189,7 @@ class TestEigenvalueInvalid(unittest.TestCase):
             with pytest.raises((numpy.linalg.LinAlgError, ValueError)):
                 xp.linalg.eigh(a, self.UPLO)
 
-    @pytest.mark.skip("No support of dpnp.eigvalsh()")
+    @pytest.mark.skip('No support of dpnp.eigvalsh()')
     def test_eigvalsh_shape_error(self):
         for xp in (numpy, cupy):
             a = xp.zeros(self.shape)

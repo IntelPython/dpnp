@@ -16,13 +16,13 @@ from numpy.testing import (
 
 
 def vvsort(val, vec, size, xp):
-    val_kwargs = dict()
+    val_kwargs = {}
     if hasattr(val, 'sycl_queue'):
-        val_kwargs['sycl_queue'] = getattr(val, "sycl_queue", None)
+        val_kwargs['sycl_queue'] = getattr(val, 'sycl_queue', None)
 
-    vec_kwargs = dict()
+    vec_kwargs = {}
     if hasattr(vec, 'sycl_queue'):
-        vec_kwargs['sycl_queue'] = getattr(vec, "sycl_queue", None)
+        vec_kwargs['sycl_queue'] = getattr(vec, 'sycl_queue', None)
 
     for i in range(size):
         imax = i
@@ -46,7 +46,7 @@ def vvsort(val, vec, size, xp):
         vec[:, imax] = temp
 
 
-@pytest.mark.parametrize("array",
+@pytest.mark.parametrize('array',
                          [[[[1, -2], [2, 5]]],
                           [[[1., -2.], [2., 5.]]],
                           [[[1., -2.], [2., 5.]], [[1., -2.], [2., 5.]]]],
@@ -61,10 +61,10 @@ def test_cholesky(array):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("arr",
+@pytest.mark.parametrize('arr',
                          [[[1, 0, -1], [0, 1, 0], [1, 0, 1]], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]],
                          ids=['[[1, 0, -1], [0, 1, 0], [1, 0, 1]]', '[[1, 2, 3], [4, 5, 6], [7, 8, 9]]'])
-@pytest.mark.parametrize("p",
+@pytest.mark.parametrize('p',
                          [None, 1, -1, 2, -2, numpy.inf, -numpy.inf, 'fro'],
                          ids=['None', '1', '-1', '2', '-2', 'numpy.inf', '-numpy.inf', '"fro"'])
 def test_cond(arr, p):
@@ -75,7 +75,7 @@ def test_cond(arr, p):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("array",
+@pytest.mark.parametrize('array',
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
                           [[1, 2], [3, 4]],
@@ -94,9 +94,9 @@ def test_det(array):
     assert_allclose(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("size",
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.parametrize('type', get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize('size',
                          [2, 4, 8, 16, 300])
 def test_eig_arange(type, size):
     if dpctl.get_current_device_type() != dpctl.device_type.gpu:
@@ -136,9 +136,9 @@ def test_eig_arange(type, size):
     assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_none=True))
-@pytest.mark.parametrize("size", [2, 4, 8])
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.parametrize('type', get_all_dtypes(no_bool=True, no_none=True))
+@pytest.mark.parametrize('size', [2, 4, 8])
 def test_eigh_arange(type, size):
     a = numpy.arange(size * size, dtype=type).reshape((size, size))
     symm_orig = numpy.tril(a) + numpy.tril(a, -1).T + numpy.diag(numpy.full((size,), size * size, dtype=type))
@@ -172,7 +172,7 @@ def test_eigh_arange(type, size):
     assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-04)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize('type', get_all_dtypes(no_bool=True, no_complex=True))
 def test_eigvals(type):
     if dpctl.get_current_device_type() != dpctl.device_type.gpu:
         pytest.skip("eigvals function doesn\'t work on CPU: https://github.com/IntelPython/dpnp/issues/1005")
@@ -190,8 +190,8 @@ def test_eigvals(type):
         assert_allclose(expected, result, atol=0.5)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("array",
+@pytest.mark.parametrize('type', get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize('array',
                          [[[1., 2.], [3., 4.]], [[0, 1, 2], [3, 2, -1], [4, -2, 3]]],
                          ids=['[[1., 2.], [3., 4.]]', '[[0, 1, 2], [3, 2, -1], [4, -2, 3]]'])
 def test_inv(type, array):
@@ -202,11 +202,11 @@ def test_inv(type, array):
     assert_allclose(expected, result)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
-@pytest.mark.parametrize("array",
+@pytest.mark.parametrize('type', get_all_dtypes(no_bool=True, no_complex=True, no_none=True))
+@pytest.mark.parametrize('array',
                          [[0, 0], [0, 1], [1, 2], [[0, 0], [0, 0]], [[1, 2], [1, 2]], [[1, 2], [3, 4]]],
                          ids=['[0, 0]', '[0, 1]', '[1, 2]', '[[0, 0], [0, 0]]', '[[1, 2], [1, 2]]', '[[1, 2], [3, 4]]'])
-@pytest.mark.parametrize("tol",
+@pytest.mark.parametrize('tol',
                          [None],
                          ids=['None'])
 def test_matrix_rank(type, tol, array):
@@ -219,15 +219,15 @@ def test_matrix_rank(type, tol, array):
     assert_allclose(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-@pytest.mark.parametrize("array",
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.usefixtures('suppress_divide_numpy_warnings')
+@pytest.mark.parametrize('array',
                          [[7], [1, 2], [1, 0]],
                          ids=['[7]', '[1, 2]', '[1, 0]'])
-@pytest.mark.parametrize("ord",
+@pytest.mark.parametrize('ord',
                          [None, -numpy.Inf, -2, -1, 0, 1, 2, 3, numpy.Inf],
                          ids=['None', '-numpy.Inf', '-2', '-1', '0', '1', '2', '3', 'numpy.Inf'])
-@pytest.mark.parametrize("axis",
+@pytest.mark.parametrize('axis',
                          [0, None],
                          ids=['0', 'None'])
 def test_norm1(array, ord, axis):
@@ -238,14 +238,14 @@ def test_norm1(array, ord, axis):
     assert_allclose(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("array",
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.parametrize('array',
                          [[[1, 0]], [[1, 2]], [[1, 0], [3, 0]], [[1, 2], [3, 4]]],
                          ids=['[[1, 0]]', '[[1, 2]]', '[[1, 0], [3, 0]]', '[[1, 2], [3, 4]]'])
-@pytest.mark.parametrize("ord",
+@pytest.mark.parametrize('ord',
                          [None, -numpy.Inf, -2, -1, 1, 2, numpy.Inf, 'fro', 'nuc'],
                          ids=['None', '-numpy.Inf', '-2', '-1', '1', '2', 'numpy.Inf', '"fro"', '"nuc"'])
-@pytest.mark.parametrize("axis",
+@pytest.mark.parametrize('axis',
                          [(0, 1), None],
                          ids=['(0, 1)', 'None'])
 def test_norm2(array, ord, axis):
@@ -256,14 +256,14 @@ def test_norm2(array, ord, axis):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("array",
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.parametrize('array',
                          [[[[1, 2], [3, 4]], [[5, 6], [7, 8]]], [[[1, 0], [3, 0]], [[5, 0], [7, 0]]]],
                          ids=['[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]', '[[[1, 0], [3, 0]], [[5, 0], [7, 0]]]'])
-@pytest.mark.parametrize("ord",
+@pytest.mark.parametrize('ord',
                          [None, -numpy.Inf, -2, -1, 1, 2, numpy.Inf],
                          ids=['None', '-numpy.Inf', '-2', '-1', '1', '2', 'numpy.Inf'])
-@pytest.mark.parametrize("axis",
+@pytest.mark.parametrize('axis',
                          [0, 1, 2, (0, 1), (0, 2), (1, 2)],
                          ids=['0', '1', '2', '(0, 1)', '(0, 2)', '(1, 2)'])
 def test_norm3(array, ord, axis):
@@ -274,12 +274,12 @@ def test_norm3(array, ord, axis):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("shape",
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.parametrize('type', get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize('shape',
                          [(2, 2), (3, 4), (5, 3), (16, 16)],
                          ids=['(2,2)', '(3,4)', '(5,3)', '(16,16)'])
-@pytest.mark.parametrize("mode",
+@pytest.mark.parametrize('mode',
                          ['complete', 'reduced'],
                          ids=['complete', 'reduced'])
 def test_qr(type, shape, mode):
@@ -316,8 +316,8 @@ def test_qr(type, shape, mode):
     assert_allclose(dpnp_r, np_r, rtol=tol, atol=tol)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("shape",
+@pytest.mark.parametrize('type', get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize('shape',
                          [(2, 2), (3, 4), (5, 3), (16, 16)],
                          ids=['(2,2)', '(3,4)', '(5,3)', '(16,16)'])
 def test_svd(type, shape):

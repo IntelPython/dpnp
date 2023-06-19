@@ -50,25 +50,25 @@ import dpctl.tensor as dpt
 
 
 __all__ = [
-    "choose",
-    "diag_indices",
-    "diag_indices_from",
-    "diagonal",
-    "extract",
-    "fill_diagonal",
-    "indices",
-    "nonzero",
-    "place",
-    "put",
-    "put_along_axis",
-    "putmask",
-    "select",
-    "take",
-    "take_along_axis",
-    "tril_indices",
-    "tril_indices_from",
-    "triu_indices",
-    "triu_indices_from"
+    'choose',
+    'diag_indices',
+    'diag_indices_from',
+    'diagonal',
+    'extract',
+    'fill_diagonal',
+    'indices',
+    'nonzero',
+    'place',
+    'put',
+    'put_along_axis',
+    'putmask',
+    'select',
+    'take',
+    'take_along_axis',
+    'tril_indices',
+    'tril_indices_from',
+    'triu_indices',
+    'triu_indices_from'
 ]
 
 

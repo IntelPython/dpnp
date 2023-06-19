@@ -49,24 +49,24 @@ from enum import Enum
 
 
 __all__ = [
-    "fft",
-    "fft2",
-    "fftfreq",
-    "fftn",
-    "fftshift",
-    "hfft",
-    "ifft",
-    "ifft2",
-    "ifftn",
-    "ifftshift",
-    "ihfft",
-    "irfft",
-    "irfft2",
-    "irfftn",
-    "rfft",
-    "rfft2",
-    "rfftfreq",
-    "rfftn"
+    'fft',
+    'fft2',
+    'fftfreq',
+    'fftn',
+    'fftshift',
+    'hfft',
+    'ifft',
+    'ifft2',
+    'ifftn',
+    'ifftshift',
+    'ihfft',
+    'irfft',
+    'irfft2',
+    'irfftn',
+    'rfft',
+    'rfft2',
+    'rfftfreq',
+    'rfftn'
 ]
 
 
@@ -76,13 +76,13 @@ class Norm(Enum):
     ortho = 2
 
 def get_validated_norm(norm):
-    if norm is None or norm == "backward":
+    if norm is None or norm == 'backward':
         return Norm.backward
-    if norm == "forward":
+    if norm == 'forward':
         return Norm.forward
-    if norm == "ortho":
+    if norm == 'ortho':
         return Norm.ortho
-    raise ValueError("Unknown norm value.")
+    raise ValueError('Unknown norm value.')
 
 
 def fft(x1, n=None, axis=-1, norm=None):
@@ -208,7 +208,7 @@ def fftn(x1, s=None, axes=None, norm=None):
                 try:
                     param_n = boundaries[param_axis]
                 except IndexError:
-                    checker_throw_axis_error("fft.fftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
+                    checker_throw_axis_error('fft.fftn', 'is out of bounds', param_axis, f'< {len(boundaries)}')
 
                 x1_iter = fft(x1_iter, n=param_n, axis=param_axis, norm=norm)
 
@@ -429,7 +429,7 @@ def ifftn(x1, s=None, axes=None, norm=None):
                 try:
                     param_n = boundaries[param_axis]
                 except IndexError:
-                    checker_throw_axis_error("fft.ifftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
+                    checker_throw_axis_error('fft.ifftn', 'is out of bounds', param_axis, f'< {len(boundaries)}')
 
                 x1_iter_desc = dpnp.get_dpnp_descriptor(x1_iter)
                 x1_iter = ifft(x1_iter_desc.get_pyobj(), n=param_n, axis=param_axis, norm=norm)
@@ -597,7 +597,7 @@ def irfftn(x1, s=None, axes=None, norm=None):
                 try:
                     param_n = boundaries[param_axis]
                 except IndexError:
-                    checker_throw_axis_error("fft.irfftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
+                    checker_throw_axis_error('fft.irfftn', 'is out of bounds', param_axis, f'< {len(boundaries)}')
 
                 x1_iter_desc = dpnp.get_dpnp_descriptor(x1_iter)
                 x1_iter = irfft(x1_iter_desc.get_pyobj(), n=param_n, axis=param_axis, norm=norm)
@@ -736,7 +736,7 @@ def rfftn(x1, s=None, axes=None, norm=None):
                 try:
                     param_n = boundaries[param_axis]
                 except IndexError:
-                    checker_throw_axis_error("fft.rfftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
+                    checker_throw_axis_error('fft.rfftn', 'is out of bounds', param_axis, f'< {len(boundaries)}')
 
                 x1_iter_desc = dpnp.get_dpnp_descriptor(x1_iter, copy_when_nondefault_queue=False)
                 x1_iter = rfft(x1_iter_desc.get_pyobj(), n=param_n, axis=param_axis, norm=norm)

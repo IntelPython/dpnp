@@ -39,10 +39,10 @@ dpctlpath = os.path.dirname(dpctl.__file__)
 # are not installed under any of default paths where Python is searching.
 from platform import system
 if system() == 'Windows':
-    if hasattr(os, "add_dll_directory"):
+    if hasattr(os, 'add_dll_directory'):
         os.add_dll_directory(mypath)
         os.add_dll_directory(dpctlpath)
-    os.environ["PATH"] = os.pathsep.join([os.getenv("PATH", ""), mypath, dpctlpath])
+    os.environ['PATH'] = os.pathsep.join([os.getenv('PATH', ''), mypath, dpctlpath])
 
 from dpnp.dpnp_array import dpnp_array as ndarray
 from dpnp.dpnp_flatiter import flatiter as flatiter

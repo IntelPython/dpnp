@@ -10,7 +10,7 @@ from tests.third_party.cupy import testing
 @testing.parameterize(*testing.product({
     'decimals': [-2, -1, 0, 1, 2],
 }))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 class TestRound(unittest.TestCase):
 
     shape = (20,)

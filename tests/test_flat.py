@@ -5,7 +5,7 @@ import dpnp as inp
 import numpy
 
 
-@pytest.mark.parametrize("type",
+@pytest.mark.parametrize('type',
                          [numpy.int64],
                          ids=['int64'])
 def test_flat(type):
@@ -17,7 +17,7 @@ def test_flat(type):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("type",
+@pytest.mark.parametrize('type',
                          [numpy.int64],
                          ids=['int64'])
 def test_flat2(type):
@@ -29,7 +29,7 @@ def test_flat2(type):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("type",
+@pytest.mark.parametrize('type',
                          [numpy.int64],
                          ids=['int64'])
 def test_flat3(type):

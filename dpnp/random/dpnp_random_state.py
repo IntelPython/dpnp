@@ -154,7 +154,7 @@ class RandomState:
             dtype = self._def_float_type
 
         if not dtype in supported_types:
-            raise TypeError(f"dtype={dtype} is unsupported.")
+            raise TypeError(f'dtype={dtype} is unsupported.')
         elif dtype != map_dtype_to_device(dtype, self._sycl_device):
             raise RuntimeError(f"dtype={dtype} is not supported by SYCL device '{self._sycl_device}'")
         return dtype
@@ -198,7 +198,7 @@ class RandomState:
         return self._sycl_device
 
 
-    def normal(self, loc=0.0, scale=1.0, size=None, dtype=None, usm_type="device"):
+    def normal(self, loc=0.0, scale=1.0, size=None, dtype=None, usm_type='device'):
         """
         Draw random samples from a normal (Gaussian) distribution.
 
@@ -247,13 +247,13 @@ class RandomState:
                 max_floating = numpy.finfo(dtype).max
 
                 if (loc >= max_floating or loc <= min_floating) and self._is_finite_scalar(loc):
-                    raise OverflowError(f"Range of loc={loc} exceeds valid bounds")
+                    raise OverflowError(f'Range of loc={loc} exceeds valid bounds')
 
                 if (scale >= max_floating) and self._is_finite_scalar(scale):
-                    raise OverflowError(f"Range of scale={scale} exceeds valid bounds")
+                    raise OverflowError(f'Range of scale={scale} exceeds valid bounds')
                 # scale = -0.0 is cosidered as negative
                 elif scale < 0 or scale == 0 and self._is_signbit_scalar(scale):
-                    raise ValueError(f"scale={scale}, but must be non-negative.")
+                    raise ValueError(f'scale={scale}, but must be non-negative.')
 
                 dpu.validate_usm_type(usm_type=usm_type, allow_none=False)
                 return self._random_state.normal(loc=loc,
@@ -266,7 +266,7 @@ class RandomState:
                            loc=loc, scale=scale, size=size, sycl_queue=self._sycl_queue)
 
 
-    def rand(self, *args, usm_type="device"):
+    def rand(self, *args, usm_type='device'):
         """
         Draw random values in a given shape.
 
@@ -309,7 +309,7 @@ class RandomState:
             return self.random_sample(size=args, usm_type=usm_type)
 
 
-    def randint(self, low, high=None, size=None, dtype=int, usm_type="device"):
+    def randint(self, low, high=None, size=None, dtype=int, usm_type='device'):
         """
         Draw random integers from `low` (inclusive) to `high` (exclusive).
 
@@ -368,14 +368,14 @@ class RandomState:
                     max_int = numpy.iinfo('int32').max
 
                     if not self._is_finite_scalar(low) or low > max_int or low < min_int:
-                        raise OverflowError(f"Range of low={low} exceeds valid bounds")
+                        raise OverflowError(f'Range of low={low} exceeds valid bounds')
                     elif not self._is_finite_scalar(high) or high > max_int or high < min_int:
-                        raise OverflowError(f"Range of high={high} exceeds valid bounds")
+                        raise OverflowError(f'Range of high={high} exceeds valid bounds')
 
                     low = int(low)
                     high = int(high)
                     if low >= high:
-                        raise ValueError(f"low={low} >= high={high}")
+                        raise ValueError(f'low={low} >= high={high}')
 
                     return self.uniform(low=low,
                                         high=high,
@@ -387,7 +387,7 @@ class RandomState:
                            low=low, high=high, size=size, dtype=dtype, sycl_queue=self._sycl_queue)
 
 
-    def randn(self, *args, usm_type="device"):
+    def randn(self, *args, usm_type='device'):
         """
         Return a sample (or samples) from the "standard normal" distribution.
 
@@ -434,7 +434,7 @@ class RandomState:
                                     usm_type=usm_type)
 
 
-    def random_sample(self, size=None, usm_type="device"):
+    def random_sample(self, size=None, usm_type='device'):
         """
         Draw random floats in the half-open interval [0.0, 1.0).
 
@@ -475,7 +475,7 @@ class RandomState:
                             usm_type=usm_type)
 
 
-    def standard_normal(self, size=None, usm_type="device"):
+    def standard_normal(self, size=None, usm_type='device'):
         """
         Draw samples from a standard Normal distribution (mean=0, stdev=1).
 
@@ -516,7 +516,7 @@ class RandomState:
                            usm_type=usm_type)
 
 
-    def uniform(self, low=0.0, high=1.0, size=None, dtype=None, usm_type="device"):
+    def uniform(self, low=0.0, high=1.0, size=None, dtype=None, usm_type='device'):
         """
         Draw samples from a uniform distribution.
 
@@ -571,9 +571,9 @@ class RandomState:
                 max_double = numpy.finfo('double').max
 
                 if not self._is_finite_scalar(low) or low >= max_double or low <= min_double:
-                    raise OverflowError(f"Range of low={low} exceeds valid bounds")
+                    raise OverflowError(f'Range of low={low} exceeds valid bounds')
                 elif not self._is_finite_scalar(high) or high >= max_double or high <= min_double:
-                    raise OverflowError(f"Range of high={high} exceeds valid bounds")
+                    raise OverflowError(f'Range of high={high} exceeds valid bounds')
 
                 if low > high:
                     low, high = high, low

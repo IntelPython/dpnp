@@ -10,19 +10,19 @@ from tests.third_party.cupy import testing
 @testing.gpu
 class TestIndexing(unittest.TestCase):
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_take_by_scalar(self, xp):
         a = testing.shaped_arange((2, 4, 3), xp)
         return a.take(2, axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_external_take_by_scalar(self, xp):
         a = testing.shaped_arange((2, 4, 3), xp)
         return xp.take(a, 2, axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_take_by_array(self, xp):
         a = testing.shaped_arange((2, 4, 3), xp)
@@ -51,14 +51,14 @@ class TestIndexing(unittest.TestCase):
         b = xp.array([0], dtype=dtype)
         return a.take(b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_take_along_axis(self, xp):
         a = testing.shaped_random((2, 4, 3), xp, dtype='float32')
         b = testing.shaped_random((2, 6, 3), xp, dtype='int64', scale=4)
         return xp.take_along_axis(a, b, axis=-2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_take_along_axis_none_axis(self, xp):
         a = testing.shaped_random((2, 4, 3), xp, dtype='float32')
@@ -102,7 +102,7 @@ class TestIndexing(unittest.TestCase):
         a = testing.shaped_arange((3, 4, 5), xp, dtype)
         return a.diagonal(1, 2, 0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_external_diagonal(self, xp, dtype):
@@ -166,7 +166,7 @@ class TestIndexing(unittest.TestCase):
         b = xp.array([[1, 0, 1], [0, 1, 0], [1, 0, 1]], dtype=dtype)
         return xp.extract(b, a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_extract_shape_mismatch(self, xp):
         a = testing.shaped_arange((2, 3), xp)
@@ -175,7 +175,7 @@ class TestIndexing(unittest.TestCase):
                       [True, False]])
         return xp.extract(b, a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_extract_size_mismatch(self, xp):
         a = testing.shaped_arange((3, 3), xp)
@@ -183,7 +183,7 @@ class TestIndexing(unittest.TestCase):
                       [False, True, False]])
         return xp.extract(b, a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_extract_size_mismatch2(self, xp):
         a = testing.shaped_arange((3, 3), xp)
@@ -191,7 +191,7 @@ class TestIndexing(unittest.TestCase):
                       [False, True, False, True]])
         return xp.extract(b, a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.numpy_cupy_array_equal()
     def test_extract_empty_1dim(self, xp):
         a = testing.shaped_arange((3, 3), xp)
@@ -199,7 +199,7 @@ class TestIndexing(unittest.TestCase):
         return xp.extract(b, a)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestChoose(unittest.TestCase):
 
@@ -350,7 +350,7 @@ class TestSelect(unittest.TestCase):
         with pytest.raises(AttributeError):
             cupy.select(condlist, choicelist)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     @testing.for_all_dtypes(no_bool=True)
     def test_select_type_error_choicelist(self, dtype):
         a, b = list(range(10)), list(range(-10, 0))

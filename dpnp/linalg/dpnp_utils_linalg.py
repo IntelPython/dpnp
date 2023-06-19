@@ -33,7 +33,7 @@ import dpnp.backend.extensions.lapack._lapack_impl as li
 import dpctl.tensor._tensor_impl as ti
 
 __all__ = [
-    "dpnp_eigh"
+    'dpnp_eigh'
 ]
 
 _jobz = {'N': 0, 'V': 1}
@@ -62,9 +62,9 @@ def dpnp_eigh(a, UPLO):
 
     # get resulting type of arrays with eigenvalues and eigenvectors
     a_dtype = a.dtype
-    lapack_func = "_syevd"
+    lapack_func = '_syevd'
     if dpnp.issubdtype(a_dtype, dpnp.complexfloating):
-        lapack_func = "_heevd"
+        lapack_func = '_heevd'
         v_type = a_dtype
         w_type = dpnp.float64 if a_dtype == dpnp.complex128 else dpnp.float32
     elif dpnp.issubdtype(a_dtype, dpnp.floating):

@@ -8,7 +8,7 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 @testing.gpu
 class TestArrayReduction(unittest.TestCase):
 

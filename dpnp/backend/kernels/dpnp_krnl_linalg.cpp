@@ -1038,7 +1038,7 @@ void func_map_init_linalg_func(func_map_t& fmap)
                                                          (void*)dpnp_svd_default_c<double, double, double>};
     fmap[DPNPFuncName::DPNP_FN_SVD][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_svd_default_c<std::complex<double>, std::complex<double>, double>};
-    
+
     fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_INT][eft_INT] = {eft_DBL,
                                                              (void*)dpnp_svd_ext_c<int32_t, double, double>};
     fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_LNG][eft_LNG] = {eft_DBL,

@@ -25,7 +25,7 @@ def cos_2_args(executor, size, test_type):
     end_time = time.perf_counter()
     calculation_time = end_time - start_time
 
-    print(f"memalloc_time={memalloc_time}, calculation_time={calculation_time}, executor={executor}")
+    print(f'memalloc_time={memalloc_time}, calculation_time={calculation_time}, executor={executor}')
 
     return result
 

@@ -5,10 +5,10 @@ import dpnp
 import numpy
 
 
-@pytest.mark.parametrize("type",
+@pytest.mark.parametrize('type',
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
-@pytest.mark.parametrize("size",
+@pytest.mark.parametrize('size',
                          [2, 4, 8, 16, 3, 9, 27, 81])
 def test_count_nonzero(type, size):
     a = numpy.arange(size, dtype=type)

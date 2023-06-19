@@ -20,7 +20,7 @@ pytest-benchmark compare results.json --csv=results.csv --group-by='name'
 ```
 
 ## Optional: creating histogram
-Note: make sure that `pytest-benchmark[histogram]` installed 
+Note: make sure that `pytest-benchmark[histogram]` installed
 ```bash
 # example
 pip install pytest-benchmark[histogram]

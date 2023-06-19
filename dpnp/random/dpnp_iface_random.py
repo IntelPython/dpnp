@@ -102,14 +102,14 @@ def _get_random_state(device=None, sycl_queue=None):
     global _dpnp_random_states
 
     if not isinstance(_dpnp_random_states, dict):
-         _dpnp_random_states = dict()
+         _dpnp_random_states = {}
     sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
     if sycl_queue not in _dpnp_random_states:
         rs = RandomState(device=device, sycl_queue=sycl_queue)
         if sycl_queue == rs.get_sycl_queue():
             _dpnp_random_states[sycl_queue] = rs
         else:
-            raise RuntimeError("Normalized SYCL queue {} mismatched with one returned by RandmoState {}"
+            raise RuntimeError('Normalized SYCL queue {} mismatched with one returned by RandmoState {}'
                                .format(sycl_queue, rs.get_sycl_queue()))
     return _dpnp_random_states[sycl_queue]
 
@@ -787,7 +787,7 @@ def normal(loc=0.0,
            scale=1.0,
            size=None,
            device=None,
-           usm_type="device",
+           usm_type='device',
            sycl_queue=None):
     """
     Draw random samples from a normal (Gaussian) distribution.
@@ -1018,7 +1018,7 @@ def power(a, size=None):
 def rand(d0,
          *dn,
          device=None,
-         usm_type="device",
+         usm_type='device',
          sycl_queue=None):
     """
     Random values in a given shape.
@@ -1068,7 +1068,7 @@ def randint(low,
             size=None,
             dtype=int,
             device=None,
-            usm_type="device",
+            usm_type='device',
             sycl_queue=None):
     """
     Return random integers from `low` (inclusive) to `high` (exclusive).
@@ -1123,7 +1123,7 @@ def randint(low,
 def randn(d0,
           *dn,
           device=None,
-          usm_type="device",
+          usm_type='device',
           sycl_queue=None):
     """
     Return a sample (or samples) from the "standard normal" distribution.
@@ -1172,7 +1172,7 @@ def randn(d0,
 
 def random(size=None,
            device=None,
-           usm_type="device",
+           usm_type='device',
            sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
@@ -1218,7 +1218,7 @@ def random_integers(low,
                     high=None,
                     size=None,
                     device=None,
-                    usm_type="device",
+                    usm_type='device',
                     sycl_queue=None):
     """
     Random integers between `low` and `high`, inclusive.
@@ -1273,7 +1273,7 @@ def random_integers(low,
 
 def random_sample(size=None,
                   device=None,
-                  usm_type="device",
+                  usm_type='device',
                   sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
@@ -1319,7 +1319,7 @@ def random_sample(size=None,
 
 def ranf(size=None,
          device=None,
-         usm_type="device",
+         usm_type='device',
          sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
@@ -1398,7 +1398,7 @@ def rayleigh(scale=1.0, size=None):
 
 def sample(size=None,
            device=None,
-           usm_type="device",
+           usm_type='device',
            sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
@@ -1603,7 +1603,7 @@ def standard_gamma(shape, size=None):
 
 def standard_normal(size=None,
                     device=None,
-                    usm_type="device",
+                    usm_type='device',
                     sycl_queue=None):
     """
     Draw samples from a standard Normal distribution (mean=0, stdev=1).
@@ -1725,7 +1725,7 @@ def uniform(low=0.0,
             high=1.0,
             size=None,
             device=None,
-            usm_type="device",
+            usm_type='device',
             sycl_queue=None):
     """
     Draw samples from a uniform distribution.

@@ -63,7 +63,7 @@ def example():
     test_repetition = 5
     for test_type in [numpy.float64, numpy.float32, numpy.int64, numpy.int32]:
         type_name = numpy.dtype(test_type).name
-        print(f"...Test data type is {type_name}, each test repetitions {test_repetition}")
+        print(f'...Test data type is {type_name}, each test repetitions {test_repetition}')
 
         for size in [64, 128, 256, 512, 1024, 2048, 4096]:
             time_numpy, result_numpy = run(numpy, size, test_type, test_repetition)
@@ -72,18 +72,18 @@ def example():
             if result_dpnp == result_numpy:
                 verification = True
             else:
-                verification = f"({result_dpnp} != {result_numpy})"
+                verification = f'({result_dpnp} != {result_numpy})'
 
-            msg = f"type:{type_name}:N:{size:4}:NumPy:{time_numpy:.3e}:SYCL:{time_dpnp:.3e}"
-            msg += f":ratio:{time_numpy/time_dpnp:6.2f}:verification:{verification}"
+            msg = f'type:{type_name}:N:{size:4}:NumPy:{time_numpy:.3e}:SYCL:{time_dpnp:.3e}'
+            msg += f':ratio:{time_numpy/time_dpnp:6.2f}:verification:{verification}'
             print(msg)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     try:
         import dpctl
 
-        with dpctl.device_context("opencl:gpu") as gpu_queue:
+        with dpctl.device_context('opencl:gpu') as gpu_queue:
             gpu_queue.get_sycl_device().dump_device_info()
             example()
 

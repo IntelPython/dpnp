@@ -14,10 +14,10 @@ from numpy.testing import (
 )
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@pytest.mark.parametrize('dtype', get_all_dtypes())
 @pytest.mark.parametrize(
-    "data", [[1, 2, 3], [1.0, 2.0, 3.0]], ids=["[1, 2, 3]", "[1., 2., 3.]"]
+    'data', [[1, 2, 3], [1.0, 2.0, 3.0]], ids=['[1, 2, 3]', '[1., 2., 3.]']
 )
 def test_asfarray(dtype, data):
     expected = numpy.asfarray(data, dtype)
@@ -26,9 +26,9 @@ def test_asfarray(dtype, data):
     assert_array_equal(result, expected)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes())
-@pytest.mark.parametrize("data", [[1.0, 2.0, 3.0]], ids=["[1., 2., 3.]"])
-@pytest.mark.parametrize("data_dtype", get_all_dtypes(no_none=True))
+@pytest.mark.parametrize('dtype', get_all_dtypes())
+@pytest.mark.parametrize('data', [[1.0, 2.0, 3.0]], ids=['[1., 2., 3.]'])
+@pytest.mark.parametrize('data_dtype', get_all_dtypes(no_none=True))
 def test_asfarray2(dtype, data, data_dtype):
     expected = numpy.asfarray(numpy.array(data, dtype=data_dtype), dtype)
     result = dpnp.asfarray(dpnp.array(data, dtype=data_dtype), dtype)
@@ -37,8 +37,8 @@ def test_asfarray2(dtype, data, data_dtype):
 
 
 class TestDims:
-    @pytest.mark.parametrize("dt", get_all_dtypes())
-    @pytest.mark.parametrize("sh",
+    @pytest.mark.parametrize('dt', get_all_dtypes())
+    @pytest.mark.parametrize('sh',
                              [(0,), (1,), (3,)],
                              ids=['(0,)', '(1,)', '(3,)'])
     def test_broadcast_array(self, sh, dt):
@@ -48,8 +48,8 @@ class TestDims:
 
         assert_allclose(func(numpy, np_a), func(dpnp, dp_a))
 
-    @pytest.mark.parametrize("dt", get_all_dtypes())
-    @pytest.mark.parametrize("sh",
+    @pytest.mark.parametrize('dt', get_all_dtypes())
+    @pytest.mark.parametrize('sh',
                              [(1,), (2,), (1, 2, 3)],
                              ids=['(1,)', '(2,)', '(1, 2, 3)'])
     def test_broadcast_ones(self, sh, dt):
@@ -59,8 +59,8 @@ class TestDims:
 
         assert_allclose(func(numpy, np_a), func(dpnp, dp_a))
 
-    @pytest.mark.parametrize("dt", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize("sh",
+    @pytest.mark.parametrize('dt', get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize('sh',
                              [(3,), (1, 3), (2, 3)],
                              ids=['(3,)', '(1, 3)', '(2, 3)'])
     def test_broadcast_arange(self, sh, dt):
@@ -70,13 +70,13 @@ class TestDims:
 
         assert_allclose(func(numpy, np_a), func(dpnp, dp_a))
 
-    @pytest.mark.parametrize("dt", get_all_dtypes())
+    @pytest.mark.parametrize('dt', get_all_dtypes())
     @pytest.mark.parametrize(
-        "sh1, sh2",
+        'sh1, sh2',
         [
-            pytest.param([0], [0], id="(0)"),
-            pytest.param([1], [1], id="(1)"),
-            pytest.param([1], [2], id="(2)"),
+            pytest.param([0], [0], id='(0)'),
+            pytest.param([1], [1], id='(1)'),
+            pytest.param([1], [2], id='(2)'),
         ],
     )
     def test_broadcast_not_tuple(self, sh1, sh2, dt):
@@ -86,13 +86,13 @@ class TestDims:
 
         assert_allclose(func(numpy, np_a), func(dpnp, dp_a))
 
-    @pytest.mark.parametrize("dt", get_all_dtypes())
+    @pytest.mark.parametrize('dt', get_all_dtypes())
     @pytest.mark.parametrize(
-        "sh1, sh2",
+        'sh1, sh2',
         [
-            pytest.param([1], (0,), id="(0,)"),
-            pytest.param((1, 2), (0, 2), id="(0, 2)"),
-            pytest.param((2, 1), (2, 0), id="(2, 0)"),
+            pytest.param([1], (0,), id='(0,)'),
+            pytest.param((1, 2), (0, 2), id='(0, 2)'),
+            pytest.param((2, 1), (2, 0), id='(2, 0)'),
         ],
     )
     def test_broadcast_zero_shape(self, sh1, sh2, dt):
@@ -103,19 +103,19 @@ class TestDims:
         assert_allclose(func(numpy, np_a), func(dpnp, dp_a))
 
     @pytest.mark.parametrize(
-        "sh1, sh2",
+        'sh1, sh2',
         [
-            pytest.param((0,), (), id="(0,)-()"),
-            pytest.param((1,), (), id="(1,)-()"),
-            pytest.param((3,), (), id="(3,)-()"),
-            pytest.param((3,), (1,), id="(3,)-(1,)"),
-            pytest.param((3,), (2,), id="(3,)-(2,)"),
-            pytest.param((3,), (4,), id="(3,)-(4,)"),
-            pytest.param((1, 2), (2, 1), id="(1, 2)-(2, 1)"),
-            pytest.param((1, 2), (1,), id="(1, 2)-(1,)"),
-            pytest.param((1,), -1, id="(1,)--1"),
-            pytest.param((1,), (-1,), id="(1,)-(-1,)"),
-            pytest.param((1, 2), (-1, 2), id="(1, 2)-(-1, 2)"),
+            pytest.param((0,), (), id='(0,)-()'),
+            pytest.param((1,), (), id='(1,)-()'),
+            pytest.param((3,), (), id='(3,)-()'),
+            pytest.param((3,), (1,), id='(3,)-(1,)'),
+            pytest.param((3,), (2,), id='(3,)-(2,)'),
+            pytest.param((3,), (4,), id='(3,)-(4,)'),
+            pytest.param((1, 2), (2, 1), id='(1, 2)-(2, 1)'),
+            pytest.param((1, 2), (1,), id='(1, 2)-(1,)'),
+            pytest.param((1,), -1, id='(1,)--1'),
+            pytest.param((1,), (-1,), id='(1,)-(-1,)'),
+            pytest.param((1, 2), (-1, 2), id='(1, 2)-(-1, 2)'),
         ],
     )
     def test_broadcast_raise(self, sh1, sh2):
@@ -128,7 +128,7 @@ class TestDims:
             func(dpnp, dp_a)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures('allow_fall_back_on_numpy')
 class TestConcatenate:
     def test_returns_copy(self):
         a = dpnp.array(numpy.eye(3))
@@ -192,11 +192,11 @@ class TestHstack:
     def test_non_iterable(self):
         assert_raises(TypeError, dpnp.hstack, 1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_empty_input(self):
         assert_raises(ValueError, dpnp.hstack, ())
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_0D_array(self):
         b = dpnp.array(2)
         a = dpnp.array(1)
@@ -204,7 +204,7 @@ class TestHstack:
         desired = dpnp.array([1, 2])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_1D_array(self):
         a = dpnp.array([1])
         b = dpnp.array([2])
@@ -212,7 +212,7 @@ class TestHstack:
         desired = dpnp.array([1, 2])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_2D_array(self):
         a = dpnp.array([[1], [2]])
         b = dpnp.array([[1], [2]])
@@ -231,11 +231,11 @@ class TestVstack:
     def test_non_iterable(self):
         assert_raises(TypeError, dpnp.vstack, 1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_empty_input(self):
         assert_raises(ValueError, dpnp.vstack, ())
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_0D_array(self):
         a = dpnp.array(1)
         b = dpnp.array(2)
@@ -243,7 +243,7 @@ class TestVstack:
         desired = dpnp.array([[1], [2]])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_1D_array(self):
         a = dpnp.array([1])
         b = dpnp.array([2])
@@ -251,7 +251,7 @@ class TestVstack:
         desired = dpnp.array([[1], [2]])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_2D_array(self):
         a = dpnp.array([[1], [2]])
         b = dpnp.array([[1], [2]])
@@ -259,7 +259,7 @@ class TestVstack:
         desired = dpnp.array([[1], [2], [1], [2]])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
     def test_2D_array2(self):
         a = dpnp.array([1, 2])
         b = dpnp.array([1, 2])
