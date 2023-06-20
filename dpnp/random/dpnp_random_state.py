@@ -98,7 +98,7 @@ class RandomState:
             dpnp.float64, self._sycl_device
         )
 
-        # TODO: rework through pybind11 extension for MKL engine and distribution classes
+        # TODO: rework through pybind11 extension for OneMKL engine and distribution classes
         if is_cpu:
             self._random_state = MT19937(self._seed, self._sycl_queue)
         else:
