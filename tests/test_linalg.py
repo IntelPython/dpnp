@@ -267,8 +267,8 @@ def test_matrix_rank(type, tol, array):
 )
 @pytest.mark.parametrize(
     "ord",
-    [None, -numpy.Inf, -2, -1, 0, 1, 2, 3, numpy.Inf],
-    ids=["None", "-numpy.Inf", "-2", "-1", "0", "1", "2", "3", "numpy.Inf"],
+    [None, -inp.Inf, -2, -1, 0, 1, 2, 3, inp.Inf],
+    ids=["None", "-dpnp.Inf", "-2", "-1", "0", "1", "2", "3", "dpnp.Inf"],
 )
 @pytest.mark.parametrize("axis", [0, None], ids=["0", "None"])
 def test_norm1(array, ord, axis):
@@ -287,15 +287,15 @@ def test_norm1(array, ord, axis):
 )
 @pytest.mark.parametrize(
     "ord",
-    [None, -numpy.Inf, -2, -1, 1, 2, numpy.Inf, "fro", "nuc"],
+    [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro", "nuc"],
     ids=[
         "None",
-        "-numpy.Inf",
+        "-dpnp.Inf",
         "-2",
         "-1",
         "1",
         "2",
-        "numpy.Inf",
+        "dpnp.Inf",
         '"fro"',
         '"nuc"',
     ],
@@ -323,8 +323,8 @@ def test_norm2(array, ord, axis):
 )
 @pytest.mark.parametrize(
     "ord",
-    [None, -numpy.Inf, -2, -1, 1, 2, numpy.Inf],
-    ids=["None", "-numpy.Inf", "-2", "-1", "1", "2", "numpy.Inf"],
+    [None, -inp.Inf, -2, -1, 1, 2, inp.Inf],
+    ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf"],
 )
 @pytest.mark.parametrize(
     "axis",
