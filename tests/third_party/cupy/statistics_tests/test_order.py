@@ -9,20 +9,20 @@ from tests.third_party.cupy import testing
 
 
 _all_interpolations = (
-    'lower',
-    'higher',
-    'midpoint',
+    "lower",
+    "higher",
+    "midpoint",
     # 'nearest', # TODO(hvy): Not implemented
-    'linear')
+    "linear",
+)
 
 
-def for_all_interpolations(name='interpolation'):
+def for_all_interpolations(name="interpolation"):
     return testing.for_orders(_all_interpolations, name=name)
 
 
 @testing.gpu
 class TestOrder(unittest.TestCase):
-
     @for_all_interpolations()
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose()
@@ -78,7 +78,8 @@ class TestOrder(unittest.TestCase):
         a = testing.shaped_random((7, 2, 9, 2), xp, dtype)
         q = testing.shaped_random((5,), xp, dtype=dtype, scale=100)
         return xp.percentile(
-            a, q, axis=None, keepdims=True, interpolation=interpolation)
+            a, q, axis=None, keepdims=True, interpolation=interpolation
+        )
 
     @for_all_interpolations()
     @testing.for_float_dtypes(no_float16=True)  # NumPy raises error on int8
@@ -88,7 +89,8 @@ class TestOrder(unittest.TestCase):
         q = testing.shaped_random((5,), xp, dtype=dtype, scale=100)
         out = testing.shaped_random((5, 10, 2, 3), xp, dtype)
         return xp.percentile(
-            a, q, axis=-1, interpolation=interpolation, out=out)
+            a, q, axis=-1, interpolation=interpolation, out=out
+        )
 
     @for_all_interpolations()
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
@@ -105,7 +107,7 @@ class TestOrder(unittest.TestCase):
             a = testing.shaped_random((4, 2, 3, 2), xp, dtype)
             q = testing.shaped_random((5,), xp, dtype=dtype, scale=100)
             with pytest.raises(ValueError):
-                xp.percentile(a, q, axis=-1, interpolation='deadbeef')
+                xp.percentile(a, q, axis=-1, interpolation="deadbeef")
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
@@ -140,16 +142,16 @@ class TestOrder(unittest.TestCase):
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
     def test_nanmax_nan(self, xp, dtype):
-        a = xp.array([float('nan'), 1, -1], dtype)
+        a = xp.array([float("nan"), 1, -1], dtype)
         with warnings.catch_warnings():
             return xp.nanmax(a)
 
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
     def test_nanmax_all_nan(self, xp, dtype):
-        a = xp.array([float('nan'), float('nan')], dtype)
+        a = xp.array([float("nan"), float("nan")], dtype)
         with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter('always')
+            warnings.simplefilter("always")
             m = xp.nanmax(a)
         self.assertEqual(len(w), 1)
         self.assertIs(w[0].category, RuntimeWarning)
@@ -188,16 +190,16 @@ class TestOrder(unittest.TestCase):
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
     def test_nanmin_nan(self, xp, dtype):
-        a = xp.array([float('nan'), 1, -1], dtype)
+        a = xp.array([float("nan"), 1, -1], dtype)
         with warnings.catch_warnings():
             return xp.nanmin(a)
 
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
     def test_nanmin_all_nan(self, xp, dtype):
-        a = xp.array([float('nan'), float('nan')], dtype)
+        a = xp.array([float("nan"), float("nan")], dtype)
         with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter('always')
+            warnings.simplefilter("always")
             m = xp.nanmin(a)
         self.assertEqual(len(w), 1)
         self.assertIs(w[0].category, RuntimeWarning)
@@ -236,11 +238,11 @@ class TestOrder(unittest.TestCase):
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
     def test_ptp_nan(self, xp, dtype):
-        a = xp.array([float('nan'), 1, -1], dtype)
+        a = xp.array([float("nan"), 1, -1], dtype)
         return xp.ptp(a)
 
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
     def test_ptp_all_nan(self, xp, dtype):
-        a = xp.array([float('nan'), float('nan')], dtype)
+        a = xp.array([float("nan"), float("nan")], dtype)
         return xp.ptp(a)

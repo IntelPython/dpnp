@@ -49,33 +49,27 @@ from dpnp.dpnp_utils import *
 
 
 __all__ = [
-    'all',
-    'allclose',
-    'any',
-    'equal',
-    'greater',
-    'greater_equal',
-    'isclose',
-    'isfinite',
-    'isinf',
-    'isnan',
-    'less',
-    'less_equal',
-    'logical_and',
-    'logical_not',
-    'logical_or',
-    'logical_xor',
-    'not_equal'
+    "all",
+    "allclose",
+    "any",
+    "equal",
+    "greater",
+    "greater_equal",
+    "isclose",
+    "isfinite",
+    "isinf",
+    "isnan",
+    "less",
+    "less_equal",
+    "logical_and",
+    "logical_not",
+    "logical_or",
+    "logical_xor",
+    "not_equal",
 ]
 
 
-def all(x1,
-        /,
-        axis=None,
-        out=None,
-        keepdims=False,
-        *,
-        where=True):
+def all(x1, /, axis=None, out=None, keepdims=False, *, where=True):
     """
     Test whether all array elements along a given axis evaluate to True.
 
@@ -129,10 +123,12 @@ def all(x1,
             result_obj = dpnp_all(x1_desc).get_pyobj()
             return dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-    return call_origin(numpy.all, x1, axis=axis, out=out, keepdims=keepdims, where=where)
+    return call_origin(
+        numpy.all, x1, axis=axis, out=out, keepdims=keepdims, where=where
+    )
 
 
-def allclose(x1, x2, rtol=1.e-5, atol=1.e-8, **kwargs):
+def allclose(x1, x2, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     """
     Returns True if two arrays are element-wise equal within a tolerance.
 
@@ -170,13 +166,7 @@ def allclose(x1, x2, rtol=1.e-5, atol=1.e-8, **kwargs):
     return call_origin(numpy.allclose, x1, x2, rtol=rtol, atol=atol, **kwargs)
 
 
-def any(x1,
-        /,
-        axis=None,
-        out=None,
-        keepdims=False,
-        *,
-        where=True):
+def any(x1, /, axis=None, out=None, keepdims=False, *, where=True):
     """
     Test whether any array element along a given axis evaluates to True.
 
@@ -230,17 +220,12 @@ def any(x1,
             result_obj = dpnp_any(x1_desc).get_pyobj()
             return dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-    return call_origin(numpy.any, x1, axis=axis, out=out, keepdims=keepdims, where=where)
+    return call_origin(
+        numpy.any, x1, axis=axis, out=out, keepdims=keepdims, where=where
+    )
 
 
-def equal(x1,
-          x2,
-          /,
-          out=None,
-          *,
-          where=True,
-          dtype=None,
-          subok=True):
+def equal(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     """
     Return the truth value of (x1 == x2) element-wise.
 
@@ -292,26 +277,35 @@ def equal(x1,
         pass
     else:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
         if x1_desc and x2_desc:
             return dpnp_equal(x1_desc, x2_desc).get_pyobj()
 
-    return call_origin(numpy.equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return call_origin(
+        numpy.equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok
+    )
 
 
-def greater(x1,
-            x2,
-            /,
-            out=None,
-            *,
-            where=True,
-            dtype=None,
-            subok=True):
+def greater(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     """
     Return the truth value of (x1 > x2) element-wise.
 
@@ -363,26 +357,35 @@ def greater(x1,
         pass
     else:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
         if x1_desc and x2_desc:
             return dpnp_greater(x1_desc, x2_desc).get_pyobj()
 
-    return call_origin(numpy.greater, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return call_origin(
+        numpy.greater, x1, x2, out=out, where=where, dtype=dtype, subok=subok
+    )
 
 
-def greater_equal(x1,
-                  x2,
-                  /,
-                  out=None,
-                  *,
-                  where=True,
-                  dtype=None,
-                  subok=True):
+def greater_equal(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     """
     Return the truth value of (x1 >= x2) element-wise.
 
@@ -434,16 +437,38 @@ def greater_equal(x1,
         pass
     else:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
         if x1_desc and x2_desc:
             return dpnp_greater_equal(x1_desc, x2_desc).get_pyobj()
 
-    return call_origin(numpy.greater_equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return call_origin(
+        numpy.greater_equal,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        dtype=dtype,
+        subok=subok,
+    )
 
 
 def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
@@ -480,7 +505,9 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     #     result_obj = dpnp_isclose(x1_desc, x2_desc, rtol, atol, equal_nan).get_pyobj()
     #     return result_obj
 
-    return call_origin(numpy.isclose, x1, x2, rtol=rtol, atol=atol, equal_nan=equal_nan)
+    return call_origin(
+        numpy.isclose, x1, x2, rtol=rtol, atol=atol, equal_nan=equal_nan
+    )
 
 
 def isfinite(x1, out=None, **kwargs):
@@ -621,14 +648,7 @@ def isnan(x1, out=None, **kwargs):
     return call_origin(numpy.isnan, x1, out, **kwargs)
 
 
-def less(x1,
-         x2,
-         /,
-         out=None,
-         *,
-         where=True,
-         dtype=None,
-         subok=True):
+def less(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     """
     Return the truth value of (x1 < x2) element-wise.
 
@@ -680,26 +700,35 @@ def less(x1,
         pass
     else:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
         if x1_desc and x2_desc:
             return dpnp_less(x1_desc, x2_desc).get_pyobj()
 
-    return call_origin(numpy.less, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return call_origin(
+        numpy.less, x1, x2, out=out, where=where, dtype=dtype, subok=subok
+    )
 
 
-def less_equal(x1,
-               x2,
-               /,
-               out=None,
-               *,
-               where=True,
-               dtype=None,
-               subok=True):
+def less_equal(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     """
     Return the truth value of (x1 <= x2) element-wise.
 
@@ -751,26 +780,35 @@ def less_equal(x1,
         pass
     else:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
         if x1_desc and x2_desc:
             return dpnp_less_equal(x1_desc, x2_desc).get_pyobj()
 
-    return call_origin(numpy.less_equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return call_origin(
+        numpy.less_equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok
+    )
 
 
-def logical_and(x1,
-                x2,
-                /,
-                out=None,
-                *,
-                where=True,
-                dtype=None,
-                subok=True):
+def logical_and(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     """
     Compute the truth value of x1 AND x2 element-wise.
 
@@ -821,25 +859,41 @@ def logical_and(x1,
         pass
     else:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
         if x1_desc and x2_desc:
             return dpnp_logical_and(x1_desc, x2_desc).get_pyobj()
 
-    return call_origin(numpy.logical_and, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return call_origin(
+        numpy.logical_and,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        dtype=dtype,
+        subok=subok,
+    )
 
 
-def logical_not(x,
-                /,
-                out=None,
-                *,
-                where=True,
-                dtype=None,
-                subok=True):
+def logical_not(x, /, out=None, *, where=True, dtype=None, subok=True):
     """
     Compute the truth value of NOT x element-wise.
 
@@ -884,21 +938,18 @@ def logical_not(x,
     elif subok is not True:
         pass
     else:
-        x1_desc = dpnp.get_dpnp_descriptor(x, copy_when_strides=False, copy_when_nondefault_queue=False)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x, copy_when_strides=False, copy_when_nondefault_queue=False
+        )
         if x1_desc:
             return dpnp_logical_not(x1_desc).get_pyobj()
 
-    return call_origin(numpy.logical_not, x, out=out, where=where, dtype=dtype, subok=subok)
+    return call_origin(
+        numpy.logical_not, x, out=out, where=where, dtype=dtype, subok=subok
+    )
 
 
-def logical_or(x1,
-               x2,
-               /,
-               out=None,
-               *,
-               where=True,
-               dtype=None,
-               subok=True):
+def logical_or(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     """
     Compute the truth value of x1 OR x2 element-wise.
 
@@ -949,26 +1000,35 @@ def logical_or(x1,
         pass
     else:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
         if x1_desc and x2_desc:
             return dpnp_logical_or(x1_desc, x2_desc).get_pyobj()
 
-    return call_origin(numpy.logical_or, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return call_origin(
+        numpy.logical_or, x1, x2, out=out, where=where, dtype=dtype, subok=subok
+    )
 
 
-def logical_xor(x1,
-               x2,
-               /,
-               out=None,
-               *,
-               where=True,
-               dtype=None,
-               subok=True):
+def logical_xor(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     """
     Compute the truth value of x1 XOR x2 element-wise.
 
@@ -1019,26 +1079,41 @@ def logical_xor(x1,
         pass
     else:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
         if x1_desc and x2_desc:
             return dpnp_logical_xor(x1_desc, x2_desc).get_pyobj()
 
-    return call_origin(numpy.logical_xor, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return call_origin(
+        numpy.logical_xor,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        dtype=dtype,
+        subok=subok,
+    )
 
 
-def not_equal(x1,
-              x2,
-              /,
-              out=None,
-              *,
-              where=True,
-              dtype=None,
-              subok=True):
+def not_equal(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     """
     Return the truth value of (x1 != x2) element-wise.
 
@@ -1090,13 +1165,29 @@ def not_equal(x1,
         pass
     else:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
         if x1_desc and x2_desc:
             return dpnp_not_equal(x1_desc, x2_desc).get_pyobj()
 
-    return call_origin(numpy.not_equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok)
+    return call_origin(
+        numpy.not_equal, x1, x2, out=out, where=where, dtype=dtype, subok=subok
+    )

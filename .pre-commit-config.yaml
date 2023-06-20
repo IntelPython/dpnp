@@ -19,8 +19,12 @@ repos:
     -   id: check-toml
     -   id: debug-statements
     -   id: destroyed-symlinks
-    -   id: double-quote-string-fixer
     -   id: end-of-file-fixer
     -   id: fix-byte-order-marker
     -   id: mixed-line-ending
     -   id: trailing-whitespace
+-   repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+    -   id: black
+        args: ["--check", "--diff", "--color"]

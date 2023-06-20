@@ -49,17 +49,19 @@ import dpctl.tensor as dpt
 
 
 __all__ = [
-    'bitwise_and',
-    'bitwise_not',
-    'bitwise_or',
-    'bitwise_xor',
-    'invert',
-    'left_shift',
-    'right_shift',
+    "bitwise_and",
+    "bitwise_not",
+    "bitwise_or",
+    "bitwise_xor",
+    "invert",
+    "left_shift",
+    "right_shift",
 ]
 
 
-def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=True, **kwargs):
+def _check_nd_call(
+    origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=True, **kwargs
+):
     """Choose function to call based on input and call chosen fucntion."""
 
     if kwargs:
@@ -74,26 +76,53 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
     else:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
         if dpnp.isscalar(x1) or dpnp.isscalar(x2):
-            usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+            usm_type, queue = (
+                get_usm_allocations([x1, x2])
+                if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+                else (None, None)
+            )
             dtype = x1.dtype if not dpnp.isscalar(x1) else x2.dtype
         else:
             dtype, usm_type, queue = (None, None, None)
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_dtype=dtype, alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_dtype=dtype, alloc_usm_type=usm_type, alloc_queue=queue)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_dtype=dtype,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_dtype=dtype,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
         if x1_desc and x2_desc:
             if out is not None:
                 if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError('return array must be of supported array type')
-                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
+                    raise TypeError(
+                        "return array must be of supported array type"
+                    )
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    or None
+                )
             else:
                 out_desc = None
 
-            return dpnp_func(x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where).get_pyobj()
+            return dpnp_func(
+                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
+            ).get_pyobj()
 
-    return call_origin(origin_func, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return call_origin(
+        origin_func, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    )
 
 
 def bitwise_and(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -133,7 +162,16 @@ def bitwise_and(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [2, 4, 16]
 
     """
-    return _check_nd_call(numpy.bitwise_and, dpnp_bitwise_and, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return _check_nd_call(
+        numpy.bitwise_and,
+        dpnp_bitwise_and,
+        x1,
+        x2,
+        dtype=dtype,
+        out=out,
+        where=where,
+        **kwargs,
+    )
 
 
 def bitwise_or(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -173,7 +211,16 @@ def bitwise_or(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [6, 5, 255]
 
     """
-    return _check_nd_call(numpy.bitwise_or, dpnp_bitwise_or, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return _check_nd_call(
+        numpy.bitwise_or,
+        dpnp_bitwise_or,
+        x1,
+        x2,
+        dtype=dtype,
+        out=out,
+        where=where,
+        **kwargs,
+    )
 
 
 def bitwise_xor(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -213,17 +260,19 @@ def bitwise_xor(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [26, 5]
 
     """
-    return _check_nd_call(numpy.bitwise_xor, dpnp_bitwise_xor, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return _check_nd_call(
+        numpy.bitwise_xor,
+        dpnp_bitwise_xor,
+        x1,
+        x2,
+        dtype=dtype,
+        out=out,
+        where=where,
+        **kwargs,
+    )
 
 
-def invert(x,
-           /,
-           out=None,
-           *,
-           where=True,
-           dtype=None,
-           subok=True,
-           **kwargs):
+def invert(x, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     """
     Compute bit-wise inversion, or bit-wise NOT, element-wise.
 
@@ -274,13 +323,28 @@ def invert(x,
         if x1_desc:
             if out is not None:
                 if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError('return array must be of supported array type')
-                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
+                    raise TypeError(
+                        "return array must be of supported array type"
+                    )
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    or None
+                )
             else:
                 out_desc = None
         return dpnp_invert(x1_desc, out_desc).get_pyobj()
 
-    return call_origin(numpy.invert, x, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
+    return call_origin(
+        numpy.invert,
+        x,
+        out=out,
+        where=where,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 bitwise_not = invert  # bitwise_not is an alias for invert
@@ -320,7 +384,16 @@ def left_shift(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [10, 20, 40]
 
     """
-    return _check_nd_call(numpy.left_shift, dpnp_left_shift, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return _check_nd_call(
+        numpy.left_shift,
+        dpnp_left_shift,
+        x1,
+        x2,
+        dtype=dtype,
+        out=out,
+        where=where,
+        **kwargs,
+    )
 
 
 def right_shift(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -357,4 +430,13 @@ def right_shift(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [5, 2, 1]
 
     """
-    return _check_nd_call(numpy.right_shift, dpnp_right_shift, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return _check_nd_call(
+        numpy.right_shift,
+        dpnp_right_shift,
+        x1,
+        x2,
+        dtype=dtype,
+        out=out,
+        where=where,
+        **kwargs,
+    )

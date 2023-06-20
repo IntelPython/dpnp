@@ -4,13 +4,10 @@ from .helper import get_all_dtypes
 import dpnp as inp
 
 import numpy
-from numpy.testing import (
-    assert_allclose,
-    assert_array_equal
-)
+from numpy.testing import assert_allclose, assert_array_equal
 
 
-@pytest.mark.parametrize('type', get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_dot_ones(type):
     n = 10**5
     a = numpy.ones(n, dtype=type)
@@ -23,7 +20,7 @@ def test_dot_ones(type):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize('type', get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_dot_arange(type):
     n = 10**2
     m = 10**3
@@ -37,7 +34,7 @@ def test_dot_arange(type):
     assert_allclose(expected, result)
 
 
-@pytest.mark.parametrize('type', get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_multi_dot(type):
     n = 16
     a = inp.reshape(inp.arange(n, dtype=type), (4, 4))

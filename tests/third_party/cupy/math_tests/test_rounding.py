@@ -9,7 +9,6 @@ from tests.third_party.cupy import testing
 
 @testing.gpu
 class TestRounding(unittest.TestCase):
-
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_unary(self, name, xp, dtype):
@@ -29,7 +28,7 @@ class TestRounding(unittest.TestCase):
             with pytest.raises(TypeError):
                 getattr(xp, name)(a)
 
-    @testing.for_dtypes(['?', 'b', 'h', 'i', 'q', 'e', 'f', 'd'])
+    @testing.for_dtypes(["?", "b", "h", "i", "q", "e", "f", "d"])
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_unary_negative(self, name, xp, dtype):
         a = xp.array([-3, -2, -1, 1, 2, 3], dtype=dtype)
@@ -38,48 +37,53 @@ class TestRounding(unittest.TestCase):
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_unary_negative_complex(self, name, xp, dtype):
-        a = xp.array([-3 - 3j, -2 - 2j, -1 - 1j, 1 + 1j, 2 + 2j, 3 + 3j], dtype=dtype)
+        a = xp.array(
+            [-3 - 3j, -2 - 2j, -1 - 1j, 1 + 1j, 2 + 2j, 3 + 3j], dtype=dtype
+        )
         return getattr(xp, name)(a)
 
     def test_rint(self):
-        self.check_unary('rint')
-        self.check_unary_complex('rint')
+        self.check_unary("rint")
+        self.check_unary_complex("rint")
 
     def test_rint_negative(self):
-        self.check_unary_negative('rint')
-        self.check_unary_negative_complex('rint')
+        self.check_unary_negative("rint")
+        self.check_unary_negative_complex("rint")
 
     def test_floor(self):
-        self.check_unary('floor')
-        self.check_unary_complex_unsupported('floor')
+        self.check_unary("floor")
+        self.check_unary_complex_unsupported("floor")
 
     def test_ceil(self):
-        self.check_unary('ceil')
-        self.check_unary_complex_unsupported('ceil')
+        self.check_unary("ceil")
+        self.check_unary_complex_unsupported("ceil")
 
     def test_trunc(self):
-        self.check_unary('trunc')
-        self.check_unary_complex_unsupported('trunc')
+        self.check_unary("trunc")
+        self.check_unary_complex_unsupported("trunc")
 
     def test_fix(self):
-        self.check_unary('fix')
-        self.check_unary_complex_unsupported('fix')
+        self.check_unary("fix")
+        self.check_unary_complex_unsupported("fix")
 
     def test_around(self):
-        self.check_unary('around')
-        self.check_unary_complex('around')
+        self.check_unary("around")
+        self.check_unary_complex("around")
 
     def test_round_(self):
-        self.check_unary('round_')
-        self.check_unary_complex('around')
+        self.check_unary("round_")
+        self.check_unary_complex("around")
 
 
-@testing.parameterize(*testing.product({
-    'decimals': [-2, -1, 0, 1, 2],
-}))
-@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@testing.parameterize(
+    *testing.product(
+        {
+            "decimals": [-2, -1, 0, 1, 2],
+        }
+    )
+)
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRound(unittest.TestCase):
-
     shape = (20,)
 
     @testing.for_all_dtypes()
@@ -98,17 +102,20 @@ class TestRound(unittest.TestCase):
 
     @testing.numpy_cupy_array_equal()
     def test_round_out(self, xp):
-        a = testing.shaped_random(self.shape, xp, scale=100, dtype='d')
+        a = testing.shaped_random(self.shape, xp, scale=100, dtype="d")
         out = xp.empty_like(a)
         xp.around(a, self.decimals, out)
         return out
 
 
-@testing.parameterize(*testing.product({
-    'decimals': [-100, -99, -90, 0, 90, 99, 100],
-}))
+@testing.parameterize(
+    *testing.product(
+        {
+            "decimals": [-100, -99, -90, 0, 90, 99, 100],
+        }
+    )
+)
 class TestRoundExtreme(unittest.TestCase):
-
     shape = (20,)
 
     @testing.for_dtypes([numpy.float64, numpy.complex128])
@@ -124,22 +131,25 @@ class TestRoundExtreme(unittest.TestCase):
         return xp.around(a, self.decimals)
 
 
-@testing.parameterize(*testing.product({
-    'value': [
-        (14, -1),
-        (15, -1),
-        (16, -1),
-        (14.0, -1),
-        (15.0, -1),
-        (16.0, -1),
-        (1.4, 0),
-        (1.5, 0),
-        (1.6, 0),
-    ]
-}))
-@pytest.mark.usefixtures('allow_fall_back_on_numpy')
+@testing.parameterize(
+    *testing.product(
+        {
+            "value": [
+                (14, -1),
+                (15, -1),
+                (16, -1),
+                (14.0, -1),
+                (15.0, -1),
+                (16.0, -1),
+                (1.4, 0),
+                (1.5, 0),
+                (1.6, 0),
+            ]
+        }
+    )
+)
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRoundBorder(unittest.TestCase):
-
     @testing.numpy_cupy_allclose(atol=1e-5)
     def test_around_positive1(self, xp):
         a, decimals = self.value

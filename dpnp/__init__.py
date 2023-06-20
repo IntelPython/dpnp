@@ -25,12 +25,14 @@
 # *****************************************************************************
 
 import os
+
 mypath = os.path.dirname(os.path.realpath(__file__))
 
 # workaround against hanging in OneMKL calls and in DPCTL
-os.environ.setdefault('SYCL_QUEUE_THREAD_POOL_SIZE', '6')
+os.environ.setdefault("SYCL_QUEUE_THREAD_POOL_SIZE", "6")
 
 import dpctl
+
 dpctlpath = os.path.dirname(dpctl.__file__)
 
 # For Windows OS with Python >= 3.7, it is required to explicitly define a path
@@ -38,11 +40,14 @@ dpctlpath = os.path.dirname(dpctl.__file__)
 # otherwise DPNP import will be failing. This is because the libraries
 # are not installed under any of default paths where Python is searching.
 from platform import system
-if system() == 'Windows':
-    if hasattr(os, 'add_dll_directory'):
+
+if system() == "Windows":
+    if hasattr(os, "add_dll_directory"):
         os.add_dll_directory(mypath)
         os.add_dll_directory(dpctlpath)
-    os.environ['PATH'] = os.pathsep.join([os.getenv('PATH', ''), mypath, dpctlpath])
+    os.environ["PATH"] = os.pathsep.join(
+        [os.getenv("PATH", ""), mypath, dpctlpath]
+    )
 
 from dpnp.dpnp_array import dpnp_array as ndarray
 from dpnp.dpnp_flatiter import flatiter as flatiter

@@ -9,7 +9,8 @@ import sys
 # [1] Module name in whicn the class is defined
 # [2] Class name
 _TestCaseTuple = collections.namedtuple(
-    '_TestCaseTuple', ('klass', 'module_name', 'class_name'))
+    "_TestCaseTuple", ("klass", "module_name", "class_name")
+)
 
 
 class _ParameterizedTestCaseBundle(object):
@@ -58,6 +59,7 @@ def make_decorator(test_case_generator):
         # Return the bundle of generated cases to allow repeated application of
         # parameterize decorators.
         return _ParameterizedTestCaseBundle(generated_cases)
+
     return f
 
 
@@ -67,9 +69,10 @@ def _generate_case(base, module, cls_name, mb, method_generator):
     members = mb.copy()
     # ismethod for Python 2 and isfunction for Python 3
     base_methods = inspect.getmembers(
-        base, predicate=lambda m: inspect.ismethod(m) or inspect.isfunction(m))
+        base, predicate=lambda m: inspect.ismethod(m) or inspect.isfunction(m)
+    )
     for name, value in base_methods:
-        if not name.startswith('test_'):
+        if not name.startswith("test_"):
             continue
         value = method_generator(value)
         # If the return value of method_generator is None, None is assigned
@@ -89,10 +92,10 @@ def _generate_test_cases(module_name, base_class, test_case_generator):
     module = sys.modules[module_name]
 
     generated_cases = []
-    for cls_name, members, method_generator in (
-            test_case_generator(base_class)):
+    for cls_name, members, method_generator in test_case_generator(base_class):
         c = _generate_case(
-            base_class, module, cls_name, members, method_generator)
+            base_class, module, cls_name, members, method_generator
+        )
         generated_cases.append(c)
 
     return generated_cases

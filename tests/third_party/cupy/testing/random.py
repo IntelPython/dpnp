@@ -25,8 +25,7 @@ def do_setup(deterministic=True):
     # Check that _random_state has been recreated in
     # cupy.random.reset_states(). Otherwise the contents of
     # _old_cupy_random_states would be overwritten.
-    assert (cupy.random.generator._random_states is not
-            _old_cupy_random_states)
+    assert cupy.random.generator._random_states is not _old_cupy_random_states
 
     if not deterministic:
         random.seed()
@@ -58,36 +57,34 @@ _nest_count = 0
 
 @atexit.register
 def _check_teardown():
-    assert _nest_count == 0, ('_setup_random() and _teardown_random() '
-                              'must be called in pairs.')
+    assert _nest_count == 0, (
+        "_setup_random() and _teardown_random() " "must be called in pairs."
+    )
 
 
 def _setup_random():
-    """Sets up the deterministic random states of ``numpy`` and ``cupy``.
-
-    """
+    """Sets up the deterministic random states of ``numpy`` and ``cupy``."""
     global _nest_count
     if _nest_count == 0:
-        nondeterministic = bool(int(os.environ.get(
-            'CUPY_TEST_RANDOM_NONDETERMINISTIC', '0')))
+        nondeterministic = bool(
+            int(os.environ.get("CUPY_TEST_RANDOM_NONDETERMINISTIC", "0"))
+        )
         do_setup(not nondeterministic)
     _nest_count += 1
 
 
 def _teardown_random():
-    """Tears down the deterministic random states set up by ``_setup_random``.
-
-    """
+    """Tears down the deterministic random states set up by ``_setup_random``."""
     global _nest_count
-    assert _nest_count > 0, '_setup_random has not been called'
+    assert _nest_count > 0, "_setup_random has not been called"
     _nest_count -= 1
     if _nest_count == 0:
         do_teardown()
 
 
 def generate_seed():
-    assert _nest_count > 0, 'random is not set up'
-    return numpy.random.randint(0x7fffffff)
+    assert _nest_count > 0, "random is not set up"
+    return numpy.random.randint(0x7FFFFFFF)
 
 
 def fix_random():
@@ -104,8 +101,9 @@ def fix_random():
     #    these decorators.
 
     def decorator(impl):
-        if (isinstance(impl, types.FunctionType) and
-                impl.__name__.startswith('test_')):
+        if isinstance(impl, types.FunctionType) and impl.__name__.startswith(
+            "test_"
+        ):
             # Applied to test method
             @functools.wraps(impl)
             def test_func(self, *args, **kw):
@@ -114,6 +112,7 @@ def fix_random():
                     impl(self, *args, **kw)
                 finally:
                     _teardown_random()
+
             return test_func
         elif isinstance(impl, type) and issubclass(impl, unittest.TestCase):
             # Applied to test case class
@@ -123,6 +122,7 @@ def fix_random():
                 def func(self):
                     _setup_random()
                     f(self)
+
                 return func
 
             def wrap_tearDown(f):
@@ -131,12 +131,13 @@ def fix_random():
                         f(self)
                     finally:
                         _teardown_random()
+
                 return func
 
             klass.setUp = wrap_setUp(klass.setUp)
             klass.tearDown = wrap_tearDown(klass.tearDown)
             return klass
         else:
-            raise ValueError('Can\'t apply fix_random to {}'.format(impl))
+            raise ValueError("Can't apply fix_random to {}".format(impl))
 
     return decorator

@@ -50,12 +50,7 @@ import numpy
 import dpctl.tensor as dpt
 
 
-__all__ = [
-    'argmax',
-    'argmin',
-    'searchsorted',
-    'where'
-]
+__all__ = ["argmax", "argmin", "searchsorted", "where"]
 
 
 def argmax(x1, axis=None, out=None):
@@ -168,7 +163,7 @@ def argmin(x1, axis=None, out=None):
     return call_origin(numpy.argmin, x1, axis, out)
 
 
-def searchsorted(a, v, side='left', sorter=None):
+def searchsorted(a, v, side="left", sorter=None):
     """
     Find indices where elements should be inserted to maintain order.
 
@@ -224,17 +219,33 @@ def where(condition, x=None, y=None, /):
     elif missing == 2:
         return dpnp.nonzero(condition)
     elif missing == 0:
-        check_input_type = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
+        check_input_type = lambda x: isinstance(
+            x, (dpnp_array, dpt.usm_ndarray)
+        )
         if check_input_type(condition):
             if numpy.isscalar(x) or numpy.isscalar(y):
                 # get USM type and queue to copy scalar from the host memory into a USM allocation
                 usm_type, queue = get_usm_allocations([condition, x, y])
-                x = dpt.asarray(x, usm_type=usm_type, sycl_queue=queue) if numpy.isscalar(x) else x
-                y = dpt.asarray(y, usm_type=usm_type, sycl_queue=queue) if numpy.isscalar(y) else y
+                x = (
+                    dpt.asarray(x, usm_type=usm_type, sycl_queue=queue)
+                    if numpy.isscalar(x)
+                    else x
+                )
+                y = (
+                    dpt.asarray(y, usm_type=usm_type, sycl_queue=queue)
+                    if numpy.isscalar(y)
+                    else y
+                )
             if check_input_type(x) and check_input_type(y):
-                dpt_condition = condition.get_array() if isinstance(condition, dpnp_array) else condition
+                dpt_condition = (
+                    condition.get_array()
+                    if isinstance(condition, dpnp_array)
+                    else condition
+                )
                 dpt_x = x.get_array() if isinstance(x, dpnp_array) else x
                 dpt_y = y.get_array() if isinstance(y, dpnp_array) else y
-                return dpnp_array._create_from_usm_ndarray(dpt.where(dpt_condition, dpt_x, dpt_y))
+                return dpnp_array._create_from_usm_ndarray(
+                    dpt.where(dpt_condition, dpt_x, dpt_y)
+                )
 
     return call_origin(numpy.where, condition, x, y)

@@ -57,26 +57,23 @@ from dpnp.linalg import *
 from dpnp.random import *
 
 __all__ = [
-    'array_equal',
-    'asnumpy',
-    'astype',
-    'convert_single_elem_array_to_scalar',
-    'default_float_type',
-    'dpnp_queue_initialize',
-    'dpnp_queue_is_cpu',
-    'from_dlpack',
-    'get_dpnp_descriptor',
-    'get_include',
-    'get_normalized_queue_device',
-    'get_usm_ndarray',
-    'get_usm_ndarray_or_scalar',
-    'is_supported_array_type'
+    "array_equal",
+    "asnumpy",
+    "astype",
+    "convert_single_elem_array_to_scalar",
+    "default_float_type",
+    "dpnp_queue_initialize",
+    "dpnp_queue_is_cpu",
+    "from_dlpack",
+    "get_dpnp_descriptor",
+    "get_include",
+    "get_normalized_queue_device",
+    "get_usm_ndarray",
+    "get_usm_ndarray_or_scalar",
+    "is_supported_array_type",
 ]
 
-from dpnp import (
-    isscalar,
-    float64
-)
+from dpnp import isscalar, float64
 
 from dpnp.dpnp_iface_arraycreation import *
 from dpnp.dpnp_iface_bitwise import *
@@ -139,7 +136,7 @@ def array_equal(a1, a2, equal_nan=False):
     return numpy.array_equal(a1, a2)
 
 
-def asnumpy(input, order='C'):
+def asnumpy(input, order="C"):
     """
     Returns the NumPy array with input data.
 
@@ -157,7 +154,7 @@ def asnumpy(input, order='C'):
     return numpy.asarray(input, order=order)
 
 
-def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
+def astype(x1, dtype, order="K", casting="unsafe", subok=True, copy=True):
     """Copy the array with data type casting."""
     if isinstance(x1, dpnp_array):
         return x1.astype(dtype, order=order, casting=casting, copy=copy)
@@ -168,9 +165,9 @@ def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
     x1_desc = get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if not x1_desc:
         pass
-    elif order != 'K':
+    elif order != "K":
         pass
-    elif casting != 'unsafe':
+    elif casting != "unsafe":
         pass
     elif not subok:
         pass
@@ -183,7 +180,15 @@ def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
     else:
         return dpnp_astype(x1_desc, dtype).get_pyobj()
 
-    return call_origin(numpy.ndarray.astype, x1, dtype, order=order, casting=casting, subok=subok, copy=copy)
+    return call_origin(
+        numpy.ndarray.astype,
+        x1,
+        dtype,
+        order=order,
+        casting=casting,
+        subok=subok,
+        copy=copy,
+    )
 
 
 def convert_single_elem_array_to_scalar(obj, keepdims=False):
@@ -222,7 +227,9 @@ def default_float_type(device=None, sycl_queue=None):
 
     """
 
-    _sycl_queue = get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
+    _sycl_queue = get_normalized_queue_device(
+        device=device, sycl_queue=sycl_queue
+    )
     return map_dtype_to_device(float64, _sycl_queue.sycl_device)
 
 
@@ -251,12 +258,14 @@ def from_dlpack(obj, /):
     return dpnp_array._create_from_usm_ndarray(usm_ary)
 
 
-def get_dpnp_descriptor(ext_obj,
-                        copy_when_strides=True,
-                        copy_when_nondefault_queue=True,
-                        alloc_dtype=None,
-                        alloc_usm_type=None,
-                        alloc_queue=None):
+def get_dpnp_descriptor(
+    ext_obj,
+    copy_when_strides=True,
+    copy_when_nondefault_queue=True,
+    alloc_dtype=None,
+    alloc_usm_type=None,
+    alloc_queue=None,
+):
     """
     Return True:
       never
@@ -282,18 +291,28 @@ def get_dpnp_descriptor(ext_obj,
     # If input object is a scalar, it means it was allocated on host memory.
     # We need to copy it to USM memory according to compute follows data paradigm.
     if isscalar(ext_obj):
-        ext_obj = array(ext_obj, dtype=alloc_dtype, usm_type=alloc_usm_type, sycl_queue=alloc_queue)
+        ext_obj = array(
+            ext_obj,
+            dtype=alloc_dtype,
+            usm_type=alloc_usm_type,
+            sycl_queue=alloc_queue,
+        )
 
     # while dpnp functions have no implementation with strides support
     # we need to create a non-strided copy
     # if function get implementation for strides case
     # then this behavior can be disabled with setting "copy_when_strides"
-    if copy_when_strides and getattr(ext_obj, 'strides', None) is not None:
+    if copy_when_strides and getattr(ext_obj, "strides", None) is not None:
         # TODO: replace this workaround when usm_ndarray will provide such functionality
-        shape_offsets = tuple(numpy.prod(ext_obj.shape[i + 1:], dtype=numpy.int64) for i in range(ext_obj.ndim))
+        shape_offsets = tuple(
+            numpy.prod(ext_obj.shape[i + 1 :], dtype=numpy.int64)
+            for i in range(ext_obj.ndim)
+        )
 
-        if hasattr(ext_obj, '__sycl_usm_array_interface__'):
-            ext_obj_offset = ext_obj.__sycl_usm_array_interface__.get('offset', 0)
+        if hasattr(ext_obj, "__sycl_usm_array_interface__"):
+            ext_obj_offset = ext_obj.__sycl_usm_array_interface__.get(
+                "offset", 0
+            )
         else:
             ext_obj_offset = 0
 
@@ -305,10 +324,12 @@ def get_dpnp_descriptor(ext_obj,
     # we need to create a copy on device associated with DPNP_QUEUE
     # if function get implementation for different queue
     # then this behavior can be disabled with setting "copy_when_nondefault_queue"
-    queue = getattr(ext_obj, 'sycl_queue', None)
+    queue = getattr(ext_obj, "sycl_queue", None)
     if queue is not None and copy_when_nondefault_queue:
         default_queue = dpctl.SyclQueue()
-        queue_is_default = dpctl.utils.get_execution_queue([queue, default_queue]) is not None
+        queue_is_default = (
+            dpctl.utils.get_execution_queue([queue, default_queue]) is not None
+        )
         if not queue_is_default:
             ext_obj = array(ext_obj, sycl_queue=default_queue)
 
@@ -324,14 +345,12 @@ def get_include():
     Return the directory that contains the DPNP C++ backend \\*.h header files.
     """
 
-    dpnp_path = os.path.join(os.path.dirname(__file__), 'backend', 'include')
+    dpnp_path = os.path.join(os.path.dirname(__file__), "backend", "include")
 
     return dpnp_path
 
 
-def get_normalized_queue_device(obj=None,
-                                device=None,
-                                sycl_queue=None):
+def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
     """
     Utility to process complementary keyword arguments 'device' and 'sycl_queue'
     in subsequent calls of functions from `dpctl.tensor` module.
@@ -367,12 +386,19 @@ def get_normalized_queue_device(obj=None,
         TypeError: if argument is not of the expected type, or keywords
             imply incompatible queues.
     """
-    if device is None and sycl_queue is None and obj is not None and hasattr(obj, 'sycl_queue'):
+    if (
+        device is None
+        and sycl_queue is None
+        and obj is not None
+        and hasattr(obj, "sycl_queue")
+    ):
         sycl_queue = obj.sycl_queue
 
     # TODO: remove check dpt._device has attribute 'normalize_queue_device'
-    if hasattr(dpt._device, 'normalize_queue_device'):
-        return dpt._device.normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    if hasattr(dpt._device, "normalize_queue_device"):
+        return dpt._device.normalize_queue_device(
+            sycl_queue=sycl_queue, device=device
+        )
     return sycl_queue
 
 
@@ -402,7 +428,9 @@ def get_usm_ndarray(a):
         return a.get_array()
     if isinstance(a, dpt.usm_ndarray):
         return a
-    raise TypeError('An array must be any of supported type, but got {}'.format(type(a)))
+    raise TypeError(
+        "An array must be any of supported type, but got {}".format(type(a))
+    )
 
 
 def get_usm_ndarray_or_scalar(a):

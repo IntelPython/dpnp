@@ -9,7 +9,6 @@ from tests.third_party.cupy import testing
 
 @testing.gpu
 class TestDims(unittest.TestCase):
-
     def check_atleast(self, func, xp):
         a = testing.shaped_arange((), xp)
         b = testing.shaped_arange((2,), xp)
@@ -19,18 +18,18 @@ class TestDims(unittest.TestCase):
         f = numpy.float32(1)
         return func(a, b, c, d, e, f)
 
-    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_atleast_1d1(self, xp):
         return self.check_atleast(xp.atleast_1d, xp)
 
-    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_atleast_1d2(self, xp):
         a = testing.shaped_arange((1, 3, 2), xp)
         return xp.atleast_1d(a)
 
-    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_atleast_2d1(self, xp):
         return self.check_atleast(xp.atleast_2d, xp)
@@ -40,7 +39,7 @@ class TestDims(unittest.TestCase):
         a = testing.shaped_arange((1, 3, 2), xp)
         return xp.atleast_2d(a)
 
-    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_atleast_3d1(self, xp):
         return self.check_atleast(xp.atleast_3d, xp)
@@ -122,27 +121,30 @@ class TestDims(unittest.TestCase):
         a = testing.shaped_arange((2, 3), xp)
         return xp.expand_dims(a, -2)
 
-    @testing.with_requires('numpy>=1.18')
+    @testing.with_requires("numpy>=1.18")
     def test_expand_dims_negative2(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3), xp)
             with pytest.raises(numpy.AxisError):
                 xp.expand_dims(a, -4)
 
-    @testing.with_requires('numpy>=1.18')
+    @testing.with_requires("numpy>=1.18")
     @testing.numpy_cupy_array_equal()
     def test_expand_dims_tuple_axis(self, xp):
         a = testing.shaped_arange((2, 2, 2), xp)
-        return [xp.expand_dims(a, axis) for axis in [
-            (0, 1, 2),
-            (0, -1, -2),
-            (0, 3, 5),
-            (0, -3, -5),
-            (),
-            (1,),
-        ]]
+        return [
+            xp.expand_dims(a, axis)
+            for axis in [
+                (0, 1, 2),
+                (0, -1, -2),
+                (0, 3, 5),
+                (0, -3, -5),
+                (),
+                (1,),
+            ]
+        ]
 
-    @testing.with_requires('numpy>=1.18')
+    @testing.with_requires("numpy>=1.18")
     def test_expand_dims_out_of_range(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 2, 2), xp)
@@ -150,7 +152,7 @@ class TestDims(unittest.TestCase):
                 with pytest.raises(numpy.AxisError):
                     xp.expand_dims(a, axis)
 
-    @testing.with_requires('numpy>=1.18')
+    @testing.with_requires("numpy>=1.18")
     def test_expand_dims_repeated_axis(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 2, 2), xp)
@@ -274,24 +276,22 @@ class TestDims(unittest.TestCase):
 
 
 @testing.parameterize(
-    {'shapes': [(), ()]},
-    {'shapes': [(0,), (0,)]},
-    {'shapes': [(1,), (1,)]},
-    {'shapes': [(2,), (2,)]},
-    {'shapes': [(0,), (1,)]},
-    {'shapes': [(2, 3), (1, 3)]},
-    {'shapes': [(2, 1, 3, 4), (3, 1, 4)]},
-    {'shapes': [(4, 3, 2, 3), (2, 3)]},
-    {'shapes': [(2, 0, 1, 1, 3), (2, 1, 0, 0, 3)]},
-    {'shapes': [(0, 1, 1, 3), (2, 1, 0, 0, 3)]},
-    {'shapes': [(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]},
+    {"shapes": [(), ()]},
+    {"shapes": [(0,), (0,)]},
+    {"shapes": [(1,), (1,)]},
+    {"shapes": [(2,), (2,)]},
+    {"shapes": [(0,), (1,)]},
+    {"shapes": [(2, 3), (1, 3)]},
+    {"shapes": [(2, 1, 3, 4), (3, 1, 4)]},
+    {"shapes": [(4, 3, 2, 3), (2, 3)]},
+    {"shapes": [(2, 0, 1, 1, 3), (2, 1, 0, 0, 3)]},
+    {"shapes": [(0, 1, 1, 3), (2, 1, 0, 0, 3)]},
+    {"shapes": [(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]},
 )
 @testing.gpu
 class TestBroadcast(unittest.TestCase):
-
     def _broadcast(self, xp, dtype, shapes):
-        arrays = [
-            testing.shaped_arange(s, xp, dtype) for s in shapes]
+        arrays = [testing.shaped_arange(s, xp, dtype) for s in shapes]
         return xp.broadcast(*arrays)
 
     @testing.for_all_dtypes()
@@ -305,20 +305,34 @@ class TestBroadcast(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_broadcast_arrays(self, xp, dtype):
-        arrays = [
-            testing.shaped_arange(s, xp, dtype) for s in self.shapes]
+        arrays = [testing.shaped_arange(s, xp, dtype) for s in self.shapes]
         return xp.broadcast_arrays(*arrays)
 
 
 @testing.parameterize(
-    {'shapes': [(3,), (2,)]},
-    {'shapes': [(3, 2), (2, 3,)]},
-    {'shapes': [(3, 2), (3, 4,)]},
-    {'shapes': [(0,), (2,)]},
+    {"shapes": [(3,), (2,)]},
+    {
+        "shapes": [
+            (3, 2),
+            (
+                2,
+                3,
+            ),
+        ]
+    },
+    {
+        "shapes": [
+            (3, 2),
+            (
+                3,
+                4,
+            ),
+        ]
+    },
+    {"shapes": [(0,), (2,)]},
 )
 @testing.gpu
 class TestInvalidBroadcast(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_invalid_broadcast(self, dtype):
         for xp in (numpy, cupy):

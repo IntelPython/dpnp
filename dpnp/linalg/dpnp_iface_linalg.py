@@ -41,9 +41,7 @@ it contains:
 
 
 import dpnp
-from .dpnp_utils_linalg import (
-    dpnp_eigh
-)
+from .dpnp_utils_linalg import dpnp_eigh
 
 import numpy
 
@@ -53,19 +51,19 @@ from dpnp.linalg.dpnp_algo_linalg import *
 
 
 __all__ = [
-    'cholesky',
-    'cond',
-    'det',
-    'eig',
-    'eigh',
-    'eigvals',
-    'inv',
-    'matrix_power',
-    'matrix_rank',
-    'multi_dot',
-    'norm',
-    'qr',
-    'svd',
+    "cholesky",
+    "cond",
+    "det",
+    "eig",
+    "eigh",
+    "eigvals",
+    "inv",
+    "matrix_power",
+    "matrix_rank",
+    "multi_dot",
+    "norm",
+    "qr",
+    "svd",
 ]
 
 
@@ -100,7 +98,10 @@ def cholesky(input):
         else:
             if input.dtype == dpnp.int32 or input.dtype == dpnp.int64:
                 # TODO memory copy. needs to move into DPNPC
-                input_ = dpnp.get_dpnp_descriptor(dpnp.astype(input, dpnp.float64), copy_when_nondefault_queue=False)
+                input_ = dpnp.get_dpnp_descriptor(
+                    dpnp.astype(input, dpnp.float64),
+                    copy_when_nondefault_queue=False,
+                )
             else:
                 input_ = x1_desc
             return dpnp_cholesky(input_).get_pyobj()
@@ -123,8 +124,8 @@ def cond(input, p=None):
     :obj:`dpnp.norm` : Matrix or vector norm.
     """
 
-    if (not use_origin_backend(input)):
-        if p in [None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, 'fro']:
+    if not use_origin_backend(input):
+        if p in [None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, "fro"]:
             result_obj = dpnp_cond(input, p)
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
@@ -171,13 +172,13 @@ def eig(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
-        if (x1_desc.size > 0):
+        if x1_desc.size > 0:
             return dpnp_eig(x1_desc)
 
     return call_origin(numpy.linalg.eig, x1)
 
 
-def eigh(a, UPLO='L'):
+def eigh(a, UPLO="L"):
     """
     Return the eigenvalues and eigenvectors of a complex Hermitian
     (conjugate symmetric) or a real symmetric matrix.
@@ -222,19 +223,23 @@ def eigh(a, UPLO='L'):
 
     """
 
-    if UPLO not in ('L', 'U'):
+    if UPLO not in ("L", "U"):
         raise ValueError("UPLO argument must be 'L' or 'U'")
 
     if not dpnp.is_supported_array_type(a):
-        raise TypeError('An array must be any of supported type, but got {}'.format(type(a)))
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(a))
+        )
 
     if a.ndim < 2:
-        raise ValueError('%d-dimensional array given. Array must be '
-                         'at least two-dimensional' % a.ndim)
+        raise ValueError(
+            "%d-dimensional array given. Array must be "
+            "at least two-dimensional" % a.ndim
+        )
 
     m, n = a.shape[-2:]
     if m != n:
-        raise ValueError('Last 2 dimensions of the array must be square')
+        raise ValueError("Last 2 dimensions of the array must be square")
 
     return dpnp_eigh(a, UPLO=UPLO)
 
@@ -282,7 +287,11 @@ def inv(input):
 
     x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
     if x1_desc:
-        if x1_desc.ndim == 2 and x1_desc.shape[0] == x1_desc.shape[1] and x1_desc.shape[0] >= 2:
+        if (
+            x1_desc.ndim == 2
+            and x1_desc.shape[0] == x1_desc.shape[1]
+            and x1_desc.shape[0] >= 2
+        ):
             return dpnp_inv(x1_desc).get_pyobj()
 
     return call_origin(numpy.linalg.inv, input)
@@ -386,7 +395,7 @@ def multi_dot(arrays, out=None):
     n = len(arrays)
 
     if n < 2:
-        checker_throw_value_error('multi_dot', 'arrays', n, '>1')
+        checker_throw_value_error("multi_dot", "arrays", n, ">1")
 
     result = arrays[0]
     for id in range(1, n):
@@ -431,11 +440,15 @@ def norm(x1, ord=None, axis=None, keepdims=False):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
-        if not isinstance(axis, int) and not isinstance(axis, tuple) and axis is not None:
+        if (
+            not isinstance(axis, int)
+            and not isinstance(axis, tuple)
+            and axis is not None
+        ):
             pass
         elif keepdims is not False:
             pass
-        elif ord not in [None, 0, 3, 'fro', 'f']:
+        elif ord not in [None, 0, 3, "fro", "f"]:
             pass
         else:
             result_obj = dpnp_norm(x1, ord=ord, axis=axis)
@@ -446,7 +459,7 @@ def norm(x1, ord=None, axis=None, keepdims=False):
     return call_origin(numpy.linalg.norm, x1, ord, axis, keepdims)
 
 
-def qr(x1, mode='reduced'):
+def qr(x1, mode="reduced"):
     """
     Compute the qr factorization of a matrix.
 
@@ -464,7 +477,7 @@ def qr(x1, mode='reduced'):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
-        if mode != 'reduced':
+        if mode != "reduced":
             pass
         else:
             result_tup = dpnp_qr(x1_desc, mode)
@@ -546,4 +559,6 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
 
             return result_tup
 
-    return call_origin(numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian)
+    return call_origin(
+        numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian
+    )

@@ -4,6 +4,7 @@ import unittest
 
 try:
     import pytest
+
     _error = None
 except ImportError as e:
     _error = e
@@ -15,10 +16,14 @@ def is_available():
 
 def check_available():
     if _error is not None:
-        raise RuntimeError('''\
+        raise RuntimeError(
+            """\
 {} is not available.
 
-Reason: {}: {}'''.format(__name__, type(_error).__name__, _error))
+Reason: {}: {}""".format(
+                __name__, type(_error).__name__, _error
+            )
+        )
 
 
 def get_error():
@@ -26,7 +31,7 @@ def get_error():
 
 
 if _error is None:
-    _gpu_limit = int(os.getenv('CUPY_TEST_GPU_LIMIT', '-1'))
+    _gpu_limit = int(os.getenv("CUPY_TEST_GPU_LIMIT", "-1"))
 
     def cudnn(*args, **kwargs):
         return pytest.mark.cudnn(*args, **kwargs)
@@ -35,6 +40,7 @@ if _error is None:
         return pytest.mark.slow(*args, **kwargs)
 
 else:
+
     def _dummy_callable(*args, **kwargs):
         check_available()
         assert False  # Not reachable
@@ -55,8 +61,8 @@ def multi_gpu(gpu_num):
 
     check_available()
     return unittest.skipIf(
-        0 <= _gpu_limit < gpu_num,
-        reason='{} GPUs required'.format(gpu_num))
+        0 <= _gpu_limit < gpu_num, reason="{} GPUs required".format(gpu_num)
+    )
 
 
 def gpu(f):

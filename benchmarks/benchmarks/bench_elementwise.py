@@ -8,12 +8,13 @@ from .common import Benchmark
 # but looks like first execution has additional overheads
 # (need to be investigated)
 class Elementwise(Benchmark):
-    executors = {'dpnp': dpnp, 'numpy': numpy}
-    params = [['dpnp', 'numpy'],
-              [2**16, 2**20, 2**24],
-              ['float64', 'float32', 'int64', 'int32']
-              ]
-    param_names = ['executor', 'size', 'dtype']
+    executors = {"dpnp": dpnp, "numpy": numpy}
+    params = [
+        ["dpnp", "numpy"],
+        [2**16, 2**20, 2**24],
+        ["float64", "float32", "int64", "int32"],
+    ]
+    param_names = ["executor", "size", "dtype"]
 
     def setup(self, executor, size, dtype):
         self.np = self.executors[executor]
