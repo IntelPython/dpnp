@@ -335,7 +335,7 @@ class TestArithmeticBinary2(ArithmeticBinaryBase, unittest.TestCase):
             self.use_dtype
             and numpy.lib.NumpyVersion(numpy.__version__) < "1.10.0"
         ):
-            raise unittest.SkipTest("Test for numpy>=1.10")
+            raise unittest.SkipTest("NumPy>=1.10")
         self.check_binary()
 
 
