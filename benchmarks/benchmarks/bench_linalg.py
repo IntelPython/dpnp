@@ -5,10 +5,12 @@ import dpnp
 
 
 class Eindot(Benchmark):
-    params = [[dpnp, numpy],
-              [16, 32, 64, 128, 256, 512, 1024],
-              ['float64', 'float32', 'int64', 'int32']]
-    param_names = ['executor', 'size', 'dtype']
+    params = [
+        [dpnp, numpy],
+        [16, 32, 64, 128, 256, 512, 1024],
+        ["float64", "float32", "int64", "int32"],
+    ]
+    param_names = ["executor", "size", "dtype"]
 
     def setup(self, np, size, dtype):
         dt = getattr(np, dtype)
@@ -45,13 +47,13 @@ class Eindot(Benchmark):
         np.dot(self.atc, self.a)
 
     def time_einsum_i_ij_j(self, np, *args):
-        np.einsum('i,ij,j', self.d, self.b, self.c)
+        np.einsum("i,ij,j", self.d, self.b, self.c)
 
     def time_einsum_ij_jk_a_b(self, np, *args):
-        np.einsum('ij,jk', self.a, self.b)
+        np.einsum("ij,jk", self.a, self.b)
 
     def time_einsum_ijk_jil_kl(self, np, *args):
-        np.einsum('ijk,jil->kl', self.a3, self.b3)
+        np.einsum("ijk,jil->kl", self.a3, self.b3)
 
     def time_inner_trans_a_a(self, np, *args):
         np.inner(self.a, self.a)
@@ -82,20 +84,19 @@ class Eindot(Benchmark):
 
 
 class Linalg(Benchmark):
-    params = [[dpnp, numpy],
-              ['svd', 'pinv', 'det', 'norm'],
-              TYPES1]
-    param_names = ['executor', 'op', 'type']
+    params = [[dpnp, numpy], ["svd", "pinv", "det", "norm"], TYPES1]
+    param_names = ["executor", "op", "type"]
 
     def setup(self, np, op, typename):
-        np.seterr(all='ignore')
+        np.seterr(all="ignore")
 
         self.func = getattr(np.linalg, op)
 
-        if op == 'cholesky':
+        if op == "cholesky":
             # we need a positive definite
-            self.a = np.dot(get_squares_()[typename],
-                            get_squares_()[typename].T)
+            self.a = np.dot(
+                get_squares_()[typename], get_squares_()[typename].T
+            )
         else:
             self.a = get_squares_()[typename]
 
@@ -111,37 +112,38 @@ class Linalg(Benchmark):
 
 class Lstsq(Benchmark):
     params = [dpnp, numpy]
-    param_names = ['executor']
+    param_names = ["executor"]
 
     def setup(self, np):
-        self.a = get_squares_()['float64']
+        self.a = get_squares_()["float64"]
         self.b = get_indexes_rand()[:100].astype(np.float64)
 
     def time_numpy_linalg_lstsq_a__b_float64(self, np):
         np.linalg.lstsq(self.a, self.b, rcond=-1)
 
+
 # class Einsum(Benchmark):
-    # param_names = ['dtype']
-    # params = [[np.float64]]
-    # def setup(self, dtype):
-        # self.a = np.arange(2900, dtype=dtype)
-        # self.b = np.arange(3000, dtype=dtype)
-        # self.c = np.arange(24000, dtype=dtype).reshape(20, 30, 40)
-        # self.c1 = np.arange(1200, dtype=dtype).reshape(30, 40)
-        # self.d = np.arange(10000, dtype=dtype).reshape(10,100,10)
+# param_names = ['dtype']
+# params = [[np.float64]]
+# def setup(self, dtype):
+# self.a = np.arange(2900, dtype=dtype)
+# self.b = np.arange(3000, dtype=dtype)
+# self.c = np.arange(24000, dtype=dtype).reshape(20, 30, 40)
+# self.c1 = np.arange(1200, dtype=dtype).reshape(30, 40)
+# self.d = np.arange(10000, dtype=dtype).reshape(10,100,10)
 
-    # #outer(a,b): trigger sum_of_products_contig_stride0_outcontig_two
-    # def time_einsum_outer(self, dtype):
-        # np.einsum("i,j", self.a, self.b, optimize=True)
+# #outer(a,b): trigger sum_of_products_contig_stride0_outcontig_two
+# def time_einsum_outer(self, dtype):
+# np.einsum("i,j", self.a, self.b, optimize=True)
 
-    # # multiply(a, b):trigger sum_of_products_contig_two
-    # def time_einsum_multiply(self, dtype):
-        # np.einsum("..., ...", self.c1, self.c , optimize=True)
+# # multiply(a, b):trigger sum_of_products_contig_two
+# def time_einsum_multiply(self, dtype):
+# np.einsum("..., ...", self.c1, self.c , optimize=True)
 
-    # # sum and multiply:trigger sum_of_products_contig_stride0_outstride0_two
-    # def time_einsum_sum_mul(self, dtype):
-        # np.einsum(",i...->", 300, self.d, optimize=True)
+# # sum and multiply:trigger sum_of_products_contig_stride0_outstride0_two
+# def time_einsum_sum_mul(self, dtype):
+# np.einsum(",i...->", 300, self.d, optimize=True)
 
-    # # sum and multiply:trigger sum_of_products_stride0_contig_outstride0_two
-    # def time_einsum_sum_mul2(self, dtype):
-        # np.einsum("i...,->", self.d, 300, optimize=True)
+# # sum and multiply:trigger sum_of_products_stride0_contig_outstride0_two
+# def time_einsum_sum_mul2(self, dtype):
+# np.einsum("i...,->", self.d, 300, optimize=True)

@@ -48,7 +48,7 @@ import numpy
 import time
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # TODO
     # as is example1.py
     result = dpnp.random.randn(10)

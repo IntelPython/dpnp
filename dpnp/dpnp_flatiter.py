@@ -36,9 +36,7 @@ class flatiter:
     def __init__(self, X):
         if type(X) is not dpnp.ndarray:
             raise TypeError(
-                'Argument must be of type dpnp.ndarray, got {}'.format(
-                    type(X)
-                )
+                "Argument must be of type dpnp.ndarray, got {}".format(type(X))
             )
         self.arr_ = X
         self.size_ = X.size
@@ -64,7 +62,7 @@ class flatiter:
         return tuple(multi_index)
 
     def __getitem__(self, key):
-        idx = getattr(key, '__index__', None)
+        idx = getattr(key, "__index__", None)
         if not callable(idx):
             raise TypeError(key)
         i = idx()
@@ -72,7 +70,7 @@ class flatiter:
         return self.arr_.__getitem__(mi)
 
     def __setitem__(self, key, val):
-        idx = getattr(key, '__index__', None)
+        idx = getattr(key, "__index__", None)
         if not callable(idx):
             raise TypeError(key)
         i = idx()

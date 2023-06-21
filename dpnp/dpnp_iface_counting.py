@@ -48,9 +48,7 @@ from dpnp.dpnp_utils import *
 
 from dpnp.dpnp_algo.dpnp_algo import *  # TODO need to investigate why dpnp.dpnp_algo can not be used
 
-__all__ = [
-    'count_nonzero'
-]
+__all__ = ["count_nonzero"]
 
 
 def count_nonzero(x1, axis=None, *, keepdims=False):

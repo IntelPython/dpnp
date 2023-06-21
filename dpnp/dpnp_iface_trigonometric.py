@@ -49,36 +49,36 @@ import dpnp
 
 
 __all__ = [
-    'arccos',
-    'arccosh',
-    'arcsin',
-    'arcsinh',
-    'arctan',
-    'arctan2',
-    'arctanh',
-    'cbrt',
-    'cos',
-    'cosh',
-    'deg2rad',
-    'degrees',
-    'exp',
-    'exp2',
-    'expm1',
-    'hypot',
-    'log',
-    'log10',
-    'log1p',
-    'log2',
-    'rad2deg',
-    'radians',
-    'reciprocal',
-    'sin',
-    'sinh',
-    'sqrt',
-    'square',
-    'tan',
-    'tanh',
-    'unwrap'
+    "arccos",
+    "arccosh",
+    "arcsin",
+    "arcsinh",
+    "arctan",
+    "arctan2",
+    "arctanh",
+    "cbrt",
+    "cos",
+    "cosh",
+    "deg2rad",
+    "degrees",
+    "exp",
+    "exp2",
+    "expm1",
+    "hypot",
+    "log",
+    "log10",
+    "log1p",
+    "log2",
+    "rad2deg",
+    "radians",
+    "reciprocal",
+    "sin",
+    "sinh",
+    "sqrt",
+    "square",
+    "tan",
+    "tanh",
+    "unwrap",
 ]
 
 
@@ -109,7 +109,9 @@ def arccos(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_arccos(x1_desc).get_pyobj()
 
@@ -145,7 +147,9 @@ def arccosh(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_arccosh(x1_desc).get_pyobj()
 
@@ -184,9 +188,15 @@ def arcsin(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
-        out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
+        out_desc = (
+            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+            if out is not None
+            else None
+        )
         return dpnp_arcsin(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.arcsin, x1, out=out, **kwargs)
@@ -213,7 +223,9 @@ def arcsinh(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_arcsinh(x1_desc).get_pyobj()
 
@@ -248,9 +260,15 @@ def arctan(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
-        out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
+        out_desc = (
+            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+            if out is not None
+            else None
+        )
         return dpnp_arctan(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.arctan, x1, out=out, **kwargs)
@@ -277,7 +295,9 @@ def arctanh(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_arctanh(x1_desc).get_pyobj()
 
@@ -305,7 +325,9 @@ def cbrt(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_cbrt(x1_desc).get_pyobj()
 
@@ -345,8 +367,12 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
+    x2_desc = dpnp.get_dpnp_descriptor(
+        x2, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -364,10 +390,18 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            return dpnp_arctan2(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
+            out_desc = (
+                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+                if out is not None
+                else None
+            )
+            return dpnp_arctan2(
+                x1_desc, x2_desc, dtype, out_desc, where
+            ).get_pyobj()
 
-    return call_origin(numpy.arctan2, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return call_origin(
+        numpy.arctan2, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    )
 
 
 def cos(x1, out=None, **kwargs):
@@ -391,9 +425,15 @@ def cos(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
-        out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
+        out_desc = (
+            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+            if out is not None
+            else None
+        )
         return dpnp_cos(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.cos, x1, out=out, **kwargs)
@@ -420,7 +460,9 @@ def cosh(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_cosh(x1_desc).get_pyobj()
 
@@ -470,7 +512,9 @@ def degrees(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_degrees(x1_desc).get_pyobj()
 
@@ -503,9 +547,15 @@ def exp(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
-        out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
+        out_desc = (
+            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+            if out is not None
+            else None
+        )
         return dpnp_exp(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.exp, x1, out=out, **kwargs)
@@ -537,7 +587,9 @@ def exp2(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_exp2(x1_desc).get_pyobj()
 
@@ -567,7 +619,9 @@ def expm1(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_expm1(x1_desc).get_pyobj()
 
@@ -601,8 +655,12 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
+    x2_desc = dpnp.get_dpnp_descriptor(
+        x2, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -622,10 +680,18 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            return dpnp_hypot(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
+            out_desc = (
+                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+                if out is not None
+                else None
+            )
+            return dpnp_hypot(
+                x1_desc, x2_desc, dtype, out_desc, where
+            ).get_pyobj()
 
-    return call_origin(numpy.hypot, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return call_origin(
+        numpy.hypot, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    )
 
 
 def log(x1, out=None, **kwargs):
@@ -657,9 +723,15 @@ def log(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
-        out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
+        out_desc = (
+            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+            if out is not None
+            else None
+        )
         return dpnp_log(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.log, x1, out=out, **kwargs)
@@ -686,7 +758,9 @@ def log10(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_log10(x1_desc).get_pyobj()
 
@@ -718,7 +792,9 @@ def log1p(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_log1p(x1_desc).get_pyobj()
 
@@ -754,7 +830,9 @@ def log2(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_log2(x1_desc).get_pyobj()
 
@@ -784,7 +862,9 @@ def reciprocal(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc and not kwargs:
         return dpnp_recip(x1_desc).get_pyobj()
 
@@ -834,7 +914,9 @@ def radians(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_radians(x1_desc).get_pyobj()
 
@@ -871,9 +953,15 @@ def sin(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
-        out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
+        out_desc = (
+            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+            if out is not None
+            else None
+        )
         return dpnp_sin(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.sin, x1, out=out, **kwargs)
@@ -900,14 +988,16 @@ def sinh(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_sinh(x1_desc).get_pyobj()
 
     return call_origin(numpy.sinh, x1, **kwargs)
 
 
-def sqrt(x1, /, out = None, **kwargs):
+def sqrt(x1, /, out=None, **kwargs):
     """
     Return the positive square-root of an array, element-wise.
 
@@ -942,8 +1032,11 @@ def sqrt(x1, /, out = None, **kwargs):
     if x1_desc:
         if out is not None:
             if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                raise TypeError('return array must be of supported array type')
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
+                raise TypeError("return array must be of supported array type")
+            out_desc = (
+                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+                or None
+            )
         else:
             out_desc = None
         return dpnp_sqrt(x1_desc, out=out_desc).get_pyobj()
@@ -979,7 +1072,9 @@ def square(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_square(x1_desc).get_pyobj()
 
@@ -1008,9 +1103,15 @@ def tan(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
-        out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
+        out_desc = (
+            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+            if out is not None
+            else None
+        )
         return dpnp_tan(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.tan, x1, out=out, **kwargs)
@@ -1037,7 +1138,9 @@ def tanh(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_tanh(x1_desc).get_pyobj()
 

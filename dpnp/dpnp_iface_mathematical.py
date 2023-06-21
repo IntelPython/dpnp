@@ -45,7 +45,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_add,
     dpnp_divide,
     dpnp_multiply,
-    dpnp_subtract
+    dpnp_subtract,
 )
 from .dpnp_utils import *
 
@@ -57,52 +57,63 @@ import dpctl.tensor as dpt
 
 
 __all__ = [
-    'abs',
-    'absolute',
-    'add',
-    'around',
-    'ceil',
-    'conj',
-    'conjugate',
-    'convolve',
-    'copysign',
-    'cross',
-    'cumprod',
-    'cumsum',
-    'diff',
-    'divide',
-    'ediff1d',
-    'fabs',
-    'floor',
-    'floor_divide',
-    'fmax',
-    'fmin',
-    'fmod',
-    'gradient',
-    'maximum',
-    'minimum',
-    'mod',
-    'modf',
-    'multiply',
-    'nancumprod',
-    'nancumsum',
-    'nanprod',
-    'nansum',
-    'negative',
-    'power',
-    'prod',
-    'remainder',
-    'round_',
-    'sign',
-    'subtract',
-    'sum',
-    'trapz',
-    'true_divide',
-    'trunc'
+    "abs",
+    "absolute",
+    "add",
+    "around",
+    "ceil",
+    "conj",
+    "conjugate",
+    "convolve",
+    "copysign",
+    "cross",
+    "cumprod",
+    "cumsum",
+    "diff",
+    "divide",
+    "ediff1d",
+    "fabs",
+    "floor",
+    "floor_divide",
+    "fmax",
+    "fmin",
+    "fmod",
+    "gradient",
+    "maximum",
+    "minimum",
+    "mod",
+    "modf",
+    "multiply",
+    "nancumprod",
+    "nancumsum",
+    "nanprod",
+    "nansum",
+    "negative",
+    "power",
+    "prod",
+    "remainder",
+    "round_",
+    "sign",
+    "subtract",
+    "sum",
+    "trapz",
+    "true_divide",
+    "trunc",
 ]
 
 
-def _check_nd_call(origin_func, dpnp_func, x1, x2, out=None, where=True, order='K', dtype=None, subok=True, **kwargs):
+def _check_nd_call(
+    origin_func,
+    dpnp_func,
+    x1,
+    x2,
+    out=None,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Chooses a common internal elementwise function to call in DPNP based on input arguments
     or to fallback on NumPy call if any passed argument is not currently supported.
@@ -121,15 +132,29 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, out=None, where=True, order='
         # at least either x1 or x2 has to be an array
         pass
     else:
-        if order in 'afkcAFKC':
+        if order in "afkcAFKC":
             order = order.upper()
         elif order is None:
-            order = 'K'
+            order = "K"
         else:
-            raise ValueError("order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(order))
+            raise ValueError(
+                "order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(
+                    order
+                )
+            )
 
         return dpnp_func(x1, x2, out=out, order=order)
-    return call_origin(origin_func, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
+    return call_origin(
+        origin_func,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def abs(*args, **kwargs):
@@ -155,14 +180,7 @@ def abs(*args, **kwargs):
     return dpnp.absolute(*args, **kwargs)
 
 
-def absolute(x,
-             /,
-             out=None,
-             *,
-             where=True,
-             dtype=None,
-             subok=True,
-             **kwargs):
+def absolute(x, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     """
     Calculate the absolute value element-wise.
 
@@ -208,22 +226,37 @@ def absolute(x,
         if x_desc:
             if x_desc.dtype == dpnp.bool:
                 # return a copy of input array "x"
-                return dpnp.array(x, dtype=x.dtype, sycl_queue=x.sycl_queue, usm_type=x.usm_type)
+                return dpnp.array(
+                    x,
+                    dtype=x.dtype,
+                    sycl_queue=x.sycl_queue,
+                    usm_type=x.usm_type,
+                )
             return dpnp_absolute(x_desc).get_pyobj()
 
-    return call_origin(numpy.absolute, x, out=out, where=where, dtype=dtype, subok=subok, **kwargs)
+    return call_origin(
+        numpy.absolute,
+        x,
+        out=out,
+        where=where,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
-def add(x1,
-        x2,
-        /,
-        out=None,
-        *,
-        where=True,
-        order='K',
-        dtype=None,
-        subok=True,
-        **kwargs):
+def add(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Add arguments element-wise.
 
@@ -254,7 +287,18 @@ def add(x1,
 
     """
 
-    return _check_nd_call(numpy.add, dpnp_add, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
+    return _check_nd_call(
+        numpy.add,
+        dpnp_add,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def around(x1, decimals=0, out=None):
@@ -326,9 +370,15 @@ def ceil(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc and not kwargs:
-        out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
+        out_desc = (
+            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+            if out is not None
+            else None
+        )
         return dpnp_ceil(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.ceil, x1, out=out, **kwargs)
@@ -356,7 +406,9 @@ def conjugate(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc and not kwargs:
         return dpnp_conjugate(x1_desc).get_pyobj()
 
@@ -366,7 +418,7 @@ def conjugate(x1, **kwargs):
 conj = conjugate
 
 
-def convolve(a, v, mode='full'):
+def convolve(a, v, mode="full"):
     """
     Returns the discrete, linear convolution of two one-dimensional sequences.
 
@@ -408,8 +460,12 @@ def copysign(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
+    x2_desc = dpnp.get_dpnp_descriptor(
+        x2, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -429,9 +485,13 @@ def copysign(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_copysign(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
+            return dpnp_copysign(
+                x1_desc, x2_desc, dtype=dtype, out=out, where=where
+            ).get_pyobj()
 
-    return call_origin(numpy.copysign, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return call_origin(
+        numpy.copysign, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    )
 
 
 def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
@@ -580,19 +640,23 @@ def diff(x1, n=1, axis=-1, prepend=numpy._NoValue, append=numpy._NoValue):
         else:
             return dpnp_diff(x1_desc, n).get_pyobj()
 
-    return call_origin(numpy.diff, x1, n=n, axis=axis, prepend=prepend, append=append)
+    return call_origin(
+        numpy.diff, x1, n=n, axis=axis, prepend=prepend, append=append
+    )
 
 
-def divide(x1,
-           x2,
-           /,
-           out=None,
-           *,
-           where=True,
-           order='K',
-           dtype=None,
-           subok=True,
-           **kwargs):
+def divide(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Divide arguments element-wise.
 
@@ -621,7 +685,18 @@ def divide(x1,
 
     """
 
-    return _check_nd_call(numpy.divide, dpnp_divide, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
+    return _check_nd_call(
+        numpy.divide,
+        dpnp_divide,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def ediff1d(x1, to_end=None, to_begin=None):
@@ -689,7 +764,9 @@ def fabs(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         return dpnp_fabs(x1_desc).get_pyobj()
 
@@ -729,9 +806,15 @@ def floor(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc and not kwargs:
-        out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
+        out_desc = (
+            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+            if out is not None
+            else None
+        )
         return dpnp_floor(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.floor, x1, out=out, **kwargs)
@@ -799,10 +882,18 @@ def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif x1_is_scalar and x2_desc.ndim > 1:
             pass
         else:
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            return dpnp_floor_divide(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
+            out_desc = (
+                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+                if out is not None
+                else None
+            )
+            return dpnp_floor_divide(
+                x1_desc, x2_desc, dtype, out_desc, where
+            ).get_pyobj()
 
-    return call_origin(numpy.floor_divide, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
+    return call_origin(
+        numpy.floor_divide, x1, x2, out=out, where=where, dtype=dtype, **kwargs
+    )
 
 
 def fmax(*args, **kwargs):
@@ -879,8 +970,12 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
+    x2_desc = dpnp.get_dpnp_descriptor(
+        x2, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -900,10 +995,18 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            return dpnp_fmod(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
+            out_desc = (
+                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+                if out is not None
+                else None
+            )
+            return dpnp_fmod(
+                x1_desc, x2_desc, dtype, out_desc, where
+            ).get_pyobj()
 
-    return call_origin(numpy.fmod, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return call_origin(
+        numpy.fmod, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    )
 
 
 def gradient(x1, *varargs, **kwargs):
@@ -979,8 +1082,12 @@ def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
+    x2_desc = dpnp.get_dpnp_descriptor(
+        x2, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -1000,9 +1107,13 @@ def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_maximum(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
+            return dpnp_maximum(
+                x1_desc, x2_desc, dtype=dtype, out=out, where=where
+            ).get_pyobj()
 
-    return call_origin(numpy.maximum, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return call_origin(
+        numpy.maximum, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    )
 
 
 def minimum(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -1036,8 +1147,12 @@ def minimum(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
+    x2_desc = dpnp.get_dpnp_descriptor(
+        x2, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
 
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
@@ -1057,9 +1172,13 @@ def minimum(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_minimum(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
+            return dpnp_minimum(
+                x1_desc, x2_desc, dtype=dtype, out=out, where=where
+            ).get_pyobj()
 
-    return call_origin(numpy.minimum, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return call_origin(
+        numpy.minimum, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    )
 
 
 def mod(*args, **kwargs):
@@ -1114,16 +1233,18 @@ def modf(x1, **kwargs):
     return call_origin(numpy.modf, x1, **kwargs)
 
 
-def multiply(x1,
-             x2,
-             /,
-             out=None,
-             *,
-             where=True,
-             order='K',
-             dtype=None,
-             subok=True,
-             **kwargs):
+def multiply(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Multiply arguments element-wise.
 
@@ -1153,7 +1274,18 @@ def multiply(x1,
 
     """
 
-    return _check_nd_call(numpy.multiply, dpnp_multiply, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
+    return _check_nd_call(
+        numpy.multiply,
+        dpnp_multiply,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def nancumprod(x1, **kwargs):
@@ -1315,22 +1447,16 @@ def negative(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc and not kwargs:
         return dpnp_negative(x1_desc).get_pyobj()
 
     return call_origin(numpy.negative, x1, **kwargs)
 
 
-def power(x1,
-          x2,
-          /,
-          out=None,
-          *,
-          where=True,
-          dtype=None,
-          subok=True,
-          **kwargs):
+def power(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     """
     First array elements raised to powers from second array, element-wise.
 
@@ -1384,26 +1510,59 @@ def power(x1,
         pass
     else:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
         if x1_desc and x2_desc:
             if out is not None:
                 if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError('return array must be of supported array type')
-                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
+                    raise TypeError(
+                        "return array must be of supported array type"
+                    )
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    or None
+                )
             else:
                 out_desc = None
 
-            return dpnp_power(x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where).get_pyobj()
+            return dpnp_power(
+                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
+            ).get_pyobj()
 
-    return call_origin(numpy.power, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    return call_origin(
+        numpy.power, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    )
 
 
-def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
+def prod(
+    x1,
+    axis=None,
+    dtype=None,
+    out=None,
+    keepdims=False,
+    initial=None,
+    where=True,
+):
     """
     Calculate product of array elements over a given axis.
 
@@ -1429,13 +1588,30 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, wher
         if where is not True:
             pass
         else:
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            result_obj = dpnp_prod(x1_desc, axis, dtype, out_desc, keepdims, initial, where).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
+            out_desc = (
+                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+                if out is not None
+                else None
+            )
+            result_obj = dpnp_prod(
+                x1_desc, axis, dtype, out_desc, keepdims, initial, where
+            ).get_pyobj()
+            result = dpnp.convert_single_elem_array_to_scalar(
+                result_obj, keepdims
+            )
 
             return result
 
-    return call_origin(numpy.prod, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
+    return call_origin(
+        numpy.prod,
+        x1,
+        axis=axis,
+        dtype=dtype,
+        out=out,
+        keepdims=keepdims,
+        initial=initial,
+        where=where,
+    )
 
 
 def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):
@@ -1500,10 +1676,18 @@ def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):
         elif x1_is_scalar and x2_desc.ndim > 1:
             pass
         else:
-            out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
-            return dpnp_remainder(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
+            out_desc = (
+                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+                if out is not None
+                else None
+            )
+            return dpnp_remainder(
+                x1_desc, x2_desc, dtype, out_desc, where
+            ).get_pyobj()
 
-    return call_origin(numpy.remainder, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
+    return call_origin(
+        numpy.remainder, x1, x2, out=out, where=where, dtype=dtype, **kwargs
+    )
 
 
 def round_(a, decimals=0, out=None):
@@ -1543,23 +1727,27 @@ def sign(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc and not kwargs:
         return dpnp_sign(x1_desc).get_pyobj()
 
     return call_origin(numpy.sign, x1, **kwargs)
 
 
-def subtract(x1,
-             x2,
-             /,
-             out=None,
-             *,
-             where=True,
-             order='K',
-             dtype=None,
-             subok=True,
-             **kwargs):
+def subtract(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Subtract arguments, element-wise.
 
@@ -1588,10 +1776,31 @@ def subtract(x1,
 
     """
 
-    return _check_nd_call(numpy.subtract, dpnp_subtract, x1, x2, out=out, where=where, order=order, dtype=dtype, subok=subok, **kwargs)
+    return _check_nd_call(
+        numpy.subtract,
+        dpnp_subtract,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
-def sum(x, /, *, axis=None, dtype=None, keepdims=False, out=None, initial=0, where=True):
+def sum(
+    x,
+    /,
+    *,
+    axis=None,
+    dtype=None,
+    keepdims=False,
+    out=None,
+    initial=0,
+    where=True,
+):
     """
     Sum of array elements over a given axis.
 
@@ -1625,7 +1834,6 @@ def sum(x, /, *, axis=None, dtype=None, keepdims=False, out=None, initial=0, whe
 
     """
 
-
     if out is not None:
         pass
     elif initial != 0:
@@ -1633,10 +1841,21 @@ def sum(x, /, *, axis=None, dtype=None, keepdims=False, out=None, initial=0, whe
     elif where is not True:
         pass
     else:
-        y = dpt.sum(dpnp.get_usm_ndarray(x), axis=axis, dtype=dtype, keepdims=keepdims)
+        y = dpt.sum(
+            dpnp.get_usm_ndarray(x), axis=axis, dtype=dtype, keepdims=keepdims
+        )
         return dpnp_array._create_from_usm_ndarray(y)
 
-    return call_origin(numpy.sum, x, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
+    return call_origin(
+        numpy.sum,
+        x,
+        axis=axis,
+        dtype=dtype,
+        out=out,
+        keepdims=keepdims,
+        initial=initial,
+        where=where,
+    )
 
 
 def trapz(y1, x1=None, dx=1.0, axis=-1):
@@ -1673,15 +1892,19 @@ def trapz(y1, x1=None, dx=1.0, axis=-1):
         else:
             y_obj = y_desc.get_array()
             if x1 is None:
-                x_obj = dpnp.empty(y_desc.shape,
-                                   dtype=y_desc.dtype,
-                                   device=y_obj.sycl_device,
-                                   usm_type=y_obj.usm_type,
-                                   sycl_queue=y_obj.sycl_queue)
+                x_obj = dpnp.empty(
+                    y_desc.shape,
+                    dtype=y_desc.dtype,
+                    device=y_obj.sycl_device,
+                    usm_type=y_obj.usm_type,
+                    sycl_queue=y_obj.sycl_queue,
+                )
             else:
                 x_obj = x1
 
-            x_desc = dpnp.get_dpnp_descriptor(x_obj, copy_when_nondefault_queue=False)
+            x_desc = dpnp.get_dpnp_descriptor(
+                x_obj, copy_when_nondefault_queue=False
+            )
             # TODO: change to "not x_desc"
             if x_desc:
                 pass
@@ -1743,9 +1966,15 @@ def trunc(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc and not kwargs:
-        out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
+        out_desc = (
+            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
+            if out is not None
+            else None
+        )
         return dpnp_trunc(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.trunc, x1, out=out, **kwargs)

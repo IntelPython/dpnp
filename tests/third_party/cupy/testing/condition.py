@@ -4,7 +4,6 @@ import unittest
 
 
 class QuietTestRunner(object):
-
     def run(self, suite):
         result = unittest.TestResult()
         suite(result)
@@ -39,14 +38,15 @@ def repeat_with_success_at_least(times, min_success):
             results = []
 
             def fail():
-                msg = '\nFail: {0}, Success: {1}'.format(
-                    failure_counter, success_counter)
+                msg = "\nFail: {0}, Success: {1}".format(
+                    failure_counter, success_counter
+                )
                 if len(results) > 0:
                     first = results[0]
                     errs = first.failures + first.errors
                     if len(errs) > 0:
-                        err_msg = '\n'.join(fail[1] for fail in errs)
-                        msg += '\n\nThe first error message:\n' + err_msg
+                        err_msg = "\n".join(fail[1] for fail in errs)
+                        msg += "\n\nThe first error message:\n" + err_msg
                 instance.fail(msg)
 
             for _ in range(times):
@@ -58,7 +58,9 @@ def repeat_with_success_at_least(times, min_success):
                     unittest.FunctionTestCase(
                         lambda: f(ins, *args[1:], **kwargs),
                         setUp=ins.setUp,
-                        tearDown=ins.tearDown))
+                        tearDown=ins.tearDown,
+                    )
+                )
 
                 result = QuietTestRunner().run(suite)
                 if len(result.skipped) == 1:
@@ -79,7 +81,9 @@ def repeat_with_success_at_least(times, min_success):
                     fail()
                     return
             fail()
+
         return wrapper
+
     return _repeat_with_success_at_least
 
 
@@ -102,7 +106,7 @@ def repeat(times, intensive_times=None):
     if intensive_times is None:
         return repeat_with_success_at_least(times, times)
 
-    casual_test = bool(int(os.environ.get('CUPY_TEST_CASUAL', '0')))
+    casual_test = bool(int(os.environ.get("CUPY_TEST_CASUAL", "0")))
     times_ = times if casual_test else intensive_times
     return repeat_with_success_at_least(times_, times_)
 

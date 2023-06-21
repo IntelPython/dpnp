@@ -9,11 +9,10 @@ from numpy.testing import assert_raises
 
 
 class TestOuter(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_two_vectors(self, xp, dtype):
-        a = xp.ones((10, ), dtype=dtype)
+        a = xp.ones((10,), dtype=dtype)
         b = xp.linspace(-2, 2, 5, dtype=dtype)
 
         return xp.outer(a, b)
@@ -29,7 +28,7 @@ class TestOuter(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_the_same_vector(self, xp, dtype):
-        a = xp.full(shape=(100, ), fill_value=7, dtype=dtype)
+        a = xp.full(shape=(100,), fill_value=7, dtype=dtype)
         return xp.outer(a, a)
 
     @testing.for_all_dtypes()
@@ -40,7 +39,6 @@ class TestOuter(unittest.TestCase):
 
 
 class TestScalarOuter(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=False)
     def test_first_is_scalar(self, xp, dtype):
@@ -55,7 +53,7 @@ class TestScalarOuter(unittest.TestCase):
         a = xp.arange(5**3, dtype=dtype).reshape(5, 5, 5)
         return xp.outer(a, scalar)
 
-    @pytest.mark.usefixtures('allow_fall_back_on_numpy')
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_both_inputs_as_scalar(self, xp):
         a = xp.int64(4)
@@ -64,7 +62,6 @@ class TestScalarOuter(unittest.TestCase):
 
 
 class TestListOuter(unittest.TestCase):
-
     def test_list(self):
         a = np.arange(27).reshape(3, 3, 3)
         b: list[list[list[int]]] = a.tolist()

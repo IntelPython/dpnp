@@ -16,13 +16,18 @@ nxs, nys = 100, 100
 
 # a set of interesting types to test
 TYPES1 = [
-    'int16', 'float16',
-    'int32', 'float32',
-    'int64', 'float64', 'complex64',
-    'longfloat', 'complex128',
+    "int16",
+    "float16",
+    "int32",
+    "float32",
+    "int64",
+    "float64",
+    "complex64",
+    "longfloat",
+    "complex128",
 ]
-if 'complex256' in numpy.typeDict:
-    TYPES1.append('complex256')
+if "complex256" in numpy.typeDict:
+    TYPES1.append("complex256")
 
 
 def memoize(func):
@@ -32,12 +37,14 @@ def memoize(func):
         if not result:
             result.append(func())
         return result[0]
+
     return wrapper
 
 
 # values which will be used to construct our sample data matrices
 # replicate 10 times to speed up initial imports of this helper
 # and generate some redundancy
+
 
 @memoize
 def get_values():
@@ -49,14 +56,15 @@ def get_values():
 @memoize
 def get_squares():
     values = get_values()
-    squares = {t: numpy.array(values,
-                              dtype=getattr(numpy, t)).reshape((nx, ny))
-               for t in TYPES1}
+    squares = {
+        t: numpy.array(values, dtype=getattr(numpy, t)).reshape((nx, ny))
+        for t in TYPES1
+    }
 
     # adjust complex ones to have non-degenerated imagery part -- use
     # original data transposed for that
     for t, v in squares.items():
-        if t.startswith('complex'):
+        if t.startswith("complex"):
             v += v.T * 1j
     return squares
 
@@ -90,8 +98,8 @@ def get_indexes():
 def get_indexes_rand():
     rnd = random.Random(1)
 
-    indexes_rand = get_indexes().tolist()       # copy
-    rnd.shuffle(indexes_rand)         # in-place shuffle
+    indexes_rand = get_indexes().tolist()  # copy
+    rnd.shuffle(indexes_rand)  # in-place shuffle
     indexes_rand = numpy.array(indexes_rand)
     return indexes_rand
 

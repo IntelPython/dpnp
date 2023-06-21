@@ -5,8 +5,10 @@ import dpnp
 
 # NumPy-like assertion functions that accept both NumPy and CuPy arrays
 
-def assert_allclose(actual, desired, rtol=1e-7, atol=0, err_msg='',
-                    verbose=True):
+
+def assert_allclose(
+    actual, desired, rtol=1e-7, atol=0, err_msg="", verbose=True
+):
     """Raises an AssertionError if objects are not equal up to desired tolerance.
 
     Args:
@@ -22,11 +24,16 @@ def assert_allclose(actual, desired, rtol=1e-7, atol=0, err_msg='',
 
     """  # NOQA
     numpy.testing.assert_allclose(
-        dpnp.asnumpy(actual), dpnp.asnumpy(desired),
-        rtol=rtol, atol=atol, err_msg=err_msg, verbose=verbose)
+        dpnp.asnumpy(actual),
+        dpnp.asnumpy(desired),
+        rtol=rtol,
+        atol=atol,
+        err_msg=err_msg,
+        verbose=verbose,
+    )
 
 
-def assert_array_almost_equal(x, y, decimal=6, err_msg='', verbose=True):
+def assert_array_almost_equal(x, y, decimal=6, err_msg="", verbose=True):
     """Raises an AssertionError if objects are not equal up to desired precision.
 
     Args:
@@ -40,8 +47,12 @@ def assert_array_almost_equal(x, y, decimal=6, err_msg='', verbose=True):
     .. seealso:: :func:`numpy.testing.assert_array_almost_equal`
     """  # NOQA
     numpy.testing.assert_array_almost_equal(
-        dpnp.asnumpy(x), dpnp.asnumpy(y), decimal=decimal,
-        err_msg=err_msg, verbose=verbose)
+        dpnp.asnumpy(x),
+        dpnp.asnumpy(y),
+        decimal=decimal,
+        err_msg=err_msg,
+        verbose=verbose,
+    )
 
 
 def assert_array_almost_equal_nulp(x, y, nulp=1):
@@ -55,7 +66,8 @@ def assert_array_almost_equal_nulp(x, y, nulp=1):
     .. seealso:: :func:`numpy.testing.assert_array_almost_equal_nulp`
     """
     numpy.testing.assert_array_almost_equal_nulp(
-        dpnp.asnumpy(x), dpnp.asnumpy(y), nulp=nulp)
+        dpnp.asnumpy(x), dpnp.asnumpy(y), nulp=nulp
+    )
 
 
 def assert_array_max_ulp(a, b, maxulp=1, dtype=None):
@@ -71,10 +83,11 @@ def assert_array_max_ulp(a, b, maxulp=1, dtype=None):
     .. seealso:: :func:`numpy.testing.assert_array_max_ulp`
     """  # NOQA
     numpy.testing.assert_array_max_ulp(
-        dpnp.asnumpy(a), dpnp.asnumpy(b), maxulp=maxulp, dtype=dtype)
+        dpnp.asnumpy(a), dpnp.asnumpy(b), maxulp=maxulp, dtype=dtype
+    )
 
 
-def assert_array_equal(x, y, err_msg='', verbose=True, strides_check=False):
+def assert_array_equal(x, y, err_msg="", verbose=True, strides_check=False):
     """Raises an AssertionError if two array_like objects are not equal.
 
     Args:
@@ -89,21 +102,21 @@ def assert_array_equal(x, y, err_msg='', verbose=True, strides_check=False):
     .. seealso:: :func:`numpy.testing.assert_array_equal`
     """
     numpy.testing.assert_array_equal(
-        dpnp.asnumpy(x), dpnp.asnumpy(y), err_msg=err_msg,
-        verbose=verbose)
+        dpnp.asnumpy(x), dpnp.asnumpy(y), err_msg=err_msg, verbose=verbose
+    )
 
     if strides_check:
         if x.strides != y.strides:
-            msg = ['Strides are not equal:']
+            msg = ["Strides are not equal:"]
             if err_msg:
-                msg = [msg[0] + ' ' + err_msg]
+                msg = [msg[0] + " " + err_msg]
             if verbose:
-                msg.append(' x: {}'.format(x.strides))
-                msg.append(' y: {}'.format(y.strides))
-            raise AssertionError('\n'.join(msg))
+                msg.append(" x: {}".format(x.strides))
+                msg.append(" y: {}".format(y.strides))
+            raise AssertionError("\n".join(msg))
 
 
-def assert_array_list_equal(xlist, ylist, err_msg='', verbose=True):
+def assert_array_list_equal(xlist, ylist, err_msg="", verbose=True):
     """Compares lists of arrays pairwise with ``assert_array_equal``.
 
     Args:
@@ -126,21 +139,23 @@ def assert_array_list_equal(xlist, ylist, err_msg='', verbose=True):
     y_type = type(ylist)
     if x_type is not y_type:
         raise AssertionError(
-            'Matching types of list or tuple are expected, '
-            'but were different types '
-            '(xlist:{} ylist:{})'.format(x_type, y_type))
+            "Matching types of list or tuple are expected, "
+            "but were different types "
+            "(xlist:{} ylist:{})".format(x_type, y_type)
+        )
     if x_type not in (list, tuple):
         raise AssertionError(
-            'List or tuple is expected, but was {}'.format(x_type))
+            "List or tuple is expected, but was {}".format(x_type)
+        )
     if len(xlist) != len(ylist):
-        raise AssertionError('List size is different')
+        raise AssertionError("List size is different")
     for x, y in zip(xlist, ylist):
         numpy.testing.assert_array_equal(
-            dpnp.asnumpy(x), dpnp.asnumpy(y), err_msg=err_msg,
-            verbose=verbose)
+            dpnp.asnumpy(x), dpnp.asnumpy(y), err_msg=err_msg, verbose=verbose
+        )
 
 
-def assert_array_less(x, y, err_msg='', verbose=True):
+def assert_array_less(x, y, err_msg="", verbose=True):
     """Raises an AssertionError if array_like objects are not ordered by less than.
 
     Args:
@@ -153,5 +168,5 @@ def assert_array_less(x, y, err_msg='', verbose=True):
     .. seealso:: :func:`numpy.testing.assert_array_less`
     """  # NOQA
     numpy.testing.assert_array_less(
-        dpnp.asnumpy(x), dpnp.asnumpy(y), err_msg=err_msg,
-        verbose=verbose)
+        dpnp.asnumpy(x), dpnp.asnumpy(y), err_msg=err_msg, verbose=verbose
+    )

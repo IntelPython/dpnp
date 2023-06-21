@@ -47,54 +47,54 @@ from .dpnp_algo_random import *
 
 
 __all__ = [
-    'beta',
-    'binomial',
-    'bytes',
-    'chisquare',
-    'choice',
-    'dirichlet',
-    'exponential',
-    'f',
-    'gamma',
-    'geometric',
-    'gumbel',
-    'hypergeometric',
-    'laplace',
-    'logistic',
-    'lognormal',
-    'logseries',
-    'multinomial',
-    'multivariate_normal',
-    'negative_binomial',
-    'normal',
-    'noncentral_chisquare',
-    'noncentral_f',
-    'pareto',
-    'permutation',
-    'poisson',
-    'power',
-    'rand',
-    'randint',
-    'randn',
-    'random',
-    'random_integers',
-    'random_sample',
-    'ranf',
-    'rayleigh',
-    'sample',
-    'shuffle',
-    'seed',
-    'standard_cauchy',
-    'standard_exponential',
-    'standard_gamma',
-    'standard_normal',
-    'standard_t',
-    'triangular',
-    'uniform',
-    'vonmises',
-    'wald',
-    'weibull',
-    'zipf'
+    "beta",
+    "binomial",
+    "bytes",
+    "chisquare",
+    "choice",
+    "dirichlet",
+    "exponential",
+    "f",
+    "gamma",
+    "geometric",
+    "gumbel",
+    "hypergeometric",
+    "laplace",
+    "logistic",
+    "lognormal",
+    "logseries",
+    "multinomial",
+    "multivariate_normal",
+    "negative_binomial",
+    "normal",
+    "noncentral_chisquare",
+    "noncentral_f",
+    "pareto",
+    "permutation",
+    "poisson",
+    "power",
+    "rand",
+    "randint",
+    "randn",
+    "random",
+    "random_integers",
+    "random_sample",
+    "ranf",
+    "rayleigh",
+    "sample",
+    "shuffle",
+    "seed",
+    "standard_cauchy",
+    "standard_exponential",
+    "standard_gamma",
+    "standard_normal",
+    "standard_t",
+    "triangular",
+    "uniform",
+    "vonmises",
+    "wald",
+    "weibull",
+    "zipf",
 ]
 
 
@@ -102,15 +102,20 @@ def _get_random_state(device=None, sycl_queue=None):
     global _dpnp_random_states
 
     if not isinstance(_dpnp_random_states, dict):
-         _dpnp_random_states = {}
-    sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
+        _dpnp_random_states = {}
+    sycl_queue = dpnp.get_normalized_queue_device(
+        device=device, sycl_queue=sycl_queue
+    )
     if sycl_queue not in _dpnp_random_states:
         rs = RandomState(device=device, sycl_queue=sycl_queue)
         if sycl_queue == rs.get_sycl_queue():
             _dpnp_random_states[sycl_queue] = rs
         else:
-            raise RuntimeError('Normalized SYCL queue {} mismatched with one returned by RandmoState {}'
-                               .format(sycl_queue, rs.get_sycl_queue()))
+            raise RuntimeError(
+                "Normalized SYCL queue {} mismatched with one returned by RandmoState {}".format(
+                    sycl_queue, rs.get_sycl_queue()
+                )
+            )
     return _dpnp_random_states[sycl_queue]
 
 
@@ -690,7 +695,7 @@ def multinomial(n, pvals, size=None):
     return call_origin(numpy.random.multinomial, n, pvals, size)
 
 
-def multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8):
+def multivariate_normal(mean, cov, size=None, check_valid="warn", tol=1e-8):
     """Multivariate normal distributions.
 
     Draw random samples from a multivariate normal distribution.
@@ -731,9 +736,13 @@ def multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8):
         else:
             final_shape = list(shape[:])
             final_shape.append(mean_.shape[0])
-            return dpnp_rng_multivariate_normal(mean_, cov_, final_shape).get_pyobj()
+            return dpnp_rng_multivariate_normal(
+                mean_, cov_, final_shape
+            ).get_pyobj()
 
-    return call_origin(numpy.random.multivariate_normal, mean, cov, size, check_valid, tol)
+    return call_origin(
+        numpy.random.multivariate_normal, mean, cov, size, check_valid, tol
+    )
 
 
 def negative_binomial(n, p, size=None):
@@ -783,12 +792,14 @@ def negative_binomial(n, p, size=None):
     return call_origin(numpy.random.negative_binomial, n, p, size)
 
 
-def normal(loc=0.0,
-           scale=1.0,
-           size=None,
-           device=None,
-           usm_type='device',
-           sycl_queue=None):
+def normal(
+    loc=0.0,
+    scale=1.0,
+    size=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw random samples from a normal (Gaussian) distribution.
 
@@ -829,7 +840,9 @@ def normal(loc=0.0,
     """
 
     rs = _get_random_state(device=device, sycl_queue=sycl_queue)
-    return rs.normal(loc=loc, scale=scale, size=size, dtype=None, usm_type=usm_type)
+    return rs.normal(
+        loc=loc, scale=scale, size=size, dtype=None, usm_type=usm_type
+    )
 
 
 def noncentral_chisquare(df, nonc, size=None):
@@ -1015,11 +1028,7 @@ def power(a, size=None):
     return call_origin(numpy.random.power, a, size)
 
 
-def rand(d0,
-         *dn,
-         device=None,
-         usm_type='device',
-         sycl_queue=None):
+def rand(d0, *dn, device=None, usm_type="device", sycl_queue=None):
     """
     Random values in a given shape.
 
@@ -1063,13 +1072,15 @@ def rand(d0,
     return rs.rand(d0, *dn, usm_type=usm_type)
 
 
-def randint(low,
-            high=None,
-            size=None,
-            dtype=int,
-            device=None,
-            usm_type='device',
-            sycl_queue=None):
+def randint(
+    low,
+    high=None,
+    size=None,
+    dtype=int,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Return random integers from `low` (inclusive) to `high` (exclusive).
 
@@ -1117,14 +1128,12 @@ def randint(low,
     """
 
     rs = _get_random_state(device=device, sycl_queue=sycl_queue)
-    return rs.randint(low=low, high=high, size=size, dtype=dtype, usm_type=usm_type)
+    return rs.randint(
+        low=low, high=high, size=size, dtype=dtype, usm_type=usm_type
+    )
 
 
-def randn(d0,
-          *dn,
-          device=None,
-          usm_type='device',
-          sycl_queue=None):
+def randn(d0, *dn, device=None, usm_type="device", sycl_queue=None):
     """
     Return a sample (or samples) from the "standard normal" distribution.
 
@@ -1170,10 +1179,7 @@ def randn(d0,
     return rs.randn(d0, *dn, usm_type=usm_type)
 
 
-def random(size=None,
-           device=None,
-           usm_type='device',
-           sycl_queue=None):
+def random(size=None, device=None, usm_type="device", sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
     Alias for random_sample.
@@ -1211,15 +1217,14 @@ def random(size=None,
 
     """
 
-    return random_sample(size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
+    return random_sample(
+        size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
 
 
-def random_integers(low,
-                    high=None,
-                    size=None,
-                    device=None,
-                    usm_type='device',
-                    sycl_queue=None):
+def random_integers(
+    low, high=None, size=None, device=None, usm_type="device", sycl_queue=None
+):
     """
     Random integers between `low` and `high`, inclusive.
 
@@ -1266,15 +1271,19 @@ def random_integers(low,
     elif not dpnp.isscalar(high):
         pass
     else:
-        return randint(low, int(high) + 1, size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
+        return randint(
+            low,
+            int(high) + 1,
+            size=size,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
     return call_origin(numpy.random.random_integers, low, high, size)
 
 
-def random_sample(size=None,
-                  device=None,
-                  usm_type='device',
-                  sycl_queue=None):
+def random_sample(size=None, device=None, usm_type="device", sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
 
@@ -1317,10 +1326,7 @@ def random_sample(size=None,
     return rs.random_sample(size=size, usm_type=usm_type)
 
 
-def ranf(size=None,
-         device=None,
-         usm_type='device',
-         sycl_queue=None):
+def ranf(size=None, device=None, usm_type="device", sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
@@ -1359,7 +1365,9 @@ def ranf(size=None,
 
     """
 
-    return random_sample(size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
+    return random_sample(
+        size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
 
 
 def rayleigh(scale=1.0, size=None):
@@ -1396,10 +1404,7 @@ def rayleigh(scale=1.0, size=None):
     return call_origin(numpy.random.rayleigh, scale, size)
 
 
-def sample(size=None,
-           device=None,
-           usm_type='device',
-           sycl_queue=None):
+def sample(size=None, device=None, usm_type="device", sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
@@ -1438,7 +1443,9 @@ def sample(size=None,
 
     """
 
-    return random_sample(size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
+    return random_sample(
+        size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
 
 
 def shuffle(x1):
@@ -1466,9 +1473,7 @@ def shuffle(x1):
     return
 
 
-def seed(seed=None,
-         device=None,
-         sycl_queue=None):
+def seed(seed=None, device=None, sycl_queue=None):
     """
     Reseed a legacy MT19937 random number generator engine.
 
@@ -1492,8 +1497,12 @@ def seed(seed=None,
     # update a mt19937 random number for both RandomState and legacy functionality
     global _dpnp_random_states
 
-    sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
-    _dpnp_random_states[sycl_queue] = RandomState(seed=seed, sycl_queue=sycl_queue)
+    sycl_queue = dpnp.get_normalized_queue_device(
+        device=device, sycl_queue=sycl_queue
+    )
+    _dpnp_random_states[sycl_queue] = RandomState(
+        seed=seed, sycl_queue=sycl_queue
+    )
 
     if not use_origin_backend(seed):
         # TODO:
@@ -1601,10 +1610,7 @@ def standard_gamma(shape, size=None):
     return call_origin(numpy.random.standard_gamma, shape, size)
 
 
-def standard_normal(size=None,
-                    device=None,
-                    usm_type='device',
-                    sycl_queue=None):
+def standard_normal(size=None, device=None, usm_type="device", sycl_queue=None):
     """
     Draw samples from a standard Normal distribution (mean=0, stdev=1).
 
@@ -1721,12 +1727,14 @@ def triangular(left, mode, right, size=None):
     return call_origin(numpy.random.triangular, left, mode, right, size)
 
 
-def uniform(low=0.0,
-            high=1.0,
-            size=None,
-            device=None,
-            usm_type='device',
-            sycl_queue=None):
+def uniform(
+    low=0.0,
+    high=1.0,
+    size=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw samples from a uniform distribution.
 
@@ -1774,7 +1782,9 @@ def uniform(low=0.0,
     """
 
     rs = _get_random_state(device=device, sycl_queue=sycl_queue)
-    return rs.uniform(low=low, high=high, size=size, dtype=None, usm_type=usm_type)
+    return rs.uniform(
+        low=low, high=high, size=size, dtype=None, usm_type=usm_type
+    )
 
 
 def vonmises(mu, kappa, size=None):

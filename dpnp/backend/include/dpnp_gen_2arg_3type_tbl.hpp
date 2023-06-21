@@ -34,7 +34,7 @@
  * - vector operation over SYCL group used to calculate the result
  * - list of types vector operation accepts
  * - mkl operation used to calculate the result
- * - list of types mkl operation accepts
+ * - list of types OneMKL operation accepts
  *
  */
 

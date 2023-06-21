@@ -54,55 +54,57 @@ import dpctl
 
 
 __all__ = [
-    'arange',
-    'array',
-    'asanyarray',
-    'asarray',
-    'ascontiguousarray',
-    'copy',
-    'diag',
-    'diagflat',
-    'empty',
-    'empty_like',
-    'eye',
-    'frombuffer',
-    'fromfile',
-    'fromfunction',
-    'fromiter',
-    'fromstring',
-    'full',
-    'full_like',
-    'geomspace',
-    'identity',
-    'linspace',
-    'loadtxt',
-    'logspace',
-    'meshgrid',
-    'mgrid',
-    'ogrid',
-    'ones',
-    'ones_like',
-    'ptp',
-    'trace',
-    'tri',
-    'tril',
-    'triu',
-    'vander',
-    'zeros',
-    'zeros_like'
+    "arange",
+    "array",
+    "asanyarray",
+    "asarray",
+    "ascontiguousarray",
+    "copy",
+    "diag",
+    "diagflat",
+    "empty",
+    "empty_like",
+    "eye",
+    "frombuffer",
+    "fromfile",
+    "fromfunction",
+    "fromiter",
+    "fromstring",
+    "full",
+    "full_like",
+    "geomspace",
+    "identity",
+    "linspace",
+    "loadtxt",
+    "logspace",
+    "meshgrid",
+    "mgrid",
+    "ogrid",
+    "ones",
+    "ones_like",
+    "ptp",
+    "trace",
+    "tri",
+    "tril",
+    "triu",
+    "vander",
+    "zeros",
+    "zeros_like",
 ]
 
 
-def arange(start,
-           /,
-           stop=None,
-           step=1,
-           *,
-           dtype=None,
-           like=None,
-           device=None,
-           usm_type='device',
-           sycl_queue=None):
+def arange(
+    start,
+    /,
+    stop=None,
+    step=1,
+    *,
+    dtype=None,
+    like=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Returns an array with evenly spaced values within a given interval.
 
@@ -135,27 +137,33 @@ def arange(start,
     """
 
     if like is None:
-        return dpnp_container.arange(start,
-                                     stop=stop,
-                                     step=step,
-                                     dtype=dtype,
-                                     device=device,
-                                     usm_type=usm_type,
-                                     sycl_queue=sycl_queue)
+        return dpnp_container.arange(
+            start,
+            stop=stop,
+            step=step,
+            dtype=dtype,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
-    return call_origin(numpy.arange, start, stop=stop, step=step, dtype=dtype, like=like)
+    return call_origin(
+        numpy.arange, start, stop=stop, step=step, dtype=dtype, like=like
+    )
 
 
-def array(x1,
-          dtype=None,
-          copy=True,
-          order='C',
-          subok=False,
-          ndmin=0,
-          like=None,
-          device=None,
-          usm_type=None,
-          sycl_queue=None):
+def array(
+    x1,
+    dtype=None,
+    copy=True,
+    order="C",
+    subok=False,
+    ndmin=0,
+    like=None,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
     """
     Creates an array.
 
@@ -205,25 +213,29 @@ def array(x1,
     elif like is not None:
         pass
     else:
-        return dpnp_container.asarray(x1,
-                                      dtype=dtype,
-                                      copy=copy,
-                                      order=order,
-                                      device=device,
-                                      usm_type=usm_type,
-                                      sycl_queue=sycl_queue)
+        return dpnp_container.asarray(
+            x1,
+            dtype=dtype,
+            copy=copy,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
-    return call_origin(numpy.array,
-                       x1,
-                       dtype=dtype,
-                       copy=copy,
-                       order=order,
-                       subok=subok,
-                       ndmin=ndmin,
-                       like=like)
+    return call_origin(
+        numpy.array,
+        x1,
+        dtype=dtype,
+        copy=copy,
+        order=order,
+        subok=subok,
+        ndmin=ndmin,
+        like=like,
+    )
 
 
-def asanyarray(a, dtype=None, order='C'):
+def asanyarray(a, dtype=None, order="C"):
     """
     Convert the input to an ndarray, but pass ndarray subclasses through.
 
@@ -260,7 +272,7 @@ def asanyarray(a, dtype=None, order='C'):
         if isinstance(a, dpnp.ndarray):
             return a
 
-        if order != 'C':
+        if order != "C":
             pass
         else:
             return array(a, dtype=dtype, order=order)
@@ -268,13 +280,15 @@ def asanyarray(a, dtype=None, order='C'):
     return call_origin(numpy.asanyarray, a, dtype, order)
 
 
-def asarray(x1,
-            dtype=None,
-            order='C',
-            like=None,
-            device=None,
-            usm_type=None,
-            sycl_queue=None):
+def asarray(
+    x1,
+    dtype=None,
+    order="C",
+    like=None,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
     """
     Converts an input object into array.
 
@@ -309,13 +323,15 @@ def asarray(x1,
     if like is not None:
         pass
     else:
-        return dpnp_container.asarray(x1,
-                                      dtype=dtype,
-                                      copy=True,  # Converting Python sequence to usm_ndarray requires a copy
-                                      order=order,
-                                      device=device,
-                                      usm_type=usm_type,
-                                      sycl_queue=sycl_queue)
+        return dpnp_container.asarray(
+            x1,
+            dtype=dtype,
+            copy=True,  # Converting Python sequence to usm_ndarray requires a copy
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
     return call_origin(numpy.asarray, x1, dtype=dtype, order=order, like=like)
 
@@ -356,7 +372,7 @@ def ascontiguousarray(a, dtype=None):
 
 
 # numpy.copy(a, order='K', subok=False)
-def copy(x1, order='K', subok=False):
+def copy(x1, order="K", subok=False):
     """
     Return an array copy of the given object.
 
@@ -381,9 +397,11 @@ def copy(x1, order='K', subok=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
-        if order != 'K':
+        if order != "K":
             pass
         elif subok:
             pass
@@ -459,21 +477,25 @@ def diagflat(x1, k=0):
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         input_ravel = dpnp.ravel(x1)
-        input_ravel_desc = dpnp.get_dpnp_descriptor(input_ravel, copy_when_nondefault_queue=False)
+        input_ravel_desc = dpnp.get_dpnp_descriptor(
+            input_ravel, copy_when_nondefault_queue=False
+        )
 
         return dpnp_diag(input_ravel_desc, k).get_pyobj()
 
     return call_origin(numpy.diagflat, x1, k)
 
 
-def empty(shape,
-          *,
-          dtype=None,
-          order='C',
-          like=None,
-          device=None,
-          usm_type='device',
-          sycl_queue=None):
+def empty(
+    shape,
+    *,
+    dtype=None,
+    order="C",
+    like=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Return a new array of given shape and type, without initializing entries.
 
@@ -503,29 +525,33 @@ def empty(shape,
 
     if like is not None:
         pass
-    elif order not in ('C', 'c', 'F', 'f', None):
+    elif order not in ("C", "c", "F", "f", None):
         pass
     else:
-        return dpnp_container.empty(shape,
-                                    dtype=dtype,
-                                    order=order,
-                                    device=device,
-                                    usm_type=usm_type,
-                                    sycl_queue=sycl_queue)
+        return dpnp_container.empty(
+            shape,
+            dtype=dtype,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
     return call_origin(numpy.empty, shape, dtype=dtype, order=order, like=like)
 
 
-def empty_like(x1,
-               /,
-               *,
-               dtype=None,
-               order='C',
-               subok=False,
-               shape=None,
-               device=None,
-               usm_type=None,
-               sycl_queue=None):
+def empty_like(
+    x1,
+    /,
+    *,
+    dtype=None,
+    order="C",
+    subok=False,
+    shape=None,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
     """
     Return a new array with the same shape and type as a given array.
 
@@ -557,7 +583,7 @@ def empty_like(x1,
 
     if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
-    elif order not in ('C', 'c', 'F', 'f', None):
+    elif order not in ("C", "c", "F", "f", None):
         pass
     elif subok is not False:
         pass
@@ -565,27 +591,33 @@ def empty_like(x1,
         _shape = x1.shape if shape is None else shape
         _dtype = x1.dtype if dtype is None else dtype
         _usm_type = x1.usm_type if usm_type is None else usm_type
-        _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
-        return dpnp_container.empty(_shape,
-                                    dtype=_dtype,
-                                    order=order,
-                                    usm_type=_usm_type,
-                                    sycl_queue=_sycl_queue)
+        _sycl_queue = dpnp.get_normalized_queue_device(
+            x1, sycl_queue=sycl_queue, device=device
+        )
+        return dpnp_container.empty(
+            _shape,
+            dtype=_dtype,
+            order=order,
+            usm_type=_usm_type,
+            sycl_queue=_sycl_queue,
+        )
 
     return call_origin(numpy.empty_like, x1, dtype, order, subok, shape)
 
 
-def eye(N,
-        M=None,
-        /,
-        *,
-        k=0,
-        dtype=None,
-        order='C',
-        like=None,
-        device=None,
-        usm_type='device',
-        sycl_queue=None):
+def eye(
+    N,
+    M=None,
+    /,
+    *,
+    k=0,
+    dtype=None,
+    order="C",
+    like=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Return a 2-D array with ones on the diagonal and zeros elsewhere.
     For full documentation refer to :obj:`numpy.eye`.
@@ -597,21 +629,25 @@ def eye(N,
     Otherwise the function will be executed sequentially on CPU.
 
     """
-    if order not in ('C', 'c', 'F', 'f', None):
+    if order not in ("C", "c", "F", "f", None):
         pass
     elif like is not None:
         pass
     else:
-        return dpnp_container.eye(N,
-                                  M,
-                                  k=k,
-                                  dtype=dtype,
-                                  order=order,
-                                  device=device,
-                                  usm_type=usm_type,
-                                  sycl_queue=sycl_queue)
+        return dpnp_container.eye(
+            N,
+            M,
+            k=k,
+            dtype=dtype,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
-    return call_origin(numpy.eye, N, M, k=k, dtype=dtype, order=order, like=None)
+    return call_origin(
+        numpy.eye, N, M, k=k, dtype=dtype, order=order, like=None
+    )
 
 
 def frombuffer(buffer, **kwargs):
@@ -696,15 +732,17 @@ def fromstring(string, **kwargs):
     return call_origin(numpy.fromstring, string, **kwargs)
 
 
-def full(shape,
-         fill_value,
-         *,
-         dtype=None,
-         order='C',
-         like=None,
-         device=None,
-         usm_type=None,
-         sycl_queue=None):
+def full(
+    shape,
+    fill_value,
+    *,
+    dtype=None,
+    order="C",
+    like=None,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
     """
     Return a new array of given shape and type, filled with `fill_value`.
 
@@ -733,31 +771,35 @@ def full(shape,
     """
     if like is not None:
         pass
-    elif order not in ('C', 'c', 'F', 'f', None):
+    elif order not in ("C", "c", "F", "f", None):
         pass
     else:
-        return dpnp_container.full(shape,
-                                   fill_value,
-                                   dtype=dtype,
-                                   order=order,
-                                   device=device,
-                                   usm_type=usm_type,
-                                   sycl_queue=sycl_queue)
+        return dpnp_container.full(
+            shape,
+            fill_value,
+            dtype=dtype,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
     return call_origin(numpy.full, shape, fill_value, dtype, order, like=like)
 
 
-def full_like(x1,
-              /,
-              fill_value,
-              *,
-              dtype=None,
-              order='C',
-              subok=False,
-              shape=None,
-              device=None,
-              usm_type=None,
-              sycl_queue=None):
+def full_like(
+    x1,
+    /,
+    fill_value,
+    *,
+    dtype=None,
+    order="C",
+    subok=False,
+    shape=None,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
     """
     Return a full array with the same shape and type as a given array.
 
@@ -788,7 +830,7 @@ def full_like(x1,
     """
     if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
-    elif order not in ('C', 'c', 'F', 'f', None):
+    elif order not in ("C", "c", "F", "f", None):
         pass
     elif subok is not False:
         pass
@@ -796,14 +838,18 @@ def full_like(x1,
         _shape = x1.shape if shape is None else shape
         _dtype = x1.dtype if dtype is None else dtype
         _usm_type = x1.usm_type if usm_type is None else usm_type
-        _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
+        _sycl_queue = dpnp.get_normalized_queue_device(
+            x1, sycl_queue=sycl_queue, device=device
+        )
 
-        return dpnp_container.full(_shape,
-                                   fill_value,
-                                   dtype=_dtype,
-                                   order=order,
-                                   usm_type=_usm_type,
-                                   sycl_queue=_sycl_queue)
+        return dpnp_container.full(
+            _shape,
+            fill_value,
+            dtype=_dtype,
+            order=order,
+            usm_type=_usm_type,
+            sycl_queue=_sycl_queue,
+        )
     return numpy.full_like(x1, fill_value, dtype, order, subok, shape)
 
 
@@ -842,7 +888,9 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
         if axis != 0:
             pass
         else:
-            return dpnp_geomspace(start, stop, num, endpoint, dtype, axis).get_pyobj()
+            return dpnp_geomspace(
+                start, stop, num, endpoint, dtype, axis
+            ).get_pyobj()
 
     return call_origin(numpy.geomspace, start, stop, num, endpoint, dtype, axis)
 
@@ -880,18 +928,20 @@ def identity(n, dtype=None, *, like=None):
     return call_origin(numpy.identity, n, dtype=dtype, like=like)
 
 
-def linspace(start,
-             stop,
-             /,
-             num,
-             *,
-             dtype=None,
-             device=None,
-             usm_type=None,
-             sycl_queue=None,
-             endpoint=True,
-             retstep=False,
-             axis=0):
+def linspace(
+    start,
+    stop,
+    /,
+    num,
+    *,
+    dtype=None,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+    endpoint=True,
+    retstep=False,
+    axis=0,
+):
     """
     Return evenly spaced numbers over a specified interval.
 
@@ -932,16 +982,20 @@ def linspace(start,
     elif axis != 0:
         pass
     else:
-        return dpnp_linspace(start,
-                             stop,
-                             num,
-                             dtype=dtype,
-                             device=device,
-                             usm_type=usm_type,
-                             sycl_queue=sycl_queue,
-                             endpoint=endpoint)
+        return dpnp_linspace(
+            start,
+            stop,
+            num,
+            dtype=dtype,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+            endpoint=endpoint,
+        )
 
-    return call_origin(numpy.linspace, start, stop, num, endpoint, retstep, dtype, axis)
+    return call_origin(
+        numpy.linspace, start, stop, num, endpoint, retstep, dtype, axis
+    )
 
 
 def loadtxt(fname, **kwargs):
@@ -1008,14 +1062,18 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
 
     if not use_origin_backend():
         if axis != 0:
-            checker_throw_value_error('linspace', 'axis', axis, 0)
+            checker_throw_value_error("linspace", "axis", axis, 0)
 
-        return dpnp_logspace(start, stop, num, endpoint, base, dtype, axis).get_pyobj()
+        return dpnp_logspace(
+            start, stop, num, endpoint, base, dtype, axis
+        ).get_pyobj()
 
-    return call_origin(numpy.logspace, start, stop, num, endpoint, base, dtype, axis)
+    return call_origin(
+        numpy.logspace, start, stop, num, endpoint, base, dtype, axis
+    )
 
 
-def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
+def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     """
     Return coordinate matrices from coordinate vectors.
 
@@ -1066,7 +1124,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
 
     if not all((isinstance(x, (dpnp.ndarray, dpt.usm_ndarray)) for x in xi)):
         pass
-    elif indexing not in ['ij', 'xy']:
+    elif indexing not in ["ij", "xy"]:
         pass
     elif copy is not True:
         pass
@@ -1138,14 +1196,16 @@ class OGridClass:
 ogrid = OGridClass()
 
 
-def ones(shape,
-         *,
-         dtype=None,
-         order='C',
-         like=None,
-         device=None,
-         usm_type='device',
-         sycl_queue=None):
+def ones(
+    shape,
+    *,
+    dtype=None,
+    order="C",
+    like=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Return a new array of given shape and type, filled with ones.
 
@@ -1179,29 +1239,33 @@ def ones(shape,
 
     if like is not None:
         pass
-    elif order not in ('C', 'c', 'F', 'f', None):
+    elif order not in ("C", "c", "F", "f", None):
         pass
     else:
-        return dpnp_container.ones(shape,
-                                   dtype=dtype,
-                                   order=order,
-                                   device=device,
-                                   usm_type=usm_type,
-                                   sycl_queue=sycl_queue)
+        return dpnp_container.ones(
+            shape,
+            dtype=dtype,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
     return call_origin(numpy.ones, shape, dtype=dtype, order=order, like=like)
 
 
-def ones_like(x1,
-              /,
-              *,
-              dtype=None,
-              order='C',
-              subok=False,
-              shape=None,
-              device=None,
-              usm_type=None,
-              sycl_queue=None):
+def ones_like(
+    x1,
+    /,
+    *,
+    dtype=None,
+    order="C",
+    subok=False,
+    shape=None,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
     """
     Return an array of ones with the same shape and type as a given array.
 
@@ -1233,7 +1297,7 @@ def ones_like(x1,
     """
     if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
-    elif order not in ('C', 'c', 'F', 'f', None):
+    elif order not in ("C", "c", "F", "f", None):
         pass
     elif subok is not False:
         pass
@@ -1241,12 +1305,16 @@ def ones_like(x1,
         _shape = x1.shape if shape is None else shape
         _dtype = x1.dtype if dtype is None else dtype
         _usm_type = x1.usm_type if usm_type is None else usm_type
-        _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
-        return dpnp_container.ones(_shape,
-                                   dtype=_dtype,
-                                   order=order,
-                                   usm_type=_usm_type,
-                                   sycl_queue=_sycl_queue)
+        _sycl_queue = dpnp.get_normalized_queue_device(
+            x1, sycl_queue=sycl_queue, device=device
+        )
+        return dpnp_container.ones(
+            _shape,
+            dtype=_dtype,
+            order=order,
+            usm_type=_usm_type,
+            sycl_queue=_sycl_queue,
+        )
 
     return call_origin(numpy.ones_like, x1, dtype, order, subok, shape)
 
@@ -1282,15 +1350,15 @@ def ptp(arr, axis=None, out=None, keepdims=numpy._NoValue):
 
 def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
     """
-       Return the sum along diagonals of the array.
+    Return the sum along diagonals of the array.
 
-       For full documentation refer to :obj:`numpy.trace`.
+    For full documentation refer to :obj:`numpy.trace`.
 
-       Limitations
-       -----------
-       Input array is supported as :obj:`dpnp.ndarray`.
-       Parameters ``axis1``, ``axis2``, ``out`` and ``dtype`` are supported only with default values.
-       """
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters ``axis1``, ``axis2``, ``out`` and ``dtype`` are supported only with default values.
+    """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
@@ -1305,7 +1373,9 @@ def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
         elif out is not None:
             pass
         else:
-            return dpnp_trace(x1_desc, offset, axis1, axis2, dtype, out).get_pyobj()
+            return dpnp_trace(
+                x1_desc, offset, axis1, axis2, dtype, out
+            ).get_pyobj()
 
     return call_origin(numpy.trace, x1, offset, axis1, axis2, dtype, out)
 
@@ -1345,7 +1415,11 @@ def tri(N, M=None, k=0, dtype=dpnp.float, **kwargs):
         elif not isinstance(k, int):
             pass
         else:
-            _dtype = dpnp.default_float_type() if dtype in (dpnp.float, None) else dtype
+            _dtype = (
+                dpnp.default_float_type()
+                if dtype in (dpnp.float, None)
+                else dtype
+            )
             return dpnp_tri(N, M, k, _dtype).get_pyobj()
 
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
@@ -1480,14 +1554,16 @@ def vander(x1, N=None, increasing=False):
     return call_origin(numpy.vander, x1, N=N, increasing=increasing)
 
 
-def zeros(shape,
-          *,
-          dtype=None,
-          order='C',
-          like=None,
-          device=None,
-          usm_type='device',
-          sycl_queue=None):
+def zeros(
+    shape,
+    *,
+    dtype=None,
+    order="C",
+    like=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Return a new array of given shape and type, filled with zeros.
 
@@ -1520,29 +1596,33 @@ def zeros(shape,
     """
     if like is not None:
         pass
-    elif order not in ('C', 'c', 'F', 'f', None):
+    elif order not in ("C", "c", "F", "f", None):
         pass
     else:
-        return dpnp_container.zeros(shape,
-                                    dtype=dtype,
-                                    order=order,
-                                    device=device,
-                                    usm_type=usm_type,
-                                    sycl_queue=sycl_queue)
+        return dpnp_container.zeros(
+            shape,
+            dtype=dtype,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
     return call_origin(numpy.zeros, shape, dtype=dtype, order=order, like=like)
 
 
-def zeros_like(x1,
-               /,
-               *,
-               dtype=None,
-               order='C',
-               subok=False,
-               shape=None,
-               device=None,
-               usm_type=None,
-               sycl_queue=None):
+def zeros_like(
+    x1,
+    /,
+    *,
+    dtype=None,
+    order="C",
+    subok=False,
+    shape=None,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
     """
     Return an array of zeros with the same shape and type as a given array.
 
@@ -1574,7 +1654,7 @@ def zeros_like(x1,
     """
     if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
-    elif order not in ('C', 'c', 'F', 'f', None):
+    elif order not in ("C", "c", "F", "f", None):
         pass
     elif subok is not False:
         pass
@@ -1582,11 +1662,15 @@ def zeros_like(x1,
         _shape = x1.shape if shape is None else shape
         _dtype = x1.dtype if dtype is None else dtype
         _usm_type = x1.usm_type if usm_type is None else usm_type
-        _sycl_queue = dpnp.get_normalized_queue_device(x1, sycl_queue=sycl_queue, device=device)
-        return dpnp_container.zeros(_shape,
-                                    dtype=_dtype,
-                                    order=order,
-                                    usm_type=_usm_type,
-                                    sycl_queue=_sycl_queue)
+        _sycl_queue = dpnp.get_normalized_queue_device(
+            x1, sycl_queue=sycl_queue, device=device
+        )
+        return dpnp_container.zeros(
+            _shape,
+            dtype=_dtype,
+            order=order,
+            usm_type=_usm_type,
+            sycl_queue=_sycl_queue,
+        )
 
     return call_origin(numpy.zeros_like, x1, dtype, order, subok, shape)
