@@ -33,7 +33,7 @@
 #include "div.hpp"
 
 namespace vm_ext = dpnp::backend::ext::vm;
-namespace py = pybind11;
+namespace py     = pybind11;
 
 // populate dispatch vectors
 void init_dispatch_vectors(void)
@@ -42,30 +42,23 @@ void init_dispatch_vectors(void)
 }
 
 // populate dispatch tables
-void init_dispatch_tables(void)
-{
-}
+void init_dispatch_tables(void) {}
 
 PYBIND11_MODULE(_vm_impl, m)
 {
     init_dispatch_vectors();
     init_dispatch_tables();
 
-    m.def("_div",
-          &vm_ext::div,
-          "Call `div` from OneMKL VM library to performs element by element division "
+    m.def("_div", &vm_ext::div,
+          "Call `div` from OneMKL VM library to performs element by element "
+          "division "
           "of vector `src1` by vector `src2` to resulting vector `dst`",
-          py::arg("sycl_queue"),
-          py::arg("src1"),
-          py::arg("src2"),
-          py::arg("dst"),
-          py::arg("depends") = py::list());
+          py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+          py::arg("dst"), py::arg("depends") = py::list());
 
-    m.def("_can_call_div",
-          &vm_ext::can_call_div,
-          "Check input arrays to answer if `div` function from OneMKL VM library can be used",
-          py::arg("sycl_queue"),
-          py::arg("src1"),
-          py::arg("src2"),
+    m.def("_can_call_div", &vm_ext::can_call_div,
+          "Check input arrays to answer if `div` function from OneMKL VM "
+          "library can be used",
+          py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
           py::arg("dst"));
 }

@@ -25,11 +25,12 @@
 
 /*
  * This header file is for interface Cython with C++.
- * It should not contains any backend specific headers (like SYCL or math library) because
- * all included headers will be exposed in Cython compilation procedure
+ * It should not contains any backend specific headers (like SYCL or math
+ * library) because all included headers will be exposed in Cython compilation
+ * procedure
  *
- * We would like to avoid backend specific things in higher level Cython modules.
- * Any backend interface functions and types should be defined here.
+ * We would like to avoid backend specific things in higher level Cython
+ * modules. Any backend interface functions and types should be defined here.
  *
  * Also, this file should contains documentation on functions and types
  * which are used in the interface
@@ -71,14 +72,15 @@ typedef ssize_t shape_elem_type;
  * @ingroup BACKEND_API
  * @brief SYCL queue initialization selector.
  *
- * The structure defines the parameters that are used for the library initialization
- * by @ref dpnp_queue_initialize_c "dpnp_queue_initialize".
+ * The structure defines the parameters that are used for the library
+ * initialization by @ref dpnp_queue_initialize_c "dpnp_queue_initialize".
  */
 enum class QueueOptions : uint32_t
 {
     CPU_SELECTOR, /**< CPU side execution mode */
     GPU_SELECTOR, /**< Intel GPU side execution mode */
-    AUTO_SELECTOR /**< Automatic selection based on environment variable with @ref CPU_SELECTOR default */
+    AUTO_SELECTOR /**< Automatic selection based on environment variable with
+                     @ref CPU_SELECTOR default */
 };
 
 /**
@@ -87,9 +89,11 @@ enum class QueueOptions : uint32_t
  *
  * Global SYCL queue initialization.
  *
- * @param [in]  selector       Select type @ref QueueOptions of the SYCL queue. Default @ref AUTO_SELECTOR
+ * @param [in]  selector       Select type @ref QueueOptions of the SYCL queue.
+ * Default @ref AUTO_SELECTOR
  */
-INP_DLLEXPORT void dpnp_queue_initialize_c(QueueOptions selector = QueueOptions::AUTO_SELECTOR);
+INP_DLLEXPORT void dpnp_queue_initialize_c(
+    QueueOptions selector = QueueOptions::AUTO_SELECTOR);
 
 /**
  * @ingroup BACKEND_API
@@ -108,16 +112,22 @@ INP_DLLEXPORT size_t dpnp_queue_is_cpu_c();
  * @param [in]  size_in_bytes  Number of bytes for requested memory allocation.
  * @param [in]  q_ref          Reference to SYCL queue.
  *
- * @return  A pointer to newly created memory on @ref dpnp_queue_initialize_c "initialized SYCL device".
+ * @return  A pointer to newly created memory on @ref dpnp_queue_initialize_c
+ * "initialized SYCL device".
  */
-INP_DLLEXPORT char* dpnp_memory_alloc_c(DPCTLSyclQueueRef q_ref, size_t size_in_bytes);
-INP_DLLEXPORT char* dpnp_memory_alloc_c(size_t size_in_bytes);
+INP_DLLEXPORT char *dpnp_memory_alloc_c(DPCTLSyclQueueRef q_ref,
+                                        size_t size_in_bytes);
+INP_DLLEXPORT char *dpnp_memory_alloc_c(size_t size_in_bytes);
 
-INP_DLLEXPORT void dpnp_memory_free_c(DPCTLSyclQueueRef q_ref, void* ptr);
-INP_DLLEXPORT void dpnp_memory_free_c(void* ptr);
+INP_DLLEXPORT void dpnp_memory_free_c(DPCTLSyclQueueRef q_ref, void *ptr);
+INP_DLLEXPORT void dpnp_memory_free_c(void *ptr);
 
-INP_DLLEXPORT void dpnp_memory_memcpy_c(DPCTLSyclQueueRef q_ref, void* dst, const void* src, size_t size_in_bytes);
-INP_DLLEXPORT void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes);
+INP_DLLEXPORT void dpnp_memory_memcpy_c(DPCTLSyclQueueRef q_ref,
+                                        void *dst,
+                                        const void *src,
+                                        size_t size_in_bytes);
+INP_DLLEXPORT void
+    dpnp_memory_memcpy_c(void *dst, const void *src, size_t size_in_bytes);
 /**
  * @ingroup BACKEND_API
  * @brief Test whether all array elements along a given axis evaluate to True.
@@ -129,14 +139,16 @@ INP_DLLEXPORT void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
-                                           const void* array,
-                                           void* result,
-                                           const size_t size,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_all_c(DPCTLSyclQueueRef q_ref,
+               const void *array,
+               void *result,
+               const size_t size,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_all_c(const void* array, void* result, const size_t size);
+INP_DLLEXPORT void
+    dpnp_all_c(const void *array, void *result, const size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -152,18 +164,23 @@ INP_DLLEXPORT void dpnp_all_c(const void* array, void* result, const size_t size
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType1, typename _DataType2, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_allclose_c(DPCTLSyclQueueRef q_ref,
-                                                const void* array1_in,
-                                                const void* array2_in,
-                                                void* result1,
-                                                const size_t size,
-                                                double rtol,
-                                                double atol,
-                                                const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_allclose_c(DPCTLSyclQueueRef q_ref,
+                    const void *array1_in,
+                    const void *array2_in,
+                    void *result1,
+                    const size_t size,
+                    double rtol,
+                    double atol,
+                    const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
-INP_DLLEXPORT void dpnp_allclose_c(
-    const void* array1_in, const void* array2_in, void* result1, const size_t size, double rtol, double atol);
+INP_DLLEXPORT void dpnp_allclose_c(const void *array1_in,
+                                   const void *array2_in,
+                                   void *result1,
+                                   const size_t size,
+                                   double rtol,
+                                   double atol);
 
 /**
  * @ingroup BACKEND_API
@@ -176,14 +193,16 @@ INP_DLLEXPORT void dpnp_allclose_c(
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
-                                           const void* array,
-                                           void* result,
-                                           const size_t size,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_any_c(DPCTLSyclQueueRef q_ref,
+               const void *array,
+               void *result,
+               const size_t size,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_any_c(const void* array, void* result, const size_t size);
+INP_DLLEXPORT void
+    dpnp_any_c(const void *array, void *result, const size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -199,15 +218,17 @@ INP_DLLEXPORT void dpnp_any_c(const void* array, void* result, const size_t size
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_arange_c(DPCTLSyclQueueRef q_ref,
-                                              size_t start,
-                                              size_t step,
-                                              void* result1,
-                                              size_t size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_arange_c(DPCTLSyclQueueRef q_ref,
+                  size_t start,
+                  size_t step,
+                  void *result1,
+                  size_t size,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size);
+INP_DLLEXPORT void
+    dpnp_arange_c(size_t start, size_t step, void *result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -220,14 +241,16 @@ INP_DLLEXPORT void dpnp_arange_c(size_t start, size_t step, void* result1, size_
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_astype_c(DPCTLSyclQueueRef q_ref,
-                                              const void* array,
-                                              void* result,
-                                              const size_t size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_astype_c(DPCTLSyclQueueRef q_ref,
+                  const void *array,
+                  void *result,
+                  const size_t size,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_astype_c(const void* array, void* result, const size_t size);
+INP_DLLEXPORT void
+    dpnp_astype_c(const void *array, void *result, const size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -240,14 +263,15 @@ INP_DLLEXPORT void dpnp_astype_c(const void* array, void* result, const size_t s
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_full_c(DPCTLSyclQueueRef q_ref,
-                                            void* array_in,
-                                            void* result,
-                                            const size_t size,
-                                            const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_full_c(DPCTLSyclQueueRef q_ref,
+                void *array_in,
+                void *result,
+                const size_t size,
+                const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_full_c(void* array_in, void* result, const size_t size);
+INP_DLLEXPORT void dpnp_full_c(void *array_in, void *result, const size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -260,14 +284,15 @@ INP_DLLEXPORT void dpnp_full_c(void* array_in, void* result, const size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_full_like_c(DPCTLSyclQueueRef q_ref,
-                                                 void* array_in,
-                                                 void* result,
-                                                 size_t size,
-                                                 const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_full_like_c(DPCTLSyclQueueRef q_ref,
+                     void *array_in,
+                     void *result,
+                     size_t size,
+                     const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
+INP_DLLEXPORT void dpnp_full_like_c(void *array_in, void *result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -294,40 +319,41 @@ INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
-                                              void* result_out,
-                                              const size_t result_size,
-                                              const size_t result_ndim,
-                                              const shape_elem_type* result_shape,
-                                              const shape_elem_type* result_strides,
-                                              const void* input1_in,
-                                              const size_t input1_size,
-                                              const size_t input1_ndim,
-                                              const shape_elem_type* input1_shape,
-                                              const shape_elem_type* input1_strides,
-                                              const void* input2_in,
-                                              const size_t input2_size,
-                                              const size_t input2_ndim,
-                                              const shape_elem_type* input2_shape,
-                                              const shape_elem_type* input2_strides,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
+                  void *result_out,
+                  const size_t result_size,
+                  const size_t result_ndim,
+                  const shape_elem_type *result_shape,
+                  const shape_elem_type *result_strides,
+                  const void *input1_in,
+                  const size_t input1_size,
+                  const size_t input1_ndim,
+                  const shape_elem_type *input1_shape,
+                  const shape_elem_type *input1_strides,
+                  const void *input2_in,
+                  const size_t input2_size,
+                  const size_t input2_ndim,
+                  const shape_elem_type *input2_shape,
+                  const shape_elem_type *input2_strides,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_matmul_c(void* result_out,
+INP_DLLEXPORT void dpnp_matmul_c(void *result_out,
                                  const size_t result_size,
                                  const size_t result_ndim,
-                                 const shape_elem_type* result_shape,
-                                 const shape_elem_type* result_strides,
-                                 const void* input1_in,
+                                 const shape_elem_type *result_shape,
+                                 const shape_elem_type *result_strides,
+                                 const void *input1_in,
                                  const size_t input1_size,
                                  const size_t input1_ndim,
-                                 const shape_elem_type* input1_shape,
-                                 const shape_elem_type* input1_strides,
-                                 const void* input2_in,
+                                 const shape_elem_type *input1_shape,
+                                 const shape_elem_type *input1_strides,
+                                 const void *input2_in,
                                  const size_t input2_size,
                                  const size_t input2_ndim,
-                                 const shape_elem_type* input2_shape,
-                                 const shape_elem_type* input2_strides);
+                                 const shape_elem_type *input2_shape,
+                                 const shape_elem_type *input2_strides);
 
 /**
  * @ingroup BACKEND_API
@@ -342,16 +368,21 @@ INP_DLLEXPORT void dpnp_matmul_c(void* result_out,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_nanvar_c(DPCTLSyclQueueRef q_ref,
-                                              void* array,
-                                              void* mask_arr,
-                                              void* result,
-                                              const size_t result_size,
-                                              size_t size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_nanvar_c(DPCTLSyclQueueRef q_ref,
+                  void *array,
+                  void *mask_arr,
+                  void *result,
+                  const size_t result_size,
+                  size_t size,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_nanvar_c(void* array, void* mask_arr, void* result, const size_t result_size, size_t size);
+INP_DLLEXPORT void dpnp_nanvar_c(void *array,
+                                 void *mask_arr,
+                                 void *result,
+                                 const size_t result_size,
+                                 size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -367,20 +398,21 @@ INP_DLLEXPORT void dpnp_nanvar_c(void* array, void* mask_arr, void* result, cons
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_nonzero_c(DPCTLSyclQueueRef q_ref,
-                                               const void* array1,
-                                               void* result1,
-                                               const size_t result_size,
-                                               const shape_elem_type* shape,
-                                               const size_t ndim,
-                                               const size_t j,
-                                               const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_nonzero_c(DPCTLSyclQueueRef q_ref,
+                   const void *array1,
+                   void *result1,
+                   const size_t result_size,
+                   const shape_elem_type *shape,
+                   const size_t ndim,
+                   const size_t j,
+                   const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_nonzero_c(const void* array1,
-                                  void* result1,
+INP_DLLEXPORT void dpnp_nonzero_c(const void *array1,
+                                  void *result1,
                                   const size_t result_size,
-                                  const shape_elem_type* shape,
+                                  const shape_elem_type *shape,
                                   const size_t ndim,
                                   const size_t j);
 
@@ -395,14 +427,16 @@ INP_DLLEXPORT void dpnp_nonzero_c(const void* array1,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_elemwise_absolute_c(DPCTLSyclQueueRef q_ref,
-                                                         const void* input1_in,
-                                                         void* result1,
-                                                         size_t size,
-                                                         const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_elemwise_absolute_c(DPCTLSyclQueueRef q_ref,
+                             const void *input1_in,
+                             void *result1,
+                             size_t size,
+                             const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_elemwise_absolute_c(const void* input1_in, void* result1, size_t size);
+INP_DLLEXPORT void
+    dpnp_elemwise_absolute_c(const void *input1_in, void *result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -426,41 +460,46 @@ INP_DLLEXPORT void dpnp_elemwise_absolute_c(const void* input1_in, void* result1
  * @param [in]  input2_strides      Strides of second input array.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
-template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
-                                           void* result_out,
-                                           const size_t result_size,
-                                           const size_t result_ndim,
-                                           const shape_elem_type* result_shape,
-                                           const shape_elem_type* result_strides,
-                                           const void* input1_in,
-                                           const size_t input1_size,
-                                           const size_t input1_ndim,
-                                           const shape_elem_type* input1_shape,
-                                           const shape_elem_type* input1_strides,
-                                           const void* input2_in,
-                                           const size_t input2_size,
-                                           const size_t input2_ndim,
-                                           const shape_elem_type* input2_shape,
-                                           const shape_elem_type* input2_strides,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+template <typename _DataType_output,
+          typename _DataType_input1,
+          typename _DataType_input2>
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_dot_c(DPCTLSyclQueueRef q_ref,
+               void *result_out,
+               const size_t result_size,
+               const size_t result_ndim,
+               const shape_elem_type *result_shape,
+               const shape_elem_type *result_strides,
+               const void *input1_in,
+               const size_t input1_size,
+               const size_t input1_ndim,
+               const shape_elem_type *input1_shape,
+               const shape_elem_type *input1_strides,
+               const void *input2_in,
+               const size_t input2_size,
+               const size_t input2_ndim,
+               const shape_elem_type *input2_shape,
+               const shape_elem_type *input2_strides,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
-template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-INP_DLLEXPORT void dpnp_dot_c(void* result_out,
+template <typename _DataType_output,
+          typename _DataType_input1,
+          typename _DataType_input2>
+INP_DLLEXPORT void dpnp_dot_c(void *result_out,
                               const size_t result_size,
                               const size_t result_ndim,
-                              const shape_elem_type* result_shape,
-                              const shape_elem_type* result_strides,
-                              const void* input1_in,
+                              const shape_elem_type *result_shape,
+                              const shape_elem_type *result_strides,
+                              const void *input1_in,
                               const size_t input1_size,
                               const size_t input1_ndim,
-                              const shape_elem_type* input1_shape,
-                              const shape_elem_type* input1_strides,
-                              const void* input2_in,
+                              const shape_elem_type *input1_shape,
+                              const shape_elem_type *input1_strides,
+                              const void *input2_in,
                               const size_t input2_size,
                               const size_t input2_ndim,
-                              const shape_elem_type* input2_shape,
-                              const shape_elem_type* input2_strides);
+                              const shape_elem_type *input2_shape,
+                              const shape_elem_type *input2_strides);
 
 /**
  * @ingroup BACKEND_API
@@ -479,31 +518,36 @@ INP_DLLEXPORT void dpnp_dot_c(void* result_out,
  * @param [in]  where               Mask array.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
-template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_cross_c(DPCTLSyclQueueRef q_ref,
-                                             void* result_out,
-                                             const void* input1_in,
-                                             const size_t input1_size,
-                                             const shape_elem_type* input1_shape,
-                                             const size_t input1_shape_ndim,
-                                             const void* input2_in,
-                                             const size_t input2_size,
-                                             const shape_elem_type* input2_shape,
-                                             const size_t input2_shape_ndim,
-                                             const size_t* where,
-                                             const DPCTLEventVectorRef dep_event_vec_ref);
+template <typename _DataType_output,
+          typename _DataType_input1,
+          typename _DataType_input2>
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_cross_c(DPCTLSyclQueueRef q_ref,
+                 void *result_out,
+                 const void *input1_in,
+                 const size_t input1_size,
+                 const shape_elem_type *input1_shape,
+                 const size_t input1_shape_ndim,
+                 const void *input2_in,
+                 const size_t input2_size,
+                 const shape_elem_type *input2_shape,
+                 const size_t input2_shape_ndim,
+                 const size_t *where,
+                 const DPCTLEventVectorRef dep_event_vec_ref);
 
-template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-INP_DLLEXPORT void dpnp_cross_c(void* result_out,
-                                const void* input1_in,
+template <typename _DataType_output,
+          typename _DataType_input1,
+          typename _DataType_input2>
+INP_DLLEXPORT void dpnp_cross_c(void *result_out,
+                                const void *input1_in,
                                 const size_t input1_size,
-                                const shape_elem_type* input1_shape,
+                                const shape_elem_type *input1_shape,
                                 const size_t input1_shape_ndim,
-                                const void* input2_in,
+                                const void *input2_in,
                                 const size_t input2_size,
-                                const shape_elem_type* input2_shape,
+                                const shape_elem_type *input2_shape,
                                 const size_t input2_shape_ndim,
-                                const size_t* where);
+                                const size_t *where);
 
 /**
  * @ingroup BACKEND_API
@@ -517,14 +561,15 @@ INP_DLLEXPORT void dpnp_cross_c(void* result_out,
  *
  */
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_cumprod_c(DPCTLSyclQueueRef q_ref,
-                                               void* array1_in,
-                                               void* result1,
-                                               size_t size,
-                                               const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_cumprod_c(DPCTLSyclQueueRef q_ref,
+                   void *array1_in,
+                   void *result1,
+                   size_t size,
+                   const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT void dpnp_cumprod_c(void* array1_in, void* result1, size_t size);
+INP_DLLEXPORT void dpnp_cumprod_c(void *array1_in, void *result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -538,14 +583,15 @@ INP_DLLEXPORT void dpnp_cumprod_c(void* array1_in, void* result1, size_t size);
  *
  */
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_cumsum_c(DPCTLSyclQueueRef q_ref,
-                                              void* array1_in,
-                                              void* result1,
-                                              size_t size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_cumsum_c(DPCTLSyclQueueRef q_ref,
+                  void *array1_in,
+                  void *result1,
+                  size_t size,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
+INP_DLLEXPORT void dpnp_cumsum_c(void *array1_in, void *result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -566,74 +612,79 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_ediff1d_c(DPCTLSyclQueueRef q_ref,
-                                               void* result_out,
-                                               const size_t result_size,
-                                               const size_t result_ndim,
-                                               const shape_elem_type* result_shape,
-                                               const shape_elem_type* result_strides,
-                                               const void* input1_in,
-                                               const size_t input1_size,
-                                               const size_t input1_ndim,
-                                               const shape_elem_type* input1_shape,
-                                               const shape_elem_type* input1_strides,
-                                               const size_t* where,
-                                               const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_ediff1d_c(DPCTLSyclQueueRef q_ref,
+                   void *result_out,
+                   const size_t result_size,
+                   const size_t result_ndim,
+                   const shape_elem_type *result_shape,
+                   const shape_elem_type *result_strides,
+                   const void *input1_in,
+                   const size_t input1_size,
+                   const size_t input1_ndim,
+                   const shape_elem_type *input1_shape,
+                   const shape_elem_type *input1_strides,
+                   const size_t *where,
+                   const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT void dpnp_ediff1d_c(void* result_out,
+INP_DLLEXPORT void dpnp_ediff1d_c(void *result_out,
                                   const size_t result_size,
                                   const size_t result_ndim,
-                                  const shape_elem_type* result_shape,
-                                  const shape_elem_type* result_strides,
-                                  const void* input1_in,
+                                  const shape_elem_type *result_shape,
+                                  const shape_elem_type *result_strides,
+                                  const void *input1_in,
                                   const size_t input1_size,
                                   const size_t input1_ndim,
-                                  const shape_elem_type* input1_shape,
-                                  const shape_elem_type* input1_strides,
-                                  const size_t* where);
+                                  const shape_elem_type *input1_shape,
+                                  const shape_elem_type *input1_strides,
+                                  const size_t *where);
 
 /**
  * @ingroup BACKEND_API
  * @brief Compute summary of input array elements.
  *
- * Input array is expected as @ref _DataType_input type and assume result as @ref _DataType_output type.
- * The function creates no memory.
+ * Input array is expected as @ref _DataType_input type and assume result as
+ * @ref _DataType_output type. The function creates no memory.
  *
  * Empty @ref input_shape means scalar.
  *
  * @param [in]  q_ref             Reference to SYCL queue.
- * @param [out] result_out        Output array pointer. @ref _DataType_output type is expected
- * @param [in]  input_in          Input array pointer. @ref _DataType_input type is expected
+ * @param [out] result_out        Output array pointer. @ref _DataType_output
+ * type is expected
+ * @param [in]  input_in          Input array pointer. @ref _DataType_input type
+ * is expected
  * @param [in]  input_shape       Shape of @ref input_in
  * @param [in]  input_shape_ndim  Number of elements in @ref input_shape
  * @param [in]  axes              Array of axes to apply to @ref input_shape
  * @param [in]  axes_ndim         Number of elements in @ref axes
- * @param [in]  initial           Pointer to initial value for the algorithm. @ref _DataType_input is expected
+ * @param [in]  initial           Pointer to initial value for the algorithm.
+ * @ref _DataType_input is expected
  * @param [in]  where             mask array
  * @param [in]  dep_event_vec_ref Reference to vector of SYCL events.
  */
 template <typename _DataType_output, typename _DataType_input>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_sum_c(DPCTLSyclQueueRef q_ref,
-                                           void* result_out,
-                                           const void* input_in,
-                                           const shape_elem_type* input_shape,
-                                           const size_t input_shape_ndim,
-                                           const shape_elem_type* axes,
-                                           const size_t axes_ndim,
-                                           const void* initial,
-                                           const long* where,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_sum_c(DPCTLSyclQueueRef q_ref,
+               void *result_out,
+               const void *input_in,
+               const shape_elem_type *input_shape,
+               const size_t input_shape_ndim,
+               const shape_elem_type *axes,
+               const size_t axes_ndim,
+               const void *initial,
+               const long *where,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType_output, typename _DataType_input>
-INP_DLLEXPORT void dpnp_sum_c(void* result_out,
-                              const void* input_in,
-                              const shape_elem_type* input_shape,
+INP_DLLEXPORT void dpnp_sum_c(void *result_out,
+                              const void *input_in,
+                              const shape_elem_type *input_shape,
                               const size_t input_shape_ndim,
-                              const shape_elem_type* axes,
+                              const shape_elem_type *axes,
                               const size_t axes_ndim,
-                              const void* initial,
-                              const long* where);
+                              const void *initial,
+                              const long *where);
 
 /**
  * @ingroup BACKEND_API
@@ -647,14 +698,16 @@ INP_DLLEXPORT void dpnp_sum_c(void* result_out,
  *
  */
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_count_nonzero_c(DPCTLSyclQueueRef q_ref,
-                                                     void* array1_in,
-                                                     void* result1_out,
-                                                     size_t size,
-                                                     const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_count_nonzero_c(DPCTLSyclQueueRef q_ref,
+                         void *array1_in,
+                         void *result1_out,
+                         size_t size,
+                         const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT void dpnp_count_nonzero_c(void* array1_in, void* result1_out, size_t size);
+INP_DLLEXPORT void
+    dpnp_count_nonzero_c(void *array1_in, void *result1_out, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -670,18 +723,23 @@ INP_DLLEXPORT void dpnp_count_nonzero_c(void* array1_in, void* result1_out, size
  * @param [in]  dep_event_vec_ref Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
-                                                 void* array,
-                                                 void* array2,
-                                                 void* result,
-                                                 const size_t kth,
-                                                 const shape_elem_type* shape,
-                                                 const size_t ndim,
-                                                 const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_partition_c(DPCTLSyclQueueRef q_ref,
+                     void *array,
+                     void *array2,
+                     void *result,
+                     const size_t kth,
+                     const shape_elem_type *shape,
+                     const size_t ndim,
+                     const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_partition_c(
-    void* array, void* array2, void* result, const size_t kth, const shape_elem_type* shape, const size_t ndim);
+INP_DLLEXPORT void dpnp_partition_c(void *array,
+                                    void *array2,
+                                    void *result,
+                                    const size_t kth,
+                                    const shape_elem_type *shape,
+                                    const size_t ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -696,58 +754,67 @@ INP_DLLEXPORT void dpnp_partition_c(
  * @param [in]  dep_event_vec_ref Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_place_c(DPCTLSyclQueueRef q_ref,
-                                             void* arr,
-                                             long* mask,
-                                             void* vals,
-                                             const size_t arr_size,
-                                             const size_t vals_size,
-                                             const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_place_c(DPCTLSyclQueueRef q_ref,
+                 void *arr,
+                 long *mask,
+                 void *vals,
+                 const size_t arr_size,
+                 const size_t vals_size,
+                 const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_place_c(void* arr, long* mask, void* vals, const size_t arr_size, const size_t vals_size);
+INP_DLLEXPORT void dpnp_place_c(void *arr,
+                                long *mask,
+                                void *vals,
+                                const size_t arr_size,
+                                const size_t vals_size);
 
 /**
  * @ingroup BACKEND_API
  * @brief Compute Product of input array elements.
  *
- * Input array is expected as @ref _DataType_input type and assume result as @ref _DataType_output type.
- * The function creates no memory.
+ * Input array is expected as @ref _DataType_input type and assume result as
+ * @ref _DataType_output type. The function creates no memory.
  *
  * Empty @ref input_shape means scalar.
  *
  * @param [in]  q_ref             Reference to SYCL queue.
- * @param [out] result_out        Output array pointer. @ref _DataType_output type is expected
- * @param [in]  input_in          Input array pointer. @ref _DataType_input type is expected
+ * @param [out] result_out        Output array pointer. @ref _DataType_output
+ * type is expected
+ * @param [in]  input_in          Input array pointer. @ref _DataType_input type
+ * is expected
  * @param [in]  input_shape       Shape of @ref input_in
  * @param [in]  input_shape_ndim  Number of elements in @ref input_shape
  * @param [in]  axes              Array of axes to apply to @ref input_shape
  * @param [in]  axes_ndim         Number of elements in @ref axes
- * @param [in]  initial           Pointer to initial value for the algorithm. @ref _DataType_input is expected
+ * @param [in]  initial           Pointer to initial value for the algorithm.
+ * @ref _DataType_input is expected
  * @param [in]  where             mask array
  * @param [in]  dep_event_vec_ref Reference to vector of SYCL events.
  */
 template <typename _DataType_output, typename _DataType_input>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_prod_c(DPCTLSyclQueueRef q_ref,
-                                            void* result_out,
-                                            const void* input_in,
-                                            const shape_elem_type* input_shape,
-                                            const size_t input_shape_ndim,
-                                            const shape_elem_type* axes,
-                                            const size_t axes_ndim,
-                                            const void* initial,
-                                            const long* where,
-                                            const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_prod_c(DPCTLSyclQueueRef q_ref,
+                void *result_out,
+                const void *input_in,
+                const shape_elem_type *input_shape,
+                const size_t input_shape_ndim,
+                const shape_elem_type *axes,
+                const size_t axes_ndim,
+                const void *initial,
+                const long *where,
+                const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType_output, typename _DataType_input>
-INP_DLLEXPORT void dpnp_prod_c(void* result_out,
-                               const void* input_in,
-                               const shape_elem_type* input_shape,
+INP_DLLEXPORT void dpnp_prod_c(void *result_out,
+                               const void *input_in,
+                               const shape_elem_type *input_shape,
                                const size_t input_shape_ndim,
-                               const shape_elem_type* axes,
+                               const shape_elem_type *axes,
                                const size_t axes_ndim,
-                               const void* initial,
-                               const long* where);
+                               const void *initial,
+                               const long *where);
 
 /**
  * @ingroup BACKEND_API
@@ -769,33 +836,34 @@ INP_DLLEXPORT void dpnp_prod_c(void* result_out,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_ptp_c(DPCTLSyclQueueRef q_ref,
-                                           void* result_out,
-                                           const size_t result_size,
-                                           const size_t result_ndim,
-                                           const shape_elem_type* result_shape,
-                                           const shape_elem_type* result_strides,
-                                           const void* input_in,
-                                           const size_t input_size,
-                                           const size_t input_ndim,
-                                           const shape_elem_type* input_shape,
-                                           const shape_elem_type* input_strides,
-                                           const shape_elem_type* axis,
-                                           const size_t naxis,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_ptp_c(DPCTLSyclQueueRef q_ref,
+               void *result_out,
+               const size_t result_size,
+               const size_t result_ndim,
+               const shape_elem_type *result_shape,
+               const shape_elem_type *result_strides,
+               const void *input_in,
+               const size_t input_size,
+               const size_t input_ndim,
+               const shape_elem_type *input_shape,
+               const shape_elem_type *input_strides,
+               const shape_elem_type *axis,
+               const size_t naxis,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_ptp_c(void* result_out,
+INP_DLLEXPORT void dpnp_ptp_c(void *result_out,
                               const size_t result_size,
                               const size_t result_ndim,
-                              const shape_elem_type* result_shape,
-                              const shape_elem_type* result_strides,
-                              const void* input_in,
+                              const shape_elem_type *result_shape,
+                              const shape_elem_type *result_strides,
+                              const void *input_in,
                               const size_t input_size,
                               const size_t input_ndim,
-                              const shape_elem_type* input_shape,
-                              const shape_elem_type* input_strides,
-                              const shape_elem_type* axis,
+                              const shape_elem_type *input_shape,
+                              const shape_elem_type *input_strides,
+                              const shape_elem_type *axis,
                               const size_t naxis);
 
 /**
@@ -812,26 +880,33 @@ INP_DLLEXPORT void dpnp_ptp_c(void* result_out,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _IndecesType, typename _ValueType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_put_c(DPCTLSyclQueueRef q_ref,
-                                           void* array,
-                                           void* ind,
-                                           void* v,
-                                           const size_t size,
-                                           const size_t size_ind,
-                                           const size_t size_v,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_put_c(DPCTLSyclQueueRef q_ref,
+               void *array,
+               void *ind,
+               void *v,
+               const size_t size,
+               const size_t size_ind,
+               const size_t size_v,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _IndecesType, typename _ValueType>
-INP_DLLEXPORT void
-    dpnp_put_c(void* array, void* ind, void* v, const size_t size, const size_t size_ind, const size_t size_v);
+INP_DLLEXPORT void dpnp_put_c(void *array,
+                              void *ind,
+                              void *v,
+                              const size_t size,
+                              const size_t size_ind,
+                              const size_t size_v);
 
 /**
  * @ingroup BACKEND_API
- * @brief Put values into the destination array by matching 1d index and data slices.
+ * @brief Put values into the destination array by matching 1d index and data
+ * slices.
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [in]  arr_in              Input array.
- * @param [in]  indices_in          Indices to change along each 1d slice of arr.
+ * @param [in]  indices_in          Indices to change along each 1d slice of
+ * arr.
  * @param [in]  values_in           Values to insert at those indices.
  * @param [in]  axis                The axis to take 1d slices along.
  * @param [in]  shape               Shape of input array.
@@ -841,23 +916,24 @@ INP_DLLEXPORT void
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_put_along_axis_c(DPCTLSyclQueueRef q_ref,
-                                                      void* arr_in,
-                                                      long* indices_in,
-                                                      void* values_in,
-                                                      size_t axis,
-                                                      const shape_elem_type* shape,
-                                                      size_t ndim,
-                                                      size_t size_indices,
-                                                      size_t values_size,
-                                                      const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_put_along_axis_c(DPCTLSyclQueueRef q_ref,
+                          void *arr_in,
+                          long *indices_in,
+                          void *values_in,
+                          size_t axis,
+                          const shape_elem_type *shape,
+                          size_t ndim,
+                          size_t size_indices,
+                          size_t values_size,
+                          const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_put_along_axis_c(void* arr_in,
-                                         long* indices_in,
-                                         void* values_in,
+INP_DLLEXPORT void dpnp_put_along_axis_c(void *arr_in,
+                                         long *indices_in,
+                                         void *values_in,
                                          size_t axis,
-                                         const shape_elem_type* shape,
+                                         const shape_elem_type *shape,
                                          size_t ndim,
                                          size_t size_indices,
                                          size_t values_size);
@@ -868,21 +944,24 @@ INP_DLLEXPORT void dpnp_put_along_axis_c(void* arr_in,
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [in]  array_in            Input array[size][size]
- * @param [out] result1             The eigenvalues, each repeated according to its multiplicity
+ * @param [out] result1             The eigenvalues, each repeated according to
+ * its multiplicity
  * @param [out] result2             The normalized (unit "length") eigenvectors
  * @param [in]  size                One dimension of square [size][size] array
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_eig_c(DPCTLSyclQueueRef q_ref,
-                                           const void* array_in,
-                                           void* result1,
-                                           void* result2,
-                                           size_t size,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_eig_c(DPCTLSyclQueueRef q_ref,
+               const void *array_in,
+               void *result1,
+               void *result2,
+               size_t size,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size);
+INP_DLLEXPORT void
+    dpnp_eig_c(const void *array_in, void *result1, void *result2, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -890,39 +969,45 @@ INP_DLLEXPORT void dpnp_eig_c(const void* array_in, void* result1, void* result2
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [in]  array_in            Input array[size][size]
- * @param [out] result1             The eigenvalues, each repeated according to its multiplicity
+ * @param [out] result1             The eigenvalues, each repeated according to
+ * its multiplicity
  * @param [in]  size                One dimension of square [size][size] array
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_eigvals_c(DPCTLSyclQueueRef q_ref,
-                                               const void* array_in,
-                                               void* result1,
-                                               size_t size,
-                                               const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_eigvals_c(DPCTLSyclQueueRef q_ref,
+                   const void *array_in,
+                   void *result1,
+                   size_t size,
+                   const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_eigvals_c(const void* array_in, void* result1, size_t size);
+INP_DLLEXPORT void
+    dpnp_eigvals_c(const void *array_in, void *result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
  * @brief Return a 2-D array with ones on the diagonal and zeros elsewhere.
  *
  * @param [in]  q_ref               Reference to SYCL queue.
- * @param [out] result              The eigenvalues, each repeated according to its multiplicity
+ * @param [out] result              The eigenvalues, each repeated according to
+ * its multiplicity
  * @param [in]  k                   Index of the diagonal
  * @param [in]  shape               Shape of result
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_eye_c(DPCTLSyclQueueRef q_ref,
-                                           void* result,
-                                           int k,
-                                           const shape_elem_type* res_shape,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_eye_c(DPCTLSyclQueueRef q_ref,
+               void *result,
+               int k,
+               const shape_elem_type *res_shape,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_eye_c(void* result, int k, const shape_elem_type* res_shape);
+INP_DLLEXPORT void
+    dpnp_eye_c(void *result, int k, const shape_elem_type *res_shape);
 
 /**
  * @ingroup BACKEND_API
@@ -935,14 +1020,15 @@ INP_DLLEXPORT void dpnp_eye_c(void* result, int k, const shape_elem_type* res_sh
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_argsort_c(DPCTLSyclQueueRef q_ref,
-                                               void* array,
-                                               void* result,
-                                               size_t size,
-                                               const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_argsort_c(DPCTLSyclQueueRef q_ref,
+                   void *array,
+                   void *result,
+                   size_t size,
+                   const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT void dpnp_argsort_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void dpnp_argsort_c(void *array, void *result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -952,24 +1038,30 @@ INP_DLLEXPORT void dpnp_argsort_c(void* array, void* result, size_t size);
  * @param [out] result              Output array.
  * @param [in]  array               Input array with data.
  * @param [in]  v                   Input values to insert into array.
- * @param [in]  side                Param for choosing a case of searching for elements.
+ * @param [in]  side                Param for choosing a case of searching for
+ * elements.
  * @param [in]  arr_size            Number of elements in input arrays.
  * @param [in]  v_size              Number of elements in input values arrays.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _IndexingType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_searchsorted_c(DPCTLSyclQueueRef q_ref,
-                                                    void* result,
-                                                    const void* array,
-                                                    const void* v,
-                                                    bool side,
-                                                    const size_t arr_size,
-                                                    const size_t v_size,
-                                                    const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_searchsorted_c(DPCTLSyclQueueRef q_ref,
+                        void *result,
+                        const void *array,
+                        const void *v,
+                        bool side,
+                        const size_t arr_size,
+                        const size_t v_size,
+                        const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _IndexingType>
-INP_DLLEXPORT void dpnp_searchsorted_c(
-    void* result, const void* array, const void* v, bool side, const size_t arr_size, const size_t v_size);
+INP_DLLEXPORT void dpnp_searchsorted_c(void *result,
+                                       const void *array,
+                                       const void *v,
+                                       bool side,
+                                       const size_t arr_size,
+                                       const size_t v_size);
 
 /**
  * @ingroup BACKEND_API
@@ -982,14 +1074,15 @@ INP_DLLEXPORT void dpnp_searchsorted_c(
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_sort_c(DPCTLSyclQueueRef q_ref,
-                                            void* array,
-                                            void* result,
-                                            size_t size,
-                                            const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_sort_c(DPCTLSyclQueueRef q_ref,
+                void *array,
+                void *result,
+                size_t size,
+                const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_sort_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void dpnp_sort_c(void *array, void *result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -1003,15 +1096,19 @@ INP_DLLEXPORT void dpnp_sort_c(void* array, void* result, size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_cholesky_c(DPCTLSyclQueueRef q_ref,
-                                                void* array1_in,
-                                                void* result1,
-                                                const size_t size,
-                                                const size_t data_size,
-                                                const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_cholesky_c(DPCTLSyclQueueRef q_ref,
+                    void *array1_in,
+                    void *result1,
+                    const size_t size,
+                    const size_t data_size,
+                    const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const size_t data_size);
+INP_DLLEXPORT void dpnp_cholesky_c(void *array1_in,
+                                   void *result1,
+                                   const size_t size,
+                                   const size_t data_size);
 
 /**
  * @ingroup BACKEND_API
@@ -1030,31 +1127,36 @@ INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, const size_t 
  * @param [in]  where               Mask array.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
-template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_correlate_c(DPCTLSyclQueueRef q_ref,
-                                                 void* result_out,
-                                                 const void* input1_in,
-                                                 const size_t input1_size,
-                                                 const shape_elem_type* input1_shape,
-                                                 const size_t input1_shape_ndim,
-                                                 const void* input2_in,
-                                                 const size_t input2_size,
-                                                 const shape_elem_type* input2_shape,
-                                                 const size_t input2_shape_ndim,
-                                                 const size_t* where,
-                                                 const DPCTLEventVectorRef dep_event_vec_ref);
+template <typename _DataType_output,
+          typename _DataType_input1,
+          typename _DataType_input2>
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_correlate_c(DPCTLSyclQueueRef q_ref,
+                     void *result_out,
+                     const void *input1_in,
+                     const size_t input1_size,
+                     const shape_elem_type *input1_shape,
+                     const size_t input1_shape_ndim,
+                     const void *input2_in,
+                     const size_t input2_size,
+                     const shape_elem_type *input2_shape,
+                     const size_t input2_shape_ndim,
+                     const size_t *where,
+                     const DPCTLEventVectorRef dep_event_vec_ref);
 
-template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-INP_DLLEXPORT void dpnp_correlate_c(void* result_out,
-                                    const void* input1_in,
+template <typename _DataType_output,
+          typename _DataType_input1,
+          typename _DataType_input2>
+INP_DLLEXPORT void dpnp_correlate_c(void *result_out,
+                                    const void *input1_in,
                                     const size_t input1_size,
-                                    const shape_elem_type* input1_shape,
+                                    const shape_elem_type *input1_shape,
                                     const size_t input1_shape_ndim,
-                                    const void* input2_in,
+                                    const void *input2_in,
                                     const size_t input2_size,
-                                    const shape_elem_type* input2_shape,
+                                    const shape_elem_type *input2_shape,
                                     const size_t input2_shape_ndim,
-                                    const size_t* where);
+                                    const size_t *where);
 
 /**
  * @ingroup BACKEND_API
@@ -1068,15 +1170,17 @@ INP_DLLEXPORT void dpnp_correlate_c(void* result_out,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_cov_c(DPCTLSyclQueueRef q_ref,
-                                           void* array1_in,
-                                           void* result1,
-                                           size_t nrows,
-                                           size_t ncols,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_cov_c(DPCTLSyclQueueRef q_ref,
+               void *array1_in,
+               void *result1,
+               size_t nrows,
+               size_t ncols,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols);
+INP_DLLEXPORT void
+    dpnp_cov_c(void *array1_in, void *result1, size_t nrows, size_t ncols);
 
 /**
  * @ingroup BACKEND_API
@@ -1090,19 +1194,24 @@ INP_DLLEXPORT void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_det_c(DPCTLSyclQueueRef q_ref,
-                                           void* array1_in,
-                                           void* result1,
-                                           shape_elem_type* shape,
-                                           size_t ndim,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_det_c(DPCTLSyclQueueRef q_ref,
+               void *array1_in,
+               void *result1,
+               shape_elem_type *shape,
+               size_t ndim,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, shape_elem_type* shape, size_t ndim);
+INP_DLLEXPORT void dpnp_det_c(void *array1_in,
+                              void *result1,
+                              shape_elem_type *shape,
+                              size_t ndim);
 
 /**
  * @ingroup BACKEND_API
- * @brief Construct an array from an index array and a list of arrays to choose from.
+ * @brief Construct an array from an index array and a list of arrays to choose
+ * from.
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [out] result1             Output array.
@@ -1114,18 +1223,23 @@ INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, shape_elem_type* s
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType1, typename _DataType2>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_choose_c(DPCTLSyclQueueRef q_ref,
-                                              void* result1,
-                                              void* array1_in,
-                                              void** choices,
-                                              size_t size,
-                                              size_t choices_size,
-                                              size_t choice_size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_choose_c(DPCTLSyclQueueRef q_ref,
+                  void *result1,
+                  void *array1_in,
+                  void **choices,
+                  size_t size,
+                  size_t choices_size,
+                  size_t choice_size,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType1, typename _DataType2>
-INP_DLLEXPORT void
-    dpnp_choose_c(void* result1, void* array1_in, void** choices, size_t size, size_t choices_size, size_t choice_size);
+INP_DLLEXPORT void dpnp_choose_c(void *result1,
+                                 void *array1_in,
+                                 void **choices,
+                                 size_t size,
+                                 size_t choices_size,
+                                 size_t choice_size);
 
 /**
  * @ingroup BACKEND_API
@@ -1142,22 +1256,23 @@ INP_DLLEXPORT void
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_diag_c(DPCTLSyclQueueRef q_ref,
-                                            void* array,
-                                            void* result,
-                                            const int k,
-                                            shape_elem_type* shape,
-                                            shape_elem_type* res_shape,
-                                            const size_t ndim,
-                                            const size_t res_ndim,
-                                            const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_diag_c(DPCTLSyclQueueRef q_ref,
+                void *array,
+                void *result,
+                const int k,
+                shape_elem_type *shape,
+                shape_elem_type *res_shape,
+                const size_t ndim,
+                const size_t res_ndim,
+                const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_diag_c(void* array,
-                               void* result,
+INP_DLLEXPORT void dpnp_diag_c(void *array,
+                               void *result,
                                const int k,
-                               shape_elem_type* shape,
-                               shape_elem_type* res_shape,
+                               shape_elem_type *shape,
+                               shape_elem_type *res_shape,
                                const size_t ndim,
                                const size_t res_ndim);
 
@@ -1171,13 +1286,14 @@ INP_DLLEXPORT void dpnp_diag_c(void* array,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_diag_indices_c(DPCTLSyclQueueRef q_ref,
-                                                    void* result1,
-                                                    size_t size,
-                                                    const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_diag_indices_c(DPCTLSyclQueueRef q_ref,
+                        void *result1,
+                        size_t size,
+                        const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_diag_indices_c(void* result1, size_t size);
+INP_DLLEXPORT void dpnp_diag_indices_c(void *result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -1187,30 +1303,32 @@ INP_DLLEXPORT void dpnp_diag_indices_c(void* result1, size_t size);
  * @param [in]  array1_in           Input array with data.
  * @param [in]  input1_size         Input1 data size.
  * @param [out] result1             Output array.
- * @param [in]  offset              Offset of the diagonal from the main diagonal.
+ * @param [in]  offset              Offset of the diagonal from the main
+ * diagonal.
  * @param [in]  shape               Shape of input array.
  * @param [in]  res_shape           Shape of output array.
  * @param [in]  res_ndim            Number of elements in shape.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
-                                                void* array1_in,
-                                                const size_t input1_size,
-                                                void* result1,
-                                                const size_t offset,
-                                                shape_elem_type* shape,
-                                                shape_elem_type* res_shape,
-                                                const size_t res_ndim,
-                                                const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
+                    void *array1_in,
+                    const size_t input1_size,
+                    void *result1,
+                    const size_t offset,
+                    shape_elem_type *shape,
+                    shape_elem_type *res_shape,
+                    const size_t res_ndim,
+                    const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_diagonal_c(void* array1_in,
+INP_DLLEXPORT void dpnp_diagonal_c(void *array1_in,
                                    const size_t input1_size,
-                                   void* result1,
+                                   void *result1,
                                    const size_t offset,
-                                   shape_elem_type* shape,
-                                   shape_elem_type* res_shape,
+                                   shape_elem_type *shape,
+                                   shape_elem_type *res_shape,
                                    const size_t res_ndim);
 
 /**
@@ -1219,17 +1337,19 @@ INP_DLLEXPORT void dpnp_diagonal_c(void* array1_in,
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [out] result1             Output array.
- * @param [in]  n                   Number of rows (and columns) in n x n output.
+ * @param [in]  n                   Number of rows (and columns) in n x n
+ * output.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_identity_c(DPCTLSyclQueueRef q_ref,
-                                                void* result1,
-                                                const size_t n,
-                                                const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_identity_c(DPCTLSyclQueueRef q_ref,
+                    void *result1,
+                    const size_t n,
+                    const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_identity_c(void* result1, const size_t n);
+INP_DLLEXPORT void dpnp_identity_c(void *result1, const size_t n);
 
 /**
  * @ingroup BACKEND_API
@@ -1242,14 +1362,15 @@ INP_DLLEXPORT void dpnp_identity_c(void* result1, const size_t n);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_initval_c(DPCTLSyclQueueRef q_ref,
-                                               void* result1,
-                                               void* value,
-                                               size_t size,
-                                               const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_initval_c(DPCTLSyclQueueRef q_ref,
+                   void *result1,
+                   void *value,
+                   size_t size,
+                   const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_initval_c(void* result1, void* value, size_t size);
+INP_DLLEXPORT void dpnp_initval_c(void *result1, void *value, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -1263,15 +1384,19 @@ INP_DLLEXPORT void dpnp_initval_c(void* result1, void* value, size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_inv_c(DPCTLSyclQueueRef q_ref,
-                                           void* array1_in,
-                                           void* result1,
-                                           shape_elem_type* shape,
-                                           size_t ndim,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_inv_c(DPCTLSyclQueueRef q_ref,
+               void *array1_in,
+               void *result1,
+               shape_elem_type *shape,
+               size_t ndim,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_inv_c(void* array1_in, void* result1, shape_elem_type* shape, size_t ndim);
+INP_DLLEXPORT void dpnp_inv_c(void *array1_in,
+                              void *result1,
+                              shape_elem_type *shape,
+                              size_t ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -1285,15 +1410,19 @@ INP_DLLEXPORT void dpnp_inv_c(void* array1_in, void* result1, shape_elem_type* s
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_matrix_rank_c(DPCTLSyclQueueRef q_ref,
-                                                   void* array1_in,
-                                                   void* result1,
-                                                   shape_elem_type* shape,
-                                                   size_t ndim,
-                                                   const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_matrix_rank_c(DPCTLSyclQueueRef q_ref,
+                       void *array1_in,
+                       void *result1,
+                       shape_elem_type *shape,
+                       size_t ndim,
+                       const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_matrix_rank_c(void* array1_in, void* result1, shape_elem_type* shape, size_t ndim);
+INP_DLLEXPORT void dpnp_matrix_rank_c(void *array1_in,
+                                      void *result1,
+                                      shape_elem_type *shape,
+                                      size_t ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -1310,23 +1439,24 @@ INP_DLLEXPORT void dpnp_matrix_rank_c(void* array1_in, void* result1, shape_elem
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
-                                           void* array1_in,
-                                           void* result1,
-                                           const size_t result_size,
-                                           const shape_elem_type* shape,
-                                           size_t ndim,
-                                           const shape_elem_type* axis,
-                                           size_t naxis,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_max_c(DPCTLSyclQueueRef q_ref,
+               void *array1_in,
+               void *result1,
+               const size_t result_size,
+               const shape_elem_type *shape,
+               size_t ndim,
+               const shape_elem_type *axis,
+               size_t naxis,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_max_c(void* array1_in,
-                              void* result1,
+INP_DLLEXPORT void dpnp_max_c(void *array1_in,
+                              void *result1,
                               const size_t result_size,
-                              const shape_elem_type* shape,
+                              const shape_elem_type *shape,
                               size_t ndim,
-                              const shape_elem_type* axis,
+                              const shape_elem_type *axis,
                               size_t naxis);
 
 /**
@@ -1343,18 +1473,23 @@ INP_DLLEXPORT void dpnp_max_c(void* array1_in,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_mean_c(DPCTLSyclQueueRef q_ref,
-                                            void* array,
-                                            void* result,
-                                            const shape_elem_type* shape,
-                                            size_t ndim,
-                                            const shape_elem_type* axis,
-                                            size_t naxis,
-                                            const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_mean_c(DPCTLSyclQueueRef q_ref,
+                void *array,
+                void *result,
+                const shape_elem_type *shape,
+                size_t ndim,
+                const shape_elem_type *axis,
+                size_t naxis,
+                const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_mean_c(
-    void* array, void* result, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis);
+INP_DLLEXPORT void dpnp_mean_c(void *array,
+                               void *result,
+                               const shape_elem_type *shape,
+                               size_t ndim,
+                               const shape_elem_type *axis,
+                               size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -1370,18 +1505,23 @@ INP_DLLEXPORT void dpnp_mean_c(
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_median_c(DPCTLSyclQueueRef q_ref,
-                                              void* array,
-                                              void* result,
-                                              const shape_elem_type* shape,
-                                              size_t ndim,
-                                              const shape_elem_type* axis,
-                                              size_t naxis,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_median_c(DPCTLSyclQueueRef q_ref,
+                  void *array,
+                  void *result,
+                  const shape_elem_type *shape,
+                  size_t ndim,
+                  const shape_elem_type *axis,
+                  size_t naxis,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_median_c(
-    void* array, void* result, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis);
+INP_DLLEXPORT void dpnp_median_c(void *array,
+                                 void *result,
+                                 const shape_elem_type *shape,
+                                 size_t ndim,
+                                 const shape_elem_type *axis,
+                                 size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -1398,23 +1538,24 @@ INP_DLLEXPORT void dpnp_median_c(
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
-                                           void* array,
-                                           void* result,
-                                           const size_t result_size,
-                                           const shape_elem_type* shape,
-                                           size_t ndim,
-                                           const shape_elem_type* axis,
-                                           size_t naxis,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_min_c(DPCTLSyclQueueRef q_ref,
+               void *array,
+               void *result,
+               const size_t result_size,
+               const shape_elem_type *shape,
+               size_t ndim,
+               const shape_elem_type *axis,
+               size_t naxis,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_min_c(void* array,
-                              void* result,
+INP_DLLEXPORT void dpnp_min_c(void *array,
+                              void *result,
                               const size_t result_size,
-                              const shape_elem_type* shape,
+                              const shape_elem_type *shape,
                               size_t ndim,
-                              const shape_elem_type* axis,
+                              const shape_elem_type *axis,
                               size_t naxis);
 
 /**
@@ -1428,14 +1569,15 @@ INP_DLLEXPORT void dpnp_min_c(void* array,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_argmax_c(DPCTLSyclQueueRef q_ref,
-                                              void* array,
-                                              void* result,
-                                              size_t size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_argmax_c(DPCTLSyclQueueRef q_ref,
+                  void *array,
+                  void *result,
+                  size_t size,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT void dpnp_argmax_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void dpnp_argmax_c(void *array, void *result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -1448,14 +1590,15 @@ INP_DLLEXPORT void dpnp_argmax_c(void* array, void* result, size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_argmin_c(DPCTLSyclQueueRef q_ref,
-                                              void* array,
-                                              void* result,
-                                              size_t size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_argmin_c(DPCTLSyclQueueRef q_ref,
+                  void *array,
+                  void *result,
+                  size_t size,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT void dpnp_argmin_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void dpnp_argmin_c(void *array, void *result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -1465,19 +1608,24 @@ INP_DLLEXPORT void dpnp_argmin_c(void* array, void* result, size_t size);
  * @param [in]  input_in            Input array with data.
  * @param [out] result_out          Output array with indeces.
  * @param [in]  input_size          Number of elements in input arrays.
- * @param [in]  decimals            Number of decimal places to round. Support only with default value 0.
+ * @param [in]  decimals            Number of decimal places to round. Support
+ * only with default value 0.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_around_c(DPCTLSyclQueueRef q_ref,
-                                              const void* input_in,
-                                              void* result_out,
-                                              const size_t input_size,
-                                              const int decimals,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_around_c(DPCTLSyclQueueRef q_ref,
+                  const void *input_in,
+                  void *result_out,
+                  const size_t input_size,
+                  const int decimals,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_around_c(const void* input_in, void* result_out, const size_t input_size, const int decimals);
+INP_DLLEXPORT void dpnp_around_c(const void *input_in,
+                                 void *result_out,
+                                 const size_t input_size,
+                                 const int decimals);
 
 /**
  * @ingroup BACKEND_API
@@ -1494,22 +1642,23 @@ INP_DLLEXPORT void dpnp_around_c(const void* input_in, void* result_out, const s
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_std_c(DPCTLSyclQueueRef q_ref,
-                                           void* array,
-                                           void* result,
-                                           const shape_elem_type* shape,
-                                           size_t ndim,
-                                           const shape_elem_type* axis,
-                                           size_t naxis,
-                                           size_t ddof,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_std_c(DPCTLSyclQueueRef q_ref,
+               void *array,
+               void *result,
+               const shape_elem_type *shape,
+               size_t ndim,
+               const shape_elem_type *axis,
+               size_t naxis,
+               size_t ddof,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_std_c(void* array,
-                              void* result,
-                              const shape_elem_type* shape,
+INP_DLLEXPORT void dpnp_std_c(void *array,
+                              void *result,
+                              const shape_elem_type *shape,
                               size_t ndim,
-                              const shape_elem_type* axis,
+                              const shape_elem_type *axis,
                               size_t naxis,
                               size_t ddof);
 
@@ -1526,16 +1675,21 @@ INP_DLLEXPORT void dpnp_std_c(void* array,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _IndecesType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_take_c(DPCTLSyclQueueRef q_ref,
-                                            void* array,
-                                            const size_t array1_size,
-                                            void* indices,
-                                            void* result,
-                                            size_t size,
-                                            const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_take_c(DPCTLSyclQueueRef q_ref,
+                void *array,
+                const size_t array1_size,
+                void *indices,
+                void *result,
+                size_t size,
+                const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _IndecesType>
-INP_DLLEXPORT void dpnp_take_c(void* array, const size_t array1_size, void* indices, void* result, size_t size);
+INP_DLLEXPORT void dpnp_take_c(void *array,
+                               const size_t array1_size,
+                               void *indices,
+                               void *result,
+                               size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -1549,37 +1703,45 @@ INP_DLLEXPORT void dpnp_take_c(void* array, const size_t array1_size, void* indi
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_trace_c(DPCTLSyclQueueRef q_ref,
-                                             const void* array,
-                                             void* result,
-                                             const shape_elem_type* shape,
-                                             const size_t ndim,
-                                             const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_trace_c(DPCTLSyclQueueRef q_ref,
+                 const void *array,
+                 void *result,
+                 const shape_elem_type *shape,
+                 const size_t ndim,
+                 const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_trace_c(const void* array, void* result, const shape_elem_type* shape, const size_t ndim);
+INP_DLLEXPORT void dpnp_trace_c(const void *array,
+                                void *result,
+                                const shape_elem_type *shape,
+                                const size_t ndim);
 
 /**
  * @ingroup BACKEND_API
- * @brief An array with ones at and below the given diagonal and zeros elsewhere.
+ * @brief An array with ones at and below the given diagonal and zeros
+ * elsewhere.
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [out] result              Output array.
  * @param [in]  N                   Number of rows in the array.
  * @param [in]  M                   Number of columns in the array.
- * @param [in]  k                   The sub-diagonal at and below which the array is filled.
+ * @param [in]  k                   The sub-diagonal at and below which the
+ * array is filled.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_tri_c(DPCTLSyclQueueRef q_ref,
-                                           void* result,
-                                           const size_t N,
-                                           const size_t M,
-                                           const int k,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_tri_c(DPCTLSyclQueueRef q_ref,
+               void *result,
+               const size_t N,
+               const size_t M,
+               const int k,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_tri_c(void* result, const size_t N, const size_t M, const int k);
+INP_DLLEXPORT void
+    dpnp_tri_c(void *result, const size_t N, const size_t M, const int k);
 
 /**
  * @ingroup BACKEND_API
@@ -1596,22 +1758,23 @@ INP_DLLEXPORT void dpnp_tri_c(void* result, const size_t N, const size_t M, cons
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_tril_c(DPCTLSyclQueueRef q_ref,
-                                            void* array,
-                                            void* result,
-                                            const int k,
-                                            shape_elem_type* shape,
-                                            shape_elem_type* res_shape,
-                                            const size_t ndim,
-                                            const size_t res_ndim,
-                                            const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_tril_c(DPCTLSyclQueueRef q_ref,
+                void *array,
+                void *result,
+                const int k,
+                shape_elem_type *shape,
+                shape_elem_type *res_shape,
+                const size_t ndim,
+                const size_t res_ndim,
+                const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_tril_c(void* array,
-                               void* result,
+INP_DLLEXPORT void dpnp_tril_c(void *array,
+                               void *result,
                                const int k,
-                               shape_elem_type* shape,
-                               shape_elem_type* res_shape,
+                               shape_elem_type *shape,
+                               shape_elem_type *res_shape,
                                const size_t ndim,
                                const size_t res_ndim);
 
@@ -1630,22 +1793,23 @@ INP_DLLEXPORT void dpnp_tril_c(void* array,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_triu_c(DPCTLSyclQueueRef q_ref,
-                                            void* array,
-                                            void* result,
-                                            const int k,
-                                            shape_elem_type* shape,
-                                            shape_elem_type* res_shape,
-                                            const size_t ndim,
-                                            const size_t res_ndim,
-                                            const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_triu_c(DPCTLSyclQueueRef q_ref,
+                void *array,
+                void *result,
+                const int k,
+                shape_elem_type *shape,
+                shape_elem_type *res_shape,
+                const size_t ndim,
+                const size_t res_ndim,
+                const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_triu_c(void* array,
-                               void* result,
+INP_DLLEXPORT void dpnp_triu_c(void *array,
+                               void *result,
                                const int k,
-                               shape_elem_type* shape,
-                               shape_elem_type* res_shape,
+                               shape_elem_type *shape,
+                               shape_elem_type *res_shape,
                                const size_t ndim,
                                const size_t res_ndim);
 
@@ -1664,22 +1828,23 @@ INP_DLLEXPORT void dpnp_triu_c(void* array,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_var_c(DPCTLSyclQueueRef q_ref,
-                                           void* array,
-                                           void* result,
-                                           const shape_elem_type* shape,
-                                           size_t ndim,
-                                           const shape_elem_type* axis,
-                                           size_t naxis,
-                                           size_t ddof,
-                                           const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_var_c(DPCTLSyclQueueRef q_ref,
+               void *array,
+               void *result,
+               const shape_elem_type *shape,
+               size_t ndim,
+               const shape_elem_type *axis,
+               size_t naxis,
+               size_t ddof,
+               const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_var_c(void* array,
-                              void* result,
-                              const shape_elem_type* shape,
+INP_DLLEXPORT void dpnp_var_c(void *array,
+                              void *result,
+                              const shape_elem_type *shape,
                               size_t ndim,
-                              const shape_elem_type* axis,
+                              const shape_elem_type *axis,
                               size_t naxis,
                               size_t ddof);
 
@@ -1694,180 +1859,133 @@ INP_DLLEXPORT void dpnp_var_c(void* array,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_invert_c(DPCTLSyclQueueRef q_ref,
-                                              void* array1_in,
-                                              void* result,
-                                              size_t size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_invert_c(DPCTLSyclQueueRef q_ref,
+                  void *array1_in,
+                  void *result,
+                  size_t size,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
+INP_DLLEXPORT void dpnp_invert_c(void *array1_in, void *result, size_t size);
 
-#define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                                   \
-    template <typename _DataType>                                                                                      \
-    INP_DLLEXPORT DPCTLSyclEventRef __name__(DPCTLSyclQueueRef q_ref,                                                  \
-                                             void* result_out,                                                         \
-                                             const size_t result_size,                                                 \
-                                             const size_t result_ndim,                                                 \
-                                             const shape_elem_type* result_shape,                                      \
-                                             const shape_elem_type* result_strides,                                    \
-                                             const void* input1_in,                                                    \
-                                             const size_t input1_size,                                                 \
-                                             const size_t input1_ndim,                                                 \
-                                             const shape_elem_type* input1_shape,                                      \
-                                             const shape_elem_type* input1_strides,                                    \
-                                             const void* input2_in,                                                    \
-                                             const size_t input2_size,                                                 \
-                                             const size_t input2_ndim,                                                 \
-                                             const shape_elem_type* input2_shape,                                      \
-                                             const shape_elem_type* input2_strides,                                    \
-                                             const size_t* where,                                                      \
-                                             const DPCTLEventVectorRef dep_event_vec_ref);                             \
-                                                                                                                       \
-    template <typename _DataType>                                                                                      \
-    INP_DLLEXPORT void __name__(void* result_out,                                                                      \
-                                const size_t result_size,                                                              \
-                                const size_t result_ndim,                                                              \
-                                const shape_elem_type* result_shape,                                                   \
-                                const shape_elem_type* result_strides,                                                 \
-                                const void* input1_in,                                                                 \
-                                const size_t input1_size,                                                              \
-                                const size_t input1_ndim,                                                              \
-                                const shape_elem_type* input1_shape,                                                   \
-                                const shape_elem_type* input1_strides,                                                 \
-                                const void* input2_in,                                                                 \
-                                const size_t input2_size,                                                              \
-                                const size_t input2_ndim,                                                              \
-                                const shape_elem_type* input2_shape,                                                   \
-                                const shape_elem_type* input2_strides,                                                 \
-                                const size_t* where);
+#define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                           \
+    template <typename _DataType>                                              \
+    INP_DLLEXPORT DPCTLSyclEventRef __name__(                                  \
+        DPCTLSyclQueueRef q_ref, void *result_out, const size_t result_size,   \
+        const size_t result_ndim, const shape_elem_type *result_shape,         \
+        const shape_elem_type *result_strides, const void *input1_in,          \
+        const size_t input1_size, const size_t input1_ndim,                    \
+        const shape_elem_type *input1_shape,                                   \
+        const shape_elem_type *input1_strides, const void *input2_in,          \
+        const size_t input2_size, const size_t input2_ndim,                    \
+        const shape_elem_type *input2_shape,                                   \
+        const shape_elem_type *input2_strides, const size_t *where,            \
+        const DPCTLEventVectorRef dep_event_vec_ref);                          \
+                                                                               \
+    template <typename _DataType>                                              \
+    INP_DLLEXPORT void __name__(                                               \
+        void *result_out, const size_t result_size, const size_t result_ndim,  \
+        const shape_elem_type *result_shape,                                   \
+        const shape_elem_type *result_strides, const void *input1_in,          \
+        const size_t input1_size, const size_t input1_ndim,                    \
+        const shape_elem_type *input1_shape,                                   \
+        const shape_elem_type *input1_strides, const void *input2_in,          \
+        const size_t input2_size, const size_t input2_ndim,                    \
+        const shape_elem_type *input2_shape,                                   \
+        const shape_elem_type *input2_strides, const size_t *where);
 
 #include <dpnp_gen_2arg_1type_tbl.hpp>
 
-#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                                  \
-    template <typename _DataType>                                                                                      \
-    INP_DLLEXPORT DPCTLSyclEventRef __name__(DPCTLSyclQueueRef q_ref,                                                  \
-                                             void* result_out,                                                         \
-                                             const size_t result_size,                                                 \
-                                             const size_t result_ndim,                                                 \
-                                             const shape_elem_type* result_shape,                                      \
-                                             const shape_elem_type* result_strides,                                    \
-                                             const void* input1_in,                                                    \
-                                             const size_t input1_size,                                                 \
-                                             const size_t input1_ndim,                                                 \
-                                             const shape_elem_type* input1_shape,                                      \
-                                             const shape_elem_type* input1_strides,                                    \
-                                             const size_t* where,                                                      \
-                                             const DPCTLEventVectorRef dep_event_vec_ref);                             \
-                                                                                                                       \
-    template <typename _DataType>                                                                                      \
-    INP_DLLEXPORT void __name__(void* result_out,                                                                      \
-                                const size_t result_size,                                                              \
-                                const size_t result_ndim,                                                              \
-                                const shape_elem_type* result_shape,                                                   \
-                                const shape_elem_type* result_strides,                                                 \
-                                const void* input1_in,                                                                 \
-                                const size_t input1_size,                                                              \
-                                const size_t input1_ndim,                                                              \
-                                const shape_elem_type* input1_shape,                                                   \
-                                const shape_elem_type* input1_strides,                                                 \
-                                const size_t* where);
+#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)          \
+    template <typename _DataType>                                              \
+    INP_DLLEXPORT DPCTLSyclEventRef __name__(                                  \
+        DPCTLSyclQueueRef q_ref, void *result_out, const size_t result_size,   \
+        const size_t result_ndim, const shape_elem_type *result_shape,         \
+        const shape_elem_type *result_strides, const void *input1_in,          \
+        const size_t input1_size, const size_t input1_ndim,                    \
+        const shape_elem_type *input1_shape,                                   \
+        const shape_elem_type *input1_strides, const size_t *where,            \
+        const DPCTLEventVectorRef dep_event_vec_ref);                          \
+                                                                               \
+    template <typename _DataType>                                              \
+    INP_DLLEXPORT void __name__(                                               \
+        void *result_out, const size_t result_size, const size_t result_ndim,  \
+        const shape_elem_type *result_shape,                                   \
+        const shape_elem_type *result_strides, const void *input1_in,          \
+        const size_t input1_size, const size_t input1_ndim,                    \
+        const shape_elem_type *input1_shape,                                   \
+        const shape_elem_type *input1_strides, const size_t *where);
 
 #include <dpnp_gen_1arg_1type_tbl.hpp>
 
-#define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                                 \
-    template <typename _DataType_input, typename _DataType_output>                                                     \
-    INP_DLLEXPORT DPCTLSyclEventRef __name__(DPCTLSyclQueueRef q_ref,                                                  \
-                                             void* result_out,                                                         \
-                                             const size_t result_size,                                                 \
-                                             const size_t result_ndim,                                                 \
-                                             const shape_elem_type* result_shape,                                      \
-                                             const shape_elem_type* result_strides,                                    \
-                                             const void* input1_in,                                                    \
-                                             const size_t input1_size,                                                 \
-                                             const size_t input1_ndim,                                                 \
-                                             const shape_elem_type* input1_shape,                                      \
-                                             const shape_elem_type* input1_strides,                                    \
-                                             const size_t* where,                                                      \
-                                             const DPCTLEventVectorRef dep_event_vec_ref);                             \
-                                                                                                                       \
-    template <typename _DataType_input, typename _DataType_output>                                                     \
-    INP_DLLEXPORT void __name__(void* result_out,                                                                      \
-                                const size_t result_size,                                                              \
-                                const size_t result_ndim,                                                              \
-                                const shape_elem_type* result_shape,                                                   \
-                                const shape_elem_type* result_strides,                                                 \
-                                const void* input1_in,                                                                 \
-                                const size_t input1_size,                                                              \
-                                const size_t input1_ndim,                                                              \
-                                const shape_elem_type* input1_shape,                                                   \
-                                const shape_elem_type* input1_strides,                                                 \
-                                const size_t* where);
+#define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)         \
+    template <typename _DataType_input, typename _DataType_output>             \
+    INP_DLLEXPORT DPCTLSyclEventRef __name__(                                  \
+        DPCTLSyclQueueRef q_ref, void *result_out, const size_t result_size,   \
+        const size_t result_ndim, const shape_elem_type *result_shape,         \
+        const shape_elem_type *result_strides, const void *input1_in,          \
+        const size_t input1_size, const size_t input1_ndim,                    \
+        const shape_elem_type *input1_shape,                                   \
+        const shape_elem_type *input1_strides, const size_t *where,            \
+        const DPCTLEventVectorRef dep_event_vec_ref);                          \
+                                                                               \
+    template <typename _DataType_input, typename _DataType_output>             \
+    INP_DLLEXPORT void __name__(                                               \
+        void *result_out, const size_t result_size, const size_t result_ndim,  \
+        const shape_elem_type *result_shape,                                   \
+        const shape_elem_type *result_strides, const void *input1_in,          \
+        const size_t input1_size, const size_t input1_ndim,                    \
+        const shape_elem_type *input1_shape,                                   \
+        const shape_elem_type *input1_strides, const size_t *where);
 
 #include <dpnp_gen_1arg_2type_tbl.hpp>
 
-#define MACRO_2ARG_2TYPES_LOGIC_OP(__name__, __operation__)                                                           \
-    template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>                         \
-    INP_DLLEXPORT DPCTLSyclEventRef __name__(DPCTLSyclQueueRef q_ref,                                                  \
-                                             void* result_out,                                                         \
-                                             const size_t result_size,                                                 \
-                                             const size_t result_ndim,                                                 \
-                                             const shape_elem_type* result_shape,                                      \
-                                             const shape_elem_type* result_strides,                                    \
-                                             const void* input1_in,                                                    \
-                                             const size_t input1_size,                                                 \
-                                             const size_t input1_ndim,                                                 \
-                                             const shape_elem_type* input1_shape,                                      \
-                                             const shape_elem_type* input1_strides,                                    \
-                                             const void* input2_in,                                                    \
-                                             const size_t input2_size,                                                 \
-                                             const size_t input2_ndim,                                                 \
-                                             const shape_elem_type* input2_shape,                                      \
-                                             const shape_elem_type* input2_strides,                                    \
-                                             const size_t* where,                                                      \
-                                             const DPCTLEventVectorRef dep_event_vec_ref);
+#define MACRO_2ARG_2TYPES_LOGIC_OP(__name__, __operation__)                    \
+    template <typename _DataType_output, typename _DataType_input1,            \
+              typename _DataType_input2>                                       \
+    INP_DLLEXPORT DPCTLSyclEventRef __name__(                                  \
+        DPCTLSyclQueueRef q_ref, void *result_out, const size_t result_size,   \
+        const size_t result_ndim, const shape_elem_type *result_shape,         \
+        const shape_elem_type *result_strides, const void *input1_in,          \
+        const size_t input1_size, const size_t input1_ndim,                    \
+        const shape_elem_type *input1_shape,                                   \
+        const shape_elem_type *input1_strides, const void *input2_in,          \
+        const size_t input2_size, const size_t input2_ndim,                    \
+        const shape_elem_type *input2_shape,                                   \
+        const shape_elem_type *input2_strides, const size_t *where,            \
+        const DPCTLEventVectorRef dep_event_vec_ref);
 
 #include <dpnp_gen_2arg_2type_tbl.hpp>
 
-#define MACRO_2ARG_3TYPES_OP(                                                                                          \
-    __name__, __operation__, __vec_operation__, __vec_types__, __mkl_operation__, __mkl_types__)                       \
-    template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>                         \
-    INP_DLLEXPORT DPCTLSyclEventRef __name__(DPCTLSyclQueueRef q_ref,                                                  \
-                                             void* result_out,                                                         \
-                                             const size_t result_size,                                                 \
-                                             const size_t result_ndim,                                                 \
-                                             const shape_elem_type* result_shape,                                      \
-                                             const shape_elem_type* result_strides,                                    \
-                                             const void* input1_in,                                                    \
-                                             const size_t input1_size,                                                 \
-                                             const size_t input1_ndim,                                                 \
-                                             const shape_elem_type* input1_shape,                                      \
-                                             const shape_elem_type* input1_strides,                                    \
-                                             const void* input2_in,                                                    \
-                                             const size_t input2_size,                                                 \
-                                             const size_t input2_ndim,                                                 \
-                                             const shape_elem_type* input2_shape,                                      \
-                                             const shape_elem_type* input2_strides,                                    \
-                                             const size_t* where,                                                      \
-                                             const DPCTLEventVectorRef dep_event_vec_ref);                             \
-                                                                                                                       \
-    template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>                         \
-    INP_DLLEXPORT void __name__(void* result_out,                                                                      \
-                                const size_t result_size,                                                              \
-                                const size_t result_ndim,                                                              \
-                                const shape_elem_type* result_shape,                                                   \
-                                const shape_elem_type* result_strides,                                                 \
-                                const void* input1_in,                                                                 \
-                                const size_t input1_size,                                                              \
-                                const size_t input1_ndim,                                                              \
-                                const shape_elem_type* input1_shape,                                                   \
-                                const shape_elem_type* input1_strides,                                                 \
-                                const void* input2_in,                                                                 \
-                                const size_t input2_size,                                                              \
-                                const size_t input2_ndim,                                                              \
-                                const shape_elem_type* input2_shape,                                                   \
-                                const shape_elem_type* input2_strides,                                                 \
-                                const size_t* where);
+#define MACRO_2ARG_3TYPES_OP(__name__, __operation__, __vec_operation__,       \
+                             __vec_types__, __mkl_operation__, __mkl_types__)  \
+    template <typename _DataType_output, typename _DataType_input1,            \
+              typename _DataType_input2>                                       \
+    INP_DLLEXPORT DPCTLSyclEventRef __name__(                                  \
+        DPCTLSyclQueueRef q_ref, void *result_out, const size_t result_size,   \
+        const size_t result_ndim, const shape_elem_type *result_shape,         \
+        const shape_elem_type *result_strides, const void *input1_in,          \
+        const size_t input1_size, const size_t input1_ndim,                    \
+        const shape_elem_type *input1_shape,                                   \
+        const shape_elem_type *input1_strides, const void *input2_in,          \
+        const size_t input2_size, const size_t input2_ndim,                    \
+        const shape_elem_type *input2_shape,                                   \
+        const shape_elem_type *input2_strides, const size_t *where,            \
+        const DPCTLEventVectorRef dep_event_vec_ref);                          \
+                                                                               \
+    template <typename _DataType_output, typename _DataType_input1,            \
+              typename _DataType_input2>                                       \
+    INP_DLLEXPORT void __name__(                                               \
+        void *result_out, const size_t result_size, const size_t result_ndim,  \
+        const shape_elem_type *result_shape,                                   \
+        const shape_elem_type *result_strides, const void *input1_in,          \
+        const size_t input1_size, const size_t input1_ndim,                    \
+        const shape_elem_type *input1_shape,                                   \
+        const shape_elem_type *input1_strides, const void *input2_in,          \
+        const size_t input2_size, const size_t input2_ndim,                    \
+        const shape_elem_type *input2_shape,                                   \
+        const shape_elem_type *input2_strides, const size_t *where);
 
 #include <dpnp_gen_2arg_3type_tbl.hpp>
 
@@ -1883,15 +2001,19 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_fill_diagonal_c(DPCTLSyclQueueRef q_ref,
-                                                     void* array1_in,
-                                                     void* val,
-                                                     shape_elem_type* shape,
-                                                     const size_t ndim,
-                                                     const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_fill_diagonal_c(DPCTLSyclQueueRef q_ref,
+                         void *array1_in,
+                         void *val,
+                         shape_elem_type *shape,
+                         const size_t ndim,
+                         const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_fill_diagonal_c(void* array1_in, void* val, shape_elem_type* shape, const size_t ndim);
+INP_DLLEXPORT void dpnp_fill_diagonal_c(void *array1_in,
+                                        void *val,
+                                        shape_elem_type *shape,
+                                        const size_t ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -1910,31 +2032,36 @@ INP_DLLEXPORT void dpnp_fill_diagonal_c(void* array1_in, void* val, shape_elem_t
  * @param [in]  where               Mask array.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_floor_divide_c(DPCTLSyclQueueRef q_ref,
-                                                    void* result_out,
-                                                    const void* input1_in,
-                                                    const size_t input1_size,
-                                                    const shape_elem_type* input1_shape,
-                                                    const size_t input1_shape_ndim,
-                                                    const void* input2_in,
-                                                    const size_t input2_size,
-                                                    const shape_elem_type* input2_shape,
-                                                    const size_t input2_shape_ndim,
-                                                    const size_t* where,
-                                                    const DPCTLEventVectorRef dep_event_vec_ref);
+template <typename _DataType_input1,
+          typename _DataType_input2,
+          typename _DataType_output>
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_floor_divide_c(DPCTLSyclQueueRef q_ref,
+                        void *result_out,
+                        const void *input1_in,
+                        const size_t input1_size,
+                        const shape_elem_type *input1_shape,
+                        const size_t input1_shape_ndim,
+                        const void *input2_in,
+                        const size_t input2_size,
+                        const shape_elem_type *input2_shape,
+                        const size_t input2_shape_ndim,
+                        const size_t *where,
+                        const DPCTLEventVectorRef dep_event_vec_ref);
 
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT void dpnp_floor_divide_c(void* result_out,
-                                       const void* input1_in,
+template <typename _DataType_input1,
+          typename _DataType_input2,
+          typename _DataType_output>
+INP_DLLEXPORT void dpnp_floor_divide_c(void *result_out,
+                                       const void *input1_in,
                                        const size_t input1_size,
-                                       const shape_elem_type* input1_shape,
+                                       const shape_elem_type *input1_shape,
                                        const size_t input1_shape_ndim,
-                                       const void* input2_in,
+                                       const void *input2_in,
                                        const size_t input2_size,
-                                       const shape_elem_type* input2_shape,
+                                       const shape_elem_type *input2_shape,
                                        const size_t input2_shape_ndim,
-                                       const size_t* where);
+                                       const size_t *where);
 
 /**
  * @ingroup BACKEND_API
@@ -1948,15 +2075,19 @@ INP_DLLEXPORT void dpnp_floor_divide_c(void* result_out,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_modf_c(DPCTLSyclQueueRef q_ref,
-                                            void* array1_in,
-                                            void* result1_out,
-                                            void* result2_out,
-                                            size_t size,
-                                            const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_modf_c(DPCTLSyclQueueRef q_ref,
+                void *array1_in,
+                void *result1_out,
+                void *result2_out,
+                size_t size,
+                const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t size);
+INP_DLLEXPORT void dpnp_modf_c(void *array1_in,
+                               void *result1_out,
+                               void *result2_out,
+                               size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -1968,13 +2099,14 @@ INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_ones_c(DPCTLSyclQueueRef q_ref,
-                                            void* result,
-                                            size_t size,
-                                            const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_ones_c(DPCTLSyclQueueRef q_ref,
+                void *result,
+                size_t size,
+                const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_ones_c(void* result, size_t size);
+INP_DLLEXPORT void dpnp_ones_c(void *result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -1986,13 +2118,14 @@ INP_DLLEXPORT void dpnp_ones_c(void* result, size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_ones_like_c(DPCTLSyclQueueRef q_ref,
-                                                 void* result,
-                                                 size_t size,
-                                                 const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_ones_like_c(DPCTLSyclQueueRef q_ref,
+                     void *result,
+                     size_t size,
+                     const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_ones_like_c(void* result, size_t size);
+INP_DLLEXPORT void dpnp_ones_like_c(void *result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -2011,31 +2144,36 @@ INP_DLLEXPORT void dpnp_ones_like_c(void* result, size_t size);
  * @param [in]  where               Mask array.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
-template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_remainder_c(DPCTLSyclQueueRef q_ref,
-                                                 void* result_out,
-                                                 const void* input1_in,
-                                                 const size_t input1_size,
-                                                 const shape_elem_type* input1_shape,
-                                                 const size_t input1_shape_ndim,
-                                                 const void* input2_in,
-                                                 const size_t input2_size,
-                                                 const shape_elem_type* input2_shape,
-                                                 const size_t input2_shape_ndim,
-                                                 const size_t* where,
-                                                 const DPCTLEventVectorRef dep_event_vec_ref);
+template <typename _DataType_output,
+          typename _DataType_input1,
+          typename _DataType_input2>
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_remainder_c(DPCTLSyclQueueRef q_ref,
+                     void *result_out,
+                     const void *input1_in,
+                     const size_t input1_size,
+                     const shape_elem_type *input1_shape,
+                     const size_t input1_shape_ndim,
+                     const void *input2_in,
+                     const size_t input2_size,
+                     const shape_elem_type *input2_shape,
+                     const size_t input2_shape_ndim,
+                     const size_t *where,
+                     const DPCTLEventVectorRef dep_event_vec_ref);
 
-template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-INP_DLLEXPORT void dpnp_remainder_c(void* result_out,
-                                    const void* input1_in,
+template <typename _DataType_output,
+          typename _DataType_input1,
+          typename _DataType_input2>
+INP_DLLEXPORT void dpnp_remainder_c(void *result_out,
+                                    const void *input1_in,
                                     const size_t input1_size,
-                                    const shape_elem_type* input1_shape,
+                                    const shape_elem_type *input1_shape,
                                     const size_t input1_shape_ndim,
-                                    const void* input2_in,
+                                    const void *input2_in,
                                     const size_t input2_size,
-                                    const shape_elem_type* input2_shape,
+                                    const shape_elem_type *input2_shape,
                                     const size_t input2_shape_ndim,
-                                    const size_t* where);
+                                    const size_t *where);
 
 /**
  * @ingroup BACKEND_API
@@ -2049,49 +2187,57 @@ INP_DLLEXPORT void dpnp_remainder_c(void* result_out,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_repeat_c(DPCTLSyclQueueRef q_ref,
-                                              const void* array_in,
-                                              void* result,
-                                              const size_t repeats,
-                                              const size_t size,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_repeat_c(DPCTLSyclQueueRef q_ref,
+                  const void *array_in,
+                  void *result,
+                  const size_t repeats,
+                  const size_t size,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_repeat_c(const void* array_in, void* result, const size_t repeats, const size_t size);
+INP_DLLEXPORT void dpnp_repeat_c(const void *array_in,
+                                 void *result,
+                                 const size_t repeats,
+                                 const size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief transpose function. Permute axes of the input to the output with elements permutation.
+ * @brief transpose function. Permute axes of the input to the output with
+ * elements permutation.
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [in]  array1_in           Input array.
  * @param [in]  input_shape         Input shape.
  * @param [in]  result_shape        Output shape.
- * @param [in]  permute_axes        Order of axis by it's id as it should be presented in output.
+ * @param [in]  permute_axes        Order of axis by it's id as it should be
+ * presented in output.
  * @param [in]  ndim                Number of elements in shapes and axes.
  * @param [out] result1             Output array.
  * @param [in]  size                Number of elements in input arrays.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_elemwise_transpose_c(DPCTLSyclQueueRef q_ref,
-                                                          void* array1_in,
-                                                          const shape_elem_type* input_shape,
-                                                          const shape_elem_type* result_shape,
-                                                          const shape_elem_type* permute_axes,
-                                                          size_t ndim,
-                                                          void* result1,
-                                                          size_t size,
-                                                          const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_elemwise_transpose_c(DPCTLSyclQueueRef q_ref,
+                              void *array1_in,
+                              const shape_elem_type *input_shape,
+                              const shape_elem_type *result_shape,
+                              const shape_elem_type *permute_axes,
+                              size_t ndim,
+                              void *result1,
+                              size_t size,
+                              const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
-                                             const shape_elem_type* input_shape,
-                                             const shape_elem_type* result_shape,
-                                             const shape_elem_type* permute_axes,
-                                             size_t ndim,
-                                             void* result1,
-                                             size_t size);
+INP_DLLEXPORT void
+    dpnp_elemwise_transpose_c(void *array1_in,
+                              const shape_elem_type *input_shape,
+                              const shape_elem_type *result_shape,
+                              const shape_elem_type *permute_axes,
+                              size_t ndim,
+                              void *result1,
+                              size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -2107,19 +2253,28 @@ INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  *
  */
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_trapz_c(DPCTLSyclQueueRef q_ref,
-                                             const void* array1_in,
-                                             const void* array2_in,
-                                             void* result1,
-                                             double dx,
-                                             size_t array1_size,
-                                             size_t array2_size,
-                                             const DPCTLEventVectorRef dep_event_vec_ref);
+template <typename _DataType_input1,
+          typename _DataType_input2,
+          typename _DataType_output>
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_trapz_c(DPCTLSyclQueueRef q_ref,
+                 const void *array1_in,
+                 const void *array2_in,
+                 void *result1,
+                 double dx,
+                 size_t array1_size,
+                 size_t array2_size,
+                 const DPCTLEventVectorRef dep_event_vec_ref);
 
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT void dpnp_trapz_c(
-    const void* array1_in, const void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size);
+template <typename _DataType_input1,
+          typename _DataType_input2,
+          typename _DataType_output>
+INP_DLLEXPORT void dpnp_trapz_c(const void *array1_in,
+                                const void *array2_in,
+                                void *result1,
+                                double dx,
+                                size_t array1_size,
+                                size_t array2_size);
 
 /**
  * @ingroup BACKEND_API
@@ -2135,17 +2290,21 @@ INP_DLLEXPORT void dpnp_trapz_c(
  *
  */
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_vander_c(DPCTLSyclQueueRef q_ref,
-                                              const void* array1_in,
-                                              void* result1,
-                                              const size_t size_in,
-                                              const size_t N,
-                                              const int increasing,
-                                              const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_vander_c(DPCTLSyclQueueRef q_ref,
+                  const void *array1_in,
+                  void *result1,
+                  const size_t size_in,
+                  const size_t N,
+                  const int increasing,
+                  const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT void
-    dpnp_vander_c(const void* array1_in, void* result1, const size_t size_in, const size_t N, const int increasing);
+INP_DLLEXPORT void dpnp_vander_c(const void *array1_in,
+                                 void *result1,
+                                 const size_t size_in,
+                                 const size_t N,
+                                 const int increasing);
 
 /**
  * @ingroup BACKEND_API
@@ -2157,13 +2316,14 @@ INP_DLLEXPORT void
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_zeros_c(DPCTLSyclQueueRef q_ref,
-                                             void* result,
-                                             size_t size,
-                                             const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_zeros_c(DPCTLSyclQueueRef q_ref,
+                 void *result,
+                 size_t size,
+                 const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_zeros_c(void* result, size_t size);
+INP_DLLEXPORT void dpnp_zeros_c(void *result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -2175,12 +2335,13 @@ INP_DLLEXPORT void dpnp_zeros_c(void* result, size_t size);
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
 template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef dpnp_zeros_like_c(DPCTLSyclQueueRef q_ref,
-                                                  void* result,
-                                                  size_t size,
-                                                  const DPCTLEventVectorRef dep_event_vec_ref);
+INP_DLLEXPORT DPCTLSyclEventRef
+    dpnp_zeros_like_c(DPCTLSyclQueueRef q_ref,
+                      void *result,
+                      size_t size,
+                      const DPCTLEventVectorRef dep_event_vec_ref);
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_zeros_like_c(void* result, size_t size);
+INP_DLLEXPORT void dpnp_zeros_like_c(void *result, size_t size);
 
 #endif // BACKEND_IFACE_H

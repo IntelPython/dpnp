@@ -28,3 +28,8 @@ repos:
     hooks:
     -   id: black
         args: ["--check", "--diff", "--color"]
+-   repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+    -   id: clang-format
+        args: ["-i"]

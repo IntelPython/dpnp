@@ -30,7 +30,9 @@
  *
  * Possible compile line:
  * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example_experimental_iface.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example_experimental_iface
+ * g++ -g dpnp/backend/examples/example_experimental_iface.cpp -Idpnp
+ * -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o
+ * example_experimental_iface
  */
 
 #include <iostream>
@@ -38,19 +40,24 @@
 #include <dpnp_iface_fptr.hpp>
 // TODO #include <backend/backend_utils.hpp>
 
-int main(int, char**)
+int main(int, char **)
 {
-    void* result = get_backend_function_name("dpnp_dot", "float");
-    std::cout << "Result Dot() function pointer (by old interface): " << result << std::endl;
+    void *result = get_backend_function_name("dpnp_dot", "float");
+    std::cout << "Result Dot() function pointer (by old interface): " << result
+              << std::endl;
 
-    DPNPFuncData_t dpnp_dot_f = get_dpnp_function_ptr(DPNPFuncName::DPNP_FN_DOT, DPNPFuncType::DPNP_FT_LONG);
-    std::cout << "Result Dot() function pointer: " << dpnp_dot_f.ptr << " with return datatype "
-              << (size_t)dpnp_dot_f.return_type << std::endl;
+    DPNPFuncData_t dpnp_dot_f = get_dpnp_function_ptr(
+        DPNPFuncName::DPNP_FN_DOT, DPNPFuncType::DPNP_FT_LONG);
+    std::cout << "Result Dot() function pointer: " << dpnp_dot_f.ptr
+              << " with return datatype " << (size_t)dpnp_dot_f.return_type
+              << std::endl;
 
-    DPNPFuncData_t dpnp_add_f =
-        get_dpnp_function_ptr(DPNPFuncName::DPNP_FN_ADD, DPNPFuncType::DPNP_FT_FLOAT, DPNPFuncType::DPNP_FT_INT);
-    std::cout << "Result Add() function pointer: " << dpnp_add_f.ptr << " with return datatype "
-              << (size_t)dpnp_add_f.return_type << std::endl;
+    DPNPFuncData_t dpnp_add_f = get_dpnp_function_ptr(
+        DPNPFuncName::DPNP_FN_ADD, DPNPFuncType::DPNP_FT_FLOAT,
+        DPNPFuncType::DPNP_FT_INT);
+    std::cout << "Result Add() function pointer: " << dpnp_add_f.ptr
+              << " with return datatype " << (size_t)dpnp_add_f.return_type
+              << std::endl;
 
     return 0;
 }

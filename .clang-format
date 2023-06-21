@@ -1,71 +1,40 @@
 BasedOnStyle: LLVM
-IndentWidth: 4
-UseTab: Never
-Language: Cpp
-Standard: Cpp11
 
 AccessModifierOffset: -4
 
-AlignConsecutiveDeclarations: false
-AlignConsecutiveAssignments: false
 AlignConsecutiveMacros: true
-AlignTrailingComments: true
+AlignConsecutiveAssignments: true
 AlignEscapedNewlines: Right
 
-AllowShortBlocksOnASingleLine: false
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: false
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: Empty
 
-AlwaysBreakBeforeMultilineStrings: true
-AlwaysBreakTemplateDeclarations: true
+AlwaysBreakTemplateDeclarations: Yes
 
-BinPackArguments: false
 BinPackParameters: false
 
-BreakBeforeBraces: Allman
-BreakConstructorInitializersBeforeComma: true
-
 BraceWrapping:
+  AfterCaseLabel:  true
   AfterClass:      true
-  AfterControlStatement: true
+  AfterControlStatement: MultiLine
   AfterEnum:       true
   AfterFunction:   true
   AfterNamespace:  true
-  AfterObjCDeclaration: true
+  AfterObjCDeclaration: false
   AfterStruct:     true
   AfterUnion:      true
-  BeforeCatch:     true
+  AfterExternBlock: true
+  BeforeCatch:     false
   BeforeElse:      true
   IndentBraces:    false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
 BreakBeforeBraces: Custom
 
-ColumnLimit: 120
-CommentPragmas: '.*'
+ColumnLimit:     80
 
-IndentCaseLabels: false
+IndentWidth: 4
 IndentWrappedFunctionNames: true
 
-KeepEmptyLinesAtTheStartOfBlocks: false
-NamespaceIndentation: All
-
-PointerAlignment: Left
-SpaceAfterCStyleCast: false
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: ControlStatements
-SpaceInEmptyParentheses: false
-SpacesInAngles: false
-SpacesInCStyleCastParentheses: false
-SpacesInParentheses: false
-SpacesInSquareBrackets: false
-
-SortIncludes: false
-ReflowComments: true
-
-IncludeCategories:
-  - Regex:           '^".*'
-    Priority:        3
-  - Regex:           '^<.*'
-    Priority:        2
-SortIncludes: true
+Standard: c++17
