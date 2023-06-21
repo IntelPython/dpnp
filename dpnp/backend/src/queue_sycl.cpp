@@ -34,7 +34,7 @@
 #if defined(DPNP_LOCAL_QUEUE)
 sycl::queue *backend_sycl::queue = nullptr;
 #endif
-mkl_rng::mt19937 *backend_sycl::rng_engine     = nullptr;
+mkl_rng::mt19937 *backend_sycl::rng_engine = nullptr;
 mkl_rng::mcg59 *backend_sycl::rng_mcg59_engine = nullptr;
 
 static void dpnpc_show_mathlib_version()
@@ -90,7 +90,7 @@ static void show_available_sycl_devices()
 static sycl::device get_default_sycl_device()
 {
     int dpnpc_queue_gpu = 0;
-    sycl::device dev    = sycl::device(sycl::cpu_selector());
+    sycl::device dev = sycl::device(sycl::cpu_selector());
 
     const char *dpnpc_queue_gpu_var = getenv("DPNPC_QUEUE_GPU");
     if (dpnpc_queue_gpu_var != NULL) {
@@ -236,7 +236,7 @@ void backend_sycl::backend_sycl_rng_engine_init(size_t seed)
     if (rng_engine) {
         backend_sycl::destroy_rng_engine();
     }
-    rng_engine       = new mkl_rng::mt19937(DPNP_QUEUE, seed);
+    rng_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
     rng_mcg59_engine = new mkl_rng::mcg59(DPNP_QUEUE, seed);
 }
 

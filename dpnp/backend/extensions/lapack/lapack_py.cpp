@@ -34,7 +34,7 @@
 #include "syevd.hpp"
 
 namespace lapack_ext = dpnp::backend::ext::lapack;
-namespace py         = pybind11;
+namespace py = pybind11;
 
 // populate dispatch vectors
 void init_dispatch_vectors(void)

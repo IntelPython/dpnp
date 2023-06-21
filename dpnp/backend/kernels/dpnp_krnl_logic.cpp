@@ -56,7 +56,7 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     const _DataType *array_in = static_cast<const _DataType *>(array1_in);
-    bool *result              = static_cast<bool *>(result1);
+    bool *result = static_cast<bool *>(result1);
 
     auto fill_event = q.fill(result, true, 1);
 
@@ -65,7 +65,7 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
         return DPCTLEvent_Copy(event_ref);
     }
 
-    constexpr size_t lws    = 64;
+    constexpr size_t lws = 64;
     constexpr size_t vec_sz = 8;
 
     auto gws_range =
@@ -74,7 +74,7 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
     sycl::nd_range<1> gws(gws_range, lws_range);
 
     auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {
-        auto gr                = nd_it.get_group();
+        auto gr = nd_it.get_group();
         const auto max_gr_size = gr.get_max_local_range()[0];
         const size_t start =
             vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +
@@ -108,7 +108,7 @@ void dpnp_all_c(const void *array1_in, void *result1, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_all_c<_DataType, _ResultType>(
+    DPCTLSyclEventRef event_ref = dpnp_all_c<_DataType, _ResultType>(
         q_ref, array1_in, result1, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
@@ -157,7 +157,7 @@ DPCTLSyclEventRef dpnp_allclose_c(DPCTLSyclQueueRef q_ref,
     DPNPC_ptr_adapter<_ResultType> result1_ptr(q_ref, result1, 1, true, true);
     const _DataType1 *array1 = input1_ptr.get_ptr();
     const _DataType2 *array2 = input2_ptr.get_ptr();
-    _ResultType *result      = result1_ptr.get_ptr();
+    _ResultType *result = result1_ptr.get_ptr();
 
     result[0] = true;
 
@@ -251,7 +251,7 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     const _DataType *array_in = static_cast<const _DataType *>(array1_in);
-    bool *result              = static_cast<bool *>(result1);
+    bool *result = static_cast<bool *>(result1);
 
     auto fill_event = q.fill(result, false, 1);
 
@@ -260,7 +260,7 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
         return DPCTLEvent_Copy(event_ref);
     }
 
-    constexpr size_t lws    = 64;
+    constexpr size_t lws = 64;
     constexpr size_t vec_sz = 8;
 
     auto gws_range =
@@ -269,7 +269,7 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
     sycl::nd_range<1> gws(gws_range, lws_range);
 
     auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {
-        auto gr                = nd_it.get_group();
+        auto gr = nd_it.get_group();
         const auto max_gr_size = gr.get_max_local_range()[0];
         const size_t start =
             vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +
@@ -303,7 +303,7 @@ void dpnp_any_c(const void *array1_in, void *result1, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_any_c<_DataType, _ResultType>(
+    DPCTLSyclEventRef event_ref = dpnp_any_c<_DataType, _ResultType>(
         q_ref, array1_in, result1, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
@@ -440,7 +440,7 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
             return event_ref;                                                  \
         }                                                                      \
         else {                                                                 \
-            constexpr size_t lws          = 64;                                \
+            constexpr size_t lws = 64;                                         \
             constexpr unsigned int vec_sz = 8;                                 \
             constexpr sycl::access::address_space global_space =               \
                 sycl::access::address_space::global_space;                     \
@@ -450,7 +450,7 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
             auto lws_range = sycl::range<1>(lws);                              \
                                                                                \
             auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {      \
-                auto sg                = nd_it.get_sub_group();                \
+                auto sg = nd_it.get_sub_group();                               \
                 const auto max_sg_size = sg.get_max_local_range()[0];          \
                 const size_t start =                                           \
                     vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +  \
@@ -465,7 +465,7 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
                                                                                \
                     for (size_t k = 0; k < vec_sz; ++k) {                      \
                         const _DataType_input1 input1_elem = x1[k];            \
-                        res_vec[k]                         = __operation__;    \
+                        res_vec[k] = __operation__;                            \
                     }                                                          \
                     sg.store<vec_sz>(                                          \
                         sycl::multi_ptr<bool, global_space>(&result[start]),   \
@@ -474,7 +474,7 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
                 else {                                                         \
                     for (size_t k = start; k < result_size; ++k) {             \
                         const _DataType_input1 input1_elem = input1_data[k];   \
-                        result[k]                          = __operation__;    \
+                        result[k] = __operation__;                             \
                     }                                                          \
                 }                                                              \
             };                                                                 \
@@ -610,7 +610,7 @@ static void func_map_logic_1arg_1type_helper(func_map_t &fmap)
                 {                                                              \
                     const _DataType_input1 input1_elem = (*input1_it)[i];      \
                     const _DataType_input2 input2_elem = (*input2_it)[i];      \
-                    result[i]                          = __operation__;        \
+                    result[i] = __operation__;                                 \
                 }                                                              \
             };                                                                 \
             auto kernel_func = [&](sycl::handler &cgh) {                       \
@@ -708,7 +708,7 @@ static void func_map_logic_1arg_1type_helper(func_map_t &fmap)
             return event_ref;                                                  \
         }                                                                      \
         else {                                                                 \
-            constexpr size_t lws          = 64;                                \
+            constexpr size_t lws = 64;                                         \
             constexpr unsigned int vec_sz = 8;                                 \
             constexpr sycl::access::address_space global_space =               \
                 sycl::access::address_space::global_space;                     \
@@ -718,7 +718,7 @@ static void func_map_logic_1arg_1type_helper(func_map_t &fmap)
             auto lws_range = sycl::range<1>(lws);                              \
                                                                                \
             auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {      \
-                auto sg                = nd_it.get_sub_group();                \
+                auto sg = nd_it.get_sub_group();                               \
                 const auto max_sg_size = sg.get_max_local_range()[0];          \
                 const size_t start =                                           \
                     vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +  \
@@ -737,7 +737,7 @@ static void func_map_logic_1arg_1type_helper(func_map_t &fmap)
                     for (size_t k = 0; k < vec_sz; ++k) {                      \
                         const _DataType_input1 input1_elem = x1[k];            \
                         const _DataType_input2 input2_elem = x2[k];            \
-                        res_vec[k]                         = __operation__;    \
+                        res_vec[k] = __operation__;                            \
                     }                                                          \
                     sg.store<vec_sz>(                                          \
                         sycl::multi_ptr<bool, global_space>(&result[start]),   \
@@ -747,7 +747,7 @@ static void func_map_logic_1arg_1type_helper(func_map_t &fmap)
                     for (size_t k = start; k < result_size; ++k) {             \
                         const _DataType_input1 input1_elem = input1_data[k];   \
                         const _DataType_input2 input2_elem = input2_data[k];   \
-                        result[k]                          = __operation__;    \
+                        result[k] = __operation__;                             \
                     }                                                          \
                 }                                                              \
             };                                                                 \

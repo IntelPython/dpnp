@@ -26,13 +26,13 @@
 #include "verbose.hpp"
 #include <iostream>
 
-bool _is_verbose_mode      = false;
+bool _is_verbose_mode = false;
 bool _is_verbose_mode_init = false;
 
 bool is_verbose_mode()
 {
     if (!_is_verbose_mode_init) {
-        _is_verbose_mode    = false;
+        _is_verbose_mode = false;
         const char *env_var = std::getenv("DPNP_VERBOSE");
         if (env_var and env_var == std::string("1")) {
             _is_verbose_mode = true;

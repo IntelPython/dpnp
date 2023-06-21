@@ -42,8 +42,8 @@
 
 int main(int, char **)
 {
-    const size_t size        = 2097152;
-    long result              = 0;
+    const size_t size = 2097152;
+    long result = 0;
     long result_verification = 0;
 
     dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);

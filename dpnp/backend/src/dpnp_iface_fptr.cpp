@@ -55,7 +55,7 @@ DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name,
             "DPNP Error: Unsupported function call."); // TODO print Function ID
     }
 
-    const map_1p_t &type1_map             = func_it->second;
+    const map_1p_t &type1_map = func_it->second;
     map_1p_t::const_iterator type1_map_it = type1_map.find(first_type);
     if (type1_map_it == type1_map.cend()) {
         throw std::runtime_error("DPNP Error: Function ID with unsupported "
@@ -63,7 +63,7 @@ DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name,
                                                            // Function ID
     }
 
-    const map_2p_t &type2_map             = type1_map_it->second;
+    const map_2p_t &type2_map = type1_map_it->second;
     map_2p_t::const_iterator type2_map_it = type2_map.find(local_second_type);
     if (type2_map_it == type2_map.cend()) {
         throw std::runtime_error("DPNP Error: Function ID with unsupported "
@@ -99,7 +99,7 @@ void (*dpnp_dot_default_c)(void *,
 void *get_backend_function_name(const char *func_name, const char *type_name)
 {
     /** Implement it in this way to allow easier play with it */
-    const char *supported_func_name  = "dpnp_dot";
+    const char *supported_func_name = "dpnp_dot";
     const char *supported_type1_name = "double";
     const char *supported_type2_name = "float";
     const char *supported_type3_name = "long";

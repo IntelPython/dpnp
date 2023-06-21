@@ -94,7 +94,7 @@ class backend_sycl
         delete rng_engine;
         delete rng_mcg59_engine;
 
-        rng_engine       = nullptr;
+        rng_engine = nullptr;
         rng_mcg59_engine = nullptr;
     }
 
@@ -102,7 +102,7 @@ public:
     backend_sycl()
     {
 #if defined(DPNP_LOCAL_QUEUE)
-        queue      = nullptr;
+        queue = nullptr;
         rng_engine = nullptr;
 #endif
     }

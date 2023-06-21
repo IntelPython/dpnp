@@ -61,12 +61,12 @@ DPCTLSyclEventRef dpnp_argsort_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue q               = *(reinterpret_cast<sycl::queue *>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size, true);
     DPNPC_ptr_adapter<_idx_DataType> result1_ptr(q_ref, result1, size, true,
                                                  true);
-    _DataType *array_1    = input1_ptr.get_ptr();
+    _DataType *array_1 = input1_ptr.get_ptr();
     _idx_DataType *result = result1_ptr.get_ptr();
 
     std::iota(result, result + size, 0);
@@ -154,7 +154,7 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
 
     const size_t size = std::accumulate(shape_, shape_ + ndim, 1,
                                         std::multiplies<shape_elem_type>());
-    size_t size_      = size / shape_[ndim - 1];
+    size_t size_ = size / shape_[ndim - 1];
 
     if (size_ == 0) {
         return event_ref;
@@ -164,7 +164,7 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
 
     if (ndim == 1) // 1d array with C-contiguous data
     {
-        _DataType *arr    = static_cast<_DataType *>(array1_in);
+        _DataType *arr = static_cast<_DataType *>(array1_in);
         _DataType *result = static_cast<_DataType *>(result1);
 
         auto policy = oneapi::dpl::execution::make_device_policy<
@@ -185,8 +185,8 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size, true);
     DPNPC_ptr_adapter<_DataType> input2_ptr(q_ref, array2_in, size, true);
     DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result1, size, true, true);
-    _DataType *arr    = input1_ptr.get_ptr();
-    _DataType *arr2   = input2_ptr.get_ptr();
+    _DataType *arr = input1_ptr.get_ptr();
+    _DataType *arr2 = input2_ptr.get_ptr();
     _DataType *result = result1_ptr.get_ptr();
 
     auto arr_to_result_event = q.memcpy(result, arr, size * sizeof(_DataType));
@@ -194,18 +194,18 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
 
     for (size_t i = 0; i < size_; ++i) {
         size_t ind_begin = i * shape_[ndim - 1];
-        size_t ind_end   = (i + 1) * shape_[ndim - 1] - 1;
+        size_t ind_end = (i + 1) * shape_[ndim - 1] - 1;
 
         _DataType matrix[shape_[ndim - 1]];
         for (size_t j = ind_begin; j < ind_end + 1; ++j) {
-            size_t ind  = j - ind_begin;
+            size_t ind = j - ind_begin;
             matrix[ind] = arr2[j];
         }
         std::partial_sort(matrix, matrix + shape_[ndim - 1],
                           matrix + shape_[ndim - 1], dpnp_less_comp());
         for (size_t j = ind_begin; j < ind_end + 1; ++j) {
             size_t ind = j - ind_begin;
-            arr2[j]    = matrix[ind];
+            arr2[j] = matrix[ind];
         }
     }
 
@@ -318,8 +318,8 @@ DPCTLSyclEventRef
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, arr_size);
     DPNPC_ptr_adapter<_DataType> input2_ptr(q_ref, v1_in, v_size);
-    const _DataType *arr  = input1_ptr.get_ptr();
-    const _DataType *v    = input2_ptr.get_ptr();
+    const _DataType *arr = input1_ptr.get_ptr();
+    const _DataType *v = input2_ptr.get_ptr();
     _IndexingType *result = reinterpret_cast<_IndexingType *>(result1);
 
     sycl::range<2> gws(v_size, arr_size);
@@ -434,12 +434,12 @@ DPCTLSyclEventRef dpnp_sort_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue q               = *(reinterpret_cast<sycl::queue *>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size, true);
     DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result1, size, true, true);
     _DataType *array_1 = input1_ptr.get_ptr();
-    _DataType *result  = result1_ptr.get_ptr();
+    _DataType *result = result1_ptr.get_ptr();
 
     std::copy(array_1, array_1 + size, result);
 
@@ -460,7 +460,7 @@ void dpnp_sort_c(void *array1_in, void *result1, size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_sort_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_sort_c<_DataType>(
         q_ref, array1_in, result1, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);

@@ -85,7 +85,7 @@ TEST_P(IteratorBroadcasting, sycl_broadcast)
 
     const IteratorParameters &param = GetParam();
     const dpnpc_index_t result_size = param.result.size();
-    data_type *result               = reinterpret_cast<data_type *>(
+    data_type *result = reinterpret_cast<data_type *>(
         dpnp_memory_alloc_c(result_size * sizeof(data_type)));
 
     std::vector<data_type> input_data =
@@ -106,7 +106,7 @@ TEST_P(IteratorBroadcasting, sycl_broadcast)
     sycl::range<1> gws(result_size);
     auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         const size_t idx = global_id[0];
-        result[idx]      = (*input_it)[idx];
+        result[idx] = (*input_it)[idx];
     };
 
     auto kernel_func = [&](sycl::handler &cgh) {

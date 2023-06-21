@@ -39,7 +39,7 @@ template <typename _DataType>
 _DataType *get_array_ptr(const void *__array)
 {
     void *const_ptr = const_cast<void *>(__array);
-    _DataType *ptr  = reinterpret_cast<_DataType *>(const_ptr);
+    _DataType *ptr = reinterpret_cast<_DataType *>(const_ptr);
 
     return ptr;
 }
@@ -93,12 +93,12 @@ DPCTLSyclEventRef
 
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(q_ref, input_in, input_size,
                                                   true);
-    _DataType_input *input   = input1_ptr.get_ptr();
+    _DataType_input *input = input1_ptr.get_ptr();
     _DataType_output *result = get_array_ptr<_DataType_output>(result_out);
 
     if (!input_shape && !input_shape_ndim) { // it is a scalar
         // result[0] = input[0];
-        _DataType_input input_elem   = 0;
+        _DataType_input input_elem = 0;
         _DataType_output result_elem = 0;
         q.memcpy(&input_elem, input, sizeof(_DataType_input)).wait();
         result_elem = input_elem;
@@ -131,7 +131,7 @@ DPCTLSyclEventRef
     input_it.set_axes(axes, axes_ndim);
 
     const size_t output_size = input_it.get_output_size();
-    auto policy              = oneapi::dpl::execution::make_device_policy<
+    auto policy = oneapi::dpl::execution::make_device_policy<
         dpnp_sum_c_kernel<_DataType_output, _DataType_input>>(q);
     for (size_t output_id = 0; output_id < output_size; ++output_id) {
         // type of "init" determine internal algorithm accumulator type
@@ -228,12 +228,12 @@ DPCTLSyclEventRef
 
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(q_ref, input_in, input_size,
                                                   true);
-    _DataType_input *input   = input1_ptr.get_ptr();
+    _DataType_input *input = input1_ptr.get_ptr();
     _DataType_output *result = get_array_ptr<_DataType_output>(result_out);
 
     if (!input_shape && !input_shape_ndim) { // it is a scalar
         // result[0] = input[0];
-        _DataType_input input_elem   = 0;
+        _DataType_input input_elem = 0;
         _DataType_output result_elem = 0;
         q.memcpy(&input_elem, input, sizeof(_DataType_input)).wait();
         result_elem = input_elem;
@@ -247,7 +247,7 @@ DPCTLSyclEventRef
     input_it.set_axes(axes, axes_ndim);
 
     const size_t output_size = input_it.get_output_size();
-    auto policy              = oneapi::dpl::execution::make_device_policy<
+    auto policy = oneapi::dpl::execution::make_device_policy<
         dpnp_prod_c_kernel<_DataType_output, _DataType_input>>(q);
     for (size_t output_id = 0; output_id < output_size; ++output_id) {
         // type of "init" determine internal algorithm accumulator type

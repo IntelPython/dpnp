@@ -33,9 +33,9 @@
 #include "queue_sycl.hpp"
 #include <dpnp_iface.hpp>
 
-namespace mkl_blas    = oneapi::mkl::blas;
+namespace mkl_blas = oneapi::mkl::blas;
 namespace mkl_blas_rm = oneapi::mkl::blas::row_major;
-namespace mkl_lapack  = oneapi::mkl::lapack;
+namespace mkl_lapack = oneapi::mkl::lapack;
 
 template <typename _DataType, typename _ResultType>
 class dpnp_astype_c_kernel;
@@ -57,7 +57,7 @@ DPCTLSyclEventRef dpnp_astype_c(DPCTLSyclQueueRef q_ref,
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
     const _DataType *array_in = input1_ptr.get_ptr();
-    _ResultType *result       = reinterpret_cast<_ResultType *>(result1);
+    _ResultType *result = reinterpret_cast<_ResultType *>(result1);
 
     if ((array_in == nullptr) || (result == nullptr)) {
         return event_ref;
@@ -69,7 +69,7 @@ DPCTLSyclEventRef dpnp_astype_c(DPCTLSyclQueueRef q_ref,
 
     sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
-        size_t i  = global_id[0];
+        size_t i = global_id[0];
         result[i] = array_in[i];
     };
 
@@ -168,7 +168,7 @@ sycl::event dot(sycl::queue &queue,
 
         auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
             const size_t index = global_id[0];
-            local_mem[index]   = input1_in[index * input1_strides] *
+            local_mem[index] = input1_in[index * input1_strides] *
                                input2_in[index * input2_strides];
         };
 
@@ -225,7 +225,7 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue q               = *(reinterpret_cast<sycl::queue *>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     DPNPC_ptr_adapter<_DataType_input1> input1_ptr(q_ref, input1_in,
                                                    input1_size);
@@ -264,33 +264,33 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
     }
 
     // 1D vector
-    size_t ext_input1_ndim              = input1_ndim == 1 ? 2 : input1_ndim;
-    shape_elem_type *ext_input1_shape   = new shape_elem_type[ext_input1_ndim];
+    size_t ext_input1_ndim = input1_ndim == 1 ? 2 : input1_ndim;
+    shape_elem_type *ext_input1_shape = new shape_elem_type[ext_input1_ndim];
     shape_elem_type *ext_input1_strides = new shape_elem_type[ext_input1_ndim];
     if (input1_ndim == 1) {
-        ext_input1_shape[0]   = 1;
-        ext_input1_shape[1]   = input1_shape[0];
+        ext_input1_shape[0] = 1;
+        ext_input1_shape[1] = input1_shape[0];
         ext_input1_strides[0] = 0;
         ext_input1_strides[1] = input1_strides[0];
     }
     else {
         for (size_t i = 0; i < ext_input1_ndim; ++i) {
-            ext_input1_shape[i]   = input1_shape[i];
+            ext_input1_shape[i] = input1_shape[i];
             ext_input1_strides[i] = input1_strides[i];
         }
     }
-    size_t ext_input2_ndim              = input2_ndim == 1 ? 2 : input2_ndim;
-    shape_elem_type *ext_input2_shape   = new shape_elem_type[ext_input2_ndim];
+    size_t ext_input2_ndim = input2_ndim == 1 ? 2 : input2_ndim;
+    shape_elem_type *ext_input2_shape = new shape_elem_type[ext_input2_ndim];
     shape_elem_type *ext_input2_strides = new shape_elem_type[ext_input2_ndim];
     if (input2_ndim == 1) {
-        ext_input2_shape[0]   = input2_shape[0];
-        ext_input2_shape[1]   = 1;
+        ext_input2_shape[0] = input2_shape[0];
+        ext_input2_shape[1] = 1;
         ext_input2_strides[0] = input2_strides[0];
         ext_input2_strides[1] = 0;
     }
     else {
         for (size_t i = 0; i < ext_input2_ndim; ++i) {
-            ext_input2_shape[i]   = input2_shape[i];
+            ext_input2_shape[i] = input2_shape[i];
             ext_input2_strides[i] = input2_strides[i];
         }
     }
@@ -397,11 +397,11 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
     std::vector<sycl::event> dot_events;
     dot_events.reserve(result_size);
 
-    size_t dot_st1  = ext_input1_strides[ext_input1_ndim - 1];
-    size_t dot_st2  = ext_input2_strides[ext_input2_ndim - 2];
+    size_t dot_st1 = ext_input1_strides[ext_input1_ndim - 1];
+    size_t dot_st2 = ext_input2_strides[ext_input2_ndim - 2];
     size_t dot_size = ext_input1_shape[ext_input1_ndim - 1];
 
-    shape_elem_type *res_coords     = new shape_elem_type[ext_result_ndim];
+    shape_elem_type *res_coords = new shape_elem_type[ext_result_ndim];
     shape_elem_type *result_offsets = new shape_elem_type[ext_result_ndim];
     get_shape_offsets_inkernel(ext_result_shape, ext_result_ndim,
                                result_offsets);
@@ -545,7 +545,7 @@ DPCTLSyclEventRef dpnp_eig_c(DPCTLSyclQueueRef q_ref,
                                                true);
     DPNPC_ptr_adapter<_ResultType> result2_ptr(q_ref, result2, size * size,
                                                true, true);
-    const _DataType *array  = input1_ptr.get_ptr();
+    const _DataType *array = input1_ptr.get_ptr();
     _ResultType *result_val = result1_ptr.get_ptr();
     _ResultType *result_vec = result2_ptr.get_ptr();
 
@@ -613,7 +613,7 @@ void dpnp_eig_c(const void *array_in, void *result1, void *result2, size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_eig_c<_DataType, _ResultType>(
+    DPCTLSyclEventRef event_ref = dpnp_eig_c<_DataType, _ResultType>(
         q_ref, array_in, result1, result2, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
@@ -660,7 +660,7 @@ DPCTLSyclEventRef dpnp_eigvals_c(DPCTLSyclQueueRef q_ref,
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array_in, size * size, true);
     DPNPC_ptr_adapter<_ResultType> result1_ptr(q_ref, result1, size, true,
                                                true);
-    const _DataType *array  = input1_ptr.get_ptr();
+    const _DataType *array = input1_ptr.get_ptr();
     _ResultType *result_val = result1_ptr.get_ptr();
 
     double *result_val_kern = reinterpret_cast<double *>(
@@ -750,7 +750,7 @@ DPCTLSyclEventRef dpnp_initval_c(DPCTLSyclQueueRef q_ref,
     validate_type_for_device<_DataType>(q);
 
     auto event = q.fill<_DataType>(result, val, size);
-    event_ref  = reinterpret_cast<DPCTLSyclEventRef>(&event);
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
     return DPCTLEvent_Copy(event_ref);
 }
@@ -760,7 +760,7 @@ void dpnp_initval_c(void *result1, void *value, size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_initval_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_initval_c<_DataType>(
         q_ref, result1, value, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
@@ -873,7 +873,7 @@ DPCTLSyclEventRef dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
                         acc += array_1[index_1] * array_2[index_2];
                     }
                     const size_t index_result = i * dim_n + j;
-                    result[index_result]      = acc;
+                    result[index_result] = acc;
                 }
             }
         };
@@ -911,7 +911,7 @@ void dpnp_matmul_c(void *result_out,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_matmul_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_matmul_c<_DataType>(
         q_ref, result_out, result_size, result_ndim, result_shape,
         result_strides, input1_in, input1_size, input1_ndim, input1_shape,
         input1_strides, input2_in, input2_size, input2_ndim, input2_shape,

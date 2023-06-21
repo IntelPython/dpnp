@@ -3,7 +3,6 @@ BasedOnStyle: LLVM
 AccessModifierOffset: -4
 
 AlignConsecutiveMacros: true
-AlignConsecutiveAssignments: true
 AlignConsecutiveBitFields: true
 AlignEscapedNewlines: Right
 

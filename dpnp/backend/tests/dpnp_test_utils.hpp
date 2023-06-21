@@ -4,7 +4,7 @@
 #include "dpnp_iterator.hpp"
 
 using namespace std;
-using dpnpc_it_t    = DPNPC_id<size_t>::iterator;
+using dpnpc_it_t = DPNPC_id<size_t>::iterator;
 using dpnpc_value_t = dpnpc_it_t::value_type;
 using dpnpc_index_t = dpnpc_it_t::size_type;
 

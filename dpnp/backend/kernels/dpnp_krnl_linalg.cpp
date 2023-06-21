@@ -32,7 +32,7 @@
 #include "queue_sycl.hpp"
 #include <dpnp_iface.hpp>
 
-namespace mkl_blas   = oneapi::mkl::blas::row_major;
+namespace mkl_blas = oneapi::mkl::blas::row_major;
 namespace mkl_lapack = oneapi::mkl::lapack;
 
 template <typename _DataType>
@@ -47,14 +47,14 @@ DPCTLSyclEventRef dpnp_cholesky_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue q               = *(reinterpret_cast<sycl::queue *>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     sycl::event event;
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size, true);
     DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result1, size, true, true);
     _DataType *in_array = input1_ptr.get_ptr();
-    _DataType *result   = result_ptr.get_ptr();
+    _DataType *result = result_ptr.get_ptr();
 
     size_t iters = size / (data_size * data_size);
 
@@ -115,7 +115,7 @@ void dpnp_cholesky_c(void *array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_cholesky_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_cholesky_c<_DataType>(
         q_ref, array1_in, result1, size, data_size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
@@ -155,7 +155,7 @@ DPCTLSyclEventRef dpnp_det_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
-    size_t n        = shape[ndim - 1];
+    size_t n = shape[ndim - 1];
     size_t size_out = 1;
     if (ndim != 2) {
         for (size_t i = 0; i < ndim - 2; i++) {
@@ -167,7 +167,7 @@ DPCTLSyclEventRef dpnp_det_c(DPCTLSyclQueueRef q_ref,
     DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result1, size_out, true,
                                             true);
     _DataType *array_1 = input1_ptr.get_ptr();
-    _DataType *result  = result_ptr.get_ptr();
+    _DataType *result = result_ptr.get_ptr();
 
     for (size_t i = 0; i < size_out; i++) {
         _DataType matrix[n][n];
@@ -197,7 +197,7 @@ DPCTLSyclEventRef dpnp_det_c(DPCTLSyclQueueRef q_ref,
                 for (size_t j = l; j < n; j++) {
                     if (matrix[j][l] != 0) {
                         for (size_t k = l; k < n; k++) {
-                            _DataType c  = matrix[l][k];
+                            _DataType c = matrix[l][k];
                             matrix[l][k] = -1 * matrix[j][k];
                             matrix[j][k] = c;
                         }
@@ -238,7 +238,7 @@ void dpnp_det_c(void *array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_det_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_det_c<_DataType>(
         q_ref, array1_in, result1, shape, ndim, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
@@ -283,7 +283,7 @@ DPCTLSyclEventRef dpnp_inv_c(DPCTLSyclQueueRef q_ref,
     DPNPC_ptr_adapter<_ResultType> result_ptr(q_ref, result1, input_size, true,
                                               true);
 
-    _DataType *array_1  = input1_ptr.get_ptr();
+    _DataType *array_1 = input1_ptr.get_ptr();
     _ResultType *result = result_ptr.get_ptr();
 
     size_t n = shape[0];
@@ -308,10 +308,10 @@ DPCTLSyclEventRef dpnp_inv_c(DPCTLSyclQueueRef q_ref,
             for (size_t i = k; i < n; ++i) {
                 if (a_arr[i][k] != 0) {
                     for (size_t j = 0; j < n; ++j) {
-                        float c     = a_arr[k][j];
+                        float c = a_arr[k][j];
                         a_arr[k][j] = a_arr[i][j];
                         a_arr[i][j] = c;
-                        float c_e   = e_arr[k][j];
+                        float c_e = e_arr[k][j];
                         e_arr[k][j] = e_arr[i][j];
                         e_arr[i][j] = c_e;
                     }
@@ -366,7 +366,7 @@ void dpnp_inv_c(void *array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_inv_c<_DataType, _ResultType>(
+    DPCTLSyclEventRef event_ref = dpnp_inv_c<_DataType, _ResultType>(
         q_ref, array1_in, result1, shape, ndim, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
@@ -420,8 +420,8 @@ DPCTLSyclEventRef dpnp_kron_c(DPCTLSyclQueueRef q_ref,
     DPNPC_ptr_adapter<_DataType2> input2_ptr(q_ref, array2_in, input2_size);
     DPNPC_ptr_adapter<_ResultType> result_ptr(q_ref, result1, result_size);
 
-    _DataType1 *array1  = input1_ptr.get_ptr();
-    _DataType2 *array2  = input2_ptr.get_ptr();
+    _DataType1 *array1 = input1_ptr.get_ptr();
+    _DataType2 *array2 = input2_ptr.get_ptr();
     _ResultType *result = result_ptr.get_ptr();
 
     shape_elem_type *_in1_shape = reinterpret_cast<shape_elem_type *>(
@@ -447,12 +447,12 @@ DPCTLSyclEventRef dpnp_kron_c(DPCTLSyclQueueRef q_ref,
     auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         const size_t idx = global_id[0];
 
-        size_t idx1     = 0;
-        size_t idx2     = 0;
+        size_t idx1 = 0;
+        size_t idx2 = 0;
         size_t reminder = idx;
         for (size_t axis = 0; axis < ndim; ++axis) {
             const size_t res_axis = reminder / res_offsets[axis];
-            reminder              = reminder - res_axis * res_offsets[axis];
+            reminder = reminder - res_axis * res_offsets[axis];
 
             const size_t in1_axis = res_axis / _in2_shape[axis];
             const size_t in2_axis = res_axis - in1_axis * _in2_shape[axis];
@@ -543,7 +543,7 @@ DPCTLSyclEventRef
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, input_size, true);
     DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result1, 1, true, true);
     _DataType *array_1 = input1_ptr.get_ptr();
-    _DataType *result  = result_ptr.get_ptr();
+    _DataType *result = result_ptr.get_ptr();
 
     shape_elem_type elems = 1;
     if (ndim > 1) {
@@ -576,7 +576,7 @@ void dpnp_matrix_rank_c(void *array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_matrix_rank_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_matrix_rank_c<_DataType>(
         q_ref, array1_in, result1, shape, ndim, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
@@ -609,7 +609,7 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue q               = *(reinterpret_cast<sycl::queue *>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     sycl::event event;
 
@@ -637,7 +637,7 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
                                               true, true);
     _ComputeDT *res_q = result1_ptr.get_ptr();
     _ComputeDT *res_r = result2_ptr.get_ptr();
-    _ComputeDT *tau   = result3_ptr.get_ptr();
+    _ComputeDT *tau = result3_ptr.get_ptr();
 
     const std::int64_t lda = size_m;
 
@@ -715,7 +715,7 @@ void dpnp_qr_c(void *array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_qr_c<_InputDT, _ComputeDT>(
+    DPCTLSyclEventRef event_ref = dpnp_qr_c<_InputDT, _ComputeDT>(
         q_ref, array1_in, result1, result2, result3, size_m, size_n,
         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
@@ -751,7 +751,7 @@ DPCTLSyclEventRef dpnp_svd_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue q               = *(reinterpret_cast<sycl::queue *>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     sycl::event event;
 
@@ -774,15 +774,15 @@ DPCTLSyclEventRef dpnp_svd_c(DPCTLSyclQueueRef q_ref,
                                          std::min(size_m, size_n), true, true);
     DPNPC_ptr_adapter<_ComputeDT> result3_ptr(q_ref, result3, size_n * size_n,
                                               true, true);
-    _ComputeDT *res_u  = result1_ptr.get_ptr();
-    _SVDT *res_s       = result2_ptr.get_ptr();
+    _ComputeDT *res_u = result1_ptr.get_ptr();
+    _SVDT *res_s = result2_ptr.get_ptr();
     _ComputeDT *res_vt = result3_ptr.get_ptr();
 
     const std::int64_t m = size_m;
     const std::int64_t n = size_n;
 
-    const std::int64_t lda  = std::max<size_t>(1UL, n);
-    const std::int64_t ldu  = std::max<size_t>(1UL, m);
+    const std::int64_t lda = std::max<size_t>(1UL, n);
+    const std::int64_t ldu = std::max<size_t>(1UL, m);
     const std::int64_t ldvt = std::max<size_t>(1UL, n);
 
     const std::int64_t scratchpad_size =

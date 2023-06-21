@@ -49,23 +49,23 @@ void black_scholes(double *price,
                    double *put,
                    const size_t size)
 {
-    const size_t ndim        = 1;
+    const size_t ndim = 1;
     const size_t scalar_size = 1;
 
     double *mr = (double *)dpnp_memory_alloc_c(1 * sizeof(double));
-    mr[0]      = -rate;
+    mr[0] = -rate;
 
     double *vol_vol_two = (double *)dpnp_memory_alloc_c(1 * sizeof(double));
-    vol_vol_two[0]      = vol * vol * 2;
+    vol_vol_two[0] = vol * vol * 2;
 
     double *quarter = (double *)dpnp_memory_alloc_c(1 * sizeof(double));
-    quarter[0]      = 0.25;
+    quarter[0] = 0.25;
 
     double *one = (double *)dpnp_memory_alloc_c(1 * sizeof(double));
-    one[0]      = 1.;
+    one[0] = 1.;
 
     double *half = (double *)dpnp_memory_alloc_c(1 * sizeof(double));
-    half[0]      = 0.5;
+    half[0] = 0.5;
 
     double *P = price;
     double *S = strike;
@@ -226,15 +226,15 @@ int main(int, char **)
     const long PL = 10, PH = 50;
     const long SL = 10, SH = 50;
     const long TL = 1, TH = 2;
-    const double RISK_FREE  = 0.1;
+    const double RISK_FREE = 0.1;
     const double VOLATILITY = 0.2;
 
     dpnp_queue_initialize_c(QueueOptions::GPU_SELECTOR);
     std::cout << "SYCL queue is CPU: " << dpnp_queue_is_cpu_c() << std::endl;
 
-    double *price  = (double *)dpnp_memory_alloc_c(SIZE * sizeof(double));
+    double *price = (double *)dpnp_memory_alloc_c(SIZE * sizeof(double));
     double *strike = (double *)dpnp_memory_alloc_c(SIZE * sizeof(double));
-    double *t      = (double *)dpnp_memory_alloc_c(SIZE * sizeof(double));
+    double *t = (double *)dpnp_memory_alloc_c(SIZE * sizeof(double));
 
     dpnp_rng_srand_c(SEED); // np.random.seed(SEED)
     dpnp_rng_uniform_c<double>(price, PL, PH,
@@ -245,13 +245,13 @@ int main(int, char **)
                                SIZE); // np.random.uniform(TL, TH, SIZE)
 
     double *zero = (double *)dpnp_memory_alloc_c(1 * sizeof(double));
-    zero[0]      = 0.;
+    zero[0] = 0.;
 
     double *mone = (double *)dpnp_memory_alloc_c(1 * sizeof(double));
-    mone[0]      = -1.;
+    mone[0] = -1.;
 
     double *call = (double *)dpnp_memory_alloc_c(SIZE * sizeof(double));
-    double *put  = (double *)dpnp_memory_alloc_c(SIZE * sizeof(double));
+    double *put = (double *)dpnp_memory_alloc_c(SIZE * sizeof(double));
 
     dpnp_full_c<double>(zero, call, SIZE); // np.full(SIZE, 0., dtype=DTYPE)
     dpnp_full_c<double>(mone, put, SIZE);  // np.full(SIZE, -1., dtype=DTYPE)

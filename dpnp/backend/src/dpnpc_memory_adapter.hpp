@@ -65,16 +65,16 @@ public:
     DPNPC_ptr_adapter(DPCTLSyclQueueRef q_ref,
                       const void *src_ptr,
                       const size_t size,
-                      bool target_no_sycl    = false,
+                      bool target_no_sycl = false,
                       bool copy_back_request = false)
     {
-        queue_ref       = q_ref;
-        queue           = *(reinterpret_cast<sycl::queue *>(queue_ref));
+        queue_ref = q_ref;
+        queue = *(reinterpret_cast<sycl::queue *>(queue_ref));
         target_no_queue = target_no_sycl;
-        copy_back       = copy_back_request;
-        orig_ptr        = const_cast<void *>(src_ptr);
-        size_in_bytes   = size * sizeof(_DataType);
-        deps            = std::vector<sycl::event>{};
+        copy_back = copy_back_request;
+        orig_ptr = const_cast<void *>(src_ptr);
+        size_in_bytes = size * sizeof(_DataType);
+        deps = std::vector<sycl::event>{};
 
         // enum class alloc { host = 0, device = 1, shared = 2, unknown = 3 };
         sycl::usm::alloc src_ptr_type = sycl::usm::alloc::unknown;

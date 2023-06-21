@@ -48,18 +48,18 @@ template <typename _Tp>
 class DPNP_USM_iterator final
 {
 public:
-    using value_type        = _Tp;
-    using difference_type   = std::ptrdiff_t;
+    using value_type = _Tp;
+    using difference_type = std::ptrdiff_t;
     using iterator_category = std::random_access_iterator_tag;
-    using pointer           = value_type *;
-    using reference         = value_type &;
-    using size_type         = shape_elem_type;
+    using pointer = value_type *;
+    using reference = value_type &;
+    using size_type = shape_elem_type;
 
     DPNP_USM_iterator(pointer __base_ptr,
                       size_type __id,
                       const size_type *__shape_stride = nullptr,
-                      const size_type *__axes_stride  = nullptr,
-                      size_type __shape_size          = 0)
+                      const size_type *__axes_stride = nullptr,
+                      size_type __shape_size = 0)
         : base(__base_ptr), iter_id(__id), iteration_shape_size(__shape_size),
           iteration_shape_strides(__shape_stride),
           axes_shape_strides(__axes_stride)
@@ -164,7 +164,7 @@ private:
             for (size_t it = 0; it < static_cast<size_t>(iteration_shape_size);
                  ++it) {
                 const size_type axis_val = iteration_shape_strides[it];
-                size_type xyz_id         = reminder / axis_val;
+                size_type xyz_id = reminder / axis_val;
                 offset += (xyz_id * axes_shape_strides[it]);
 
                 reminder = reminder % axis_val;
@@ -184,7 +184,7 @@ private:
         size_type{}; /**< Number of elements in @ref iteration_shape_strides
                         array */
     const size_type *iteration_shape_strides = nullptr;
-    const size_type *axes_shape_strides      = nullptr;
+    const size_type *axes_shape_strides = nullptr;
 };
 
 /**
@@ -200,10 +200,10 @@ class DPNPC_id final
 {
 public:
     using value_type = _Tp;
-    using iterator   = DPNP_USM_iterator<value_type>;
-    using pointer    = value_type *;
-    using reference  = value_type &;
-    using size_type  = shape_elem_type;
+    using iterator = DPNP_USM_iterator<value_type>;
+    using pointer = value_type *;
+    using reference = value_type &;
+    using size_type = shape_elem_type;
 
     DPNPC_id(DPCTLSyclQueueRef q_ref,
              pointer __ptr,
@@ -409,7 +409,7 @@ public:
             free_iteration_memory();
             free_output_memory();
 
-            axes     = get_validated_axes(__axes, input_shape_size);
+            axes = get_validated_axes(__axes, input_shape_size);
             axis_use = true;
 
             output_shape_size = input_shape_size - axes.size();
@@ -501,8 +501,8 @@ private:
         }
 
         if (__ptr != nullptr) {
-            data        = __ptr;
-            input_size  = 1; // means scalar at this stage
+            data = __ptr;
+            input_size = 1;  // means scalar at this stage
             output_size = 1; // if input size is not zero it means we have
                              // scalar as output
             iteration_size = 1;
@@ -542,8 +542,8 @@ private:
         }
 
         if (__ptr != nullptr) {
-            data        = __ptr;
-            input_size  = 1; // means scalar at this stage
+            data = __ptr;
+            input_size = 1;  // means scalar at this stage
             output_size = 1; // if input size is not zero it means we have
                              // scalar as output
             iteration_size = 1;
@@ -637,17 +637,17 @@ private:
 
     void free_input_memory()
     {
-        input_size       = size_type{};
+        input_size = size_type{};
         input_shape_size = size_type{};
         dpnp_memory_free_c(queue_ref, input_shape);
         dpnp_memory_free_c(queue_ref, input_shape_strides);
-        input_shape         = nullptr;
+        input_shape = nullptr;
         input_shape_strides = nullptr;
     }
 
     void free_iteration_memory()
     {
-        iteration_size       = size_type{};
+        iteration_size = size_type{};
         iteration_shape_size = size_type{};
         dpnp_memory_free_c(queue_ref, iteration_shape_strides);
         iteration_shape_strides = nullptr;
@@ -655,11 +655,11 @@ private:
 
     void free_output_memory()
     {
-        output_size       = size_type{};
+        output_size = size_type{};
         output_shape_size = size_type{};
         dpnp_memory_free_c(queue_ref, output_shape);
         dpnp_memory_free_c(queue_ref, output_shape_strides);
-        output_shape         = nullptr;
+        output_shape = nullptr;
         output_shape_strides = nullptr;
     }
 
@@ -674,9 +674,9 @@ private:
 
     DPCTLSyclQueueRef queue_ref = nullptr; /**< reference to SYCL queue */
 
-    pointer data               = nullptr;     /**< input array begin pointer */
-    size_type input_size       = size_type{}; /**< input array size */
-    size_type *input_shape     = nullptr;     /**< input array shape */
+    pointer data = nullptr;                   /**< input array begin pointer */
+    size_type input_size = size_type{};       /**< input array size */
+    size_type *input_shape = nullptr;         /**< input array shape */
     size_type input_shape_size = size_type{}; /**< input array shape size */
     size_type *input_shape_strides =
         nullptr; /**< input array shape strides (same size as input_shape) */
@@ -691,16 +691,16 @@ private:
 
     size_type output_size =
         size_type{}; /**< output array size. Expected is same as GWS */
-    size_type *output_shape     = nullptr;     /**< output array shape */
+    size_type *output_shape = nullptr;         /**< output array shape */
     size_type output_shape_size = size_type{}; /**< output array shape size */
     size_type *output_shape_strides =
         nullptr; /**< output array shape strides (same size as output_shape) */
 
     size_type iteration_size =
         size_type{}; /**< iteration array size in elements */
-    size_type iteration_shape_size     = size_type{};
+    size_type iteration_shape_size = size_type{};
     size_type *iteration_shape_strides = nullptr;
-    size_type *axes_shape_strides      = nullptr;
+    size_type *axes_shape_strides = nullptr;
 };
 
 #endif // DPNP_ITERATOR_H

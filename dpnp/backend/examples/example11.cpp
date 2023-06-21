@@ -55,12 +55,12 @@ int main(int, char **)
     // 1) array size = 100, ndim = 1, high_dim_size = 10 (aka ndarray with shape
     // (100,) ) 2) array size = 100, ndim = 2, high_dim_size = 20 (e.g. ndarray
     // with shape (20, 5) and len(array) = 20 )
-    const size_t ndim_cases                = 2;
-    const size_t itemsize                  = sizeof(double);
-    const size_t ndim[ndim_cases]          = {1, 2};
+    const size_t ndim_cases = 2;
+    const size_t itemsize = sizeof(double);
+    const size_t ndim[ndim_cases] = {1, 2};
     const size_t high_dim_size[ndim_cases] = {100, 20};
-    const size_t size                      = 100;
-    const size_t seed                      = 1234;
+    const size_t size = 100;
+    const size_t seed = 1234;
 
     // DPNPC dpnp_rng_shuffle_c
     // DPNPC interface

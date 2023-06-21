@@ -76,7 +76,7 @@ protected:
 
 double *RandomTestCase::result1 = nullptr;
 double *RandomTestCase::result2 = nullptr;
-size_t RandomTestCase::size     = 10;
+size_t RandomTestCase::size = 10;
 
 template <typename _DataType>
 bool check_statistics(_DataType *r,
@@ -92,7 +92,7 @@ bool check_statistics(_DataType *r,
     double DeltaM, DeltaD;
 
     /***** Sample moments *****/
-    sum  = 0.0;
+    sum = 0.0;
     sum2 = 0.0;
     for (size_t i = 0; i < size; i++) {
         sum += (double)r[i];
@@ -102,9 +102,9 @@ bool check_statistics(_DataType *r,
     sD = sum2 / (double)size - (sM * sM);
 
     /***** Comparison of theoretical and sample moments *****/
-    n   = (double)size;
+    n = (double)size;
     tD2 = tD * tD;
-    s   = ((tQ - tD2) / n) - (2 * (tQ - 2 * tD2) / (n * n)) +
+    s = ((tQ - tD2) / n) - (2 * (tQ - 2 * tD2) / (n * n)) +
         ((tQ - 3 * tD2) / (n * n * n));
 
     DeltaM = (tM - sM) / sqrt(tD / n);
@@ -118,8 +118,8 @@ bool check_statistics(_DataType *r,
 TEST_F(RandomTestCase, rng_beta_test_seed)
 {
     const size_t seed = 10;
-    const double a    = 0.4;
-    const double b    = 0.5;
+    const double a = 0.4;
+    const double b = 0.5;
 
     dpnp_rng_srand_c(seed);
     dpnp_rng_beta_c<double>(result1, a, b, size);
@@ -134,7 +134,7 @@ TEST_F(RandomTestCase, rng_beta_test_seed)
 
 TEST_F(RandomTestCase, rng_f_test_seed)
 {
-    const size_t seed  = 10;
+    const size_t seed = 10;
     const double dfnum = 10.4;
     const double dfden = 12.5;
 
@@ -151,8 +151,8 @@ TEST_F(RandomTestCase, rng_f_test_seed)
 
 TEST_F(RandomTestCase, rng_normal_test_seed)
 {
-    const size_t seed  = 10;
-    const double loc   = 2.56;
+    const size_t seed = 10;
+    const double loc = 2.56;
     const double scale = 0.8;
 
     dpnp_rng_srand_c(seed);
@@ -169,8 +169,8 @@ TEST_F(RandomTestCase, rng_normal_test_seed)
 TEST_F(RandomTestCase, rng_uniform_test_seed)
 {
     const size_t seed = 10;
-    const long low    = 1;
-    const long high   = 120;
+    const long low = 1;
+    const long high = 120;
 
     dpnp_rng_srand_c(seed);
     dpnp_rng_uniform_c<double>(result1, low, high, size);
@@ -185,10 +185,10 @@ TEST_F(RandomTestCase, rng_uniform_test_seed)
 
 TEST(TestBackendRandomUniform, test_statistics)
 {
-    const size_t size         = 256;
-    size_t seed               = 10;
-    long a                    = 1;
-    long b                    = 120;
+    const size_t size = 256;
+    size_t seed = 10;
+    long a = 1;
+    long b = 120;
     bool check_statistics_res = false;
 
     /***** Theoretical moments *****/
@@ -208,7 +208,7 @@ TEST(TestBackendRandomUniform, test_statistics)
 // Generalization for all DPNPFuncName
 TEST(TestBackendRandomSrand, test_func_ptr)
 {
-    void *fptr               = nullptr;
+    void *fptr = nullptr;
     DPNPFuncData kernel_data = get_dpnp_function_ptr(
         DPNPFuncName::DPNP_FN_RNG_SRAND, DPNPFuncType::DPNP_FT_DOUBLE,
         DPNPFuncType::DPNP_FT_DOUBLE);

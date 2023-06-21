@@ -47,7 +47,7 @@ int main(int, char **)
     dpnp_queue_initialize_c();
     std::cout << "SYCL queue is CPU: " << dpnp_queue_is_cpu_c() << std::endl;
 
-    int *array1    = (int *)dpnp_memory_alloc_c(size * sizeof(int));
+    int *array1 = (int *)dpnp_memory_alloc_c(size * sizeof(int));
     double *result = (double *)dpnp_memory_alloc_c(size * sizeof(double));
 
     for (size_t i = 0; i < 10; ++i) {
@@ -57,10 +57,10 @@ int main(int, char **)
     }
     std::cout << std::endl;
 
-    const long ndim        = 1;
+    const long ndim = 1;
     shape_elem_type *shape = reinterpret_cast<shape_elem_type *>(
         dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
-    shape[0]                 = size;
+    shape[0] = size;
     shape_elem_type *strides = reinterpret_cast<shape_elem_type *>(
         dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
     strides[0] = 1;

@@ -43,7 +43,7 @@ namespace ext
 namespace lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;
-namespace py         = pybind11;
+namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*heevd_impl_fn_ptr_t)(sycl::queue,
@@ -71,7 +71,7 @@ static sycl::event heevd_impl(sycl::queue exec_q,
     type_utils::validate_type_for_device<T>(exec_q);
     type_utils::validate_type_for_device<RealT>(exec_q);
 
-    T *a     = reinterpret_cast<T *>(in_a);
+    T *a = reinterpret_cast<T *>(in_a);
     RealT *w = reinterpret_cast<RealT *>(out_w);
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
@@ -212,7 +212,7 @@ std::pair<sycl::event, sycl::event>
     char *eig_vecs_data = eig_vecs.get_data();
     char *eig_vals_data = eig_vals.get_data();
 
-    const std::int64_t n            = eig_vecs_shape[0];
+    const std::int64_t n = eig_vecs_shape[0];
     const oneapi::mkl::job jobz_val = static_cast<oneapi::mkl::job>(jobz);
     const oneapi::mkl::uplo uplo_val =
         static_cast<oneapi::mkl::uplo>(upper_lower);

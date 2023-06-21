@@ -95,7 +95,7 @@ void get_shape_offsets_inkernel(const _DataType *shape,
 {
     size_t dim_prod_input = 1;
     for (size_t i = 0; i < shape_size; ++i) {
-        long i_reverse     = shape_size - 1 - i;
+        long i_reverse = shape_size - 1 - i;
         offsets[i_reverse] = dim_prod_input;
         dim_prod_input *= shape[i_reverse];
     }
@@ -127,9 +127,9 @@ void get_xyz_by_id(size_t idx,
     size_t remainder = idx;
 
     for (size_t i = 0; i < ndim; ++i) {
-        quotient  = remainder / offsets[i];
+        quotient = remainder / offsets[i];
         remainder = remainder - quotient * offsets[i];
-        xyz[i]    = quotient;
+        xyz[i] = quotient;
     }
     return;
 }
@@ -162,11 +162,11 @@ _DataType get_xyz_id_by_id_inkernel(size_t global_id,
     assert(axis < offsets_size);
 
     _DataType xyz_id = 0;
-    long reminder    = global_id;
+    long reminder = global_id;
     for (size_t i = 0; i < axis + 1; ++i) {
         const _DataType axis_val = offsets[i];
-        xyz_id                   = reminder / axis_val;
-        reminder                 = reminder % axis_val;
+        xyz_id = reminder / axis_val;
+        reminder = reminder % axis_val;
     }
 
     return xyz_id;

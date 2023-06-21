@@ -217,7 +217,7 @@ static void
     const size_t shift = input_shape[shape_size - 1];
 
     double backward_scale = 1.;
-    double forward_scale  = 1.;
+    double forward_scale = 1.;
 
     if (norm == 0) // norm = "backward"
     {
@@ -303,11 +303,11 @@ static DPCTLSyclEventRef
         std::accumulate(input_shape, input_shape + shape_size - 1, 1,
                         std::multiplies<shape_elem_type>());
 
-    const size_t input_shift  = input_shape[shape_size - 1];
+    const size_t input_shift = input_shape[shape_size - 1];
     const size_t result_shift = result_shape[shape_size - 1];
 
     double backward_scale = 1.;
-    double forward_scale  = 1.;
+    double forward_scale = 1.;
 
     if (norm == 0) // norm = "backward"
     {
@@ -481,10 +481,10 @@ DPCTLSyclEventRef dpnp_fft_fft_c(DPCTLSyclQueueRef q_ref,
 
             shape_elem_type *copy_strides = reinterpret_cast<shape_elem_type *>(
                 dpnp_memory_alloc_c(q_ref, sizeof(shape_elem_type)));
-            *copy_strides               = 1;
+            *copy_strides = 1;
             shape_elem_type *copy_shape = reinterpret_cast<shape_elem_type *>(
                 dpnp_memory_alloc_c(q_ref, sizeof(shape_elem_type)));
-            *copy_shape                     = input_size;
+            *copy_shape = input_size;
             shape_elem_type copy_shape_size = 1;
             event_ref = dpnp_copyto_c<_DataType_input, double>(
                 q_ref, array1_copy, input_size, copy_shape_size, copy_shape,
@@ -622,10 +622,10 @@ DPCTLSyclEventRef dpnp_fft_rfft_c(DPCTLSyclQueueRef q_ref,
 
             shape_elem_type *copy_strides = reinterpret_cast<shape_elem_type *>(
                 dpnp_memory_alloc_c(q_ref, sizeof(shape_elem_type)));
-            *copy_strides               = 1;
+            *copy_strides = 1;
             shape_elem_type *copy_shape = reinterpret_cast<shape_elem_type *>(
                 dpnp_memory_alloc_c(q_ref, sizeof(shape_elem_type)));
-            *copy_shape                     = input_size;
+            *copy_shape = input_size;
             shape_elem_type copy_shape_size = 1;
             event_ref = dpnp_copyto_c<_DataType_input, double>(
                 q_ref, array1_copy, input_size, copy_shape_size, copy_shape,

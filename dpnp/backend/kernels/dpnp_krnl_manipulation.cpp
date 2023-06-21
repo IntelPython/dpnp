@@ -63,12 +63,12 @@ DPCTLSyclEventRef dpnp_repeat_c(DPCTLSyclQueueRef q_ref,
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
     const _DataType *array_in = input1_ptr.get_ptr();
-    _DataType *result         = reinterpret_cast<_DataType *>(result1);
+    _DataType *result = reinterpret_cast<_DataType *>(result1);
 
     sycl::range<2> gws(size, repeats);
     auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
-        size_t idx1                     = global_id[0];
-        size_t idx2                     = global_id[1];
+        size_t idx1 = global_id[0];
+        size_t idx2 = global_id[1];
         result[(idx1 * repeats) + idx2] = array_in[idx1];
     };
 
@@ -92,7 +92,7 @@ void dpnp_repeat_c(const void *array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_repeat_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_repeat_c<_DataType>(
         q_ref, array1_in, result1, repeats, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -164,11 +164,11 @@ DPCTLSyclEventRef
         const size_t idx = global_id[0];
 
         size_t output_index = 0;
-        size_t reminder     = idx;
+        size_t reminder = idx;
         for (size_t axis = 0; axis < ndim; ++axis) {
             /* reconstruct [x][y][z] from given linear idx */
             size_t xyz_id = reminder / input_offset_shape[axis];
-            reminder      = reminder % input_offset_shape[axis];
+            reminder = reminder % input_offset_shape[axis];
 
             /* calculate destination index based on reconstructed [x][y][z] */
             output_index += (xyz_id * result_offset_shape[axis]);

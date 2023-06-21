@@ -46,7 +46,7 @@ TEST(TestUtilsIterator, begin_prefix_postfix)
     DPNPC_id<dpnpc_value_t> result_obj(q_ref, input_data.data(), {2});
 
     test_it begin = result_obj.begin();
-    test_it end   = result_obj.end();
+    test_it end = result_obj.end();
 
     EXPECT_NE(begin, end);
 
@@ -123,7 +123,7 @@ TEST(TestUtilsIterator, take_value_axes_loop_3D)
     result_obj.set_axes({0, 2});
 
     vector<dpnpc_value_t>::iterator expected_it = expected_data.begin();
-    DPNPC_id<dpnpc_value_t>::iterator end       = result_obj.end();
+    DPNPC_id<dpnpc_value_t>::iterator end = result_obj.end();
     for (DPNPC_id<dpnpc_value_t>::iterator it = result_obj.begin(); it != end;
          ++it, ++expected_it)
     {
@@ -140,7 +140,7 @@ TEST(TestUtilsIterator, take_value_axis_0_0)
     result_obj.set_axis(0); // expected data {{1, 3}, {2 ,4}} with shape {2, 2}
 
     dpnpc_it_t begin = result_obj.begin();
-    dpnpc_it_t end   = result_obj.end();
+    dpnpc_it_t end = result_obj.end();
     EXPECT_NE(begin, end);
     EXPECT_EQ(*begin, 1);
 
@@ -157,7 +157,7 @@ TEST(TestUtilsIterator, take_value_axis_0_1)
     result_obj.set_axis(0); // expected data {{1, 3}, {2 ,4}} with shape {2, 2}
 
     dpnpc_it_t begin = result_obj.begin(1);
-    dpnpc_it_t end   = result_obj.end(1);
+    dpnpc_it_t end = result_obj.end(1);
     EXPECT_NE(begin, end);
     EXPECT_EQ(*begin, 2);
 
@@ -174,7 +174,7 @@ TEST(TestUtilsIterator, take_value_axis_1)
     result_obj.set_axis(1); // expected data {{1, 2}, {3 ,4}}
 
     dpnpc_it_t begin = result_obj.begin();
-    dpnpc_it_t end   = result_obj.end();
+    dpnpc_it_t end = result_obj.end();
     EXPECT_NE(begin, end);
     EXPECT_EQ(*begin, 1);
     EXPECT_EQ(*end, 3); // linear data space
@@ -283,7 +283,7 @@ TEST(TestUtilsIterator, iterator_loop)
     iota(result.begin(), result.end(), 1);
 
     vector<dpnpc_value_t>::iterator it_expected = expected.begin();
-    dpnpc_it_t it_result                        = result.begin();
+    dpnpc_it_t it_result = result.begin();
 
     for (; it_expected != expected.end(); ++it_expected, ++it_result) {
         EXPECT_EQ(*it_expected, *it_result);
@@ -441,7 +441,7 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
 
     sycl::range<1> gws(result_size);
     const DPNPC_id<data_type> *input_it = &input;
-    auto kernel_parallel_for_func       = [=](sycl::id<1> global_id) {
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         const size_t idx = global_id[0];
 
         data_type accumulator = 0;

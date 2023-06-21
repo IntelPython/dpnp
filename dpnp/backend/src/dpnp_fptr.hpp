@@ -60,13 +60,13 @@ typedef std::map<DPNPFuncName, map_1p_t> func_map_t;
 /**
  * Internal shortcuts for Data type enum values
  */
-const DPNPFuncType eft_INT  = DPNPFuncType::DPNP_FT_INT;
-const DPNPFuncType eft_LNG  = DPNPFuncType::DPNP_FT_LONG;
-const DPNPFuncType eft_FLT  = DPNPFuncType::DPNP_FT_FLOAT;
-const DPNPFuncType eft_DBL  = DPNPFuncType::DPNP_FT_DOUBLE;
-const DPNPFuncType eft_C64  = DPNPFuncType::DPNP_FT_CMPLX64;
+const DPNPFuncType eft_INT = DPNPFuncType::DPNP_FT_INT;
+const DPNPFuncType eft_LNG = DPNPFuncType::DPNP_FT_LONG;
+const DPNPFuncType eft_FLT = DPNPFuncType::DPNP_FT_FLOAT;
+const DPNPFuncType eft_DBL = DPNPFuncType::DPNP_FT_DOUBLE;
+const DPNPFuncType eft_C64 = DPNPFuncType::DPNP_FT_CMPLX64;
 const DPNPFuncType eft_C128 = DPNPFuncType::DPNP_FT_CMPLX128;
-const DPNPFuncType eft_BLN  = DPNPFuncType::DPNP_FT_BOOL;
+const DPNPFuncType eft_BLN = DPNPFuncType::DPNP_FT_BOOL;
 
 /**
  * An internal structure to build a pair of Data type enum value with C++ type
@@ -235,8 +235,8 @@ public:
                           std::complex<float>, std::complex<double>>)
         {
             bool ret = false;
-            _Xp a    = std::forward<_Xp>(__x);
-            _Yp b    = std::forward<_Yp>(__y);
+            _Xp a = std::forward<_Xp>(__x);
+            _Yp b = std::forward<_Yp>(__y);
 
             if (a.real() < b.real()) {
                 ret = (a.imag() == a.imag() || b.imag() != b.imag());

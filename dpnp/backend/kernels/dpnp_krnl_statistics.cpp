@@ -31,7 +31,7 @@
 #include "queue_sycl.hpp"
 #include <dpnp_iface.hpp>
 
-namespace mkl_blas  = oneapi::mkl::blas::row_major;
+namespace mkl_blas = oneapi::mkl::blas::row_major;
 namespace mkl_stats = oneapi::mkl::stats;
 
 template <typename _KernelNameSpecialization1,
@@ -155,7 +155,7 @@ DPCTLSyclEventRef dpnp_cov_c(DPCTLSyclQueueRef q_ref,
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, nrows * ncols);
     _DataType *array_1 = input1_ptr.get_ptr();
-    _DataType *result  = reinterpret_cast<_DataType *>(result1);
+    _DataType *result = reinterpret_cast<_DataType *>(result1);
 
     auto policy = oneapi::dpl::execution::make_device_policy<
         class dpnp_cov_c_kernel1<_DataType>>(q);
@@ -164,7 +164,7 @@ DPCTLSyclEventRef dpnp_cov_c(DPCTLSyclQueueRef q_ref,
         sycl::malloc_shared(nrows * sizeof(_DataType), q));
     for (size_t i = 0; i < nrows; ++i) {
         _DataType *row_start = array_1 + ncols * i;
-        mean[i]              = std::reduce(policy, row_start, row_start + ncols,
+        mean[i] = std::reduce(policy, row_start, row_start + ncols,
                               _DataType(0), std::plus<_DataType>()) /
                   ncols;
     }
@@ -173,7 +173,7 @@ DPCTLSyclEventRef dpnp_cov_c(DPCTLSyclQueueRef q_ref,
     _DataType *temp = reinterpret_cast<_DataType *>(
         sycl::malloc_shared(nrows * ncols * sizeof(_DataType), q));
     for (size_t i = 0; i < nrows; ++i) {
-        size_t offset        = ncols * i;
+        size_t offset = ncols * i;
         _DataType *row_start = array_1 + offset;
         std::transform(policy, row_start, row_start + ncols, temp + offset,
                        [=](_DataType x) { return x - mean[i]; });
@@ -183,7 +183,7 @@ DPCTLSyclEventRef dpnp_cov_c(DPCTLSyclQueueRef q_ref,
     sycl::event event_syrk;
 
     const _DataType alpha = _DataType(1) / (ncols - 1);
-    const _DataType beta  = _DataType(0);
+    const _DataType beta = _DataType(0);
 
     event_syrk =
         mkl_blas::syrk(q,                                // queue &exec_queue,
@@ -203,7 +203,7 @@ DPCTLSyclEventRef dpnp_cov_c(DPCTLSyclQueueRef q_ref,
     sycl::event event;
     sycl::range<1> gws(nrows * nrows);
     auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
-        const size_t idx     = global_id[0];
+        const size_t idx = global_id[0];
         const size_t row_idx = idx / nrows;
         const size_t col_idx = idx - row_idx * nrows;
         if (col_idx < row_idx) {
@@ -231,7 +231,7 @@ void dpnp_cov_c(void *array1_in, void *result1, size_t nrows, size_t ncols)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_cov_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_cov_c<_DataType>(
         q_ref, array1_in, result1, nrows, ncols, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -262,7 +262,7 @@ DPCTLSyclEventRef
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(q_ref, array1_in, size, true);
     DPNPC_ptr_adapter<_DataType_output> result_ptr(q_ref, result1_out, 1, true,
                                                    true);
-    _DataType_input *array1   = input1_ptr.get_ptr();
+    _DataType_input *array1 = input1_ptr.get_ptr();
     _DataType_output *result1 = result_ptr.get_ptr();
 
     result1[0] = 0;
@@ -331,7 +331,7 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
     DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result1, result_size, true,
                                             true);
     _DataType *array_1 = input1_ptr.get_ptr();
-    _DataType *result  = result_ptr.get_ptr();
+    _DataType *result = result_ptr.get_ptr();
 
     if (naxis == 0) {
         __attribute__((unused)) void *tmp = (void *)(axis + naxis);
@@ -411,7 +411,7 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
             size_t xyz[res_ndim];
             size_t remainder = result_idx;
             for (size_t i = 0; i < res_ndim; ++i) {
-                xyz[i]    = remainder / output_shape_offsets[i];
+                xyz[i] = remainder / output_shape_offsets[i];
                 remainder = remainder - xyz[i] * output_shape_offsets[i];
             }
 
@@ -447,7 +447,7 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
             size_t xyz[ndim];
             size_t remainder = source_idx;
             for (size_t i = 0; i < ndim; ++i) {
-                xyz[i]    = remainder / input_shape_offsets[i];
+                xyz[i] = remainder / input_shape_offsets[i];
                 remainder = remainder - xyz[i] * input_shape_offsets[i];
             }
 
@@ -550,7 +550,7 @@ DPCTLSyclEventRef dpnp_mean_c(DPCTLSyclQueueRef q_ref,
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size, true);
     DPNPC_ptr_adapter<_ResultType> result_ptr(q_ref, result1, 1, true, true);
-    _DataType *array    = input1_ptr.get_ptr();
+    _DataType *array = input1_ptr.get_ptr();
     _ResultType *result = result_ptr.get_ptr();
 
     if constexpr (std::is_same<_DataType, double>::value ||
@@ -592,7 +592,7 @@ void dpnp_mean_c(void *array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_mean_c<_DataType, _ResultType>(
+    DPCTLSyclEventRef event_ref = dpnp_mean_c<_DataType, _ResultType>(
         q_ref, array1_in, result1, shape, ndim, axis, naxis, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
@@ -721,7 +721,7 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
     DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result1, result_size, true,
                                             true);
     _DataType *array_1 = input1_ptr.get_ptr();
-    _DataType *result  = result_ptr.get_ptr();
+    _DataType *result = result_ptr.get_ptr();
 
     if (naxis == 0) {
         if constexpr (std::is_same<_DataType, double>::value ||
@@ -795,7 +795,7 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
             size_t xyz[res_ndim];
             size_t remainder = result_idx;
             for (size_t i = 0; i < res_ndim; ++i) {
-                xyz[i]    = remainder / output_shape_offsets[i];
+                xyz[i] = remainder / output_shape_offsets[i];
                 remainder = remainder - xyz[i] * output_shape_offsets[i];
             }
 
@@ -831,7 +831,7 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
             size_t xyz[ndim];
             size_t remainder = source_idx;
             for (size_t i = 0; i < ndim; ++i) {
-                xyz[i]    = remainder / input_shape_offsets[i];
+                xyz[i] = remainder / input_shape_offsets[i];
                 remainder = remainder - xyz[i] * input_shape_offsets[i];
             }
 
@@ -937,7 +937,7 @@ DPCTLSyclEventRef dpnp_nanvar_c(DPCTLSyclQueueRef q_ref,
     DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result1, result_size, true,
                                             true);
     _DataType *array1 = input1_ptr.get_ptr();
-    bool *mask_arr    = input2_ptr.get_ptr();
+    bool *mask_arr = input2_ptr.get_ptr();
     _DataType *result = result_ptr.get_ptr();
 
     size_t ind = 0;
@@ -996,7 +996,7 @@ DPCTLSyclEventRef dpnp_std_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue q               = *(reinterpret_cast<sycl::queue *>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     _ResultType *var = reinterpret_cast<_ResultType *>(
         sycl::malloc_shared(1 * sizeof(_ResultType), q));
@@ -1012,18 +1012,18 @@ DPCTLSyclEventRef dpnp_std_c(DPCTLSyclQueueRef q_ref,
         result1_ndim * sizeof(shape_elem_type);
     shape_elem_type *result1_shape = reinterpret_cast<shape_elem_type *>(
         sycl::malloc_shared(result1_shape_size_in_bytes, q));
-    *result1_shape                   = 1;
+    *result1_shape = 1;
     shape_elem_type *result1_strides = reinterpret_cast<shape_elem_type *>(
         sycl::malloc_shared(result1_strides_size_in_bytes, q));
     *result1_strides = 1;
 
-    const size_t var_size                  = 1;
-    const size_t var_ndim                  = 1;
-    const size_t var_shape_size_in_bytes   = var_ndim * sizeof(shape_elem_type);
+    const size_t var_size = 1;
+    const size_t var_ndim = 1;
+    const size_t var_shape_size_in_bytes = var_ndim * sizeof(shape_elem_type);
     const size_t var_strides_size_in_bytes = var_ndim * sizeof(shape_elem_type);
     shape_elem_type *var_shape = reinterpret_cast<shape_elem_type *>(
         sycl::malloc_shared(var_shape_size_in_bytes, q));
-    *var_shape                   = 1;
+    *var_shape = 1;
     shape_elem_type *var_strides = reinterpret_cast<shape_elem_type *>(
         sycl::malloc_shared(var_strides_size_in_bytes, q));
     *var_strides = 1;
@@ -1055,7 +1055,7 @@ void dpnp_std_c(void *array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_std_c<_DataType, _ResultType>(
+    DPCTLSyclEventRef event_ref = dpnp_std_c<_DataType, _ResultType>(
         q_ref, array1_in, result1, shape, ndim, axis, naxis, ddof,
         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
@@ -1113,7 +1113,7 @@ DPCTLSyclEventRef dpnp_var_c(DPCTLSyclQueueRef q_ref,
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
     DPNPC_ptr_adapter<_ResultType> result_ptr(q_ref, result1, 1, true, true);
-    _DataType *array1   = input1_ptr.get_ptr();
+    _DataType *array1 = input1_ptr.get_ptr();
     _ResultType *result = result_ptr.get_ptr();
 
     _ResultType *mean = reinterpret_cast<_ResultType *>(
@@ -1166,7 +1166,7 @@ void dpnp_var_c(void *array1_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_var_c<_DataType, _ResultType>(
+    DPCTLSyclEventRef event_ref = dpnp_var_c<_DataType, _ResultType>(
         q_ref, array1_in, result1, shape, ndim, axis, naxis, ddof,
         dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);

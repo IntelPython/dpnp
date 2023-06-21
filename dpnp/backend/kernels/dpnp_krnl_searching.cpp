@@ -44,10 +44,10 @@ DPCTLSyclEventRef dpnp_argmax_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue q               = *(reinterpret_cast<sycl::queue *>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
-    _DataType *array_1    = input1_ptr.get_ptr();
+    _DataType *array_1 = input1_ptr.get_ptr();
     _idx_DataType *result = reinterpret_cast<_idx_DataType *>(result1);
 
     auto policy = oneapi::dpl::execution::make_device_policy<
@@ -100,9 +100,9 @@ DPCTLSyclEventRef dpnp_argmin_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue q               = *(reinterpret_cast<sycl::queue *>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
-    _DataType *array_1    = input1_ptr.get_ptr();
+    _DataType *array_1 = input1_ptr.get_ptr();
     _idx_DataType *result = reinterpret_cast<_idx_DataType *>(result1);
 
     auto policy = oneapi::dpl::execution::make_device_policy<

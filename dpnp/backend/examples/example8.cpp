@@ -45,7 +45,7 @@ int main(int, char **)
     dpnp_queue_initialize_c(QueueOptions::GPU_SELECTOR);
 
     double *array = (double *)dpnp_memory_alloc_c(size * sizeof(double));
-    long *result  = (long *)dpnp_memory_alloc_c(size * sizeof(long));
+    long *result = (long *)dpnp_memory_alloc_c(size * sizeof(long));
 
     std::cout << "array" << std::endl;
     for (size_t i = 0; i < size; ++i) {

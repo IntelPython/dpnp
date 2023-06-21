@@ -57,8 +57,8 @@ int main(int, char **)
     double *result = (double *)dpnp_memory_alloc_c(size * sizeof(double));
 
     size_t seed = 10;
-    long low    = 1;
-    long high   = 120;
+    long low = 1;
+    long high = 120;
 
     std::cout << "Uniform distr. params:\nlow is " << low << ", high is "
               << high << std::endl;

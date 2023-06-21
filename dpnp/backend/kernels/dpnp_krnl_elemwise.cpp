@@ -136,7 +136,7 @@
                     }                                                          \
                                                                                \
                     const _DataType_output input_elem = input1_data[input_id]; \
-                    result[output_id]                 = __operation1__;        \
+                    result[output_id] = __operation1__;                        \
                 }                                                              \
             };                                                                 \
             auto kernel_func = [&](sycl::handler &cgh) {                       \
@@ -849,180 +849,180 @@ constexpr T dispatch_sign_op(T elem)
     }
 }
 
-#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                    \
-    template <typename _KernelNameSpecialization>                                        \
-    class __name__##_kernel;                                                             \
-                                                                                         \
-    template <typename _KernelNameSpecialization>                                        \
-    class __name__##_strides_kernel;                                                     \
-                                                                                         \
-    template <typename _DataType>                                                        \
-    DPCTLSyclEventRef __name__(                                                          \
-        DPCTLSyclQueueRef q_ref, void *result_out, const size_t result_size,             \
-        const size_t result_ndim, const shape_elem_type *result_shape,                   \
-        const shape_elem_type *result_strides, const void *input1_in,                    \
-        const size_t input1_size, const size_t input1_ndim,                              \
-        const shape_elem_type *input1_shape,                                             \
-        const shape_elem_type *input1_strides, const size_t *where,                      \
-        const DPCTLEventVectorRef dep_event_vec_ref)                                     \
-    {                                                                                    \
-        /* avoid warning unused variable*/                                               \
-        (void)result_shape;                                                              \
-        (void)where;                                                                     \
-        (void)dep_event_vec_ref;                                                         \
-                                                                                         \
-        DPCTLSyclEventRef event_ref = nullptr;                                           \
-                                                                                         \
-        if (!input1_size) {                                                              \
-            return event_ref;                                                            \
-        }                                                                                \
-                                                                                         \
-        sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));                       \
-                                                                                         \
-        _DataType *input1_data =                                                         \
-            static_cast<_DataType *>(const_cast<void *>(input1_in));                     \
-        _DataType *result = static_cast<_DataType *>(result_out);                        \
-                                                                                         \
-        shape_elem_type *input1_shape_offsets =                                          \
-            new shape_elem_type[input1_ndim];                                            \
-                                                                                         \
-        get_shape_offsets_inkernel(input1_shape, input1_ndim,                            \
-                                   input1_shape_offsets);                                \
-        bool use_strides = !array_equal(input1_strides, input1_ndim,                     \
-                                        input1_shape_offsets, input1_ndim);              \
-        delete[] input1_shape_offsets;                                                   \
-                                                                                         \
-        sycl::event event;                                                               \
-        sycl::range<1> gws(result_size);                                                 \
-                                                                                         \
-        if (use_strides) {                                                               \
-            if (result_ndim != input1_ndim) {                                            \
-                throw std::runtime_error(                                                \
-                    "Result ndim=" + std::to_string(result_ndim) +                       \
-                    " mismatches with input1 ndim=" +                                    \
-                    std::to_string(input1_ndim));                                        \
-            }                                                                            \
-                                                                                         \
-            /* memory transfer optimization, use USM-host for temporary speeds           \
-             * up tranfer to device */                                                   \
-            using usm_host_allocatorT =                                                  \
-                sycl::usm_allocator<shape_elem_type, sycl::usm::alloc::host>;            \
-                                                                                         \
-            size_t strides_size = 2 * result_ndim;                                       \
-            shape_elem_type *dev_strides_data =                                          \
-                sycl::malloc_device<shape_elem_type>(strides_size, q);                   \
-                                                                                         \
-            /* create host temporary for packed strides managed by shared                \
-             * pointer */                                                                \
-            auto strides_host_packed =                                                   \
-                std::vector<shape_elem_type, usm_host_allocatorT>(                       \
-                    strides_size, usm_host_allocatorT(q));                               \
-                                                                                         \
-            /* packed vector is concatenation of result_strides,                         \
-             * input1_strides and input2_strides */                                      \
-            std::copy(result_strides, result_strides + result_ndim,                      \
-                      strides_host_packed.begin());                                      \
-            std::copy(input1_strides, input1_strides + result_ndim,                      \
-                      strides_host_packed.begin() + result_ndim);                        \
-                                                                                         \
-            auto copy_strides_ev = q.copy<shape_elem_type>(                              \
-                strides_host_packed.data(), dev_strides_data,                            \
-                strides_host_packed.size());                                             \
-                                                                                         \
-            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                 \
-                size_t output_id = global_id[0]; /* for (size_t i = 0; i <               \
-                                                    result_size; ++i) */                 \
-                {                                                                        \
-                    const shape_elem_type *result_strides_data =                         \
-                        &dev_strides_data[0];                                            \
-                    const shape_elem_type *input1_strides_data =                         \
-                        &dev_strides_data[result_ndim];                                  \
-                                                                                         \
-                    size_t input_id = 0;                                                 \
-                    for (size_t i = 0; i < input1_ndim; ++i) {                           \
-                        const size_t output_xyz_id =                                     \
-                            get_xyz_id_by_id_inkernel(output_id,                         \
-                                                      result_strides_data,               \
-                                                      result_ndim, i);                   \
-                        input_id += output_xyz_id * input1_strides_data[i];              \
-                    }                                                                    \
-                                                                                         \
-                    const _DataType input_elem = input1_data[input_id];                  \
-                    result[output_id]          = __operation1__;                         \
-                }                                                                        \
-            };                                                                           \
-            auto kernel_func = [&](sycl::handler &cgh) {                                 \
-                cgh.parallel_for<class __name__##_strides_kernel<_DataType>>(            \
-                    gws, kernel_parallel_for_func);                                      \
-            };                                                                           \
-                                                                                         \
-            q.submit(kernel_func).wait();                                                \
-                                                                                         \
-            sycl::free(dev_strides_data, q);                                             \
-            return event_ref;                                                            \
-        }                                                                                \
-        else {                                                                           \
-            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {                 \
-                size_t i = global_id[0]; /* for (size_t i = 0; i <                       \
-                                            result_size; ++i) */                         \
-                {                                                                        \
-                    const _DataType input_elem = input1_data[i];                         \
-                    result[i]                  = __operation1__;                         \
-                }                                                                        \
-            };                                                                           \
-            auto kernel_func = [&](sycl::handler &cgh) {                                 \
-                cgh.parallel_for<class __name__##_kernel<_DataType>>(                    \
-                    gws, kernel_parallel_for_func);                                      \
-            };                                                                           \
-                                                                                         \
-            if constexpr (is_any_v<_DataType, float, double>) {                          \
-                if (q.get_device().has(sycl::aspect::fp64)) {                            \
-                    event = __operation2__;                                              \
-                                                                                         \
-                    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);             \
-                    return DPCTLEvent_Copy(event_ref);                                   \
-                }                                                                        \
-            }                                                                            \
-            event = q.submit(kernel_func);                                               \
-        }                                                                                \
-                                                                                         \
-        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);                         \
-        return DPCTLEvent_Copy(event_ref);                                               \
-    }                                                                                    \
-                                                                                         \
-    template <typename _DataType>                                                        \
-    void __name__(                                                                       \
-        void *result_out, const size_t result_size, const size_t result_ndim,            \
-        const shape_elem_type *result_shape,                                             \
-        const shape_elem_type *result_strides, const void *input1_in,                    \
-        const size_t input1_size, const size_t input1_ndim,                              \
-        const shape_elem_type *input1_shape,                                             \
-        const shape_elem_type *input1_strides, const size_t *where)                      \
-    {                                                                                    \
-        DPCTLSyclQueueRef q_ref =                                                        \
-            reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);                            \
-        DPCTLEventVectorRef dep_event_vec_ref = nullptr;                                 \
-        DPCTLSyclEventRef event_ref           = __name__<_DataType>(                     \
+#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)          \
+    template <typename _KernelNameSpecialization>                              \
+    class __name__##_kernel;                                                   \
+                                                                               \
+    template <typename _KernelNameSpecialization>                              \
+    class __name__##_strides_kernel;                                           \
+                                                                               \
+    template <typename _DataType>                                              \
+    DPCTLSyclEventRef __name__(                                                \
+        DPCTLSyclQueueRef q_ref, void *result_out, const size_t result_size,   \
+        const size_t result_ndim, const shape_elem_type *result_shape,         \
+        const shape_elem_type *result_strides, const void *input1_in,          \
+        const size_t input1_size, const size_t input1_ndim,                    \
+        const shape_elem_type *input1_shape,                                   \
+        const shape_elem_type *input1_strides, const size_t *where,            \
+        const DPCTLEventVectorRef dep_event_vec_ref)                           \
+    {                                                                          \
+        /* avoid warning unused variable*/                                     \
+        (void)result_shape;                                                    \
+        (void)where;                                                           \
+        (void)dep_event_vec_ref;                                               \
+                                                                               \
+        DPCTLSyclEventRef event_ref = nullptr;                                 \
+                                                                               \
+        if (!input1_size) {                                                    \
+            return event_ref;                                                  \
+        }                                                                      \
+                                                                               \
+        sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));             \
+                                                                               \
+        _DataType *input1_data =                                               \
+            static_cast<_DataType *>(const_cast<void *>(input1_in));           \
+        _DataType *result = static_cast<_DataType *>(result_out);              \
+                                                                               \
+        shape_elem_type *input1_shape_offsets =                                \
+            new shape_elem_type[input1_ndim];                                  \
+                                                                               \
+        get_shape_offsets_inkernel(input1_shape, input1_ndim,                  \
+                                   input1_shape_offsets);                      \
+        bool use_strides = !array_equal(input1_strides, input1_ndim,           \
+                                        input1_shape_offsets, input1_ndim);    \
+        delete[] input1_shape_offsets;                                         \
+                                                                               \
+        sycl::event event;                                                     \
+        sycl::range<1> gws(result_size);                                       \
+                                                                               \
+        if (use_strides) {                                                     \
+            if (result_ndim != input1_ndim) {                                  \
+                throw std::runtime_error(                                      \
+                    "Result ndim=" + std::to_string(result_ndim) +             \
+                    " mismatches with input1 ndim=" +                          \
+                    std::to_string(input1_ndim));                              \
+            }                                                                  \
+                                                                               \
+            /* memory transfer optimization, use USM-host for temporary speeds \
+             * up tranfer to device */                                         \
+            using usm_host_allocatorT =                                        \
+                sycl::usm_allocator<shape_elem_type, sycl::usm::alloc::host>;  \
+                                                                               \
+            size_t strides_size = 2 * result_ndim;                             \
+            shape_elem_type *dev_strides_data =                                \
+                sycl::malloc_device<shape_elem_type>(strides_size, q);         \
+                                                                               \
+            /* create host temporary for packed strides managed by shared      \
+             * pointer */                                                      \
+            auto strides_host_packed =                                         \
+                std::vector<shape_elem_type, usm_host_allocatorT>(             \
+                    strides_size, usm_host_allocatorT(q));                     \
+                                                                               \
+            /* packed vector is concatenation of result_strides,               \
+             * input1_strides and input2_strides */                            \
+            std::copy(result_strides, result_strides + result_ndim,            \
+                      strides_host_packed.begin());                            \
+            std::copy(input1_strides, input1_strides + result_ndim,            \
+                      strides_host_packed.begin() + result_ndim);              \
+                                                                               \
+            auto copy_strides_ev = q.copy<shape_elem_type>(                    \
+                strides_host_packed.data(), dev_strides_data,                  \
+                strides_host_packed.size());                                   \
+                                                                               \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {       \
+                size_t output_id = global_id[0]; /* for (size_t i = 0; i <     \
+                                                    result_size; ++i) */       \
+                {                                                              \
+                    const shape_elem_type *result_strides_data =               \
+                        &dev_strides_data[0];                                  \
+                    const shape_elem_type *input1_strides_data =               \
+                        &dev_strides_data[result_ndim];                        \
+                                                                               \
+                    size_t input_id = 0;                                       \
+                    for (size_t i = 0; i < input1_ndim; ++i) {                 \
+                        const size_t output_xyz_id =                           \
+                            get_xyz_id_by_id_inkernel(output_id,               \
+                                                      result_strides_data,     \
+                                                      result_ndim, i);         \
+                        input_id += output_xyz_id * input1_strides_data[i];    \
+                    }                                                          \
+                                                                               \
+                    const _DataType input_elem = input1_data[input_id];        \
+                    result[output_id] = __operation1__;                        \
+                }                                                              \
+            };                                                                 \
+            auto kernel_func = [&](sycl::handler &cgh) {                       \
+                cgh.parallel_for<class __name__##_strides_kernel<_DataType>>(  \
+                    gws, kernel_parallel_for_func);                            \
+            };                                                                 \
+                                                                               \
+            q.submit(kernel_func).wait();                                      \
+                                                                               \
+            sycl::free(dev_strides_data, q);                                   \
+            return event_ref;                                                  \
+        }                                                                      \
+        else {                                                                 \
+            auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {       \
+                size_t i = global_id[0]; /* for (size_t i = 0; i <             \
+                                            result_size; ++i) */               \
+                {                                                              \
+                    const _DataType input_elem = input1_data[i];               \
+                    result[i] = __operation1__;                                \
+                }                                                              \
+            };                                                                 \
+            auto kernel_func = [&](sycl::handler &cgh) {                       \
+                cgh.parallel_for<class __name__##_kernel<_DataType>>(          \
+                    gws, kernel_parallel_for_func);                            \
+            };                                                                 \
+                                                                               \
+            if constexpr (is_any_v<_DataType, float, double>) {                \
+                if (q.get_device().has(sycl::aspect::fp64)) {                  \
+                    event = __operation2__;                                    \
+                                                                               \
+                    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);   \
+                    return DPCTLEvent_Copy(event_ref);                         \
+                }                                                              \
+            }                                                                  \
+            event = q.submit(kernel_func);                                     \
+        }                                                                      \
+                                                                               \
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);               \
+        return DPCTLEvent_Copy(event_ref);                                     \
+    }                                                                          \
+                                                                               \
+    template <typename _DataType>                                              \
+    void __name__(                                                             \
+        void *result_out, const size_t result_size, const size_t result_ndim,  \
+        const shape_elem_type *result_shape,                                   \
+        const shape_elem_type *result_strides, const void *input1_in,          \
+        const size_t input1_size, const size_t input1_ndim,                    \
+        const shape_elem_type *input1_shape,                                   \
+        const shape_elem_type *input1_strides, const size_t *where)            \
+    {                                                                          \
+        DPCTLSyclQueueRef q_ref =                                              \
+            reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);                  \
+        DPCTLEventVectorRef dep_event_vec_ref = nullptr;                       \
+        DPCTLSyclEventRef event_ref = __name__<_DataType>(                     \
             q_ref, result_out, result_size, result_ndim, result_shape,         \
             result_strides, input1_in, input1_size, input1_ndim, input1_shape, \
             input1_strides, where, dep_event_vec_ref);                         \
-        DPCTLEvent_WaitAndThrow(event_ref);                                              \
-        DPCTLEvent_Delete(event_ref);                                                    \
-    }                                                                                    \
-                                                                                         \
-    template <typename _DataType>                                                        \
-    void (*__name__##_default)(                                                          \
-        void *, const size_t, const size_t, const shape_elem_type *,                     \
-        const shape_elem_type *, const void *, const size_t, const size_t,               \
-        const shape_elem_type *, const shape_elem_type *, const size_t *) =              \
-        __name__<_DataType>;                                                             \
-                                                                                         \
-    template <typename _DataType>                                                        \
-    DPCTLSyclEventRef (*__name__##_ext)(                                                 \
-        DPCTLSyclQueueRef, void *, const size_t, const size_t,                           \
-        const shape_elem_type *, const shape_elem_type *, const void *,                  \
-        const size_t, const size_t, const shape_elem_type *,                             \
-        const shape_elem_type *, const size_t *, const DPCTLEventVectorRef) =            \
+        DPCTLEvent_WaitAndThrow(event_ref);                                    \
+        DPCTLEvent_Delete(event_ref);                                          \
+    }                                                                          \
+                                                                               \
+    template <typename _DataType>                                              \
+    void (*__name__##_default)(                                                \
+        void *, const size_t, const size_t, const shape_elem_type *,           \
+        const shape_elem_type *, const void *, const size_t, const size_t,     \
+        const shape_elem_type *, const shape_elem_type *, const size_t *) =    \
+        __name__<_DataType>;                                                   \
+                                                                               \
+    template <typename _DataType>                                              \
+    DPCTLSyclEventRef (*__name__##_ext)(                                       \
+        DPCTLSyclQueueRef, void *, const size_t, const size_t,                 \
+        const shape_elem_type *, const shape_elem_type *, const void *,        \
+        const size_t, const size_t, const shape_elem_type *,                   \
+        const shape_elem_type *, const size_t *, const DPCTLEventVectorRef) =  \
         __name__<_DataType>;
 
 #include <dpnp_gen_1arg_1type_tbl.hpp>
@@ -1307,7 +1307,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                 {                                                              \
                     const _DataType_output input1_elem = (*input1_it)[i];      \
                     const _DataType_output input2_elem = (*input2_it)[i];      \
-                    result[i]                          = __operation__;        \
+                    result[i] = __operation__;                                 \
                 }                                                              \
             };                                                                 \
             auto kernel_func = [&](sycl::handler &cgh) {                       \
@@ -1422,7 +1422,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                               _DataType_input1, _DataType_input2,              \
                               std::complex<float>, std::complex<double>>)      \
             {                                                                  \
-                constexpr size_t lws          = 64;                            \
+                constexpr size_t lws = 64;                                     \
                 constexpr unsigned int vec_sz = 8;                             \
                 constexpr sycl::access::address_space global_space =           \
                     sycl::access::address_space::global_space;                 \
@@ -1433,7 +1433,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                 auto lws_range = sycl::range<1>(lws);                          \
                                                                                \
                 auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {  \
-                    auto sg                = nd_it.get_sub_group();            \
+                    auto sg = nd_it.get_sub_group();                           \
                     const auto max_sg_size = sg.get_max_local_range()[0];      \
                     const size_t start =                                       \
                         vec_sz *                                               \
@@ -1531,7 +1531,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                                                                                \
                     const _DataType_output input1_elem = input1_data[i];       \
                     const _DataType_output input2_elem = input2_data[i];       \
-                    result[i]                          = __operation__;        \
+                    result[i] = __operation__;                                 \
                 };                                                             \
                 auto kernel_func = [&](sycl::handler &cgh) {                   \
                     cgh.parallel_for<class __name__##_kernel<                  \
@@ -1601,7 +1601,7 @@ template <DPNPFuncType FT1,
           typename has_fp64 = std::true_type>
 static constexpr DPNPFuncType get_divide_res_type()
 {
-    constexpr auto widest_type  = populate_func_types<FT1, FT2>();
+    constexpr auto widest_type = populate_func_types<FT1, FT2>();
     constexpr auto shortes_type = (widest_type == FT1) ? FT2 : FT1;
 
     if constexpr (widest_type == DPNPFuncType::DPNP_FT_CMPLX128 ||

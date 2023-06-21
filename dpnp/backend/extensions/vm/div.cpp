@@ -42,8 +42,8 @@ namespace ext
 {
 namespace vm
 {
-namespace mkl_vm     = oneapi::mkl::vm;
-namespace py         = pybind11;
+namespace mkl_vm = oneapi::mkl::vm;
+namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*div_impl_fn_ptr_t)(sycl::queue,
@@ -67,7 +67,7 @@ static sycl::event div_impl(sycl::queue exec_q,
 
     const T *a = reinterpret_cast<const T *>(in_a);
     const T *b = reinterpret_cast<const T *>(in_b);
-    T *y       = reinterpret_cast<T *>(out_y);
+    T *y = reinterpret_cast<T *>(out_y);
 
     return mkl_vm::div(exec_q,
                        n, // number of elements to be calculated
@@ -87,12 +87,12 @@ std::pair<sycl::event, sycl::event>
     // check type_nums
     int src1_typenum = src1.get_typenum();
     int src2_typenum = src2.get_typenum();
-    int dst_typenum  = dst.get_typenum();
+    int dst_typenum = dst.get_typenum();
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int src1_typeid  = array_types.typenum_to_lookup_id(src1_typenum);
-    int src2_typeid  = array_types.typenum_to_lookup_id(src2_typenum);
-    int dst_typeid   = array_types.typenum_to_lookup_id(dst_typenum);
+    int src1_typeid = array_types.typenum_to_lookup_id(src1_typenum);
+    int src2_typeid = array_types.typenum_to_lookup_id(src2_typenum);
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
     if (src1_typeid != src2_typeid || src2_typeid != dst_typeid) {
         throw py::value_error(
@@ -115,7 +115,7 @@ std::pair<sycl::event, sycl::event>
     // check that shapes are the same
     const py::ssize_t *src1_shape = src1.get_shape_raw();
     const py::ssize_t *src2_shape = src2.get_shape_raw();
-    const py::ssize_t *dst_shape  = dst.get_shape_raw();
+    const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool shapes_equal(true);
     size_t src_nelems(1);
 
@@ -154,12 +154,12 @@ std::pair<sycl::event, sycl::event>
 
     const char *src1_data = src1.get_data();
     const char *src2_data = src2.get_data();
-    char *dst_data        = dst.get_data();
+    char *dst_data = dst.get_data();
 
     // handle contiguous inputs
     bool is_src1_c_contig = src1.is_c_contiguous();
     bool is_src2_c_contig = src2.is_c_contiguous();
-    bool is_dst_c_contig  = dst.is_c_contiguous();
+    bool is_dst_c_contig = dst.is_c_contiguous();
 
     bool all_c_contig =
         (is_src1_c_contig && is_src2_c_contig && is_dst_c_contig);
@@ -189,12 +189,12 @@ bool can_call_div(sycl::queue exec_q,
     // check type_nums
     int src1_typenum = src1.get_typenum();
     int src2_typenum = src2.get_typenum();
-    int dst_typenum  = dst.get_typenum();
+    int dst_typenum = dst.get_typenum();
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int src1_typeid  = array_types.typenum_to_lookup_id(src1_typenum);
-    int src2_typeid  = array_types.typenum_to_lookup_id(src2_typenum);
-    int dst_typeid   = array_types.typenum_to_lookup_id(dst_typenum);
+    int src1_typeid = array_types.typenum_to_lookup_id(src1_typenum);
+    int src2_typeid = array_types.typenum_to_lookup_id(src2_typenum);
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
     // types must be the same
     if (src1_typeid != src2_typeid || src2_typeid != dst_typeid) {
@@ -224,7 +224,7 @@ bool can_call_div(sycl::queue exec_q,
     // shapes must be the same
     const py::ssize_t *src1_shape = src1.get_shape_raw();
     const py::ssize_t *src2_shape = src2.get_shape_raw();
-    const py::ssize_t *dst_shape  = dst.get_shape_raw();
+    const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool shapes_equal(true);
     size_t src_nelems(1);
 
@@ -262,7 +262,7 @@ bool can_call_div(sycl::queue exec_q,
     // suppport only contiguous inputs
     bool is_src1_c_contig = src1.is_c_contiguous();
     bool is_src2_c_contig = src2.is_c_contiguous();
-    bool is_dst_c_contig  = dst.is_c_contiguous();
+    bool is_dst_c_contig = dst.is_c_contiguous();
 
     bool all_c_contig =
         (is_src1_c_contig && is_src2_c_contig && is_dst_c_contig);

@@ -41,8 +41,8 @@ static_assert(INTEL_MKL_VERSION >= __INTEL_MKL_2023_VERSION_REQUIRED,
               "MKL does not meet minimum version requirement");
 
 namespace mkl_blas = oneapi::mkl::blas;
-namespace mkl_rng  = oneapi::mkl::rng;
-namespace mkl_vm   = oneapi::mkl::vm;
+namespace mkl_rng = oneapi::mkl::rng;
+namespace mkl_vm = oneapi::mkl::vm;
 
 /**
  * Use get/set functions to access/modify this variable
@@ -188,7 +188,7 @@ void dpnp_rng_beta_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_beta_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_beta_c<_DataType>(
         q_ref, result, a, b, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -263,7 +263,7 @@ void dpnp_rng_binomial_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_binomial_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_binomial_c<_DataType>(
         q_ref, result, ntrial, p, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -319,7 +319,7 @@ void dpnp_rng_chisquare_c(void *result, const int df, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_chisquare_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_chisquare_c<_DataType>(
         q_ref, result, df, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -377,7 +377,7 @@ void dpnp_rng_exponential_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_exponential_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_exponential_c<_DataType>(
         q_ref, result, beta, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -418,7 +418,7 @@ DPCTLSyclEventRef dpnp_rng_f_c(DPCTLSyclQueueRef q_ref,
 
     _DataType shape = 0.5 * df_num;
     _DataType scale = 2.0 / df_num;
-    _DataType *den  = nullptr;
+    _DataType *den = nullptr;
 
     DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result, size, true, true);
     _DataType *result1 = result1_ptr.get_ptr();
@@ -454,7 +454,7 @@ void dpnp_rng_f_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_f_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_f_c<_DataType>(
         q_ref, result, df_num, df_den, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -500,7 +500,7 @@ DPCTLSyclEventRef dpnp_rng_gamma_c(DPCTLSyclQueueRef q_ref,
     }
     else {
         _DataType *result1 = reinterpret_cast<_DataType *>(result);
-        const _DataType a  = (_DataType(0.0));
+        const _DataType a = (_DataType(0.0));
 
         mkl_rng::gamma<_DataType> distribution(shape, a, scale);
         event_out =
@@ -519,7 +519,7 @@ void dpnp_rng_gamma_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_gamma_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_gamma_c<_DataType>(
         q_ref, result, shape, scale, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -578,7 +578,7 @@ void dpnp_rng_gaussian_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_gaussian_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_gaussian_c<_DataType>(
         q_ref, result, mean, stddev, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -639,7 +639,7 @@ void dpnp_rng_geometric_c(void *result, const float p, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_geometric_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_geometric_c<_DataType>(
         q_ref, result, p, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -688,9 +688,9 @@ DPCTLSyclEventRef dpnp_rng_gumbel_c(DPCTLSyclQueueRef q_ref,
     }
     else {
         const _DataType alpha = (_DataType(-1.0));
-        std::int64_t incx     = 1;
-        _DataType *result1    = reinterpret_cast<_DataType *>(result);
-        double negloc         = loc * (double(-1.0));
+        std::int64_t incx = 1;
+        _DataType *result1 = reinterpret_cast<_DataType *>(result);
+        double negloc = loc * (double(-1.0));
 
         mkl_rng::gumbel<_DataType> distribution(negloc, scale);
         auto event_distribution =
@@ -711,7 +711,7 @@ void dpnp_rng_gumbel_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_gumbel_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_gumbel_c<_DataType>(
         q_ref, result, loc, scale, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -853,7 +853,7 @@ void dpnp_rng_laplace_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_laplace_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_laplace_c<_DataType>(
         q_ref, result, loc, scale, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -899,7 +899,7 @@ DPCTLSyclEventRef
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     const _DataType d_zero = _DataType(0.0);
-    const _DataType d_one  = _DataType(1.0);
+    const _DataType d_one = _DataType(1.0);
 
     _DataType *result1 = reinterpret_cast<_DataType *>(result);
 
@@ -909,7 +909,7 @@ DPCTLSyclEventRef
 
     sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
-        size_t i   = global_id[0];
+        size_t i = global_id[0];
         result1[i] = sycl::log(result1[i] / (1.0 - result1[i]));
         result1[i] = loc + scale * result1[i];
     };
@@ -919,7 +919,7 @@ DPCTLSyclEventRef
             gws, kernel_parallel_for_func);
     };
     auto event = q.submit(kernel_func);
-    event_ref  = reinterpret_cast<DPCTLSyclEventRef>(&event);
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
     return DPCTLEvent_Copy(event_ref);
 }
@@ -932,7 +932,7 @@ void dpnp_rng_logistic_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_logistic_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_logistic_c<_DataType>(
         q_ref, result, loc, scale, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -989,7 +989,7 @@ DPCTLSyclEventRef
     }
     else {
         const _DataType displacement = _DataType(0.0);
-        const _DataType scalefactor  = _DataType(1.0);
+        const _DataType scalefactor = _DataType(1.0);
 
         mkl_rng::lognormal<_DataType> distribution(mean, stddev, displacement,
                                                    scalefactor);
@@ -1008,7 +1008,7 @@ void dpnp_rng_lognormal_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_lognormal_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_lognormal_c<_DataType>(
         q_ref, result, mean, stddev, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -1092,7 +1092,7 @@ DPCTLSyclEventRef
             DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result, size, true,
                                                     true);
             _DataType *result1 = result_ptr.get_ptr();
-            int errcode        = viRngMultinomial(
+            int errcode = viRngMultinomial(
                 VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n,
                 result1, ntrial, p_size, p_data);
             if (errcode != VSL_STATUS_OK) {
@@ -1113,7 +1113,7 @@ void dpnp_rng_multinomial_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_multinomial_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_multinomial_c<_DataType>(
         q_ref, result, ntrial, p_in, p_size, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
@@ -1168,7 +1168,7 @@ DPCTLSyclEventRef
     _DataType *result1 = static_cast<_DataType *>(result);
 
     auto mean = sycl::span<double>{mean_data, mean_size};
-    auto cov  = sycl::span<double>{cov_data, cov_size};
+    auto cov = sycl::span<double>{cov_data, cov_size};
 
     // `result` is a array for random numbers
     // `size` is a `result`'s len.
@@ -1314,8 +1314,8 @@ DPCTLSyclEventRef
     _DataType *result1 = result1_ptr.get_ptr();
 
     const _DataType d_zero = _DataType(0.0);
-    const _DataType d_one  = _DataType(1.0);
-    const _DataType d_two  = _DataType(2.0);
+    const _DataType d_one = _DataType(1.0);
+    const _DataType d_two = _DataType(2.0);
 
     _DataType shape, loc;
     size_t i;
@@ -1362,15 +1362,15 @@ DPCTLSyclEventRef
 
         shape = 0.5 * df;
         if (0.125 * size > sqrt(lambda)) {
-            size_t *idx    = nullptr;
+            size_t *idx = nullptr;
             _DataType *tmp = nullptr;
-            idx            = reinterpret_cast<size_t *>(
+            idx = reinterpret_cast<size_t *>(
                 sycl::malloc_shared(size * sizeof(size_t), q));
 
             sycl::range<1> gws1(size);
             auto kernel_parallel_for_func1 = [=](sycl::id<1> global_id) {
                 size_t i = global_id[0];
-                idx[i]   = i;
+                idx[i] = i;
             };
             auto kernel_func1 = [&](sycl::handler &cgh) {
                 cgh.parallel_for<
@@ -1409,7 +1409,7 @@ DPCTLSyclEventRef
 
                 sycl::range<1> gws2(j - i);
                 auto kernel_parallel_for_func2 = [=](sycl::id<1> global_id) {
-                    size_t index            = global_id[0];
+                    size_t index = global_id[0];
                     result1[idx[index + i]] = tmp[index];
                 };
                 auto kernel_func2 = [&](sycl::handler &cgh) {
@@ -1491,7 +1491,7 @@ DPCTLSyclEventRef dpnp_rng_normal_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue *q              = reinterpret_cast<sycl::queue *>(q_ref);
+    sycl::queue *q = reinterpret_cast<sycl::queue *>(q_ref);
 
     if (!size) {
         return event_ref;
@@ -1534,14 +1534,14 @@ void dpnp_rng_normal_c(void *result,
                        const _DataType stddev,
                        const size_t size)
 {
-    sycl::queue *q          = &DPNP_QUEUE;
+    sycl::queue *q = &DPNP_QUEUE;
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(q);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = nullptr;
+    DPCTLSyclEventRef event_ref = nullptr;
 
     if (q->get_device().is_cpu()) {
         mt19937_struct *mt19937 = new mt19937_struct();
-        mt19937->engine         = &DPNP_RNG_ENGINE;
+        mt19937->engine = &DPNP_RNG_ENGINE;
 
         event_ref = dpnp_rng_normal_c<_DataType>(q_ref, result, mean, stddev,
                                                  static_cast<int64_t>(size),
@@ -1554,7 +1554,7 @@ void dpnp_rng_normal_c(void *result,
         // MCG59 engine is assumed to provide a better performance on GPU than
         // MT19937
         mcg59_struct *mcg59 = new mcg59_struct();
-        mcg59->engine       = &DPNP_RNG_MCG59_ENGINE;
+        mcg59->engine = &DPNP_RNG_MCG59_ENGINE;
 
         event_ref = dpnp_rng_normal_c<_DataType>(q_ref, result, mean, stddev,
                                                  static_cast<int64_t>(size),
@@ -1601,8 +1601,8 @@ DPCTLSyclEventRef dpnp_rng_pareto_c(DPCTLSyclQueueRef q_ref,
     std::vector<sycl::event> no_deps;
 
     const _DataType d_zero = _DataType(0.0);
-    const _DataType d_one  = _DataType(1.0);
-    _DataType neg_rec_alp  = -1.0 / alpha;
+    const _DataType d_one = _DataType(1.0);
+    _DataType neg_rec_alp = -1.0 / alpha;
 
     _DataType *result1 = reinterpret_cast<_DataType *>(result);
 
@@ -1623,7 +1623,7 @@ void dpnp_rng_pareto_c(void *result, const double alpha, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_pareto_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_pareto_c<_DataType>(
         q_ref, result, alpha, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -1676,7 +1676,7 @@ void dpnp_rng_poisson_c(void *result, const double lambda, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_poisson_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_poisson_c<_DataType>(
         q_ref, result, lambda, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -1713,8 +1713,8 @@ DPCTLSyclEventRef dpnp_rng_power_c(DPCTLSyclQueueRef q_ref,
     std::vector<sycl::event> no_deps;
 
     const _DataType d_zero = _DataType(0.0);
-    const _DataType d_one  = _DataType(1.0);
-    _DataType neg_rec_alp  = 1.0 / alpha;
+    const _DataType d_one = _DataType(1.0);
+    _DataType neg_rec_alp = 1.0 / alpha;
 
     _DataType *result1 = reinterpret_cast<_DataType *>(result);
 
@@ -1735,7 +1735,7 @@ void dpnp_rng_power_c(void *result, const double alpha, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_power_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_power_c<_DataType>(
         q_ref, result, alpha, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -1773,7 +1773,7 @@ DPCTLSyclEventRef
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
     std::vector<sycl::event> no_deps;
 
-    const _DataType a    = 0.0;
+    const _DataType a = 0.0;
     const _DataType beta = 2.0;
 
     DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result, size);
@@ -1786,7 +1786,7 @@ DPCTLSyclEventRef
     auto sqrt_event = mkl_vm::sqrt(q, size, result1, result1,
                                    {exponential_rng_event}, mkl_vm::mode::ha);
     auto scal_event = mkl_blas::scal(q, size, scale, result1, 1, {sqrt_event});
-    event_ref       = reinterpret_cast<DPCTLSyclEventRef>(&scal_event);
+    event_ref = reinterpret_cast<DPCTLSyclEventRef>(&scal_event);
 
     return DPCTLEvent_Copy(event_ref);
 }
@@ -1796,7 +1796,7 @@ void dpnp_rng_rayleigh_c(void *result, const _DataType scale, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_rayleigh_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_rayleigh_c<_DataType>(
         q_ref, result, scale, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -1843,7 +1843,7 @@ DPCTLSyclEventRef
     char *result1 = result1_ptr.get_ptr();
 
     size_t uvec_size = high_dim_size - 1;
-    double *Uvec     = reinterpret_cast<double *>(
+    double *Uvec = reinterpret_cast<double *>(
         sycl::malloc_shared(uvec_size * sizeof(double), q));
     mkl_rng::uniform<double> uniform_distribution(0.0, 1.0);
     auto uniform_event = mkl_rng::generate(uniform_distribution,
@@ -1901,7 +1901,7 @@ void dpnp_rng_shuffle_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_shuffle_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_shuffle_c<_DataType>(
         q_ref, result, itemsize, ndim, high_dim_size, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -2108,10 +2108,10 @@ DPCTLSyclEventRef
 
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
-    _DataType *result1     = reinterpret_cast<_DataType *>(result);
+    _DataType *result1 = reinterpret_cast<_DataType *>(result);
     const _DataType d_zero = 0.0, d_one = 1.0;
     _DataType shape = df / 2;
-    _DataType *sn   = nullptr;
+    _DataType *sn = nullptr;
 
     mkl_rng::gamma<_DataType> gamma_distribution(shape, d_zero, 1.0 / shape);
     auto gamma_distr_event =
@@ -2142,7 +2142,7 @@ void dpnp_rng_standard_t_c(void *result, const _DataType df, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_standard_t_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_standard_t_c<_DataType>(
         q_ref, result, df, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -2183,9 +2183,9 @@ DPCTLSyclEventRef
 
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
-    _DataType *result1     = reinterpret_cast<_DataType *>(result);
+    _DataType *result1 = reinterpret_cast<_DataType *>(result);
     const _DataType d_zero = (_DataType(0));
-    const _DataType d_one  = (_DataType(1));
+    const _DataType d_one = (_DataType(1));
 
     _DataType ratio, lpr, rpr;
 
@@ -2197,12 +2197,12 @@ DPCTLSyclEventRef
         _DataType wtot, wl, wr;
 
         wtot = x_max - x_min;
-        wl   = x_mode - x_min;
-        wr   = x_max - x_mode;
+        wl = x_mode - x_min;
+        wr = x_max - x_mode;
 
         ratio = wl / wtot;
-        lpr   = wl * wtot;
-        rpr   = wr * wtot;
+        lpr = wl * wtot;
+        rpr = wr * wtot;
     }
 
     if (!(0 <= ratio && ratio <= 1)) {
@@ -2250,7 +2250,7 @@ void dpnp_rng_triangular_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_triangular_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_triangular_c<_DataType>(
         q_ref, result, x_min, x_mode, x_max, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -2327,14 +2327,14 @@ void dpnp_rng_uniform_c(void *result,
                         const long high,
                         const size_t size)
 {
-    sycl::queue *q          = &DPNP_QUEUE;
+    sycl::queue *q = &DPNP_QUEUE;
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(q);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = nullptr;
+    DPCTLSyclEventRef event_ref = nullptr;
 
     if (q->get_device().is_cpu()) {
         mt19937_struct *mt19937 = new mt19937_struct();
-        mt19937->engine         = &DPNP_RNG_ENGINE;
+        mt19937->engine = &DPNP_RNG_ENGINE;
 
         event_ref = dpnp_rng_uniform_c<_DataType>(
             q_ref, result, static_cast<double>(low), static_cast<double>(high),
@@ -2347,7 +2347,7 @@ void dpnp_rng_uniform_c(void *result,
         // MCG59 engine is assumed to provide a better performance on GPU than
         // MT19937
         mcg59_struct *mcg59 = new mcg59_struct();
-        mcg59->engine       = &DPNP_RNG_MCG59_ENGINE;
+        mcg59->engine = &DPNP_RNG_MCG59_ENGINE;
 
         event_ref = dpnp_rng_uniform_c<_DataType>(
             q_ref, result, static_cast<double>(low), static_cast<double>(high),
@@ -2405,8 +2405,8 @@ DPCTLSyclEventRef
 
     _DataType r_over_two_kappa, recip_two_kappa;
     _DataType s_minus_one, hpt, r_over_two_kappa_minus_one, rho_minus_one;
-    _DataType *Uvec        = nullptr;
-    _DataType *Vvec        = nullptr;
+    _DataType *Uvec = nullptr;
+    _DataType *Vvec = nullptr;
     const _DataType d_zero = 0.0, d_one = 1.0;
 
     assert(kappa > 1.0);
@@ -2418,7 +2418,7 @@ DPCTLSyclEventRef
     r_over_two_kappa_minus_one =
         recip_two_kappa * (1 + recip_two_kappa / (1 + hpt));
     r_over_two_kappa = 1 + r_over_two_kappa_minus_one;
-    rho_minus_one    = r_over_two_kappa_minus_one -
+    rho_minus_one = r_over_two_kappa_minus_one -
                     sqrt(2 * r_over_two_kappa * recip_two_kappa);
     s_minus_one = rho_minus_one * (0.5 * rho_minus_one / (1 + rho_minus_one));
 
@@ -2446,14 +2446,14 @@ DPCTLSyclEventRef
             _DataType sn, cn, sn2, cn2;
             _DataType neg_W_minus_one, V, Y;
 
-            sn  = sin(Uvec[i]);
-            cn  = cos(Uvec[i]);
-            V   = Vvec[i];
+            sn = sin(Uvec[i]);
+            cn = cos(Uvec[i]);
+            V = Vvec[i];
             sn2 = sn * sn;
             cn2 = cn * cn;
 
             neg_W_minus_one = s_minus_one * sn2 / (0.5 * s_minus_one + cn2);
-            Y               = kappa * (s_minus_one + neg_W_minus_one);
+            Y = kappa * (s_minus_one + neg_W_minus_one);
 
             if ((Y * (2 - Y) >= V) || (log(Y / V) + 1 >= Y)) {
                 Y = neg_W_minus_one * (2 - neg_W_minus_one);
@@ -2480,9 +2480,9 @@ DPCTLSyclEventRef
         cgh.parallel_for(gws, [=](sycl::id<1> global_id) {
             size_t i = global_id[0];
             double mod, resi;
-            resi       = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
-            mod        = sycl::fabs(resi);
-            mod        = (sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
+            resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
+            mod = sycl::fabs(resi);
+            mod = (sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
             result1[i] = (resi < 0) ? -mod : mod;
         });
     };
@@ -2553,9 +2553,9 @@ DPCTLSyclEventRef
 
     assert(0. < kappa <= 1.0);
 
-    r              = 1 + sqrt(1 + 4 * kappa * kappa);
+    r = 1 + sqrt(1 + 4 * kappa * kappa);
     rho_over_kappa = (2) / (r + sqrt(2 * r));
-    rho            = rho_over_kappa * kappa;
+    rho = rho_over_kappa * kappa;
 
     /* s times kappa */
     s_kappa = (1 + rho * rho) / (2 * rho_over_kappa);
@@ -2604,9 +2604,9 @@ DPCTLSyclEventRef
         cgh.parallel_for(gws, [=](sycl::id<1> global_id) {
             size_t i = global_id[0];
             double mod, resi;
-            resi       = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
-            mod        = sycl::fabs(resi);
-            mod        = (sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
+            resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
+            mod = sycl::fabs(resi);
+            mod = (sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
             result1[i] = (resi < 0) ? -mod : mod;
         });
     };
@@ -2684,7 +2684,7 @@ void dpnp_rng_vonmises_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_vonmises_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_vonmises_c<_DataType>(
         q_ref, result, mu, kappa, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -2731,11 +2731,11 @@ DPCTLSyclEventRef dpnp_rng_wald_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     _DataType *result1 = reinterpret_cast<_DataType *>(result);
-    _DataType *uvec    = nullptr;
+    _DataType *uvec = nullptr;
 
     const _DataType d_zero = _DataType(0.0);
-    const _DataType d_one  = _DataType(1.0);
-    _DataType gsc          = sqrt(0.5 * mean / scale);
+    const _DataType d_one = _DataType(1.0);
+    _DataType gsc = sqrt(0.5 * mean / scale);
 
     mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, gsc);
 
@@ -2800,7 +2800,7 @@ void dpnp_rng_wald_c(void *result,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_wald_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_wald_c<_DataType>(
         q_ref, result, mean, scale, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -2845,8 +2845,8 @@ DPCTLSyclEventRef
             dpnp_zeros_c<_DataType>(q_ref, result, size, dep_event_vec_ref);
     }
     else {
-        _DataType *result1   = reinterpret_cast<_DataType *>(result);
-        const _DataType a    = (_DataType(0.0));
+        _DataType *result1 = reinterpret_cast<_DataType *>(result);
+        const _DataType a = (_DataType(0.0));
         const _DataType beta = (_DataType(1.0));
 
         mkl_rng::weibull<_DataType> distribution(alpha, a, beta);
@@ -2862,7 +2862,7 @@ void dpnp_rng_weibull_c(void *result, const double alpha, const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_rng_weibull_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_rng_weibull_c<_DataType>(
         q_ref, result, alpha, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -2903,13 +2903,13 @@ DPCTLSyclEventRef dpnp_rng_zipf_c(DPCTLSyclQueueRef q_ref,
     _DataType *Uvec = nullptr, *Vvec = nullptr;
     long X;
     const _DataType d_zero = 0.0;
-    const _DataType d_one  = 1.0;
+    const _DataType d_one = 1.0;
 
     DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result, size, true, true);
     _DataType *result1 = result1_ptr.get_ptr();
 
     am1 = a - d_one;
-    b   = pow(2.0, am1);
+    b = pow(2.0, am1);
 
     Uvec = reinterpret_cast<_DataType *>(
         sycl::malloc_shared(size * 2 * sizeof(_DataType), q));

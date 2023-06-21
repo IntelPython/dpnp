@@ -28,12 +28,12 @@
 #include "constants.hpp"
 
 void *python_constants::py_none = nullptr;
-void *python_constants::py_nan  = nullptr;
+void *python_constants::py_nan = nullptr;
 
 void dpnp_python_constants_initialize_c(void *_py_none, void *_py_nan)
 {
     python_constants::py_none = _py_none;
-    python_constants::py_nan  = _py_nan;
+    python_constants::py_nan = _py_nan;
     //    std::cout << "========dpnp_python_constants_initialize_c============="
     //    << std::endl; std::cout << "\t None=" << _py_none
     //              << "\n\t NaN=" << _py_nan

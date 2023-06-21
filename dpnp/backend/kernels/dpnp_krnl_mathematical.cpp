@@ -59,7 +59,7 @@ DPCTLSyclEventRef dpnp_around_c(DPCTLSyclQueueRef q_ref,
     sycl::event event;
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, input_in, input_size);
-    _DataType *input  = input1_ptr.get_ptr();
+    _DataType *input = input1_ptr.get_ptr();
     _DataType *result = reinterpret_cast<_DataType *>(result_out);
 
     if constexpr (std::is_same<_DataType, double>::value ||
@@ -97,7 +97,7 @@ void dpnp_around_c(const void *input_in,
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref           = dpnp_around_c<_DataType>(
+    DPCTLSyclEventRef event_ref = dpnp_around_c<_DataType>(
         q_ref, input_in, result_out, input_size, decimals, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
@@ -155,7 +155,7 @@ DPCTLSyclEventRef
         static_assert(std::is_same_v<_DataType_input, _DataType_output>,
                       "Result type must match a type of input data");
 
-        constexpr size_t lws          = 64;
+        constexpr size_t lws = 64;
         constexpr unsigned int vec_sz = 8;
         constexpr sycl::access::address_space global_space =
             sycl::access::address_space::global_space;
@@ -165,7 +165,7 @@ DPCTLSyclEventRef
         auto lws_range = sycl::range<1>(lws);
 
         auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {
-            auto sg                = nd_it.get_sub_group();
+            auto sg = nd_it.get_sub_group();
             const auto max_sg_size = sg.get_max_local_range()[0];
             const size_t start =
                 vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +
@@ -266,7 +266,7 @@ DPCTLSyclEventRef dpnp_cross_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue q               = *(reinterpret_cast<sycl::queue *>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     DPNPC_ptr_adapter<_DataType_input1> input1_ptr(q_ref, input1_in,
                                                    input1_size, true);
@@ -276,7 +276,7 @@ DPCTLSyclEventRef dpnp_cross_c(DPCTLSyclQueueRef q_ref,
                                                    input1_size, true, true);
     const _DataType_input1 *input1 = input1_ptr.get_ptr();
     const _DataType_input2 *input2 = input2_ptr.get_ptr();
-    _DataType_output *result       = result_ptr.get_ptr();
+    _DataType_output *result = result_ptr.get_ptr();
 
     result[0] = input1[1] * input2[2] - input1[2] * input2[1];
 
@@ -368,7 +368,7 @@ DPCTLSyclEventRef dpnp_cumprod_c(DPCTLSyclQueueRef q_ref,
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(q_ref, array1_in, size, true);
     DPNPC_ptr_adapter<_DataType_output> result_ptr(q_ref, result1, size, true,
                                                    true);
-    _DataType_input *array1  = input1_ptr.get_ptr();
+    _DataType_input *array1 = input1_ptr.get_ptr();
     _DataType_output *result = result_ptr.get_ptr();
 
     _DataType_output cur_res = 1;
@@ -429,7 +429,7 @@ DPCTLSyclEventRef dpnp_cumsum_c(DPCTLSyclQueueRef q_ref,
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(q_ref, array1_in, size, true);
     DPNPC_ptr_adapter<_DataType_output> result_ptr(q_ref, result1, size, true,
                                                    true);
-    _DataType_input *array1  = input1_ptr.get_ptr();
+    _DataType_input *array1 = input1_ptr.get_ptr();
     _DataType_output *result = result_ptr.get_ptr();
 
     _DataType_output cur_res = 0;
@@ -508,7 +508,7 @@ DPCTLSyclEventRef dpnp_ediff1d_c(DPCTLSyclQueueRef q_ref,
                                                    result_size, false, true);
 
     _DataType_input *input1_data = input1_ptr.get_ptr();
-    _DataType_output *result     = result_ptr.get_ptr();
+    _DataType_output *result = result_ptr.get_ptr();
 
     cl::sycl::event event;
     cl::sycl::range<1> gws(result_size);
@@ -519,7 +519,7 @@ DPCTLSyclEventRef dpnp_ediff1d_c(DPCTLSyclQueueRef q_ref,
         {
             const _DataType_output curr_elem = input1_data[output_id];
             const _DataType_output next_elem = input1_data[output_id + 1];
-            result[output_id]                = next_elem - curr_elem;
+            result[output_id] = next_elem - curr_elem;
         }
     };
     auto kernel_func = [&](cl::sycl::handler &cgh) {
@@ -662,7 +662,7 @@ DPCTLSyclEventRef
         const _DataType_output input2_elem = (*input2_it)[i];
 
         double div = (double)input1_elem / (double)input2_elem;
-        result[i]  = static_cast<_DataType_output>(sycl::floor(div));
+        result[i] = static_cast<_DataType_output>(sycl::floor(div));
     };
     auto kernel_func = [&](sycl::handler &cgh) {
         cgh.parallel_for<class dpnp_floor_divide_c_kernel<
@@ -910,12 +910,12 @@ DPCTLSyclEventRef dpnp_remainder_c(DPCTLSyclQueueRef q_ref,
 
     sycl::range<1> gws(result_size);
     auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
-        const size_t i                     = global_id[0];
+        const size_t i = global_id[0];
         const _DataType_output input1_elem = (*input1_it)[i];
         const _DataType_output input2_elem = (*input2_it)[i];
         double fmod_res = sycl::fmod((double)input1_elem, (double)input2_elem);
-        double add      = fmod_res + input2_elem;
-        result[i]       = sycl::fmod(add, (double)input2_elem);
+        double add = fmod_res + input2_elem;
+        result[i] = sycl::fmod(add, (double)input2_elem);
     };
     auto kernel_func = [&](sycl::handler &cgh) {
         cgh.parallel_for<class dpnp_remainder_c_kernel<

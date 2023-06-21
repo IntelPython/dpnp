@@ -47,7 +47,7 @@ void test_dpnp_random_normal(const size_t size,
                              const double scale)
 {
     clock_t start, end;
-    double dev_time_used     = 0.0;
+    double dev_time_used = 0.0;
     double sum_dev_time_used = 0.0;
 
     dpnp_queue_initialize_c(QueueOptions::GPU_SELECTOR);
@@ -81,7 +81,7 @@ void test_mkl_random_normal(const size_t size,
                             const double scale)
 {
     clock_t start, end;
-    double dev_time_used     = 0.0;
+    double dev_time_used = 0.0;
     double sum_dev_time_used = 0.0;
 
     sycl::queue queue{sycl::gpu_selector()};
@@ -119,11 +119,11 @@ void test_mkl_random_normal(const size_t size,
 
 int main(int, char **)
 {
-    const size_t size  = 100000000;
+    const size_t size = 100000000;
     const size_t iters = 30;
 
-    const size_t seed  = 10;
-    const double loc   = 0.0;
+    const size_t seed = 10;
+    const double loc = 0.0;
     const double scale = 1.0;
 
     std::cout << "Normal distr. params:\nloc is " << loc << ", scale is "

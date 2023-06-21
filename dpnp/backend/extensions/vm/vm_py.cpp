@@ -33,7 +33,7 @@
 #include "div.hpp"
 
 namespace vm_ext = dpnp::backend::ext::vm;
-namespace py     = pybind11;
+namespace py = pybind11;
 
 // populate dispatch vectors
 void init_dispatch_vectors(void)

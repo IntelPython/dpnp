@@ -43,11 +43,11 @@
 int main(int, char **)
 {
     const size_t size = 2;
-    size_t len        = size * size;
+    size_t len = size * size;
 
     dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
 
-    float *array   = (float *)dpnp_memory_alloc_c(len * sizeof(float));
+    float *array = (float *)dpnp_memory_alloc_c(len * sizeof(float));
     float *result1 = (float *)dpnp_memory_alloc_c(size * sizeof(float));
     float *result2 = (float *)dpnp_memory_alloc_c(len * sizeof(float));
 

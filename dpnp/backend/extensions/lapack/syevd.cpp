@@ -43,7 +43,7 @@ namespace ext
 namespace lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;
-namespace py         = pybind11;
+namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*syevd_impl_fn_ptr_t)(sycl::queue,
@@ -214,7 +214,7 @@ std::pair<sycl::event, sycl::event>
     char *eig_vecs_data = eig_vecs.get_data();
     char *eig_vals_data = eig_vals.get_data();
 
-    const std::int64_t n            = eig_vecs_shape[0];
+    const std::int64_t n = eig_vecs_shape[0];
     const oneapi::mkl::job jobz_val = static_cast<oneapi::mkl::job>(jobz);
     const oneapi::mkl::uplo uplo_val =
         static_cast<oneapi::mkl::uplo>(upper_lower);
