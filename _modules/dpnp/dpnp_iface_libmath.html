@@ -130,9 +130,7 @@
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;erf&#39;</span>
-<span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;erf&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="erf"><a class="viewcode-back" href="../../reference/generated/dpnp.erf.html#dpnp.erf">[docs]</a><span class="k">def</span> <span class="nf">erf</span><span class="p">(</span><span class="n">in_array1</span><span class="p">):</span>
@@ -162,11 +160,15 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
+        <span class="n">in_array1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_erf</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">create_output_descriptor_py</span><span class="p">(</span><span class="n">in_array1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">in_array1</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">create_output_descriptor_py</span><span class="p">(</span>
+        <span class="n">in_array1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">in_array1</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
         <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">erf</span><span class="p">(</span><span class="n">in_array1</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 

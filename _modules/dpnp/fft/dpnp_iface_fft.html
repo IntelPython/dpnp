@@ -134,24 +134,24 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;fft&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;fft2&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;fftfreq&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;fftn&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;fftshift&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;hfft&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ifft&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ifft2&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ifftn&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ifftshift&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ihfft&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;irfft&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;irfft2&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;irfftn&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;rfft&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;rfft2&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;rfftfreq&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;rfftn&#39;</span>
+    <span class="s2">&quot;fft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fft2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fftfreq&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fftn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fftshift&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hfft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ifft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ifft2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ifftn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ifftshift&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ihfft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;irfft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;irfft2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;irfftn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rfft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rfft2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rfftfreq&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rfftn&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -160,14 +160,15 @@
     <span class="n">forward</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">ortho</span> <span class="o">=</span> <span class="mi">2</span>
 
+
 <span class="k">def</span> <span class="nf">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">norm</span> <span class="o">==</span> <span class="s1">&#39;backward&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">norm</span> <span class="o">==</span> <span class="s2">&quot;backward&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Norm</span><span class="o">.</span><span class="n">backward</span>
-    <span class="k">if</span> <span class="n">norm</span> <span class="o">==</span> <span class="s1">&#39;forward&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">norm</span> <span class="o">==</span> <span class="s2">&quot;forward&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Norm</span><span class="o">.</span><span class="n">forward</span>
-    <span class="k">if</span> <span class="n">norm</span> <span class="o">==</span> <span class="s1">&#39;ortho&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">norm</span> <span class="o">==</span> <span class="s2">&quot;ortho&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Norm</span><span class="o">.</span><span class="n">ortho</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown norm value.&#39;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown norm value.&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="fft"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fft.html#dpnp.fft.fft">[docs]</a><span class="k">def</span> <span class="nf">fft</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -190,7 +191,7 @@
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>      <span class="c1"># the most right dimension (default value)</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># the most right dimension (default value)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">axis_param</span> <span class="o">=</span> <span class="n">axis</span>
 
@@ -200,16 +201,23 @@
             <span class="n">input_boundarie</span> <span class="o">=</span> <span class="n">n</span>
 
         <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">input_boundarie</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">axis</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output_boundarie</span> <span class="o">=</span> <span class="n">input_boundarie</span>
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span>
+                <span class="n">x1_desc</span><span class="p">,</span>
+                <span class="n">input_boundarie</span><span class="p">,</span>
+                <span class="n">output_boundarie</span><span class="p">,</span>
+                <span class="n">axis_param</span><span class="p">,</span>
+                <span class="kc">False</span><span class="p">,</span>
+                <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
@@ -293,7 +301,12 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">param_n</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="n">param_axis</span><span class="p">]</span>
                 <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                    <span class="n">checker_throw_axis_error</span><span class="p">(</span><span class="s1">&#39;fft.fftn&#39;</span><span class="p">,</span> <span class="s1">&#39;is out of bounds&#39;</span><span class="p">,</span> <span class="n">param_axis</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">checker_throw_axis_error</span><span class="p">(</span>
+                        <span class="s2">&quot;fft.fftn&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span>
+                        <span class="n">param_axis</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
 
                 <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">x1_iter</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
 
@@ -318,18 +331,24 @@
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">:</span>
-
-        <span class="n">norm_</span><span class="o">=</span> <span class="n">Norm</span><span class="o">.</span><span class="n">backward</span>
+        <span class="n">norm_</span> <span class="o">=</span> <span class="n">Norm</span><span class="o">.</span><span class="n">backward</span>
 
         <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>      <span class="c1"># the most right dimension (default value)</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># the most right dimension (default value)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">axis_param</span> <span class="o">=</span> <span class="n">axes</span>
 
         <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span>
+                <span class="n">x1_desc</span><span class="p">,</span>
+                <span class="n">input_boundarie</span><span class="p">,</span>
+                <span class="n">output_boundarie</span><span class="p">,</span>
+                <span class="n">axis_param</span><span class="p">,</span>
+                <span class="kc">False</span><span class="p">,</span>
+                <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span></div>
 
@@ -353,7 +372,7 @@
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>      <span class="c1"># the most right dimension (default value)</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># the most right dimension (default value)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">axis_param</span> <span class="o">=</span> <span class="n">axis</span>
 
@@ -363,15 +382,22 @@
             <span class="n">input_boundarie</span> <span class="o">=</span> <span class="n">n</span>
 
         <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">input_boundarie</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output_boundarie</span> <span class="o">=</span> <span class="n">input_boundarie</span>
 
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span>
+                <span class="n">x1_desc</span><span class="p">,</span>
+                <span class="n">input_boundarie</span><span class="p">,</span>
+                <span class="n">output_boundarie</span><span class="p">,</span>
+                <span class="n">axis_param</span><span class="p">,</span>
+                <span class="kc">False</span><span class="p">,</span>
+                <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">hfft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
@@ -395,7 +421,7 @@
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>      <span class="c1"># the most right dimension (default value)</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># the most right dimension (default value)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">axis_param</span> <span class="o">=</span> <span class="n">axis</span>
 
@@ -405,14 +431,21 @@
             <span class="n">input_boundarie</span> <span class="o">=</span> <span class="n">n</span>
 
         <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">input_boundarie</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output_boundarie</span> <span class="o">=</span> <span class="n">input_boundarie</span>
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span>
+                <span class="n">x1_desc</span><span class="p">,</span>
+                <span class="n">input_boundarie</span><span class="p">,</span>
+                <span class="n">output_boundarie</span><span class="p">,</span>
+                <span class="n">axis_param</span><span class="p">,</span>
+                <span class="kc">True</span><span class="p">,</span>
+                <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
@@ -459,18 +492,24 @@
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">:</span>
-
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">Norm</span><span class="o">.</span><span class="n">backward</span>
 
         <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>      <span class="c1"># the most right dimension (default value)</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># the most right dimension (default value)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">axis_param</span> <span class="o">=</span> <span class="n">axes</span>
 
         <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span>
+                <span class="n">x1_desc</span><span class="p">,</span>
+                <span class="n">input_boundarie</span><span class="p">,</span>
+                <span class="n">output_boundarie</span><span class="p">,</span>
+                <span class="n">axis_param</span><span class="p">,</span>
+                <span class="kc">True</span><span class="p">,</span>
+                <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span></div>
 
@@ -514,10 +553,20 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">param_n</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="n">param_axis</span><span class="p">]</span>
                 <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                    <span class="n">checker_throw_axis_error</span><span class="p">(</span><span class="s1">&#39;fft.ifftn&#39;</span><span class="p">,</span> <span class="s1">&#39;is out of bounds&#39;</span><span class="p">,</span> <span class="n">param_axis</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">checker_throw_axis_error</span><span class="p">(</span>
+                        <span class="s2">&quot;fft.ifftn&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span>
+                        <span class="n">param_axis</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
 
                 <span class="n">x1_iter_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1_iter</span><span class="p">)</span>
-                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">x1_iter_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span>
+                    <span class="n">x1_iter_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span>
+                    <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span>
+                    <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span>
+                <span class="p">)</span>
 
             <span class="k">return</span> <span class="n">x1_iter</span>
 
@@ -543,7 +592,7 @@
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>      <span class="c1"># the most right dimension (default value)</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># the most right dimension (default value)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">axis_param</span> <span class="o">=</span> <span class="n">axis</span>
 
@@ -553,9 +602,9 @@
             <span class="n">input_boundarie</span> <span class="o">=</span> <span class="n">n</span>
 
         <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">input_boundarie</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -563,7 +612,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output_boundarie</span> <span class="o">=</span> <span class="n">input_boundarie</span>
 
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span>
+                <span class="n">x1_desc</span><span class="p">,</span>
+                <span class="n">input_boundarie</span><span class="p">,</span>
+                <span class="n">output_boundarie</span><span class="p">,</span>
+                <span class="n">axis_param</span><span class="p">,</span>
+                <span class="kc">True</span><span class="p">,</span>
+                <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ihfft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
@@ -587,7 +643,7 @@
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>      <span class="c1"># the most right dimension (default value)</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># the most right dimension (default value)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">axis_param</span> <span class="o">=</span> <span class="n">axis</span>
 
@@ -597,9 +653,9 @@
             <span class="n">input_boundarie</span> <span class="o">=</span> <span class="n">n</span>
 
         <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">input_boundarie</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -607,7 +663,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output_boundarie</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">input_boundarie</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_rfft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_rfft</span><span class="p">(</span>
+                <span class="n">x1_desc</span><span class="p">,</span>
+                <span class="n">input_boundarie</span><span class="p">,</span>
+                <span class="n">output_boundarie</span><span class="p">,</span>
+                <span class="n">axis_param</span><span class="p">,</span>
+                <span class="kc">True</span><span class="p">,</span>
+                <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
             <span class="c1"># TODO tmp = utils.create_output_array(result_shape, result_c_type, out)</span>
             <span class="c1"># tmp = dparray(result.shape, dtype=dpnp.float64)</span>
             <span class="c1"># for it in range(tmp.size):</span>
@@ -682,10 +745,20 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">param_n</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="n">param_axis</span><span class="p">]</span>
                 <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                    <span class="n">checker_throw_axis_error</span><span class="p">(</span><span class="s1">&#39;fft.irfftn&#39;</span><span class="p">,</span> <span class="s1">&#39;is out of bounds&#39;</span><span class="p">,</span> <span class="n">param_axis</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">checker_throw_axis_error</span><span class="p">(</span>
+                        <span class="s2">&quot;fft.irfftn&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span>
+                        <span class="n">param_axis</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
 
                 <span class="n">x1_iter_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1_iter</span><span class="p">)</span>
-                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">irfft</span><span class="p">(</span><span class="n">x1_iter_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">irfft</span><span class="p">(</span>
+                    <span class="n">x1_iter_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span>
+                    <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span>
+                    <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span>
+                <span class="p">)</span>
 
             <span class="k">return</span> <span class="n">x1_iter</span>
 
@@ -711,7 +784,7 @@
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>                             <span class="c1"># the most right dimension (default value)</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># the most right dimension (default value)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">axis_param</span> <span class="o">=</span> <span class="n">axis</span>
 
@@ -721,9 +794,9 @@
             <span class="n">input_boundarie</span> <span class="o">=</span> <span class="n">n</span>
 
         <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                                        <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">input_boundarie</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                                        <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">elif</span> <span class="n">axis</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -733,8 +806,17 @@
         <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">complex64</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">output_boundarie</span> <span class="o">=</span> <span class="n">input_boundarie</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># rfft specific requirenment</span>
-            <span class="k">return</span> <span class="n">dpnp_rfft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="n">output_boundarie</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">input_boundarie</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="p">)</span>  <span class="c1"># rfft specific requirenment</span>
+            <span class="k">return</span> <span class="n">dpnp_rfft</span><span class="p">(</span>
+                <span class="n">x1_desc</span><span class="p">,</span>
+                <span class="n">input_boundarie</span><span class="p">,</span>
+                <span class="n">output_boundarie</span><span class="p">,</span>
+                <span class="n">axis_param</span><span class="p">,</span>
+                <span class="kc">False</span><span class="p">,</span>
+                <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
@@ -811,7 +893,7 @@
         <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>                      <span class="c1"># let fallback to handle exception</span>
+            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">x1</span>
             <span class="n">iteration_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axes_param</span><span class="p">)))</span>
@@ -821,10 +903,22 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">param_n</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="n">param_axis</span><span class="p">]</span>
                 <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                    <span class="n">checker_throw_axis_error</span><span class="p">(</span><span class="s1">&#39;fft.rfftn&#39;</span><span class="p">,</span> <span class="s1">&#39;is out of bounds&#39;</span><span class="p">,</span> <span class="n">param_axis</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">checker_throw_axis_error</span><span class="p">(</span>
+                        <span class="s2">&quot;fft.rfftn&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span>
+                        <span class="n">param_axis</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
 
-                <span class="n">x1_iter_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1_iter</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">rfft</span><span class="p">(</span><span class="n">x1_iter_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+                <span class="n">x1_iter_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
+                    <span class="n">x1_iter</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
+                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">rfft</span><span class="p">(</span>
+                    <span class="n">x1_iter_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span>
+                    <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span>
+                    <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span>
+                <span class="p">)</span>
 
             <span class="k">return</span> <span class="n">x1_iter</span>
 

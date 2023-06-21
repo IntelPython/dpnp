@@ -127,17 +127,12 @@
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils.dpnp_algo_utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">call_origin</span><span class="p">,</span>
     <span class="n">map_dtype_to_device</span><span class="p">,</span>
-    <span class="n">use_origin_backend</span>
+    <span class="n">use_origin_backend</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">dpnp.random.dpnp_algo_random</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">MCG59</span><span class="p">,</span>
-    <span class="n">MT19937</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpnp.random.dpnp_algo_random</span> <span class="kn">import</span> <span class="n">MCG59</span><span class="p">,</span> <span class="n">MT19937</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;RandomState&#39;</span>
-<span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;RandomState&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="RandomState"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState">[docs]</a><span class="k">class</span> <span class="nc">RandomState</span><span class="p">:</span>
@@ -164,7 +159,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span>
 
         <span class="n">is_cpu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span><span class="o">.</span><span class="n">is_cpu</span>
@@ -182,30 +179,30 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="o">=</span> <span class="n">seed</span>
 
         <span class="c1"># &#39;float32&#39; is default floating data type if device doesn&#39;t support &#39;float64&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_def_float_type</span> <span class="o">=</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_def_float_type</span> <span class="o">=</span> <span class="n">map_dtype_to_device</span><span class="p">(</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span>
+        <span class="p">)</span>
 
-        <span class="c1"># TODO: rework through pybind11 extension for MKL engine and distribution classes</span>
+        <span class="c1"># TODO: rework through pybind11 extension for OneMKL engine and distribution classes</span>
         <span class="k">if</span> <span class="n">is_cpu</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">MT19937</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># MCG59 is assumed to provide a better performance on GPU than MT19937</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">MCG59</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_random_state</span> <span class="o">=</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">allow_fallback</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_random_state</span> <span class="o">=</span> <span class="n">call_origin</span><span class="p">(</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">allow_fallback</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39; at 0x</span><span class="si">{:X}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot; at 0x</span><span class="si">{:X}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-        <span class="n">_str</span> <span class="o">+=</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+        <span class="n">_str</span> <span class="o">+=</span> <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
         <span class="k">return</span> <span class="n">_str</span>
-
 
     <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
-
 
     <span class="k">def</span> <span class="nf">_is_finite_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -216,7 +213,6 @@
         <span class="c1"># but for now use direct numpy calls without call_origin() wrapper, since data is a scalar</span>
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-
     <span class="k">def</span> <span class="nf">_is_signbit_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test a scalar if sign bit is set for it (less than zero).</span>
@@ -225,7 +221,6 @@
         <span class="c1"># TODO: replace with dpnp.signbit() once function is available in DPNP,</span>
         <span class="c1"># but for now use direct numpy calls without call_origin() wrapper, since data is a scalar</span>
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">signbit</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
 
     <span class="k">def</span> <span class="nf">_validate_float_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -239,11 +234,12 @@
             <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_def_float_type</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;dtype=</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s1"> is unsupported.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dtype=</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is unsupported.&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dtype=</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is not supported by SYCL device &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;dtype=</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is not supported by SYCL device &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">dtype</span>
-
 
 <div class="viewcode-block" id="RandomState.get_state"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -258,7 +254,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span></div>
 
-
 <div class="viewcode-block" id="RandomState.get_sycl_queue"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_sycl_queue">[docs]</a>    <span class="k">def</span> <span class="nf">get_sycl_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an instance of :class:`dpctl.SyclQueue` used within the generator for data allocation.</span>
@@ -269,7 +264,6 @@
 <span class="sd">            A SYCL queue used for data allocation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span></div>
-
 
 <div class="viewcode-block" id="RandomState.get_sycl_device"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_sycl_device">[docs]</a>    <span class="k">def</span> <span class="nf">get_sycl_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -282,8 +276,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span></div>
 
-
-<div class="viewcode-block" id="RandomState.normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.normal">[docs]</a>    <span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s1">&#39;device&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomState.normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.normal">[docs]</a>    <span class="k">def</span> <span class="nf">normal</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw random samples from a normal (Gaussian) distribution.</span>
 
@@ -327,31 +322,47 @@
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_float_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_float_dtype</span><span class="p">(</span>
+                    <span class="n">dtype</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="n">min_floating</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">min</span>
                 <span class="n">max_floating</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
 
-                <span class="k">if</span> <span class="p">(</span><span class="n">loc</span> <span class="o">&gt;=</span> <span class="n">max_floating</span> <span class="ow">or</span> <span class="n">loc</span> <span class="o">&lt;=</span> <span class="n">min_floating</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">loc</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Range of loc=</span><span class="si">{</span><span class="n">loc</span><span class="si">}</span><span class="s1"> exceeds valid bounds&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">loc</span> <span class="o">&gt;=</span> <span class="n">max_floating</span> <span class="ow">or</span> <span class="n">loc</span> <span class="o">&lt;=</span> <span class="n">min_floating</span>
+                <span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">loc</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Range of loc=</span><span class="si">{</span><span class="n">loc</span><span class="si">}</span><span class="s2"> exceeds valid bounds&quot;</span>
+                    <span class="p">)</span>
 
                 <span class="k">if</span> <span class="p">(</span><span class="n">scale</span> <span class="o">&gt;=</span> <span class="n">max_floating</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Range of scale=</span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s1"> exceeds valid bounds&#39;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Range of scale=</span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s2"> exceeds valid bounds&quot;</span>
+                    <span class="p">)</span>
                 <span class="c1"># scale = -0.0 is cosidered as negative</span>
                 <span class="k">elif</span> <span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">scale</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_signbit_scalar</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;scale=</span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s1">, but must be non-negative.&#39;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;scale=</span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s2">, but must be non-negative.&quot;</span>
+                    <span class="p">)</span>
 
                 <span class="n">dpu</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span>
-                                                 <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
-                                                 <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
-                                                 <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-                                                 <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
+                    <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span>
+                    <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+                    <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                    <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fallback_random_state</span><span class="o">.</span><span class="n">normal</span><span class="p">,</span>
-                           <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_random_state</span><span class="o">.</span><span class="n">normal</span><span class="p">,</span>
+            <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span>
+            <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="RandomState.rand"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.rand">[docs]</a>    <span class="k">def</span> <span class="nf">rand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s1">&#39;device&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomState.rand"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.rand">[docs]</a>    <span class="k">def</span> <span class="nf">rand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw random values in a given shape.</span>
 
@@ -393,8 +404,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="RandomState.randint"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.randint">[docs]</a>    <span class="k">def</span> <span class="nf">randint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s1">&#39;device&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomState.randint"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.randint">[docs]</a>    <span class="k">def</span> <span class="nf">randint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw random integers from `low` (inclusive) to `high` (exclusive).</span>
 
@@ -449,30 +459,49 @@
                         <span class="n">high</span> <span class="o">=</span> <span class="n">low</span>
                         <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
 
-                    <span class="n">min_int</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">min</span>
-                    <span class="n">max_int</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
+                    <span class="n">min_int</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">min</span>
+                    <span class="n">max_int</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
 
-                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">low</span><span class="p">)</span> <span class="ow">or</span> <span class="n">low</span> <span class="o">&gt;</span> <span class="n">max_int</span> <span class="ow">or</span> <span class="n">low</span> <span class="o">&lt;</span> <span class="n">min_int</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Range of low=</span><span class="si">{</span><span class="n">low</span><span class="si">}</span><span class="s1"> exceeds valid bounds&#39;</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">high</span><span class="p">)</span> <span class="ow">or</span> <span class="n">high</span> <span class="o">&gt;</span> <span class="n">max_int</span> <span class="ow">or</span> <span class="n">high</span> <span class="o">&lt;</span> <span class="n">min_int</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Range of high=</span><span class="si">{</span><span class="n">high</span><span class="si">}</span><span class="s1"> exceeds valid bounds&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">low</span><span class="p">)</span>
+                        <span class="ow">or</span> <span class="n">low</span> <span class="o">&gt;</span> <span class="n">max_int</span>
+                        <span class="ow">or</span> <span class="n">low</span> <span class="o">&lt;</span> <span class="n">min_int</span>
+                    <span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Range of low=</span><span class="si">{</span><span class="n">low</span><span class="si">}</span><span class="s2"> exceeds valid bounds&quot;</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="p">(</span>
+                        <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">high</span><span class="p">)</span>
+                        <span class="ow">or</span> <span class="n">high</span> <span class="o">&gt;</span> <span class="n">max_int</span>
+                        <span class="ow">or</span> <span class="n">high</span> <span class="o">&lt;</span> <span class="n">min_int</span>
+                    <span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Range of high=</span><span class="si">{</span><span class="n">high</span><span class="si">}</span><span class="s2"> exceeds valid bounds&quot;</span>
+                        <span class="p">)</span>
 
                     <span class="n">low</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">low</span><span class="p">)</span>
                     <span class="n">high</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">high</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">low</span> <span class="o">&gt;=</span> <span class="n">high</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;low=</span><span class="si">{</span><span class="n">low</span><span class="si">}</span><span class="s1"> &gt;= high=</span><span class="si">{</span><span class="n">high</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;low=</span><span class="si">{</span><span class="n">low</span><span class="si">}</span><span class="s2"> &gt;= high=</span><span class="si">{</span><span class="n">high</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span>
-                                        <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span>
-                                        <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
-                                        <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span>
-                                        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+                        <span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span>
+                        <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span>
+                        <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span>
+                        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                    <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fallback_random_state</span><span class="o">.</span><span class="n">randint</span><span class="p">,</span>
-                           <span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_random_state</span><span class="o">.</span><span class="n">randint</span><span class="p">,</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="RandomState.randn"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.randn">[docs]</a>    <span class="k">def</span> <span class="nf">randn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s1">&#39;device&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomState.randn"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.randn">[docs]</a>    <span class="k">def</span> <span class="nf">randn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a sample (or samples) from the &quot;standard normal&quot; distribution.</span>
 
@@ -515,11 +544,9 @@
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
-                                    <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="RandomState.random_sample"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.random_sample">[docs]</a>    <span class="k">def</span> <span class="nf">random_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s1">&#39;device&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomState.random_sample"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.random_sample">[docs]</a>    <span class="k">def</span> <span class="nf">random_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw random floats in the half-open interval [0.0, 1.0).</span>
 
@@ -553,14 +580,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-                            <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-                            <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
-                            <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+            <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+        <span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="RandomState.standard_normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.standard_normal">[docs]</a>    <span class="k">def</span> <span class="nf">standard_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s1">&#39;device&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomState.standard_normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.standard_normal">[docs]</a>    <span class="k">def</span> <span class="nf">standard_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a standard Normal distribution (mean=0, stdev=1).</span>
 
@@ -594,14 +618,13 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-                           <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-                           <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
-                           <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                           <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
+            <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+        <span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="RandomState.uniform"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.uniform">[docs]</a>    <span class="k">def</span> <span class="nf">uniform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s1">&#39;device&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomState.uniform"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.uniform">[docs]</a>    <span class="k">def</span> <span class="nf">uniform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a uniform distribution.</span>
 
@@ -652,28 +675,49 @@
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">high</span><span class="p">):</span>
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">min_double</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">min</span>
-                <span class="n">max_double</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
+                <span class="n">min_double</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="s2">&quot;double&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">min</span>
+                <span class="n">max_double</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="s2">&quot;double&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
 
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">low</span><span class="p">)</span> <span class="ow">or</span> <span class="n">low</span> <span class="o">&gt;=</span> <span class="n">max_double</span> <span class="ow">or</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">min_double</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Range of low=</span><span class="si">{</span><span class="n">low</span><span class="si">}</span><span class="s1"> exceeds valid bounds&#39;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">high</span><span class="p">)</span> <span class="ow">or</span> <span class="n">high</span> <span class="o">&gt;=</span> <span class="n">max_double</span> <span class="ow">or</span> <span class="n">high</span> <span class="o">&lt;=</span> <span class="n">min_double</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Range of high=</span><span class="si">{</span><span class="n">high</span><span class="si">}</span><span class="s1"> exceeds valid bounds&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">low</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="n">low</span> <span class="o">&gt;=</span> <span class="n">max_double</span>
+                    <span class="ow">or</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">min_double</span>
+                <span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Range of low=</span><span class="si">{</span><span class="n">low</span><span class="si">}</span><span class="s2"> exceeds valid bounds&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="p">(</span>
+                    <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_finite_scalar</span><span class="p">(</span><span class="n">high</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="n">high</span> <span class="o">&gt;=</span> <span class="n">max_double</span>
+                    <span class="ow">or</span> <span class="n">high</span> <span class="o">&lt;=</span> <span class="n">min_double</span>
+                <span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Range of high=</span><span class="si">{</span><span class="n">high</span><span class="si">}</span><span class="s2"> exceeds valid bounds&quot;</span>
+                    <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">low</span> <span class="o">&gt;</span> <span class="n">high</span><span class="p">:</span>
                     <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">high</span><span class="p">,</span> <span class="n">low</span>
 
-                <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_float_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_float_dtype</span><span class="p">(</span>
+                    <span class="n">dtype</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="n">dpu</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span>
-                                                  <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span>
-                                                  <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
-                                                  <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-                                                  <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+                    <span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span>
+                    <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span>
+                    <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                    <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fallback_random_state</span><span class="o">.</span><span class="n">uniform</span><span class="p">,</span>
-                           <span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_random_state</span><span class="o">.</span><span class="n">uniform</span><span class="p">,</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
 </pre></div>
 
            </div>

@@ -130,28 +130,26 @@
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils.dpnp_utils_statistics</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">dpnp_cov</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils.dpnp_utils_statistics</span> <span class="kn">import</span> <span class="n">dpnp_cov</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;amax&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;amin&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;average&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;bincount&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;correlate&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;cov&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;histogram&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;max&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;mean&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;median&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;min&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;nanvar&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;std&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;var&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;amax&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;amin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;average&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bincount&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;correlate&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cov&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;histogram&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;max&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;median&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;min&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nanvar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;std&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;var&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -283,7 +281,7 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">bincount</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="n">minlength</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="correlate"><a class="viewcode-back" href="../../reference/generated/dpnp.correlate.html#dpnp.correlate">[docs]</a><span class="k">def</span> <span class="nf">correlate</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;valid&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="correlate"><a class="viewcode-back" href="../../reference/generated/dpnp.correlate.html#dpnp.correlate">[docs]</a><span class="k">def</span> <span class="nf">correlate</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;valid&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cross-correlation of two 1-dimensional sequences.</span>
 
@@ -318,7 +316,7 @@
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;valid&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dpnp_correlate</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
@@ -326,7 +324,17 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">correlate</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="cov"><a class="viewcode-back" href="../../reference/generated/dpnp.cov.html#dpnp.cov">[docs]</a><span class="k">def</span> <span class="nf">cov</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fweights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aweights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="cov"><a class="viewcode-back" href="../../reference/generated/dpnp.cov.html#dpnp.cov">[docs]</a><span class="k">def</span> <span class="nf">cov</span><span class="p">(</span>
+    <span class="n">m</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">rowvar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">ddof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fweights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">aweights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None, *, dtype=None):</span>
 
 <span class="sd">    Estimate a covariance matrix, given data and weights.</span>
@@ -386,7 +394,9 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_cov</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="n">rowvar</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cov</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rowvar</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">ddof</span><span class="p">,</span> <span class="n">fweights</span><span class="p">,</span> <span class="n">aweights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">cov</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rowvar</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">ddof</span><span class="p">,</span> <span class="n">fweights</span><span class="p">,</span> <span class="n">aweights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="histogram"><a class="viewcode-back" href="../../reference/generated/dpnp.histogram.html#dpnp.histogram">[docs]</a><span class="k">def</span> <span class="nf">histogram</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -413,7 +423,14 @@
 <span class="sd">    1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">histogram</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">histogram</span><span class="p">,</span>
+        <span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span>
+        <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span>
+        <span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">,</span>
+        <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">,</span>
+        <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="max"><a class="viewcode-back" href="../../reference/generated/dpnp.max.html#dpnp.max">[docs]</a><span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -542,28 +559,40 @@
                 <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span> <span class="o">/</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
                 <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dtype</span> <span class="k">else</span> <span class="n">result</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,(</span><span class="nb">tuple</span><span class="p">,</span><span class="nb">list</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
             <span class="n">axis</span> <span class="o">=</span> <span class="p">(</span><span class="n">axis</span><span class="p">,)</span>
 
-        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s1">&#39;axis&#39;</span><span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">)</span>
         <span class="n">res_sum</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
 
         <span class="n">del_</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="k">for</span> <span class="n">axis_value</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">:</span>
             <span class="n">del_</span> <span class="o">*=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis_value</span><span class="p">]</span>
 
-        <span class="c1">#performing an inplace operation on arrays of bool or integer types</span>
-        <span class="c1">#is not possible due to incompatible data types because</span>
-        <span class="c1">#it returns a floating value</span>
+        <span class="c1"># performing an inplace operation on arrays of bool or integer types</span>
+        <span class="c1"># is not possible due to incompatible data types because</span>
+        <span class="c1"># it returns a floating value</span>
         <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">res_sum</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
             <span class="n">res_sum</span> <span class="o">/=</span> <span class="n">del_</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new_res_sum</span> <span class="o">=</span> <span class="n">res_sum</span> <span class="o">/</span> <span class="n">del_</span>
-            <span class="k">return</span> <span class="n">new_res_sum</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="k">if</span> <span class="n">new_res_sum</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dtype</span> <span class="k">else</span> <span class="n">new_res_sum</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">new_res_sum</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">new_res_sum</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dtype</span>
+                <span class="k">else</span> <span class="n">new_res_sum</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">res_sum</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="k">if</span> <span class="n">res_sum</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dtype</span> <span class="k">else</span> <span class="n">res_sum</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="median"><a class="viewcode-back" href="../../reference/generated/dpnp.median.html#dpnp.median">[docs]</a><span class="k">def</span> <span class="nf">median</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -693,7 +722,15 @@
 
             <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nanvar</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">nanvar</span><span class="p">,</span>
+        <span class="n">x1</span><span class="p">,</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="std"><a class="viewcode-back" href="../../reference/generated/dpnp.std.html#dpnp.std">[docs]</a><span class="k">def</span> <span class="nf">std</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
