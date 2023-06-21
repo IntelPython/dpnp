@@ -4,6 +4,7 @@ AccessModifierOffset: -4
 
 AlignConsecutiveMacros: true
 AlignConsecutiveAssignments: true
+AlignConsecutiveBitFields: true
 AlignEscapedNewlines: Right
 
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -26,6 +27,8 @@ BraceWrapping:
   AfterExternBlock: true
   BeforeCatch:     false
   BeforeElse:      true
+  BeforeLambdaBody: false
+  BeforeWhile:     false
   IndentBraces:    false
   SplitEmptyFunction: true
   SplitEmptyRecord: true

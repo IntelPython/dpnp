@@ -93,8 +93,8 @@ struct func_type_map_factory_t : public Ps...
     using Ps::get_pair...;
 
     template <DPNPFuncType FuncType>
-    using find_type = typename decltype(
-        get_pair(std::integral_constant<DPNPFuncType, FuncType>{}))::type;
+    using find_type = typename decltype(get_pair(
+        std::integral_constant<DPNPFuncType, FuncType>{}))::type;
 };
 
 /**
