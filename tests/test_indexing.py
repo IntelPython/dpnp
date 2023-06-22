@@ -1,11 +1,10 @@
+import numpy
 import pytest
-from .helper import get_all_dtypes
-
+from numpy.testing import assert_, assert_array_equal, assert_equal
 
 import dpnp
 
-import numpy
-from numpy.testing import assert_, assert_array_equal, assert_equal
+from .helper import get_all_dtypes
 
 
 class TestIndexing:

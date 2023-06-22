@@ -1,8 +1,7 @@
+import numpy
 import pytest
 
 import dpnp
-
-import numpy
 
 
 @pytest.mark.parametrize("type", [numpy.float64], ids=["float64"])

@@ -1,6 +1,6 @@
 import functools
-import itertools
 import io
+import itertools
 import types
 import typing as tp  # NOQA
 import unittest

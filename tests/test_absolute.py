@@ -1,10 +1,10 @@
+import numpy
 import pytest
-from .helper import get_all_dtypes, get_complex_dtypes, get_float_complex_dtypes
+from numpy.testing import assert_array_equal, assert_equal
 
 import dpnp
 
-import numpy
-from numpy.testing import assert_array_equal, assert_equal
+from .helper import get_all_dtypes, get_complex_dtypes, get_float_complex_dtypes
 
 
 @pytest.mark.parametrize("func", ["abs", "absolute"])

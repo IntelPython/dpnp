@@ -34,23 +34,22 @@ and the rest of the library
 """
 
 
-import numpy
-import dpctl
-import dpnp
 import numbers
+
+import dpctl
+import numpy
+
+import dpnp
 import dpnp.config as config
 from dpnp.dpnp_array import dpnp_array
 
-from libc.stdlib cimport free, malloc
-from libc.stdint cimport uint32_t, uint64_t, int64_t
-
-from dpnp.dpnp_algo cimport *
 cimport dpctl as c_dpctl
+cimport numpy
+from libc.stdint cimport int64_t, uint32_t, uint64_t
+from libc.stdlib cimport free, malloc
 
 cimport dpnp.dpnp_utils as utils
-
-cimport numpy
-
+from dpnp.dpnp_algo cimport *
 
 __all__ = [
     "MCG59",

@@ -27,10 +27,10 @@
 # *****************************************************************************
 
 
+import dpctl.tensor._tensor_impl as ti
+
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
-
-import dpctl.tensor._tensor_impl as ti
 
 __all__ = ["dpnp_eigh"]
 

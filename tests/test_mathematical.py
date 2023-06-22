@@ -1,20 +1,20 @@
-import pytest
-from .helper import (
-    get_all_dtypes,
-    get_float_complex_dtypes,
-    is_cpu_device,
-    is_win_platform,
-)
-
-import dpnp
-
 import numpy
+import pytest
 from numpy.testing import (
     assert_allclose,
     assert_array_almost_equal,
     assert_array_equal,
     assert_equal,
     assert_raises,
+)
+
+import dpnp
+
+from .helper import (
+    get_all_dtypes,
+    get_float_complex_dtypes,
+    is_cpu_device,
+    is_win_platform,
 )
 
 

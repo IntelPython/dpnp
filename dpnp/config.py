@@ -27,7 +27,6 @@
 
 import os
 
-
 __DPNP_ORIGIN__ = int(os.getenv("DPNP_ORIGIN", 0))
 """
 Explicitly use original host Python NumPy

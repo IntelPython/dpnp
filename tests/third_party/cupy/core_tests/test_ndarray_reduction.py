@@ -1,7 +1,7 @@
 import unittest
-import pytest
 
 import numpy
+import pytest
 
 import dpnp as cupy
 

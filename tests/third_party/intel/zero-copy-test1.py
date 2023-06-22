@@ -1,10 +1,11 @@
 import dpctl
 import dpctl.memory as dpmem
-import dpnp
+import dpctl.tensor.numpy_usm_shared as usmarray
+import numba_dppy as dppy
 import numpy as np
 import pytest
-import numba_dppy as dppy
-import dpctl.tensor.numpy_usm_shared as usmarray
+
+import dpnp
 
 
 class DuckUSMArray:

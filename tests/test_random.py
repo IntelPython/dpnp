@@ -1,10 +1,11 @@
-import pytest
+import math
 import unittest
 
-import dpnp.random
 import numpy
+import pytest
 from numpy.testing import assert_allclose, assert_array_equal
-import math
+
+import dpnp.random
 
 
 class TestDistribution(unittest.TestCase):

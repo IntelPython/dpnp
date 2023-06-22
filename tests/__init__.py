@@ -1,10 +1,10 @@
-from tests.third_party.cupy import testing as cupy_testing
-from .helper import has_support_aspect64
-import dpnp
 import numpy
 
+import dpnp
 from tests import testing
+from tests.third_party.cupy import testing as cupy_testing
 
+from .helper import has_support_aspect64
 
 numpy.testing.assert_allclose = testing.assert_allclose
 numpy.testing.assert_array_equal = testing.assert_array_equal

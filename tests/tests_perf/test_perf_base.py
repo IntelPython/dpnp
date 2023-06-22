@@ -30,9 +30,10 @@ import statistics
 import time
 import warnings
 
-import dpnp
 import numpy
 import pytest
+
+import dpnp
 
 # def pytest_generate_tests(metafunc):
 #     metafunc.parametrize("lib", [numpy, dpnp], ids=["base", "DPNP"])

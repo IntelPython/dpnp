@@ -1,9 +1,9 @@
 import functools
-import pytest
 import string
 import unittest
 
 import numpy as np
+import pytest
 
 import dpnp as cupy
 from tests.third_party.cupy import testing

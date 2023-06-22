@@ -1,7 +1,7 @@
-import dpnp
 import numpy
 import pytest
 
+import dpnp
 from tests.tests_perf.data_generator import *
 from tests.tests_perf.test_perf_base import DPNPTestPerfBase
 

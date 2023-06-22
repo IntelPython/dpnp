@@ -2,7 +2,6 @@ import collections
 import inspect
 import sys
 
-
 # A tuple that represents a test case.
 # For bare (non-generated) test cases, [1] and [2] are None.
 # [0] Test case class

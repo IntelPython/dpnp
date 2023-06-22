@@ -1,14 +1,13 @@
 import unittest
 from unittest import mock
-import pytest
 
 import numpy
+import pytest
 
 import dpnp as cupy
 from dpnp import random
 from tests.third_party.cupy import testing
-from tests.third_party.cupy.testing import condition
-from tests.third_party.cupy.testing import hypothesis
+from tests.third_party.cupy.testing import condition, hypothesis
 
 
 @testing.gpu

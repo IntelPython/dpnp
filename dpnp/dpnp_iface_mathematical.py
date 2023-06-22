@@ -40,6 +40,12 @@ it contains:
 """
 
 
+import dpctl.tensor as dpt
+import numpy
+
+import dpnp
+from dpnp.dpnp_array import dpnp_array
+
 from .dpnp_algo import *
 from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_add,
@@ -48,13 +54,6 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_subtract,
 )
 from .dpnp_utils import *
-
-import dpnp
-from dpnp.dpnp_array import dpnp_array
-
-import numpy
-import dpctl.tensor as dpt
-
 
 __all__ = [
     "abs",

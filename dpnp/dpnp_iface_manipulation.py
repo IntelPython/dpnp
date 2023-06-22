@@ -42,16 +42,14 @@ it contains:
 
 import collections.abc
 
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
-from dpnp.dpnp_iface_arraycreation import array
+import dpctl.tensor as dpt
+import numpy
 
 import dpnp
+from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
-
-import numpy
-import dpctl.tensor as dpt
-
+from dpnp.dpnp_iface_arraycreation import array
+from dpnp.dpnp_utils import *
 
 __all__ = [
     "asfarray",

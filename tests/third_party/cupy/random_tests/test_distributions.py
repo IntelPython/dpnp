@@ -1,13 +1,12 @@
 import unittest
-import pytest
 
 import numpy
+import pytest
 
 import dpnp as cupy
 from dpnp import random as _distributions
 from tests.third_party.cupy import testing
 from tests.third_party.cupy.testing import helper
-
 
 _regular_float_dtypes = (numpy.float64, numpy.float32)
 _float_dtypes = _regular_float_dtypes + (numpy.float16,)

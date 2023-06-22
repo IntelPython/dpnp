@@ -40,15 +40,15 @@ it contains:
 """
 
 
-import numpy
 import dpctl.tensor as dpt
+import numpy
 from numpy.core.numeric import normalize_axis_tuple
+
+import dpnp
 from dpnp.dpnp_algo import *
+from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
 from dpnp.dpnp_utils.dpnp_utils_statistics import dpnp_cov
-from dpnp.dpnp_array import dpnp_array
-import dpnp
-
 
 __all__ = [
     "amax",

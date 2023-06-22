@@ -42,9 +42,8 @@ import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
-from .dpnp_random_state import RandomState
 from .dpnp_algo_random import *
-
+from .dpnp_random_state import RandomState
 
 __all__ = [
     "beta",

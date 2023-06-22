@@ -1,12 +1,10 @@
-import pytest
-from .helper import get_all_dtypes
-
-import dpnp
+import operator
+import tempfile
 
 import dpctl
 import dpctl.tensor as dpt
-
 import numpy
+import pytest
 from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
@@ -14,8 +12,9 @@ from numpy.testing import (
     assert_raises,
 )
 
-import tempfile
-import operator
+import dpnp
+
+from .helper import get_all_dtypes
 
 
 @pytest.mark.parametrize(
