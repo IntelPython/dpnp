@@ -51,7 +51,6 @@ bool is_verbose_mode()
         if (env_var != nullptr)
             free(env_var);
 #endif
-
     }
     return _is_verbose_mode;
 }
