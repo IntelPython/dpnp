@@ -1,13 +1,12 @@
-import pytest
-from .helper import get_all_dtypes, is_win_platform
-
-import dpnp
 import dpctl
-from dpctl.utils import ExecutionPlacementError
 import numpy
-
+import pytest
+from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
+import dpnp
+
+from .helper import get_all_dtypes, is_win_platform
 
 list_of_backend_str = [
     "host",

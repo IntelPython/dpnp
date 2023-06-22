@@ -1,12 +1,8 @@
-import pytest
-from .helper import is_cpu_device
 from unittest import mock
 
-import dpnp
-import numpy
 import dpctl
-
-from dpnp.random import RandomState
+import numpy
+import pytest
 from numpy.testing import (
     assert_allclose,
     assert_array_almost_equal,
@@ -15,6 +11,10 @@ from numpy.testing import (
     assert_raises,
 )
 
+import dpnp
+from dpnp.random import RandomState
+
+from .helper import is_cpu_device
 
 # aspects of default device:
 _def_device = dpctl.SyclQueue().sycl_device

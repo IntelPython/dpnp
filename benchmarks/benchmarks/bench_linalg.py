@@ -1,7 +1,8 @@
-from .common import Benchmark, get_squares_, get_indexes_rand, TYPES1
-
 import numpy
+
 import dpnp
+
+from .common import TYPES1, Benchmark, get_indexes_rand, get_squares_
 
 
 class Eindot(Benchmark):

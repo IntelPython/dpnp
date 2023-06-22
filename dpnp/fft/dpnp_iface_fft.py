@@ -40,13 +40,13 @@ it contains:
 """
 
 
-import dpnp
-import numpy
-
-from dpnp.dpnp_utils import *
-from dpnp.fft.dpnp_algo_fft import *
 from enum import Enum
 
+import numpy
+
+import dpnp
+from dpnp.dpnp_utils import *
+from dpnp.fft.dpnp_algo_fft import *
 
 __all__ = [
     "fft",

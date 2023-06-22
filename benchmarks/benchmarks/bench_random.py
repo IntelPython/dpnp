@@ -1,5 +1,7 @@
 import numpy
+
 import dpnp
+
 from .common import Benchmark
 
 

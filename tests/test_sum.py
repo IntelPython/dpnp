@@ -1,9 +1,8 @@
+import numpy
 import pytest
 
 import dpnp
 from tests.helper import get_float_dtypes, has_support_aspect64
-
-import numpy
 
 
 # Note: numpy.sum() always upcast integers to (u)int64 and float32 to

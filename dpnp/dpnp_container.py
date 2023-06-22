@@ -34,12 +34,11 @@ This module contains code and dependency on diffrent containers used in DPNP
 """
 
 
-import dpctl.utils as dpu
 import dpctl.tensor as dpt
+import dpctl.utils as dpu
 
-from dpnp.dpnp_array import dpnp_array
 import dpnp
-
+from dpnp.dpnp_array import dpnp_array
 
 __all__ = [
     "arange",

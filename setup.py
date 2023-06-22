@@ -1,7 +1,7 @@
-from skbuild import setup
-import os
 import importlib.machinery as imm
+import os
 
+from skbuild import setup
 
 """
 Get the project version

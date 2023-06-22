@@ -1,12 +1,11 @@
+import dpctl
+import numpy
 import pytest
-from .helper import get_all_dtypes, get_complex_dtypes
+from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp as inp
 
-import dpctl
-
-import numpy
-from numpy.testing import assert_allclose, assert_array_equal
+from .helper import get_all_dtypes, get_complex_dtypes
 
 
 def vvsort(val, vec, size, xp):

@@ -1,11 +1,12 @@
 import math
+
+import numpy
 import pytest
-from .helper import get_all_dtypes
+from numpy.testing import assert_allclose
 
 import dpnp
 
-import numpy
-from numpy.testing import assert_allclose
+from .helper import get_all_dtypes
 
 
 def _getattr(ex, str_):

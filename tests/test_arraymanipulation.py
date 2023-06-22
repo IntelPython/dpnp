@@ -1,9 +1,5 @@
-import pytest
-from .helper import get_all_dtypes
-
-import dpnp
-
 import numpy
+import pytest
 from numpy.testing import (
     assert_,
     assert_allclose,
@@ -12,6 +8,10 @@ from numpy.testing import (
     assert_raises,
     assert_warns,
 )
+
+import dpnp
+
+from .helper import get_all_dtypes
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")

@@ -34,9 +34,8 @@ and the rest of the library
 """
 
 
-from dpnp.dpnp_algo cimport *
 cimport dpnp.dpnp_utils as utils
-
+from dpnp.dpnp_algo cimport *
 
 __all__ = [
     "dpnp_fft",

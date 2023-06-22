@@ -1,6 +1,7 @@
 import unittest
 
 import numpy
+
 from tests.third_party.cupy import testing
 
 

@@ -35,8 +35,8 @@ Set of functions to implement NumPy random module API
 """
 
 
-import numpy
 import dpctl.utils as dpu
+import numpy
 
 import dpnp
 from dpnp.dpnp_utils.dpnp_algo_utils import (
@@ -45,7 +45,6 @@ from dpnp.dpnp_utils.dpnp_algo_utils import (
     use_origin_backend,
 )
 from dpnp.random.dpnp_algo_random import MCG59, MT19937
-
 
 __all__ = ["RandomState"]
 

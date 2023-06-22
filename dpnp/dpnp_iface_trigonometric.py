@@ -40,13 +40,12 @@ it contains:
 """
 
 
-import numpy
 import dpctl.tensor as dpt
+import numpy
 
+import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-import dpnp
-
 
 __all__ = [
     "arccos",

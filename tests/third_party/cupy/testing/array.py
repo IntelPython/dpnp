@@ -2,7 +2,6 @@ import numpy.testing
 
 import dpnp
 
-
 # NumPy-like assertion functions that accept both NumPy and CuPy arrays
 
 

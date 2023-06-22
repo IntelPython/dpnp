@@ -3,21 +3,20 @@ import functools
 import inspect
 import os
 import random
-from typing import Tuple, Type
 import traceback
 import unittest
 import warnings
+from typing import Tuple, Type
 
 import numpy
+from dpctl import select_default_device
 
 import dpnp
 import dpnp as cupy
 import dpnp as cupyx
 
 # from dpnp.core import internal
-from tests.third_party.cupy.testing import array
-from tests.third_party.cupy.testing import parameterized
-from dpctl import select_default_device
+from tests.third_party.cupy.testing import array, parameterized
 
 # import dpnp
 # import dpnp.scipy.sparse

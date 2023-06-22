@@ -1,11 +1,11 @@
+import dpctl.tensor as dpt
+import numpy
 import pytest
-from .helper import get_all_dtypes
+from numpy.testing import assert_array_equal
 
 import dpnp
-import dpctl.tensor as dpt
 
-import numpy
-from numpy.testing import assert_array_equal
+from .helper import get_all_dtypes
 
 
 @pytest.mark.parametrize("res_dtype", get_all_dtypes())
