@@ -33,9 +33,21 @@
 static bool use_sycl_device_memory()
 {
     // TODO need to move all getenv() into common dpnpc place
-    const char *dpnpc_memtype_device =
-        getenv("DPNPC_OUTPUT_DPARRAY_USE_MEMORY_DEVICE");
+    char *dpnpc_memtype_device = nullptr;
+
+#ifdef _WIN32
+    size_t dpnpc_memtype_device_size = 0;
+    _dupenv_s(&dpnpc_memtype_device, &dpnpc_memtype_device_size,
+              "DPNPC_OUTPUT_DPARRAY_USE_MEMORY_DEVICE");
+#else
+    dpnpc_memtype_device =
+        std::getenv("DPNPC_OUTPUT_DPARRAY_USE_MEMORY_DEVICE");
+#endif
+
     if (dpnpc_memtype_device != nullptr) {
+#ifdef _WIN32
+        free(dpnpc_memtype_device);
+#endif
         return true;
     }
 
