@@ -31,7 +31,8 @@
  *
  * Possible compile line:
  * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
+ * g++ -g dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend/include
+ * -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
  *
  */
 
@@ -39,18 +40,17 @@
 
 #include "dpnp_iface.hpp"
 
-int main(int, char**)
+int main(int, char **)
 {
     const size_t size = 256;
 
     dpnp_queue_initialize_c();
     std::cout << "SYCL queue is CPU: " << dpnp_queue_is_cpu_c() << std::endl;
 
-    int* array1 = (int*)dpnp_memory_alloc_c(size * sizeof(int));
-    double* result = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    int *array1 = (int *)dpnp_memory_alloc_c(size * sizeof(int));
+    double *result = (double *)dpnp_memory_alloc_c(size * sizeof(double));
 
-    for (size_t i = 0; i < 10; ++i)
-    {
+    for (size_t i = 0; i < 10; ++i) {
         array1[i] = i;
         result[i] = 0;
         std::cout << ", " << array1[i];
@@ -58,15 +58,17 @@ int main(int, char**)
     std::cout << std::endl;
 
     const long ndim = 1;
-    shape_elem_type* shape = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type *shape = reinterpret_cast<shape_elem_type *>(
+        dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
     shape[0] = size;
-    shape_elem_type* strides = reinterpret_cast<shape_elem_type*>(dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
+    shape_elem_type *strides = reinterpret_cast<shape_elem_type *>(
+        dpnp_memory_alloc_c(ndim * sizeof(shape_elem_type)));
     strides[0] = 1;
 
-    dpnp_cos_c<int, double>(result, size, ndim, shape, strides, array1, size, ndim, shape, strides, NULL);
+    dpnp_cos_c<int, double>(result, size, ndim, shape, strides, array1, size,
+                            ndim, shape, strides, NULL);
 
-    for (size_t i = 0; i < 10; ++i)
-    {
+    for (size_t i = 0; i < 10; ++i) {
         std::cout << ", " << result[i];
     }
     std::cout << std::endl;

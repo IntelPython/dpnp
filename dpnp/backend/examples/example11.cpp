@@ -26,11 +26,12 @@
 /**
  * Example 11.
  *
- * This example shows simple usage of the DPNP C++ Backend library RNG shuffle function
- * for one and ndim arrays.
+ * This example shows simple usage of the DPNP C++ Backend library RNG shuffle
+ * function for one and ndim arrays.
  *
  * Possible compile line:
- * g++ -g dpnp/backend/examples/example11.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example11
+ * g++ -g dpnp/backend/examples/example11.cpp -Idpnp -Idpnp/backend/include
+ * -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example11
  *
  */
 
@@ -39,21 +40,21 @@
 #include <dpnp_iface.hpp>
 
 template <typename T>
-void print_dpnp_array(T* arr, size_t size)
+void print_dpnp_array(T *arr, size_t size)
 {
     std::cout << std::endl;
-    for (size_t i = 0; i < size; ++i)
-    {
+    for (size_t i = 0; i < size; ++i) {
         std::cout << arr[i] << ", ";
     }
     std::cout << std::endl;
 }
 
-int main(int, char**)
+int main(int, char **)
 {
     // Two cases:
-    // 1) array size = 100, ndim = 1, high_dim_size = 10 (aka ndarray with shape (100,) )
-    // 2) array size = 100, ndim = 2, high_dim_size = 20 (e.g. ndarray with shape (20, 5) and len(array) = 20 )
+    // 1) array size = 100, ndim = 1, high_dim_size = 10 (aka ndarray with shape
+    // (100,) ) 2) array size = 100, ndim = 2, high_dim_size = 20 (e.g. ndarray
+    // with shape (20, 5) and len(array) = 20 )
     const size_t ndim_cases = 2;
     const size_t itemsize = sizeof(double);
     const size_t ndim[ndim_cases] = {1, 2};
@@ -63,9 +64,9 @@ int main(int, char**)
 
     // DPNPC dpnp_rng_shuffle_c
     // DPNPC interface
-    double* array_1 = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
-    for (size_t i = 0; i < ndim_cases; i++)
-    {
+    double *array_1 =
+        reinterpret_cast<double *>(dpnp_memory_alloc_c(size * sizeof(double)));
+    for (size_t i = 0; i < ndim_cases; i++) {
         std::cout << "\nREPRODUCE: DPNPC dpnp_rng_shuffle_c:";
         std::cout << "\nDIMS: " << ndim[i] << std::endl;
         // init array 0, 1, 2, 3, 4, 5, 6, ....
@@ -74,7 +75,8 @@ int main(int, char**)
         std::cout << "\nINPUT array:";
         print_dpnp_array(array_1, size);
         dpnp_rng_srand_c(seed);
-        dpnp_rng_shuffle_c<double>(array_1, itemsize, ndim[i], high_dim_size[i], size);
+        dpnp_rng_shuffle_c<double>(array_1, itemsize, ndim[i], high_dim_size[i],
+                                   size);
         // print shuffle result
         std::cout << "\nSHUFFLE INPUT array:";
         print_dpnp_array(array_1, size);

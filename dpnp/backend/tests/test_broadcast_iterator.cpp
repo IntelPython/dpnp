@@ -30,7 +30,8 @@
 #include "dpnp_iterator.hpp"
 #include "dpnp_test_utils.hpp"
 
-#define DPNP_LOCAL_QUEUE 1 // TODO need to fix build procedure and remove this workaround. Issue #551
+// TODO need to fix build procedure and remove this workaround. Issue #551
+#define DPNP_LOCAL_QUEUE 1
 #include "queue_sycl.hpp"
 
 struct IteratorParameters
@@ -39,10 +40,13 @@ struct IteratorParameters
     vector<dpnpc_it_t::size_type> output_shape;
     vector<dpnpc_value_t> result;
 
-    /// Operator needs to print this container in human readable form in error reporting
-    friend std::ostream& operator<<(std::ostream& out, const IteratorParameters& data)
+    /// Operator needs to print this container in human readable form in error
+    /// reporting
+    friend std::ostream &operator<<(std::ostream &out,
+                                    const IteratorParameters &data)
     {
-        out << "IteratorParameters(input_shape=" << data.input_shape << ", output_shape=" << data.output_shape
+        out << "IteratorParameters(input_shape=" << data.input_shape
+            << ", output_shape=" << data.output_shape
             << ", result=" << data.result << ")";
 
         return out;
@@ -57,8 +61,9 @@ TEST_P(IteratorBroadcasting, loop_broadcast)
 {
     using data_type = double;
 
-    const IteratorParameters& param = GetParam();
-    std::vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
+    const IteratorParameters &param = GetParam();
+    std::vector<data_type> input_data =
+        get_input_data<data_type>(param.input_shape);
 
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
 
@@ -67,7 +72,8 @@ TEST_P(IteratorBroadcasting, loop_broadcast)
 
     ASSERT_EQ(input.get_output_size(), param.result.size());
 
-    for (dpnpc_index_t output_id = 0; output_id < input.get_output_size(); ++output_id)
+    for (dpnpc_index_t output_id = 0; output_id < input.get_output_size();
+         ++output_id)
     {
         EXPECT_EQ(input[output_id], param.result.at(output_id));
     }
@@ -77,17 +83,20 @@ TEST_P(IteratorBroadcasting, sycl_broadcast)
 {
     using data_type = double;
 
-    const IteratorParameters& param = GetParam();
+    const IteratorParameters &param = GetParam();
     const dpnpc_index_t result_size = param.result.size();
-    data_type* result = reinterpret_cast<data_type*>(dpnp_memory_alloc_c(result_size * sizeof(data_type)));
+    data_type *result = reinterpret_cast<data_type *>(
+        dpnp_memory_alloc_c(result_size * sizeof(data_type)));
 
-    std::vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
-    data_type* shared_data = get_shared_data<data_type>(input_data);
+    std::vector<data_type> input_data =
+        get_input_data<data_type>(param.input_shape);
+    data_type *shared_data = get_shared_data<data_type>(input_data);
 
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
 
-    DPNPC_id<data_type>* input_it;
-    input_it = reinterpret_cast<DPNPC_id<data_type>*>(dpnp_memory_alloc_c(q_ref, sizeof(DPNPC_id<data_type>)));
+    DPNPC_id<data_type> *input_it;
+    input_it = reinterpret_cast<DPNPC_id<data_type> *>(
+        dpnp_memory_alloc_c(q_ref, sizeof(DPNPC_id<data_type>)));
     new (input_it) DPNPC_id<data_type>(q_ref, shared_data, param.input_shape);
 
     input_it->broadcast_to_shape(param.output_shape);
@@ -100,15 +109,15 @@ TEST_P(IteratorBroadcasting, sycl_broadcast)
         result[idx] = (*input_it)[idx];
     };
 
-    auto kernel_func = [&](sycl::handler& cgh) {
-        cgh.parallel_for<class test_sycl_reduce_axis_kernel>(gws, kernel_parallel_for_func);
+    auto kernel_func = [&](sycl::handler &cgh) {
+        cgh.parallel_for<class test_sycl_reduce_axis_kernel>(
+            gws, kernel_parallel_for_func);
     };
 
     sycl::event event = DPNP_QUEUE.submit(kernel_func);
     event.wait();
 
-    for (dpnpc_index_t i = 0; i < result_size; ++i)
-    {
+    for (dpnpc_index_t i = 0; i < result_size; ++i) {
         EXPECT_EQ(result[i], param.result.at(i));
     }
 
@@ -133,7 +142,8 @@ TEST_P(IteratorBroadcasting, sycl_broadcast)
  * print(f"output shape={output.shape}")
  *
  * result = input * output
- * print(f"result={np.array2string(result.reshape(result.size), separator=', ')}\n", sep=", ")
+ * print(f"result={np.array2string(result.reshape(result.size), separator=',
+ * ')}\n", sep=", ")
  */
 INSTANTIATE_TEST_SUITE_P(
     TestBroadcastIterator,
@@ -142,16 +152,27 @@ INSTANTIATE_TEST_SUITE_P(
         IteratorParameters{{1}, {1}, {1}},
         IteratorParameters{{1}, {4}, {1, 1, 1, 1}},
         IteratorParameters{{1}, {3, 4}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}},
-        IteratorParameters{{1}, {2, 3, 4}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}},
+        IteratorParameters{{1}, {2, 3, 4}, {1, 1, 1, 1, 1, 1, 1, 1,
+                                            1, 1, 1, 1, 1, 1, 1, 1,
+                                            1, 1, 1, 1, 1, 1, 1, 1}},
         IteratorParameters{{4}, {4}, {1, 2, 3, 4}},
         IteratorParameters{{4}, {3, 4}, {1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4}},
-        IteratorParameters{{4}, {2, 3, 4}, {1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4}},
-        IteratorParameters{{3, 4}, {3, 4}, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}},
-        IteratorParameters{
-            {3, 4}, {2, 3, 4}, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}},
-        IteratorParameters{{2, 3, 4}, {2, 3, 4}, {1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
-                                                  13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
-        IteratorParameters{
-            {2, 3, 1}, {2, 3, 4}, {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6}},
-        IteratorParameters{
-            {2, 1, 4}, {2, 3, 4}, {1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8}}));
+        IteratorParameters{{4}, {2, 3, 4}, {1, 2, 3, 4, 1, 2, 3, 4,
+                                            1, 2, 3, 4, 1, 2, 3, 4,
+                                            1, 2, 3, 4, 1, 2, 3, 4}},
+        IteratorParameters{{3, 4},
+                           {3, 4},
+                           {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}},
+        IteratorParameters{{3, 4}, {2, 3, 4}, {1, 2,  3,  4,  5, 6,  7,  8,
+                                               9, 10, 11, 12, 1, 2,  3,  4,
+                                               5, 6,  7,  8,  9, 10, 11, 12}},
+        IteratorParameters{{2, 3, 4},
+                           {2, 3, 4},
+                           {1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                            13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
+        IteratorParameters{{2, 3, 1}, {2, 3, 4}, {1, 1, 1, 1, 2, 2, 2, 2,
+                                                  3, 3, 3, 3, 4, 4, 4, 4,
+                                                  5, 5, 5, 5, 6, 6, 6, 6}},
+        IteratorParameters{{2, 1, 4}, {2, 3, 4}, {1, 2, 3, 4, 1, 2, 3, 4,
+                                                  1, 2, 3, 4, 5, 6, 7, 8,
+                                                  5, 6, 7, 8, 5, 6, 7, 8}}));

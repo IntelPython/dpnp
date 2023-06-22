@@ -61,20 +61,24 @@ namespace mkl_rng = oneapi::mkl::rng;
 #define DPNP_RNG_MCG59_ENGINE backend_sycl::get_rng_mcg59_engine()
 
 /**
- * This is container for the SYCL queue, random number generation engine and related functions like queue and engine
- * initialization and maintenance.
- * The queue could not be initialized as a global object. Global object initialization order is undefined.
- * This class postpone initialization of the SYCL queue and mt19937 random number generation engine.
+ * This is container for the SYCL queue, random number generation engine and
+ * related functions like queue and engine initialization and maintenance. The
+ * queue could not be initialized as a global object. Global object
+ * initialization order is undefined. This class postpone initialization of the
+ * SYCL queue and mt19937 random number generation engine.
  */
 class backend_sycl
 {
 #if defined(DPNP_LOCAL_QUEUE)
-    static sycl::queue* queue; /**< contains SYCL queue pointer initialized in @ref backend_sycl_queue_init */
+    static sycl::queue *queue; /**< contains SYCL queue pointer initialized in
+                                  @ref backend_sycl_queue_init */
 #endif
-    static mkl_rng::mt19937*
-        rng_engine;       /**< RNG MT19937 engine ptr. initialized in @ref backend_sycl_rng_engine_init */
-    static mkl_rng::mcg59*
-        rng_mcg59_engine; /**< RNG MCG59 engine ptr. initialized in @ref backend_sycl_rng_engine_init */
+    static mkl_rng::mt19937
+        *rng_engine; /**< RNG MT19937 engine ptr. initialized in @ref
+                        backend_sycl_rng_engine_init */
+    static mkl_rng::mcg59
+        *rng_mcg59_engine; /**< RNG MCG59 engine ptr. initialized in @ref
+                              backend_sycl_rng_engine_init */
 
     static void destroy()
     {
@@ -111,13 +115,14 @@ public:
     /**
      * Explicitly disallow copying
      */
-    backend_sycl(const backend_sycl&) = delete;
-    backend_sycl& operator=(const backend_sycl&) = delete;
+    backend_sycl(const backend_sycl &) = delete;
+    backend_sycl &operator=(const backend_sycl &) = delete;
 
     /**
      * Initialize @ref queue
      */
-    static void backend_sycl_queue_init(QueueOptions selector = QueueOptions::CPU_SELECTOR);
+    static void backend_sycl_queue_init(
+        QueueOptions selector = QueueOptions::CPU_SELECTOR);
 
     /**
      * Return True if current @ref queue is related to cpu device
@@ -132,11 +137,10 @@ public:
     /**
      * Return the @ref queue to the user
      */
-    static sycl::queue& get_queue()
+    static sycl::queue &get_queue()
     {
 #if defined(DPNP_LOCAL_QUEUE)
-        if (!queue)
-        {
+        if (!queue) {
             backend_sycl_queue_init();
         }
 
@@ -144,24 +148,26 @@ public:
 #else
         // temporal solution. Started from Sept-2020
         DPCTLSyclQueueRef DPCtrl_queue = DPCTLQueueMgr_GetCurrentQueue();
-        if (DPCtrl_queue == nullptr)
-        {
-            std::string reason = (DPCTLQueueMgr_GetQueueStackSize() == static_cast<size_t>(-1))
-                                     ? ": the queue stack is empty, probably no device is available."
-                                     : ".";
-            throw std::runtime_error("Failed to create a copy of SYCL queue with default device" + reason);
+        if (DPCtrl_queue == nullptr) {
+            std::string reason =
+                (DPCTLQueueMgr_GetQueueStackSize() == static_cast<size_t>(-1))
+                    ? ": the queue stack is empty, probably no device is "
+                      "available."
+                    : ".";
+            throw std::runtime_error(
+                "Failed to create a copy of SYCL queue with default device" +
+                reason);
         }
-        return *(reinterpret_cast<sycl::queue*>(DPCtrl_queue));
+        return *(reinterpret_cast<sycl::queue *>(DPCtrl_queue));
 #endif
     }
 
     /**
      * Return the @ref rng_engine to the user
      */
-    static mkl_rng::mt19937& get_rng_engine()
+    static mkl_rng::mt19937 &get_rng_engine()
     {
-        if (!rng_engine)
-        {
+        if (!rng_engine) {
             backend_sycl_rng_engine_init();
         }
         return *rng_engine;
@@ -170,10 +176,9 @@ public:
     /**
      * Return the @ref rng_mcg59_engine to the user
      */
-    static mkl_rng::mcg59& get_rng_mcg59_engine()
+    static mkl_rng::mcg59 &get_rng_mcg59_engine()
     {
-        if (!rng_engine)
-        {
+        if (!rng_engine) {
             backend_sycl_rng_engine_init();
         }
         return *rng_mcg59_engine;

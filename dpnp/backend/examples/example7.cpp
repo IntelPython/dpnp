@@ -31,7 +31,8 @@
  *
  * Possible compile line:
  * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example7.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example7
+ * g++ -g dpnp/backend/examples/example7.cpp -Idpnp -Idpnp/backend/include
+ * -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example7
  *
  */
 
@@ -39,36 +40,33 @@
 
 #include "dpnp_iface.hpp"
 
-int main(int, char**)
+int main(int, char **)
 {
     const size_t size = 2;
     size_t len = size * size;
 
     dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
 
-    float* array = (float*)dpnp_memory_alloc_c(len * sizeof(float));
-    float* result1 = (float*)dpnp_memory_alloc_c(size * sizeof(float));
-    float* result2 = (float*)dpnp_memory_alloc_c(len * sizeof(float));
+    float *array = (float *)dpnp_memory_alloc_c(len * sizeof(float));
+    float *result1 = (float *)dpnp_memory_alloc_c(size * sizeof(float));
+    float *result2 = (float *)dpnp_memory_alloc_c(len * sizeof(float));
 
     /* init input diagonal array like:
     1, 0, 0,
     0, 2, 0,
     0, 0, 3
     */
-    for (size_t i = 0; i < len; ++i)
-    {
+    for (size_t i = 0; i < len; ++i) {
         array[i] = 0;
     }
-    for (size_t i = 0; i < size; ++i)
-    {
+    for (size_t i = 0; i < size; ++i) {
         array[size * i + i] = i + 1;
     }
 
     dpnp_eig_c<float, float>(array, result1, result2, size);
 
     std::cout << "eigen values" << std::endl;
-    for (size_t i = 0; i < size; ++i)
-    {
+    for (size_t i = 0; i < size; ++i) {
         std::cout << result1[i] << ", ";
     }
     std::cout << std::endl;

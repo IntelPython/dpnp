@@ -39,8 +39,8 @@ class dpnp_repeat_c_kernel;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_repeat_c(DPCTLSyclQueueRef q_ref,
-                                const void* array1_in,
-                                void* result1,
+                                const void *array1_in,
+                                void *result1,
                                 const size_t repeats,
                                 const size_t size,
                                 const DPCTLEventVectorRef dep_event_vec_ref)
@@ -50,22 +50,20 @@ DPCTLSyclEventRef dpnp_repeat_c(DPCTLSyclQueueRef q_ref,
 
     DPCTLSyclEventRef event_ref = nullptr;
 
-    if (!array1_in || !result1)
-    {
+    if (!array1_in || !result1) {
         return event_ref;
     }
 
-    if (!size || !repeats)
-    {
+    if (!size || !repeats) {
         return event_ref;
     }
 
-    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,array1_in, size);
-    const _DataType* array_in = input1_ptr.get_ptr();
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
+    const _DataType *array_in = input1_ptr.get_ptr();
+    _DataType *result = reinterpret_cast<_DataType *>(result1);
 
     sycl::range<2> gws(size, repeats);
     auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
@@ -74,8 +72,9 @@ DPCTLSyclEventRef dpnp_repeat_c(DPCTLSyclQueueRef q_ref,
         result[(idx1 * repeats) + idx2] = array_in[idx1];
     };
 
-    auto kernel_func = [&](sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_repeat_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    auto kernel_func = [&](sycl::handler &cgh) {
+        cgh.parallel_for<class dpnp_repeat_c_kernel<_DataType>>(
+            gws, kernel_parallel_for_func);
     };
 
     event = q.submit(kernel_func);
@@ -86,74 +85,78 @@ DPCTLSyclEventRef dpnp_repeat_c(DPCTLSyclQueueRef q_ref,
 }
 
 template <typename _DataType>
-void dpnp_repeat_c(const void* array1_in, void* result1, const size_t repeats, const size_t size)
+void dpnp_repeat_c(const void *array1_in,
+                   void *result1,
+                   const size_t repeats,
+                   const size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_repeat_c<_DataType>(q_ref,
-                                                           array1_in,
-                                                           result1,
-                                                           repeats,
-                                                           size,
-                                                           dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_repeat_c<_DataType>(
+        q_ref, array1_in, result1, repeats, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_repeat_default_c)(const void*, void*, const size_t, const size_t) = dpnp_repeat_c<_DataType>;
+void (*dpnp_repeat_default_c)(const void *,
+                              void *,
+                              const size_t,
+                              const size_t) = dpnp_repeat_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_repeat_ext_c)(DPCTLSyclQueueRef,
-                                       const void*,
-                                       void*,
+                                       const void *,
+                                       void *,
                                        const size_t,
                                        const size_t,
-                                       const DPCTLEventVectorRef) = dpnp_repeat_c<_DataType>;
+                                       const DPCTLEventVectorRef) =
+    dpnp_repeat_c<_DataType>;
 
 template <typename _KernelNameSpecialization>
 class dpnp_elemwise_transpose_c_kernel;
 
 template <typename _DataType>
-DPCTLSyclEventRef dpnp_elemwise_transpose_c(DPCTLSyclQueueRef q_ref,
-                                            void* array1_in,
-                                            const shape_elem_type* input_shape,
-                                            const shape_elem_type* result_shape,
-                                            const shape_elem_type* permute_axes,
-                                            size_t ndim,
-                                            void* result1,
-                                            size_t size,
-                                            const DPCTLEventVectorRef dep_event_vec_ref)
+DPCTLSyclEventRef
+    dpnp_elemwise_transpose_c(DPCTLSyclQueueRef q_ref,
+                              void *array1_in,
+                              const shape_elem_type *input_shape,
+                              const shape_elem_type *result_shape,
+                              const shape_elem_type *permute_axes,
+                              size_t ndim,
+                              void *result1,
+                              size_t size,
+                              const DPCTLEventVectorRef dep_event_vec_ref)
 {
     // avoid warning unused variable
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
 
-    if (!size)
-    {
+    if (!size) {
         return event_ref;
     }
 
-    sycl::queue q = *(reinterpret_cast<sycl::queue*>(q_ref));
+    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref,array1_in, size);
-    _DataType* array1 = input1_ptr.get_ptr();
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size);
+    _DataType *array1 = input1_ptr.get_ptr();
+    _DataType *result = reinterpret_cast<_DataType *>(result1);
 
-    shape_elem_type* input_offset_shape =
-        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
+    shape_elem_type *input_offset_shape = reinterpret_cast<shape_elem_type *>(
+        sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
     get_shape_offsets_inkernel(input_shape, ndim, input_offset_shape);
 
-    shape_elem_type* temp_result_offset_shape =
-        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
+    shape_elem_type *temp_result_offset_shape =
+        reinterpret_cast<shape_elem_type *>(
+            sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
     get_shape_offsets_inkernel(result_shape, ndim, temp_result_offset_shape);
 
-    shape_elem_type* result_offset_shape =
-        reinterpret_cast<shape_elem_type*>(sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
-    for (size_t axis = 0; axis < ndim; ++axis)
-    {
-        result_offset_shape[permute_axes[axis]] = temp_result_offset_shape[axis];
+    shape_elem_type *result_offset_shape = reinterpret_cast<shape_elem_type *>(
+        sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
+    for (size_t axis = 0; axis < ndim; ++axis) {
+        result_offset_shape[permute_axes[axis]] =
+            temp_result_offset_shape[axis];
     }
 
     sycl::range<1> gws(size);
@@ -162,8 +165,7 @@ DPCTLSyclEventRef dpnp_elemwise_transpose_c(DPCTLSyclQueueRef q_ref,
 
         size_t output_index = 0;
         size_t reminder = idx;
-        for (size_t axis = 0; axis < ndim; ++axis)
-        {
+        for (size_t axis = 0; axis < ndim; ++axis) {
             /* reconstruct [x][y][z] from given linear idx */
             size_t xyz_id = reminder / input_offset_shape[axis];
             reminder = reminder % input_offset_shape[axis];
@@ -175,8 +177,9 @@ DPCTLSyclEventRef dpnp_elemwise_transpose_c(DPCTLSyclQueueRef q_ref,
         result[output_index] = array1[idx];
     };
 
-    auto kernel_func = [&](sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_elemwise_transpose_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    auto kernel_func = [&](sycl::handler &cgh) {
+        cgh.parallel_for<class dpnp_elemwise_transpose_c_kernel<_DataType>>(
+            gws, kernel_parallel_for_func);
     };
 
     event = q.submit(kernel_func);
@@ -191,57 +194,60 @@ DPCTLSyclEventRef dpnp_elemwise_transpose_c(DPCTLSyclQueueRef q_ref,
 }
 
 template <typename _DataType>
-void dpnp_elemwise_transpose_c(void* array1_in,
-                               const shape_elem_type* input_shape,
-                               const shape_elem_type* result_shape,
-                               const shape_elem_type* permute_axes,
+void dpnp_elemwise_transpose_c(void *array1_in,
+                               const shape_elem_type *input_shape,
+                               const shape_elem_type *result_shape,
+                               const shape_elem_type *permute_axes,
                                size_t ndim,
-                               void* result1,
+                               void *result1,
                                size_t size)
 {
     DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
     DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_elemwise_transpose_c<_DataType>(q_ref,
-                                                                       array1_in,
-                                                                       input_shape,
-                                                                       result_shape,
-                                                                       permute_axes,
-                                                                       ndim,
-                                                                       result1,
-                                                                       size,
-                                                                       dep_event_vec_ref);
+    DPCTLSyclEventRef event_ref = dpnp_elemwise_transpose_c<_DataType>(
+        q_ref, array1_in, input_shape, result_shape, permute_axes, ndim,
+        result1, size, dep_event_vec_ref);
     DPCTLEvent_WaitAndThrow(event_ref);
     DPCTLEvent_Delete(event_ref);
 }
 
 template <typename _DataType>
-void (*dpnp_elemwise_transpose_default_c)(void*,
-                                          const shape_elem_type*,
-                                          const shape_elem_type*,
-                                          const shape_elem_type*,
+void (*dpnp_elemwise_transpose_default_c)(void *,
+                                          const shape_elem_type *,
+                                          const shape_elem_type *,
+                                          const shape_elem_type *,
                                           size_t,
-                                          void*,
-                                          size_t) = dpnp_elemwise_transpose_c<_DataType>;
+                                          void *,
+                                          size_t) =
+    dpnp_elemwise_transpose_c<_DataType>;
 
-void func_map_init_manipulation(func_map_t& fmap)
+void func_map_init_manipulation(func_map_t &fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_repeat_default_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_repeat_default_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_repeat_default_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_repeat_default_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_INT][eft_INT] = {
+        eft_INT, (void *)dpnp_repeat_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_LNG][eft_LNG] = {
+        eft_LNG, (void *)dpnp_repeat_default_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_FLT][eft_FLT] = {
+        eft_FLT, (void *)dpnp_repeat_default_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_DBL][eft_DBL] = {
+        eft_DBL, (void *)dpnp_repeat_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_REPEAT_EXT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_repeat_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_REPEAT_EXT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_repeat_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_REPEAT_EXT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_repeat_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_REPEAT_EXT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_repeat_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_REPEAT_EXT][eft_INT][eft_INT] = {
+        eft_INT, (void *)dpnp_repeat_ext_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_REPEAT_EXT][eft_LNG][eft_LNG] = {
+        eft_LNG, (void *)dpnp_repeat_ext_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_REPEAT_EXT][eft_FLT][eft_FLT] = {
+        eft_FLT, (void *)dpnp_repeat_ext_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_REPEAT_EXT][eft_DBL][eft_DBL] = {
+        eft_DBL, (void *)dpnp_repeat_ext_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_INT][eft_INT] = {eft_INT,
-                                                               (void*)dpnp_elemwise_transpose_default_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_LNG][eft_LNG] = {eft_LNG,
-                                                               (void*)dpnp_elemwise_transpose_default_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_FLT][eft_FLT] = {eft_FLT,
-                                                               (void*)dpnp_elemwise_transpose_default_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_DBL][eft_DBL] = {eft_DBL,
-                                                               (void*)dpnp_elemwise_transpose_default_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_INT][eft_INT] = {
+        eft_INT, (void *)dpnp_elemwise_transpose_default_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_LNG][eft_LNG] = {
+        eft_LNG, (void *)dpnp_elemwise_transpose_default_c<int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_FLT][eft_FLT] = {
+        eft_FLT, (void *)dpnp_elemwise_transpose_default_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_DBL][eft_DBL] = {
+        eft_DBL, (void *)dpnp_elemwise_transpose_default_c<double>};
     return;
 }

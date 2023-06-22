@@ -37,11 +37,15 @@ struct AxesParameters
     bool duplications = bool{};
     vector<size_t> result;
 
-    /// Operator needs to print this container in human readable form in error reporting
-    friend std::ostream& operator<<(std::ostream& out, const AxesParameters& data)
+    /// Operator needs to print this container in human readable form in error
+    /// reporting
+    friend std::ostream &operator<<(std::ostream &out,
+                                    const AxesParameters &data)
     {
-        out << "AxesParameters(axes=" << data.axes << ", shape_size=" << data.shape_size
-            << ", duplications=" << data.duplications << ", result=" << data.result << ")";
+        out << "AxesParameters(axes=" << data.axes
+            << ", shape_size=" << data.shape_size
+            << ", duplications=" << data.duplications
+            << ", result=" << data.result << ")";
 
         return out;
     }
@@ -53,12 +57,14 @@ struct AxesNormalization : public ::testing::TestWithParam<AxesParameters>
     struct PrintToStringParamName
     {
         template <class ParamType>
-        string operator()(const testing::TestParamInfo<ParamType>& info) const
+        string operator()(const testing::TestParamInfo<ParamType> &info) const
         {
-            const AxesParameters& param = static_cast<AxesParameters>(info.param);
+            const AxesParameters &param =
+                static_cast<AxesParameters>(info.param);
             stringstream ss;
             ss << "axes=" << param.axes << ", shape_size=" << param.shape_size
-               << ", duplications=" << param.duplications << ", result=" << param.result;
+               << ", duplications=" << param.duplications
+               << ", result=" << param.result;
             return ss.str();
         }
     };
@@ -66,24 +72,26 @@ struct AxesNormalization : public ::testing::TestWithParam<AxesParameters>
 
 TEST_P(AxesNormalization, get_validated_axes)
 {
-    const AxesParameters& param = GetParam();
-    vector<size_t> result = get_validated_axes(param.axes, param.shape_size, param.duplications);
+    const AxesParameters &param = GetParam();
+    vector<size_t> result =
+        get_validated_axes(param.axes, param.shape_size, param.duplications);
     EXPECT_EQ(result, param.result);
 }
 
-INSTANTIATE_TEST_SUITE_P(TestUtilsAxesNormalization,
-                         AxesNormalization,
-                         testing::Values(AxesParameters{{0}, 1, true, {0}},
-                                         AxesParameters{{1}, 4, false, {1}},
-                                         AxesParameters{{-1}, 4, false, {3}},
-                                         AxesParameters{{0, 1, 2, 3}, 4, false, {0, 1, 2, 3}},
-                                         /* AxesParameters{{0, 1, 1, 3}, 4, false, {0, 1, 3}}, */
-                                         AxesParameters{{0, 1, 1, 3}, 4, true, {0, 1, 1, 3}},
-                                         AxesParameters{{-2, 1, -4, 3}, 4, false, {2, 1, 0, 3}},
-                                         AxesParameters{{-4, -3, -2, -1}, 4, false, {0, 1, 2, 3}},
-                                         AxesParameters{{-1, -2, -3, -4}, 4, false, {3, 2, 1, 0}},
-                                         AxesParameters{{}, 0, true, {}},
-                                         AxesParameters{{}, 0, false, {}},
-                                         AxesParameters{{}, 2, true, {}})
-                         /*, AxesNormalization::PrintToStringParamName()*/
+INSTANTIATE_TEST_SUITE_P(
+    TestUtilsAxesNormalization,
+    AxesNormalization,
+    testing::Values(AxesParameters{{0}, 1, true, {0}},
+                    AxesParameters{{1}, 4, false, {1}},
+                    AxesParameters{{-1}, 4, false, {3}},
+                    AxesParameters{{0, 1, 2, 3}, 4, false, {0, 1, 2, 3}},
+                    /* AxesParameters{{0, 1, 1, 3}, 4, false, {0, 1, 3}}, */
+                    AxesParameters{{0, 1, 1, 3}, 4, true, {0, 1, 1, 3}},
+                    AxesParameters{{-2, 1, -4, 3}, 4, false, {2, 1, 0, 3}},
+                    AxesParameters{{-4, -3, -2, -1}, 4, false, {0, 1, 2, 3}},
+                    AxesParameters{{-1, -2, -3, -4}, 4, false, {3, 2, 1, 0}},
+                    AxesParameters{{}, 0, true, {}},
+                    AxesParameters{{}, 0, false, {}},
+                    AxesParameters{{}, 2, true, {}})
+    /*, AxesNormalization::PrintToStringParamName()*/
 );
