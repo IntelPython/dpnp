@@ -125,17 +125,17 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">import</span> <span class="nn">numpy.lib.stride_tricks</span> <span class="k">as</span> <span class="nn">np_st</span>
-<span class="kn">import</span> <span class="nn">dpnp.config</span> <span class="k">as</span> <span class="nn">config</span>
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">numpy.lib.stride_tricks</span> <span class="k">as</span> <span class="nn">np_st</span>
 
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
+<span class="kn">import</span> <span class="nn">dpnp.config</span> <span class="k">as</span> <span class="nn">config</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.fft</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.linalg</span> <span class="kn">import</span> <span class="o">*</span>
@@ -158,34 +158,32 @@
     <span class="s2">&quot;is_supported_array_type&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
-<span class="kn">from</span> <span class="nn">dpnp</span> <span class="kn">import</span> <span class="n">isscalar</span><span class="p">,</span> <span class="n">float64</span>
-
+<span class="kn">from</span> <span class="nn">dpnp</span> <span class="kn">import</span> <span class="n">float64</span><span class="p">,</span> <span class="n">isscalar</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_bitwise</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_counting</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_indexing</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_libmath</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_linearalgebra</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_logic</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_manipulation</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_mathematical</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_searching</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_sorting</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_statistics</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="o">*</span>
-
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__arraycreation</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_bitwise</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_bitwise</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__bitwise</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_counting</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_counting</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__counting</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_indexing</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_indexing</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__indexing</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_libmath</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_libmath</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__libmath</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_linearalgebra</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_linearalgebra</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__linearalgebra</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_logic</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_logic</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__logic</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_manipulation</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_manipulation</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__manipulation</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_mathematical</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_mathematical</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__mathematical</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_searching</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_searching</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__searching</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_sorting</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_sorting</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__sorting</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_statistics</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_statistics</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__statistics</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__trigonometric</span>
 
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__arraycreation</span>
