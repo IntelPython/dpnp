@@ -8,7 +8,6 @@ import pytest
 import dpnp as cupy
 from tests.third_party.cupy import testing
 
-
 float_types = [numpy.float32, numpy.float64]
 complex_types = []
 signed_int_types = [numpy.int32, numpy.int64]

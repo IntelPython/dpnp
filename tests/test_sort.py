@@ -1,10 +1,10 @@
+import numpy
 import pytest
-from .helper import get_all_dtypes
+from numpy.testing import assert_array_equal
 
 import dpnp
 
-import numpy
-from numpy.testing import assert_array_equal
+from .helper import get_all_dtypes
 
 
 @pytest.mark.parametrize("kth", [0, 1], ids=["0", "1"])

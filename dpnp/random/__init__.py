@@ -25,9 +25,8 @@
 # *****************************************************************************
 
 from .dpnp_iface_random import *
-from .dpnp_random_state import *
-
 from .dpnp_iface_random import __all__ as __all__random
+from .dpnp_random_state import *
 from .dpnp_random_state import __all__ as __all__random_state
 
 __all__ = __all__random

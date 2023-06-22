@@ -25,8 +25,8 @@
 # *****************************************************************************
 
 import numpy
-from dpnp.dpnp_utils import convert_item
 
+from dpnp.dpnp_utils import convert_item
 
 assert_allclose_orig = numpy.testing.assert_allclose
 assert_array_equal_orig = numpy.testing.assert_array_equal

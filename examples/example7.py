@@ -39,16 +39,17 @@ and DPNP for several matrix multiplication
 try:
     import dpnp
 except ImportError:
-    import sys
     import os
+    import sys
 
     root_dir = os.path.join(os.path.dirname(__file__), os.pardir)
     sys.path.append(root_dir)
 
     import dpnp
 
-import numpy
 import time
+
+import numpy
 
 
 def run_function(executor, name, size, test_type, repetition):

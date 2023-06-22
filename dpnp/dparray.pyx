@@ -38,7 +38,12 @@ import warnings
 
 from libcpp cimport bool as cpp_bool
 
-from dpnp.dpnp_iface_types import *
+import numpy
+
+# to avoid interference with Python internal functions
+from dpnp.dpnp_iface import get_dpnp_descriptor as iface_get_dpnp_descriptor
+from dpnp.dpnp_iface import prod as iface_prod
+from dpnp.dpnp_iface import sum as iface_sum
 
 # It's prohibeted to use 'import *' from 'dpnp.dpnp_iface_arraycreation' module here,
 # because module has 'array' function, but cython has already imported 'array' by default.
@@ -79,7 +84,7 @@ from dpnp.dpnp_iface_arraycreation import (
     triu,
     vander,
     zeros,
-    zeros_like
+    zeros_like,
 )
 from dpnp.dpnp_iface_bitwise import *
 from dpnp.dpnp_iface_counting import *
@@ -87,25 +92,23 @@ from dpnp.dpnp_iface_indexing import *
 from dpnp.dpnp_iface_libmath import *
 from dpnp.dpnp_iface_linearalgebra import *
 from dpnp.dpnp_iface_logic import *
+from dpnp.dpnp_iface_logic import all, any  # TODO do the same as for iface_sum
 from dpnp.dpnp_iface_manipulation import *
 from dpnp.dpnp_iface_mathematical import *
 from dpnp.dpnp_iface_searching import *
 from dpnp.dpnp_iface_sorting import *
 from dpnp.dpnp_iface_statistics import *
+from dpnp.dpnp_iface_statistics import (  # TODO do the same as for iface_sum
+    max,
+    min,
+)
 from dpnp.dpnp_iface_trigonometric import *
+from dpnp.dpnp_iface_types import *
 
-# to avoid interference with Python internal functions
-from dpnp.dpnp_iface import sum as iface_sum
-from dpnp.dpnp_iface import prod as iface_prod
-from dpnp.dpnp_iface import get_dpnp_descriptor as iface_get_dpnp_descriptor
-
-from dpnp.dpnp_iface_statistics import min, max  # TODO do the same as for iface_sum
-from dpnp.dpnp_iface_logic import all, any  # TODO do the same as for iface_sum
-import numpy
 cimport numpy
 
-from dpnp.dpnp_algo cimport *
 cimport dpnp.dpnp_utils as utils
+from dpnp.dpnp_algo cimport *
 
 
 # initially copied from original

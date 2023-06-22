@@ -1,11 +1,11 @@
 import unittest
-from tests.third_party.cupy import testing
 
-import dpnp as dp
 import numpy as np
 import pytest
-
 from numpy.testing import assert_raises
+
+import dpnp as dp
+from tests.third_party.cupy import testing
 
 
 class TestOuter(unittest.TestCase):

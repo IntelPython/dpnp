@@ -1,8 +1,9 @@
+import numpy
 import pytest
-from .helper import get_all_dtypes
+
 import dpnp
 
-import numpy
+from .helper import get_all_dtypes
 
 
 @pytest.mark.parametrize(

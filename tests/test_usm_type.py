@@ -1,8 +1,7 @@
+import dpctl.utils as du
 import pytest
 
 import dpnp as dp
-
-import dpctl.utils as du
 
 list_of_usm_types = ["device", "shared", "host"]
 

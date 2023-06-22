@@ -3,9 +3,9 @@ import unittest
 
 import numpy
 import pytest
+from dpctl import select_default_device
 
 import dpnp as cupy
-from dpctl import select_default_device
 from tests.third_party.cupy import testing
 
 

@@ -36,7 +36,6 @@ This module provides public type interface file for the library
 
 import numpy
 
-
 __all__ = [
     "bool",
     "bool_",

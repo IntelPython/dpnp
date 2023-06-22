@@ -27,17 +27,15 @@
 # *****************************************************************************
 
 
-import dpnp
-from dpnp.dpnp_array import dpnp_array
-import dpnp.backend.extensions.vm._vm_impl as vmi
-
-from dpctl.tensor._elementwise_common import BinaryElementwiseFunc
-import dpctl.tensor._tensor_impl as ti
-import dpctl.tensor as dpt
 import dpctl
-
+import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as ti
 import numpy
+from dpctl.tensor._elementwise_common import BinaryElementwiseFunc
 
+import dpnp
+import dpnp.backend.extensions.vm._vm_impl as vmi
+from dpnp.dpnp_array import dpnp_array
 
 __all__ = ["dpnp_add", "dpnp_divide", "dpnp_multiply", "dpnp_subtract"]
 

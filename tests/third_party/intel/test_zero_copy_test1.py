@@ -1,5 +1,6 @@
-import sys
 import importlib
+import sys
+
 import pytest
 
 

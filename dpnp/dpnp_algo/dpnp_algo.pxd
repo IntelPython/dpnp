@@ -25,12 +25,11 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 cimport dpctl as c_dpctl
-
 from libcpp cimport bool as cpp_bool
 
+from dpnp.dpnp_algo cimport shape_elem_type, shape_type_c
 from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 
-from dpnp.dpnp_algo cimport shape_elem_type, shape_type_c
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":

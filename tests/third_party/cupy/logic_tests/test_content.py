@@ -1,7 +1,7 @@
 import unittest
-import pytest
 
 import numpy
+import pytest
 
 from tests.third_party.cupy import testing
 

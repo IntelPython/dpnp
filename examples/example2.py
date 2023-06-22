@@ -39,16 +39,17 @@ over diffrent types of input data
 try:
     import dpnp
 except ImportError:
-    import sys
     import os
+    import sys
 
     root_dir = os.path.join(os.path.dirname(__file__), os.pardir)
     sys.path.append(root_dir)
 
     import dpnp
 
-import numpy
 import time
+
+import numpy
 
 common_function_one_input = numpy.sin
 """

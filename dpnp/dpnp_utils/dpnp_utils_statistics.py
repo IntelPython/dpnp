@@ -27,14 +27,13 @@
 # *****************************************************************************
 
 
-import dpnp
-from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import get_usm_allocations
-
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 
+import dpnp
+from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import get_usm_allocations
 
 __all__ = ["dpnp_cov"]
 

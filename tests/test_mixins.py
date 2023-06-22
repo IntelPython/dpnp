@@ -1,8 +1,8 @@
 import unittest
 
-import dpnp as inp
-
 import numpy
+
+import dpnp as inp
 
 
 class TestMatMul(unittest.TestCase):

@@ -24,11 +24,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
-import dpnp
-from dpnp.dparray import dparray
-
 import numpy
 
+import dpnp
+from dpnp.dparray import dparray
 
 __all__ = ["gen_array_1d", "gen_array_2d"]
 

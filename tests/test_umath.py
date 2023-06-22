@@ -1,10 +1,10 @@
-import pytest
-from .helper import get_all_dtypes, get_float_dtypes
-
 import numpy
+import pytest
 from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
+
+from .helper import get_all_dtypes, get_float_dtypes
 
 # full list of umaths
 umaths = [i for i in dir(numpy) if isinstance(getattr(numpy, i), numpy.ufunc)]

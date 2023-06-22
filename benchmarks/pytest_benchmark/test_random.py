@@ -25,10 +25,10 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import numpy as np
 import pytest
 
 import dpnp
-import numpy as np
 
 ROUNDS = 30
 ITERATIONS = 4

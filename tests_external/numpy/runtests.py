@@ -35,20 +35,19 @@ to run specific test case:
 >>> python -m tests_external.numpy.runtests core/tests/test_umath.py::TestHypot::test_simple
 """
 
-import numpy.conftest
-import numpy.core._rational_tests
-import numpy
 import argparse
-import unittest
 import site
 import sys
 import types
-
+import unittest
 from pathlib import Path
 
+import numpy
+import numpy.conftest
+import numpy.core._rational_tests
 import pytest
-import dpnp
 
+import dpnp
 from dpnp.dparray import dparray
 
 

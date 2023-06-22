@@ -40,18 +40,17 @@ it contains:
 """
 
 
-import numpy
-import dpnp
 import operator
 
+import dpctl
+import dpctl.tensor as dpt
+import numpy
+
+import dpnp
 import dpnp.config as config
+import dpnp.dpnp_container as dpnp_container
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-
-import dpnp.dpnp_container as dpnp_container
-import dpctl.tensor as dpt
-import dpctl
-
 
 __all__ = [
     "arange",

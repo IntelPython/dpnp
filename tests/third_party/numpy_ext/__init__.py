@@ -36,6 +36,5 @@ to run specific test case:
 import dpnp
 from tests_external.numpy import runtests
 
-
 code = runtests.run()
 exit(code)

@@ -26,10 +26,11 @@
 
 import os
 import sys
-import dpnp
+
 import numpy
 import pytest
 
+import dpnp
 
 skip_mark = pytest.mark.skip(reason="Skipping test.")
 
