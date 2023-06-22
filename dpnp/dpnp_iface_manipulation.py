@@ -40,8 +40,6 @@ it contains:
 """
 
 
-import collections.abc
-
 import dpctl.tensor as dpt
 import numpy
 
@@ -108,6 +106,7 @@ def asfarray(x1, dtype=None):
 def atleast_1d(*arys):
     """
     Convert inputs to arrays with at least one dimension.
+
     Scalar inputs are converted to 1-dimensional arrays, whilst
     higher-dimensional inputs are preserved.
 
@@ -605,7 +604,7 @@ def reshape(x, /, newshape, order="C", copy=None):
 
     if order is None:
         order = "C"
-    elif not order in "cfCF":
+    elif order not in "cfCF":
         raise ValueError(f"order must be one of 'C' or 'F' (got {order})")
 
     usm_arr = dpnp.get_usm_ndarray(x)
@@ -615,6 +614,8 @@ def reshape(x, /, newshape, order="C", copy=None):
 
 def result_type(*arrays_and_dtypes):
     """
+    result_type(*arrays_and_dtypes)
+
     Returns the type that results from applying the NumPy
     type promotion rules to the arguments.
 

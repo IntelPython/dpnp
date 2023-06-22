@@ -43,7 +43,6 @@ it contains:
 import numpy
 
 import dpnp
-import dpnp.config as config
 from dpnp.dpnp_algo.dpnp_algo import *  # TODO need to investigate why dpnp.dpnp_algo can not be used
 from dpnp.dpnp_utils import *
 

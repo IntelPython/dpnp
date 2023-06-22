@@ -63,7 +63,7 @@ def get_package_specific_input_data_type(input_type, size):
 
 def run_third_party_function(input, repetition):
     times = []
-    for iteration in range(repetition):
+    for _ in range(repetition):
         start_time = time.time()
         result = common_function_one_input(input)
         end_time = time.time()

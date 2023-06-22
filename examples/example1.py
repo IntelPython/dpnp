@@ -61,7 +61,7 @@ def run_dgemm(executor, name, size, test_type, repetition):
     )
 
     times = []
-    for iteration in range(repetition):
+    for _ in range(repetition):
         start_time = time.perf_counter()
         result = executor.matmul(x1, x2)
         # print("result[5]=%f" % (result.item(5)))

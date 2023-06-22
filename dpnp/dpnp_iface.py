@@ -40,15 +40,12 @@ it contains:
 """
 
 
-import collections
 import os
 
 import dpctl
 import dpctl.tensor as dpt
 import numpy
-import numpy.lib.stride_tricks as np_st
 
-import dpnp.config as config
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
@@ -190,9 +187,7 @@ def astype(x1, dtype, order="K", casting="unsafe", subok=True, copy=True):
 
 
 def convert_single_elem_array_to_scalar(obj, keepdims=False):
-    """
-    Convert array with single element to scalar
-    """
+    """Convert array with single element to scalar."""
 
     if (obj.ndim > 0) and (obj.size == 1) and (keepdims is False):
         return obj.dtype.type(obj[0])
@@ -339,9 +334,7 @@ def get_dpnp_descriptor(
 
 
 def get_include():
-    """
-    Return the directory that contains the DPNP C++ backend \\*.h header files.
-    """
+    r"""Return the directory that contains the DPNP C++ backend \*.h header files."""
 
     dpnp_path = os.path.join(os.path.dirname(__file__), "backend", "include")
 
