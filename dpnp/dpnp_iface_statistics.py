@@ -250,7 +250,8 @@ def cov(
     *,
     dtype=None,
 ):
-    """cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None, *, dtype=None):
+    """
+    cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None, *, dtype=None)
 
     Estimate a covariance matrix, given data and weights.
 
@@ -317,7 +318,9 @@ def cov(
 def histogram(a, bins=10, range=None, density=None, weights=None):
     """
     Compute the histogram of a dataset.
+
     For full documentation refer to :obj:`numpy.histogram`.
+
     Examples
     --------
     >>> import dpnp
@@ -336,6 +339,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     >>> res = dpnp.sum(hist * dpnp.diff(bin_edges))
     >>> print(res)
     1.0
+
     """
 
     return call_origin(

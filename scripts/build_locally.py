@@ -48,7 +48,7 @@ def run(
     elif sys.platform in ["win32", "cygwin"]:
         build_system = "Ninja"
     else:
-        assert False, sys.platform + " not supported"
+        raise AssertionError(sys.platform + " not supported")
 
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     cmake_args = [

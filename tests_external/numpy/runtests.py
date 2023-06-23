@@ -39,7 +39,6 @@ import argparse
 import site
 import sys
 import types
-import unittest
 from pathlib import Path
 
 import numpy

@@ -64,7 +64,6 @@ def erf(in_array1):
 
     Examples
     --------
-
     >>> import dpnp as np
     >>> x = np.linspace(2.0, 3.0, num=5)
     >>> [i for i in x]

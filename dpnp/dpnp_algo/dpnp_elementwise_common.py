@@ -30,7 +30,6 @@
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
-import numpy
 from dpctl.tensor._elementwise_common import BinaryElementwiseFunc
 
 import dpnp
@@ -67,6 +66,7 @@ Returns:
 def dpnp_add(x1, x2, out=None, order="K"):
     """
     Invokes add() from dpctl.tensor implementation for add() function.
+
     TODO: add a pybind11 extension of add() from OneMKL VM where possible
     and would be performance effective.
 
@@ -111,20 +111,27 @@ Returns:
 def dpnp_divide(x1, x2, out=None, order="K"):
     """
     Invokes div() function from pybind11 extension of OneMKL VM if possible.
+
     Otherwise fully relies on dpctl.tensor implementation for divide() function.
 
     """
 
-    def _call_divide(src1, src2, dst, sycl_queue, depends=[]):
+    def _call_divide(src1, src2, dst, sycl_queue, depends=None):
         """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
 
         if vmi._can_call_div(sycl_queue, src1, src2, dst):
             # call pybind11 extension for div() function from OneMKL VM
             return vmi._div(sycl_queue, src1, src2, dst, depends)
         return ti._divide(src1, src2, dst, sycl_queue, depends)
 
-    def _call_divide_inplace(lhs, rhs, sycl_queue, depends=[]):
+    def _call_divide_inplace(lhs, rhs, sycl_queue, depends=None):
         """In place workaround until dpctl.tensor provides the functionality."""
+
+        if depends is None:
+            depends = []
 
         # allocate temporary memory for out array
         out = dpt.empty_like(lhs, dtype=dpnp.result_type(lhs.dtype, rhs.dtype))
@@ -182,6 +189,7 @@ Returns:
 def dpnp_multiply(x1, x2, out=None, order="K"):
     """
     Invokes multiply() from dpctl.tensor implementation for multiply() function.
+
     TODO: add a pybind11 extension of mul() from OneMKL VM where possible
     and would be performance effective.
 
@@ -230,6 +238,7 @@ Returns:
 def dpnp_subtract(x1, x2, out=None, order="K"):
     """
     Invokes subtract() from dpctl.tensor implementation for subtract() function.
+
     TODO: add a pybind11 extension of sub() from OneMKL VM where possible
     and would be performance effective.
 

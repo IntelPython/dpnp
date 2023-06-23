@@ -508,10 +508,10 @@ def hypergeometric(ngood, nbad, nsample, size=None):
         elif nsample < 1:
             pass
         else:
-            m = int(ngood)
-            l = int(ngood) + int(nbad)
-            s = int(nsample)
-            return dpnp_rng_hypergeometric(l, s, m, size).get_pyobj()
+            _m = int(ngood)
+            _l = int(ngood) + int(nbad)
+            _s = int(nsample)
+            return dpnp_rng_hypergeometric(_l, _s, _m, size).get_pyobj()
 
     return call_origin(numpy.random.hypergeometric, ngood, nbad, nsample, size)
 
@@ -583,7 +583,7 @@ def logistic(loc=0.0, scale=1.0, size=None):
             pass
         else:
             result = dpnp_rng_logistic(loc, scale, size).get_pyobj()
-            if size == None or size == 1:
+            if size is None or size == 1:
                 return result[0]
             else:
                 return result
@@ -686,7 +686,7 @@ def multinomial(n, pvals, size=None):
             else:
                 try:
                     shape = (operator.index(size), d)
-                except:
+                except Exception:
                     shape = tuple(size) + (d,)
 
             return dpnp_rng_multinomial(int(n), pvals_desc, shape).get_pyobj()
@@ -1181,6 +1181,7 @@ def randn(d0, *dn, device=None, usm_type="device", sycl_queue=None):
 def random(size=None, device=None, usm_type="device", sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
+
     Alias for random_sample.
 
     For full documentation refer to :obj:`numpy.random.random`.
@@ -1328,6 +1329,7 @@ def random_sample(size=None, device=None, usm_type="device", sycl_queue=None):
 def ranf(size=None, device=None, usm_type="device", sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
+
     This is an alias of random_sample.
 
     For full documentation refer to :obj:`numpy.random.ranf`.
@@ -1406,6 +1408,7 @@ def rayleigh(scale=1.0, size=None):
 def sample(size=None, device=None, usm_type="device", sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0).
+
     This is an alias of random_sample.
 
     For full documentation refer to :obj:`numpy.random.sample`.
@@ -1787,7 +1790,8 @@ def uniform(
 
 
 def vonmises(mu, kappa, size=None):
-    """von Mises distribution.
+    """
+    Von Mises distribution.
 
     Draw samples from a von Mises distribution.
 

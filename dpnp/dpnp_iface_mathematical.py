@@ -114,6 +114,8 @@ def _check_nd_call(
     **kwargs,
 ):
     """
+    Checks arguments and calls a function.
+
     Chooses a common internal elementwise function to call in DPNP based on input arguments
     or to fallback on NumPy call if any passed argument is not currently supported.
 

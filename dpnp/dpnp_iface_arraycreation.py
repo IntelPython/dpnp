@@ -42,12 +42,10 @@ it contains:
 
 import operator
 
-import dpctl
 import dpctl.tensor as dpt
 import numpy
 
 import dpnp
-import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
@@ -619,6 +617,7 @@ def eye(
 ):
     """
     Return a 2-D array with ones on the diagonal and zeros elsewhere.
+
     For full documentation refer to :obj:`numpy.eye`.
 
     Limitations
@@ -998,7 +997,7 @@ def linspace(
 
 
 def loadtxt(fname, **kwargs):
-    """
+    r"""
     Load data from a text file.
 
     Each row in the text file must have the same number of values.

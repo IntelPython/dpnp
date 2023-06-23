@@ -24,10 +24,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-Implementation of flatiter
-
-"""
+"""Implementation of flatiter."""
 
 import dpnp
 

@@ -119,18 +119,14 @@ class RandomState:
         return self.get_state()
 
     def _is_finite_scalar(self, x):
-        """
-        Test a scalar for finiteness (not infinity and not Not a Number).
-        """
+        """Test a scalar for finiteness (not infinity and not Not a Number)."""
 
         # TODO: replace with dpnp.isfinite() once function is available in DPNP,
         # but for now use direct numpy calls without call_origin() wrapper, since data is a scalar
         return numpy.isfinite(x)
 
     def _is_signbit_scalar(self, x):
-        """
-        Test a scalar if sign bit is set for it (less than zero).
-        """
+        """Test a scalar if sign bit is set for it (less than zero)."""
 
         # TODO: replace with dpnp.signbit() once function is available in DPNP,
         # but for now use direct numpy calls without call_origin() wrapper, since data is a scalar
@@ -138,6 +134,8 @@ class RandomState:
 
     def _validate_float_dtype(self, dtype, supported_types):
         """
+        Validate an input floating type.
+
         Test an input floating type if it is listed in `supported_types` and
         if it is supported by the used SYCL device.
         If `dtype` is ``None``, default floating type will be validating.
@@ -147,7 +145,7 @@ class RandomState:
         if dtype is None:
             dtype = self._def_float_type
 
-        if not dtype in supported_types:
+        if dtype not in supported_types:
             raise TypeError(f"dtype={dtype} is unsupported.")
         elif dtype != map_dtype_to_device(dtype, self._sycl_device):
             raise RuntimeError(

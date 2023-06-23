@@ -101,6 +101,7 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
 def partition(x1, kth, axis=-1, kind="introselect", order=None):
     """
     Return a partitioned copy of an array.
+
     For full documentation refer to :obj:`numpy.partition`.
 
     Limitations
@@ -133,6 +134,7 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
 def searchsorted(x1, x2, side="left", sorter=None):
     """
     Find indices where elements should be inserted to maintain order.
+
     For full documentation refer to :obj:`numpy.searchsorted`.
 
     Limitations
