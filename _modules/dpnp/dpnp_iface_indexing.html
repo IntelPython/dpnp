@@ -326,6 +326,7 @@
 <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the elements of an array that satisfy some condition.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.extract`.</span>
 
 <span class="sd">    Returns</span>
@@ -341,8 +342,9 @@
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">check_input_type</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">check_input_type</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span> <span class="ow">and</span> <span class="n">check_input_type</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span>
+        <span class="n">x</span>
+    <span class="p">):</span>
         <span class="k">if</span> <span class="n">condition</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
@@ -477,6 +479,7 @@
 <span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change elements of an array based on conditional and input values.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.place`.</span>
 
 <span class="sd">    Limitations</span>
@@ -486,11 +489,10 @@
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">check_input_type</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="n">check_input_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="n">check_input_type</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="n">check_input_type</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
         <span class="n">dpt_mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">mask</span>
@@ -503,6 +505,7 @@
 <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replaces specified elements of an array with given values.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.put`.</span>
 
 <span class="sd">    Limitations</span>
@@ -532,6 +535,7 @@
 <span class="k">def</span> <span class="nf">put_along_axis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Put values into the destination array by matching 1d index and data slices.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.put_along_axis`.</span>
 
 <span class="sd">    See Also</span>
@@ -566,6 +570,7 @@
 <span class="k">def</span> <span class="nf">putmask</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Changes elements of an array based on conditional and input values.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.putmask`.</span>
 
 <span class="sd">    Limitations</span>
@@ -589,6 +594,7 @@
 <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array drawn from elements in choicelist, depending on conditions.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.select`.</span>
 
 <span class="sd">    Limitations</span>
@@ -621,6 +627,7 @@
 <span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take elements from an array.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.take`.</span>
 
 <span class="sd">    Limitations</span>
@@ -655,6 +662,7 @@
 <span class="k">def</span> <span class="nf">take_along_axis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take values from the input array by matching 1d index and data slices.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.take_along_axis`.</span>
 
 <span class="sd">    See Also</span>
@@ -731,6 +739,7 @@
 <span class="k">def</span> <span class="nf">tril_indices_from</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices for the lower-triangle of arr.</span>
+
 <span class="sd">    See `tril_indices` for full details.</span>
 
 <span class="sd">    Parameters</span>
@@ -791,6 +800,7 @@
 <span class="k">def</span> <span class="nf">triu_indices_from</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices for the lower-triangle of arr.</span>
+
 <span class="sd">    See `tril_indices` for full details.</span>
 
 <span class="sd">    Parameters</span>

@@ -204,18 +204,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_is_finite_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Test a scalar for finiteness (not infinity and not Not a Number).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test a scalar for finiteness (not infinity and not Not a Number).&quot;&quot;&quot;</span>
 
         <span class="c1"># TODO: replace with dpnp.isfinite() once function is available in DPNP,</span>
         <span class="c1"># but for now use direct numpy calls without call_origin() wrapper, since data is a scalar</span>
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_is_signbit_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Test a scalar if sign bit is set for it (less than zero).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test a scalar if sign bit is set for it (less than zero).&quot;&quot;&quot;</span>
 
         <span class="c1"># TODO: replace with dpnp.signbit() once function is available in DPNP,</span>
         <span class="c1"># but for now use direct numpy calls without call_origin() wrapper, since data is a scalar</span>
@@ -223,6 +219,8 @@
 
     <span class="k">def</span> <span class="nf">_validate_float_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate an input floating type.</span>
+
 <span class="sd">        Test an input floating type if it is listed in `supported_types` and</span>
 <span class="sd">        if it is supported by the used SYCL device.</span>
 <span class="sd">        If `dtype` is ``None``, default floating type will be validating.</span>
@@ -232,7 +230,7 @@
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_def_float_type</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dtype=</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is unsupported.&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>

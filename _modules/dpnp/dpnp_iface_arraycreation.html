@@ -127,12 +127,10 @@
 
 <span class="kn">import</span> <span class="nn">operator</span>
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
-<span class="kn">import</span> <span class="nn">dpnp.config</span> <span class="k">as</span> <span class="nn">config</span>
 <span class="kn">import</span> <span class="nn">dpnp.dpnp_container</span> <span class="k">as</span> <span class="nn">dpnp_container</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
@@ -704,6 +702,7 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a 2-D array with ones on the diagonal and zeros elsewhere.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.eye`.</span>
 
 <span class="sd">    Limitations</span>
@@ -1083,7 +1082,7 @@
 
 
 <span class="k">def</span> <span class="nf">loadtxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load data from a text file.</span>
 
 <span class="sd">    Each row in the text file must have the same number of values.</span>

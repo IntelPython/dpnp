@@ -154,6 +154,7 @@
 <div class="viewcode-block" id="cholesky"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.cholesky.html#dpnp.linalg.cholesky">[docs]</a><span class="k">def</span> <span class="nf">cholesky</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cholesky decomposition.</span>
+
 <span class="sd">    Return the Cholesky decomposition, `L * L.H`, of the square matrix `input`,</span>
 <span class="sd">    where `L` is lower-triangular and .H is the conjugate transpose operator</span>
 <span class="sd">    (which is the ordinary transpose if `input` is real-valued).  `input` must be</span>
@@ -196,6 +197,7 @@
 <span class="k">def</span> <span class="nf">cond</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the condition number of a matrix.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.linalg.cond`.</span>
 
 <span class="sd">    Limitations</span>
@@ -264,6 +266,8 @@
 
 <div class="viewcode-block" id="eigh"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eigh.html#dpnp.linalg.eigh">[docs]</a><span class="k">def</span> <span class="nf">eigh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    eigh(a, UPLO=&quot;L&quot;)</span>
+
 <span class="sd">    Return the eigenvalues and eigenvectors of a complex Hermitian</span>
 <span class="sd">    (conjugate symmetric) or a real symmetric matrix.</span>
 
@@ -331,6 +335,7 @@
 <div class="viewcode-block" id="eigvals"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eigvals.html#dpnp.linalg.eigvals">[docs]</a><span class="k">def</span> <span class="nf">eigvals</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the eigenvalues of a general matrix.</span>
+
 <span class="sd">    Main difference between `eigvals` and `eig`: the eigenvectors aren&#39;t</span>
 <span class="sd">    returned.</span>
 
@@ -402,7 +407,7 @@
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">()</span> <span class="ow">and</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="nb">input</span>
-        <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">result</span>
@@ -412,7 +417,8 @@
 
 <div class="viewcode-block" id="matrix_rank"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.matrix_rank.html#dpnp.linalg.matrix_rank">[docs]</a><span class="k">def</span> <span class="nf">matrix_rank</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return matrix rank of array</span>
+<span class="sd">    Return matrix rank of array.</span>
+
 <span class="sd">    Rank of the array is the number of singular values of the array that are</span>
 <span class="sd">    greater than `tol`.</span>
 
@@ -491,6 +497,7 @@
 <div class="viewcode-block" id="norm"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.norm.html#dpnp.linalg.norm">[docs]</a><span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matrix or vector norm.</span>
+
 <span class="sd">    This function is able to return one of eight different matrix norms,</span>
 <span class="sd">    or one of an infinite number of vector norms (described below), depending</span>
 <span class="sd">    on the value of the ``ord`` parameter.</span>
@@ -632,11 +639,11 @@
     <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">full_matrices</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">full_matrices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">compute_uv</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">compute_uv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">hermitian</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">hermitian</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">result_tup</span> <span class="o">=</span> <span class="n">dpnp_svd</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">full_matrices</span><span class="p">,</span> <span class="n">compute_uv</span><span class="p">,</span> <span class="n">hermitian</span><span class="p">)</span>

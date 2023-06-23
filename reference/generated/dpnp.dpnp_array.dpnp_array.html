@@ -215,8 +215,7 @@ of index to the minimum values along the given axis.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.argsort">
 <span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.argsort" title="Permalink to this definition"></a></dt>
-<dd><p>Return an ndarray of indices that sort the array along the
-specified axis.</p>
+<dd><p>Return an ndarray of indices that sort the array along the specified axis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -451,7 +450,8 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.partition">
 <span class="sig-name descname"><span class="pre">partition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'introselect'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.partition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.partition" title="Permalink to this definition"></a></dt>
-<dd><p>Rearranges the elements in the array in such a way that the value of the
+<dd><p>Return a partitioned copy of an array.</p>
+<p>Rearranges the elements in the array in such a way that the value of the
 element in kth position is in the position it would be in a sorted array.</p>
 <p>All elements smaller than the kth element are moved before this element and
 all equal or greater are moved behind it. The ordering of the elements in
@@ -564,7 +564,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">a.resh
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.to_device">
 <span class="sig-name descname"><span class="pre">to_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.to_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.to_device" title="Permalink to this definition"></a></dt>
-<dd><p>Transfer array to target device</p>
+<dd><p>Transfer array to target device.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -683,7 +683,8 @@ finite will be masked.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.dtype">
 <span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.dtype" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns NumPy’s dtype corresponding to the type of the array elements.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.flags">
@@ -726,12 +727,20 @@ cannot be reshaped without copy, it raises an exception.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.size">
 <span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.size" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Number of elements in the array.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.strides">
 <span class="sig-name descname"><span class="pre">strides</span></span><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.strides" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get strides of an array.</p>
+<p>Returns memory displacement in array elements, upon unit
+change of respective index.</p>
+<p>E.g. for strides (s1, s2, s3) and multi-index (i1, i2, i3)</p>
+<blockquote>
+<div><p>a[i1, i2, i3] == (&amp;a[0,0,0])[ s1*s1 + s2*i2 + s3*i3]</p>
+</div></blockquote>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.sycl_context">
