@@ -40,18 +40,14 @@ it contains:
 """
 
 
-import collections.abc
-
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
-from dpnp.dpnp_iface_arraycreation import array
+import dpctl.tensor as dpt
+import numpy
 
 import dpnp
+from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
-
-import numpy
-import dpctl.tensor as dpt
-
+from dpnp.dpnp_iface_arraycreation import array
+from dpnp.dpnp_utils import *
 
 __all__ = [
     "asfarray",
@@ -75,7 +71,7 @@ __all__ = [
     "swapaxes",
     "transpose",
     "unique",
-    "vstack"
+    "vstack",
 ]
 
 
@@ -110,6 +106,7 @@ def asfarray(x1, dtype=None):
 def atleast_1d(*arys):
     """
     Convert inputs to arrays with at least one dimension.
+
     Scalar inputs are converted to 1-dimensional arrays, whilst
     higher-dimensional inputs are preserved.
 
@@ -139,7 +136,9 @@ def atleast_2d(*arys):
     arys_desc = []
     for ary in arys:
         if not dpnp.isscalar(ary):
-            ary_desc = dpnp.get_dpnp_descriptor(ary, copy_when_nondefault_queue=False)
+            ary_desc = dpnp.get_dpnp_descriptor(
+                ary, copy_when_nondefault_queue=False
+            )
             if ary_desc:
                 arys_desc.append(ary_desc)
                 continue
@@ -175,7 +174,9 @@ def atleast_3d(*arys):
     arys_desc = []
     for ary in arys:
         if not dpnp.isscalar(ary):
-            ary_desc = dpnp.get_dpnp_descriptor(ary, copy_when_nondefault_queue=False)
+            ary_desc = dpnp.get_dpnp_descriptor(
+                ary, copy_when_nondefault_queue=False
+            )
             if ary_desc:
                 arys_desc.append(ary_desc)
                 continue
@@ -261,10 +262,17 @@ def concatenate(arrs, axis=0, out=None, dtype=None, casting="same_kind"):
     [1 2 3 4 5 6]
 
     """
-    return call_origin(numpy.concatenate, arrs, axis=axis, out=out, dtype=dtype, casting=casting)
+    return call_origin(
+        numpy.concatenate,
+        arrs,
+        axis=axis,
+        out=out,
+        dtype=dtype,
+        casting=casting,
+    )
 
 
-def copyto(dst, src, casting='same_kind', where=True):
+def copyto(dst, src, casting="same_kind", where=True):
     """
     Copies values from one array to another, broadcasting as necessary.
 
@@ -281,18 +289,38 @@ def copyto(dst, src, casting='same_kind', where=True):
 
     """
 
-    dst_desc = dpnp.get_dpnp_descriptor(dst, copy_when_strides=False, copy_when_nondefault_queue=False)
+    dst_desc = dpnp.get_dpnp_descriptor(
+        dst, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     src_desc = dpnp.get_dpnp_descriptor(src, copy_when_nondefault_queue=False)
     if dst_desc and src_desc:
-        if casting != 'same_kind':
+        if casting != "same_kind":
             pass
-        elif (dst_desc.dtype == dpnp.bool and  # due to 'same_kind' casting
-              src_desc.dtype in [dpnp.int32, dpnp.int64, dpnp.float32, dpnp.float64, dpnp.complex128]):
+        elif (
+            dst_desc.dtype == dpnp.bool
+            and src_desc.dtype  # due to 'same_kind' casting
+            in [
+                dpnp.int32,
+                dpnp.int64,
+                dpnp.float32,
+                dpnp.float64,
+                dpnp.complex128,
+            ]
+        ):
             pass
-        elif (dst_desc.dtype in [dpnp.int32, dpnp.int64] and  # due to 'same_kind' casting
-              src_desc.dtype in [dpnp.float32, dpnp.float64, dpnp.complex128]):
+        elif dst_desc.dtype in [
+            dpnp.int32,
+            dpnp.int64,
+        ] and src_desc.dtype in [  # due to 'same_kind' casting
+            dpnp.float32,
+            dpnp.float64,
+            dpnp.complex128,
+        ]:
             pass
-        elif dst_desc.dtype in [dpnp.float32, dpnp.float64] and src_desc.dtype == dpnp.complex128:  # due to 'same_kind' casting
+        elif (
+            dst_desc.dtype in [dpnp.float32, dpnp.float64]
+            and src_desc.dtype == dpnp.complex128
+        ):  # due to 'same_kind' casting
             pass
         elif where is not True:
             pass
@@ -303,7 +331,9 @@ def copyto(dst, src, casting='same_kind', where=True):
         else:
             return dpnp_copyto(dst_desc, src_desc, where=where)
 
-    return call_origin(numpy.copyto, dst, src, casting, where, dpnp_inplace=True)
+    return call_origin(
+        numpy.copyto, dst, src, casting, where, dpnp_inplace=True
+    )
 
 
 def expand_dims(x1, axis):
@@ -428,12 +458,14 @@ def moveaxis(x, source, destination):
 
     if isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
         dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
-        return dpnp_array._create_from_usm_ndarray(dpt.moveaxis(dpt_array, source, destination))
+        return dpnp_array._create_from_usm_ndarray(
+            dpt.moveaxis(dpt_array, source, destination)
+        )
 
     return call_origin(numpy.moveaxis, x, source, destination)
 
 
-def ravel(x1, order='C'):
+def ravel(x1, order="C"):
     """
     Return a contiguous flattened array.
 
@@ -503,7 +535,7 @@ def repeat(x1, repeats, axis=None):
     return call_origin(numpy.repeat, x1, repeats, axis)
 
 
-def reshape(x, /, newshape, order='C', copy=None):
+def reshape(x, /, newshape, order="C", copy=None):
     """
     Gives a new shape to an array without changing its data.
 
@@ -542,7 +574,7 @@ def reshape(x, /, newshape, order='C', copy=None):
         This will be a new view object if possible; otherwise, it will
         be a copy.  Note there is no guarantee of the *memory layout* (C- or
         Fortran- contiguous) of the returned array.
-    
+
     Limitations
     -----------
     Parameter `order` is supported only with values ``"C"`` and ``"F"``.
@@ -571,8 +603,8 @@ def reshape(x, /, newshape, order='C', copy=None):
         newshape = x.shape
 
     if order is None:
-        order = 'C'
-    elif not order in "cfCF":
+        order = "C"
+    elif order not in "cfCF":
         raise ValueError(f"order must be one of 'C' or 'F' (got {order})")
 
     usm_arr = dpnp.get_usm_ndarray(x)
@@ -582,6 +614,8 @@ def reshape(x, /, newshape, order='C', copy=None):
 
 def result_type(*arrays_and_dtypes):
     """
+    result_type(*arrays_and_dtypes)
+
     Returns the type that results from applying the NumPy
     type promotion rules to the arguments.
 
@@ -676,7 +710,7 @@ def shape(a):
     Return the shape of an array.
 
     For full documentation refer to :obj:`numpy.shape`.
-    
+
     Parameters
     ----------
     a : array_like
@@ -809,7 +843,10 @@ def swapaxes(x1, axis1, axis2):
             # 'do nothing' pattern for transpose()
             input_permute = [i for i in range(x1.ndim)]
             # swap axes
-            input_permute[axis1], input_permute[axis2] = input_permute[axis2], input_permute[axis1]
+            input_permute[axis1], input_permute[axis2] = (
+                input_permute[axis2],
+                input_permute[axis1],
+            )
 
             return transpose(x1_desc.get_pyobj(), axes=input_permute)
 
@@ -870,7 +907,9 @@ def transpose(a, axes=None):
     elif isinstance(a, dpt.usm_ndarray):
         array = dpnp_array._create_from_usm_ndarray(a.get_array())
     else:
-        raise TypeError("An array must be any of supported type, but got {}".format(type(a)))
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(a))
+        )
 
     if axes is None:
         return array.transpose()

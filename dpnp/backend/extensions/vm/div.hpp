@@ -39,18 +39,19 @@ namespace ext
 {
 namespace vm
 {
-    extern std::pair<sycl::event, sycl::event> div(sycl::queue exec_q,
-                                                   dpctl::tensor::usm_ndarray src1,
-                                                   dpctl::tensor::usm_ndarray src2,
-                                                   dpctl::tensor::usm_ndarray dst,
-                                                   const std::vector<sycl::event>& depends);
+extern std::pair<sycl::event, sycl::event>
+    div(sycl::queue exec_q,
+        dpctl::tensor::usm_ndarray src1,
+        dpctl::tensor::usm_ndarray src2,
+        dpctl::tensor::usm_ndarray dst,
+        const std::vector<sycl::event> &depends);
 
-    extern bool can_call_div(sycl::queue exec_q,
-                             dpctl::tensor::usm_ndarray src1,
-                             dpctl::tensor::usm_ndarray src2,
-                             dpctl::tensor::usm_ndarray dst);
+extern bool can_call_div(sycl::queue exec_q,
+                         dpctl::tensor::usm_ndarray src1,
+                         dpctl::tensor::usm_ndarray src2,
+                         dpctl::tensor::usm_ndarray dst);
 
-    extern void init_div_dispatch_vector(void);
+extern void init_div_dispatch_vector(void);
 } // namespace vm
 } // namespace ext
 } // namespace backend

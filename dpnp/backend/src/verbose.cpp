@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -31,38 +31,55 @@ bool _is_verbose_mode_init = false;
 
 bool is_verbose_mode()
 {
-    if (!_is_verbose_mode_init)
-    {
+    if (!_is_verbose_mode_init) {
         _is_verbose_mode = false;
-        const char* env_var = std::getenv("DPNP_VERBOSE");
-        if (env_var and env_var == std::string("1"))
-        {
+        char *env_var = nullptr;
+
+#ifdef _WIN32
+        size_t env_var_size = 0;
+        _dupenv_s(&env_var, &env_var_size, "DPNP_VERBOSE");
+#else
+        env_var = std::getenv("DPNP_VERBOSE");
+#endif
+
+        if (env_var && std::string(env_var) == "1") {
             _is_verbose_mode = true;
         }
         _is_verbose_mode_init = true;
+
+#ifdef _WIN32
+        if (env_var != nullptr)
+            free(env_var);
+#endif
     }
     return _is_verbose_mode;
 }
 
 class barrierKernelClass;
 
-void set_barrier_event(sycl::queue queue, std::vector<sycl::event>& depends)
+void set_barrier_event(sycl::queue queue, std::vector<sycl::event> &depends)
 {
-    if (is_verbose_mode())
-    {
-        sycl::event barrier_event = queue.single_task<barrierKernelClass>(depends, [=] {});
+    if (is_verbose_mode()) {
+        sycl::event barrier_event =
+            queue.single_task<barrierKernelClass>(depends, [=] {});
         depends.clear();
         depends.push_back(barrier_event);
     }
 }
 
-void verbose_print(std::string header, sycl::event first_event, sycl::event last_event)
+void verbose_print(std::string header,
+                   sycl::event first_event,
+                   sycl::event last_event)
 {
-    if (is_verbose_mode())
-    {
-        auto first_event_end = first_event.get_profiling_info<sycl::info::event_profiling::command_end>();
-        auto last_event_end = last_event.get_profiling_info<sycl::info::event_profiling::command_end>();
-        std::cout << "DPNP_VERBOSE " << header << " Time: " << (last_event_end - first_event_end) / 1.0e9 << " s"
-                  << std::endl;
+    if (is_verbose_mode()) {
+        auto first_event_end =
+            first_event
+                .get_profiling_info<sycl::info::event_profiling::command_end>();
+        auto last_event_end =
+            last_event
+                .get_profiling_info<sycl::info::event_profiling::command_end>();
+        std::cout << "DPNP_VERBOSE " << header
+                  << " Time: " << (last_event_end - first_event_end) / 1.0e9
+                  << " s" << std::endl;
     }
 }

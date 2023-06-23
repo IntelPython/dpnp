@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,24 +39,29 @@ and DPNP for several matrix multiplication
 try:
     import dpnp
 except ImportError:
-    import sys
     import os
+    import sys
 
     root_dir = os.path.join(os.path.dirname(__file__), os.pardir)
     sys.path.append(root_dir)
 
     import dpnp
 
-import numpy
 import time
+
+import numpy
 
 
 def run_dgemm(executor, name, size, test_type, repetition):
-    x1 = executor.reshape(executor.arange(size * size, dtype=test_type), (size, size))
-    x2 = executor.reshape(executor.arange(size * size, dtype=test_type), (size, size))
+    x1 = executor.reshape(
+        executor.arange(size * size, dtype=test_type), (size, size)
+    )
+    x2 = executor.reshape(
+        executor.arange(size * size, dtype=test_type), (size, size)
+    )
 
     times = []
-    for iteration in range(repetition):
+    for _ in range(repetition):
         start_time = time.perf_counter()
         result = executor.matmul(x1, x2)
         # print("result[5]=%f" % (result.item(5)))
@@ -70,15 +75,21 @@ def run_dgemm(executor, name, size, test_type, repetition):
     return (min_time, med_time, max_time), result.item(5)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_repetition = 5
     for test_type in [numpy.float64, numpy.float32, numpy.int64, numpy.int32]:
         type_name = numpy.dtype(test_type).name
-        print(f"...Test data type is {test_type}, each test repetitions {test_repetition}")
+        print(
+            f"...Test data type is {test_type}, each test repetitions {test_repetition}"
+        )
 
         for size in [16, 32, 64, 128]:  # , 256, 512, 1024, 2048, 4096]:
-            times_python, result_python = run_dgemm(numpy, "<NumPy>", size, test_type, test_repetition)
-            times_sycl, result_mkl = run_dgemm(dpnp, " <DPNP>", size, test_type, test_repetition)
+            times_python, result_python = run_dgemm(
+                numpy, "<NumPy>", size, test_type, test_repetition
+            )
+            times_sycl, result_mkl = run_dgemm(
+                dpnp, " <DPNP>", size, test_type, test_repetition
+            )
 
             verification = False
             if result_mkl == result_python:

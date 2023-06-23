@@ -1,19 +1,17 @@
 import unittest
 from unittest import mock
-import pytest
 
 import numpy
+import pytest
 
 import dpnp as cupy
 from dpnp import random
 from tests.third_party.cupy import testing
-from tests.third_party.cupy.testing import condition
-from tests.third_party.cupy.testing import hypothesis
+from tests.third_party.cupy.testing import condition, hypothesis
 
 
 @testing.gpu
 class TestRandint(unittest.TestCase):
-
     def test_lo_hi_reversed(self):
         with self.assertRaises(ValueError):
             random.randint(100, 1)
@@ -44,7 +42,6 @@ class TestRandint(unittest.TestCase):
 # @testing.fix_random()
 @testing.gpu
 class TestRandint2(unittest.TestCase):
-
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @condition.repeat(3, 10)
     def test_bound_1(self):
@@ -113,7 +110,6 @@ class TestRandint2(unittest.TestCase):
 
 @testing.gpu
 class TestRandintDtype(unittest.TestCase):
-
     # numpy.int8, numpy.uint8, numpy.int16, numpy.uint16, numpy.int32])
     @testing.for_dtypes([numpy.int32])
     def test_dtype(self, dtype):
@@ -148,27 +144,31 @@ class TestRandintDtype(unittest.TestCase):
 
 @testing.gpu
 class TestRandomIntegers(unittest.TestCase):
-
     def test_normal(self):
-        with mock.patch('dpnp.random.RandomState.randint') as m:
+        with mock.patch("dpnp.random.RandomState.randint") as m:
             random.random_integers(3, 5)
-        m.assert_called_with(low=3, high=6, size=None, dtype=int, usm_type="device")
+        m.assert_called_with(
+            low=3, high=6, size=None, dtype=int, usm_type="device"
+        )
 
     def test_high_is_none(self):
-        with mock.patch('dpnp.random.RandomState.randint') as m:
+        with mock.patch("dpnp.random.RandomState.randint") as m:
             random.random_integers(3, None)
-        m.assert_called_with(low=0, high=4, size=None, dtype=int, usm_type="device")
+        m.assert_called_with(
+            low=0, high=4, size=None, dtype=int, usm_type="device"
+        )
 
     def test_size_is_not_none(self):
-        with mock.patch('dpnp.random.RandomState.randint') as m:
+        with mock.patch("dpnp.random.RandomState.randint") as m:
             random.random_integers(3, 5, (1, 2, 3))
-        m.assert_called_with(low=3, high=6, size=(1, 2, 3), dtype=int, usm_type="device")
+        m.assert_called_with(
+            low=3, high=6, size=(1, 2, 3), dtype=int, usm_type="device"
+        )
 
 
 @testing.fix_random()
 @testing.gpu
 class TestRandomIntegers2(unittest.TestCase):
-
     @condition.repeat(3, 10)
     def test_bound_1(self):
         vals = [random.random_integers(0, 10, (2, 3)).get() for _ in range(10)]
@@ -205,7 +205,6 @@ class TestRandomIntegers2(unittest.TestCase):
 
 @testing.gpu
 class TestChoice(unittest.TestCase):
-
     def setUp(self):
         self.rs_tmp = random.generator._random_states
         device_id = cuda.Device().id
@@ -251,53 +250,50 @@ class TestChoice(unittest.TestCase):
 
 # @testing.gpu
 class TestRandomSample(unittest.TestCase):
-
     def test_rand(self):
         # no keyword argument 'dtype' in dpnp
         with self.assertRaises(TypeError):
             random.rand(1, 2, 3, dtype=numpy.float32)
 
     def test_rand_default_dtype(self):
-        with mock.patch('dpnp.random.RandomState.random_sample') as m:
+        with mock.patch("dpnp.random.RandomState.random_sample") as m:
             random.rand(1, 2, 3)
-        m.assert_called_once_with(
-            size=(1, 2, 3), usm_type="device")
+        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
 
     def test_rand_invalid_argument(self):
         with self.assertRaises(TypeError):
-            random.rand(1, 2, 3, unnecessary='unnecessary_argument')
+            random.rand(1, 2, 3, unnecessary="unnecessary_argument")
 
     def test_randn(self):
-        with mock.patch('dpnp.random.RandomState.standard_normal') as m:
+        with mock.patch("dpnp.random.RandomState.standard_normal") as m:
             random.randn(1, 2, 3)
         m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
 
     def test_randn_default_dtype(self):
-        with mock.patch('dpnp.random.RandomState.standard_normal') as m:
+        with mock.patch("dpnp.random.RandomState.standard_normal") as m:
             random.randn(1, 2, 3)
         m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
 
     def test_randn_invalid_argument(self):
         with self.assertRaises(TypeError):
-            random.randn(1, 2, 3, unnecessary='unnecessary_argument')
+            random.randn(1, 2, 3, unnecessary="unnecessary_argument")
 
 
 @testing.parameterize(
-    {'size': None},
-    {'size': ()},
-    {'size': 4},
-    {'size': (0,)},
-    {'size': (1, 0)},
+    {"size": None},
+    {"size": ()},
+    {"size": 4},
+    {"size": (0,)},
+    {"size": (1, 0)},
 )
 @testing.fix_random()
 @testing.gpu
 class TestMultinomial(unittest.TestCase):
-
     @condition.repeat(3, 10)
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose(rtol=0.05)
     def test_multinomial(self, xp, dtype):
         pvals = xp.array([0.2, 0.3, 0.5], dtype)
         x = xp.random.multinomial(100000, pvals, self.size)
-        self.assertEqual(x.dtype, 'l')
+        self.assertEqual(x.dtype, "l")
         return x / 100000

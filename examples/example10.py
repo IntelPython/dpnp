@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,14 +40,16 @@ except ImportError:
     import os
     import sys
 
-    sys.path.insert(0, os.path.abspath('.'))
+    sys.path.insert(0, os.path.abspath("."))
     import dpnp
 
 import numpy
 
 
 def run(executor, size, test_type, repetition):
-    x = executor.reshape(executor.arange(size * size, dtype=test_type), (size, size))
+    x = executor.reshape(
+        executor.arange(size * size, dtype=test_type), (size, size)
+    )
 
     times = []
     for _ in range(repetition):
@@ -63,10 +65,14 @@ def example():
     test_repetition = 5
     for test_type in [numpy.float64, numpy.float32, numpy.int64, numpy.int32]:
         type_name = numpy.dtype(test_type).name
-        print(f"...Test data type is {type_name}, each test repetitions {test_repetition}")
+        print(
+            f"...Test data type is {type_name}, each test repetitions {test_repetition}"
+        )
 
         for size in [64, 128, 256, 512, 1024, 2048, 4096]:
-            time_numpy, result_numpy = run(numpy, size, test_type, test_repetition)
+            time_numpy, result_numpy = run(
+                numpy, size, test_type, test_repetition
+            )
             time_dpnp, result_dpnp = run(dpnp, size, test_type, test_repetition)
 
             if result_dpnp == result_numpy:

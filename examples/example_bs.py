@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,8 @@ to calculate black scholes algorithm
 try:
     import dpnp as np
 except ImportError:
-    import sys
     import os
+    import sys
 
     root_dir = os.path.join(os.path.dirname(__file__), os.pardir)
     sys.path.append(root_dir)
@@ -44,7 +44,7 @@ except ImportError:
     import dpnp as np
 
 
-SIZE = 2 ** 8
+SIZE = 2**8
 DTYPE = np.float64
 
 SEED = 7777777
@@ -68,7 +68,7 @@ def black_scholes(price, strike, t, rate, vol, call, put):
 
     z = T * sig_sig_two
     c = 0.25 * z
-    y = 1. / np.sqrt(z)
+    y = 1.0 / np.sqrt(z)
 
     w1 = (a - b + c) * y
     w2 = (a - b - c) * y

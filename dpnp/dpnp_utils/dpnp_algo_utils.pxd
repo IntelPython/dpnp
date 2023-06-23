@@ -27,8 +27,8 @@
 
 from libcpp cimport bool as cpp_bool
 
-from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncType, DPNPFuncName
 from dpnp.dpnp_algo cimport shape_type_c
+from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncName, DPNPFuncType
 
 
 cpdef checker_throw_runtime_error(function_name, message)

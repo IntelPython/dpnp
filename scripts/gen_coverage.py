@@ -2,13 +2,13 @@ import os
 import subprocess
 import sys
 
+
 def run(
     c_compiler=None,
     cxx_compiler=None,
     bin_llvm=None,
-    pytest_opts = "",
+    pytest_opts="",
 ):
-
     IS_LIN = False
 
     if "linux" in sys.platform:
@@ -16,7 +16,7 @@ def run(
     elif sys.platform in ["win32", "cygwin"]:
         pass
     else:
-        assert False, sys.platform + " not supported"
+        raise AssertionError(sys.platform + " not supported")
 
     if not IS_LIN:
         raise RuntimeError(
@@ -24,7 +24,9 @@ def run(
         )
 
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    dpctl_cmake_dir = subprocess.check_output([sys.executable, "-m", "dpctl", "--cmakedir"])
+    dpctl_cmake_dir = subprocess.check_output(
+        [sys.executable, "-m", "dpctl", "--cmakedir"]
+    )
 
     cmake_args = [
         sys.executable,
@@ -46,7 +48,6 @@ def run(
             "LLVM_TOOLS_HOME": bin_llvm,
         }
         env.update({k: v for k, v in os.environ.items() if k != "PATH"})
-
 
     subprocess.check_call(cmake_args, shell=False, cwd=setup_dir, env=env)
 
@@ -113,6 +114,7 @@ def run(
             stdout=fh,
         )
 
+
 if __name__ == "__main__":
     import argparse
 
@@ -136,10 +138,9 @@ if __name__ == "__main__":
     bin_dir = os.path.dirname(os.path.dirname(icx_path))
     bin_llvm = os.path.join(bin_dir.decode("utf-8"), "bin-llvm")
 
-
     run(
         c_compiler=c_compiler,
         cxx_compiler=cxx_compiler,
         bin_llvm=bin_llvm,
-        pytest_opts = args.pytest_opts,
+        pytest_opts=args.pytest_opts,
     )

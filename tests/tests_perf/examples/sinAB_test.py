@@ -2,7 +2,7 @@ import time
 
 
 def cos_2_args(executor, size, test_type):
-    """ sin(A + B) = sin A cos B + cos A sin B """
+    """sin(A + B) = sin A cos B + cos A sin B"""
 
     start_time = time.perf_counter()
     input_A = executor.arange(size, dtype=test_type)
@@ -25,16 +25,20 @@ def cos_2_args(executor, size, test_type):
     end_time = time.perf_counter()
     calculation_time = end_time - start_time
 
-    print(f"memalloc_time={memalloc_time}, calculation_time={calculation_time}, executor={executor}")
+    print(
+        f"memalloc_time={memalloc_time}, calculation_time={calculation_time}, executor={executor}"
+    )
 
     return result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     size = 33554432  # 16777216
 
     import dpnp
+
     cos_2_args(dpnp, size, dpnp.float64)
 
     import numpy
+
     cos_2_args(numpy, size, numpy.float64)

@@ -1,13 +1,10 @@
+import numpy
 import pytest
-from .helper import get_all_dtypes
+from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp as inp
 
-import numpy
-from numpy.testing import (
-    assert_allclose,
-    assert_array_equal
-)
+from .helper import get_all_dtypes
 
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))

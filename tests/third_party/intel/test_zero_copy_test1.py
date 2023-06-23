@@ -1,5 +1,6 @@
-import sys
 import importlib
+import sys
+
 import pytest
 
 
@@ -7,7 +8,7 @@ class dummymodule:
     pass
 
 
-sys.modules['numba_dppy'] = dummymodule
+sys.modules["numba_dppy"] = dummymodule
 
 module_not_found = False
 

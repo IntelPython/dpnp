@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,25 +30,25 @@
  *
  * Possible compile line:
  * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example8.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example8
+ * g++ -g dpnp/backend/examples/example8.cpp -Idpnp -Idpnp/backend/include
+ * -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example8
  *
  */
 #include <iostream>
 
 #include "dpnp_iface.hpp"
 
-int main(int, char**)
+int main(int, char **)
 {
     const size_t size = 16;
 
     dpnp_queue_initialize_c(QueueOptions::GPU_SELECTOR);
 
-    double* array = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    long* result = (long*)dpnp_memory_alloc_c(size * sizeof(long));
+    double *array = (double *)dpnp_memory_alloc_c(size * sizeof(double));
+    long *result = (long *)dpnp_memory_alloc_c(size * sizeof(long));
 
     std::cout << "array" << std::endl;
-    for (size_t i = 0; i < size; ++i)
-    {
+    for (size_t i = 0; i < size; ++i) {
         array[i] = (double)(size - i) / 2;
         std::cout << array[i] << ", ";
     }
@@ -57,8 +57,7 @@ int main(int, char**)
     dpnp_argsort_c<double, long>(array, result, size);
 
     std::cout << "array with 'sorted' indeces" << std::endl;
-    for (size_t i = 0; i < size; ++i)
-    {
+    for (size_t i = 0; i < size; ++i) {
         std::cout << result[i] << ", ";
     }
     std::cout << std::endl;

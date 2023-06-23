@@ -5,12 +5,13 @@ import pytest
 
 import dpnp as cupy
 from tests.third_party.cupy import testing
+
 # from cupy import util
 
 
 def astype_without_warning(x, dtype, *args, **kwargs):
     dtype = numpy.dtype(dtype)
-    if x.dtype.kind == 'c' and dtype.kind not in ['b', 'c']:
+    if x.dtype.kind == "c" and dtype.kind not in ["b", "c"]:
         with testing.assert_warns(numpy.ComplexWarning):
             return x.astype(dtype, *args, **kwargs)
     else:
@@ -19,7 +20,6 @@ def astype_without_warning(x, dtype, *args, **kwargs):
 
 @testing.gpu
 class TestArrayCopyAndView(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_view(self, xp):
         a = testing.shaped_arange((4,), xp, dtype=numpy.float32)
@@ -99,15 +99,15 @@ class TestArrayCopyAndView(unittest.TestCase):
         b.fill(1)
         return b
 
-    @testing.for_orders(['C', 'F', 'A', 'K', None])
-    @testing.for_all_dtypes_combination(('src_dtype', 'dst_dtype'))
+    @testing.for_orders(["C", "F", "A", "K", None])
+    @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_array_equal()
     def test_astype(self, xp, src_dtype, dst_dtype, order):
         a = testing.shaped_arange((2, 3, 4), xp, src_dtype)
         return astype_without_warning(a, dst_dtype, order=order)
 
-    @testing.for_orders('CFAK')
-    @testing.for_all_dtypes_combination(('src_dtype', 'dst_dtype'))
+    @testing.for_orders("CFAK")
+    @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     def test_astype_type(self, src_dtype, dst_dtype, order):
         a = testing.shaped_arange((2, 3, 4), cupy, src_dtype)
         b = astype_without_warning(a, dst_dtype, order=order)
@@ -115,14 +115,14 @@ class TestArrayCopyAndView(unittest.TestCase):
         b_cpu = astype_without_warning(a_cpu, dst_dtype, order=order)
         self.assertEqual(b.dtype.type, b_cpu.dtype.type)
 
-    @testing.for_orders('CAK')
+    @testing.for_orders("CAK")
     @testing.for_all_dtypes()
     def test_astype_type_c_contiguous_no_copy(self, dtype, order):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
         b = a.astype(dtype, order=order, copy=False)
         self.assertTrue(b is a)
 
-    @testing.for_orders('FAK')
+    @testing.for_orders("FAK")
     @testing.for_all_dtypes()
     def test_astype_type_f_contiguous_no_copy(self, dtype, order):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
@@ -130,34 +130,40 @@ class TestArrayCopyAndView(unittest.TestCase):
         b = a.astype(dtype, order=order, copy=False)
         self.assertTrue(b is a)
 
-    @testing.for_all_dtypes_combination(('src_dtype', 'dst_dtype'))
+    @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_array_equal()
     def test_astype_strides(self, xp, src_dtype, dst_dtype):
         src = xp.empty((1, 2, 3), dtype=src_dtype)
         return numpy.array(
-            astype_without_warning(src, dst_dtype, order='K').strides)
+            astype_without_warning(src, dst_dtype, order="K").strides
+        )
 
-    @testing.for_all_dtypes_combination(('src_dtype', 'dst_dtype'))
+    @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_array_equal()
     def test_astype_strides_negative(self, xp, src_dtype, dst_dtype):
         src = xp.empty((2, 3), dtype=src_dtype)[::-1, :]
         return numpy.array(
-            astype_without_warning(src, dst_dtype, order='K').strides)
+            astype_without_warning(src, dst_dtype, order="K").strides
+        )
 
-    @testing.for_all_dtypes_combination(('src_dtype', 'dst_dtype'))
+    @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_array_equal()
     def test_astype_strides_swapped(self, xp, src_dtype, dst_dtype):
         src = xp.swapaxes(xp.empty((2, 3, 4), dtype=src_dtype), 1, 0)
         return numpy.array(
-            astype_without_warning(src, dst_dtype, order='K').strides)
+            astype_without_warning(src, dst_dtype, order="K").strides
+        )
 
-    @testing.for_all_dtypes_combination(('src_dtype', 'dst_dtype'))
+    @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_array_equal()
     def test_astype_strides_broadcast(self, xp, src_dtype, dst_dtype):
-        src, _ = xp.broadcast_arrays(xp.empty((2,), dtype=src_dtype),
-                                     xp.empty((2, 3, 2), dtype=src_dtype))
+        src, _ = xp.broadcast_arrays(
+            xp.empty((2,), dtype=src_dtype),
+            xp.empty((2, 3, 2), dtype=src_dtype),
+        )
         return numpy.array(
-            astype_without_warning(src, dst_dtype, order='K').strides)
+            astype_without_warning(src, dst_dtype, order="K").strides
+        )
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
@@ -174,9 +180,10 @@ class TestArrayCopyAndView(unittest.TestCase):
         return a.diagonal(-1, 2, 0)
 
     # @unittest.skipUnless(util.ENABLE_SLICE_COPY, 'Special copy disabled')
-    @testing.for_orders('CF')
-    @testing.for_dtypes([numpy.int16, numpy.int64,
-                         numpy.float16, numpy.float64])
+    @testing.for_orders("CF")
+    @testing.for_dtypes(
+        [numpy.int16, numpy.int64, numpy.float16, numpy.float64]
+    )
     @testing.numpy_cupy_array_equal()
     def test_isinstance_numpy_copy(self, xp, dtype, order):
         a = numpy.arange(100, dtype=dtype).reshape(10, 10, order=order)
@@ -209,19 +216,19 @@ class TestArrayCopyAndView(unittest.TestCase):
 
 
 @testing.parameterize(
-    {'src_order': 'C'},
-    {'src_order': 'F'},
+    {"src_order": "C"},
+    {"src_order": "F"},
 )
 @testing.gpu
 class TestNumPyArrayCopyView(unittest.TestCase):
     # @unittest.skipUnless(util.ENABLE_SLICE_COPY, 'Special copy disabled')
-    @testing.for_orders('CF')
-    @testing.for_dtypes([numpy.int16, numpy.int64,
-                         numpy.float16, numpy.float64])
+    @testing.for_orders("CF")
+    @testing.for_dtypes(
+        [numpy.int16, numpy.int64, numpy.float16, numpy.float64]
+    )
     @testing.numpy_cupy_array_equal()
     def test_isinstance_numpy_view_copy_f(self, xp, dtype, order):
-        a = numpy.arange(100, dtype=dtype).reshape(
-            10, 10, order=self.src_order)
+        a = numpy.arange(100, dtype=dtype).reshape(10, 10, order=self.src_order)
         a = a[2:5, 1:8]
         b = xp.empty(a.shape, dtype=dtype, order=order)
         b[:] = a

@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,8 @@
  *
  * Possible compile line:
  * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example9.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example9
+ * g++ -g dpnp/backend/examples/example9.cpp -Idpnp -Idpnp/backend/include
+ * -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example9
  *
  */
 
@@ -39,7 +40,7 @@
 
 #include "dpnp_iface.hpp"
 
-int main(int, char**)
+int main(int, char **)
 {
     const size_t size = 2097152;
     long result = 0;
@@ -47,17 +48,18 @@ int main(int, char**)
 
     dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
 
-    long* array = reinterpret_cast<long*>(dpnp_memory_alloc_c(size * sizeof(long)));
+    long *array =
+        reinterpret_cast<long *>(dpnp_memory_alloc_c(size * sizeof(long)));
 
-    for (size_t i = 0; i < size; ++i)
-    {
+    for (size_t i = 0; i < size; ++i) {
         array[i] = i;
         result_verification += i;
     }
 
     dpnp_sum_c<long, long>(&result, array, &size, 1, NULL, 0, NULL, NULL);
 
-    std::cout << "SUM() value: " << result << " verification value: " << result_verification << std::endl;
+    std::cout << "SUM() value: " << result
+              << " verification value: " << result_verification << std::endl;
 
     dpnp_memory_free_c(array);
 

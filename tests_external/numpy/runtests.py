@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,20 +35,18 @@ to run specific test case:
 >>> python -m tests_external.numpy.runtests core/tests/test_umath.py::TestHypot::test_simple
 """
 
-import numpy.conftest
-import numpy.core._rational_tests
-import numpy
 import argparse
-import unittest
 import site
 import sys
 import types
-
 from pathlib import Path
 
+import numpy
+import numpy.conftest
+import numpy.core._rational_tests
 import pytest
-import dpnp
 
+import dpnp
 from dpnp.dparray import dparray
 
 
@@ -76,10 +74,10 @@ class dummy_multiarray_tests(dummymodule):
     run_sortkind_converter = dummy_func
 
 
-dummy_sctypes = {'uint': [], 'int': [], 'float': []}
+dummy_sctypes = {"uint": [], "int": [], "float": []}
 
 
-def define_func_types(mod, func_names, types_, default=''):
+def define_func_types(mod, func_names, types_, default=""):
     """Define attribute types to specified functions of specified module"""
     for obj in mod.__dict__.values():
         if not isinstance(obj, types.FunctionType):
@@ -93,6 +91,7 @@ def define_func_types(mod, func_names, types_, default=''):
 
 def redefine_strides(f):
     """Redefine attribute strides in dparray returned by specified function"""
+
     def wrapper(*args, **kwargs):
         res = f(*args, **kwargs)
         if not isinstance(res, dparray):
@@ -108,6 +107,7 @@ def redefine_strides(f):
 
 def replace_arg_value(f, arg_pos, in_values, out_value):
     """Replace value of positional argument of specified function"""
+
     def wrapper(*args, **kwargs):
         if len(args) <= arg_pos:
             return f(*args, **kwargs)
@@ -125,6 +125,7 @@ def replace_arg_value(f, arg_pos, in_values, out_value):
 
 def replace_kwarg_value(f, arg_name, in_values, out_value):
     """Replace value of keyword argument of specified function"""
+
     def wrapper(*args, **kwargs):
         arg_value = kwargs.get(arg_name)
         for in_value in in_values:
@@ -138,14 +139,48 @@ def replace_kwarg_value(f, arg_name, in_values, out_value):
 
 # setting some dummy attrubutes to dpnp
 unsupported_classes = [
-    'byte', 'bytes_', 'cdouble', 'character', 'clongdouble', 'complex_',
-    'complexfloating', 'datetime64', 'flexible', 'floating',
-    'generic', 'half', 'inexact', 'int_', 'int16', 'int8', 'intc', 'integer',
-    'longlong', 'matrix', 'memmap', 'nditer', 'nextafter',
-    'number', 'object_', 'short', 'signedinteger', 'single', 'stack',
-    'timedelta64', 'ubyte', 'uint', 'uint16', 'uint32', 'uint64', 'uint8',
-    'uintc', 'ulonglong', 'unsignedinteger', 'ushort', 'vectorize',
-    'VisibleDeprecationWarning'
+    "byte",
+    "bytes_",
+    "cdouble",
+    "character",
+    "clongdouble",
+    "complex_",
+    "complexfloating",
+    "datetime64",
+    "flexible",
+    "floating",
+    "generic",
+    "half",
+    "inexact",
+    "int_",
+    "int16",
+    "int8",
+    "intc",
+    "integer",
+    "longlong",
+    "matrix",
+    "memmap",
+    "nditer",
+    "nextafter",
+    "number",
+    "object_",
+    "short",
+    "signedinteger",
+    "single",
+    "stack",
+    "timedelta64",
+    "ubyte",
+    "uint",
+    "uint16",
+    "uint32",
+    "uint64",
+    "uint8",
+    "uintc",
+    "ulonglong",
+    "unsignedinteger",
+    "ushort",
+    "vectorize",
+    "VisibleDeprecationWarning",
 ]
 for klass in unsupported_classes:
     setattr(dpnp, klass, DummyClass)
@@ -193,36 +228,55 @@ dpnp.zeros(shape, dtype=dpnp.dtype(dict(
 array_input_replace_map = [
     (dpnp.nan, [dpnp.nan]),
     ([None], [dpnp.nan]),
-    ([2. + 1j, 1. + 2j], []),
-    ([2. + 1j, 1. + 2j, 3. - 3j], []),
-    ([['one', 'two'], ['three', 'four']], [[], []]),
-    ([[1., 2 + 3j], [2 - 3j, 1]], [[], []]),
-    ([[1. + 2j, 2 + 3j], [3 + 4j, 4 + 5j]], [[], []]),
-    ([[2. + 1j, 1. + 2j], [1 - 1j, 2 - 2j]], [[], []]),
-    ([[2. + 1j, 1. + 2j, 1 + 3j], [1 - 2j, 1 - 3j, 1 - 6j]], [[], []]),
-    ([[1. + 1j, 2. + 2j, 3. - 3j], [3. - 5j, 4. + 9j, 6. + 2j]], [[], []]),
-    ([[2. + 1j, 1. + 2j], [1 - 1j, 2 - 2j], [1 - 1j, 2 - 2j]], [[2., 1.], [1., 2.], [1., 2.]]),
-    ([[1. + 1j, 2. + 2j], [3. - 3j, 4. - 9j], [5. - 4j, 6. + 8j]], [[1., 2.], [3., 4.], [5., 6.]]),
+    ([2.0 + 1j, 1.0 + 2j], []),
+    ([2.0 + 1j, 1.0 + 2j, 3.0 - 3j], []),
+    ([["one", "two"], ["three", "four"]], [[], []]),
+    ([[1.0, 2 + 3j], [2 - 3j, 1]], [[], []]),
+    ([[1.0 + 2j, 2 + 3j], [3 + 4j, 4 + 5j]], [[], []]),
+    ([[2.0 + 1j, 1.0 + 2j], [1 - 1j, 2 - 2j]], [[], []]),
+    ([[2.0 + 1j, 1.0 + 2j, 1 + 3j], [1 - 2j, 1 - 3j, 1 - 6j]], [[], []]),
+    (
+        [[1.0 + 1j, 2.0 + 2j, 3.0 - 3j], [3.0 - 5j, 4.0 + 9j, 6.0 + 2j]],
+        [[], []],
+    ),
+    (
+        [[2.0 + 1j, 1.0 + 2j], [1 - 1j, 2 - 2j], [1 - 1j, 2 - 2j]],
+        [[2.0, 1.0], [1.0, 2.0], [1.0, 2.0]],
+    ),
+    (
+        [[1.0 + 1j, 2.0 + 2j], [3.0 - 3j, 4.0 - 9j], [5.0 - 4j, 6.0 + 8j]],
+        [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]],
+    ),
 ]
 for in_value, out_value in array_input_replace_map:
     dpnp.array = replace_arg_value(dpnp.array, 0, [in_value], out_value)
 
 rational = numpy.core._rational_tests.rational
-dpnp.array = replace_kwarg_value(dpnp.array, 'dtype', ['m8', dpnp.uint8, 'i4,i4', object, rational], None)
-dpnp.array = replace_arg_value(dpnp.array, 1, ['i,i'], None)
+dpnp.array = replace_kwarg_value(
+    dpnp.array, "dtype", ["m8", dpnp.uint8, "i4,i4", object, rational], None
+)
+dpnp.array = replace_arg_value(dpnp.array, 1, ["i,i"], None)
 
-dpnp.full = replace_arg_value(dpnp.full, 1, [-2**64 + 1], 0)
-dpnp.full = replace_kwarg_value(dpnp.full, 'dtype', [object], None)
+dpnp.full = replace_arg_value(dpnp.full, 1, [-(2**64) + 1], 0)
+dpnp.full = replace_kwarg_value(dpnp.full, "dtype", [object], None)
 dpnp.ones = redefine_strides(dpnp.ones)
-dpnp.ones = replace_kwarg_value(dpnp.ones, 'dtype', ['i,i'], None)
-dpnp.zeros = replace_kwarg_value(dpnp.zeros, 'dtype', [
-    'm8', dpnp.dtype(dict(
-        formats=['<i4', '<i4'],
-        names=['a', 'b'],
-        offsets=[0, 2],
-        itemsize=6
-    ))
-], None)
+dpnp.ones = replace_kwarg_value(dpnp.ones, "dtype", ["i,i"], None)
+dpnp.zeros = replace_kwarg_value(
+    dpnp.zeros,
+    "dtype",
+    [
+        "m8",
+        dpnp.dtype(
+            dict(
+                formats=["<i4", "<i4"],
+                names=["a", "b"],
+                offsets=[0, 2],
+                itemsize=6,
+            )
+        ),
+    ],
+    None,
+)
 
 # setting some dummy attrubutes to dpnp
 dpnp.add.reduce = dummy_func
@@ -266,8 +320,18 @@ dpnp.ufunc = types.FunctionType
 
 # setting some numpy attrubutes to dpnp
 NUMPY_ONLY_ATTRS = [
-    'BUFSIZE', '_NoValue', 'errstate', 'finfo', 'iinfo', 'inf', 'intp',
-    'longdouble', 'NZERO', 'pi', 'testing', 'typecodes',
+    "BUFSIZE",
+    "_NoValue",
+    "errstate",
+    "finfo",
+    "iinfo",
+    "inf",
+    "intp",
+    "longdouble",
+    "NZERO",
+    "pi",
+    "testing",
+    "typecodes",
 ]
 for attr in NUMPY_ONLY_ATTRS:
     setattr(dpnp, attr, getattr(numpy, attr))
@@ -281,34 +345,38 @@ dbl = 1 + D_INFO.eps
 dpnp.array = replace_arg_value(dpnp.array, 0, [[ldbl] * 5], [dbl] * 5)
 
 # to be able to import core/tests/test_ufunc.py
-unary_ufuncs = [obj for obj in numpy.core.umath.__dict__.values()
-                if isinstance(obj, numpy.ufunc)]
-unary_object_ufuncs_names = {uf.__name__ for uf in unary_ufuncs
-                             if 'O->O' in uf.types}
-define_func_types(dpnp, unary_object_ufuncs_names, 'O->O')
+unary_ufuncs = [
+    obj
+    for obj in numpy.core.umath.__dict__.values()
+    if isinstance(obj, numpy.ufunc)
+]
+unary_object_ufuncs_names = {
+    uf.__name__ for uf in unary_ufuncs if "O->O" in uf.types
+}
+define_func_types(dpnp, unary_object_ufuncs_names, "O->O")
 
 dpnp.conftest = numpy.conftest
 
 del numpy
-sys.modules['numpy'] = dpnp  # next import of numpy will be replaced with dpnp
+sys.modules["numpy"] = dpnp  # next import of numpy will be replaced with dpnp
 
 
 NUMPY_TESTS = [
-    'core',
-    'fft',
-    'linalg/tests/test_build.py',
-    'linalg/tests/test_deprecations.py',
+    "core",
+    "fft",
+    "linalg/tests/test_build.py",
+    "linalg/tests/test_deprecations.py",
     # disabled due to __setitem__ limitation:
     # https://github.com/numpy/numpy/blob/d7a75e8e8fefc433cf6e5305807d5f3180954273/numpy/linalg/tests/test_linalg.py#L293
     # 'linalg/tests/test_linalg.py',
-    'linalg/tests/test_regression.py',
-    'random',
+    "linalg/tests/test_regression.py",
+    "random",
 ]
 NUMPY_NOT_FOUND = 3
 TESTS_EXT_PATH = Path(__file__).parents[1]
-ABORTED_TESTS_FILE = TESTS_EXT_PATH / 'skipped_tests_numpy_aborted.tbl'
-SKIPPED_TESTS_FILE = TESTS_EXT_PATH / 'skipped_tests_numpy.tbl'
-FAILED_TESTS_FILE = TESTS_EXT_PATH / 'failed_tests_numpy.tbl'
+ABORTED_TESTS_FILE = TESTS_EXT_PATH / "skipped_tests_numpy_aborted.tbl"
+SKIPPED_TESTS_FILE = TESTS_EXT_PATH / "skipped_tests_numpy.tbl"
+FAILED_TESTS_FILE = TESTS_EXT_PATH / "failed_tests_numpy.tbl"
 
 
 def get_excluded_tests():
@@ -322,7 +390,7 @@ def get_excluded_tests():
 
 
 def pytest_collection_modifyitems(config, items):
-    skip_mark = pytest.mark.skip(reason='Skipping test.')
+    skip_mark = pytest.mark.skip(reason="Skipping test.")
 
     for item in items:
         test_name = item.nodeid.strip()
@@ -340,9 +408,9 @@ def pytest_runtest_makereport(item, call):
     if not rep.failed:
         return None
 
-    mode = 'a' if FAILED_TESTS_FILE.exists() else 'w'
+    mode = "a" if FAILED_TESTS_FILE.exists() else "w"
     with FAILED_TESTS_FILE.open(mode) as f:
-        f.write(rep.nodeid.strip() + '\n')
+        f.write(rep.nodeid.strip() + "\n")
 
 
 dpnp.conftest.pytest_collection_modifyitems = pytest_collection_modifyitems
@@ -362,7 +430,7 @@ def find_pkg(name):
 def tests_from_cmdline():
     """Get relative paths to tests from command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument('tests', nargs='*', help='list of tests to run')
+    parser.add_argument("tests", nargs="*", help="list of tests to run")
     args = parser.parse_args()
 
     return args.tests
@@ -383,9 +451,9 @@ def get_tests(base_path):
 
 
 def run():
-    numpy_path = find_pkg('numpy')
+    numpy_path = find_pkg("numpy")
     if numpy_path is None:
-        print('Numpy not found in the environment.')
+        print("Numpy not found in the environment.")
         return NUMPY_NOT_FOUND
 
     if FAILED_TESTS_FILE.exists():
@@ -404,5 +472,5 @@ def run():
     return code
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(run())

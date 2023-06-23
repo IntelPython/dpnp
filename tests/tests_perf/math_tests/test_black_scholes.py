@@ -1,10 +1,10 @@
 import math
+
 import numpy
 import pytest
 
 from tests.tests_perf.data_generator import *
 from tests.tests_perf.test_perf_base import DPNPTestPerfBase
-
 
 SEED = 7777777
 SL, SH = 10.0, 50.0
@@ -31,7 +31,9 @@ def gen_data(lib, low, high, size):
 
 
 def black_scholes_put(lib, S, K, T, r, sigma):
-    d1 = (lib.log(S / K) + (r + sigma * sigma / 2.) * T) / (sigma * lib.sqrt(T))
+    d1 = (lib.log(S / K) + (r + sigma * sigma / 2.0) * T) / (
+        sigma * lib.sqrt(T)
+    )
     d2 = d1 - sigma * lib.sqrt(T)
 
     cdf_d1 = (1 + lib.erf(d1 / lib.sqrt(2))) / 2
@@ -43,7 +45,6 @@ def black_scholes_put(lib, S, K, T, r, sigma):
 
 
 class TestBlackScholes(DPNPTestPerfBase):
-
     @pytest.mark.parametrize("dtype", [numpy.float64])
     @pytest.mark.parametrize("size", [1024, 2048, 4096, 8192])
     def test_bs_put(self, lib, dtype, size):
@@ -52,6 +53,16 @@ class TestBlackScholes(DPNPTestPerfBase):
         K = gen_data(lib, KL, KH, size)
         T = gen_data(lib, TL, TH, size)
 
-        self.dpnp_benchmark("bs_put", lib, dtype, size,
-                            lib, S, K, T, RISK_FREE, VOLATILITY,
-                            custom_fptr=black_scholes_put)
+        self.dpnp_benchmark(
+            "bs_put",
+            lib,
+            dtype,
+            size,
+            lib,
+            S,
+            K,
+            T,
+            RISK_FREE,
+            VOLATILITY,
+            custom_fptr=black_scholes_put,
+        )

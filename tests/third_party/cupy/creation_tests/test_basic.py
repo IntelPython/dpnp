@@ -19,7 +19,7 @@ class TestBasic(unittest.TestCase):
 
     @testing.slow
     def test_empty_huge_size(self):
-        a = cupy.empty((1024, 2048, 1024), dtype='b')
+        a = cupy.empty((1024, 2048, 1024), dtype="b")
         a.fill(123)
         self.assertTrue((a == 123).all())
         # Free huge memory for slow test
@@ -28,7 +28,7 @@ class TestBasic(unittest.TestCase):
 
     @testing.slow
     def test_empty_huge_size_fill0(self):
-        a = cupy.empty((1024, 2048, 1024), dtype='b')
+        a = cupy.empty((1024, 2048, 1024), dtype="b")
         a.fill(0)
         self.assertTrue((a == 0).all())
         # Free huge memory for slow test
@@ -53,7 +53,7 @@ class TestBasic(unittest.TestCase):
 
     @testing.slow
     def test_empty_int_huge_size(self):
-        a = cupy.empty(2 ** 31, dtype='b')
+        a = cupy.empty(2**31, dtype="b")
         a.fill(123)
         self.assertTrue((a == 123).all())
         # Free huge memory for slow test
@@ -62,14 +62,14 @@ class TestBasic(unittest.TestCase):
 
     @testing.slow
     def test_empty_int_huge_size_fill0(self):
-        a = cupy.empty(2 ** 31, dtype='b')
+        a = cupy.empty(2**31, dtype="b")
         a.fill(0)
         self.assertTrue((a == 0).all())
         # Free huge memory for slow test
         del a
         cupy.get_default_memory_pool().free_all_blocks()
 
-    @testing.for_orders('C')
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like(self, xp, dtype, order):
@@ -78,20 +78,20 @@ class TestBasic(unittest.TestCase):
         b.fill(0)
         return b
 
-    @testing.for_orders('C')
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_contiguity(self, xp, dtype, order):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         b = xp.empty_like(a, order=order)
         b.fill(0)
-        if order in ['f', 'F']:
+        if order in ["f", "F"]:
             self.assertTrue(b.flags.f_contiguous)
         else:
             self.assertTrue(b.flags.c_contiguous)
         return b
 
-    @testing.for_orders('C')
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_contiguity2(self, xp, dtype, order):
@@ -99,13 +99,13 @@ class TestBasic(unittest.TestCase):
         a = xp.asfortranarray(a)
         b = xp.empty_like(a, order=order)
         b.fill(0)
-        if order in ['c', 'C']:
+        if order in ["c", "C"]:
             self.assertTrue(b.flags.c_contiguous)
         else:
             self.assertTrue(b.flags.f_contiguous)
         return b
 
-    @testing.for_orders('C')
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_contiguity3(self, xp, dtype, order):
@@ -114,10 +114,10 @@ class TestBasic(unittest.TestCase):
         a = a[:, ::2, :].swapaxes(0, 1)
         b = xp.empty_like(a, order=order)
         b.fill(0)
-        if order in ['k', 'K', None]:
+        if order in ["k", "K", None]:
             self.assertFalse(b.flags.c_contiguous)
             self.assertFalse(b.flags.f_contiguous)
-        elif order in ['f', 'F']:
+        elif order in ["f", "F"]:
             self.assertFalse(b.flags.c_contiguous)
             self.assertTrue(b.flags.f_contiguous)
         else:
@@ -130,13 +130,13 @@ class TestBasic(unittest.TestCase):
         # test strides that are both non-contiguous and non-descending
         a = testing.shaped_arange((2, 3, 4), numpy, dtype)
         a = a[:, ::2, :].swapaxes(0, 1)
-        b = numpy.empty_like(a, order='K')
+        b = numpy.empty_like(a, order="K")
         b.fill(0)
 
         # GPU case
         ag = testing.shaped_arange((2, 3, 4), cupy, dtype)
         ag = ag[:, ::2, :].swapaxes(0, 1)
-        bg = cupy.empty_like(ag, order='K')
+        bg = cupy.empty_like(ag, order="K")
         bg.fill(0)
 
         # make sure NumPy and CuPy strides agree
@@ -148,7 +148,7 @@ class TestBasic(unittest.TestCase):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3, 4), xp, dtype)
             with pytest.raises(TypeError):
-                xp.empty_like(a, order='Q')
+                xp.empty_like(a, order="Q")
 
     def test_empty_like_subok(self):
         a = testing.shaped_arange((2, 3, 4), cupy)
@@ -157,8 +157,8 @@ class TestBasic(unittest.TestCase):
 
     @testing.for_CF_orders()
     def test_empty_zero_sized_array_strides(self, order):
-        a = numpy.empty((1, 0, 2), dtype='d', order=order)
-        b = cupy.empty((1, 0, 2), dtype='d', order=order)
+        a = numpy.empty((1, 0, 2), dtype="d", order=order)
+        b = cupy.empty((1, 0, 2), dtype="d", order=order)
         self.assertEqual(b.strides, a.strides)
 
     @testing.for_all_dtypes()
@@ -191,11 +191,11 @@ class TestBasic(unittest.TestCase):
 
     @testing.for_CF_orders()
     def test_zeros_strides(self, order):
-        a = numpy.zeros((2, 3), dtype='d', order=order)
-        b = cupy.zeros((2, 3), dtype='d', order=order)
+        a = numpy.zeros((2, 3), dtype="d", order=order)
+        b = cupy.zeros((2, 3), dtype="d", order=order)
         self.assertEqual(b.strides, a.strides)
 
-    @testing.for_orders('C')
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_zeros_like(self, xp, dtype, order):
@@ -212,7 +212,7 @@ class TestBasic(unittest.TestCase):
     def test_ones(self, xp, dtype):
         return xp.ones((2, 3, 4), dtype=dtype)
 
-    @testing.for_orders('C')
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_ones_like(self, xp, dtype, order):
@@ -239,7 +239,7 @@ class TestBasic(unittest.TestCase):
     def test_full_default_dtype_cpu_input(self, xp, dtype):
         return xp.full((2, 3, 4), numpy.array(1, dtype=dtype))
 
-    @testing.for_orders('C')
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_full_like(self, xp, dtype, order):
@@ -253,15 +253,16 @@ class TestBasic(unittest.TestCase):
 
 
 @testing.parameterize(
-    *testing.product({
-        'shape': [4, (4, ), (4, 2), (4, 2, 3), (5, 4, 2, 3)],
-    })
+    *testing.product(
+        {
+            "shape": [4, (4,), (4, 2), (4, 2, 3), (5, 4, 2, 3)],
+        }
+    )
 )
 @testing.gpu
 class TestBasicReshape(unittest.TestCase):
-
-    @testing.with_requires('numpy>=1.17.0')
-    @testing.for_orders('C')
+    @testing.with_requires("numpy>=1.17.0")
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_reshape(self, xp, dtype, order):
@@ -281,21 +282,21 @@ class TestBasicReshape(unittest.TestCase):
 
         testing.assert_array_equal(b, c)
 
-    @testing.with_requires('numpy>=1.17.0')
-    @testing.for_orders('C')
+    @testing.with_requires("numpy>=1.17.0")
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_reshape_contiguity(self, xp, dtype, order):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         b = xp.empty_like(a, order=order, shape=self.shape)
         b.fill(0)
-        if order in ['f', 'F']:
+        if order in ["f", "F"]:
             self.assertTrue(b.flags.f_contiguous)
         else:
             self.assertTrue(b.flags.c_contiguous)
         return b
 
-    @testing.for_orders('C')
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     def test_empty_like_reshape_contiguity_cupy_only(self, dtype, order):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
@@ -303,14 +304,14 @@ class TestBasicReshape(unittest.TestCase):
         b.fill(0)
         c = cupy.empty(self.shape)
         c.fill(0)
-        if order in ['f', 'F']:
+        if order in ["f", "F"]:
             self.assertTrue(b.flags.f_contiguous)
         else:
             self.assertTrue(b.flags.c_contiguous)
         testing.assert_array_equal(b, c)
 
-    @testing.with_requires('numpy>=1.17.0')
-    @testing.for_orders('C')
+    @testing.with_requires("numpy>=1.17.0")
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_reshape_contiguity2(self, xp, dtype, order):
@@ -319,14 +320,15 @@ class TestBasicReshape(unittest.TestCase):
         b = xp.empty_like(a, order=order, shape=self.shape)
         b.fill(0)
         shape = self.shape if not numpy.isscalar(self.shape) else (self.shape,)
-        if (order in ['c', 'C'] or
-                (order in ['k', 'K', None] and len(shape) != a.ndim)):
+        if order in ["c", "C"] or (
+            order in ["k", "K", None] and len(shape) != a.ndim
+        ):
             self.assertTrue(b.flags.c_contiguous)
         else:
             self.assertTrue(b.flags.f_contiguous)
         return b
 
-    @testing.for_orders('C')
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     def test_empty_like_reshape_contiguity2_cupy_only(self, dtype, order):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
@@ -336,15 +338,16 @@ class TestBasicReshape(unittest.TestCase):
         c = cupy.empty(self.shape)
         c.fill(0)
         shape = self.shape if not numpy.isscalar(self.shape) else (self.shape,)
-        if (order in ['c', 'C'] or
-                (order in ['k', 'K', None] and len(shape) != a.ndim)):
+        if order in ["c", "C"] or (
+            order in ["k", "K", None] and len(shape) != a.ndim
+        ):
             self.assertTrue(b.flags.c_contiguous)
         else:
             self.assertTrue(b.flags.f_contiguous)
         testing.assert_array_equal(b, c)
 
-    @testing.with_requires('numpy>=1.17.0')
-    @testing.for_orders('C')
+    @testing.with_requires("numpy>=1.17.0")
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_reshape_contiguity3(self, xp, dtype, order):
@@ -357,10 +360,10 @@ class TestBasicReshape(unittest.TestCase):
         if len(shape) == 1:
             self.assertTrue(b.flags.c_contiguous)
             self.assertTrue(b.flags.f_contiguous)
-        elif order in ['k', 'K', None] and len(shape) == a.ndim:
+        elif order in ["k", "K", None] and len(shape) == a.ndim:
             self.assertFalse(b.flags.c_contiguous)
             self.assertFalse(b.flags.f_contiguous)
-        elif order in ['f', 'F']:
+        elif order in ["f", "F"]:
             self.assertFalse(b.flags.c_contiguous)
             self.assertTrue(b.flags.f_contiguous)
         else:
@@ -368,7 +371,7 @@ class TestBasicReshape(unittest.TestCase):
             self.assertFalse(b.flags.f_contiguous)
         return b
 
-    @testing.for_orders('C')
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     def test_empty_like_reshape_contiguity3_cupy_only(self, dtype, order):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
@@ -380,10 +383,10 @@ class TestBasicReshape(unittest.TestCase):
         if len(shape) == 1:
             self.assertTrue(b.flags.c_contiguous)
             self.assertTrue(b.flags.f_contiguous)
-        elif order in ['k', 'K', None] and len(shape) == a.ndim:
+        elif order in ["k", "K", None] and len(shape) == a.ndim:
             self.assertFalse(b.flags.c_contiguous)
             self.assertFalse(b.flags.f_contiguous)
-        elif order in ['f', 'F']:
+        elif order in ["f", "F"]:
             self.assertFalse(b.flags.c_contiguous)
             self.assertTrue(b.flags.f_contiguous)
         else:
@@ -394,27 +397,27 @@ class TestBasicReshape(unittest.TestCase):
         c.fill(0)
         testing.assert_array_equal(b, c)
 
-    @testing.with_requires('numpy>=1.17.0')
+    @testing.with_requires("numpy>=1.17.0")
     @testing.for_all_dtypes()
     def test_empty_like_K_strides_reshape(self, dtype):
         # test strides that are both non-contiguous and non-descending
         a = testing.shaped_arange((2, 3, 4), numpy, dtype)
         a = a[:, ::2, :].swapaxes(0, 1)
-        b = numpy.empty_like(a, order='K', shape=self.shape)
+        b = numpy.empty_like(a, order="K", shape=self.shape)
         b.fill(0)
 
         # GPU case
         ag = testing.shaped_arange((2, 3, 4), cupy, dtype)
         ag = ag[:, ::2, :].swapaxes(0, 1)
-        bg = cupy.empty_like(ag, order='K', shape=self.shape)
+        bg = cupy.empty_like(ag, order="K", shape=self.shape)
         bg.fill(0)
 
         # make sure NumPy and CuPy strides agree
         self.assertEqual(b.strides, bg.strides)
         return
 
-    @testing.with_requires('numpy>=1.17.0')
-    @testing.for_orders('C')
+    @testing.with_requires("numpy>=1.17.0")
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_zeros_like_reshape(self, xp, dtype, order):
@@ -430,8 +433,8 @@ class TestBasicReshape(unittest.TestCase):
 
         testing.assert_array_equal(b, c)
 
-    @testing.with_requires('numpy>=1.17.0')
-    @testing.for_orders('C')
+    @testing.with_requires("numpy>=1.17.0")
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_ones_like_reshape(self, xp, dtype, order):
@@ -446,8 +449,8 @@ class TestBasicReshape(unittest.TestCase):
 
         testing.assert_array_equal(b, c)
 
-    @testing.with_requires('numpy>=1.17.0')
-    @testing.for_orders('C')
+    @testing.with_requires("numpy>=1.17.0")
+    @testing.for_orders("C")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_full_like_reshape(self, xp, dtype, order):

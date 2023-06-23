@@ -40,33 +40,31 @@ it contains:
 """
 
 
-import numpy
 import dpctl.tensor as dpt
+import numpy
 from numpy.core.numeric import normalize_axis_tuple
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
-from dpnp.dpnp_utils.dpnp_utils_statistics import (
-    dpnp_cov
-)
-from dpnp.dpnp_array import dpnp_array
-import dpnp
 
+import dpnp
+from dpnp.dpnp_algo import *
+from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import *
+from dpnp.dpnp_utils.dpnp_utils_statistics import dpnp_cov
 
 __all__ = [
-    'amax',
-    'amin',
-    'average',
-    'bincount',
-    'correlate',
-    'cov',
-    'histogram',
-    'max',
-    'mean',
-    'median',
-    'min',
-    'nanvar',
-    'std',
-    'var',
+    "amax",
+    "amin",
+    "average",
+    "bincount",
+    "correlate",
+    "cov",
+    "histogram",
+    "max",
+    "mean",
+    "median",
+    "min",
+    "nanvar",
+    "std",
+    "var",
 ]
 
 
@@ -198,7 +196,7 @@ def bincount(x1, weights=None, minlength=0):
     return call_origin(numpy.bincount, x1, weights=weights, minlength=minlength)
 
 
-def correlate(x1, x2, mode='valid'):
+def correlate(x1, x2, mode="valid"):
     """
     Cross-correlation of two 1-dimensional sequences.
 
@@ -233,7 +231,7 @@ def correlate(x1, x2, mode='valid'):
             pass
         elif x1_desc.shape != x2_desc.shape:
             pass
-        elif mode != 'valid':
+        elif mode != "valid":
             pass
         else:
             return dpnp_correlate(x1_desc, x2_desc).get_pyobj()
@@ -241,8 +239,19 @@ def correlate(x1, x2, mode='valid'):
     return call_origin(numpy.correlate, x1, x2, mode=mode)
 
 
-def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None, *, dtype=None):
-    """cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None, *, dtype=None):
+def cov(
+    m,
+    y=None,
+    rowvar=True,
+    bias=False,
+    ddof=None,
+    fweights=None,
+    aweights=None,
+    *,
+    dtype=None,
+):
+    """
+    cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None, *, dtype=None)
 
     Estimate a covariance matrix, given data and weights.
 
@@ -301,13 +310,17 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
     else:
         return dpnp_cov(m, y=y, rowvar=rowvar, dtype=dtype)
 
-    return call_origin(numpy.cov, m, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype)
+    return call_origin(
+        numpy.cov, m, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype
+    )
 
 
 def histogram(a, bins=10, range=None, density=None, weights=None):
     """
     Compute the histogram of a dataset.
+
     For full documentation refer to :obj:`numpy.histogram`.
+
     Examples
     --------
     >>> import dpnp
@@ -326,9 +339,17 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     >>> res = dpnp.sum(hist * dpnp.diff(bin_edges))
     >>> print(res)
     1.0
+
     """
 
-    return call_origin(numpy.histogram, a=a, bins=bins, range=range, density=density, weights=weights)
+    return call_origin(
+        numpy.histogram,
+        a=a,
+        bins=bins,
+        range=range,
+        density=density,
+        weights=weights,
+    )
 
 
 def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
@@ -457,7 +478,7 @@ def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
                 result = dpnp.sum(x, dtype=dtype) / x.size
                 return result.astype(dtype) if result.dtype != dtype else result
 
-        if not isinstance(axis,(tuple,list)):
+        if not isinstance(axis, (tuple, list)):
             axis = (axis,)
 
         axis = normalize_axis_tuple(axis, x.ndim, "axis")
@@ -467,18 +488,30 @@ def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
         for axis_value in axis:
             del_ *= x.shape[axis_value]
 
-        #performing an inplace operation on arrays of bool or integer types
-        #is not possible due to incompatible data types because
-        #it returns a floating value
+        # performing an inplace operation on arrays of bool or integer types
+        # is not possible due to incompatible data types because
+        # it returns a floating value
         if dpnp.issubdtype(res_sum.dtype, dpnp.inexact):
             res_sum /= del_
         else:
             new_res_sum = res_sum / del_
-            return new_res_sum.astype(dtype) if new_res_sum.dtype != dtype else new_res_sum
+            return (
+                new_res_sum.astype(dtype)
+                if new_res_sum.dtype != dtype
+                else new_res_sum
+            )
 
         return res_sum.astype(dtype) if res_sum.dtype != dtype else res_sum
 
-    return call_origin(numpy.mean, x, axis=axis, dtype=dtype, out=out, keepdims=keepdims, where=where)
+    return call_origin(
+        numpy.mean,
+        x,
+        axis=axis,
+        dtype=dtype,
+        out=out,
+        keepdims=keepdims,
+        where=where,
+    )
 
 
 def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
@@ -608,7 +641,15 @@ def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
 
             return result
 
-    return call_origin(numpy.nanvar, x1, axis=axis, dtype=dtype, out=out, ddof=ddof, keepdims=keepdims)
+    return call_origin(
+        numpy.nanvar,
+        x1,
+        axis=axis,
+        dtype=dtype,
+        out=out,
+        ddof=ddof,
+        keepdims=keepdims,
+    )
 
 
 def std(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):

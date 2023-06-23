@@ -27,6 +27,7 @@
 import os
 import subprocess
 import sys
+
 import dpctl
 
 
@@ -47,7 +48,7 @@ def run(
     elif sys.platform in ["win32", "cygwin"]:
         build_system = "Ninja"
     else:
-        assert False, sys.platform + " not supported"
+        raise AssertionError(sys.platform + " not supported")
 
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     cmake_args = [
@@ -59,7 +60,9 @@ def run(
         cmake_args += [
             "--cmake-executable=" + cmake_executable,
         ]
-    dpctl_module_path = os.path.join(dpctl.get_include(), "..", "resources", "cmake")
+    dpctl_module_path = os.path.join(
+        dpctl.get_include(), "..", "resources", "cmake"
+    )
     cmake_args += [
         "--build-type=" + build_type,
         "--generator=" + build_system,

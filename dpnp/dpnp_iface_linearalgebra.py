@@ -40,14 +40,12 @@ it contains:
 """
 
 
-from dpnp.dpnp_array import dpnp_array
+import dpctl.tensor as dpt
+import numpy
+
+import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-import dpnp
-
-import numpy
-import dpctl.tensor as dpt
-
 
 __all__ = [
     "dot",
@@ -58,7 +56,7 @@ __all__ = [
     "matmul",
     "outer",
     "tensordot",
-    "vdot"
+    "vdot",
 ]
 
 
@@ -104,18 +102,39 @@ def dot(x1, x2, out=None, **kwargs):
         pass
     else:
         # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = get_usm_allocations([x1, x2]) if dpnp.isscalar(x1) or dpnp.isscalar(x2) else (None, None)
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
         # TODO: copy_when_strides=False (now it's done for faster implementation with transpose arrays)
-        x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=True, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
-        x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=True, copy_when_nondefault_queue=False,
-                                           alloc_usm_type=usm_type, alloc_queue=queue)
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=True,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=True,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
         if x1_desc and x2_desc:
             if out is not None:
                 if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError("return array must be of supported array type")
-                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) or None
+                    raise TypeError(
+                        "return array must be of supported array type"
+                    )
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    or None
+                )
             else:
                 out_desc = None
             return dpnp_dot(x1_desc, x2_desc, out=out_desc).get_pyobj()
@@ -147,6 +166,8 @@ def einsum(*args, **kwargs):
 
 def einsum_path(*args, **kwargs):
     """
+    einsum_path(subscripts, *operands, optimize='greedy')
+
     Evaluates the lowest cost contraction order for an einsum expression
     by considering the creation of intermediate arrays.
 
@@ -283,7 +304,9 @@ def matmul(x1, x2, out=None, **kwargs):
                 array2_size = x2_desc.size
                 cost_size = 4096  # 2D array shape(64, 64)
 
-                if ((x1_desc.dtype == dpnp.float64) or (x1_desc.dtype == dpnp.float32)):
+                if (x1_desc.dtype == dpnp.float64) or (
+                    x1_desc.dtype == dpnp.float32
+                ):
                     """
                     Floating point types are handled via original math library better than SYCL math library
                     """
@@ -292,7 +315,13 @@ def matmul(x1, x2, out=None, **kwargs):
                 if (array1_size > cost_size) and (array2_size > cost_size):
                     return dpnp_matmul(x1_desc, x2_desc, out)
             else:
-                out_desc = dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False) if out is not None else None
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    if out is not None
+                    else None
+                )
                 return dpnp_matmul(x1_desc, x2_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.matmul, x1, x2, out=out, **kwargs)
@@ -338,8 +367,16 @@ def outer(x1, x2, out=None):
     elif not (x2_is_scalar or dpnp.is_supported_array_type(x2)):
         pass
     else:
-        x1_in = x1 if x1_is_scalar else (x1.reshape(-1) if x1.ndim > 1 else x1)[:, None]
-        x2_in = x2 if x2_is_scalar else (x2.reshape(-1) if x2.ndim > 1 else x2)[None, :]
+        x1_in = (
+            x1
+            if x1_is_scalar
+            else (x1.reshape(-1) if x1.ndim > 1 else x1)[:, None]
+        )
+        x2_in = (
+            x2
+            if x2_is_scalar
+            else (x2.reshape(-1) if x2.ndim > 1 else x2)[None, :]
+        )
         return dpnp.multiply(x1_in, x2_in, out=out)
 
     return call_origin(numpy.outer, x1, x2, out=out)

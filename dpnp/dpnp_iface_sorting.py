@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,18 +42,11 @@ it contains:
 
 import numpy
 
+import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
-import dpnp
-
-
-__all__ = [
-    'argsort',
-    'partition',
-    'searchsorted',
-    'sort'
-]
+__all__ = ["argsort", "partition", "searchsorted", "sort"]
 
 
 def argsort(in_array1, axis=-1, kind=None, order=None):
@@ -89,7 +82,9 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(in_array1, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        in_array1, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         if axis != -1:
             pass
@@ -103,9 +98,10 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
     return call_origin(numpy.argsort, in_array1, axis, kind, order)
 
 
-def partition(x1, kth, axis=-1, kind='introselect', order=None):
+def partition(x1, kth, axis=-1, kind="introselect", order=None):
     """
     Return a partitioned copy of an array.
+
     For full documentation refer to :obj:`numpy.partition`.
 
     Limitations
@@ -125,7 +121,7 @@ def partition(x1, kth, axis=-1, kind='introselect', order=None):
             pass
         elif axis != -1:
             pass
-        elif kind != 'introselect':
+        elif kind != "introselect":
             pass
         elif order is not None:
             pass
@@ -135,9 +131,10 @@ def partition(x1, kth, axis=-1, kind='introselect', order=None):
     return call_origin(numpy.partition, x1, kth, axis, kind, order)
 
 
-def searchsorted(x1, x2, side='left', sorter=None):
+def searchsorted(x1, x2, side="left", sorter=None):
     """
     Find indices where elements should be inserted to maintain order.
+
     For full documentation refer to :obj:`numpy.searchsorted`.
 
     Limitations
@@ -155,7 +152,7 @@ def searchsorted(x1, x2, side='left', sorter=None):
             pass
         elif x1_desc.dtype != x2_desc.dtype:
             pass
-        elif side not in ['left', 'right']:
+        elif side not in ["left", "right"]:
             pass
         elif sorter is not None:
             pass

@@ -4,7 +4,7 @@ THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 
 DPCTL_TARGET_VERSION=0.5.0rc2
 echo ++++++++++++++++++ Build DPCTL ${DPCTL_TARGET_VERSION} +++++++++++++++++++
-git clone --branch ${DPCTL_TARGET_VERSION} https://github.com/IntelPython/dpctl.git 
+git clone --branch ${DPCTL_TARGET_VERSION} https://github.com/IntelPython/dpctl.git
 
 cd dpctl
 

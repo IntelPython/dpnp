@@ -3,23 +3,25 @@ import functools
 import inspect
 import os
 import random
-from typing import Tuple, Type
 import traceback
 import unittest
 import warnings
+from typing import Tuple, Type
 
 import numpy
+from dpctl import select_default_device
 
 import dpnp
 import dpnp as cupy
 import dpnp as cupyx
+
 # from dpnp.core import internal
-from tests.third_party.cupy.testing import array
-from tests.third_party.cupy.testing import parameterized
-from dpctl import select_default_device
+from tests.third_party.cupy.testing import array, parameterized
+
 # import dpnp
 # import dpnp.scipy.sparse
 from tests.third_party.cupy.testing.attr import is_available
+
 
 def prod(args, init=1):
     for arg in args:
@@ -29,19 +31,22 @@ def prod(args, init=1):
 
 if is_available():
     import _pytest.outcomes
+
     _is_pytest_available = True
     _skip_classes: Tuple[Type, ...] = (
-        unittest.SkipTest, _pytest.outcomes.Skipped)
+        unittest.SkipTest,
+        _pytest.outcomes.Skipped,
+    )
 else:
     _is_pytest_available = False
-    _skip_classes = unittest.SkipTest,
+    _skip_classes = (unittest.SkipTest,)
 
 
 def _format_exception(exc):
     if exc is None:
         return None
     # TODO(kataoka): Use traceback.format_exception(exc) in Python 3.10
-    return ''.join(traceback.TracebackException.from_exception(exc).format())
+    return "".join(traceback.TracebackException.from_exception(exc).format())
 
 
 def _call_func(self, impl, args, kw):
@@ -86,9 +91,11 @@ def _call_func_numpy(self, impl, args, kw, name, sp_name, scipy_name):
     kw[name] = numpy
     if sp_name:
         import scipy.sparse
+
         kw[sp_name] = scipy.sparse
     if scipy_name:
         import scipy
+
         kw[scipy_name] = scipy
     result, error, tb = _call_func(self, impl, args, kw)
     return result, error, tb
@@ -97,72 +104,92 @@ def _call_func_numpy(self, impl, args, kw, name, sp_name, scipy_name):
 def _call_func_numpy_cupy(self, impl, args, kw, name, sp_name, scipy_name):
     # Run cupy
     cupy_result, cupy_error, cupy_tb = _call_func_cupy(
-        self, impl, args, kw, name, sp_name, scipy_name)
+        self, impl, args, kw, name, sp_name, scipy_name
+    )
 
     # Run numpy
     numpy_result, numpy_error, numpy_tb = _call_func_numpy(
-        self, impl, args, kw, name, sp_name, scipy_name)
+        self, impl, args, kw, name, sp_name, scipy_name
+    )
 
     return (
-        cupy_result, cupy_error, cupy_tb,
-        numpy_result, numpy_error, numpy_tb)
+        cupy_result,
+        cupy_error,
+        cupy_tb,
+        numpy_result,
+        numpy_error,
+        numpy_tb,
+    )
 
 
 _numpy_errors = [
-    AttributeError, Exception, IndexError, TypeError, ValueError,
-    NotImplementedError, DeprecationWarning,
-    numpy.AxisError, numpy.linalg.LinAlgError,
+    AttributeError,
+    Exception,
+    IndexError,
+    TypeError,
+    ValueError,
+    NotImplementedError,
+    DeprecationWarning,
+    numpy.AxisError,
+    numpy.linalg.LinAlgError,
 ]
 
 
 def _check_numpy_cupy_error_compatible(cupy_error, numpy_error):
-    """Checks if try/except blocks are equivalent up to public error classes
-    """
+    """Checks if try/except blocks are equivalent up to public error classes"""
 
-    return all([isinstance(cupy_error, err) == isinstance(numpy_error, err)
-                for err in _numpy_errors])
+    return all(
+        [
+            isinstance(cupy_error, err) == isinstance(numpy_error, err)
+            for err in _numpy_errors
+        ]
+    )
 
 
-def _fail_test_with_unexpected_errors(
-        tb, msg_format, cupy_error, numpy_error):
+def _fail_test_with_unexpected_errors(tb, msg_format, cupy_error, numpy_error):
     # Fails the test due to unexpected errors raised from the test.
     # msg_format may include format placeholders:
     # '{cupy_error}' '{numpy_error}'
 
     msg = msg_format.format(
         cupy_error=_format_exception(cupy_error),
-        numpy_error=_format_exception(numpy_error))
+        numpy_error=_format_exception(numpy_error),
+    )
 
     # Fail the test with the traceback of the error (for pytest --pdb)
     raise AssertionError(msg).with_traceback(tb)
 
 
-def _check_cupy_numpy_error(cupy_error, numpy_error,
-                            accept_error=False):
+def _check_cupy_numpy_error(cupy_error, numpy_error, accept_error=False):
     # Skip the test if both raised SkipTest.
-    if (isinstance(cupy_error, _skip_classes)
-            and isinstance(numpy_error, _skip_classes)):
+    if isinstance(cupy_error, _skip_classes) and isinstance(
+        numpy_error, _skip_classes
+    ):
         if cupy_error.__class__ is not numpy_error.__class__:
             raise AssertionError(
-                'Both numpy and cupy were skipped but with different '
-                'exceptions.')
+                "Both numpy and cupy were skipped but with different "
+                "exceptions."
+            )
         if cupy_error.args != numpy_error.args:
             raise AssertionError(
-                'Both numpy and cupy were skipped but with different causes.')
+                "Both numpy and cupy were skipped but with different causes."
+            )
         raise numpy_error  # reraise SkipTest
 
     # Check if the error was not raised from test code.
-    if os.environ.get('CUPY_CI', '') != '' and cupy_error is not None:
+    if os.environ.get("CUPY_CI", "") != "" and cupy_error is not None:
         frame = traceback.extract_tb(cupy_error.__traceback__)[-1]
         filename = os.path.basename(frame.filename)
-        if filename == 'test_helper.py':
+        if filename == "test_helper.py":
             # Allows errors from the test code for testing helpers.
             pass
-        elif filename.startswith('test_'):
+        elif filename.startswith("test_"):
             _fail_test_with_unexpected_errors(
                 cupy_error.__traceback__,
-                'Error was raised from test code.\n\n{cupy_error}',
-                cupy_error, None)
+                "Error was raised from test code.\n\n{cupy_error}",
+                cupy_error,
+                None,
+            )
 
     # For backward compatibility
     if accept_error is True:
@@ -172,44 +199,55 @@ def _check_cupy_numpy_error(cupy_error, numpy_error,
     # TODO(oktua): expected_regexp like numpy.testing.assert_raises_regex
     if cupy_error is None and numpy_error is None:
         raise AssertionError(
-            'Both cupy and numpy are expected to raise errors, but not')
+            "Both cupy and numpy are expected to raise errors, but not"
+        )
     elif cupy_error is None:
         _fail_test_with_unexpected_errors(
             numpy_error.__traceback__,
-            'Only numpy raises error\n\n{numpy_error}',
-            None, numpy_error)
+            "Only numpy raises error\n\n{numpy_error}",
+            None,
+            numpy_error,
+        )
     elif numpy_error is None:
         _fail_test_with_unexpected_errors(
             cupy_error.__traceback__,
-            'Only cupy raises error\n\n{cupy_error}',
-            cupy_error, None)
+            "Only cupy raises error\n\n{cupy_error}",
+            cupy_error,
+            None,
+        )
 
     elif not _check_numpy_cupy_error_compatible(cupy_error, numpy_error):
         _fail_test_with_unexpected_errors(
             cupy_error.__traceback__,
-            '''Different types of errors occurred
+            """Different types of errors occurred
 
 cupy
 {cupy_error}
 
 numpy
 {numpy_error}
-''',
-            cupy_error, numpy_error)
+""",
+            cupy_error,
+            numpy_error,
+        )
 
-    elif not (isinstance(cupy_error, accept_error)
-              and isinstance(numpy_error, accept_error)):
+    elif not (
+        isinstance(cupy_error, accept_error)
+        and isinstance(numpy_error, accept_error)
+    ):
         _fail_test_with_unexpected_errors(
             cupy_error.__traceback__,
-            '''Both cupy and numpy raise exceptions
+            """Both cupy and numpy raise exceptions
 
 cupy
 {cupy_error}
 
 numpy
 {numpy_error}
-''',
-            cupy_error, numpy_error)
+""",
+            cupy_error,
+            numpy_error,
+        )
 
 
 def _make_positive_mask(self, impl, args, kw, name, sp_name, scipy_name):
@@ -219,15 +257,17 @@ def _make_positive_mask(self, impl, args, kw, name, sp_name, scipy_name):
     for k in ks:
         kw[k] = numpy.intp
     result, error, tb = _call_func_cupy(
-        self, impl, args, kw, name, sp_name, scipy_name)
+        self, impl, args, kw, name, sp_name, scipy_name
+    )
     assert error is None
     return dpnp.asnumpy(result) >= 0
 
 
 def _contains_signed_and_unsigned(kw):
     vs = set(kw.values())
-    return any(d in vs for d in _unsigned_dtypes) and \
-        any(d in vs for d in _float_dtypes + _signed_dtypes)
+    return any(d in vs for d in _unsigned_dtypes) and any(
+        d in vs for d in _float_dtypes + _signed_dtypes
+    )
 
 
 def _wraps_partial(wrapped, *names):
@@ -235,13 +275,16 @@ def _wraps_partial(wrapped, *names):
     def decorator(impl):
         impl = functools.wraps(wrapped)(impl)
         impl.__signature__ = inspect.signature(
-            functools.partial(wrapped, **{name: None for name in names}))
+            functools.partial(wrapped, **{name: None for name in names})
+        )
         return impl
+
     return decorator
 
 
-def _make_decorator(check_func, name, type_check, accept_error, sp_name=None,
-                    scipy_name=None):
+def _make_decorator(
+    check_func, name, type_check, accept_error, sp_name=None, scipy_name=None
+):
     assert isinstance(name, str)
     assert sp_name is None or isinstance(sp_name, str)
     assert scipy_name is None or isinstance(scipy_name, str)
@@ -251,38 +294,47 @@ def _make_decorator(check_func, name, type_check, accept_error, sp_name=None,
         def test_func(self, *args, **kw):
             # Run cupy and numpy
             (
-                cupy_result, cupy_error, cupy_tb,
-                numpy_result, numpy_error, numpy_tb) = (
-                    _call_func_numpy_cupy(
-                        self, impl, args, kw, name, sp_name, scipy_name))
+                cupy_result,
+                cupy_error,
+                cupy_tb,
+                numpy_result,
+                numpy_error,
+                numpy_tb,
+            ) = _call_func_numpy_cupy(
+                self, impl, args, kw, name, sp_name, scipy_name
+            )
             assert cupy_result is not None or cupy_error is not None
             assert numpy_result is not None or numpy_error is not None
 
             # Check errors raised
             if cupy_error or numpy_error:
-                _check_cupy_numpy_error(cupy_error,
-                                        numpy_error,
-                                        accept_error=accept_error)
+                _check_cupy_numpy_error(
+                    cupy_error, numpy_error, accept_error=accept_error
+                )
                 return
 
             # Check returned arrays
 
             if not isinstance(cupy_result, (tuple, list)):
-                cupy_result = cupy_result,
+                cupy_result = (cupy_result,)
             if not isinstance(numpy_result, (tuple, list)):
-                numpy_result = numpy_result,
+                numpy_result = (numpy_result,)
 
             assert len(cupy_result) == len(numpy_result)
 
             if type_check:
                 for cupy_r, numpy_r in zip(cupy_result, numpy_result):
                     if cupy_r.dtype != numpy_r.dtype:
-                        print(f"\nERROR:\n\tcupy_r.dtype={cupy_r.dtype},\n\tnumpy_r.dtype={numpy_r.dtype}")
+                        print(
+                            f"\nERROR:\n\tcupy_r.dtype={cupy_r.dtype},\n\tnumpy_r.dtype={numpy_r.dtype}"
+                        )
                     assert cupy_r.dtype == numpy_r.dtype
 
             for cupy_r, numpy_r in zip(cupy_result, numpy_result):
                 if cupy_r.shape != numpy_r.shape:
-                    print(f"\nERROR:\n\tcupy_r.shape={cupy_r.shape},\n\tnumpy_r.shape={numpy_r.shape}")
+                    print(
+                        f"\nERROR:\n\tcupy_r.shape={cupy_r.shape},\n\tnumpy_r.shape={numpy_r.shape}"
+                    )
                 assert cupy_r.shape == numpy_r.shape
 
                 # Behavior of assigning a negative value to an unsigned integer
@@ -291,10 +343,13 @@ def _make_decorator(check_func, name, type_check, accept_error, sp_name=None,
                 # To avoid this difference, we need to ignore dimensions whose
                 # values are negative.
                 skip = False
-                if (_contains_signed_and_unsigned(kw)
-                        and cupy_r.dtype in _unsigned_dtypes):
+                if (
+                    _contains_signed_and_unsigned(kw)
+                    and cupy_r.dtype in _unsigned_dtypes
+                ):
                     mask = _make_positive_mask(
-                        self, impl, args, kw, name, sp_name, scipy_name)
+                        self, impl, args, kw, name, sp_name, scipy_name
+                    )
                     if cupy_r.shape == ():
                         skip = (mask == 0).all()
                     else:
@@ -303,13 +358,24 @@ def _make_decorator(check_func, name, type_check, accept_error, sp_name=None,
 
                 if not skip:
                     check_func(cupy_r, numpy_r)
+
         return test_func
+
     return decorator
 
 
-def numpy_cupy_allclose(rtol=1e-7, atol=0, err_msg='', verbose=True,
-                        name='xp', type_check=True, accept_error=False,
-                        sp_name=None, scipy_name=None, contiguous_check=True):
+def numpy_cupy_allclose(
+    rtol=1e-7,
+    atol=0,
+    err_msg="",
+    verbose=True,
+    name="xp",
+    type_check=True,
+    accept_error=False,
+    sp_name=None,
+    scipy_name=None,
+    contiguous_check=True,
+):
     """Decorator that checks NumPy results and CuPy ones are close.
 
     Args:
@@ -357,24 +423,34 @@ def numpy_cupy_allclose(rtol=1e-7, atol=0, err_msg='', verbose=True,
 
     .. seealso:: :func:`cupy.testing.assert_allclose`
     """
+
     def check_func(c, n):
         c_array = c
         n_array = n
         if sp_name is not None:
             import scipy.sparse
+
             if cupyx.scipy.sparse.issparse(c):
                 c_array = c.A
             if scipy.sparse.issparse(n):
                 n_array = n.A
         array.assert_allclose(c_array, n_array, rtol, atol, err_msg, verbose)
-    return _make_decorator(check_func, name, type_check, accept_error, sp_name,
-                           scipy_name)
+
+    return _make_decorator(
+        check_func, name, type_check, accept_error, sp_name, scipy_name
+    )
 
 
-def numpy_cupy_array_almost_equal(decimal=6, err_msg='', verbose=True,
-                                  name='xp', type_check=True,
-                                  accept_error=False, sp_name=None,
-                                  scipy_name=None):
+def numpy_cupy_array_almost_equal(
+    decimal=6,
+    err_msg="",
+    verbose=True,
+    name="xp",
+    type_check=True,
+    accept_error=False,
+    sp_name=None,
+    scipy_name=None,
+):
     """Decorator that checks NumPy results and CuPy ones are almost equal.
 
     Args:
@@ -404,16 +480,23 @@ def numpy_cupy_array_almost_equal(decimal=6, err_msg='', verbose=True,
 
     .. seealso:: :func:`cupy.testing.assert_array_almost_equal`
     """
+
     def check_func(x, y):
-        array.assert_array_almost_equal(
-            x, y, decimal, err_msg, verbose)
-    return _make_decorator(check_func, name, type_check, accept_error, sp_name,
-                           scipy_name)
+        array.assert_array_almost_equal(x, y, decimal, err_msg, verbose)
+
+    return _make_decorator(
+        check_func, name, type_check, accept_error, sp_name, scipy_name
+    )
 
 
-def numpy_cupy_array_almost_equal_nulp(nulp=1, name='xp', type_check=True,
-                                       accept_error=False, sp_name=None,
-                                       scipy_name=None):
+def numpy_cupy_array_almost_equal_nulp(
+    nulp=1,
+    name="xp",
+    type_check=True,
+    accept_error=False,
+    sp_name=None,
+    scipy_name=None,
+):
     """Decorator that checks results of NumPy and CuPy are equal w.r.t. spacing.
 
     Args:
@@ -439,16 +522,26 @@ def numpy_cupy_array_almost_equal_nulp(nulp=1, name='xp', type_check=True,
     (except the type of array module) even if ``xp`` is ``numpy`` or ``cupy``.
 
     .. seealso:: :func:`cupy.testing.assert_array_almost_equal_nulp`
-    """  # NOQA
+
+    """
+
     def check_func(x, y):
         array.assert_array_almost_equal_nulp(x, y, nulp)
-    return _make_decorator(check_func, name, type_check, accept_error, sp_name,
-                           scipy_name=None)
+
+    return _make_decorator(
+        check_func, name, type_check, accept_error, sp_name, scipy_name=None
+    )
 
 
-def numpy_cupy_array_max_ulp(maxulp=1, dtype=None, name='xp', type_check=True,
-                             accept_error=False, sp_name=None,
-                             scipy_name=None):
+def numpy_cupy_array_max_ulp(
+    maxulp=1,
+    dtype=None,
+    name="xp",
+    type_check=True,
+    accept_error=False,
+    sp_name=None,
+    scipy_name=None,
+):
     """Decorator that checks results of NumPy and CuPy ones are equal w.r.t. ulp.
 
     Args:
@@ -478,16 +571,26 @@ def numpy_cupy_array_max_ulp(maxulp=1, dtype=None, name='xp', type_check=True,
 
     .. seealso:: :func:`cupy.testing.assert_array_max_ulp`
 
-    """  # NOQA
+    """
+
     def check_func(x, y):
         array.assert_array_max_ulp(x, y, maxulp, dtype)
-    return _make_decorator(check_func, name, type_check, accept_error, sp_name,
-                           scipy_name)
+
+    return _make_decorator(
+        check_func, name, type_check, accept_error, sp_name, scipy_name
+    )
 
 
-def numpy_cupy_array_equal(err_msg='', verbose=True, name='xp',
-                           type_check=True, accept_error=False, sp_name=None,
-                           scipy_name=None, strides_check=False):
+def numpy_cupy_array_equal(
+    err_msg="",
+    verbose=True,
+    name="xp",
+    type_check=True,
+    accept_error=False,
+    sp_name=None,
+    scipy_name=None,
+    strides_check=False,
+):
     """Decorator that checks NumPy results and CuPy ones are equal.
 
     Args:
@@ -518,9 +621,11 @@ def numpy_cupy_array_equal(err_msg='', verbose=True, name='xp',
 
     .. seealso:: :func:`cupy.testing.assert_array_equal`
     """
+
     def check_func(x, y):
         if sp_name is not None:
             import scipy.sparse
+
             if cupyx.scipy.sparse.issparse(x):
                 x = x.A
             if scipy.sparse.issparse(y):
@@ -528,12 +633,14 @@ def numpy_cupy_array_equal(err_msg='', verbose=True, name='xp',
 
         array.assert_array_equal(x, y, err_msg, verbose, strides_check)
 
-    return _make_decorator(check_func, name, type_check, accept_error, sp_name,
-                           scipy_name)
+    return _make_decorator(
+        check_func, name, type_check, accept_error, sp_name, scipy_name
+    )
 
 
 def numpy_cupy_array_list_equal(
-        err_msg='', verbose=True, name='xp', sp_name=None, scipy_name=None):
+    err_msg="", verbose=True, name="xp", sp_name=None, scipy_name=None
+):
     """Decorator that checks the resulting lists of NumPy and CuPy's one are equal.
 
     Args:
@@ -553,15 +660,24 @@ def numpy_cupy_array_list_equal(
     (except the type of array module) even if ``xp`` is ``numpy`` or ``cupy``.
 
     .. seealso:: :func:`cupy.testing.assert_array_list_equal`
-    """  # NOQA
+
+    """
+
     def check_func(x, y):
         array.assert_array_equal(x, y, err_msg, verbose)
+
     return _make_decorator(check_func, name, False, False, sp_name, scipy_name)
 
 
-def numpy_cupy_array_less(err_msg='', verbose=True, name='xp',
-                          type_check=True, accept_error=False, sp_name=None,
-                          scipy_name=None):
+def numpy_cupy_array_less(
+    err_msg="",
+    verbose=True,
+    name="xp",
+    type_check=True,
+    accept_error=False,
+    sp_name=None,
+    scipy_name=None,
+):
     """Decorator that checks the CuPy result is less than NumPy result.
 
     Args:
@@ -589,13 +705,16 @@ def numpy_cupy_array_less(err_msg='', verbose=True, name='xp',
 
     .. seealso:: :func:`cupy.testing.assert_array_less`
     """
+
     def check_func(x, y):
         array.assert_array_less(x, y, err_msg, verbose)
-    return _make_decorator(check_func, name, type_check, accept_error, sp_name,
-                           scipy_name)
+
+    return _make_decorator(
+        check_func, name, type_check, accept_error, sp_name, scipy_name
+    )
 
 
-def numpy_cupy_equal(name='xp', sp_name=None, scipy_name=None):
+def numpy_cupy_equal(name="xp", sp_name=None, scipy_name=None):
     """Decorator that checks NumPy results are equal to CuPy ones.
 
     Args:
@@ -611,24 +730,39 @@ def numpy_cupy_equal(name='xp', sp_name=None, scipy_name=None):
     Decorated test fixture is required to return the same results
     even if ``xp`` is ``numpy`` or ``cupy``.
     """
+
     def decorator(impl):
         @functools.wraps(impl)
         def test_func(self, *args, **kw):
             # Run cupy and numpy
-            (cupy_result, cupy_error, cupy_tb, numpy_result, numpy_error, numpy_tb) = (
-                _call_func_numpy_cupy(self, impl, args, kw, name, sp_name, scipy_name))
+            (
+                cupy_result,
+                cupy_error,
+                cupy_tb,
+                numpy_result,
+                numpy_error,
+                numpy_tb,
+            ) = _call_func_numpy_cupy(
+                self, impl, args, kw, name, sp_name, scipy_name
+            )
 
             if cupy_result != numpy_result:
-                message = '''Results are not equal:
+                message = """Results are not equal:
 cupy: %s
-numpy: %s''' % (str(cupy_result), str(numpy_result))
+numpy: %s""" % (
+                    str(cupy_result),
+                    str(numpy_result),
+                )
                 raise AssertionError(message)
+
         return test_func
+
     return decorator
 
 
-def numpy_cupy_raises(name='xp', sp_name=None, scipy_name=None,
-                      accept_error=Exception):
+def numpy_cupy_raises(
+    name="xp", sp_name=None, scipy_name=None, accept_error=Exception
+):
     """Decorator that checks the NumPy and CuPy throw same errors.
 
     Args:
@@ -650,24 +784,32 @@ def numpy_cupy_raises(name='xp', sp_name=None, scipy_name=None,
     Decorated test fixture is required throw same errors
     even if ``xp`` is ``numpy`` or ``cupy``.
     """
+
     def decorator(impl):
         @functools.wraps(impl)
         def test_func(self, *args, **kw):
             # Run cupy and numpy
             (
-                cupy_result, cupy_error, cupy_tb,
-                numpy_result, numpy_error, numpy_tb) = (
-                    _call_func_numpy_cupy(
-                        self, impl, args, kw, name, sp_name, scipy_name))
+                cupy_result,
+                cupy_error,
+                cupy_tb,
+                numpy_result,
+                numpy_error,
+                numpy_tb,
+            ) = _call_func_numpy_cupy(
+                self, impl, args, kw, name, sp_name, scipy_name
+            )
 
-            _check_cupy_numpy_error(cupy_error,
-                                    numpy_error,
-                                    accept_error=accept_error)
+            _check_cupy_numpy_error(
+                cupy_error, numpy_error, accept_error=accept_error
+            )
+
         return test_func
+
     return decorator
 
 
-def for_dtypes(dtypes, name='dtype'):
+def for_dtypes(dtypes, name="dtype"):
     """Decorator for parameterized dtype test.
 
     Args:
@@ -679,6 +821,7 @@ def for_dtypes(dtypes, name='dtype'):
     by passing the each element of ``dtypes`` to the named
     argument.
     """
+
     def decorator(impl):
         @_wraps_partial(impl, name)
         def test_func(*args, **kw):
@@ -687,19 +830,22 @@ def for_dtypes(dtypes, name='dtype'):
                     kw[name] = numpy.dtype(dtype).type
                     impl(*args, **kw)
                 except unittest.SkipTest as e:
-                    print('skipped: {} = {} ({})'.format(name, dtype, e))
+                    print("skipped: {} = {} ({})".format(name, dtype, e))
                 except Exception:
-                    print(name, 'is', dtype)
+                    print(name, "is", dtype)
                     raise
 
         return test_func
+
     return decorator
+
 
 def _get_supported_float_dtypes():
     if select_default_device().has_aspect_fp64:
         return (numpy.float64, numpy.float32)
     else:
         return (numpy.float32,)
+
 
 def _get_supported_complex_dtypes():
     if select_default_device().has_aspect_fp64:
@@ -712,7 +858,7 @@ _complex_dtypes = _get_supported_complex_dtypes()
 _regular_float_dtypes = _get_supported_float_dtypes()
 _float_dtypes = _regular_float_dtypes
 _signed_dtypes = ()
-_unsigned_dtypes = tuple(numpy.dtype(i).type for i in 'BHILQ')
+_unsigned_dtypes = tuple(numpy.dtype(i).type for i in "BHILQ")
 _int_dtypes = _signed_dtypes + _unsigned_dtypes
 _int_bool_dtypes = _int_dtypes
 _regular_dtypes = _regular_float_dtypes + _int_bool_dtypes
@@ -721,6 +867,8 @@ _dtypes = _float_dtypes + _int_bool_dtypes
 
 def _make_all_dtypes(no_float16, no_bool, no_complex):
     return (numpy.int64, numpy.int32) + _get_supported_float_dtypes()
+
+
 #     if no_float16:
 #         dtypes = _regular_float_dtypes
 #     else:
@@ -737,8 +885,9 @@ def _make_all_dtypes(no_float16, no_bool, no_complex):
 #     return dtypes
 
 
-def for_all_dtypes(name='dtype', no_float16=False, no_bool=False,
-                   no_complex=False):
+def for_all_dtypes(
+    name="dtype", no_float16=False, no_bool=False, no_complex=False
+):
     """Decorator that checks the fixture with all dtypes.
 
     Args:
@@ -793,11 +942,12 @@ def for_all_dtypes(name='dtype', no_float16=False, no_bool=False,
 
     .. seealso:: :func:`cupy.testing.for_dtypes`
     """
-    return for_dtypes(_make_all_dtypes(no_float16, no_bool, no_complex),
-                      name=name)
+    return for_dtypes(
+        _make_all_dtypes(no_float16, no_bool, no_complex), name=name
+    )
 
 
-def for_float_dtypes(name='dtype', no_float16=False):
+def for_float_dtypes(name="dtype", no_float16=False):
     """Decorator that checks the fixture with float dtypes.
 
     Args:
@@ -817,7 +967,7 @@ def for_float_dtypes(name='dtype', no_float16=False):
         return for_dtypes(_float_dtypes, name=name)
 
 
-def for_signed_dtypes(name='dtype'):
+def for_signed_dtypes(name="dtype"):
     """Decorator that checks the fixture with signed dtypes.
 
     Args:
@@ -832,7 +982,7 @@ def for_signed_dtypes(name='dtype'):
     return for_dtypes(_signed_dtypes, name=name)
 
 
-def for_unsigned_dtypes(name='dtype'):
+def for_unsigned_dtypes(name="dtype"):
     """Decorator that checks the fixture with unsinged dtypes.
 
     Args:
@@ -848,7 +998,7 @@ def for_unsigned_dtypes(name='dtype'):
     return for_dtypes(_unsigned_dtypes, name=name)
 
 
-def for_int_dtypes(name='dtype', no_bool=False):
+def for_int_dtypes(name="dtype", no_bool=False):
     """Decorator that checks the fixture with integer and optionally bool dtypes.
 
     Args:
@@ -863,14 +1013,16 @@ def for_int_dtypes(name='dtype', no_bool=False):
 
     .. seealso:: :func:`cupy.testing.for_dtypes`,
         :func:`cupy.testing.for_all_dtypes`
-    """  # NOQA
+
+    """
+
     if no_bool:
         return for_dtypes(_int_dtypes, name=name)
     else:
         return for_dtypes(_int_bool_dtypes, name=name)
 
 
-def for_complex_dtypes(name='dtype'):
+def for_complex_dtypes(name="dtype"):
     """Decorator that checks the fixture with complex dtypes.
 
     Args:
@@ -884,7 +1036,7 @@ def for_complex_dtypes(name='dtype'):
     return for_dtypes(_complex_dtypes, name=name)
 
 
-def for_dtypes_combination(types, names=('dtype',), full=None):
+def for_dtypes_combination(types, names=("dtype",), full=None):
     """Decorator that checks the fixture with a product set of dtypes.
 
     Args:
@@ -914,11 +1066,11 @@ def for_dtypes_combination(types, names=('dtype',), full=None):
     types = list(types)
 
     if len(types) == 1:
-        name, = names
+        (name,) = names
         return for_dtypes(types, name)
 
     if full is None:
-        full = int(os.environ.get('CUPY_TEST_FULL_COMBINATION', '0')) != 0
+        full = int(os.environ.get("CUPY_TEST_FULL_COMBINATION", "0")) != 0
 
     if full:
         combination = parameterized.product({name: types for name in names})
@@ -948,12 +1100,17 @@ def for_dtypes_combination(types, names=('dtype',), full=None):
                     raise
 
         return test_func
+
     return decorator
 
 
-def for_all_dtypes_combination(names=('dtyes',),
-                               no_float16=False, no_bool=False, full=None,
-                               no_complex=False):
+def for_all_dtypes_combination(
+    names=("dtyes",),
+    no_float16=False,
+    no_bool=False,
+    full=None,
+    no_complex=False,
+):
     """Decorator that checks the fixture with a product set of all dtypes.
 
     Args:
@@ -975,7 +1132,7 @@ def for_all_dtypes_combination(names=('dtyes',),
     return for_dtypes_combination(types, names, full)
 
 
-def for_signed_dtypes_combination(names=('dtype',), full=None):
+def for_signed_dtypes_combination(names=("dtype",), full=None):
     """Decorator for parameterized test w.r.t. the product set of signed dtypes.
 
     Args:
@@ -986,11 +1143,13 @@ def for_signed_dtypes_combination(names=('dtype',), full=None):
              (see description in :func:`cupy.testing.for_dtypes_combination`).
 
     .. seealso:: :func:`cupy.testing.for_dtypes_combination`
-    """  # NOQA
+
+    """
+
     return for_dtypes_combination(_signed_dtypes, names=names, full=full)
 
 
-def for_unsigned_dtypes_combination(names=('dtype',), full=None):
+def for_unsigned_dtypes_combination(names=("dtype",), full=None):
     """Decorator for parameterized test w.r.t. the product set of unsigned dtypes.
 
     Args:
@@ -1001,11 +1160,13 @@ def for_unsigned_dtypes_combination(names=('dtype',), full=None):
              (see description in :func:`cupy.testing.for_dtypes_combination`).
 
     .. seealso:: :func:`cupy.testing.for_dtypes_combination`
-    """  # NOQA
+
+    """
+
     return for_dtypes_combination(_unsigned_dtypes, names=names, full=full)
 
 
-def for_int_dtypes_combination(names=('dtype',), no_bool=False, full=None):
+def for_int_dtypes_combination(names=("dtype",), no_bool=False, full=None):
     """Decorator for parameterized test w.r.t. the product set of int and boolean.
 
     Args:
@@ -1018,7 +1179,9 @@ def for_int_dtypes_combination(names=('dtype',), no_bool=False, full=None):
              (see description in :func:`cupy.testing.for_dtypes_combination`).
 
     .. seealso:: :func:`cupy.testing.for_dtypes_combination`
-    """  # NOQA
+
+    """
+
     if no_bool:
         types = _int_dtypes
     else:
@@ -1026,7 +1189,7 @@ def for_int_dtypes_combination(names=('dtype',), no_bool=False, full=None):
     return for_dtypes_combination(types, names, full)
 
 
-def for_orders(orders, name='order'):
+def for_orders(orders, name="order"):
     """Decorator to parameterize tests with order.
 
     Args:
@@ -1038,6 +1201,7 @@ def for_orders(orders, name='order'):
     ``orders`` to the named argument.
 
     """
+
     def decorator(impl):
         @functools.wraps(impl)
         def test_func(self, *args, **kw):
@@ -1046,14 +1210,15 @@ def for_orders(orders, name='order'):
                     kw[name] = order
                     impl(self, *args, **kw)
                 except Exception:
-                    print(name, 'is', order)
+                    print(name, "is", order)
                     raise
 
         return test_func
+
     return decorator
 
 
-def for_CF_orders(name='order'):
+def for_CF_orders(name="order"):
     """Decorator that checks the fixture with orders 'C' and 'F'.
 
     Args:
@@ -1062,7 +1227,7 @@ def for_CF_orders(name='order'):
     .. seealso:: :func:`cupy.testing.for_all_dtypes`
 
     """
-    return for_orders([None, 'C', 'c'], name)
+    return for_orders([None, "C", "c"], name)
 
 
 def with_requires(*requirements):
@@ -1094,7 +1259,7 @@ def with_requires(*requirements):
     except pkg_resources.ResolutionError:
         skip = True
 
-    msg = 'requires: {}'.format(','.join(requirements))
+    msg = "requires: {}".format(",".join(requirements))
     return unittest.skipIf(skip, msg)
 
 
@@ -1108,7 +1273,7 @@ def numpy_satisfies(version_range):
     # See https://github.com/pypa/setuptools/issues/510
     import pkg_resources
 
-    spec = 'numpy{}'.format(version_range)
+    spec = "numpy{}".format(version_range)
     try:
         pkg_resources.require(spec)
     except pkg_resources.VersionConflict:
@@ -1116,7 +1281,7 @@ def numpy_satisfies(version_range):
     return True
 
 
-def shaped_arange(shape, xp=dpnp, dtype=numpy.float64, order='C'):
+def shaped_arange(shape, xp=dpnp, dtype=numpy.float64, order="C"):
     """Returns an array with given shape, array module, and dtype.
 
     Args:
@@ -1136,9 +1301,9 @@ def shaped_arange(shape, xp=dpnp, dtype=numpy.float64, order='C'):
     """
     dtype = numpy.dtype(dtype)
     a = xp.arange(1, prod(shape) + 1, 1)
-    if dtype == '?':
+    if dtype == "?":
         a = a % 2 == 0
-    elif dtype.kind == 'c':
+    elif dtype.kind == "c":
         a = a + a * 1j
     return xp.array(a.astype(dtype).reshape(shape), order=order, dtype=dtype)
 
@@ -1163,9 +1328,9 @@ def shaped_reverse_arange(shape, xp=dpnp, dtype=numpy.float32):
     size = prod(shape)
     # a = xp.arange(size, 0, -1)
     a = xp.arange(0, size)
-    if dtype == '?':
+    if dtype == "?":
         a = a % 2 == 0
-    elif dtype.kind == 'c':
+    elif dtype.kind == "c":
         a = a + a * 1j
     return xp.array(a.astype(dtype).reshape(shape))
 
@@ -1195,9 +1360,9 @@ def shaped_random(shape, xp=dpnp, dtype=numpy.float64, scale=10, seed=0):
     numpy.random.seed(seed)
     dtype = numpy.dtype(dtype)
 
-    if dtype == '?':
+    if dtype == "?":
         return xp.asarray(numpy.random.randint(2, size=shape), dtype=dtype)
-    elif dtype.kind == 'c':
+    elif dtype.kind == "c":
         a = dpnp.random.rand(*shape) + 1j * numpy.random.rand(*shape)
         return xp.asarray(a * scale, dtype=dtype)
     else:
@@ -1209,7 +1374,6 @@ def empty(xp=dpnp, dtype=numpy.float64):
 
 
 class NumpyError(object):
-
     def __init__(self, **kw):
         self.kw = kw
 
@@ -1224,7 +1388,7 @@ class NumpyError(object):
 @contextlib.contextmanager
 def assert_warns(expected):
     with warnings.catch_warnings(record=True) as w:
-        warnings.simplefilter('always')
+        warnings.simplefilter("always")
         yield
 
     if any(isinstance(m.message, expected) for m in w):
@@ -1235,11 +1399,10 @@ def assert_warns(expected):
     except AttributeError:
         exc_name = str(expected)
 
-    raise AssertionError('%s not triggerred' % exc_name)
+    raise AssertionError("%s not triggerred" % exc_name)
 
 
 class NumpyAliasTestBase(unittest.TestCase):
-
     @property
     def func(self):
         raise NotImplementedError()
@@ -1254,7 +1417,6 @@ class NumpyAliasTestBase(unittest.TestCase):
 
 
 class NumpyAliasBasicTestBase(NumpyAliasTestBase):
-
     def test_argspec(self):
         f = inspect.signature
         assert f(self.cupy_func) == f(self.numpy_func)
@@ -1262,13 +1424,12 @@ class NumpyAliasBasicTestBase(NumpyAliasTestBase):
     def test_docstring(self):
         cupy_func = self.cupy_func
         numpy_func = self.numpy_func
-        assert hasattr(cupy_func, '__doc__')
+        assert hasattr(cupy_func, "__doc__")
         assert cupy_func.__doc__ is not None
-        assert cupy_func.__doc__ != ''
+        assert cupy_func.__doc__ != ""
         assert cupy_func.__doc__ is not numpy_func.__doc__
 
 
 class NumpyAliasValuesTestBase(NumpyAliasTestBase):
-
     def test_values(self):
         assert self.cupy_func(*self.args) == self.numpy_func(*self.args)

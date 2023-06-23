@@ -32,31 +32,28 @@ This module contains differnt helpers and utilities
 
 """
 
-import numpy
-
 import dpctl
-import dpctl.utils as dpu
 import dpctl.tensor._copy_utils as dpt_cu
 import dpctl.tensor._tensor_impl as dpt_ti
+import dpctl.utils as dpu
+import numpy
 
+import dpnp
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
-import dpnp
-
 from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_algo.dpnp_algo cimport (
-    dpnp_DPNPFuncType_to_dtype,
-    dpnp_dtype_to_DPNPFuncType,
-    get_dpnp_function_ptr
-)
-
-from libcpp cimport bool as cpp_bool
-from libcpp.complex cimport complex as cpp_complex
 
 cimport cpython
 cimport cython
 cimport numpy
+from libcpp cimport bool as cpp_bool
+from libcpp.complex cimport complex as cpp_complex
 
+from dpnp.dpnp_algo.dpnp_algo cimport (
+    dpnp_DPNPFuncType_to_dtype,
+    dpnp_dtype_to_DPNPFuncType,
+    get_dpnp_function_ptr,
+)
 
 """
 Python import functions

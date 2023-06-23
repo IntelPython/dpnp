@@ -35,22 +35,23 @@ and the rest of the library
 
 from libc.time cimport time, time_t
 from libcpp.vector cimport vector
+
+import dpctl
+
 import dpnp
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
 import dpnp.dpnp_utils as utils_py
 from dpnp.dpnp_array import dpnp_array
 
-import dpctl
-
 cimport cpython
-cimport dpnp.dpnp_utils as utils
-
 cimport numpy
-import numpy
+
+cimport dpnp.dpnp_utils as utils
 
 import operator
 
+import numpy
 
 __all__ = [
     "dpnp_astype",

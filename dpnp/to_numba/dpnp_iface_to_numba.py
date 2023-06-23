@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,18 +40,16 @@ import ctypes
 import numba
 from numba.extending import get_cython_function_address as nba_addr
 
-
-name_to_numba_signatures = {
-    "cos": [(numba.types.float64)]
-}
+name_to_numba_signatures = {"cos": [(numba.types.float64)]}
 
 name_and_types_to_pointer = {
-    ("cos", numba.types.float64): ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)(nba_addr("dpnp.dpnp_algo", "dpnp_cos"))
+    ("cos", numba.types.float64): ctypes.CFUNCTYPE(
+        ctypes.c_double, ctypes.c_double
+    )(nba_addr("dpnp.dpnp_algo", "dpnp_cos"))
 }
 
 
 def choose_kernel(name, all_signatures):
-
     def choice_function(*args):
         for signature in all_signatures:
             if args == signature:
@@ -65,4 +63,6 @@ def add_overloads():
     for name, all_signatures in name_to_numba_signatures.items():
         sc_function = getattr(sc, name)
         print(f"sc_function={sc_function}")
-        numba.extending.overload(sc_function)(choose_kernel(name, all_signatures))
+        numba.extending.overload(sc_function)(
+            choose_kernel(name, all_signatures)
+        )

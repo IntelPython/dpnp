@@ -1,11 +1,11 @@
 import unittest
+
 import pytest
 
 from tests.third_party.cupy import testing
 
 
 class TestArithmetic(unittest.TestCase):
-
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
     def test_modf_part1(self, xp, dtype):

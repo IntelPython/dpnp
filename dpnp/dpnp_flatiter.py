@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,10 +24,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-Implementation of flatiter
-
-"""
+"""Implementation of flatiter."""
 
 import dpnp
 
@@ -36,9 +33,7 @@ class flatiter:
     def __init__(self, X):
         if type(X) is not dpnp.ndarray:
             raise TypeError(
-                "Argument must be of type dpnp.ndarray, got {}".format(
-                    type(X)
-                )
+                "Argument must be of type dpnp.ndarray, got {}".format(type(X))
             )
         self.arr_ = X
         self.size_ = X.size
@@ -48,7 +43,7 @@ class flatiter:
         nd = self.arr_.ndim
         if nd == 0:
             if i == 0:
-                return tuple()
+                return ()
             raise KeyError
         elif nd == 1:
             return (i,)

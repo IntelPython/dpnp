@@ -25,11 +25,12 @@
 
 /*
  * This header file is for interface Cython with C++.
- * It should not contains any backend specific headers (like SYCL or math library) because
- * all included headers will be exposed in Cython compilation procedure
+ * It should not contains any backend specific headers (like SYCL or math
+ * library) because all included headers will be exposed in Cython compilation
+ * procedure
  *
- * We would like to avoid backend specific things in higher level Cython modules.
- * Any backend interface functions and types should be defined here.
+ * We would like to avoid backend specific things in higher level Cython
+ * modules. Any backend interface functions and types should be defined here.
  *
  * Also, this file should contains documentation on functions and types
  * which are used in the interface
@@ -50,7 +51,7 @@
 // Structure storing a base MKL engine
 struct engine_struct
 {
-    void* engine;
+    void *engine;
 };
 
 // Structure storing MKL engine for MT199374x32x10 generator
@@ -67,26 +68,38 @@ struct mcg59_struct : engine_struct
  * @ingroup BACKEND_API
  * @brief Create a MKL engine from scalar seed.
  *
- * Invoke a common seed initialization of the engine for MT199374x32x10 algorithm.
+ * Invoke a common seed initialization of the engine for MT199374x32x10
+ * algorithm.
  *
- * @param [in]  mt19937       A structure with MKL engine which will be filled with generated value by MKL.
- * @param [in]  q_ref         A refference on SYCL queue which will be used to obtain random numbers.
+ * @param [in]  mt19937       A structure with MKL engine which will be filled
+ *                            with generated value by MKL.
+ * @param [in]  q_ref         A refference on SYCL queue which will be used to
+ *                            obtain random numbers.
  * @param [in]  seed          An initial condition of the generator state.
  */
-INP_DLLEXPORT void MT19937_InitScalarSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, uint32_t seed = 1);
+INP_DLLEXPORT void MT19937_InitScalarSeed(mt19937_struct *mt19937,
+                                          DPCTLSyclQueueRef q_ref,
+                                          uint32_t seed = 1);
 
 /**
  * @ingroup BACKEND_API
  * @brief Create a MKL engine from seed vector.
  *
- * Invoke an extended seed initialization of the engine for MT199374x32x10 algorithm..
+ * Invoke an extended seed initialization of the engine for MT199374x32x10
+ * algorithm..
  *
- * @param [in]  mt19937       A structure with MKL engine which will be filled with generated value by MKL.
- * @param [in]  q_ref         A refference on SYCL queue which will be used to obtain random numbers.
- * @param [in]  seed          A vector with the initial conditions of the generator state.
+ * @param [in]  mt19937       A structure with MKL engine which will be filled
+ *                            with generated value by MKL.
+ * @param [in]  q_ref         A refference on SYCL queue which will be used to
+ *                            obtain random numbers.
+ * @param [in]  seed          A vector with the initial conditions of the
+ *                            generator state.
  * @param [in]  n             Length of the vector.
  */
-INP_DLLEXPORT void MT19937_InitVectorSeed(mt19937_struct *mt19937, DPCTLSyclQueueRef q_ref, uint32_t * seed, unsigned int n);
+INP_DLLEXPORT void MT19937_InitVectorSeed(mt19937_struct *mt19937,
+                                          DPCTLSyclQueueRef q_ref,
+                                          uint32_t *seed,
+                                          unsigned int n);
 
 /**
  * @ingroup BACKEND_API
@@ -104,11 +117,15 @@ INP_DLLEXPORT void MT19937_Delete(mt19937_struct *mt19937);
  *
  * Invoke a common seed initialization of the engine for MCG59 algorithm.
  *
- * @param [in]  mcg59         A structure with MKL engine which will be filled with generated value by MKL.
- * @param [in]  q_ref         A refference on SYCL queue which will be used to obtain random numbers.
+ * @param [in]  mcg59         A structure with MKL engine which will be filled
+ *                            with generated value by MKL.
+ * @param [in]  q_ref         A refference on SYCL queue which will be used to
+ *                            obtain random numbers.
  * @param [in]  seed          An initial condition of the generator state.
  */
-INP_DLLEXPORT void MCG59_InitScalarSeed(mcg59_struct* mcg59, DPCTLSyclQueueRef q_ref, uint64_t seed);
+INP_DLLEXPORT void MCG59_InitScalarSeed(mcg59_struct *mcg59,
+                                        DPCTLSyclQueueRef q_ref,
+                                        uint64_t seed);
 
 /**
  * @ingroup BACKEND_API
@@ -118,6 +135,6 @@ INP_DLLEXPORT void MCG59_InitScalarSeed(mcg59_struct* mcg59, DPCTLSyclQueueRef q
  *
  * @param [in]  mcg59         A structure with the MKL engine.
  */
-INP_DLLEXPORT void MCG59_Delete(mcg59_struct* mcg59);
+INP_DLLEXPORT void MCG59_Delete(mcg59_struct *mcg59);
 
 #endif // BACKEND_RANDOM_STATE_H

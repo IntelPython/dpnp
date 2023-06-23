@@ -39,15 +39,13 @@ it contains:
 
 """
 
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
+import dpctl.tensor as dpt
+import numpy
 
 import dpnp
+from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
-
-import numpy
-import dpctl.tensor as dpt
-
+from dpnp.dpnp_utils import *
 
 __all__ = [
     "choose",
@@ -68,11 +66,11 @@ __all__ = [
     "tril_indices",
     "tril_indices_from",
     "triu_indices",
-    "triu_indices_from"
+    "triu_indices_from",
 ]
 
 
-def choose(x1, choices, out=None, mode='raise'):
+def choose(x1, choices, out=None, mode="raise"):
     """
     Construct an array from an index array and a set of arrays to choose from.
 
@@ -86,14 +84,16 @@ def choose(x1, choices, out=None, mode='raise'):
 
     choices_list = []
     for choice in choices:
-        choices_list.append(dpnp.get_dpnp_descriptor(choice, copy_when_nondefault_queue=False))
+        choices_list.append(
+            dpnp.get_dpnp_descriptor(choice, copy_when_nondefault_queue=False)
+        )
 
     if x1_desc:
         if any(not desc for desc in choices_list):
             pass
         elif out is not None:
             pass
-        elif mode != 'raise':
+        elif mode != "raise":
             pass
         elif any(not choices[0].dtype == choice.dtype for choice in choices):
             pass
@@ -102,7 +102,10 @@ def choose(x1, choices, out=None, mode='raise'):
         else:
             size = x1_desc.size
             choices_size = choices_list[0].size
-            if any(choice.size != choices_size or choice.size != size for choice in choices):
+            if any(
+                choice.size != choices_size or choice.size != size
+                for choice in choices
+            ):
                 pass
             elif any(x >= choices_size for x in dpnp.asnumpy(x1)):
                 pass
@@ -196,7 +199,9 @@ def diag_indices_from(x1):
         # original limitation
         # For more than d=2, the strided formula is only valid for arrays with
         # all dimensions equal, so we check first.
-        elif not numpy.alltrue(numpy.diff(x1_desc.shape) == 0):  # TODO: replace alltrue and diff funcs with dpnp own ones
+        elif not numpy.alltrue(
+            numpy.diff(x1_desc.shape) == 0
+        ):  # TODO: replace alltrue and diff funcs with dpnp own ones
             pass
         else:
             return dpnp_diag_indices(x1_desc.shape[0], x1_desc.ndim)
@@ -236,6 +241,7 @@ def diagonal(x1, offset=0, axis1=0, axis2=1):
 def extract(condition, x):
     """
     Return the elements of an array that satisfy some condition.
+
     For full documentation refer to :obj:`numpy.extract`.
 
     Returns
@@ -251,8 +257,9 @@ def extract(condition, x):
     Otherwise the function will be executed sequentially on CPU.
     """
 
-    check_input_type = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
-    if check_input_type(condition) and check_input_type(x):
+    if dpnp.is_supported_array_type(condition) and dpnp.is_supported_array_type(
+        x
+    ):
         if condition.shape != x.shape:
             pass
         else:
@@ -262,7 +269,9 @@ def extract(condition, x):
                 else condition
             )
             dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
-            return dpnp_array._create_from_usm_ndarray(dpt.extract(dpt_condition, dpt_array))
+            return dpnp_array._create_from_usm_ndarray(
+                dpt.extract(dpt_condition, dpt_array)
+            )
 
     return call_origin(numpy.extract, condition, x)
 
@@ -283,7 +292,9 @@ def fill_diagonal(x1, val, wrap=False):
     :obj:`dpnp.diag_indices_from` : Return the indices to access the main diagonal of an n-dimensional array.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
         if not dpnp.isscalar(val):
             pass
@@ -372,7 +383,10 @@ def nonzero(x, /):
 
     if isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
         dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
-        return tuple(dpnp_array._create_from_usm_ndarray(y) for y in dpt.nonzero(dpt_array))
+        return tuple(
+            dpnp_array._create_from_usm_ndarray(y)
+            for y in dpt.nonzero(dpt_array)
+        )
 
     return call_origin(numpy.nonzero, x)
 
@@ -380,6 +394,7 @@ def nonzero(x, /):
 def place(x, mask, vals, /):
     """
     Change elements of an array based on conditional and input values.
+
     For full documentation refer to :obj:`numpy.place`.
 
     Limitations
@@ -389,8 +404,11 @@ def place(x, mask, vals, /):
     Otherwise the function will be executed sequentially on CPU.
     """
 
-    check_input_type = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
-    if check_input_type(x) and check_input_type(mask) and check_input_type(vals):
+    if (
+        dpnp.is_supported_array_type(x)
+        and dpnp.is_supported_array_type(mask)
+        and dpnp.is_supported_array_type(vals)
+    ):
         dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
         dpt_mask = mask.get_array() if isinstance(mask, dpnp_array) else mask
         dpt_vals = vals.get_array() if isinstance(vals, dpnp_array) else vals
@@ -399,9 +417,10 @@ def place(x, mask, vals, /):
     return call_origin(numpy.place, x, mask, vals, dpnp_inplace=True)
 
 
-def put(x1, ind, v, mode='raise'):
+def put(x1, ind, v, mode="raise"):
     """
     Replaces specified elements of an array with given values.
+
     For full documentation refer to :obj:`numpy.put`.
 
     Limitations
@@ -410,13 +429,17 @@ def put(x1, ind, v, mode='raise'):
     Not supported parameter mode.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     if x1_desc:
-        if mode != 'raise':
+        if mode != "raise":
             pass
         elif type(ind) != type(v):
             pass
-        elif numpy.max(ind) >= x1_desc.size or numpy.min(ind) + x1_desc.size < 0:
+        elif (
+            numpy.max(ind) >= x1_desc.size or numpy.min(ind) + x1_desc.size < 0
+        ):
             pass
         else:
             return dpnp_put(x1_desc, ind, v)
@@ -427,6 +450,7 @@ def put(x1, ind, v, mode='raise'):
 def put_along_axis(x1, indices, values, axis):
     """
     Put values into the destination array by matching 1d index and data slices.
+
     For full documentation refer to :obj:`numpy.put_along_axis`.
 
     See Also
@@ -435,8 +459,12 @@ def put_along_axis(x1, indices, values, axis):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    indices_desc = dpnp.get_dpnp_descriptor(indices, copy_when_nondefault_queue=False)
-    values_desc = dpnp.get_dpnp_descriptor(values, copy_when_nondefault_queue=False)
+    indices_desc = dpnp.get_dpnp_descriptor(
+        indices, copy_when_nondefault_queue=False
+    )
+    values_desc = dpnp.get_dpnp_descriptor(
+        values, copy_when_nondefault_queue=False
+    )
     if x1_desc and indices_desc and values_desc:
         if x1_desc.ndim != indices_desc.ndim:
             pass
@@ -449,12 +477,15 @@ def put_along_axis(x1, indices, values, axis):
         else:
             return dpnp_put_along_axis(x1_desc, indices_desc, values_desc, axis)
 
-    return call_origin(numpy.put_along_axis, x1, indices, values, axis, dpnp_inplace=True)
+    return call_origin(
+        numpy.put_along_axis, x1, indices, values, axis, dpnp_inplace=True
+    )
 
 
 def putmask(x1, mask, values):
     """
     Changes elements of an array based on conditional and input values.
+
     For full documentation refer to :obj:`numpy.putmask`.
 
     Limitations
@@ -462,9 +493,13 @@ def putmask(x1, mask, values):
     Input arrays ``arr``, ``mask`` and ``values``  are supported as :obj:`dpnp.ndarray`.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False, copy_when_nondefault_queue=False)
+    x1_desc = dpnp.get_dpnp_descriptor(
+        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    )
     mask_desc = dpnp.get_dpnp_descriptor(mask, copy_when_nondefault_queue=False)
-    values_desc = dpnp.get_dpnp_descriptor(values, copy_when_nondefault_queue=False)
+    values_desc = dpnp.get_dpnp_descriptor(
+        values, copy_when_nondefault_queue=False
+    )
     if x1_desc and mask_desc and values_desc:
         return dpnp_putmask(x1_desc, mask_desc, values_desc)
 
@@ -474,6 +509,7 @@ def putmask(x1, mask, values):
 def select(condlist, choicelist, default=0):
     """
     Return an array drawn from elements in choicelist, depending on conditions.
+
     For full documentation refer to :obj:`numpy.select`.
 
     Limitations
@@ -503,9 +539,10 @@ def select(condlist, choicelist, default=0):
     return call_origin(numpy.select, condlist, choicelist, default)
 
 
-def take(x1, indices, axis=None, out=None, mode='raise'):
+def take(x1, indices, axis=None, out=None, mode="raise"):
     """
     Take elements from an array.
+
     For full documentation refer to :obj:`numpy.take`.
 
     Limitations
@@ -521,13 +558,15 @@ def take(x1, indices, axis=None, out=None, mode='raise'):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    indices_desc = dpnp.get_dpnp_descriptor(indices, copy_when_nondefault_queue=False)
+    indices_desc = dpnp.get_dpnp_descriptor(
+        indices, copy_when_nondefault_queue=False
+    )
     if x1_desc and indices_desc:
         if axis is not None:
             pass
         elif out is not None:
             pass
-        elif mode != 'raise':
+        elif mode != "raise":
             pass
         else:
             return dpnp_take(x1_desc, indices_desc).get_pyobj()
@@ -538,6 +577,7 @@ def take(x1, indices, axis=None, out=None, mode='raise'):
 def take_along_axis(x1, indices, axis):
     """
     Take values from the input array by matching 1d index and data slices.
+
     For full documentation refer to :obj:`numpy.take_along_axis`.
 
     See Also
@@ -547,7 +587,9 @@ def take_along_axis(x1, indices, axis):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    indices_desc = dpnp.get_dpnp_descriptor(indices, copy_when_nondefault_queue=False)
+    indices_desc = dpnp.get_dpnp_descriptor(
+        indices, copy_when_nondefault_queue=False
+    )
     if x1_desc and indices_desc:
         if x1_desc.ndim != indices_desc.ndim:
             pass
@@ -599,8 +641,11 @@ def tril_indices(n, k=0, m=None):
     """
 
     if not use_origin_backend():
-        if isinstance(n, int) and isinstance(k, int) \
-                and (isinstance(m, int) or m is None):
+        if (
+            isinstance(n, int)
+            and isinstance(k, int)
+            and (isinstance(m, int) or m is None)
+        ):
             return dpnp_tril_indices(n, k, m)
 
     return call_origin(numpy.tril_indices, n, k, m)
@@ -609,6 +654,7 @@ def tril_indices(n, k=0, m=None):
 def tril_indices_from(x1, k=0):
     """
     Return the indices for the lower-triangle of arr.
+
     See `tril_indices` for full details.
 
     Parameters
@@ -656,8 +702,11 @@ def triu_indices(n, k=0, m=None):
     """
 
     if not use_origin_backend():
-        if isinstance(n, int) and isinstance(k, int) \
-                and (isinstance(m, int) or m is None):
+        if (
+            isinstance(n, int)
+            and isinstance(k, int)
+            and (isinstance(m, int) or m is None)
+        ):
             return dpnp_triu_indices(n, k, m)
 
     return call_origin(numpy.triu_indices, n, k, m)
@@ -666,6 +715,7 @@ def triu_indices(n, k=0, m=None):
 def triu_indices_from(x1, k=0):
     """
     Return the indices for the lower-triangle of arr.
+
     See `tril_indices` for full details.
 
     Parameters

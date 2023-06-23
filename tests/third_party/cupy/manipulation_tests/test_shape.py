@@ -7,12 +7,15 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
-@testing.parameterize(*testing.product({
-    'shape': [(2, 3), (), (4,)],
-}))
+@testing.parameterize(
+    *testing.product(
+        {
+            "shape": [(2, 3), (), (4,)],
+        }
+    )
+)
 @testing.gpu
 class TestShape(unittest.TestCase):
-
     def test_shape(self):
         shape = self.shape
         for xp in (numpy, cupy):
@@ -29,18 +32,20 @@ class TestShape(unittest.TestCase):
 @testing.gpu
 class TestReshape(unittest.TestCase):
     # order = 'A' is out of support currently
-    _supported_orders = 'CF'
+    _supported_orders = "CF"
 
     def test_reshape_shapes(self):
         def func(xp):
             a = testing.shaped_arange((1, 1, 1, 2, 2), xp)
             return a.shape
+
         assert func(numpy) == func(cupy)
 
     def test_reshape2(self):
         def func(xp):
             a = xp.zeros((8,), dtype=xp.float32)
             return a.reshape((1, 1, 1, 4, 1, 2)).shape
+
         assert func(numpy) == func(cupy)
 
     @testing.for_orders(_supported_orders)
@@ -89,7 +94,7 @@ class TestReshape(unittest.TestCase):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3, 4), xp)
             with pytest.raises(ValueError):
-                a.reshape(2, 4, 4, order='K')
+                a.reshape(2, 4, 4, order="K")
 
     def test_reshape_zerosize_invalid(self):
         for xp in (numpy, cupy):
@@ -125,7 +130,7 @@ class TestReshape(unittest.TestCase):
         return xp.reshape(a, (1, 1, 1, 4, 1, 2), order=order)
 
     def _test_ndim_limit(self, xp, ndim, dtype, order):
-        idx = [1]*ndim
+        idx = [1] * ndim
         idx[-1] = ndim
         a = xp.ones(ndim, dtype=dtype)
         a = a.reshape(idx, order=order)
@@ -152,21 +157,20 @@ class TestReshape(unittest.TestCase):
 
 @testing.gpu
 class TestRavel(unittest.TestCase):
-
-    @testing.for_orders('CFA')
+    @testing.for_orders("CFA")
     @testing.numpy_cupy_array_equal()
     def test_ravel(self, xp, order):
         a = testing.shaped_arange((2, 3, 4), xp)
         a = a.transpose(2, 0, 1)
         return a.ravel(order)
 
-    @testing.for_orders('CFA')
+    @testing.for_orders("CFA")
     @testing.numpy_cupy_array_equal()
     def test_ravel2(self, xp, order):
         a = testing.shaped_arange((2, 3, 4), xp)
         return a.ravel(order)
 
-    @testing.for_orders('CFA')
+    @testing.for_orders("CFA")
     @testing.numpy_cupy_array_equal()
     def test_ravel3(self, xp, order):
         a = testing.shaped_arange((2, 3, 4), xp)
@@ -180,18 +184,23 @@ class TestRavel(unittest.TestCase):
         return xp.ravel(a)
 
 
-@testing.parameterize(*testing.product({
-    'order_init': ['C', 'F'],
-    # order = 'A' is out of support currently
-    # 'order_reshape': ['C', 'F', 'A', 'c', 'f', 'a'],
-    'order_reshape': ['C', 'F', 'c', 'f'],
-    'shape_in_out': [((2, 3), (1, 6, 1)),  # (shape_init, shape_final)
-                     ((6,), (2, 3)),
-                     ((3, 3, 3), (9, 3))],
-}))
+@testing.parameterize(
+    *testing.product(
+        {
+            "order_init": ["C", "F"],
+            # order = 'A' is out of support currently
+            # 'order_reshape': ['C', 'F', 'A', 'c', 'f', 'a'],
+            "order_reshape": ["C", "F", "c", "f"],
+            "shape_in_out": [
+                ((2, 3), (1, 6, 1)),  # (shape_init, shape_final)
+                ((6,), (2, 3)),
+                ((3, 3, 3), (9, 3)),
+            ],
+        }
+    )
+)
 @testing.gpu
 class TestReshapeOrder(unittest.TestCase):
-
     def test_reshape_contiguity(self):
         shape_init, shape_final = self.shape_in_out
 
