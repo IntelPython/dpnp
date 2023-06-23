@@ -558,7 +558,7 @@ class TestFromData(unittest.TestCase):
 # mask = testing.shaped_arange((2, 3, 4), cupy, dtype)
 # a = DummyObjectWithCudaArrayInterface(a, self.ver, self.strides, mask)
 # with pytest.raises(ValueError) as ex:
-# b = cupy.asarray(a)  # noqa
+# b = cupy.asarray(a)
 # assert 'does not support' in str(ex.value)
 
 

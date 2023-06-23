@@ -23,6 +23,25 @@ repos:
     -   id: fix-byte-order-marker
     -   id: mixed-line-ending
     -   id: trailing-whitespace
+-   repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+    -   id: python-check-blanket-noqa
+    -   id: python-check-blanket-type-ignore
+    -   id: python-check-mock-methods
+    -   id: python-no-eval
+        exclude: |
+            (?x)^(
+                tests/test_arraycreation.py|
+                tests/test_sycl_queue.py|
+                tests/test_usm_type.py
+            )$
+    -   id: python-no-log-warn
+    -   id: python-use-type-annotations
+    -   id: rst-backticks
+    -   id: rst-directive-colons
+    -   id: rst-inline-touching-normal
+    -   id: text-unicode-replacement-char
 -   repo: https://github.com/psf/black
     rev: 23.3.0
     hooks:
