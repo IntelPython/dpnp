@@ -43,4 +43,4 @@ repos:
     rev: v1.3.5
     hooks:
     -   id: clang-format
-        args: ["-i", "--version=12"]
+        args: ["-i"]
