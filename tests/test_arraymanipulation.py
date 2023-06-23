@@ -1,17 +1,17 @@
-import pytest
-from .helper import get_all_dtypes
-
-import dpnp
-
 import numpy
+import pytest
 from numpy.testing import (
     assert_,
     assert_allclose,
     assert_array_equal,
     assert_equal,
     assert_raises,
-    assert_warns
+    assert_warns,
 )
+
+import dpnp
+
+from .helper import get_all_dtypes
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -38,9 +38,9 @@ def test_asfarray2(dtype, data, data_dtype):
 
 class TestDims:
     @pytest.mark.parametrize("dt", get_all_dtypes())
-    @pytest.mark.parametrize("sh",
-                             [(0,), (1,), (3,)],
-                             ids=['(0,)', '(1,)', '(3,)'])
+    @pytest.mark.parametrize(
+        "sh", [(0,), (1,), (3,)], ids=["(0,)", "(1,)", "(3,)"]
+    )
     def test_broadcast_array(self, sh, dt):
         np_a = numpy.array(0, dtype=dt)
         dp_a = dpnp.array(0, dtype=dt)
@@ -49,9 +49,9 @@ class TestDims:
         assert_allclose(func(numpy, np_a), func(dpnp, dp_a))
 
     @pytest.mark.parametrize("dt", get_all_dtypes())
-    @pytest.mark.parametrize("sh",
-                             [(1,), (2,), (1, 2, 3)],
-                             ids=['(1,)', '(2,)', '(1, 2, 3)'])
+    @pytest.mark.parametrize(
+        "sh", [(1,), (2,), (1, 2, 3)], ids=["(1,)", "(2,)", "(1, 2, 3)"]
+    )
     def test_broadcast_ones(self, sh, dt):
         np_a = numpy.ones(1, dtype=dt)
         dp_a = dpnp.ones(1, dtype=dt)
@@ -60,9 +60,9 @@ class TestDims:
         assert_allclose(func(numpy, np_a), func(dpnp, dp_a))
 
     @pytest.mark.parametrize("dt", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize("sh",
-                             [(3,), (1, 3), (2, 3)],
-                             ids=['(3,)', '(1, 3)', '(2, 3)'])
+    @pytest.mark.parametrize(
+        "sh", [(3,), (1, 3), (2, 3)], ids=["(3,)", "(1, 3)", "(2, 3)"]
+    )
     def test_broadcast_arange(self, sh, dt):
         np_a = numpy.arange(3, dtype=dt)
         dp_a = dpnp.arange(3, dtype=dt)
@@ -156,9 +156,7 @@ class TestConcatenate:
         assert_array_equal(dpnp.concatenate((r4, r3)), r4 + r3)
         # Mixed sequence types
         assert_array_equal(dpnp.concatenate((tuple(r4), r3)), r4 + r3)
-        assert_array_equal(
-            dpnp.concatenate((dpnp.array(r4), r3)), r4 + r3
-        )
+        assert_array_equal(dpnp.concatenate((dpnp.array(r4), r3)), r4 + r3)
         # Explicit axis specification
         assert_array_equal(dpnp.concatenate((r4, r3), 0), r4 + r3)
         # Including negative

@@ -1,17 +1,10 @@
+import numpy
 import pytest
-from .helper import (
-    get_all_dtypes,
-    get_complex_dtypes,
-    get_float_complex_dtypes
-)
+from numpy.testing import assert_array_equal, assert_equal
 
 import dpnp
 
-import numpy
-from numpy.testing import (
-    assert_array_equal,
-    assert_equal
-)
+from .helper import get_all_dtypes, get_complex_dtypes, get_float_complex_dtypes
 
 
 @pytest.mark.parametrize("func", ["abs", "absolute"])
@@ -29,20 +22,27 @@ def test_abs(func, dtype):
 @pytest.mark.parametrize("stride", [-4, -2, -1, 1, 2, 4])
 @pytest.mark.parametrize("dtype", get_complex_dtypes())
 def test_abs_complex(stride, dtype):
-    np_arr = numpy.array([complex(numpy.nan , numpy.nan),
-                          complex(numpy.nan , numpy.inf),
-                          complex(numpy.inf , numpy.nan),
-                          complex(numpy.inf , numpy.inf),
-                          complex(0.        , numpy.inf),
-                          complex(numpy.inf , 0.),
-                          complex(0.        , 0.),
-                          complex(0.        , numpy.nan),
-                          complex(numpy.nan , 0.)], dtype=dtype)
+    np_arr = numpy.array(
+        [
+            complex(numpy.nan, numpy.nan),
+            complex(numpy.nan, numpy.inf),
+            complex(numpy.inf, numpy.nan),
+            complex(numpy.inf, numpy.inf),
+            complex(0.0, numpy.inf),
+            complex(numpy.inf, 0.0),
+            complex(0.0, 0.0),
+            complex(0.0, numpy.nan),
+            complex(numpy.nan, 0.0),
+        ],
+        dtype=dtype,
+    )
     dpnp_arr = dpnp.array(np_arr)
     assert_equal(numpy.abs(np_arr[::stride]), dpnp.abs(dpnp_arr[::stride]))
 
 
-@pytest.mark.parametrize("arraysize", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 18, 19])
+@pytest.mark.parametrize(
+    "arraysize", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 18, 19]
+)
 @pytest.mark.parametrize("stride", [-4, -3, -2, -1, 1, 2, 3, 4])
 @pytest.mark.parametrize("astype", get_complex_dtypes())
 def test_abs_complex_avx(arraysize, stride, astype):
@@ -53,6 +53,9 @@ def test_abs_complex_avx(arraysize, stride, astype):
 
 @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
 def test_abs_values(dtype):
-    np_arr = numpy.array([numpy.nan, -numpy.nan, numpy.inf, -numpy.inf, 0., -0., -1.0, 1.0], dtype=dtype)
+    np_arr = numpy.array(
+        [numpy.nan, -numpy.nan, numpy.inf, -numpy.inf, 0.0, -0.0, -1.0, 1.0],
+        dtype=dtype,
+    )
     dpnp_arr = dpnp.array(np_arr)
     assert_equal(numpy.abs(np_arr), dpnp.abs(dpnp_arr))

@@ -1,8 +1,7 @@
 import functools
-import itertools
 import io
+import itertools
 import types
-import typing as tp  # NOQA
 import unittest
 
 from tests.third_party.cupy.testing import _bundle
@@ -11,7 +10,7 @@ from tests.third_party.cupy.testing import _bundle
 def _param_to_str(obj):
     if isinstance(obj, type):
         return obj.__name__
-    elif hasattr(obj, '__name__') and isinstance(obj.__name__, str):
+    elif hasattr(obj, "__name__") and isinstance(obj.__name__, str):
         # print __name__ attribute for classes, functions and modules
         return obj.__name__
     return repr(obj)
@@ -20,7 +19,7 @@ def _param_to_str(obj):
 def _shorten(s, maxlen):
     # Shortens the string down to maxlen, by replacing the middle part with
     # a 3-dots string '...'.
-    ellipsis = '...'
+    ellipsis = "..."
     if len(s) <= maxlen:
         return s
     n1 = (maxlen - len(ellipsis)) // 2
@@ -35,11 +34,11 @@ def _make_class_name(base_class_name, i_param, param):
     SINGLE_PARAM_MAXLEN = 100  # Length limit of a single parameter value
     PARAMS_MAXLEN = 5000  # Length limit of the whole parameters part
     param_strs = [
-        '{}={}'.format(k, _shorten(_param_to_str(v), SINGLE_PARAM_MAXLEN))
-        for k, v in sorted(param.items())]
-    param_strs = _shorten(', '.join(param_strs), PARAMS_MAXLEN)
-    cls_name = '{}_param_{}_{{{}}}'.format(
-        base_class_name, i_param, param_strs)
+        "{}={}".format(k, _shorten(_param_to_str(v), SINGLE_PARAM_MAXLEN))
+        for k, v in sorted(param.items())
+    ]
+    param_strs = _shorten(", ".join(param_strs), PARAMS_MAXLEN)
+    cls_name = "{}_param_{}_{{{}}}".format(base_class_name, i_param, param_strs)
     return cls_name
 
 
@@ -55,9 +54,9 @@ def _parameterize_test_case(base, i, param):
 
     def __str__(self):
         name = base.__str__(self)
-        return '%s  parameter: %s' % (name, param)
+        return "%s  parameter: %s" % (name, param)
 
-    mb = {'__str__': __str__}
+    mb = {"__str__": __str__}
     for k, v in sorted(param.items()):
         if isinstance(v, types.FunctionType):
 
@@ -66,6 +65,7 @@ def _parameterize_test_case(base, i, param):
 
                 def new_v(self, *args, **kwargs):
                     return f(*args, **kwargs)
+
                 return new_v
 
             mb[k] = create_new_v()
@@ -83,13 +83,17 @@ def _parameterize_test_case(base, i, param):
                 raise
             except Exception as e:
                 s = io.StringIO()
-                s.write('Parameterized test failed.\n\n')
-                s.write('Base test method: {}.{}\n'.format(
-                    base.__name__, base_method.__name__))
-                s.write('Test parameters:\n')
+                s.write("Parameterized test failed.\n\n")
+                s.write(
+                    "Base test method: {}.{}\n".format(
+                        base.__name__, base_method.__name__
+                    )
+                )
+                s.write("Test parameters:\n")
                 for k, v in sorted(param.items()):
-                    s.write('  {}: {}\n'.format(k, v))
+                    s.write("  {}: {}\n".format(k, v))
                 raise e.__class__(s.getvalue()).with_traceback(e.__traceback__)
+
         return new_method
 
     return (cls_name, mb, method_generator)
@@ -98,7 +102,8 @@ def _parameterize_test_case(base, i, param):
 def parameterize(*params):
     # TODO(niboshi): Add documentation
     return _bundle.make_decorator(
-        lambda base: _parameterize_test_case_generator(base, params))
+        lambda base: _parameterize_test_case_generator(base, params)
+    )
 
 
 def _values_to_dicts(names, values):
@@ -111,7 +116,7 @@ def _values_to_dicts(names, values):
         assert isinstance(vs, (tuple, list)) and len(ns) == len(vs)
         return zip(ns, vs)
 
-    names = names.split(',')
+    names = names.split(",")
     params = [dict(safe_zip(names, value_list)) for value_list in values]
     return params
 
@@ -131,26 +136,32 @@ def parameterize_pytest(names, values):
 def product(parameter):
     # TODO(niboshi): Add documentation
     if isinstance(parameter, dict):
-        return product_dict(*[
-            _values_to_dicts(names, values)
-            for names, values in sorted(parameter.items())])
+        return product_dict(
+            *[
+                _values_to_dicts(names, values)
+                for names, values in sorted(parameter.items())
+            ]
+        )
 
     elif isinstance(parameter, list):
         # list of lists of dicts
         if not all(isinstance(_, list) for _ in parameter):
-            raise TypeError('parameter must be list of lists of dicts')
+            raise TypeError("parameter must be list of lists of dicts")
         if not all(isinstance(_, dict) for l in parameter for _ in l):
-            raise TypeError('parameter must be list of lists of dicts')
+            raise TypeError("parameter must be list of lists of dicts")
         return product_dict(*parameter)
 
     else:
         raise TypeError(
-            'parameter must be either dict or list. Actual: {}'.format(
-                type(parameter)))
+            "parameter must be either dict or list. Actual: {}".format(
+                type(parameter)
+            )
+        )
 
 
 def product_dict(*parameters):
     # TODO(niboshi): Add documentation
     return [
         {k: v for dic in dicts for k, v in dic.items()}
-        for dicts in itertools.product(*parameters)]
+        for dicts in itertools.product(*parameters)
+    ]

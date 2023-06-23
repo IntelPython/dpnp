@@ -5,7 +5,7 @@ THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 # echo +++++++++++++++++++++++++ System prerequisites +++++++++++++++++++++++++++
 # sudo apt-get install -f
 # sudo dpkg --configure -a
-# sudo apt-get install -f 
+# sudo apt-get install -f
 
 # sudo apt-get clean
 # sudo apt-get autoclean
@@ -77,7 +77,7 @@ sudo aptitude install -y cmake valgrind libgtest-dev
 
 #echo ========================= install/delete libstdc++-dev ===================
 #sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
-# oneapi beta 10 can not work with libstdc++-10-dev 
+# oneapi beta 10 can not work with libstdc++-10-dev
 #sudo apt remove -y libstdc++-10-dev
 #sudo apt autoremove
 #sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev

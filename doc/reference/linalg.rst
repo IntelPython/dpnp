@@ -9,7 +9,7 @@ Matrix and vector products
 .. autosummary::
    :toctree: generated/
    :nosignatures:
-   
+
    dpnp.cross
    dpnp.dot
    dpnp.linalg.multi_dot

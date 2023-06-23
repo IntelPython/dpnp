@@ -1,6 +1,8 @@
 import math
-import dpnp
+
 import numpy
+
+import dpnp
 
 
 def test_erf():

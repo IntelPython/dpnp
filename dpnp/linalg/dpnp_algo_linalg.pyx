@@ -34,13 +34,15 @@ and the rest of the library
 """
 
 import numpy
+
 from dpnp.dpnp_algo cimport *
-import dpnp.dpnp_utils as utils_py
+
 import dpnp
-cimport dpnp.dpnp_utils as utils
+import dpnp.dpnp_utils as utils_py
 
 cimport numpy
 
+cimport dpnp.dpnp_utils as utils
 
 __all__ = [
     "dpnp_cholesky",

@@ -35,24 +35,18 @@ Set of functions to implement NumPy random module API
 """
 
 
-import numpy
 import dpctl.utils as dpu
+import numpy
 
 import dpnp
 from dpnp.dpnp_utils.dpnp_algo_utils import (
     call_origin,
     map_dtype_to_device,
-    use_origin_backend
+    use_origin_backend,
 )
-from dpnp.random.dpnp_algo_random import (
-    MCG59,
-    MT19937
-)
+from dpnp.random.dpnp_algo_random import MCG59, MT19937
 
-
-__all__ = [
-    'RandomState'
-]
+__all__ = ["RandomState"]
 
 
 class RandomState:
@@ -79,7 +73,9 @@ class RandomState:
     """
 
     def __init__(self, seed=None, device=None, sycl_queue=None):
-        self._sycl_queue = dpnp.get_normalized_queue_device(device=device, sycl_queue=sycl_queue)
+        self._sycl_queue = dpnp.get_normalized_queue_device(
+            device=device, sycl_queue=sycl_queue
+        )
         self._sycl_device = self._sycl_queue.sycl_device
 
         is_cpu = self._sycl_device.is_cpu
@@ -97,53 +93,49 @@ class RandomState:
             self._seed = seed
 
         # 'float32' is default floating data type if device doesn't support 'float64'
-        self._def_float_type = map_dtype_to_device(dpnp.float64, self._sycl_device)
+        self._def_float_type = map_dtype_to_device(
+            dpnp.float64, self._sycl_device
+        )
 
-        # TODO: rework through pybind11 extension for MKL engine and distribution classes
+        # TODO: rework through pybind11 extension for OneMKL engine and distribution classes
         if is_cpu:
             self._random_state = MT19937(self._seed, self._sycl_queue)
         else:
             # MCG59 is assumed to provide a better performance on GPU than MT19937
             self._random_state = MCG59(self._seed, self._sycl_queue)
-        self._fallback_random_state = call_origin(numpy.random.RandomState, seed, allow_fallback=True)
-
+        self._fallback_random_state = call_origin(
+            numpy.random.RandomState, seed, allow_fallback=True
+        )
 
     def __repr__(self):
-        return self.__str__() + ' at 0x{:X}'.format(id(self))
-
+        return self.__str__() + " at 0x{:X}".format(id(self))
 
     def __str__(self):
         _str = self.__class__.__name__
-        _str += '(' + self._random_state.__class__.__name__ + ')'
+        _str += "(" + self._random_state.__class__.__name__ + ")"
         return _str
-
 
     def __getstate__(self):
         return self.get_state()
 
-
     def _is_finite_scalar(self, x):
-        """
-        Test a scalar for finiteness (not infinity and not Not a Number).
-        """
+        """Test a scalar for finiteness (not infinity and not Not a Number)."""
 
         # TODO: replace with dpnp.isfinite() once function is available in DPNP,
         # but for now use direct numpy calls without call_origin() wrapper, since data is a scalar
         return numpy.isfinite(x)
 
-
     def _is_signbit_scalar(self, x):
-        """
-        Test a scalar if sign bit is set for it (less than zero).
-        """
+        """Test a scalar if sign bit is set for it (less than zero)."""
 
         # TODO: replace with dpnp.signbit() once function is available in DPNP,
         # but for now use direct numpy calls without call_origin() wrapper, since data is a scalar
         return numpy.signbit(x)
 
-
     def _validate_float_dtype(self, dtype, supported_types):
         """
+        Validate an input floating type.
+
         Test an input floating type if it is listed in `supported_types` and
         if it is supported by the used SYCL device.
         If `dtype` is ``None``, default floating type will be validating.
@@ -153,12 +145,13 @@ class RandomState:
         if dtype is None:
             dtype = self._def_float_type
 
-        if not dtype in supported_types:
+        if dtype not in supported_types:
             raise TypeError(f"dtype={dtype} is unsupported.")
         elif dtype != map_dtype_to_device(dtype, self._sycl_device):
-            raise RuntimeError(f"dtype={dtype} is not supported by SYCL device '{self._sycl_device}'")
+            raise RuntimeError(
+                f"dtype={dtype} is not supported by SYCL device '{self._sycl_device}'"
+            )
         return dtype
-
 
     def get_state(self):
         """
@@ -173,7 +166,6 @@ class RandomState:
         """
         return self._random_state
 
-
     def get_sycl_queue(self):
         """
         Return an instance of :class:`dpctl.SyclQueue` used within the generator for data allocation.
@@ -184,7 +176,6 @@ class RandomState:
             A SYCL queue used for data allocation.
         """
         return self._sycl_queue
-
 
     def get_sycl_device(self):
         """
@@ -197,8 +188,9 @@ class RandomState:
         """
         return self._sycl_device
 
-
-    def normal(self, loc=0.0, scale=1.0, size=None, dtype=None, usm_type="device"):
+    def normal(
+        self, loc=0.0, scale=1.0, size=None, dtype=None, usm_type="device"
+    ):
         """
         Draw random samples from a normal (Gaussian) distribution.
 
@@ -242,29 +234,45 @@ class RandomState:
             elif not dpnp.isscalar(scale):
                 pass
             else:
-                dtype = self._validate_float_dtype(dtype, (dpnp.float32, dpnp.float64))
+                dtype = self._validate_float_dtype(
+                    dtype, (dpnp.float32, dpnp.float64)
+                )
                 min_floating = numpy.finfo(dtype).min
                 max_floating = numpy.finfo(dtype).max
 
-                if (loc >= max_floating or loc <= min_floating) and self._is_finite_scalar(loc):
-                    raise OverflowError(f"Range of loc={loc} exceeds valid bounds")
+                if (
+                    loc >= max_floating or loc <= min_floating
+                ) and self._is_finite_scalar(loc):
+                    raise OverflowError(
+                        f"Range of loc={loc} exceeds valid bounds"
+                    )
 
                 if (scale >= max_floating) and self._is_finite_scalar(scale):
-                    raise OverflowError(f"Range of scale={scale} exceeds valid bounds")
+                    raise OverflowError(
+                        f"Range of scale={scale} exceeds valid bounds"
+                    )
                 # scale = -0.0 is cosidered as negative
                 elif scale < 0 or scale == 0 and self._is_signbit_scalar(scale):
-                    raise ValueError(f"scale={scale}, but must be non-negative.")
+                    raise ValueError(
+                        f"scale={scale}, but must be non-negative."
+                    )
 
                 dpu.validate_usm_type(usm_type=usm_type, allow_none=False)
-                return self._random_state.normal(loc=loc,
-                                                 scale=scale,
-                                                 size=size,
-                                                 dtype=dtype,
-                                                 usm_type=usm_type).get_pyobj()
+                return self._random_state.normal(
+                    loc=loc,
+                    scale=scale,
+                    size=size,
+                    dtype=dtype,
+                    usm_type=usm_type,
+                ).get_pyobj()
 
-        return call_origin(self._fallback_random_state.normal,
-                           loc=loc, scale=scale, size=size, sycl_queue=self._sycl_queue)
-
+        return call_origin(
+            self._fallback_random_state.normal,
+            loc=loc,
+            scale=scale,
+            size=size,
+            sycl_queue=self._sycl_queue,
+        )
 
     def rand(self, *args, usm_type="device"):
         """
@@ -307,7 +315,6 @@ class RandomState:
             return self.random_sample(usm_type=usm_type)
         else:
             return self.random_sample(size=args, usm_type=usm_type)
-
 
     def randint(self, low, high=None, size=None, dtype=int, usm_type="device"):
         """
@@ -364,28 +371,47 @@ class RandomState:
                         high = low
                         low = 0
 
-                    min_int = numpy.iinfo('int32').min
-                    max_int = numpy.iinfo('int32').max
+                    min_int = numpy.iinfo("int32").min
+                    max_int = numpy.iinfo("int32").max
 
-                    if not self._is_finite_scalar(low) or low > max_int or low < min_int:
-                        raise OverflowError(f"Range of low={low} exceeds valid bounds")
-                    elif not self._is_finite_scalar(high) or high > max_int or high < min_int:
-                        raise OverflowError(f"Range of high={high} exceeds valid bounds")
+                    if (
+                        not self._is_finite_scalar(low)
+                        or low > max_int
+                        or low < min_int
+                    ):
+                        raise OverflowError(
+                            f"Range of low={low} exceeds valid bounds"
+                        )
+                    elif (
+                        not self._is_finite_scalar(high)
+                        or high > max_int
+                        or high < min_int
+                    ):
+                        raise OverflowError(
+                            f"Range of high={high} exceeds valid bounds"
+                        )
 
                     low = int(low)
                     high = int(high)
                     if low >= high:
                         raise ValueError(f"low={low} >= high={high}")
 
-                    return self.uniform(low=low,
-                                        high=high,
-                                        size=size,
-                                        dtype=_dtype,
-                                        usm_type=usm_type)
+                    return self.uniform(
+                        low=low,
+                        high=high,
+                        size=size,
+                        dtype=_dtype,
+                        usm_type=usm_type,
+                    )
 
-        return call_origin(self._fallback_random_state.randint,
-                           low=low, high=high, size=size, dtype=dtype, sycl_queue=self._sycl_queue)
-
+        return call_origin(
+            self._fallback_random_state.randint,
+            low=low,
+            high=high,
+            size=size,
+            dtype=dtype,
+            sycl_queue=self._sycl_queue,
+        )
 
     def randn(self, *args, usm_type="device"):
         """
@@ -430,9 +456,7 @@ class RandomState:
 
         if len(args) == 0:
             return self.standard_normal(usm_type=usm_type)
-        return self.standard_normal(size=args,
-                                    usm_type=usm_type)
-
+        return self.standard_normal(size=args, usm_type=usm_type)
 
     def random_sample(self, size=None, usm_type="device"):
         """
@@ -468,12 +492,9 @@ class RandomState:
 
         """
 
-        return self.uniform(low=0.0,
-                            high=1.0,
-                            size=size,
-                            dtype=None,
-                            usm_type=usm_type)
-
+        return self.uniform(
+            low=0.0, high=1.0, size=size, dtype=None, usm_type=usm_type
+        )
 
     def standard_normal(self, size=None, usm_type="device"):
         """
@@ -509,14 +530,13 @@ class RandomState:
 
         """
 
-        return self.normal(loc=0.0,
-                           scale=1.0,
-                           size=size,
-                           dtype=None,
-                           usm_type=usm_type)
+        return self.normal(
+            loc=0.0, scale=1.0, size=size, dtype=None, usm_type=usm_type
+        )
 
-
-    def uniform(self, low=0.0, high=1.0, size=None, dtype=None, usm_type="device"):
+    def uniform(
+        self, low=0.0, high=1.0, size=None, dtype=None, usm_type="device"
+    ):
         """
         Draw samples from a uniform distribution.
 
@@ -567,25 +587,46 @@ class RandomState:
             elif not dpnp.isscalar(high):
                 pass
             else:
-                min_double = numpy.finfo('double').min
-                max_double = numpy.finfo('double').max
+                min_double = numpy.finfo("double").min
+                max_double = numpy.finfo("double").max
 
-                if not self._is_finite_scalar(low) or low >= max_double or low <= min_double:
-                    raise OverflowError(f"Range of low={low} exceeds valid bounds")
-                elif not self._is_finite_scalar(high) or high >= max_double or high <= min_double:
-                    raise OverflowError(f"Range of high={high} exceeds valid bounds")
+                if (
+                    not self._is_finite_scalar(low)
+                    or low >= max_double
+                    or low <= min_double
+                ):
+                    raise OverflowError(
+                        f"Range of low={low} exceeds valid bounds"
+                    )
+                elif (
+                    not self._is_finite_scalar(high)
+                    or high >= max_double
+                    or high <= min_double
+                ):
+                    raise OverflowError(
+                        f"Range of high={high} exceeds valid bounds"
+                    )
 
                 if low > high:
                     low, high = high, low
 
-                dtype = self._validate_float_dtype(dtype, (dpnp.int32, dpnp.float32, dpnp.float64))
+                dtype = self._validate_float_dtype(
+                    dtype, (dpnp.int32, dpnp.float32, dpnp.float64)
+                )
                 dpu.validate_usm_type(usm_type, allow_none=False)
 
-                return self._random_state.uniform(low=low,
-                                                  high=high,
-                                                  size=size,
-                                                  dtype=dtype,
-                                                  usm_type=usm_type).get_pyobj()
+                return self._random_state.uniform(
+                    low=low,
+                    high=high,
+                    size=size,
+                    dtype=dtype,
+                    usm_type=usm_type,
+                ).get_pyobj()
 
-        return call_origin(self._fallback_random_state.uniform,
-                           low=low, high=high, size=size, sycl_queue=self._sycl_queue)
+        return call_origin(
+            self._fallback_random_state.uniform,
+            low=low,
+            high=high,
+            size=size,
+            sycl_queue=self._sycl_queue,
+        )

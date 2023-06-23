@@ -11,7 +11,6 @@ from tests.third_party.cupy import testing
 
 @testing.gpu
 class TestRanges(unittest.TestCase):
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_arange(self, xp, dtype):
@@ -87,18 +86,20 @@ class TestRanges(unittest.TestCase):
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_linspace_zero_num_no_endopoint_with_retstep(self, xp, dtype):
-        x, step = xp.linspace(0, 10, 0, dtype=dtype, endpoint=False,
-                              retstep=True)
+        x, step = xp.linspace(
+            0, 10, 0, dtype=dtype, endpoint=False, retstep=True
+        )
         self.assertTrue(math.isnan(step))
         return x
 
-    @testing.with_requires('numpy>=1.18')
+    @testing.with_requires("numpy>=1.18")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_linspace_one_num_no_endopoint_with_retstep(self, xp, dtype):
         start, stop = 3, 7
-        x, step = xp.linspace(start, stop, 1, dtype=dtype, endpoint=False,
-                              retstep=True)
+        x, step = xp.linspace(
+            start, stop, 1, dtype=dtype, endpoint=False, retstep=True
+        )
         self.assertEqual(step, stop - start)
         return x
 
@@ -138,7 +139,7 @@ class TestRanges(unittest.TestCase):
 
     @testing.numpy_cupy_allclose()
     def test_linspace_float_overflow(self, xp):
-        return xp.linspace(0., sys.float_info.max / 5, 10, dtype=float)
+        return xp.linspace(0.0, sys.float_info.max / 5, 10, dtype=float)
 
     @testing.numpy_cupy_array_equal()
     def test_linspace_float_underflow(self, xp):
@@ -146,51 +147,55 @@ class TestRanges(unittest.TestCase):
         x = sys.float_info.min
         while x / 2 > 0:
             x /= 2
-        return xp.linspace(0., x, 10, dtype=float)
+        return xp.linspace(0.0, x, 10, dtype=float)
 
-    @testing.with_requires('numpy>=1.16')
-    @testing.for_all_dtypes_combination(names=('dtype_range', 'dtype_out'),
-                                        no_bool=True, no_complex=True)
+    @testing.with_requires("numpy>=1.16")
+    @testing.for_all_dtypes_combination(
+        names=("dtype_range", "dtype_out"), no_bool=True, no_complex=True
+    )
     @testing.numpy_cupy_allclose()
     def test_linspace_array_start_stop(self, xp, dtype_range, dtype_out):
         start = xp.array([0, 120], dtype=dtype_range)
         stop = xp.array([100, 0], dtype=dtype_range)
         return xp.linspace(start, stop, num=50, dtype=dtype_out)
 
-    @testing.with_requires('numpy>=1.16')
-    @testing.for_all_dtypes_combination(names=('dtype_range', 'dtype_out'),
-                                        no_bool=True, no_complex=True)
+    @testing.with_requires("numpy>=1.16")
+    @testing.for_all_dtypes_combination(
+        names=("dtype_range", "dtype_out"), no_bool=True, no_complex=True
+    )
     @testing.numpy_cupy_array_equal()
     def test_linspace_mixed_start_stop(self, xp, dtype_range, dtype_out):
         start = 0.0
-        if xp.dtype(dtype_range).kind in 'u':
+        if xp.dtype(dtype_range).kind in "u":
             stop = xp.array([100, 16], dtype=dtype_range)
         else:
             stop = xp.array([100, -100], dtype=dtype_range)
         return xp.linspace(start, stop, num=50, dtype=dtype_out)
 
-    @testing.with_requires('numpy>=1.16')
-    @testing.for_all_dtypes_combination(names=('dtype_range', 'dtype_out'),
-                                        no_bool=True, no_complex=True)
+    @testing.with_requires("numpy>=1.16")
+    @testing.for_all_dtypes_combination(
+        names=("dtype_range", "dtype_out"), no_bool=True, no_complex=True
+    )
     @testing.numpy_cupy_allclose()
     def test_linspace_mixed_start_stop2(self, xp, dtype_range, dtype_out):
-        if xp.dtype(dtype_range).kind in 'u':
+        if xp.dtype(dtype_range).kind in "u":
             start = xp.array([160, 120], dtype=dtype_range)
         else:
             start = xp.array([-120, 120], dtype=dtype_range)
         stop = 0
         return xp.linspace(start, stop, num=50, dtype=dtype_out)
 
-    @testing.with_requires('numpy>=1.16')
-    @testing.for_all_dtypes_combination(names=('dtype_range', 'dtype_out'),
-                                        no_bool=True, no_complex=True)
+    @testing.with_requires("numpy>=1.16")
+    @testing.for_all_dtypes_combination(
+        names=("dtype_range", "dtype_out"), no_bool=True, no_complex=True
+    )
     @testing.numpy_cupy_array_equal()
     def test_linspace_array_start_stop_axis1(self, xp, dtype_range, dtype_out):
         start = xp.array([0, 120], dtype=dtype_range)
         stop = xp.array([100, 0], dtype=dtype_range)
         return xp.linspace(start, stop, num=50, dtype=dtype_out, axis=1)
 
-    @testing.with_requires('numpy>=1.16')
+    @testing.with_requires("numpy>=1.16")
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose()
     def test_linspace_complex_start_stop(self, xp, dtype):
@@ -198,7 +203,7 @@ class TestRanges(unittest.TestCase):
         stop = xp.array([100, 0], dtype=dtype)
         return xp.linspace(start, stop, num=50, dtype=dtype)
 
-    @testing.with_requires('numpy>=1.16')
+    @testing.with_requires("numpy>=1.16")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_linspace_start_stop_list(self, xp, dtype):
@@ -263,35 +268,39 @@ class TestRanges(unittest.TestCase):
 
 
 @testing.parameterize(
-    *testing.product({
-        'indexing': ['xy', 'ij'],
-        'sparse': [False, True],
-        'copy': [False, True],
-    })
+    *testing.product(
+        {
+            "indexing": ["xy", "ij"],
+            "sparse": [False, True],
+            "copy": [False, True],
+        }
+    )
 )
 @testing.gpu
 class TestMeshgrid(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_meshgrid0(self, dtype):
-        out = cupy.meshgrid(indexing=self.indexing, sparse=self.sparse,
-                            copy=self.copy)
-        assert(out == [])
+        out = cupy.meshgrid(
+            indexing=self.indexing, sparse=self.sparse, copy=self.copy
+        )
+        assert out == []
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_meshgrid1(self, xp, dtype):
         x = xp.arange(2).astype(dtype)
-        return xp.meshgrid(x, indexing=self.indexing, sparse=self.sparse,
-                           copy=self.copy)
+        return xp.meshgrid(
+            x, indexing=self.indexing, sparse=self.sparse, copy=self.copy
+        )
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_meshgrid2(self, xp, dtype):
         x = xp.arange(2).astype(dtype)
         y = xp.arange(3).astype(dtype)
-        return xp.meshgrid(x, y, indexing=self.indexing, sparse=self.sparse,
-                           copy=self.copy)
+        return xp.meshgrid(
+            x, y, indexing=self.indexing, sparse=self.sparse, copy=self.copy
+        )
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -299,13 +308,13 @@ class TestMeshgrid(unittest.TestCase):
         x = xp.arange(2).astype(dtype)
         y = xp.arange(3).astype(dtype)
         z = xp.arange(4).astype(dtype)
-        return xp.meshgrid(x, y, z, indexing=self.indexing, sparse=self.sparse,
-                           copy=self.copy)
+        return xp.meshgrid(
+            x, y, z, indexing=self.indexing, sparse=self.sparse, copy=self.copy
+        )
 
 
 @testing.gpu
 class TestMgrid(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_mgrid0(self, xp):
         return xp.mgrid[0:]
@@ -339,7 +348,6 @@ class TestMgrid(unittest.TestCase):
 
 @testing.gpu
 class TestOgrid(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_ogrid0(self, xp):
         return xp.ogrid[0:]

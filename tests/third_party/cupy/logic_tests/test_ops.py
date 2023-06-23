@@ -1,4 +1,5 @@
 import unittest
+
 import pytest
 
 from tests.third_party.cupy import testing
@@ -6,7 +7,6 @@ from tests.third_party.cupy import testing
 
 @testing.gpu
 class TestOps(unittest.TestCase):
-
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_unary(self, name, xp, dtype):
@@ -21,13 +21,13 @@ class TestOps(unittest.TestCase):
         return getattr(xp, name)(a, b)
 
     def test_logical_and(self):
-        self.check_binary('logical_and')
+        self.check_binary("logical_and")
 
     def test_logical_or(self):
-        self.check_binary('logical_or')
+        self.check_binary("logical_or")
 
     def test_logical_xor(self):
-        self.check_binary('logical_xor')
+        self.check_binary("logical_xor")
 
     def test_logical_not(self):
-        self.check_unary('logical_not')
+        self.check_unary("logical_not")

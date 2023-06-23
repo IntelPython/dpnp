@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,16 +24,12 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
+import numpy
+
 import dpnp
 from dpnp.dparray import dparray
 
-import numpy
-
-
-__all__ = [
-    "gen_array_1d",
-    "gen_array_2d"
-]
+__all__ = ["gen_array_1d", "gen_array_2d"]
 
 
 def gen_ndarray(size, dtype=numpy.float64, low=None, high=None, seed=None):
@@ -70,7 +66,9 @@ def gen_ndarray(size, dtype=numpy.float64, low=None, high=None, seed=None):
 
         return numpy.random.randint(low, high, size=size, dtype=dtype)
 
-    raise NotImplementedError(f"Generator of ndarray of type {dtype.__name__} not found.")
+    raise NotImplementedError(
+        f"Generator of ndarray of type {dtype.__name__} not found."
+    )
 
 
 def gen_dparray(size, dtype=numpy.float64, low=None, high=None, seed=None):
@@ -105,7 +103,9 @@ def gen_dparray(size, dtype=numpy.float64, low=None, high=None, seed=None):
     return dparr
 
 
-def gen_array_1d(lib, size, dtype=numpy.float64, low=None, high=None, seed=None):
+def gen_array_1d(
+    lib, size, dtype=numpy.float64, low=None, high=None, seed=None
+):
     """
     Generate array of random numbers bases on library.
 
@@ -137,5 +137,9 @@ def gen_array_1d(lib, size, dtype=numpy.float64, low=None, high=None, seed=None)
     raise NotImplementedError(f"{lib.__name__} array generator not found.")
 
 
-def gen_array_2d(lib, size_x, size_y, dtype=numpy.float64, low=None, high=None, seed=None):
-    return gen_array_1d(lib, size_x * size_y, dtype=dtype, low=low, high=high, seed=seed).reshape((size_x, size_y))
+def gen_array_2d(
+    lib, size_x, size_y, dtype=numpy.float64, low=None, high=None, seed=None
+):
+    return gen_array_1d(
+        lib, size_x * size_y, dtype=dtype, low=low, high=high, seed=seed
+    ).reshape((size_x, size_y))

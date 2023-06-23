@@ -1,6 +1,7 @@
 from sys import platform
 
 import dpctl
+
 import dpnp
 
 
@@ -18,8 +19,7 @@ def get_complex_dtypes(device=None):
     return dtypes
 
 
-def get_float_dtypes(no_float16=True,
-                     device=None):
+def get_float_dtypes(no_float16=True, device=None):
     """
     Build a list of floating types supported by DPNP based on device capabilities.
     """
@@ -37,8 +37,7 @@ def get_float_dtypes(no_float16=True,
     return dtypes
 
 
-def get_float_complex_dtypes(no_float16=True,
-                             device=None):
+def get_float_complex_dtypes(no_float16=True, device=None):
     """
     Build a list of floating and complex types supported by DPNP based on device capabilities.
     """
@@ -48,11 +47,9 @@ def get_float_complex_dtypes(no_float16=True,
     return dtypes
 
 
-def get_all_dtypes(no_bool=False,
-                   no_float16=True,
-                   no_complex=False,
-                   no_none=False,
-                   device=None):
+def get_all_dtypes(
+    no_bool=False, no_float16=True, no_complex=False, no_none=False, device=None
+):
     """
     Build a list of types supported by DPNP based on input flags and device capabilities.
     """
@@ -90,7 +87,7 @@ def is_win_platform():
     """
     Return True if a test is runing on Windows OS, False otherwise.
     """
-    return platform.startswith('win')
+    return platform.startswith("win")
 
 
 def has_support_aspect64(device=None):

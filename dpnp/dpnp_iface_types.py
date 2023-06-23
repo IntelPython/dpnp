@@ -36,7 +36,6 @@ This module provides public type interface file for the library
 
 import numpy
 
-
 __all__ = [
     "bool",
     "bool_",
@@ -84,7 +83,7 @@ __all__ = [
     "PZERO",
     "signedinteger",
     "single",
-    "singlecomplex"
+    "singlecomplex",
 ]
 
 
@@ -174,11 +173,14 @@ def issubsctype(arg1, arg2):
 
 
 def is_type_supported(obj_type):
-    """
-    Return True if type is supported by DPNP python level.
-    """
+    """Return True if type is supported by DPNP python level."""
 
-    if obj_type == float64 or obj_type == float32 or obj_type == int64 or obj_type == int32:
+    if (
+        obj_type == float64
+        or obj_type == float32
+        or obj_type == int64
+        or obj_type == int32
+    ):
         return True
 
     return False

@@ -27,21 +27,21 @@
 # *****************************************************************************
 
 
+import dpctl.tensor._tensor_impl as ti
+
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
 
-import dpctl.tensor._tensor_impl as ti
+__all__ = ["dpnp_eigh"]
 
-__all__ = [
-    "dpnp_eigh"
-]
-
-_jobz = {'N': 0, 'V': 1}
-_upper_lower = {'U': 0, 'L': 1}
+_jobz = {"N": 0, "V": 1}
+_upper_lower = {"U": 0, "L": 1}
 
 
 def dpnp_eigh(a, UPLO):
     """
+    dpnp_eigh(a, UPLO)
+
     Return the eigenvalues and eigenvectors of a complex Hermitian
     (conjugate symmetric) or a real symmetric matrix.
 
@@ -53,11 +53,11 @@ def dpnp_eigh(a, UPLO):
 
     a_usm_type = a.usm_type
     a_sycl_queue = a.sycl_queue
-    a_order = 'C' if a.flags.c_contiguous else 'F'
+    a_order = "C" if a.flags.c_contiguous else "F"
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
     # 'V' means both eigenvectors and eigenvalues will be calculated
-    jobz = _jobz['V']
+    jobz = _jobz["V"]
     uplo = _upper_lower[UPLO]
 
     # get resulting type of arrays with eigenvalues and eigenvectors
@@ -75,7 +75,12 @@ def dpnp_eigh(a, UPLO):
         v_type = w_type = dpnp.float32
 
     if a.ndim > 2:
-        w = dpnp.empty(a.shape[:-1], dtype=w_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue)
+        w = dpnp.empty(
+            a.shape[:-1],
+            dtype=w_type,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
 
         # need to loop over the 1st dimension to get eigenvalues and eigenvectors of 3d matrix A
         op_count = a.shape[0]
@@ -88,13 +93,24 @@ def dpnp_eigh(a, UPLO):
         for i in range(op_count):
             # oneMKL LAPACK assumes fortran-like array as input, so
             # allocate a memory with 'F' order for dpnp array of eigenvectors
-            eig_vecs[i] = dpnp.empty_like(a[i], order='F', dtype=v_type)
+            eig_vecs[i] = dpnp.empty_like(a[i], order="F", dtype=v_type)
 
             # use DPCTL tensor function to fill the array of eigenvectors with content of input array
-            ht_copy_ev[i], copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(src=a_usm_arr[i], dst=eig_vecs[i].get_array(), sycl_queue=a_sycl_queue)
+            ht_copy_ev[i], copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_usm_arr[i],
+                dst=eig_vecs[i].get_array(),
+                sycl_queue=a_sycl_queue,
+            )
 
             # call LAPACK extension function to get eigenvalues and eigenvectors of a portion of matrix A
-            ht_lapack_ev[i], _ = getattr(li, lapack_func)(a_sycl_queue, jobz, uplo, eig_vecs[i].get_array(), w[i].get_array(), depends=[copy_ev])
+            ht_lapack_ev[i], _ = getattr(li, lapack_func)(
+                a_sycl_queue,
+                jobz,
+                uplo,
+                eig_vecs[i].get_array(),
+                w[i].get_array(),
+                depends=[copy_ev],
+            )
 
         for i in range(op_count):
             ht_lapack_ev[i].wait()
@@ -106,21 +122,40 @@ def dpnp_eigh(a, UPLO):
     else:
         # oneMKL LAPACK assumes fortran-like array as input, so
         # allocate a memory with 'F' order for dpnp array of eigenvectors
-        v = dpnp.empty_like(a, order='F', dtype=v_type)
+        v = dpnp.empty_like(a, order="F", dtype=v_type)
 
         # use DPCTL tensor function to fill the array of eigenvectors with content of input array
-        ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(src=a_usm_arr, dst=v.get_array(), sycl_queue=a_sycl_queue)
+        ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr, dst=v.get_array(), sycl_queue=a_sycl_queue
+        )
 
         # allocate a memory for dpnp array of eigenvalues
-        w = dpnp.empty(a.shape[:-1], dtype=w_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue)
+        w = dpnp.empty(
+            a.shape[:-1],
+            dtype=w_type,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
 
         # call LAPACK extension function to get eigenvalues and eigenvectors of matrix A
-        ht_lapack_ev, lapack_ev = getattr(li, lapack_func)(a_sycl_queue, jobz, uplo, v.get_array(), w.get_array(), depends=[copy_ev])
+        ht_lapack_ev, lapack_ev = getattr(li, lapack_func)(
+            a_sycl_queue,
+            jobz,
+            uplo,
+            v.get_array(),
+            w.get_array(),
+            depends=[copy_ev],
+        )
 
-        if a_order != 'F':
+        if a_order != "F":
             # need to align order of eigenvectors with one of input matrix A
             out_v = dpnp.empty_like(v, order=a_order)
-            ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(src=v.get_array(), dst=out_v.get_array(), sycl_queue=a_sycl_queue, depends=[lapack_ev])
+            ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=v.get_array(),
+                dst=out_v.get_array(),
+                sycl_queue=a_sycl_queue,
+                depends=[lapack_ev],
+            )
             ht_copy_out_ev.wait()
         else:
             out_v = v

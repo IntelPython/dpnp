@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2020, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,12 +37,10 @@ public:
         // TODO update print
         std::cout << "starting new env" << std::endl << std::endl;
     }
-    void TearDown() override
-    {
-    }
+    void TearDown() override {}
 };
 
-int RunAllTests(DPNPCTestEnvironment* env)
+int RunAllTests(DPNPCTestEnvironment *env)
 {
     // testing::internal::GetUnitTestImpl()->ClearAdHocTestResult();
     (void)env;
@@ -51,7 +49,7 @@ int RunAllTests(DPNPCTestEnvironment* env)
     return RUN_ALL_TESTS();
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
 

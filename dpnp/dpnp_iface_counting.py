@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2020, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,17 +40,13 @@ it contains:
 """
 
 
-import dpnp
 import numpy
 
-import dpnp.config as config
+import dpnp
+from dpnp.dpnp_algo.dpnp_algo import *  # TODO need to investigate why dpnp.dpnp_algo can not be used
 from dpnp.dpnp_utils import *
 
-from dpnp.dpnp_algo.dpnp_algo import *  # TODO need to investigate why dpnp.dpnp_algo can not be used
-
-__all__ = [
-    'count_nonzero'
-]
+__all__ = ["count_nonzero"]
 
 
 def count_nonzero(x1, axis=None, *, keepdims=False):
