@@ -39,20 +39,14 @@ __all__ += [
     "dpnp_all",
     "dpnp_allclose",
     "dpnp_any",
-    "dpnp_equal",
-    "dpnp_greater",
-    "dpnp_greater_equal",
     "dpnp_isclose",
     "dpnp_isfinite",
     "dpnp_isinf",
     "dpnp_isnan",
-    "dpnp_less",
-    "dpnp_less_equal",
     "dpnp_logical_and",
     "dpnp_logical_not",
     "dpnp_logical_or",
     "dpnp_logical_xor",
-    "dpnp_not_equal"
 ]
 
 
@@ -167,30 +161,6 @@ cpdef utils.dpnp_descriptor dpnp_any(utils.dpnp_descriptor array1):
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_equal(utils.dpnp_descriptor x1_obj,
-                                       utils.dpnp_descriptor x2_obj,
-                                       object dtype=None,
-                                       utils.dpnp_descriptor out=None,
-                                       object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_EQUAL_EXT, x1_obj, x2_obj, dtype, out, where, func_name="equal")
-
-
-cpdef utils.dpnp_descriptor dpnp_greater(utils.dpnp_descriptor x1_obj,
-                                         utils.dpnp_descriptor x2_obj,
-                                         object dtype=None,
-                                         utils.dpnp_descriptor out=None,
-                                         object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_GREATER_EXT, x1_obj, x2_obj, dtype, out, where, func_name="greater")
-
-
-cpdef utils.dpnp_descriptor dpnp_greater_equal(utils.dpnp_descriptor x1_obj,
-                                               utils.dpnp_descriptor x2_obj,
-                                               object dtype=None,
-                                               utils.dpnp_descriptor out=None,
-                                               object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_GREATER_EQUAL_EXT, x1_obj, x2_obj, dtype, out, where, func_name="greater_equal")
-
-
 cpdef utils.dpnp_descriptor dpnp_isclose(utils.dpnp_descriptor input1,
                                          utils.dpnp_descriptor input2,
                                          double rtol=1e-05,
@@ -255,22 +225,6 @@ cpdef utils.dpnp_descriptor dpnp_isnan(utils.dpnp_descriptor input1):
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_less(utils.dpnp_descriptor x1_obj,
-                                      utils.dpnp_descriptor x2_obj,
-                                      object dtype=None,
-                                      utils.dpnp_descriptor out=None,
-                                      object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_LESS_EXT, x1_obj, x2_obj, dtype, out, where, func_name="less")
-
-
-cpdef utils.dpnp_descriptor dpnp_less_equal(utils.dpnp_descriptor x1_obj,
-                                            utils.dpnp_descriptor x2_obj,
-                                            object dtype=None,
-                                            utils.dpnp_descriptor out=None,
-                                            object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_LESS_EQUAL_EXT, x1_obj, x2_obj, dtype, out, where, func_name="less_equal")
-
-
 cpdef utils.dpnp_descriptor dpnp_logical_and(utils.dpnp_descriptor x1_obj,
                                              utils.dpnp_descriptor x2_obj,
                                              object dtype=None,
@@ -300,11 +254,3 @@ cpdef utils.dpnp_descriptor dpnp_logical_xor(utils.dpnp_descriptor x1_obj,
                                              utils.dpnp_descriptor out=None,
                                              object where=True):
     return call_fptr_2in_1out_strides(DPNP_FN_LOGICAL_XOR_EXT, x1_obj, x2_obj, dtype, out, where, func_name="logical_xor")
-
-
-cpdef utils.dpnp_descriptor dpnp_not_equal(utils.dpnp_descriptor x1_obj,
-                                           utils.dpnp_descriptor x2_obj,
-                                           object dtype=None,
-                                           utils.dpnp_descriptor out=None,
-                                           object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_NOT_EQUAL_EXT, x1_obj, x2_obj, dtype, out, where, func_name="not_equal")

@@ -36,11 +36,22 @@ import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.dpnp_array import dpnp_array
 
-__all__ = ["dpnp_add", "dpnp_divide", "dpnp_multiply", "dpnp_subtract"]
+__all__ = [
+    "dpnp_add",
+    "dpnp_divide",
+    "dpnp_equal",
+    "dpnp_greater",
+    "dpnp_greater_equal",
+    "dpnp_less",
+    "dpnp_less_equal",
+    "dpnp_multiply",
+    "dpnp_not_equal",
+    "dpnp_subtract",
+]
 
 
 _add_docstring_ = """
-add(x1, x2, out=None, order='K')
+add(x1, x2, out=None, order="K")
 
 Calculates the sum for each element `x1_i` of the input array `x1` with
 the respective element `x2_i` of the input array `x2`.
@@ -85,7 +96,7 @@ def dpnp_add(x1, x2, out=None, order="K"):
 
 
 _divide_docstring_ = """
-divide(x1, x2, out=None, order='K')
+divide(x1, x2, out=None, order="K")
 
 Calculates the ratio for each element `x1_i` of the input array `x1` with
 the respective element `x2_i` of the input array `x2`.
@@ -163,7 +174,7 @@ def dpnp_divide(x1, x2, out=None, order="K"):
 
 
 _multiply_docstring_ = """
-multiply(x1, x2, out=None, order='K')
+multiply(x1, x2, out=None, order="K")
 
 Calculates the product for each element `x1_i` of the input array `x1`
 with the respective element `x2_i` of the input array `x2`.
@@ -212,7 +223,7 @@ def dpnp_multiply(x1, x2, out=None, order="K"):
 
 
 _subtract_docstring_ = """
-subtract(x1, x2, out=None, order='K')
+subtract(x1, x2, out=None, order="K")
 
 Calculates the difference bewteen each element `x1_i` of the input
 array `x1` and the respective element `x2_i` of the input array `x2`.
@@ -266,6 +277,249 @@ def dpnp_subtract(x1, x2, out=None, order="K"):
         ti._subtract,
         _subtract_docstring_,
         ti._subtract_inplace,
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_less_docstring_ = """
+less(x1, x2, out=None, order="K")
+
+Calculates the less-than results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the result of element-wise less-than comparison.
+        The data type of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_less(x1, x2, out=None, order="K"):
+    """Invokes less() from dpctl.tensor implementation for less() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "less", ti._less_result_type, ti._less, _less_docstring_
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_less_equal_docstring_ = """
+less_equal(x1, x2, out=None, order="K")
+
+Calculates the less-than or equal-to results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the result of element-wise less-than or equal-to comparison.
+        The data type of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_less_equal(x1, x2, out=None, order="K"):
+    """Invokes less_equal() from dpctl.tensor implementation for less_equal() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "less_equal",
+        ti._less_equal_result_type,
+        ti._less_equal,
+        _less_equal_docstring_,
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_greater_docstring_ = """
+greater(x1, x2, out=None, order="K")
+
+Calculates the greater-than results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the result of element-wise greater-than comparison.
+        The data type of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_greater(x1, x2, out=None, order="K"):
+    """Invokes greater() from dpctl.tensor implementation for greater() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "greater", ti._greater_result_type, ti._greater, _greater_docstring_
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_greater_equal_docstring_ = """
+greater_equal(x1, x2, out=None, order="K")
+
+Calculates the greater-than or equal-to results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the result of element-wise greater-than or equal-to comparison.
+        The data type of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_greater_equal(x1, x2, out=None, order="K"):
+    """Invokes greater_equal() from dpctl.tensor implementation for greater_equal() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "greater_equal",
+        ti._greater_equal_result_type,
+        ti._greater_equal,
+        _greater_equal_docstring_,
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_equal_docstring_ = """
+
+equal(x1, x2, out=None, order="K")
+Calculates equality results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the result of element-wise equality comparison.
+        The data type of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_equal(x1, x2, out=None, order="K"):
+    """Invokes equal() from dpctl.tensor implementation for equal() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "equal", ti._equal_result_type, ti._equal, _equal_docstring_
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_not_equal_docstring_ = """
+not_equal(x1, x2, out=None, order="K")
+
+Calculates inequality results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the result of element-wise inequality comparison.
+        The data type of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_not_equal(x1, x2, out=None, order="K"):
+    """Invokes not_equal() from dpctl.tensor implementation for not_equal() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "not_equal",
+        ti._not_equal_result_type,
+        ti._not_equal,
+        _not_equal_docstring_,
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)

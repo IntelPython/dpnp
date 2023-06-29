@@ -458,7 +458,13 @@ cdef class MT19937(_Engine):
         MT19937_Delete(&self.mt19937)
 
     cdef bint is_uint_range(self, value):
-        return value >= 0 and value <= numpy.iinfo(numpy.uint32).max
+        if value < 0:
+            return False
+
+        max_val = numpy.iinfo(numpy.uint32).max
+        if isinstance(value, dpnp_array):
+            max_val = dpnp.array(max_val, dtype=dpnp.uint32)
+        return value <= max_val
 
 
 cdef class MCG59(_Engine):
@@ -489,7 +495,13 @@ cdef class MCG59(_Engine):
         MCG59_Delete(&self.mcg59)
 
     cdef bint is_uint64_range(self, value):
-        return value >= 0 and value <= numpy.iinfo(numpy.uint64).max
+        if value < 0:
+            return False
+
+        max_val = numpy.iinfo(numpy.uint64).max
+        if isinstance(value, dpnp_array):
+            max_val = dpnp.array(max_val, dtype=dpnp.uint64)
+        return value <= max_val
 
 
 cpdef utils.dpnp_descriptor dpnp_rng_beta(double a, double b, size):
