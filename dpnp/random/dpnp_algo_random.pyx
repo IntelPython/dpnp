@@ -463,7 +463,7 @@ cdef class MT19937(_Engine):
 
         max_val = numpy.iinfo(numpy.uint32).max
         if isinstance(value, dpnp_array):
-            max_val = dpnp.array(max_val, dtype=dpnp.uint32)
+            max_val = dpnp.array(max_val, dtype=numpy.uint32)
         return value <= max_val
 
 
@@ -500,7 +500,7 @@ cdef class MCG59(_Engine):
 
         max_val = numpy.iinfo(numpy.uint64).max
         if isinstance(value, dpnp_array):
-            max_val = dpnp.array(max_val, dtype=dpnp.uint64)
+            max_val = dpnp.array(max_val, dtype=numpy.uint64)
         return value <= max_val
 
 
