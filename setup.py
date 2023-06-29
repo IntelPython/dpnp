@@ -23,7 +23,8 @@ Development Status :: 4 - Beta
 Intended Audience :: Science/Research
 Intended Audience :: Developers
 License :: OSI Approved :: Apache Software License
-Programming Language :: C
+Programming Language :: C++
+Programming Language :: Cython
 Programming Language :: Python
 Programming Language :: Python :: 3
 Programming Language :: Python :: 3.8
@@ -40,7 +41,7 @@ Operating System :: Unix
 setup(
     name="dpnp",
     version=__version__,
-    description="NumPy-like API accelerated with SYCL",
+    description="Data Parallel Extension for NumPy",
     long_description=__readme_file__,
     long_description_content_type="text/markdown",
     license="Apache 2.0",
