@@ -201,7 +201,11 @@ def call_origin(function, *args, **kwargs):
         for res_origin in result:
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
-                res = dpnp_container.empty(res_origin.shape, dtype=res_origin.dtype, sycl_queue=exec_q)
+                if exec_q is not None:
+                    result_dtype = map_dtype_to_device(res_origin.dtype, exec_q.sycl_device)
+                else:
+                    result_dtype = res_origin.d_type
+                res = dpnp_container.empty(res_origin.shape, dtype=result_dtype, sycl_queue=exec_q)
                 copy_from_origin(res, res_origin)
             result_list.append(res)
 
