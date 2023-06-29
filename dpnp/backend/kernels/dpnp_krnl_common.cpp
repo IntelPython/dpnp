@@ -958,6 +958,13 @@ DPCTLSyclEventRef (*dpnp_matmul_ext_c)(DPCTLSyclQueueRef,
                                        const DPCTLEventVectorRef) =
     dpnp_matmul_c<_DataType>;
 
+template <typename has_fp64 = std::true_type>
+static constexpr DPNPFuncType get_eig_res_type()
+{
+    return has_fp64::value ? DPNPFuncType::DPNP_FT_DOUBLE
+                           : DPNPFuncType::DPNP_FT_FLOAT;
+}
+
 void func_map_init_linalg(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_BLN][eft_BLN] = {
@@ -1152,9 +1159,21 @@ void func_map_init_linalg(func_map_t &fmap)
         eft_DBL, (void *)dpnp_eig_default_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_eig_ext_c<int32_t, double>};
+        get_eig_res_type<>(),
+        (void *)dpnp_eig_ext_c<
+            int32_t, func_type_map_t::find_type<get_eig_res_type<>()>>,
+        get_eig_res_type<std::false_type>(),
+        (void *)dpnp_eig_ext_c<
+            int32_t,
+            func_type_map_t::find_type<get_eig_res_type<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_eig_ext_c<int64_t, double>};
+        get_eig_res_type<>(),
+        (void *)dpnp_eig_ext_c<
+            int64_t, func_type_map_t::find_type<get_eig_res_type<>()>>,
+        get_eig_res_type<std::false_type>(),
+        (void *)dpnp_eig_ext_c<
+            int64_t,
+            func_type_map_t::find_type<get_eig_res_type<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_FLT][eft_FLT] = {
         eft_FLT, (void *)dpnp_eig_ext_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_DBL][eft_DBL] = {

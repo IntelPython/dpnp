@@ -5,7 +5,7 @@ from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp as inp
 
-from .helper import get_all_dtypes, get_complex_dtypes
+from .helper import get_all_dtypes, get_complex_dtypes, has_support_aspect64
 
 
 def vvsort(val, vec, size, xp):
@@ -109,15 +109,9 @@ def test_det(array):
     assert_allclose(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("size", [2, 4, 8, 16, 300])
 def test_eig_arange(type, size):
-    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
-        pytest.skip(
-            "eig function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
-        )
-
     a = numpy.arange(size * size, dtype=type).reshape((size, size))
     symm_orig = (
         numpy.tril(a)
@@ -145,8 +139,9 @@ def test_eig_arange(type, size):
     assert_array_equal(symm_orig, symm)
     assert_array_equal(dpnp_symm_orig, dpnp_symm)
 
-    assert dpnp_val.dtype == np_val.dtype
-    assert dpnp_vec.dtype == np_vec.dtype
+    if has_support_aspect64():
+        assert dpnp_val.dtype == np_val.dtype
+        assert dpnp_vec.dtype == np_vec.dtype
     assert dpnp_val.shape == np_val.shape
     assert dpnp_vec.shape == np_vec.shape
     assert dpnp_val.usm_type == dpnp_symm.usm_type
