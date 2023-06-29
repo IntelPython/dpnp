@@ -45,7 +45,7 @@ setup(
     long_description=__readme_file__,
     long_description_content_type="text/markdown",
     license="Apache 2.0",
-    classifiers=[_f for _f in CLASSIFIERS.split('\n') if _f],
+    classifiers=[_f for _f in CLASSIFIERS.split("\n") if _f],
     keywords="sycl numpy python3 intel mkl oneapi gpu dpcpp",
     platforms=["Linux", "Windows"],
     author="Intel Corporation",
