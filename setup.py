@@ -15,7 +15,7 @@ __version__ = version_mod.__version__
 """
 Set project auxilary data like readme and licence files
 """
-with open('README.md') as f:
+with open("README.md") as f:
     __readme_file__ = f.read()
 
 CLASSIFIERS = """\
