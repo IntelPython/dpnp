@@ -213,7 +213,7 @@ def test_inv(type, array):
     ia = inp.array(a)
     result = inp.linalg.inv(ia)
     expected = numpy.linalg.inv(a)
-    assert_allclose(expected, result)
+    assert_allclose(expected, result, rtol=1e-06)
 
 
 @pytest.mark.parametrize(

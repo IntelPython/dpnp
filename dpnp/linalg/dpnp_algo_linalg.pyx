@@ -291,9 +291,18 @@ cpdef utils.dpnp_descriptor dpnp_inv(utils.dpnp_descriptor input):
 
     input_obj = input.get_array()
 
+    cdef custom_linalg_1in_1out_func_ptr_t func = NULL
+    cdef DPNPFuncType return_type = DPNP_FT_NONE
+    if (dpnp.issubdtype(input_obj.dtype, dpnp.integer) or input_obj.dtype == dpnp.float32) and not input_obj.sycl_device.has_aspect_fp64:
+        return_type = kernel_data.return_type_no_fp64
+        func = < custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr_no_fp64
+    else:
+        return_type = kernel_data.return_type
+        func = < custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
+
     # ceate result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(input_shape,
-                                                                       kernel_data.return_type,
+                                                                       return_type,
                                                                        None,
                                                                        device=input_obj.sycl_device,
                                                                        usm_type=input_obj.usm_type,
@@ -303,8 +312,6 @@ cpdef utils.dpnp_descriptor dpnp_inv(utils.dpnp_descriptor input):
 
     cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
     cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
 
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
                                                     input.get_data(),
