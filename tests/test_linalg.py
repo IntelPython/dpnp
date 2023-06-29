@@ -151,7 +151,7 @@ def test_eig_arange(type, size):
     assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+# @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_none=True))
 @pytest.mark.parametrize("size", [2, 4, 8])
 def test_eigh_arange(type, size):
@@ -193,11 +193,6 @@ def test_eigh_arange(type, size):
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_eigvals(type):
-    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
-        pytest.skip(
-            "eigvals function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
-        )
-
     arrays = [[[0, 0], [0, 0]], [[1, 2], [1, 2]], [[1, 2], [3, 4]]]
     for array in arrays:
         a = numpy.array(array, dtype=type)
