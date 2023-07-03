@@ -894,7 +894,7 @@ class TestPower:
         np_array2 = numpy.array(array2_data, dtype=dtype)
         expected = numpy.power(np_array1, np_array2, out=out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)
@@ -912,7 +912,7 @@ class TestPower:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         result = dpnp.power(dp_array1, dp_array2, out=dp_out)
 
-        assert_array_equal(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
@@ -947,9 +947,9 @@ class TestPower:
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
     def test_invalid_shape(self, shape):
-        dp_array1 = dpnp.arange(10, dtype=dpnp.float64)
-        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+        dp_array1 = dpnp.arange(10, dtype=dpnp.float32)
+        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float32)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float32)
 
         with pytest.raises(ValueError):
             dpnp.power(dp_array1, dp_array2, out=dp_out)

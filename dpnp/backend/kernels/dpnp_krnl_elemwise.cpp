@@ -1198,6 +1198,49 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
     return;
 }
 
+/**
+ * A template function that calculates exponentiation for integer and boolean
+ * types using different implementations based on the type T.
+ */
+template <typename T>
+constexpr T powi(T base, T exp)
+{
+    if (exp < 0) {
+        base = 1 / base;
+        exp = -exp;
+    }
+
+    T result = 1;
+    for (;;) {
+        if constexpr (std::is_same_v<T, bool>) {
+            if (exp)
+                result = result && base;
+            break;
+        }
+        else {
+            if (exp & 1)
+                result *= base;
+            exp >>= 1;
+            if (!exp)
+                break;
+            base *= base;
+        }
+    }
+
+    return result;
+}
+
+template <typename T>
+constexpr T dispatch_pow_op(T elem1, T elem2)
+{
+    if constexpr (is_any_v<T, std::int32_t, std::int64_t, bool>) {
+        return powi(elem1, elem2);
+    }
+    else {
+        return std::pow(elem1, elem2);
+    }
+}
+
 #define MACRO_2ARG_3TYPES_OP(__name__, __operation__, __vec_operation__,       \
                              __vec_types__, __mkl_operation__, __mkl_types__)  \
     template <typename _KernelNameSpecialization1,                             \
