@@ -12,6 +12,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
 from dpnp.random import RandomState
 
 from .helper import is_cpu_device
@@ -547,6 +548,9 @@ class TestRandInt:
         ids=["[2]", "dpnp.array([2])", "numpy.array([2])"],
     )
     def test_bounds_fallback(self, low, high):
+        if isinstance(high, dpnp_array) and high.dtype == numpy.int32:
+            pytest.skip("NumPy fails: 'high' is out of bounds for int32")
+
         seed = 15
         size = (3, 2, 5)
 
