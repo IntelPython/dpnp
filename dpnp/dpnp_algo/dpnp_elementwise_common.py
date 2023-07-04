@@ -38,6 +38,7 @@ from dpctl.tensor._elementwise_common import (
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import call_origin
 
 __all__ = [
     "check_nd_call_func",
@@ -456,11 +457,11 @@ Computes the logical AND for each element `x1_i` of the input array `x1`
 with the respective element `x2_i` of the input array `x2`.
 
 Args:
-    x1 (usm_ndarray):
+    x1 (dpnp.ndarray):
         First input array.
-    x2 (usm_ndarray):
+    x2 (dpnp.ndarray):
         Second input array.
-    out ({None, usm_ndarray}, optional):
+    out ({None, dpnp.ndarray}, optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
@@ -494,9 +495,9 @@ _logical_not_docstring_ = """
 logical_not(x, out=None, order='K')
 Computes the logical NOT for each element `x_i` of input array `x`.
 Args:
-    x (usm_ndarray):
+    x (dpnp.ndarray):
         Input array.
-    out (usm_ndarray):
+    out ({None, dpnp.ndarray}, optional):
         Output array to populate. Array must have the correct
         shape and the expected data type.
     order ("C","F","A","K", optional): memory layout of the new
@@ -532,11 +533,11 @@ Computes the logical OR for each element `x1_i` of the input array `x1`
 with the respective element `x2_i` of the input array `x2`.
 
 Args:
-    x1 (usm_ndarray):
+    x1 (dpnp.ndarray):
         First input array.
-    x2 (usm_ndarray):
+    x2 (dpnp.ndarray):
         Second input array.
-    out ({None, usm_ndarray}, optional):
+    out ({None, dpnp.ndarray}, optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
@@ -573,11 +574,11 @@ Computes the logical XOR for each element `x1_i` of the input array `x1`
 with the respective element `x2_i` of the input array `x2`.
 
 Args:
-    x1 (usm_ndarray):
+    x1 (dpnp.ndarray):
         First input array.
-    x2 (usm_ndarray):
+    x2 (dpnp.ndarray):
         Second input array.
-    out ({None, usm_ndarray}, optional):
+    out ({None, dpnp.ndarray}, optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
