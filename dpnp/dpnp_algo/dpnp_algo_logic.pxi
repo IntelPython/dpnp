@@ -43,10 +43,6 @@ __all__ += [
     "dpnp_isfinite",
     "dpnp_isinf",
     "dpnp_isnan",
-    "dpnp_logical_and",
-    "dpnp_logical_not",
-    "dpnp_logical_or",
-    "dpnp_logical_xor",
 ]
 
 
@@ -223,34 +219,3 @@ cpdef utils.dpnp_descriptor dpnp_isnan(utils.dpnp_descriptor input1):
         result.get_pyobj()[i] = numpy.isnan(input1.get_pyobj()[i])
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_logical_and(utils.dpnp_descriptor x1_obj,
-                                             utils.dpnp_descriptor x2_obj,
-                                             object dtype=None,
-                                             utils.dpnp_descriptor out=None,
-                                             object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_LOGICAL_AND_EXT, x1_obj, x2_obj, dtype, out, where, func_name="logical_and")
-
-
-cpdef utils.dpnp_descriptor dpnp_logical_not(utils.dpnp_descriptor x_obj,
-                                            object dtype=None,
-                                            utils.dpnp_descriptor out=None,
-                                            object where=True):
-    return call_fptr_1in_1out_strides(DPNP_FN_LOGICAL_NOT_EXT, x_obj, dtype, out, where, func_name="logical_not")
-
-
-cpdef utils.dpnp_descriptor dpnp_logical_or(utils.dpnp_descriptor x1_obj,
-                                            utils.dpnp_descriptor x2_obj,
-                                            object dtype=None,
-                                            utils.dpnp_descriptor out=None,
-                                            object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_LOGICAL_OR_EXT, x1_obj, x2_obj, dtype, out, where, func_name="logical_or")
-
-
-cpdef utils.dpnp_descriptor dpnp_logical_xor(utils.dpnp_descriptor x1_obj,
-                                             utils.dpnp_descriptor x2_obj,
-                                             object dtype=None,
-                                             utils.dpnp_descriptor out=None,
-                                             object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_LOGICAL_XOR_EXT, x1_obj, x2_obj, dtype, out, where, func_name="logical_xor")

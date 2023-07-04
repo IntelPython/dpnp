@@ -170,10 +170,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_LOG1P_EXT
         DPNP_FN_LOG2
         DPNP_FN_LOG2_EXT
-        DPNP_FN_LOGICAL_AND_EXT
-        DPNP_FN_LOGICAL_NOT_EXT
-        DPNP_FN_LOGICAL_OR_EXT
-        DPNP_FN_LOGICAL_XOR_EXT
         DPNP_FN_MATMUL
         DPNP_FN_MATMUL_EXT
         DPNP_FN_MATRIX_RANK
@@ -477,10 +473,6 @@ Logic functions
 """
 cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input2,
                                    double rtol=*, double atol=*, cpp_bool equal_nan=*)
-cpdef dpnp_descriptor dpnp_logical_and(dpnp_descriptor input1, dpnp_descriptor input2)
-cpdef dpnp_descriptor dpnp_logical_not(dpnp_descriptor input1)
-cpdef dpnp_descriptor dpnp_logical_or(dpnp_descriptor input1, dpnp_descriptor input2)
-cpdef dpnp_descriptor dpnp_logical_xor(dpnp_descriptor input1, dpnp_descriptor input2)
 
 
 """
