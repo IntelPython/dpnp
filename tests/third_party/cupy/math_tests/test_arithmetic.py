@@ -8,7 +8,7 @@ import pytest
 import dpnp as cupy
 from tests.third_party.cupy import testing
 
-float_types = [numpy.float32, numpy.float64]
+float_types = [*testing.helper._float_dtypes]
 complex_types = []
 signed_int_types = [numpy.int32, numpy.int64]
 unsigned_int_types = []
@@ -168,36 +168,32 @@ class ArithmeticBinaryBase:
                 y = y.astype(numpy.complex64)
 
         # NumPy returns an output array of another type than DPNP when input ones have diffrent types.
-        if xp is cupy and dtype1 != dtype2 and not self.use_dtype:
+        if xp is numpy and dtype1 != dtype2:
             is_array_arg1 = not xp.isscalar(arg1)
             is_array_arg2 = not xp.isscalar(arg2)
 
             is_int_float = lambda _x, _y: numpy.issubdtype(
                 _x, numpy.integer
             ) and numpy.issubdtype(_y, numpy.floating)
-            is_same_type = lambda _x, _y, _type: numpy.issubdtype(
-                _x, _type
-            ) and numpy.issubdtype(_y, _type)
 
-            if self.name == "power":
-                if is_array_arg1 and is_array_arg2:
-                    # If both inputs are arrays where one is of floating type and another - integer,
+            if (
+                self.name == "power"
+                and not testing.helper.has_support_aspect64()
+            ):
+                if (
+                    (is_array_arg1 and is_array_arg2)
+                    or (is_array_arg1 and not is_array_arg2)
+                    or (is_array_arg2 and not is_array_arg1)
+                ):
+                    # If both inputs are arrays where one is of floating type and another - integer or
+                    # if one input is an array of floating type and another - an integer or floating scalar
                     # NumPy will return an output array of always "float64" type,
-                    # while DPNP will return the array of a wider type from the input arrays.
+                    # while DPNP will return the array of float32 or float64 depending on the capability of
+                    # the device.
                     if is_int_float(dtype1, dtype2) or is_int_float(
                         dtype2, dtype1
                     ):
-                        y = y.astype(numpy.float64)
-                elif is_same_type(
-                    dtype1, dtype2, numpy.floating
-                ) or is_same_type(dtype1, dtype2, numpy.integer):
-                    # If one input is an array and another - scalar,
-                    # NumPy will return an output array of the same type as the inpupt array has,
-                    # while DPNP will return the array of a wider type from the inputs (considering both array and scalar).
-                    if is_array_arg1 and not is_array_arg2:
-                        y = y.astype(dtype1)
-                    elif is_array_arg2 and not is_array_arg1:
-                        y = y.astype(dtype2)
+                        y = y.astype(numpy.float32)
 
         # NumPy returns different values (nan/inf) on division by zero
         # depending on the architecture.

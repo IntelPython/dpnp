@@ -894,7 +894,7 @@ class TestPower:
         np_array2 = numpy.array(array2_data, dtype=dtype)
         expected = numpy.power(np_array1, np_array2, out=out)
 
-        assert_allclose(expected, result)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)
@@ -909,10 +909,19 @@ class TestPower:
 
         dp_array1 = dpnp.arange(size, 2 * size, dtype=dtype)
         dp_array2 = dpnp.arange(size, dtype=dtype)
-        dp_out = dpnp.empty(size, dtype=dpnp.complex64)
-        result = dpnp.power(dp_array1, dp_array2, out=dp_out)
 
-        assert_array_equal(expected, result)
+        dp_out = dpnp.empty(size, dtype=dpnp.complex64)
+        if dtype != dpnp.complex64:
+            # dtype of out mismatches types of input arrays
+            with pytest.raises(TypeError):
+                dpnp.power(dp_array1, dp_array2, out=dp_out)
+
+            # allocate new out with expected type
+            out_dtype = dtype if dtype != dpnp.bool else dpnp.int64
+            dp_out = dpnp.empty(size, dtype=out_dtype)
+
+        result = dpnp.power(dp_array1, dp_array2, out=dp_out)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)

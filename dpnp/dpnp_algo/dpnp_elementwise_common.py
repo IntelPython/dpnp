@@ -55,6 +55,7 @@ __all__ = [
     "dpnp_logical_xor",
     "dpnp_multiply",
     "dpnp_not_equal",
+    "dpnp_power",
     "dpnp_subtract",
 ]
 
@@ -694,6 +695,46 @@ def dpnp_not_equal(x1, x2, out=None, order="K"):
         ti._not_equal_result_type,
         ti._not_equal,
         _not_equal_docstring_,
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_power_docstring_ = """
+power(x1, x2, out=None, order="K")
+
+Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the result of element-wise of raising each element
+        to a specified power.
+        The data type of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_power(x1, x2, out=None, order="K"):
+    """Invokes pow() from dpctl.tensor implementation for power() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "pow", ti._pow_result_type, ti._pow, _power_docstring_
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)

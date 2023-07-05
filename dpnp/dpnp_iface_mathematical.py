@@ -48,9 +48,11 @@ from dpnp.dpnp_array import dpnp_array
 
 from .dpnp_algo import *
 from .dpnp_algo.dpnp_elementwise_common import (
+    check_nd_call_func,
     dpnp_add,
     dpnp_divide,
     dpnp_multiply,
+    dpnp_power,
     dpnp_subtract,
 )
 from .dpnp_utils import *
@@ -99,63 +101,6 @@ __all__ = [
     "true_divide",
     "trunc",
 ]
-
-
-def _check_nd_call(
-    origin_func,
-    dpnp_func,
-    x1,
-    x2,
-    out=None,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Checks arguments and calls a function.
-
-    Chooses a common internal elementwise function to call in DPNP based on input arguments
-    or to fallback on NumPy call if any passed argument is not currently supported.
-
-    """
-
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        if order in "afkcAFKC":
-            order = order.upper()
-        elif order is None:
-            order = "K"
-        else:
-            raise ValueError(
-                "order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(
-                    order
-                )
-            )
-
-        return dpnp_func(x1, x2, out=out, order=order)
-    return call_origin(
-        origin_func,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
 
 
 def abs(*args, **kwargs):
@@ -288,7 +233,7 @@ def add(
 
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.add,
         dpnp_add,
         x1,
@@ -686,7 +631,7 @@ def divide(
 
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.divide,
         dpnp_divide,
         x1,
@@ -1275,7 +1220,7 @@ def multiply(
 
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.multiply,
         dpnp_multiply,
         x1,
@@ -1457,7 +1402,18 @@ def negative(x1, **kwargs):
     return call_origin(numpy.negative, x1, **kwargs)
 
 
-def power(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
+def power(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     First array elements raised to powers from second array, element-wise.
 
@@ -1476,7 +1432,6 @@ def power(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1498,60 +1453,17 @@ def power(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
 
     """
 
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
-
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            if out is not None:
-                if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError(
-                        "return array must be of supported array type"
-                    )
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
-                    )
-                    or None
-                )
-            else:
-                out_desc = None
-
-            return dpnp_power(
-                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.power, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    return check_nd_call_func(
+        numpy.power,
+        dpnp_power,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 
@@ -1777,7 +1689,7 @@ def subtract(
 
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.subtract,
         dpnp_subtract,
         x1,
