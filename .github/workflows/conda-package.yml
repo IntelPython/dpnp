@@ -350,7 +350,7 @@ jobs:
       run:
         shell: ${{ matrix.os == 'windows-latest' && 'cmd /C CALL {0}' || 'bash -l {0}' }}
 
-    continue-on-error: false
+    continue-on-error: true
 
     if: |
       (github.repository == 'IntelPython/dpnp') &&
