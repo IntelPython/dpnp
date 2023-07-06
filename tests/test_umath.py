@@ -4,7 +4,12 @@ from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
 
-from .helper import get_all_dtypes, get_float_dtypes
+from .helper import (
+    get_all_dtypes,
+    get_complex_dtypes,
+    get_float_dtypes,
+    has_support_aspect64,
+)
 
 # full list of umaths
 umaths = [i for i in dir(numpy) if isinstance(getattr(numpy, i), numpy.ufunc)]
@@ -170,20 +175,44 @@ class TestCos:
 
 
 class TestsLog:
-    def test_log(self):
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    def test_log(self, dtype):
         array_data = numpy.arange(10)
         out = numpy.empty(10, dtype=numpy.float64)
 
         # DPNP
-        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
-        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(
+            out, dtype=dpnp.float64 if has_support_aspect64() else dpnp.float32
+        )
         result = dpnp.log(dp_array, out=dp_out)
 
         # original
-        np_array = numpy.array(array_data, dtype=numpy.float64)
+        np_array = numpy.array(array_data, dtype=dtype)
         expected = numpy.log(np_array, out=out)
 
-        assert_array_equal(expected, result)
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_log_complex(self, dtype):
+        array_data = numpy.arange(10, 20)
+        out = numpy.empty(10, dtype=numpy.complex128)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(
+            out,
+            dtype=dpnp.complex128 if has_support_aspect64() else dpnp.complex64,
+        )
+        result = dpnp.log(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=dtype)
+        expected = numpy.log(np_array, out=out)
+
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize(
         "dtype",
@@ -191,20 +220,20 @@ class TestsLog:
         ids=["numpy.float32", "numpy.int64", "numpy.int32"],
     )
     def test_invalid_dtype(self, dtype):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_array = dpnp.arange(10, dtype=dpnp.complex64)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.log(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
     def test_invalid_shape(self, shape):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+        dp_array = dpnp.arange(10)
+        dp_out = dpnp.empty(shape, dtype=dp_array.dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.log(dp_array, out=dp_out)
 
 
