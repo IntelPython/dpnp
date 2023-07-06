@@ -1206,24 +1206,21 @@ template <typename T>
 constexpr T powi(T base, T exp)
 {
     if (exp < 0) {
-        base = 1 / base;
-        exp = -exp;
+        return T(0);
     }
 
     T result = 1;
-    for (;;) {
-        if constexpr (std::is_same_v<T, bool>) {
-            if (exp)
-                result = result && base;
-            break;
-        }
-        else {
+
+    if constexpr (std::is_same_v<T, bool>) {
+        if (exp)
+            result = result && base;
+    }
+    else {
+        while (exp > 0) {
             if (exp & 1)
                 result *= base;
-            exp >>= 1;
-            if (!exp)
-                break;
             base *= base;
+            exp >>= 1;
         }
     }
 
@@ -1680,6 +1677,19 @@ static constexpr DPNPFuncType get_divide_res_type()
     return widest_type;
 }
 
+template <DPNPFuncType FT1, DPNPFuncType FT2>
+static constexpr DPNPFuncType get_power_res_type()
+{
+    constexpr auto widest_type = populate_func_types<FT1, FT2>();
+
+    if constexpr (widest_type == DPNPFuncType::DPNP_FT_BOOL) {
+        return DPNPFuncType::DPNP_FT_INT;
+    }
+    else {
+        return widest_type;
+    }
+}
+
 template <DPNPFuncType FT1, DPNPFuncType... FTs>
 static void func_map_elemwise_2arg_3type_core(func_map_t &fmap)
 {
@@ -1711,9 +1721,9 @@ static void func_map_elemwise_2arg_3type_core(func_map_t &fmap)
                func_type_map_t::find_type<FTs>>}),
      ...);
     ((fmap[DPNPFuncName::DPNP_FN_POWER_EXT][FT1][FTs] =
-          {populate_func_types<FT1, FTs>(),
+          {get_power_res_type<FT1, FTs>(),
            (void *)dpnp_power_c_ext<
-               func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
+               func_type_map_t::find_type<get_power_res_type<FT1, FTs>()>,
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>}),
      ...);

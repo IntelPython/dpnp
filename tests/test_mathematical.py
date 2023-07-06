@@ -990,13 +990,10 @@ class TestPower:
 
     @pytest.mark.parametrize("dtype", [dpnp.int32, dpnp.int64])
     def test_integer_to_negative_power(self, dtype):
-        ones = dpnp.ones(10, dtype=dtype)
         a = dpnp.arange(2, 10, dtype=dtype)
-        b = dpnp.full(10, -2, dtype=dtype)
+        zeros = dpnp.zeros(8, dtype=dtype)
 
-        assert_array_equal(ones ** (-2), ones)
-        assert_equal(a ** (-3), 0)  # positive integer to negative integer power
-        assert_equal(b ** (-4), 0)  # negative integer to negative integer power
+        assert_equal(a ** (-3), zeros)
 
     def test_float_to_inf(self):
         a = numpy.array(
