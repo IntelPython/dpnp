@@ -49,7 +49,6 @@ __all__ += [
     'dpnp_exp',
     'dpnp_exp2',
     'dpnp_expm1',
-    'dpnp_log',
     'dpnp_log10',
     'dpnp_log1p',
     'dpnp_log2',
@@ -115,10 +114,6 @@ cpdef utils.dpnp_descriptor dpnp_exp2(utils.dpnp_descriptor x1):
 
 cpdef utils.dpnp_descriptor dpnp_expm1(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_EXPM1_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_log(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_LOG_EXT, x1, dtype=None, out=out, where=True, func_name='log')
 
 
 cpdef utils.dpnp_descriptor dpnp_log10(utils.dpnp_descriptor x1):
