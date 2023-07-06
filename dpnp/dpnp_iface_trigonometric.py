@@ -1035,6 +1035,11 @@ def sqrt(
 
     For full documentation refer to :obj:`numpy.sqrt`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        An array containing the element-wise results of positive square root.
+
     Limitations
     -----------
     Input array is supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
@@ -1048,9 +1053,12 @@ def sqrt(
     --------
     >>> import dpnp as np
     >>> x = np.array([1, 4, 9])
-    >>> out = np.sqrt(x)
-    >>> [i for i in out]
-    [1.0, 2.0, 3.0]
+    >>> np.sqrt(x)
+    array([1., 2., 3.])
+
+    >>> x2 = np.array([4, -1, np.inf])
+    >>> np.sqrt(x2)
+    array([ 2., nan, inf])
 
     """
 

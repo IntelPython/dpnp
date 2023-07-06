@@ -52,8 +52,8 @@ __all__ = [
     "dpnp_log",
     "dpnp_multiply",
     "dpnp_not_equal",
-    "dpnp_subtract",
     "dpnp_sqrt",
+    "dpnp_subtract",
 ]
 
 
@@ -586,6 +586,41 @@ def dpnp_not_equal(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_sqrt_docstring_ = """
+sqrt(x, out=None, order='K')
+Computes the non-negative square-root for each element `x_i` for input array `x`.
+Args:
+    x (dpnp.ndarray):
+        Input array.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise square-root results.
+"""
+
+
+def dpnp_sqrt(x, out=None, order="K"):
+    """Invokes sqrt() from dpctl.tensor implementation for sqrt() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "sqrt",
+        ti._sqrt_result_type,
+        ti._sqrt,
+        _sqrt_docstring_,
+    )
+    res_usm = func(x_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _subtract_docstring_ = """
 subtract(x1, x2, out=None, order="K")
 
@@ -643,39 +678,4 @@ def dpnp_subtract(x1, x2, out=None, order="K"):
         ti._subtract_inplace,
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
-    return dpnp_array._create_from_usm_ndarray(res_usm)
-
-
-_sqrt_docstring_ = """
-sqrt(x, out=None, order='K')
-Computes the non-negative square-root for each element `x_i` for input array `x`.
-Args:
-    x (dpnp.ndarray):
-        Input array.
-    out ({None, dpnp.ndarray}, optional):
-        Output array to populate. Array must have the correct
-        shape and the expected data type.
-    order ("C","F","A","K", optional): memory layout of the new
-        output array, if parameter `out` is `None`.
-        Default: "K".
-Return:
-    usm_ndarray:
-        An array containing the element-wise square-root results.
-"""
-
-
-def dpnp_sqrt(x, out=None, order="K"):
-    """Invokes sqrt() from dpctl.tensor implementation for sqrt() function."""
-
-    # dpctl.tensor only works with usm_ndarray or scalar
-    x_usm = dpnp.get_usm_ndarray(x)
-    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
-
-    func = UnaryElementwiseFunc(
-        "sqrt",
-        ti._sqrt_result_type,
-        ti._sqrt,
-        _sqrt_docstring_,
-    )
-    res_usm = func(x_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)

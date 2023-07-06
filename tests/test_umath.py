@@ -7,7 +7,7 @@ import dpnp
 from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
-    get_float_dtypes,
+    get_float_complex_dtypes,
     has_support_aspect16,
     has_support_aspect64,
 )
@@ -454,8 +454,22 @@ class TestArctan2:
 
 
 class TestSqrt:
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_sqrt_ordinary(self, dtype):
+        array_data = numpy.arange(10)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        result = dpnp.sqrt(dp_array)
+
+        # original
+        np_array = numpy.array(array_data, dtype=dtype)
+        expected = numpy.sqrt(np_array)
+
+        numpy.testing.assert_allclose(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_sqrt_out(self, dtype):
         array_data = numpy.arange(10)
         out = numpy.empty(10, dtype=dtype)
 
