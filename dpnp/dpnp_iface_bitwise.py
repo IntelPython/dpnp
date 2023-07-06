@@ -133,7 +133,7 @@ def bitwise_and(x1, x2, dtype=None, out=None, where=True, **kwargs):
     Returns
     -------
     y : dpnp.ndarray
-        An array containing the element-wise results.
+        An array containing the element-wise results of positive square root.
 
     Limitations
     -----------
