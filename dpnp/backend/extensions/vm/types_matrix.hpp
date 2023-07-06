@@ -66,6 +66,22 @@ struct DivTypePairSupportFactory
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
+
+/**
+ * @brief A factory to define supported types for which
+ * MKL VM library provides support in oneapi::mkl::vm::sqrt<T> function.
+ *
+ * @tparam T Type of input vector `a` and of result vector `y`.
+ */
+template <typename T>
+struct SqrtTypeSupportFactory
+{
+    static constexpr bool is_defined =
+        std::disjunction<std::bool_constant<std::is_same_v<T, float>>,
+                         std::bool_constant<std::is_same_v<T, double>>,
+                         // fall-through
+                         std::false_type>::value;
+};
 } // namespace types
 } // namespace vm
 } // namespace ext

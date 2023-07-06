@@ -781,6 +781,17 @@ Return:
 def dpnp_sqrt(x, out=None, order="K"):
     """Invokes sqrt() from dpctl.tensor implementation for sqrt() function."""
 
+    def _call_sqrt(src, dst, sycl_queue, depends=None):
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
+
+        if vmi._can_call_sqrt(sycl_queue, src, dst):
+            # call pybind11 extension for sqrt() function from OneMKL VM
+            return vmi._sqrt(sycl_queue, src, dst, depends)
+        return ti._sqrt(src, dst, sycl_queue, depends)
+
     # dpctl.tensor only works with usm_ndarray or scalar
     x_usm = dpnp.get_usm_ndarray(x)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
@@ -788,7 +799,7 @@ def dpnp_sqrt(x, out=None, order="K"):
     func = UnaryElementwiseFunc(
         "sqrt",
         ti._sqrt_result_type,
-        ti._sqrt,
+        _call_sqrt,
         _sqrt_docstring_,
     )
     res_usm = func(x_usm, out=out_usm, order=order)

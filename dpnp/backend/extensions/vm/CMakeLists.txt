@@ -28,6 +28,7 @@ set(python_module_name _vm_impl)
 pybind11_add_module(${python_module_name} MODULE
     vm_py.cpp
     div.cpp
+    sqrt.cpp
 )
 
 if (WIN32)

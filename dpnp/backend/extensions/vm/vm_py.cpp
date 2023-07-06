@@ -31,6 +31,7 @@
 #include <pybind11/stl.h>
 
 #include "div.hpp"
+#include "sqrt.hpp"
 
 namespace vm_ext = dpnp::backend::ext::vm;
 namespace py = pybind11;
@@ -39,6 +40,7 @@ namespace py = pybind11;
 void init_dispatch_vectors(void)
 {
     vm_ext::init_div_dispatch_vector();
+    vm_ext::init_sqrt_dispatch_vector();
 }
 
 // populate dispatch tables
@@ -61,4 +63,16 @@ PYBIND11_MODULE(_vm_impl, m)
           "library can be used",
           py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
           py::arg("dst"));
+
+    m.def("_sqrt", &vm_ext::sqrt,
+          "Call `sqrt` from OneMKL VM library to performs element by element "
+          "operation of extracting the square root "
+          "of vector `src` to resulting vector `dst`",
+          py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+          py::arg("depends") = py::list());
+
+    m.def("_can_call_sqrt", &vm_ext::can_call_sqrt,
+          "Check input arrays to answer if `sqrt` function from OneMKL VM "
+          "library can be used",
+          py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
 }
