@@ -478,7 +478,7 @@ class TestSqrt:
         dp_array = dpnp.arange(10, dtype=dpnp.float32)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.sqrt(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -488,7 +488,7 @@ class TestSqrt:
         dp_array = dpnp.arange(10, dtype=dpnp.float32)
         dp_out = dpnp.empty(shape, dtype=dpnp.float32)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.sqrt(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(

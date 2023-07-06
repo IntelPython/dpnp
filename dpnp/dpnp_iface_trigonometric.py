@@ -40,7 +40,6 @@ it contains:
 """
 
 
-import dpctl.tensor as dpt
 import numpy
 
 import dpnp
@@ -50,6 +49,7 @@ from dpnp.dpnp_utils import *
 from .dpnp_algo.dpnp_elementwise_common import (
     check_nd_call_func,
     dpnp_log,
+    dpnp_sqrt,
 )
 
 __all__ = [
@@ -1019,7 +1019,17 @@ def sinh(x1):
     return call_origin(numpy.sinh, x1, **kwargs)
 
 
-def sqrt(x1, /, out=None, **kwargs):
+def sqrt(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Return the positive square-root of an array, element-wise.
 
@@ -1030,8 +1040,8 @@ def sqrt(x1, /, out=None, **kwargs):
     Input array is supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `out` is supported as class:`dpnp.ndarray`, class:`dpctl.tensor.usm_ndarray` or
     with default value ``None``.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -1044,26 +1054,17 @@ def sqrt(x1, /, out=None, **kwargs):
 
     """
 
-    x1_desc = (
-        dpnp.get_dpnp_descriptor(
-            x1, copy_when_strides=False, copy_when_nondefault_queue=False
-        )
-        if not kwargs
-        else None
+    return check_nd_call_func(
+        numpy.sqrt,
+        dpnp_sqrt,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        if out is not None:
-            if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                raise TypeError("return array must be of supported array type")
-            out_desc = (
-                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-                or None
-            )
-        else:
-            out_desc = None
-        return dpnp_sqrt(x1_desc, out=out_desc).get_pyobj()
-
-    return call_origin(numpy.sqrt, x1, out=out, **kwargs)
 
 
 def square(x1):
