@@ -473,7 +473,7 @@ def dpnp_log(x, out=None, order="K"):
     """
 
     def _call_log(src, dst, sycl_queue, depends=None):
-        """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
 
         if depends is None:
             depends = []

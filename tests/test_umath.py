@@ -8,6 +8,7 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
+    has_support_aspect16,
     has_support_aspect64,
 )
 
@@ -179,39 +180,53 @@ class TestsLog:
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
     def test_log(self, dtype):
-        array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=numpy.float64)
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=numpy.float64)
 
         # DPNP
-        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_array = dpnp.array(np_array, dtype=dtype)
         dp_out = dpnp.array(
-            out, dtype=dpnp.float64 if has_support_aspect64() else dpnp.float32
+            np_out,
+            dtype=dpnp.float64 if has_support_aspect64() else dpnp.float32,
         )
         result = dpnp.log(dp_array, out=dp_out)
 
         # original
-        np_array = numpy.array(array_data, dtype=dtype)
-        expected = numpy.log(np_array, out=out)
-
+        expected = numpy.log(np_array, out=np_out)
         assert_allclose(expected, result)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     def test_log_complex(self, dtype):
-        array_data = numpy.arange(10, 20)
-        out = numpy.empty(10, dtype=numpy.complex128)
+        np_array = numpy.arange(10, 20, dtype=dtype)
+        np_out = numpy.empty(10, dtype=numpy.complex128)
 
         # DPNP
-        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_array = dpnp.array(np_array, dtype=dtype)
         dp_out = dpnp.array(
-            out,
+            np_out,
             dtype=dpnp.complex128 if has_support_aspect64() else dpnp.complex64,
         )
         result = dpnp.log(dp_array, out=dp_out)
 
         # original
-        np_array = numpy.array(array_data, dtype=dtype)
-        expected = numpy.log(np_array, out=out)
+        expected = numpy.log(np_array, out=np_out)
+        assert_allclose(expected, result)
 
+    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
+    @pytest.mark.skipif(
+        not has_support_aspect16(), reason="No fp16 support by device"
+    )
+    def test_log_bool(self):
+        np_array = numpy.arange(2, dtype=numpy.bool_)
+        np_out = numpy.empty(2, dtype=numpy.float16)
+
+        # DPNP
+        dp_array = dpnp.array(np_array, dtype=np_array.dtype)
+        dp_out = dpnp.array(np_out, dtype=np_out.dtype)
+        result = dpnp.log(dp_array, out=dp_out)
+
+        # original
+        expected = numpy.log(np_array, out=np_out)
         assert_allclose(expected, result)
 
     @pytest.mark.parametrize(

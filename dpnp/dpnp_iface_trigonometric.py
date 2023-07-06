@@ -717,6 +717,11 @@ def log(
 
     For full documentation refer to :obj:`numpy.log`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        The natural logarithm of `x`, element-wise.
+
     Limitations
     -----------
     Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
