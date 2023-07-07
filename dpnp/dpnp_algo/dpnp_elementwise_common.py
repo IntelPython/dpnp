@@ -450,9 +450,9 @@ _log_docstring = """
 log(x, out=None, order='K')
 Computes the natural logarithm element-wise.
 Args:
-    x (usm_ndarray):
+    x (dpnp.ndarray):
         Input array, expected to have numeric data type.
-    out (usm_ndarray):
+    out ({None, dpnp.ndarray}, optional):
         Output array to populate. Array must have the correct
         shape and the expected data type.
     order ("C","F","A","K", optional): memory layout of the new
