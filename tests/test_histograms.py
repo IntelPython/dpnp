@@ -3,6 +3,8 @@ import pytest
 
 import dpnp
 
+from .helper import has_support_aspect64
+
 
 class TestHistogram:
     def setup(self):
@@ -20,7 +22,14 @@ class TestHistogram:
         numpy.testing.assert_equal(dpnp.sum(a, axis=0), n)
         # check that the bin counts are evenly spaced when the data is from
         # a linear function
-        (a, b) = dpnp.histogram(numpy.linspace(0, 10, 100))
+        (a, b) = dpnp.histogram(
+            numpy.linspace(
+                0,
+                10,
+                100,
+                dtype="float64" if has_support_aspect64() else "float32",
+            )
+        )
         numpy.testing.assert_array_equal(a, 10)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")

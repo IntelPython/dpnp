@@ -4,7 +4,7 @@ from numpy.testing import assert_, assert_array_equal, assert_equal
 
 import dpnp
 
-from .helper import get_all_dtypes
+from .helper import get_all_dtypes, has_support_aspect64
 
 
 class TestIndexing:
@@ -592,18 +592,7 @@ def test_select():
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize(
-    "array_type",
-    [
-        numpy.bool8,
-        numpy.int32,
-        numpy.int64,
-        numpy.float32,
-        numpy.float64,
-        numpy.complex128,
-    ],
-    ids=["bool8", "int32", "int64", "float32", "float64", "complex128"],
-)
+@pytest.mark.parametrize("array_type", get_all_dtypes(no_none=True))
 @pytest.mark.parametrize(
     "indices_type", [numpy.int32, numpy.int64], ids=["int32", "int64"]
 )
@@ -641,6 +630,8 @@ def test_select():
     ],
 )
 def test_take(array, indices, array_type, indices_type):
+    if not has_support_aspect64() and array_type is numpy.complex64:
+        pytest.skip("The device does not support result of take function")
     a = numpy.array(array, dtype=array_type)
     ind = numpy.array(indices, dtype=indices_type)
     ia = dpnp.array(a)
