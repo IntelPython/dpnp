@@ -162,8 +162,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_KRON_EXT
         DPNP_FN_LEFT_SHIFT
         DPNP_FN_LEFT_SHIFT_EXT
-        DPNP_FN_LOG
-        DPNP_FN_LOG_EXT
         DPNP_FN_LOG10
         DPNP_FN_LOG10_EXT
         DPNP_FN_LOG1P
@@ -554,7 +552,6 @@ cpdef dpnp_descriptor dpnp_degrees(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_exp(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_exp2(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_expm1(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_log(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_log10(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_log1p(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_log2(dpnp_descriptor array1)

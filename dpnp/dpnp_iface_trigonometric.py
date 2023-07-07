@@ -47,6 +47,11 @@ import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
+from .dpnp_algo.dpnp_elementwise_common import (
+    check_nd_call_func,
+    dpnp_log,
+)
+
 __all__ = [
     "arccos",
     "arccosh",
@@ -693,15 +698,35 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
     )
 
 
-def log(x1, out=None, **kwargs):
+def log(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
-    Trigonometric logarithm, element-wise.
+    Natural logarithm, element-wise.
+
+    The natural logarithm `log` is the inverse of the exponential function,
+    so that `log(exp(x)) = x`. The natural logarithm is logarithm in base `e`.
 
     For full documentation refer to :obj:`numpy.log`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        The natural logarithm of `x`, element-wise.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -715,25 +740,23 @@ def log(x1, out=None, **kwargs):
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([1.0, np.e, np.e**2, 0.0])
-    >>> out = np.log(x)
-    >>> [i for i in out]
-    [0.0, 1.0, 2.0, -inf]
+    >>> x = np.array([1, np.e, np.e**2, 0])
+    >>> np.log(x)
+    array([  0.,   1.,   2., -inf])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.log,
+        dpnp_log,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        out_desc = (
-            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-            if out is not None
-            else None
-        )
-        return dpnp_log(x1_desc, out_desc).get_pyobj()
-
-    return call_origin(numpy.log, x1, out=out, **kwargs)
 
 
 def log10(x1):

@@ -30,13 +30,18 @@
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
-from dpctl.tensor._elementwise_common import BinaryElementwiseFunc
+from dpctl.tensor._elementwise_common import (
+    BinaryElementwiseFunc,
+    UnaryElementwiseFunc,
+)
 
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import call_origin
 
 __all__ = [
+    "check_nd_call_func",
     "dpnp_add",
     "dpnp_divide",
     "dpnp_equal",
@@ -44,10 +49,77 @@ __all__ = [
     "dpnp_greater_equal",
     "dpnp_less",
     "dpnp_less_equal",
+    "dpnp_log",
     "dpnp_multiply",
     "dpnp_not_equal",
     "dpnp_subtract",
 ]
+
+
+def check_nd_call_func(
+    origin_func,
+    dpnp_func,
+    *x_args,
+    out=None,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Checks arguments and calls function with a single input array.
+
+    Chooses a common internal elementwise function to call in DPNP based on input arguments
+    or to fallback on NumPy call if any passed argument is not currently supported.
+    """
+
+    args_len = len(x_args)
+    if kwargs:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif args_len < 1 or args_len > 2:
+        raise ValueError(
+            "Unsupported number of input arrays to pass in elementwise function {}".format(
+                dpnp_func.__name__
+            )
+        )
+    elif args_len == 1 and dpnp.isscalar(x_args[0]):
+        # input has to be an array
+        pass
+    elif (
+        args_len == 2 and dpnp.isscalar(x_args[0]) and dpnp.isscalar(x_args[1])
+    ):
+        # at least one of input has to be an array
+        pass
+    else:
+        if order in "afkcAFKC":
+            order = order.upper()
+        elif order is None:
+            order = "K"
+        else:
+            raise ValueError(
+                "order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(
+                    order
+                )
+            )
+
+        return dpnp_func(*x_args, out=out, order=order)
+    return call_origin(
+        origin_func,
+        *x_args,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 _add_docstring_ = """
@@ -133,7 +205,7 @@ def dpnp_divide(x1, x2, out=None, order="K"):
         if depends is None:
             depends = []
 
-        if vmi._can_call_div(sycl_queue, src1, src2, dst):
+        if vmi._mkl_div_to_call(sycl_queue, src1, src2, dst):
             # call pybind11 extension for div() function from OneMKL VM
             return vmi._div(sycl_queue, src1, src2, dst, depends)
         return ti._divide(src1, src2, dst, sycl_queue, depends)
@@ -371,6 +443,54 @@ def dpnp_less_equal(x1, x2, out=None, order="K"):
         _less_equal_docstring_,
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_log_docstring = """
+log(x, out=None, order='K')
+Computes the natural logarithm element-wise.
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise natural logarithm values.
+"""
+
+
+def dpnp_log(x, out=None, order="K"):
+    """
+    Invokes log() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for log() function.
+
+    """
+
+    def _call_log(src, dst, sycl_queue, depends=None):
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
+
+        if vmi._mkl_ln_to_call(sycl_queue, src, dst):
+            # call pybind11 extension for ln() function from OneMKL VM
+            return vmi._ln(sycl_queue, src, dst, depends)
+        return ti._log(src, dst, sycl_queue, depends)
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "log", ti._log_result_type, _call_log, _log_docstring
+    )
+    res_usm = func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
