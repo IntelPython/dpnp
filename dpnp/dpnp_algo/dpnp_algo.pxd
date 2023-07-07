@@ -90,8 +90,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_COPYTO_EXT
         DPNP_FN_CORRELATE
         DPNP_FN_CORRELATE_EXT
-        DPNP_FN_COS
-        DPNP_FN_COS_EXT
         DPNP_FN_COSH
         DPNP_FN_COSH_EXT
         DPNP_FN_COUNT_NONZERO
@@ -293,8 +291,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SEARCHSORTED_EXT
         DPNP_FN_SIGN
         DPNP_FN_SIGN_EXT
-        DPNP_FN_SIN
-        DPNP_FN_SIN_EXT
         DPNP_FN_SINH
         DPNP_FN_SINH_EXT
         DPNP_FN_SORT
@@ -544,7 +540,6 @@ cpdef dpnp_descriptor dpnp_arcsinh(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_arctan(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_arctanh(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_cbrt(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_cos(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_cosh(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_degrees(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_exp(dpnp_descriptor array1, dpnp_descriptor out)
@@ -555,7 +550,6 @@ cpdef dpnp_descriptor dpnp_log1p(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_log2(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_radians(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_recip(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_sin(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_sinh(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_square(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_tan(dpnp_descriptor array1, dpnp_descriptor out)
