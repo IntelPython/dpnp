@@ -459,7 +459,7 @@ Args:
         output array, if parameter `out` is `None`.
         Default: "K".
 Return:
-    usm_ndarray:
+    dpnp.ndarray:
         An array containing the element-wise natural logarithm values.
 """
 
