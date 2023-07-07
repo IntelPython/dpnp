@@ -153,7 +153,7 @@ PYBIND11_MODULE(_vm_impl, m)
         };
         m.def("_sin", sin_pyapi,
               "Call `sin` function from OneMKL VM library to compute "
-              "natural logarithm of vector elements",
+              "sine of vector elements",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
               py::arg("depends") = py::list());
 
