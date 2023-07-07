@@ -33,6 +33,7 @@
 #include "common.hpp"
 #include "div.hpp"
 #include "ln.hpp"
+#include "sqrt.hpp"
 #include "types_matrix.hpp"
 
 namespace py = pybind11;
@@ -44,6 +45,7 @@ using vm_ext::unary_impl_fn_ptr_t;
 static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
 
 static unary_impl_fn_ptr_t ln_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t sqrt_dispatch_vector[dpctl_td_ns::num_types];
 
 PYBIND11_MODULE(_vm_impl, m)
 {
@@ -104,6 +106,36 @@ PYBIND11_MODULE(_vm_impl, m)
         };
         m.def("_mkl_ln_to_call", ln_need_to_call_pyapi,
               "Check input arguments to answer if `ln` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Sqrt(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::SqrtContigFactory>(
+            sqrt_dispatch_vector);
+
+        auto sqrt_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                              const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       sqrt_dispatch_vector);
+        };
+        m.def(
+            "_sqrt", sqrt_pyapi,
+            "Call `sqrt` from OneMKL VM library to performs element by element "
+            "operation of extracting the square root "
+            "of vector `src` to resulting vector `dst`",
+            py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+            py::arg("depends") = py::list());
+
+        auto sqrt_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                           arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    sqrt_dispatch_vector);
+        };
+        m.def("_mkl_sqrt_to_call", sqrt_need_to_call_pyapi,
+              "Check input arguments to answer if `sqrt` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }
