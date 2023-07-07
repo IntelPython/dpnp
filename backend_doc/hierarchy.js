@@ -4,6 +4,8 @@ var hierarchy =
     [ "std::conjunction", null, [
       [ "are_same< T, Ts >", "structare__same.html", null ]
     ] ],
+    [ "dpnp::backend::ext::vm::CosContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_cos_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::CosOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cos_output_type.html", null ],
     [ "std::disjunction", null, [
       [ "is_any< T, Ts >", "structis__any.html", null ]
     ] ],
@@ -23,6 +25,8 @@ var hierarchy =
     [ "dpnp::backend::ext::vm::LnContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ln_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::LnOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ln_output_type.html", null ],
     [ "python_constants", "structpython__constants.html", null ],
+    [ "dpnp::backend::ext::vm::SinContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sin_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::SinOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sin_output_type.html", null ],
     [ "dpnp::backend::ext::lapack::types::SyevdTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
     [ "Ps", null, [
       [ "func_type_map_factory_t< Ps >", "structfunc__type__map__factory__t.html", null ]

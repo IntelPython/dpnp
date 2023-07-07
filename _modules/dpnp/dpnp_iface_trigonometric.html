@@ -134,7 +134,9 @@
 
 <span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">check_nd_call_func</span><span class="p">,</span>
+    <span class="n">dpnp_cos</span><span class="p">,</span>
     <span class="n">dpnp_log</span><span class="p">,</span>
+    <span class="n">dpnp_sin</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -493,39 +495,54 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="cos"><a class="viewcode-back" href="../../reference/generated/dpnp.cos.html#dpnp.cos">[docs]</a><span class="k">def</span> <span class="nf">cos</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="cos"><a class="viewcode-back" href="../../reference/generated/dpnp.cos.html#dpnp.cos">[docs]</a><span class="k">def</span> <span class="nf">cos</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Trigonometric cosine, element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.cos`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">        The cosine of each element of `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([0, np.pi/2, np.pi])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.cos(x)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [1.0, 6.123233995736766e-17, -1.0]</span>
+<span class="sd">    &gt;&gt;&gt; np.cos(x)</span>
+<span class="sd">    array([ 1.000000e+00, -4.371139e-08, -1.000000e+00])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="n">out_desc</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="kc">None</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">dpnp_cos</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">out_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">,</span>
+        <span class="n">dpnp_cos</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="cosh"><a class="viewcode-back" href="../../reference/generated/dpnp.cosh.html#dpnp.cosh">[docs]</a><span class="k">def</span> <span class="nf">cosh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -1030,18 +1047,32 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">radians</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="sin"><a class="viewcode-back" href="../../reference/generated/dpnp.sin.html#dpnp.sin">[docs]</a><span class="k">def</span> <span class="nf">sin</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="sin"><a class="viewcode-back" href="../../reference/generated/dpnp.sin.html#dpnp.sin">[docs]</a><span class="k">def</span> <span class="nf">sin</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Trigonometric sine, element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.sin`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">        The sine of each element of `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``x1`` is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Parameter ``out`` is supported as default value ``None``.</span>
-<span class="sd">    Keyword arguments ``kwargs`` are currently unsupported.</span>
-<span class="sd">    Otherwise the functions will be executed sequentially on CPU.</span>
+<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
@@ -1054,24 +1085,22 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([0, np.pi/2, np.pi])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.sin(x)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [0.0, 1.0, 1.2246467991473532e-16]</span>
+<span class="sd">    &gt;&gt;&gt; np.sin(x)</span>
+<span class="sd">    array([ 0.000000e+00,  1.000000e+00, -8.742278e-08])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="n">out_desc</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="kc">None</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">dpnp_sin</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">out_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
+        <span class="n">dpnp_sin</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="sinh"><a class="viewcode-back" href="../../reference/generated/dpnp.sinh.html#dpnp.sinh">[docs]</a><span class="k">def</span> <span class="nf">sinh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>

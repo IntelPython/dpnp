@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['heevdtypepairsupportfactory_0',['HeevdTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]]
+  ['func_5ftype_5fmap_5ffactory_5ft_0',['func_type_map_factory_t',['../structfunc__type__map__factory__t.html',1,'']]],
+  ['func_5ftype_5fpair_5ft_1',['func_type_pair_t',['../structfunc__type__pair__t.html',1,'']]]
 ];
