@@ -184,11 +184,12 @@ class TestsLog:
         np_out = numpy.empty(10, dtype=numpy.float64)
 
         # DPNP
+        dp_out_dtype = dpnp.float32
+        if has_support_aspect64() and dtype != dpnp.float32:
+            dp_out_dtype = dpnp.float64
+
+        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
         dp_array = dpnp.array(np_array, dtype=dtype)
-        dp_out = dpnp.array(
-            np_out,
-            dtype=dpnp.float64 if has_support_aspect64() else dpnp.float32,
-        )
         result = dpnp.log(dp_array, out=dp_out)
 
         # original
@@ -201,11 +202,12 @@ class TestsLog:
         np_out = numpy.empty(10, dtype=numpy.complex128)
 
         # DPNP
+        dp_out_dtype = dpnp.complex64
+        if has_support_aspect64() and dtype != dpnp.complex64:
+            dp_out_dtype = dpnp.complex128
+
+        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
         dp_array = dpnp.array(np_array, dtype=dtype)
-        dp_out = dpnp.array(
-            np_out,
-            dtype=dpnp.complex128 if has_support_aspect64() else dpnp.complex64,
-        )
         result = dpnp.log(dp_array, out=dp_out)
 
         # original
