@@ -1031,14 +1031,18 @@ def sqrt(
     **kwargs,
 ):
     """
-    Return the positive square-root of an array, element-wise.
+    Return the non-negative square-root of an array, element-wise.
 
     For full documentation refer to :obj:`numpy.sqrt`.
 
     Returns
     -------
     y : dpnp.ndarray
-        An array containing the element-wise results of positive square root.
+        An array of the same shape as `x`, containing the positive
+        square-root of each element in `x`.  If any element in `x` is
+        complex, a complex array is returned (and the square-roots of
+        negative reals are calculated).  If all of the elements in `x`
+        are real, so is `y`, with negative elements returning ``nan``.
 
     Limitations
     -----------

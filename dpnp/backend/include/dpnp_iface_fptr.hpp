@@ -483,8 +483,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SORT_EXT, /**< Used in numpy.sort() impl, requires extra parameters
                        */
     DPNP_FN_SQRT,     /**< Used in numpy.sqrt() impl  */
-    DPNP_FN_SQRT_EXT, /**< Used in numpy.sqrt() impl, requires extra parameters
-                       */
     DPNP_FN_SQUARE,   /**< Used in numpy.square() impl  */
     DPNP_FN_SQUARE_EXT, /**< Used in numpy.square() impl, requires extra
                            parameters */

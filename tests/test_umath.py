@@ -7,7 +7,6 @@ import dpnp
 from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
-    get_float_complex_dtypes,
     has_support_aspect16,
     has_support_aspect64,
 )
