@@ -1,12 +1,12 @@
 var NAVTREEINDEX2 =
 {
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558af905d2372a52b6fb1b7a22b76010b6dd":[0,2,2,159],
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558af9851fa6cc53a0fdbda609d059f26f8f":[0,2,2,143],
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558afca9175f1ea7f71a0cf585421ea66a27":[0,2,2,271],
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558afeedec938b7ca8cd5bcb8d1b6420e781":[0,2,2,275],
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558af905d2372a52b6fb1b7a22b76010b6dd":[0,2,2,158],
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558af9851fa6cc53a0fdbda609d059f26f8f":[0,2,2,142],
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558afca9175f1ea7f71a0cf585421ea66a27":[0,2,2,270],
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558afeedec938b7ca8cd5bcb8d1b6420e781":[0,2,2,274],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aff4168a7cd7fb4d4eb3262ea311b7498":[0,2,2,112],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558affbf46f58f8741b15c07c0600250e7bf":[0,2,2,24],
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558affc2163c69279951e165fb38fb98bb41":[0,2,2,179],
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558affc2163c69279951e165fb38fb98bb41":[0,2,2,178],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a1d41c2373d33a46bb47a6791a876c103":[0,2,3,1],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a2ca75eef4ff62b379b29390b6efe736f":[0,2,3,2],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a4dd2e447249c9f1ed5b4a01263bd8d06":[0,2,3,0],
@@ -67,6 +67,7 @@ var NAVTREEINDEX2 =
 "hierarchy.html":[1,2],
 "index.html":[],
 "lapack_2types__matrix_8hpp_source.html":[2,0,0,0,2],
+"ln_8hpp_source.html":[2,0,0,1,2],
 "modules.html":[0],
 "pages.html":[],
 "queue__sycl_8hpp_source.html":[2,0,2,7],
@@ -78,7 +79,10 @@ var NAVTREEINDEX2 =
 "structare__same.html":[1,0,1],
 "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html":[1,0,0,0,0,0,0,0],
 "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html":[1,0,0,0,0,0,0,1],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_type_pair_support_factory.html":[1,0,0,0,0,1,0,0],
+"structdpnp_1_1backend_1_1ext_1_1vm_1_1_div_contig_factory.html":[1,0,0,0,0,1,1],
+"structdpnp_1_1backend_1_1ext_1_1vm_1_1_ln_contig_factory.html":[1,0,0,0,0,1,2],
+"structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_output_type.html":[1,0,0,0,0,1,0,0],
+"structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ln_output_type.html":[1,0,0,0,0,1,0,1],
 "structengine__struct.html":[1,0,8],
 "structfunc__type__map__factory__t.html":[1,0,9],
 "structfunc__type__pair__t.html":[1,0,10],
@@ -88,5 +92,5 @@ var NAVTREEINDEX2 =
 "structpython__constants.html":[1,0,14],
 "syevd_8hpp_source.html":[2,0,0,0,1],
 "verbose_8hpp_source.html":[2,0,2,8],
-"vm_2types__matrix_8hpp_source.html":[2,0,0,1,1]
+"vm_2types__matrix_8hpp_source.html":[2,0,0,1,3]
 };

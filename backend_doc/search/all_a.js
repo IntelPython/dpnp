@@ -1,6 +1,10 @@
 var searchData=
 [
-  ['operator_2b_2b_0',['operator++',['../class_d_p_n_p___u_s_m__iterator.html#a995480447406ffd7421ddbd4006637be',1,'DPNP_USM_iterator::operator++()'],['../class_d_p_n_p___u_s_m__iterator.html#a8f31f980fbfb90d1e9367438a7351e26',1,'DPNP_USM_iterator::operator++(int)']]],
-  ['operator_3c_3c_1',['operator&lt;&lt;',['../class_d_p_n_p___u_s_m__iterator.html#ad8717a8073f17dc82cbfc74a9fbcc777',1,'DPNP_USM_iterator::operator&lt;&lt;()'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga2d677a923f4dc4c31e302b0c3bb692f0',1,'operator&lt;&lt;(std::ostream &amp;out, const std::vector&lt; T &gt; &amp;vec):&#160;dpnp_utils.hpp'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga632dede9569431596d7423005389a147',1,'operator&lt;&lt;(std::ostream &amp;out, DPNPFuncType elem):&#160;dpnp_utils.hpp']]],
-  ['operator_5b_5d_2',['operator[]',['../class_d_p_n_p_c__id.html#a2e98849be3b71da7efdfbccdcb26c010',1,'DPNPC_id']]]
+  ['mcg59_5fdelete_0',['MCG59_Delete',['../group___b_a_c_k_e_n_d___a_p_i.html#gad658fb513fc4ab24115573d8bdbf38df',1,'dpnp_random_state.hpp']]],
+  ['mcg59_5finitscalarseed_1',['MCG59_InitScalarSeed',['../group___b_a_c_k_e_n_d___a_p_i.html#ga8d41fc0affbac587992402c23ff9b930',1,'dpnp_random_state.hpp']]],
+  ['mcg59_5fstruct_2',['mcg59_struct',['../structmcg59__struct.html',1,'']]],
+  ['mt19937_5fdelete_3',['MT19937_Delete',['../group___b_a_c_k_e_n_d___a_p_i.html#gaff33ecfcdcc418196d3361d37c53f5f0',1,'dpnp_random_state.hpp']]],
+  ['mt19937_5finitscalarseed_4',['MT19937_InitScalarSeed',['../group___b_a_c_k_e_n_d___a_p_i.html#ga27e7a066bbe9e7bb42ea0bb4aa80fa5a',1,'dpnp_random_state.hpp']]],
+  ['mt19937_5finitvectorseed_5',['MT19937_InitVectorSeed',['../group___b_a_c_k_e_n_d___a_p_i.html#ga5aa43f73b2b057034fd5f29cd86ea246',1,'dpnp_random_state.hpp']]],
+  ['mt19937_5fstruct_6',['mt19937_struct',['../structmt19937__struct.html',1,'']]]
 ];

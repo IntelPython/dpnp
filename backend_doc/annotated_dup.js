@@ -11,8 +11,11 @@ var annotated_dup =
           ] ],
           [ "vm", null, [
             [ "types", null, [
-              [ "DivTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_type_pair_support_factory.html", null ]
-            ] ]
+              [ "DivOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_output_type.html", null ],
+              [ "LnOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ln_output_type.html", null ]
+            ] ],
+            [ "DivContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_div_contig_factory.html", null ],
+            [ "LnContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ln_contig_factory.html", null ]
           ] ]
         ] ]
       ] ]

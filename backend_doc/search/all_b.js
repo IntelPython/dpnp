@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['ptr_0',['ptr',['../struct_d_p_n_p_func_data.html#af40fd22f5954384788121f817fb02f0d',1,'DPNPFuncData']]],
-  ['ptr_5fno_5ffp64_1',['ptr_no_fp64',['../struct_d_p_n_p_func_data.html#aa88f90ce507ebffe7462bba4d2df6c76',1,'DPNPFuncData']]],
-  ['py_5fnan_2',['py_nan',['../structpython__constants.html#ad34c02509443758b7257406387f7a14c',1,'python_constants']]],
-  ['py_5fnone_3',['py_none',['../structpython__constants.html#a4b321c2c3693f0fedfe18e20c317dd24',1,'python_constants']]],
-  ['python_5fconstants_4',['python_constants',['../structpython__constants.html',1,'']]]
+  ['operator_2b_2b_0',['operator++',['../class_d_p_n_p___u_s_m__iterator.html#a995480447406ffd7421ddbd4006637be',1,'DPNP_USM_iterator::operator++()'],['../class_d_p_n_p___u_s_m__iterator.html#a8f31f980fbfb90d1e9367438a7351e26',1,'DPNP_USM_iterator::operator++(int)']]],
+  ['operator_3c_3c_1',['operator&lt;&lt;',['../class_d_p_n_p___u_s_m__iterator.html#ad8717a8073f17dc82cbfc74a9fbcc777',1,'DPNP_USM_iterator::operator&lt;&lt;()'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga2d677a923f4dc4c31e302b0c3bb692f0',1,'operator&lt;&lt;(std::ostream &amp;out, const std::vector&lt; T &gt; &amp;vec):&#160;dpnp_utils.hpp'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga632dede9569431596d7423005389a147',1,'operator&lt;&lt;(std::ostream &amp;out, DPNPFuncType elem):&#160;dpnp_utils.hpp']]],
+  ['operator_5b_5d_2',['operator[]',['../class_d_p_n_p_c__id.html#a2e98849be3b71da7efdfbccdcb26c010',1,'DPNPC_id']]]
 ];
