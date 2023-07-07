@@ -90,7 +90,7 @@ std::pair<sycl::event, sycl::event>
     // check that queues are compatible
     if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
-            "Execution queue is not compatible with allocation queues");
+            "Execution queue is not compatible with allocation queues.");
     }
 
     // check that dimensions are the same
