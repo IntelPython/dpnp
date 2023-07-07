@@ -49,7 +49,9 @@ from dpnp.dpnp_utils import *
 
 from .dpnp_algo.dpnp_elementwise_common import (
     check_nd_call_func,
+    dpnp_cos,
     dpnp_log,
+    dpnp_sin,
 )
 
 __all__ = [
@@ -408,39 +410,54 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
     )
 
 
-def cos(x1, out=None, **kwargs):
+def cos(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Trigonometric cosine, element-wise.
 
     For full documentation refer to :obj:`numpy.cos`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        The cosine of each element of `x`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([0, np.pi/2, np.pi])
-    >>> out = np.cos(x)
-    >>> [i for i in out]
-    [1.0, 6.123233995736766e-17, -1.0]
+    >>> np.cos(x)
+    array([ 1.000000e+00, -4.371139e-08, -1.000000e+00])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.cos,
+        dpnp_cos,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        out_desc = (
-            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-            if out is not None
-            else None
-        )
-        return dpnp_cos(x1_desc, out_desc).get_pyobj()
-
-    return call_origin(numpy.cos, x1, out=out, **kwargs)
 
 
 def cosh(x1):
@@ -945,18 +962,32 @@ def radians(x1):
     return call_origin(numpy.radians, x1, **kwargs)
 
 
-def sin(x1, out=None, **kwargs):
+def sin(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Trigonometric sine, element-wise.
 
     For full documentation refer to :obj:`numpy.sin`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        The sine of each element of `x`.
+
     Limitations
     -----------
-    Parameters ``x1`` is supported as :obj:`dpnp.ndarray`.
-    Parameter ``out`` is supported as default value ``None``.
-    Keyword arguments ``kwargs`` are currently unsupported.
-    Otherwise the functions will be executed sequentially on CPU.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -969,24 +1000,22 @@ def sin(x1, out=None, **kwargs):
     --------
     >>> import dpnp as np
     >>> x = np.array([0, np.pi/2, np.pi])
-    >>> out = np.sin(x)
-    >>> [i for i in out]
-    [0.0, 1.0, 1.2246467991473532e-16]
+    >>> np.sin(x)
+    array([ 0.000000e+00,  1.000000e+00, -8.742278e-08])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.sin,
+        dpnp_sin,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        out_desc = (
-            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-            if out is not None
-            else None
-        )
-        return dpnp_sin(x1_desc, out_desc).get_pyobj()
-
-    return call_origin(numpy.sin, x1, out=out, **kwargs)
 
 
 def sinh(x1):

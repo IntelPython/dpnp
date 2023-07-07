@@ -31,8 +31,10 @@
 #include <pybind11/stl.h>
 
 #include "common.hpp"
+#include "cos.hpp"
 #include "div.hpp"
 #include "ln.hpp"
+#include "sin.hpp"
 #include "types_matrix.hpp"
 
 namespace py = pybind11;
@@ -43,7 +45,9 @@ using vm_ext::unary_impl_fn_ptr_t;
 
 static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
 
+static unary_impl_fn_ptr_t cos_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ln_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t sin_dispatch_vector[dpctl_td_ns::num_types];
 
 PYBIND11_MODULE(_vm_impl, m)
 {
@@ -80,6 +84,34 @@ PYBIND11_MODULE(_vm_impl, m)
               py::arg("dst"));
     }
 
+    // UnaryUfunc: ==== Cos(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::CosContigFactory>(
+            cos_dispatch_vector);
+
+        auto cos_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                             const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       cos_dispatch_vector);
+        };
+        m.def("_cos", cos_pyapi,
+              "Call `cos` function from OneMKL VM library to compute "
+              "cosine of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto cos_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                          arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    cos_dispatch_vector);
+        };
+        m.def("_mkl_cos_to_call", cos_need_to_call_pyapi,
+              "Check input arguments to answer if `cos` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
     // UnaryUfunc: ==== Ln(x) ====
     {
         vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
@@ -104,6 +136,34 @@ PYBIND11_MODULE(_vm_impl, m)
         };
         m.def("_mkl_ln_to_call", ln_need_to_call_pyapi,
               "Check input arguments to answer if `ln` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Sin(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::SinContigFactory>(
+            sin_dispatch_vector);
+
+        auto sin_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                             const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       sin_dispatch_vector);
+        };
+        m.def("_sin", sin_pyapi,
+              "Call `sin` function from OneMKL VM library to compute "
+              "sine of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto sin_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                          arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    sin_dispatch_vector);
+        };
+        m.def("_mkl_sin_to_call", sin_need_to_call_pyapi,
+              "Check input arguments to answer if `sin` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }

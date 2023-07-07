@@ -948,9 +948,13 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_axis_transposed
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont
+tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_period
+tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont_and_period
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_axis
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_discont
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_without_axis
+tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_period
+tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_discont_and_period
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_0_{a_shape=(), b_shape=(), shape=(4, 3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_1_{a_shape=(), b_shape=(), shape=(3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_2_{a_shape=(), b_shape=(3, 2), shape=(4, 3, 2)}::test_beta
