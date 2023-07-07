@@ -97,7 +97,7 @@ PYBIND11_MODULE(_vm_impl, m)
         };
         m.def("_cos", cos_pyapi,
               "Call `cos` function from OneMKL VM library to compute "
-              "natural logarithm of vector elements",
+              "cosine of vector elements",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
               py::arg("depends") = py::list());
 
