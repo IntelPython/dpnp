@@ -681,6 +681,7 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNu
 
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2
+tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2_infinities
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_copysign_float
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_frexp
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_ldexp

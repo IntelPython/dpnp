@@ -2,7 +2,6 @@ import functools
 import io
 import itertools
 import types
-import typing as tp  # NOQA
 import unittest
 
 from tests.third_party.cupy.testing import _bundle

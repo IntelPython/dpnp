@@ -23,6 +23,25 @@ repos:
     -   id: fix-byte-order-marker
     -   id: mixed-line-ending
     -   id: trailing-whitespace
+-   repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+    -   id: python-check-blanket-noqa
+    -   id: python-check-blanket-type-ignore
+    -   id: python-check-mock-methods
+    -   id: python-no-eval
+        exclude: |
+            (?x)^(
+                tests/test_arraycreation.py|
+                tests/test_sycl_queue.py|
+                tests/test_usm_type.py
+            )$
+    -   id: python-no-log-warn
+    -   id: python-use-type-annotations
+    -   id: rst-backticks
+    -   id: rst-directive-colons
+    -   id: rst-inline-touching-normal
+    -   id: text-unicode-replacement-char
 -   repo: https://github.com/psf/black
     rev: 23.3.0
     hooks:
@@ -39,8 +58,16 @@ repos:
     -   id: isort
         name: isort (pyi)
         types: [pyi]
+-   repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+    -   id: flake8
+        args: ["--config=.flake8"]
+        additional_dependencies:
+            - flake8-docstrings==1.7.0
+            - flake8-bugbear==23.6.5
 -   repo: https://github.com/pocc/pre-commit-hooks
     rev: v1.3.5
     hooks:
     -   id: clang-format
-        args: ["-i", "--version=12"]
+        args: ["-i"]

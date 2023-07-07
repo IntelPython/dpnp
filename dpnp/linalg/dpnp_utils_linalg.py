@@ -40,6 +40,8 @@ _upper_lower = {"U": 0, "L": 1}
 
 def dpnp_eigh(a, UPLO):
     """
+    dpnp_eigh(a, UPLO)
+
     Return the eigenvalues and eigenvectors of a complex Hermitian
     (conjugate symmetric) or a real symmetric matrix.
 

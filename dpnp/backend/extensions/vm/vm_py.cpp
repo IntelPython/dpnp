@@ -30,35 +30,81 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "common.hpp"
 #include "div.hpp"
+#include "ln.hpp"
+#include "types_matrix.hpp"
 
-namespace vm_ext = dpnp::backend::ext::vm;
 namespace py = pybind11;
+namespace vm_ext = dpnp::backend::ext::vm;
 
-// populate dispatch vectors
-void init_dispatch_vectors(void)
-{
-    vm_ext::init_div_dispatch_vector();
-}
+using vm_ext::binary_impl_fn_ptr_t;
+using vm_ext::unary_impl_fn_ptr_t;
 
-// populate dispatch tables
-void init_dispatch_tables(void) {}
+static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
+
+static unary_impl_fn_ptr_t ln_dispatch_vector[dpctl_td_ns::num_types];
 
 PYBIND11_MODULE(_vm_impl, m)
 {
-    init_dispatch_vectors();
-    init_dispatch_tables();
+    using arrayT = dpctl::tensor::usm_ndarray;
+    using event_vecT = std::vector<sycl::event>;
 
-    m.def("_div", &vm_ext::div,
-          "Call `div` from OneMKL VM library to performs element by element "
-          "division "
-          "of vector `src1` by vector `src2` to resulting vector `dst`",
-          py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
-          py::arg("dst"), py::arg("depends") = py::list());
+    // BinaryUfunc: ==== Div(x1, x2) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<binary_impl_fn_ptr_t,
+                                           vm_ext::DivContigFactory>(
+            div_dispatch_vector);
 
-    m.def("_can_call_div", &vm_ext::can_call_div,
-          "Check input arrays to answer if `div` function from OneMKL VM "
-          "library can be used",
-          py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
-          py::arg("dst"));
+        auto div_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                             arrayT dst, const event_vecT &depends = {}) {
+            return vm_ext::binary_ufunc(exec_q, src1, src2, dst, depends,
+                                        div_dispatch_vector);
+        };
+        m.def("_div", div_pyapi,
+              "Call `div` function from OneMKL VM library to performs element "
+              "by element division of vector `src1` by vector `src2` "
+              "to resulting vector `dst`",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("depends") = py::list());
+
+        auto div_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
+                                          arrayT src2, arrayT dst) {
+            return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
+                                                     div_dispatch_vector);
+        };
+        m.def("_mkl_div_to_call", div_need_to_call_pyapi,
+              "Check input arguments to answer if `div` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Ln(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::LnContigFactory>(
+            ln_dispatch_vector);
+
+        auto ln_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                            const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       ln_dispatch_vector);
+        };
+        m.def("_ln", ln_pyapi,
+              "Call `ln` function from OneMKL VM library to compute "
+              "natural logarithm of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto ln_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                         arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    ln_dispatch_vector);
+        };
+        m.def("_mkl_ln_to_call", ln_need_to_call_pyapi,
+              "Check input arguments to answer if `ln` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
 }

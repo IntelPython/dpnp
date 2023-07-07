@@ -8,3 +8,12 @@ b0cd5f85c9b0c2705359fee3a3f4f3feda53bfa0
 
 # Add clang-format to pre-commit config
 ae755b57a9aeeb09435594aa7f6a04bf4cdc55fa
+
+# Add isort to pre-commit config
+3f202cf778cc47698310f2d040e5f83bdf2a90da
+
+# Add flake8 to pre-commit config
+c106d91b866f4acd30226b68519b12a73a881490
+
+# Add pygrep-hooks to pre-commit config
+e62718415aa3660da5f607e352c991a063a54219

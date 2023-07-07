@@ -17,12 +17,12 @@ class TestHistogram:
     def test_simple(self):
         n = 100
         v = dpnp.random.rand(n)
-        (a, b) = dpnp.histogram(v)
+        a, _ = dpnp.histogram(v)
         # check if the sum of the bins equals the number of samples
         numpy.testing.assert_equal(dpnp.sum(a, axis=0), n)
         # check that the bin counts are evenly spaced when the data is from
         # a linear function
-        (a, b) = dpnp.histogram(
+        a, _ = dpnp.histogram(
             numpy.linspace(
                 0,
                 10,
@@ -76,7 +76,7 @@ class TestHistogram:
 
         # Taken from a bug report from N. Becker on the numpy-discussion
         # mailing list Aug. 6, 2010.
-        counts, dmy = dpnp.histogram(
+        counts, _ = dpnp.histogram(
             [1, 2, 3, 4], [0.5, 1.5, numpy.inf], density=True
         )
         numpy.testing.assert_equal(counts, [0.25, 0])

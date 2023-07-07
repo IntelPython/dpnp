@@ -40,6 +40,8 @@ __all__ = ["dpnp_cov"]
 
 def dpnp_cov(m, y=None, rowvar=True, dtype=None):
     """
+    dpnp_cov(m, y=None, rowvar=True, dtype=None)
+
     Estimate a covariance matrix based on passed data.
     No support for given weights is provided now.
 

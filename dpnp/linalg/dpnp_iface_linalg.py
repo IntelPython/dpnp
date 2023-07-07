@@ -69,6 +69,7 @@ __all__ = [
 def cholesky(input):
     """
     Cholesky decomposition.
+
     Return the Cholesky decomposition, `L * L.H`, of the square matrix `input`,
     where `L` is lower-triangular and .H is the conjugate transpose operator
     (which is the ordinary transpose if `input` is real-valued).  `input` must be
@@ -111,6 +112,7 @@ def cholesky(input):
 def cond(input, p=None):
     """
     Compute the condition number of a matrix.
+
     For full documentation refer to :obj:`numpy.linalg.cond`.
 
     Limitations
@@ -179,6 +181,8 @@ def eig(x1):
 
 def eigh(a, UPLO="L"):
     """
+    eigh(a, UPLO="L")
+
     Return the eigenvalues and eigenvectors of a complex Hermitian
     (conjugate symmetric) or a real symmetric matrix.
 
@@ -246,6 +250,7 @@ def eigh(a, UPLO="L"):
 def eigvals(input):
     """
     Compute the eigenvalues of a general matrix.
+
     Main difference between `eigvals` and `eig`: the eigenvectors aren't
     returned.
 
@@ -317,7 +322,7 @@ def matrix_power(input, count):
 
     if not use_origin_backend() and count > 0:
         result = input
-        for id in range(count - 1):
+        for _ in range(count - 1):
             result = dpnp.matmul(result, input)
 
         return result
@@ -327,7 +332,8 @@ def matrix_power(input, count):
 
 def matrix_rank(input, tol=None, hermitian=False):
     """
-    Return matrix rank of array
+    Return matrix rank of array.
+
     Rank of the array is the number of singular values of the array that are
     greater than `tol`.
 
@@ -406,6 +412,7 @@ def multi_dot(arrays, out=None):
 def norm(x1, ord=None, axis=None, keepdims=False):
     """
     Matrix or vector norm.
+
     This function is able to return one of eight different matrix norms,
     or one of an infinite number of vector norms (described below), depending
     on the value of the ``ord`` parameter.
@@ -547,11 +554,11 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     if x1_desc:
         if not x1_desc.ndim == 2:
             pass
-        elif not full_matrices == True:
+        elif full_matrices is not True:
             pass
-        elif not compute_uv == True:
+        elif compute_uv is not True:
             pass
-        elif not hermitian == False:
+        elif hermitian is not False:
             pass
         else:
             result_tup = dpnp_svd(x1_desc, full_matrices, compute_uv, hermitian)

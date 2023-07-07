@@ -217,10 +217,7 @@ def where(condition, x=None, y=None, /):
     elif missing == 2:
         return dpnp.nonzero(condition)
     elif missing == 0:
-        check_input_type = lambda x: isinstance(
-            x, (dpnp_array, dpt.usm_ndarray)
-        )
-        if check_input_type(condition):
+        if dpnp.is_supported_array_type(condition):
             if numpy.isscalar(x) or numpy.isscalar(y):
                 # get USM type and queue to copy scalar from the host memory into a USM allocation
                 usm_type, queue = get_usm_allocations([condition, x, y])
@@ -234,7 +231,9 @@ def where(condition, x=None, y=None, /):
                     if numpy.isscalar(y)
                     else y
                 )
-            if check_input_type(x) and check_input_type(y):
+            if dpnp.is_supported_array_type(x) and dpnp.is_supported_array_type(
+                y
+            ):
                 dpt_condition = (
                     condition.get_array()
                     if isinstance(condition, dpnp_array)

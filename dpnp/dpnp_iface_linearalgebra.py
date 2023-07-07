@@ -45,7 +45,6 @@ import numpy
 
 import dpnp
 from dpnp.dpnp_algo import *
-from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
 
 __all__ = [
@@ -167,6 +166,8 @@ def einsum(*args, **kwargs):
 
 def einsum_path(*args, **kwargs):
     """
+    einsum_path(subscripts, *operands, optimize='greedy')
+
     Evaluates the lowest cost contraction order for an einsum expression
     by considering the creation of intermediate arrays.
 

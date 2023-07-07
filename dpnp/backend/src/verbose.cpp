@@ -33,11 +33,24 @@ bool is_verbose_mode()
 {
     if (!_is_verbose_mode_init) {
         _is_verbose_mode = false;
-        const char *env_var = std::getenv("DPNP_VERBOSE");
-        if (env_var and env_var == std::string("1")) {
+        char *env_var = nullptr;
+
+#ifdef _WIN32
+        size_t env_var_size = 0;
+        _dupenv_s(&env_var, &env_var_size, "DPNP_VERBOSE");
+#else
+        env_var = std::getenv("DPNP_VERBOSE");
+#endif
+
+        if (env_var && std::string(env_var) == "1") {
             _is_verbose_mode = true;
         }
         _is_verbose_mode_init = true;
+
+#ifdef _WIN32
+        if (env_var != nullptr)
+            free(env_var);
+#endif
     }
     return _is_verbose_mode;
 }

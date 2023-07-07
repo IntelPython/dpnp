@@ -44,10 +44,6 @@ except ImportError:
 
     import dpnp
 
-import time
-
-import numpy
-
 if __name__ == "__main__":
     # TODO
     # as is example1.py

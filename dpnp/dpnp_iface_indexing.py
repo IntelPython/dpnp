@@ -241,6 +241,7 @@ def diagonal(x1, offset=0, axis1=0, axis2=1):
 def extract(condition, x):
     """
     Return the elements of an array that satisfy some condition.
+
     For full documentation refer to :obj:`numpy.extract`.
 
     Returns
@@ -256,8 +257,9 @@ def extract(condition, x):
     Otherwise the function will be executed sequentially on CPU.
     """
 
-    check_input_type = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
-    if check_input_type(condition) and check_input_type(x):
+    if dpnp.is_supported_array_type(condition) and dpnp.is_supported_array_type(
+        x
+    ):
         if condition.shape != x.shape:
             pass
         else:
@@ -392,6 +394,7 @@ def nonzero(x, /):
 def place(x, mask, vals, /):
     """
     Change elements of an array based on conditional and input values.
+
     For full documentation refer to :obj:`numpy.place`.
 
     Limitations
@@ -401,11 +404,10 @@ def place(x, mask, vals, /):
     Otherwise the function will be executed sequentially on CPU.
     """
 
-    check_input_type = lambda x: isinstance(x, (dpnp_array, dpt.usm_ndarray))
     if (
-        check_input_type(x)
-        and check_input_type(mask)
-        and check_input_type(vals)
+        dpnp.is_supported_array_type(x)
+        and dpnp.is_supported_array_type(mask)
+        and dpnp.is_supported_array_type(vals)
     ):
         dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
         dpt_mask = mask.get_array() if isinstance(mask, dpnp_array) else mask
@@ -418,6 +420,7 @@ def place(x, mask, vals, /):
 def put(x1, ind, v, mode="raise"):
     """
     Replaces specified elements of an array with given values.
+
     For full documentation refer to :obj:`numpy.put`.
 
     Limitations
@@ -447,6 +450,7 @@ def put(x1, ind, v, mode="raise"):
 def put_along_axis(x1, indices, values, axis):
     """
     Put values into the destination array by matching 1d index and data slices.
+
     For full documentation refer to :obj:`numpy.put_along_axis`.
 
     See Also
@@ -481,6 +485,7 @@ def put_along_axis(x1, indices, values, axis):
 def putmask(x1, mask, values):
     """
     Changes elements of an array based on conditional and input values.
+
     For full documentation refer to :obj:`numpy.putmask`.
 
     Limitations
@@ -504,6 +509,7 @@ def putmask(x1, mask, values):
 def select(condlist, choicelist, default=0):
     """
     Return an array drawn from elements in choicelist, depending on conditions.
+
     For full documentation refer to :obj:`numpy.select`.
 
     Limitations
@@ -536,6 +542,7 @@ def select(condlist, choicelist, default=0):
 def take(x1, indices, axis=None, out=None, mode="raise"):
     """
     Take elements from an array.
+
     For full documentation refer to :obj:`numpy.take`.
 
     Limitations
@@ -570,6 +577,7 @@ def take(x1, indices, axis=None, out=None, mode="raise"):
 def take_along_axis(x1, indices, axis):
     """
     Take values from the input array by matching 1d index and data slices.
+
     For full documentation refer to :obj:`numpy.take_along_axis`.
 
     See Also
@@ -646,6 +654,7 @@ def tril_indices(n, k=0, m=None):
 def tril_indices_from(x1, k=0):
     """
     Return the indices for the lower-triangle of arr.
+
     See `tril_indices` for full details.
 
     Parameters
@@ -706,6 +715,7 @@ def triu_indices(n, k=0, m=None):
 def triu_indices_from(x1, k=0):
     """
     Return the indices for the lower-triangle of arr.
+
     See `tril_indices` for full details.
 
     Parameters

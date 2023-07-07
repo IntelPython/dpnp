@@ -47,7 +47,8 @@ __all__ = [
     "eye",
     "full",
     "linspace",
-    "ones" "tril",
+    "ones",
+    "tril",
     "triu",
     "zeros",
 ]
@@ -297,7 +298,7 @@ def ones(
 
 
 def tril(x1, /, *, k=0):
-    """ "Creates `dpnp_array` as lower triangular part of an input array."""
+    """Creates `dpnp_array` as lower triangular part of an input array."""
     array_obj = dpt.tril(
         x1.get_array() if isinstance(x1, dpnp_array) else x1, k
     )
@@ -305,7 +306,7 @@ def tril(x1, /, *, k=0):
 
 
 def triu(x1, /, *, k=0):
-    """ "Creates `dpnp_array` as upper triangular part of an input array."""
+    """Creates `dpnp_array` as upper triangular part of an input array."""
     array_obj = dpt.triu(
         x1.get_array() if isinstance(x1, dpnp_array) else x1, k
     )

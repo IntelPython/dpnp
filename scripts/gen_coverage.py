@@ -16,7 +16,7 @@ def run(
     elif sys.platform in ["win32", "cygwin"]:
         pass
     else:
-        assert False, sys.platform + " not supported"
+        raise AssertionError(sys.platform + " not supported")
 
     if not IS_LIN:
         raise RuntimeError(

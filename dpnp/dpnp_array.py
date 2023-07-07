@@ -32,6 +32,8 @@ import dpnp
 
 def _get_unwrapped_index_key(key):
     """
+    Get an unwrapped index key.
+
     Return a key where each nested instance of DPNP array is unwrapped into USM ndarray
     for futher processing in DPCTL advanced indexing functions.
 
@@ -109,9 +111,7 @@ class dpnp_array:
         return self.transpose()
 
     def to_device(self, target_device):
-        """
-        Transfer array to target device
-        """
+        """Transfer array to target device."""
 
         return dpnp_array(
             shape=self.shape, buffer=self.get_array().to_device(target_device)
@@ -276,9 +276,7 @@ class dpnp_array:
         return dpnp.less_equal(self, other)
 
     def __len__(self):
-        """
-        Performs the operation __len__.
-        """
+        """Performs the operation __len__."""
 
         return self._array_obj.__len__()
 
@@ -335,7 +333,7 @@ class dpnp_array:
         return dpnp.matmul(other, self)
 
     def __rmod__(self, other):
-        return remainder(other, self)
+        return dpnp.remainder(other, self)
 
     def __rmul__(self, other):
         return dpnp.multiply(other, self)
@@ -499,8 +497,7 @@ class dpnp_array:
 
     def argsort(self, axis=-1, kind=None, order=None):
         """
-        Return an ndarray of indices that sort the array along the
-        specified axis.
+        Return an ndarray of indices that sort the array along the specified axis.
 
         Parameters
         ----------
@@ -584,10 +581,7 @@ class dpnp_array:
     # 'byteswap',
 
     def choose(input, choices, out=None, mode="raise"):
-        """
-        Construct an array from an index array and a set of arrays to choose from.
-
-        """
+        """Construct an array from an index array and a set of arrays to choose from."""
 
         return dpnp.choose(input, choices, out, mode)
 
@@ -655,7 +649,7 @@ class dpnp_array:
 
     @property
     def dtype(self):
-        """ """
+        """Returns NumPy's dtype corresponding to the type of the array elements."""
 
         return self._array_obj.dtype
 
@@ -689,19 +683,13 @@ class dpnp_array:
 
     @property
     def flags(self):
-        """
-        Return information about the memory layout of the array.
-
-        """
+        """Return information about the memory layout of the array."""
 
         return self._array_obj.flags
 
     @property
     def flat(self):
-        """
-        Return a flat iterator, or set a flattened version of self to value.
-
-        """
+        """Return a flat iterator, or set a flattened version of self to value."""
 
         return dpnp.flatiter(self)
 
@@ -787,10 +775,7 @@ class dpnp_array:
 
     @property
     def itemsize(self):
-        """
-        Size of one array element in bytes.
-
-        """
+        """Size of one array element in bytes."""
 
         return self._array_obj.itemsize
 
@@ -802,16 +787,12 @@ class dpnp_array:
         initial=numpy._NoValue,
         where=numpy._NoValue,
     ):
-        """
-        Return the maximum along an axis.
-        """
+        """Return the maximum along an axis."""
 
         return dpnp.max(self, axis, out, keepdims, initial, where)
 
     def mean(self, axis=None, **kwargs):
-        """
-        Returns the average of the array elements.
-        """
+        """Returns the average of the array elements."""
 
         return dpnp.mean(self, axis=axis, **kwargs)
 
@@ -823,27 +804,19 @@ class dpnp_array:
         initial=numpy._NoValue,
         where=numpy._NoValue,
     ):
-        """
-        Return the minimum along a given axis.
-        """
+        """Return the minimum along a given axis."""
 
         return dpnp.min(self, axis, out, keepdims, initial, where)
 
     @property
     def nbytes(self):
-        """
-        Total bytes consumed by the elements of the array.
-
-        """
+        """Total bytes consumed by the elements of the array."""
 
         return self._array_obj.nbytes
 
     @property
     def ndim(self):
-        """
-        Number of array dimensions.
-
-        """
+        """Number of array dimensions."""
 
         return self._array_obj.ndim
 
@@ -854,6 +827,8 @@ class dpnp_array:
 
     def partition(self, kth, axis=-1, kind="introselect", order=None):
         """
+        Return a partitioned copy of an array.
+
         Rearranges the elements in the array in such a way that the value of the
         element in kth position is in the position it would be in a sorted array.
 
@@ -968,7 +943,10 @@ class dpnp_array:
 
     @shape.setter
     def shape(self, newshape):
-        """Set new lengths of axes. A tuple of numbers represents size of each dimention.
+        """
+        Set new lengths of axes.
+
+        A tuple of numbers represents size of each dimention.
         It involves reshaping without copy. If the array cannot be reshaped without copy,
         it raises an exception.
 
@@ -980,7 +958,7 @@ class dpnp_array:
 
     @property
     def size(self):
-        """ """
+        """Number of elements in the array."""
 
         return self._array_obj.size
 
@@ -1009,7 +987,17 @@ class dpnp_array:
 
     @property
     def strides(self):
-        """ """
+        """
+        Get strides of an array.
+
+        Returns memory displacement in array elements, upon unit
+        change of respective index.
+
+        E.g. for strides (s1, s2, s3) and multi-index (i1, i2, i3)
+
+           a[i1, i2, i3] == (&a[0,0,0])[ s1*s1 + s2*i2 + s3*i3]
+
+        """
 
         return self._array_obj.strides
 
