@@ -76,11 +76,13 @@ struct DivTypePairSupportFactory
 template <typename T>
 struct SqrtTypeSupportFactory
 {
-    static constexpr bool is_defined =
-        std::disjunction<std::bool_constant<std::is_same_v<T, float>>,
-                         std::bool_constant<std::is_same_v<T, double>>,
-                         // fall-through
-                         std::false_type>::value;
+    static constexpr bool is_defined = std::disjunction<
+        std::bool_constant<std::is_same_v<T, float>>,
+        std::bool_constant<std::is_same_v<T, double>>,
+        std::bool_constant<std::is_same_v<T, std::complex<float>>>,
+        std::bool_constant<std::is_same_v<T, std::complex<double>>>,
+        // fall-through
+        std::false_type>::value;
 };
 } // namespace types
 } // namespace vm
