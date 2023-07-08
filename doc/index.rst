@@ -35,3 +35,4 @@ along with their limitations.
    reference/index
    dpnp_backend_api
    dpctl
+   compute_follows_data
