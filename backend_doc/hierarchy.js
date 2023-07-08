@@ -27,6 +27,8 @@ var hierarchy =
     [ "python_constants", "structpython__constants.html", null ],
     [ "dpnp::backend::ext::vm::SinContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sin_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::SinOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sin_output_type.html", null ],
+    [ "dpnp::backend::ext::vm::SqrtContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqrt_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::SqrtOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqrt_output_type.html", null ],
     [ "dpnp::backend::ext::lapack::types::SyevdTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
     [ "Ps", null, [
       [ "func_type_map_factory_t< Ps >", "structfunc__type__map__factory__t.html", null ]

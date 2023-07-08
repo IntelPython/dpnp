@@ -14,12 +14,14 @@ var annotated_dup =
               [ "CosOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cos_output_type.html", null ],
               [ "DivOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_output_type.html", null ],
               [ "LnOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ln_output_type.html", null ],
-              [ "SinOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sin_output_type.html", null ]
+              [ "SinOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sin_output_type.html", null ],
+              [ "SqrtOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqrt_output_type.html", null ]
             ] ],
             [ "CosContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_cos_contig_factory.html", null ],
             [ "DivContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_div_contig_factory.html", null ],
             [ "LnContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ln_contig_factory.html", null ],
-            [ "SinContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sin_contig_factory.html", null ]
+            [ "SinContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sin_contig_factory.html", null ],
+            [ "SqrtContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqrt_contig_factory.html", null ]
           ] ]
         ] ]
       ] ]
