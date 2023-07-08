@@ -39,39 +39,35 @@ namespace ext
 namespace vm
 {
 template <typename T>
-sycl::event div_contig_impl(sycl::queue exec_q,
-                            const std::int64_t n,
-                            const char *in_a,
-                            const char *in_b,
-                            char *out_y,
-                            const std::vector<sycl::event> &depends)
+sycl::event ln_contig_impl(sycl::queue exec_q,
+                           const std::int64_t n,
+                           const char *in_a,
+                           char *out_y,
+                           const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
 
     const T *a = reinterpret_cast<const T *>(in_a);
-    const T *b = reinterpret_cast<const T *>(in_b);
     T *y = reinterpret_cast<T *>(out_y);
 
-    return mkl_vm::div(exec_q,
-                       n, // number of elements to be calculated
-                       a, // pointer `a` containing 1st input vector of size n
-                       b, // pointer `b` containing 2nd input vector of size n
-                       y, // pointer `y` to the output vector of size n
-                       depends);
+    return mkl_vm::ln(exec_q,
+                      n, // number of elements to be calculated
+                      a, // pointer `a` containing input vector of size n
+                      y, // pointer `y` to the output vector of size n
+                      depends);
 }
 
 template <typename fnT, typename T>
-struct DivContigFactory
+struct LnContigFactory
 {
     fnT get()
     {
         if constexpr (std::is_same_v<
-                          typename types::DivOutputType<T>::value_type, void>)
-        {
+                          typename types::LnOutputType<T>::value_type, void>) {
             return nullptr;
         }
         else {
-            return div_contig_impl<T>;
+            return ln_contig_impl<T>;
         }
     }
 };

@@ -43,18 +43,22 @@ from dpnp.dpnp_utils import call_origin
 __all__ = [
     "check_nd_call_func",
     "dpnp_add",
+    "dpnp_cos",
     "dpnp_divide",
     "dpnp_equal",
     "dpnp_greater",
     "dpnp_greater_equal",
     "dpnp_less",
     "dpnp_less_equal",
+    "dpnp_log",
     "dpnp_logical_and",
     "dpnp_logical_not",
     "dpnp_logical_or",
     "dpnp_logical_xor",
     "dpnp_multiply",
     "dpnp_not_equal",
+    "dpnp_sin",
+    "dpnp_sqrt",
     "dpnp_subtract",
 ]
 
@@ -171,6 +175,55 @@ def dpnp_add(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_cos_docstring = """
+cos(x, out=None, order='K')
+Computes cosine for each element `x_i` for input array `x`.
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise cosine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_cos(x, out=None, order="K"):
+    """
+    Invokes cos() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for cos() function.
+
+    """
+
+    def _call_cos(src, dst, sycl_queue, depends=None):
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
+
+        if vmi._mkl_cos_to_call(sycl_queue, src, dst):
+            # call pybind11 extension for cos() function from OneMKL VM
+            return vmi._cos(sycl_queue, src, dst, depends)
+        return ti._cos(src, dst, sycl_queue, depends)
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "cos", ti._cos_result_type, _call_cos, _cos_docstring
+    )
+    res_usm = func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _divide_docstring_ = """
 divide(x1, x2, out=None, order="K")
 
@@ -209,7 +262,7 @@ def dpnp_divide(x1, x2, out=None, order="K"):
         if depends is None:
             depends = []
 
-        if vmi._can_call_div(sycl_queue, src1, src2, dst):
+        if vmi._mkl_div_to_call(sycl_queue, src1, src2, dst):
             # call pybind11 extension for div() function from OneMKL VM
             return vmi._div(sycl_queue, src1, src2, dst, depends)
         return ti._divide(src1, src2, dst, sycl_queue, depends)
@@ -447,6 +500,54 @@ def dpnp_less_equal(x1, x2, out=None, order="K"):
         _less_equal_docstring_,
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_log_docstring = """
+log(x, out=None, order='K')
+Computes the natural logarithm element-wise.
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise natural logarithm values.
+"""
+
+
+def dpnp_log(x, out=None, order="K"):
+    """
+    Invokes log() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for log() function.
+
+    """
+
+    def _call_log(src, dst, sycl_queue, depends=None):
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
+
+        if vmi._mkl_ln_to_call(sycl_queue, src, dst):
+            # call pybind11 extension for ln() function from OneMKL VM
+            return vmi._ln(sycl_queue, src, dst, depends)
+        return ti._log(src, dst, sycl_queue, depends)
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "log", ti._log_result_type, _call_log, _log_docstring
+    )
+    res_usm = func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -696,6 +797,106 @@ def dpnp_not_equal(x1, x2, out=None, order="K"):
         _not_equal_docstring_,
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_sin_docstring = """
+sin(x, out=None, order='K')
+Computes sine for each element `x_i` of input array `x`.
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise sine. The data type of the
+        returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_sin(x, out=None, order="K"):
+    """
+    Invokes sin() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for sin() function.
+
+    """
+
+    def _call_sin(src, dst, sycl_queue, depends=None):
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
+
+        if vmi._mkl_sin_to_call(sycl_queue, src, dst):
+            # call pybind11 extension for sin() function from OneMKL VM
+            return vmi._sin(sycl_queue, src, dst, depends)
+        return ti._sin(src, dst, sycl_queue, depends)
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "sin", ti._sin_result_type, _call_sin, _sin_docstring
+    )
+    res_usm = func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_sqrt_docstring_ = """
+sqrt(x, out=None, order='K')
+Computes the non-negative square-root for each element `x_i` for input array `x`.
+Args:
+    x (dpnp.ndarray):
+        Input array.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise square-root results.
+"""
+
+
+def dpnp_sqrt(x, out=None, order="K"):
+    """
+    Invokes sqrt() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for sqrt() function.
+
+    """
+
+    def _call_sqrt(src, dst, sycl_queue, depends=None):
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
+
+        if vmi._mkl_sqrt_to_call(sycl_queue, src, dst):
+            # call pybind11 extension for sqrt() function from OneMKL VM
+            return vmi._sqrt(sycl_queue, src, dst, depends)
+        return ti._sqrt(src, dst, sycl_queue, depends)
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "sqrt",
+        ti._sqrt_result_type,
+        _call_sqrt,
+        _sqrt_docstring_,
+    )
+    res_usm = func(x_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 

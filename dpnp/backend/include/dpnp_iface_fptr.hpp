@@ -145,8 +145,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CORRELATE_EXT, /**< Used in numpy.correlate() impl, requires extra
                               parameters */
     DPNP_FN_COS,           /**< Used in numpy.cos() impl  */
-    DPNP_FN_COS_EXT, /**< Used in numpy.cos() impl, requires extra parameters */
-    DPNP_FN_COSH,    /**< Used in numpy.cosh() impl  */
+    DPNP_FN_COSH,          /**< Used in numpy.cosh() impl  */
     DPNP_FN_COSH_EXT, /**< Used in numpy.cosh() impl, requires extra parameters
                        */
     DPNP_FN_COUNT_NONZERO,     /**< Used in numpy.count_nonzero() impl  */
@@ -262,11 +261,10 @@ enum class DPNPFuncName : size_t
     DPNP_FN_LESS_EQUAL_EXT, /**< Used in numpy.less_equal() impl, requires extra
                                parameters */
     DPNP_FN_LOG,            /**< Used in numpy.log() impl  */
-    DPNP_FN_LOG_EXT, /**< Used in numpy.log() impl, requires extra parameters */
-    DPNP_FN_LOG10,   /**< Used in numpy.log10() impl  */
-    DPNP_FN_LOG10_EXT, /**< Used in numpy.log10() impl, requires extra
-                          parameters  */
-    DPNP_FN_LOG2,      /**< Used in numpy.log2() impl  */
+    DPNP_FN_LOG10,          /**< Used in numpy.log10() impl  */
+    DPNP_FN_LOG10_EXT,      /**< Used in numpy.log10() impl, requires extra
+                               parameters  */
+    DPNP_FN_LOG2,           /**< Used in numpy.log2() impl  */
     DPNP_FN_LOG2_EXT,  /**< Used in numpy.log2() impl, requires extra parameters
                         */
     DPNP_FN_LOG1P,     /**< Used in numpy.log1p() impl  */
@@ -476,8 +474,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SIGN_EXT, /**< Used in numpy.sign() impl, requires extra parameters
                        */
     DPNP_FN_SIN,      /**< Used in numpy.sin() impl  */
-    DPNP_FN_SIN_EXT, /**< Used in numpy.sin() impl, requires extra parameters */
-    DPNP_FN_SINH,    /**< Used in numpy.sinh() impl  */
+    DPNP_FN_SINH,     /**< Used in numpy.sinh() impl  */
     DPNP_FN_SINH_EXT, /**< Used in numpy.sinh() impl, requires extra parameters
                        */
     DPNP_FN_SORT,     /**< Used in numpy.sort() impl  */
