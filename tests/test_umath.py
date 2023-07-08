@@ -11,7 +11,6 @@ import dpnp
 from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
-    get_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
 )
@@ -550,22 +549,60 @@ class TestArctan2:
 
 
 class TestSqrt:
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
-    def test_sqrt_ordinary(self, dtype):
-        array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=dtype)
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    def test_sqrt_int_float(self, dtype):
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=numpy.float64)
 
         # DPNP
-        dp_array = dpnp.array(array_data, dtype=dtype)
-        dp_out = dpnp.array(out, dtype=dtype)
+        dp_out_dtype = dpnp.float32
+        if has_support_aspect64() and dtype != dpnp.float32:
+            dp_out_dtype = dpnp.float64
+
+        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
+        dp_array = dpnp.array(np_array, dtype=dtype)
         result = dpnp.sqrt(dp_array, out=dp_out)
 
         # original
-        np_array = numpy.array(array_data, dtype=dtype)
-        expected = numpy.sqrt(np_array, out=out)
+        expected = numpy.sqrt(np_array, out=np_out)
+        assert_allclose(expected, result)
 
-        numpy.testing.assert_allclose(expected, result)
-        numpy.testing.assert_allclose(out, dp_out)
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_sqrt_complex(self, dtype):
+        np_array = numpy.arange(10, 20, dtype=dtype)
+        np_out = numpy.empty(10, dtype=numpy.complex128)
+
+        # DPNP
+        dp_out_dtype = dpnp.complex64
+        if has_support_aspect64() and dtype != dpnp.complex64:
+            dp_out_dtype = dpnp.complex128
+
+        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
+        dp_array = dpnp.array(np_array, dtype=dtype)
+        result = dpnp.sqrt(dp_array, out=dp_out)
+
+        # original
+        expected = numpy.sqrt(np_array, out=np_out)
+        assert_allclose(expected, result)
+
+    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
+    @pytest.mark.skipif(
+        not has_support_aspect16(), reason="No fp16 support by device"
+    )
+    def test_sqrt_bool(self):
+        np_array = numpy.arange(2, dtype=numpy.bool_)
+        np_out = numpy.empty(2, dtype=numpy.float16)
+
+        # DPNP
+        dp_array = dpnp.array(np_array, dtype=np_array.dtype)
+        dp_out = dpnp.array(np_out, dtype=np_out.dtype)
+        result = dpnp.sqrt(dp_array, out=dp_out)
+
+        # original
+        expected = numpy.sqrt(np_array, out=np_out)
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize(
         "dtype", [numpy.int64, numpy.int32], ids=["numpy.int64", "numpy.int32"]
@@ -574,7 +611,7 @@ class TestSqrt:
         dp_array = dpnp.arange(10, dtype=dpnp.float32)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.sqrt(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -584,7 +621,7 @@ class TestSqrt:
         dp_array = dpnp.arange(10, dtype=dpnp.float32)
         dp_out = dpnp.empty(shape, dtype=dpnp.float32)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.sqrt(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(

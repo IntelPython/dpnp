@@ -54,6 +54,7 @@ __all__ = [
     "dpnp_multiply",
     "dpnp_not_equal",
     "dpnp_sin",
+    "dpnp_sqrt",
     "dpnp_subtract",
 ]
 
@@ -682,6 +683,57 @@ def dpnp_sin(x, out=None, order="K"):
         "sin", ti._sin_result_type, _call_sin, _sin_docstring
     )
     res_usm = func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_sqrt_docstring_ = """
+sqrt(x, out=None, order='K')
+Computes the non-negative square-root for each element `x_i` for input array `x`.
+Args:
+    x (dpnp.ndarray):
+        Input array.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise square-root results.
+"""
+
+
+def dpnp_sqrt(x, out=None, order="K"):
+    """
+    Invokes sqrt() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for sqrt() function.
+
+    """
+
+    def _call_sqrt(src, dst, sycl_queue, depends=None):
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
+
+        if vmi._mkl_sqrt_to_call(sycl_queue, src, dst):
+            # call pybind11 extension for sqrt() function from OneMKL VM
+            return vmi._sqrt(sycl_queue, src, dst, depends)
+        return ti._sqrt(src, dst, sycl_queue, depends)
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "sqrt",
+        ti._sqrt_result_type,
+        _call_sqrt,
+        _sqrt_docstring_,
+    )
+    res_usm = func(x_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
