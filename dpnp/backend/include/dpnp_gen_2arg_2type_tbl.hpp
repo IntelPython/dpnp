@@ -89,10 +89,6 @@ MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_greater_c, input1_elem > input2_elem)
 MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_greater_equal_c, input1_elem >= input2_elem)
 MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_less_c, input1_elem < input2_elem)
 MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_less_equal_c, input1_elem <= input2_elem)
-MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_logical_and_c, input1_elem &&input2_elem)
-MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_logical_or_c, input1_elem || input2_elem)
-MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_logical_xor_c,
-                           (!!input1_elem) != (!!input2_elem))
 MACRO_2ARG_2TYPES_LOGIC_OP(dpnp_not_equal_c, input1_elem != input2_elem)
 
 #undef MACRO_2ARG_2TYPES_LOGIC_OP
