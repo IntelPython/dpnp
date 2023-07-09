@@ -51,6 +51,10 @@ __all__ = [
     "dpnp_less",
     "dpnp_less_equal",
     "dpnp_log",
+    "dpnp_logical_and",
+    "dpnp_logical_not",
+    "dpnp_logical_or",
+    "dpnp_logical_xor",
     "dpnp_multiply",
     "dpnp_not_equal",
     "dpnp_sin",
@@ -75,6 +79,7 @@ def check_nd_call_func(
 
     Chooses a common internal elementwise function to call in DPNP based on input arguments
     or to fallback on NumPy call if any passed argument is not currently supported.
+
     """
 
     args_len = len(x_args)
@@ -543,6 +548,164 @@ def dpnp_log(x, out=None, order="K"):
         "log", ti._log_result_type, _call_log, _log_docstring
     )
     res_usm = func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_logical_and_docstring_ = """
+logical_and(x1, x2, out=None, order='K')
+
+Computes the logical AND for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array.
+    x2 (dpnp.ndarray):
+        Second input array.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise logical AND results.
+"""
+
+
+def dpnp_logical_and(x1, x2, out=None, order="K"):
+    """Invokes logical_and() from dpctl.tensor implementation for logical_and() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "logical_and",
+        ti._logical_and_result_type,
+        ti._logical_and,
+        _logical_and_docstring_,
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_logical_not_docstring_ = """
+logical_not(x, out=None, order='K')
+Computes the logical NOT for each element `x_i` of input array `x`.
+Args:
+    x (dpnp.ndarray):
+        Input array.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    usm_ndarray:
+        An array containing the element-wise logical NOT results.
+"""
+
+
+def dpnp_logical_not(x, out=None, order="K"):
+    """Invokes logical_not() from dpctl.tensor implementation for logical_not() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "logical_not",
+        ti._logical_not_result_type,
+        ti._logical_not,
+        _logical_not_docstring_,
+    )
+    res_usm = func(x_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_logical_or_docstring_ = """
+logical_or(x1, x2, out=None, order='K')
+
+Computes the logical OR for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array.
+    x2 (dpnp.ndarray):
+        Second input array.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise logical OR results.
+"""
+
+
+def dpnp_logical_or(x1, x2, out=None, order="K"):
+    """Invokes logical_or() from dpctl.tensor implementation for logical_or() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "logical_or",
+        ti._logical_or_result_type,
+        ti._logical_or,
+        _logical_or_docstring_,
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_logical_xor_docstring_ = """
+logical_xor(x1, x2, out=None, order='K')
+
+Computes the logical XOR for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array.
+    x2 (dpnp.ndarray):
+        Second input array.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise logical XOR results.
+"""
+
+
+def dpnp_logical_xor(x1, x2, out=None, order="K"):
+    """Invokes logical_xor() from dpctl.tensor implementation for logical_xor() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "logical_xor",
+        ti._logical_xor_result_type,
+        ti._logical_xor,
+        _logical_xor_docstring_,
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 

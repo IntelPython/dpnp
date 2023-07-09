@@ -47,14 +47,18 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
 from .dpnp_algo.dpnp_elementwise_common import (
+    check_nd_call_func,
     dpnp_equal,
     dpnp_greater,
     dpnp_greater_equal,
     dpnp_less,
     dpnp_less_equal,
+    dpnp_logical_and,
+    dpnp_logical_not,
+    dpnp_logical_or,
+    dpnp_logical_xor,
     dpnp_not_equal,
 )
-from .dpnp_iface_mathematical import _check_nd_call
 
 __all__ = [
     "all",
@@ -279,9 +283,23 @@ def equal(
     >>> np.equal(x1, x2)
     array([ True,  True, False])
 
+    What is compared are values, not types. So an int (1) and an array of
+    length one can evaluate as True:
+
+    >>> np.equal(1, np.ones(1))
+    array([ True])
+
+    The ``==`` operator can be used as a shorthand for ``equal`` on
+    :class:`dpnp.ndarray`.
+
+    >>> a = np.array([2, 4, 6])
+    >>> b = np.array([2, 4, 2])
+    >>> a == b
+    array([ True,  True, False])
+
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.equal,
         dpnp_equal,
         x1,
@@ -340,9 +358,18 @@ def greater(
     >>> x2 = np.array([2, 2])
     >>> np.greater(x1, x2)
     array([ True, False])
+
+    The ``>`` operator can be used as a shorthand for ``greater`` on
+    :class:`dpnp.ndarray`.
+
+    >>> a = np.array([4, 2])
+    >>> b = np.array([2, 2])
+    >>> a > b
+    array([ True, False])
+
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.greater,
         dpnp_greater,
         x1,
@@ -402,9 +429,17 @@ def greater_equal(
     >>> np.greater_equal(x1, x2)
     array([ True,  True, False])
 
+    The ``>=`` operator can be used as a shorthand for ``greater_equal`` on
+    :class:`dpnp.ndarray`.
+
+    >>> a = np.array([4, 2, 1])
+    >>> b = np.array([2, 2, 2])
+    >>> a >= b
+    array([ True,  True, False])
+
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.greater_equal,
         dpnp_greater_equal,
         x1,
@@ -641,9 +676,17 @@ def less(
     >>> np.less(x1, x2)
     array([ True, False])
 
+    The ``<`` operator can be used as a shorthand for ``less`` on
+    :class:`dpnp.ndarray`.
+
+    >>> a = np.array([1, 2])
+    >>> b = np.array([2, 2])
+    >>> a < b
+    array([ True, False])
+
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.less,
         dpnp_less,
         x1,
@@ -703,9 +746,17 @@ def less_equal(
     >>> np.less_equal(x1, x2)
     array([False,  True,  True])
 
+    The ``<=`` operator can be used as a shorthand for ``less_equal`` on
+    :class:`dpnp.ndarray`.
+
+    >>> a = np.array([4, 2, 1])
+    >>> b = np.array([2, 2, 2])
+    >>> a <= b
+    array([False,  True,  True])
+
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.less_equal,
         dpnp_less_equal,
         x1,
@@ -719,7 +770,18 @@ def less_equal(
     )
 
 
-def logical_and(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
+def logical_and(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Compute the truth value of x1 AND x2 element-wise.
 
@@ -728,16 +790,16 @@ def logical_and(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise logical comparison of `x1` and `x2`.
+        Boolean result of the logical AND operation applied to the elements
+        of `x1` and `x2`; the shape is determined by broadcasting.
 
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`,
-    excluding `dpnp.complex64` and `dpnp.complex128`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -751,60 +813,48 @@ def logical_and(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     >>> import dpnp as np
     >>> x1 = np.array([True, False])
     >>> x2 = np.array([False, False])
-    >>> out = np.logical_and(x1, x2)
-    >>> [i for i in out]
-    [False, False]
+    >>> np.logical_and(x1, x2)
+    array([False, False])
+
+    >>> x = np.arange(5)
+    >>> np.logical_and(x > 1, x < 4)
+    array([False, False,  True,  True, False])
+
+    The ``&`` operator can be used as a shorthand for ``logical_and`` on
+    boolean :class:`dpnp.ndarray`.
+
+    >>> a = np.array([True, False])
+    >>> b = np.array([False, False])
+    >>> a & b
+    array([False, False])
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
-
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            return dpnp_logical_and(x1_desc, x2_desc).get_pyobj()
-
-    return call_origin(
+    return check_nd_call_func(
         numpy.logical_and,
+        dpnp_logical_and,
         x1,
         x2,
         out=out,
         where=where,
+        order=order,
         dtype=dtype,
         subok=subok,
+        **kwargs,
     )
 
 
-def logical_not(x, /, out=None, *, where=True, dtype=None, subok=True):
+def logical_not(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Compute the truth value of NOT x element-wise.
 
@@ -819,10 +869,9 @@ def logical_not(x, /, out=None, *, where=True, dtype=None, subok=True):
     Limitations
     -----------
     Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data type is limited by supported DPNP :ref:`Data types`,
-    excluding `dpnp.complex64` and `dpnp.complex128`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -834,33 +883,40 @@ def logical_not(x, /, out=None, *, where=True, dtype=None, subok=True):
     --------
     >>> import dpnp as np
     >>> x = np.array([True, False, 0, 1])
-    >>> out = np.logical_not(x)
-    >>> [i for i in out]
-    [False, True, True, False]
+    >>> np.logical_not(x)
+    array([False,  True,  True, False])
+
+    >>> x = np.arange(5)
+    >>> np.logical_not(x < 3)
+    array([False, False, False,  True,  True])
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    else:
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x, copy_when_strides=False, copy_when_nondefault_queue=False
-        )
-        if x1_desc:
-            return dpnp_logical_not(x1_desc).get_pyobj()
-
-    return call_origin(
-        numpy.logical_not, x, out=out, where=where, dtype=dtype, subok=subok
+    return check_nd_call_func(
+        numpy.logical_not,
+        dpnp_logical_not,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 
-def logical_or(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
+def logical_or(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Compute the truth value of x1 OR x2 element-wise.
 
@@ -869,16 +925,16 @@ def logical_or(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise logical comparison of `x1` and `x2`.
+        Boolean result of the logical OR operation applied to the elements
+        of `x1` and `x2`; the shape is determined by broadcasting.
 
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`,
-    excluding `dpnp.complex64` and `dpnp.complex128`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -892,54 +948,49 @@ def logical_or(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     >>> import dpnp as np
     >>> x1 = np.array([True, False])
     >>> x2 = np.array([False, False])
-    >>> out = np.logical_or(x1, x2)
-    >>> [i for i in out]
-    [True, False]
+    >>> np.logical_or(x1, x2)
+    array([ True, False])
+
+    >>> x = np.arange(5)
+    >>> np.logical_or(x < 1, x > 3)
+    array([ True, False, False, False,  True])
+
+    The ``|`` operator can be used as a shorthand for ``logical_or`` on
+    boolean :class:`dpnp.ndarray`.
+
+    >>> a = np.array([True, False])
+    >>> b = np.array([False, False])
+    >>> a | b
+    array([ True, False])
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
-
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            return dpnp_logical_or(x1_desc, x2_desc).get_pyobj()
-
-    return call_origin(
-        numpy.logical_or, x1, x2, out=out, where=where, dtype=dtype, subok=subok
+    return check_nd_call_func(
+        numpy.logical_or,
+        dpnp_logical_or,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 
-def logical_xor(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
+def logical_xor(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Compute the truth value of x1 XOR x2 element-wise.
 
@@ -948,16 +999,16 @@ def logical_xor(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise logical comparison of `x1` and `x2`.
+        Boolean result of the logical XOR operation applied to the elements
+        of `x1` and `x2`; the shape is determined by broadcasting.
 
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`,
-    excluding `dpnp.complex64` and `dpnp.complex128`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -971,56 +1022,32 @@ def logical_xor(x1, x2, /, out=None, *, where=True, dtype=None, subok=True):
     >>> import dpnp as np
     >>> x1 = np.array([True, True, False, False])
     >>> x2 = np.array([True, False, True, False])
-    >>> out = np.logical_xor(x1, x2)
-    >>> [i for i in out]
-    [False, True, True, False]
+    >>> np.logical_xor(x1, x2)
+    array([False,  True,  True, False])
+
+    >>> x = np.arange(5)
+    >>> np.logical_xor(x < 1, x > 3)
+    array([ True, False, False, False,  True])
+
+    Simple example showing support of broadcasting
+
+    >>> np.logical_xor(0, np.eye(2))
+    array([[ True, False],
+           [False,  True]])
 
     """
 
-    if out is not None:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
-
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            return dpnp_logical_xor(x1_desc, x2_desc).get_pyobj()
-
-    return call_origin(
+    return check_nd_call_func(
         numpy.logical_xor,
+        dpnp_logical_xor,
         x1,
         x2,
         out=out,
         where=where,
+        order=order,
         dtype=dtype,
         subok=subok,
+        **kwargs,
     )
 
 
@@ -1070,9 +1097,17 @@ def not_equal(
     >>> np.not_equal(x1, x2)
     array([False, False])
 
+    The ``!=`` operator can be used as a shorthand for ``not_equal`` on
+    :class:`dpnp.ndarray`.
+
+    >>> a = np.array([1., 2.])
+    >>> b = np.array([1., 3.])
+    >>> a != b
+    array([False,  True])
+
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.not_equal,
         dpnp_not_equal,
         x1,
