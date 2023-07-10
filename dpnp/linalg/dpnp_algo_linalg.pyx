@@ -366,7 +366,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
 
             input = dpnp.ravel(input, order='K')
             sqnorm = dpnp.dot(input, input)
-            ret = dpnp.sqrt([sqnorm])
+            ret = dpnp.sqrt(sqnorm)
             return dpnp.array(ret.reshape(1, *ret.shape), dtype=res_type)
 
     len_axis = 1 if axis is None else len(axis_)

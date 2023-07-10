@@ -3,10 +3,9 @@ import unittest
 from tests.third_party.cupy import testing
 
 
-@testing.gpu
 class TestTrigonometric(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=False)
     def check_unary(self, name, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return getattr(xp, name)(a)
@@ -55,7 +54,7 @@ class TestTrigonometric(unittest.TestCase):
         self.check_unary("rad2deg")
 
 
-@testing.gpu
+@testing.with_requires("numpy>=1.21.0")
 class TestUnwrap(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
@@ -68,6 +67,18 @@ class TestUnwrap(unittest.TestCase):
     def test_unwrap_1dim_with_discont(self, xp, dtype):
         a = testing.shaped_random((5,), xp, dtype)
         return xp.unwrap(a, discont=1.0)
+
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_allclose()
+    def test_unwrap_1dim_with_period(self, xp, dtype):
+        a = testing.shaped_random((5,), xp, dtype)
+        return xp.unwrap(a, period=1.2)
+
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_allclose()
+    def test_unwrap_1dim_with_discont_and_period(self, xp, dtype):
+        a = testing.shaped_random((5,), xp, dtype)
+        return xp.unwrap(a, discont=1.0, period=1.2)
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
@@ -86,3 +97,15 @@ class TestUnwrap(unittest.TestCase):
     def test_unwrap_2dim_with_discont(self, xp, dtype):
         a = testing.shaped_random((4, 5), xp, dtype)
         return xp.unwrap(a, discont=5.0, axis=1)
+
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_allclose()
+    def test_unwrap_2dim_with_period(self, xp, dtype):
+        a = testing.shaped_random((4, 5), xp, dtype)
+        return xp.unwrap(a, axis=1, period=4.5)
+
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_allclose()
+    def test_unwrap_2dim_with_discont_and_period(self, xp, dtype):
+        a = testing.shaped_random((4, 5), xp, dtype)
+        return xp.unwrap(a, discont=5.0, axis=1, period=4.5)
