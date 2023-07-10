@@ -1,6 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a2ca75eef4ff62b379b29390b6efe736f":[0,2,3,2],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a4dd2e447249c9f1ed5b4a01263bd8d06":[0,2,3,0],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a599b693823273a797188b9beb8018052":[0,2,3,7],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a8160fd9c1c7bd64515ffa60b8140f208":[0,2,3,3],
@@ -64,7 +63,8 @@ var NAVTREEINDEX2 =
 "pages.html":[],
 "queue__sycl_8hpp_source.html":[2,0,2,7],
 "sin_8hpp_source.html":[2,0,0,1,4],
-"sqrt_8hpp_source.html":[2,0,0,1,5],
+"sqr_8hpp_source.html":[2,0,0,1,5],
+"sqrt_8hpp_source.html":[2,0,0,1,6],
 "struct_d_p_n_p_func_data.html":[0,2,0],
 "struct_d_p_n_p_func_data.html#a591831d25d776b9ce6ef0a328bda9ddc":[0,2,0,3],
 "struct_d_p_n_p_func_data.html#a59c07232bc3830e89d5abe5447a24816":[0,2,0,2],
@@ -77,12 +77,14 @@ var NAVTREEINDEX2 =
 "structdpnp_1_1backend_1_1ext_1_1vm_1_1_div_contig_factory.html":[1,0,0,0,0,1,2],
 "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ln_contig_factory.html":[1,0,0,0,0,1,3],
 "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sin_contig_factory.html":[1,0,0,0,0,1,4],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqrt_contig_factory.html":[1,0,0,0,0,1,5],
+"structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqr_contig_factory.html":[1,0,0,0,0,1,5],
+"structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqrt_contig_factory.html":[1,0,0,0,0,1,6],
 "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cos_output_type.html":[1,0,0,0,0,1,0,0],
 "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_output_type.html":[1,0,0,0,0,1,0,1],
 "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ln_output_type.html":[1,0,0,0,0,1,0,2],
 "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sin_output_type.html":[1,0,0,0,0,1,0,3],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqrt_output_type.html":[1,0,0,0,0,1,0,4],
+"structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqr_output_type.html":[1,0,0,0,0,1,0,4],
+"structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqrt_output_type.html":[1,0,0,0,0,1,0,5],
 "structengine__struct.html":[1,0,8],
 "structfunc__type__map__factory__t.html":[1,0,9],
 "structfunc__type__pair__t.html":[1,0,10],
@@ -92,5 +94,5 @@ var NAVTREEINDEX2 =
 "structpython__constants.html":[1,0,14],
 "syevd_8hpp_source.html":[2,0,0,0,1],
 "verbose_8hpp_source.html":[2,0,2,8],
-"vm_2types__matrix_8hpp_source.html":[2,0,0,1,6]
+"vm_2types__matrix_8hpp_source.html":[2,0,0,1,7]
 };
