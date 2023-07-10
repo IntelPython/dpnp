@@ -59,6 +59,7 @@ __all__ = [
     "dpnp_not_equal",
     "dpnp_sin",
     "dpnp_sqrt",
+    "dpnp_square",
     "dpnp_subtract",
 ]
 
@@ -895,6 +896,57 @@ def dpnp_sqrt(x, out=None, order="K"):
         ti._sqrt_result_type,
         _call_sqrt,
         _sqrt_docstring_,
+    )
+    res_usm = func(x_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_square_docstring_ = """
+square(x, out=None, order='K')
+Computes `x_i**2` (or `x_i*x_i`) for each element `x_i` of input array `x`.
+Args:
+    x (dpnp.ndarray):
+        Input array.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise square results.
+"""
+
+
+def dpnp_square(x, out=None, order="K"):
+    """
+    Invokes sqr() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for square() function.
+
+    """
+
+    def _call_square(src, dst, sycl_queue, depends=None):
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
+
+        if vmi._mkl_sqr_to_call(sycl_queue, src, dst):
+            # call pybind11 extension for sqr() function from OneMKL VM
+            return vmi._sqr(sycl_queue, src, dst, depends)
+        return ti._square(src, dst, sycl_queue, depends)
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "square",
+        ti._square_result_type,
+        _call_square,
+        _square_docstring_,
     )
     res_usm = func(x_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)

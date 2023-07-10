@@ -476,9 +476,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SQRT_EXT, /**< Used in numpy.sqrt() impl, requires extra parameters
                        */
     DPNP_FN_SQUARE,   /**< Used in numpy.square() impl  */
-    DPNP_FN_SQUARE_EXT, /**< Used in numpy.square() impl, requires extra
-                           parameters */
-    DPNP_FN_STD,        /**< Used in numpy.std() impl  */
+    DPNP_FN_STD,      /**< Used in numpy.std() impl  */
     DPNP_FN_STD_EXT, /**< Used in numpy.std() impl, requires extra parameters */
     DPNP_FN_SUBTRACT,     /**< Used in numpy.subtract() impl  */
     DPNP_FN_SUBTRACT_EXT, /**< Used in numpy.subtract() impl, requires extra

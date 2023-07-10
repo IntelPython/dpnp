@@ -23,6 +23,7 @@ env:
       test_umath.py
       test_usm_type.py
       third_party/cupy/math_tests/test_explog.py
+      third_party/cupy/math_tests/test_misc.py
       third_party/cupy/math_tests/test_trigonometric.py
       third_party/cupy/sorting_tests/test_sort.py
   VER_JSON_NAME: 'version.json'
