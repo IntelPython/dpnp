@@ -289,8 +289,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SINH_EXT
         DPNP_FN_SORT
         DPNP_FN_SORT_EXT
-        DPNP_FN_SQUARE
-        DPNP_FN_SQUARE_EXT
         DPNP_FN_STD
         DPNP_FN_STD_EXT
         DPNP_FN_SUM
@@ -541,6 +539,5 @@ cpdef dpnp_descriptor dpnp_log2(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_radians(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_recip(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_sinh(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_square(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_tan(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_tanh(dpnp_descriptor array1)

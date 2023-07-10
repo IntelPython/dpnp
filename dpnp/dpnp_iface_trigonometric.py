@@ -52,6 +52,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_log,
     dpnp_sin,
     dpnp_sqrt,
+    dpnp_square,
 )
 
 __all__ = [
@@ -1108,19 +1109,40 @@ def sqrt(
     )
 
 
-def square(x1):
+def square(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Return the element-wise square of the input.
 
     For full documentation refer to :obj:`numpy.square`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        Element-wise `x * x`, of the same shape and dtype as `x`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array is supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `out` is supported as class:`dpnp.ndarray`, class:`dpctl.tensor.usm_ndarray` or
+    with default value ``None``.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
+    :obj:`dpnp..linalg.matrix_power` : Raise a square matrix
+                                       to the (integer) power `n`.
     :obj:`dpnp.sqrt` : Return the positive square-root of an array,
                        element-wise.
     :obj:`dpnp.power` : First array elements raised to powers
@@ -1129,20 +1151,23 @@ def square(x1):
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([1, 2, 3])
-    >>> out = np.square(x)
-    >>> [i for i in out]
-    [1, 4, 9]
+    >>> x = np.array([-1j, 1])
+    >>> np.square(x)
+    array([-1.+0.j,  1.+0.j])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.square,
+        dpnp_square,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_square(x1_desc).get_pyobj()
-
-    return call_origin(numpy.square, x1, **kwargs)
 
 
 def tan(x1, out=None, **kwargs):

@@ -634,3 +634,65 @@ class TestSqrt:
 
         numpy.testing.assert_raises(TypeError, dpnp.sqrt, a, out)
         numpy.testing.assert_raises(TypeError, numpy.sqrt, a.asnumpy(), out)
+
+
+class TestSquare:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    def test_square(self, dtype):
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=dtype)
+
+        # DPNP
+        dp_out = dpnp.array(np_out, dtype=dtype)
+        dp_array = dpnp.array(np_array, dtype=dtype)
+        result = dpnp.square(dp_array, out=dp_out)
+
+        # original
+        expected = numpy.square(np_array, out=np_out)
+        assert_allclose(expected, result)
+
+    def test_square_bool(self):
+        np_array = numpy.arange(2, dtype=numpy.bool_)
+        np_out = numpy.empty(2, dtype=numpy.int8)
+
+        # DPNP
+        dp_array = dpnp.array(np_array, dtype=np_array.dtype)
+        dp_out = dpnp.array(np_out, dtype=np_out.dtype)
+        result = dpnp.square(dp_array, out=dp_out)
+
+        # original
+        expected = numpy.square(np_array, out=np_out)
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    def test_invalid_dtype(self, dtype):
+        dp_array = dpnp.ones(10, dtype=dpnp.bool)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(TypeError):
+            dpnp.square(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize(
+        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
+    )
+    def test_invalid_shape(self, shape):
+        dp_array = dpnp.arange(10, dtype=dpnp.float32)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float32)
+
+        with pytest.raises(TypeError):
+            dpnp.square(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize(
+        "out",
+        [4, (), [], (3, 7), [2, 4]],
+        ids=["4", "()", "[]", "(3, 7)", "[2, 4]"],
+    )
+    def test_invalid_out(self, out):
+        a = dpnp.arange(10)
+
+        numpy.testing.assert_raises(TypeError, dpnp.square, a, out)
+        numpy.testing.assert_raises(TypeError, numpy.square, a.asnumpy(), out)
