@@ -46,6 +46,7 @@ __all__ = [
     "dpnp_cos",
     "dpnp_divide",
     "dpnp_equal",
+    "dpnp_floor_divide",
     "dpnp_greater",
     "dpnp_greater_equal",
     "dpnp_less",
@@ -337,6 +338,48 @@ def dpnp_equal(x1, x2, out=None, order="K"):
 
     func = BinaryElementwiseFunc(
         "equal", ti._equal_result_type, ti._equal, _equal_docstring_
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_floor_divide_docstring_ = """
+floor_divide(x1, x2, out=None, order="K")
+Calculates the ratio for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2` to the greatest
+integer-value number that is not greater than the division result.
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the result of element-wise floor division.
+        The data type of the returned array is determined by the Type
+        Promotion Rules
+"""
+
+
+def dpnp_floor_divide(x1, x2, out=None, order="K"):
+    """Invokes floor_divide() from dpctl.tensor implementation for floor_divide() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "floor_divide",
+        ti._floor_divide_result_type,
+        ti._floor_divide,
+        _floor_divide_docstring_,
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
