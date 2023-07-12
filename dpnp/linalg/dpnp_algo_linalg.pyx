@@ -477,20 +477,29 @@ cpdef tuple dpnp_qr(utils.dpnp_descriptor x1, str mode):
 
     x1_obj = x1.get_array()
 
+    cdef custom_linalg_1in_3out_shape_t func = NULL
+    cdef DPNPFuncType return_type = DPNP_FT_NONE
+    if dpnp.issubdtype(x1_obj.dtype, dpnp.integer) and not x1_obj.sycl_device.has_aspect_fp64:
+        return_type = kernel_data.return_type_no_fp64
+        func = < custom_linalg_1in_3out_shape_t > kernel_data.ptr_no_fp64
+    else:
+        return_type = kernel_data.return_type
+        func = < custom_linalg_1in_3out_shape_t > kernel_data.ptr
+
     cdef utils.dpnp_descriptor res_q = utils.create_output_descriptor((size_m, min_m_n),
-                                                                       kernel_data.return_type,
+                                                                       return_type,
                                                                        None,
                                                                        device=x1_obj.sycl_device,
                                                                        usm_type=x1_obj.usm_type,
                                                                        sycl_queue=x1_obj.sycl_queue)
     cdef utils.dpnp_descriptor res_r = utils.create_output_descriptor((min_m_n, size_n),
-                                                                       kernel_data.return_type,
+                                                                       return_type,
                                                                        None,
                                                                        device=x1_obj.sycl_device,
                                                                        usm_type=x1_obj.usm_type,
                                                                        sycl_queue=x1_obj.sycl_queue)
     cdef utils.dpnp_descriptor tau = utils.create_output_descriptor((size_tau, ),
-                                                                     kernel_data.return_type,
+                                                                     return_type,
                                                                      None,
                                                                      device=x1_obj.sycl_device,
                                                                      usm_type=x1_obj.usm_type,
@@ -500,8 +509,6 @@ cpdef tuple dpnp_qr(utils.dpnp_descriptor x1, str mode):
 
     cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
     cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_linalg_1in_3out_shape_t func = < custom_linalg_1in_3out_shape_t > kernel_data.ptr
 
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
                                                     x1.get_data(),

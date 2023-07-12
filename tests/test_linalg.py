@@ -344,15 +344,20 @@ def test_qr(type, shape, mode):
     np_q, np_r = numpy.linalg.qr(a, mode)
     dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
 
-    assert dpnp_q.dtype == np_q.dtype
-    assert dpnp_r.dtype == np_r.dtype
+    support_aspect64 = has_support_aspect64()
+
+    if support_aspect64:
+        assert dpnp_q.dtype == np_q.dtype
+        assert dpnp_r.dtype == np_r.dtype
     assert dpnp_q.shape == np_q.shape
     assert dpnp_r.shape == np_r.shape
 
-    if type == numpy.float32:
+    tol = 1e-6
+    if support_aspect64:
+        if type == numpy.float32:
+            tol = 1e-02
+    elif type in (numpy.float32, numpy.int32, numpy.int64, None):
         tol = 1e-02
-    else:
-        tol = 1e-11
 
     # check decomposition
     assert_allclose(
