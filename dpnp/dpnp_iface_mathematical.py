@@ -50,6 +50,7 @@ from .dpnp_algo import *
 from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_add,
     dpnp_divide,
+    dpnp_floor_divide,
     dpnp_multiply,
     dpnp_subtract,
 )
@@ -821,7 +822,18 @@ def floor(x1, out=None, **kwargs):
     return call_origin(numpy.floor, x1, out=out, **kwargs)
 
 
-def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def floor_divide(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Compute the largest integer smaller or equal to the division of the inputs.
 
@@ -830,7 +842,7 @@ def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
     Limitations
     -----------
         Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-        Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+        Parameters ``where``, ``dtype`` and ``subok`` are supported with their default values.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -845,55 +857,22 @@ def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
     Examples
     --------
     >>> import dpnp as np
-    >>> result = np.floor_divide(np.array([1, -1, -2, -9]), np.array([-2, -2, -2, -2]))
-    >>> [x for x in result]
-    [-1, 0, 1, 4]
+    >>> np.floor_divide(np.array([1, -1, -2, -9]), np.array([-2, -2, -2, -2]))
+    array([-1,  0,  1,  4])
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif x2_is_scalar and not x2_desc:
-            pass
-        elif x1_desc and x2_desc and x1_desc.size != x2_desc.size:
-            # TODO: enable broadcasting
-            pass
-        elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        elif x1_is_scalar and x2_desc.ndim > 1:
-            pass
-        else:
-            out_desc = (
-                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-                if out is not None
-                else None
-            )
-            return dpnp_floor_divide(
-                x1_desc, x2_desc, dtype, out_desc, where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.floor_divide, x1, x2, out=out, where=where, dtype=dtype, **kwargs
+    return _check_nd_call(
+        numpy.floor_divide,
+        dpnp_floor_divide,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 

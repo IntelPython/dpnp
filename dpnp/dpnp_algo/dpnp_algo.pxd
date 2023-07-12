@@ -90,8 +90,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_COPYTO_EXT
         DPNP_FN_CORRELATE
         DPNP_FN_CORRELATE_EXT
-        DPNP_FN_COS
-        DPNP_FN_COS_EXT
         DPNP_FN_COSH
         DPNP_FN_COSH_EXT
         DPNP_FN_COUNT_NONZERO
@@ -120,7 +118,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_EIG_EXT
         DPNP_FN_EIGVALS
         DPNP_FN_EIGVALS_EXT
-        DPNP_FN_EQUAL_EXT
         DPNP_FN_ERF
         DPNP_FN_ERF_EXT
         DPNP_FN_EYE
@@ -143,14 +140,10 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FLATTEN_EXT
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_EXT
-        DPNP_FN_FLOOR_DIVIDE
-        DPNP_FN_FLOOR_DIVIDE_EXT
         DPNP_FN_FMOD
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
         DPNP_FN_FULL_LIKE
-        DPNP_FN_GREATER_EXT
-        DPNP_FN_GREATER_EQUAL_EXT
         DPNP_FN_HYPOT
         DPNP_FN_HYPOT_EXT
         DPNP_FN_IDENTITY
@@ -165,20 +158,12 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_KRON_EXT
         DPNP_FN_LEFT_SHIFT
         DPNP_FN_LEFT_SHIFT_EXT
-        DPNP_FN_LESS_EXT
-        DPNP_FN_LESS_EQUAL_EXT
-        DPNP_FN_LOG
-        DPNP_FN_LOG_EXT
         DPNP_FN_LOG10
         DPNP_FN_LOG10_EXT
         DPNP_FN_LOG1P
         DPNP_FN_LOG1P_EXT
         DPNP_FN_LOG2
         DPNP_FN_LOG2_EXT
-        DPNP_FN_LOGICAL_AND_EXT
-        DPNP_FN_LOGICAL_NOT_EXT
-        DPNP_FN_LOGICAL_OR_EXT
-        DPNP_FN_LOGICAL_XOR_EXT
         DPNP_FN_MATMUL
         DPNP_FN_MATMUL_EXT
         DPNP_FN_MATRIX_RANK
@@ -200,7 +185,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_NEGATIVE
         DPNP_FN_NEGATIVE_EXT
         DPNP_FN_NONZERO
-        DPNP_FN_NOT_EQUAL_EXT
         DPNP_FN_ONES
         DPNP_FN_ONES_LIKE
         DPNP_FN_PARTITION
@@ -301,16 +285,10 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SEARCHSORTED_EXT
         DPNP_FN_SIGN
         DPNP_FN_SIGN_EXT
-        DPNP_FN_SIN
-        DPNP_FN_SIN_EXT
         DPNP_FN_SINH
         DPNP_FN_SINH_EXT
         DPNP_FN_SORT
         DPNP_FN_SORT_EXT
-        DPNP_FN_SQRT
-        DPNP_FN_SQRT_EXT
-        DPNP_FN_SQUARE
-        DPNP_FN_SQUARE_EXT
         DPNP_FN_STD
         DPNP_FN_STD_EXT
         DPNP_FN_SUM
@@ -481,18 +459,8 @@ cpdef dpnp_descriptor dpnp_right_shift(dpnp_descriptor x1_obj,
 """
 Logic functions
 """
-cpdef dpnp_descriptor dpnp_equal(dpnp_descriptor array1, dpnp_descriptor input2)
-cpdef dpnp_descriptor dpnp_greater(dpnp_descriptor input1, dpnp_descriptor input2)
-cpdef dpnp_descriptor dpnp_greater_equal(dpnp_descriptor input1, dpnp_descriptor input2)
 cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input2,
                                    double rtol=*, double atol=*, cpp_bool equal_nan=*)
-cpdef dpnp_descriptor dpnp_less(dpnp_descriptor input1, dpnp_descriptor input2)
-cpdef dpnp_descriptor dpnp_less_equal(dpnp_descriptor input1, dpnp_descriptor input2)
-cpdef dpnp_descriptor dpnp_logical_and(dpnp_descriptor input1, dpnp_descriptor input2)
-cpdef dpnp_descriptor dpnp_logical_not(dpnp_descriptor input1)
-cpdef dpnp_descriptor dpnp_logical_or(dpnp_descriptor input1, dpnp_descriptor input2)
-cpdef dpnp_descriptor dpnp_logical_xor(dpnp_descriptor input1, dpnp_descriptor input2)
-cpdef dpnp_descriptor dpnp_not_equal(dpnp_descriptor input1, dpnp_descriptor input2)
 
 
 """
@@ -560,21 +528,16 @@ cpdef dpnp_descriptor dpnp_arcsinh(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_arctan(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_arctanh(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_cbrt(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_cos(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_cosh(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_degrees(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_exp(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_exp2(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_expm1(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_log(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_log10(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_log1p(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_log2(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_radians(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_recip(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_sin(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_sinh(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_sqrt(dpnp_descriptor array1, dpnp_descriptor out)
-cpdef dpnp_descriptor dpnp_square(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_tan(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_tanh(dpnp_descriptor array1)

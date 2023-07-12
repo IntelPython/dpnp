@@ -30,7 +30,7 @@
 // dpctl tensor headers
 #include "utils/type_dispatch.hpp"
 
-// dpctl namespace for operations with types
+// dpctl namespace for types dispatching
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
 namespace dpnp
@@ -50,21 +50,113 @@ namespace types
  * @tparam T Type of input vectors `a` and `b` and of result vector `y`.
  */
 template <typename T>
-struct DivTypePairSupportFactory
+struct DivOutputType
 {
-    static constexpr bool is_defined = std::disjunction<
-        dpctl_td_ns::TypePairDefinedEntry<T,
-                                          std::complex<double>,
-                                          T,
-                                          std::complex<double>>,
-        dpctl_td_ns::TypePairDefinedEntry<T,
-                                          std::complex<float>,
-                                          T,
-                                          std::complex<float>>,
-        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
-        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
-        // fall-through
-        dpctl_td_ns::NotDefinedEntry>::is_defined;
+    using value_type = typename std::disjunction<
+        dpctl_td_ns::BinaryTypeMapResultEntry<T,
+                                              std::complex<double>,
+                                              T,
+                                              std::complex<double>,
+                                              std::complex<double>>,
+        dpctl_td_ns::BinaryTypeMapResultEntry<T,
+                                              std::complex<float>,
+                                              T,
+                                              std::complex<float>,
+                                              std::complex<float>>,
+        dpctl_td_ns::BinaryTypeMapResultEntry<T, double, T, double, double>,
+        dpctl_td_ns::BinaryTypeMapResultEntry<T, float, T, float, float>,
+        dpctl_td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL VM library provides support in oneapi::mkl::vm::cos<T> function.
+ *
+ * @tparam T Type of input vector `a` and of result vector `y`.
+ */
+template <typename T>
+struct CosOutputType
+{
+    using value_type = typename std::disjunction<
+        dpctl_td_ns::
+            TypeMapResultEntry<T, std::complex<double>, std::complex<double>>,
+        dpctl_td_ns::
+            TypeMapResultEntry<T, std::complex<float>, std::complex<float>>,
+        dpctl_td_ns::TypeMapResultEntry<T, double, double>,
+        dpctl_td_ns::TypeMapResultEntry<T, float, float>,
+        dpctl_td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL VM library provides support in oneapi::mkl::vm::ln<T> function.
+ *
+ * @tparam T Type of input vector `a` and of result vector `y`.
+ */
+template <typename T>
+struct LnOutputType
+{
+    using value_type = typename std::disjunction<
+        dpctl_td_ns::
+            TypeMapResultEntry<T, std::complex<double>, std::complex<double>>,
+        dpctl_td_ns::
+            TypeMapResultEntry<T, std::complex<float>, std::complex<float>>,
+        dpctl_td_ns::TypeMapResultEntry<T, double, double>,
+        dpctl_td_ns::TypeMapResultEntry<T, float, float>,
+        dpctl_td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL VM library provides support in oneapi::mkl::vm::sin<T> function.
+ *
+ * @tparam T Type of input vector `a` and of result vector `y`.
+ */
+template <typename T>
+struct SinOutputType
+{
+    using value_type = typename std::disjunction<
+        dpctl_td_ns::
+            TypeMapResultEntry<T, std::complex<double>, std::complex<double>>,
+        dpctl_td_ns::
+            TypeMapResultEntry<T, std::complex<float>, std::complex<float>>,
+        dpctl_td_ns::TypeMapResultEntry<T, double, double>,
+        dpctl_td_ns::TypeMapResultEntry<T, float, float>,
+        dpctl_td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL VM library provides support in oneapi::mkl::vm::sqr<T> function.
+ *
+ * @tparam T Type of input vector `a` and of result vector `y`.
+ */
+template <typename T>
+struct SqrOutputType
+{
+    using value_type = typename std::disjunction<
+        dpctl_td_ns::TypeMapResultEntry<T, double, double>,
+        dpctl_td_ns::TypeMapResultEntry<T, float, float>,
+        dpctl_td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL VM library provides support in oneapi::mkl::vm::sqrt<T> function.
+ *
+ * @tparam T Type of input vector `a` and of result vector `y`.
+ */
+template <typename T>
+struct SqrtOutputType
+{
+    using value_type = typename std::disjunction<
+        dpctl_td_ns::
+            TypeMapResultEntry<T, std::complex<double>, std::complex<double>>,
+        dpctl_td_ns::
+            TypeMapResultEntry<T, std::complex<float>, std::complex<float>>,
+        dpctl_td_ns::TypeMapResultEntry<T, double, double>,
+        dpctl_td_ns::TypeMapResultEntry<T, float, float>,
+        dpctl_td_ns::DefaultResultEntry<void>>::result_type;
 };
 } // namespace types
 } // namespace vm
