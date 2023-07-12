@@ -151,7 +151,6 @@ def test_eig_arange(type, size):
     assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
 
 
-# @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_none=True))
 @pytest.mark.parametrize("size", [2, 4, 8])
 def test_eigh_arange(type, size):
