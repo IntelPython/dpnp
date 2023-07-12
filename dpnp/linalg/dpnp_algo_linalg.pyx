@@ -533,26 +533,31 @@ cpdef tuple dpnp_svd(utils.dpnp_descriptor x1, cpp_bool full_matrices, cpp_bool 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SVD_EXT, param1_type, param1_type)
 
-    cdef DPNPFuncType type_s = DPNP_FT_DOUBLE
-    if x1.dtype == dpnp.float32:
-        type_s = DPNP_FT_FLOAT
-
     x1_obj = x1.get_array()
 
+    cdef custom_linalg_1in_3out_shape_t func = NULL
+    cdef DPNPFuncType return_type = DPNP_FT_NONE
+    if dpnp.issubdtype(x1_obj.dtype, dpnp.integer) and not x1_obj.sycl_device.has_aspect_fp64:
+        return_type = kernel_data.return_type_no_fp64
+        func = < custom_linalg_1in_3out_shape_t > kernel_data.ptr_no_fp64
+    else:
+        return_type = kernel_data.return_type
+        func = < custom_linalg_1in_3out_shape_t > kernel_data.ptr
+
     cdef utils.dpnp_descriptor res_u = utils.create_output_descriptor((size_m, size_m),
-                                                                       kernel_data.return_type,
+                                                                       return_type,
                                                                        None,
                                                                        device=x1_obj.sycl_device,
                                                                        usm_type=x1_obj.usm_type,
                                                                        sycl_queue=x1_obj.sycl_queue)
     cdef utils.dpnp_descriptor res_s = utils.create_output_descriptor((size_s, ),
-                                                                       type_s,
+                                                                       return_type,
                                                                        None,
                                                                        device=x1_obj.sycl_device,
                                                                        usm_type=x1_obj.usm_type,
                                                                        sycl_queue=x1_obj.sycl_queue)
     cdef utils.dpnp_descriptor res_vt = utils.create_output_descriptor((size_n, size_n),
-                                                                       kernel_data.return_type,
+                                                                       return_type,
                                                                        None,
                                                                        device=x1_obj.sycl_device,
                                                                        usm_type=x1_obj.usm_type,
@@ -562,8 +567,6 @@ cpdef tuple dpnp_svd(utils.dpnp_descriptor x1, cpp_bool full_matrices, cpp_bool 
 
     cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
     cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_linalg_1in_3out_shape_t func = < custom_linalg_1in_3out_shape_t > kernel_data.ptr
 
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
                                                     x1.get_data(),

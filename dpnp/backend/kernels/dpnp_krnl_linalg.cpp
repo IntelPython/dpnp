@@ -1099,9 +1099,29 @@ void func_map_init_linalg_func(func_map_t &fmap)
                                              std::complex<double>, double>};
 
     fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_svd_ext_c<int32_t, double, double>};
+        get_res_type_with_aspect<>(),
+        (void *)dpnp_svd_ext_c<
+            int32_t, func_type_map_t::find_type<get_res_type_with_aspect<>()>,
+            func_type_map_t::find_type<get_res_type_with_aspect<>()>>,
+        get_res_type_with_aspect<std::false_type>(),
+        (void *)
+            dpnp_svd_ext_c<int32_t,
+                           func_type_map_t::find_type<
+                               get_res_type_with_aspect<std::false_type>()>,
+                           func_type_map_t::find_type<
+                               get_res_type_with_aspect<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_svd_ext_c<int64_t, double, double>};
+        get_res_type_with_aspect<>(),
+        (void *)dpnp_svd_ext_c<
+            int64_t, func_type_map_t::find_type<get_res_type_with_aspect<>()>,
+            func_type_map_t::find_type<get_res_type_with_aspect<>()>>,
+        get_res_type_with_aspect<std::false_type>(),
+        (void *)
+            dpnp_svd_ext_c<int64_t,
+                           func_type_map_t::find_type<
+                               get_res_type_with_aspect<std::false_type>()>,
+                           func_type_map_t::find_type<
+                               get_res_type_with_aspect<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_FLT][eft_FLT] = {
         eft_FLT, (void *)dpnp_svd_ext_c<float, float, float>};
     fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_DBL][eft_DBL] = {

@@ -396,17 +396,22 @@ def test_svd(type, shape):
     np_u, np_s, np_vt = numpy.linalg.svd(a)
     dpnp_u, dpnp_s, dpnp_vt = inp.linalg.svd(ia)
 
-    assert dpnp_u.dtype == np_u.dtype
-    assert dpnp_s.dtype == np_s.dtype
-    assert dpnp_vt.dtype == np_vt.dtype
+    support_aspect64 = has_support_aspect64()
+
+    if support_aspect64:
+        assert dpnp_u.dtype == np_u.dtype
+        assert dpnp_s.dtype == np_s.dtype
+        assert dpnp_vt.dtype == np_vt.dtype
     assert dpnp_u.shape == np_u.shape
     assert dpnp_s.shape == np_s.shape
     assert dpnp_vt.shape == np_vt.shape
 
-    if type == numpy.float32:
+    tol = 1e-12
+    if support_aspect64:
+        if type == numpy.float32:
+            tol = 1e-03
+    elif type in (numpy.float32, numpy.int32, numpy.int64, None):
         tol = 1e-03
-    else:
-        tol = 1e-12
 
     # check decomposition
     dpnp_diag_s = inp.zeros(shape, dtype=dpnp_s.dtype)
