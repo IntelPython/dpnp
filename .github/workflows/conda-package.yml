@@ -9,6 +9,7 @@ on:
 env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
+  MINICONDA_VER: py310_23.3.1-0
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   TEST_SCOPE: >-
       test_arraycreation.py
@@ -63,7 +64,7 @@ jobs:
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
-          miniconda-version: 'latest'
+          miniconda-version: ${{ env.MINICONDA_VER }}
           activate-environment: 'build'
 
       - if: matrix.os == 'ubuntu-20.04'
@@ -145,7 +146,7 @@ jobs:
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
-          miniconda-version: 'latest'
+          miniconda-version: ${{ env.MINICONDA_VER }}
           activate-environment: 'test'
 
       # Needed to be able to run conda index
@@ -254,7 +255,7 @@ jobs:
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
-          miniconda-version: 'latest'
+          miniconda-version: ${{ env.MINICONDA_VER }}
           activate-environment: ${{ env.active-env-name }}
 
       - name: Store conda paths as envs
@@ -371,7 +372,7 @@ jobs:
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
-          miniconda-version: 'latest'
+          miniconda-version: ${{ env.MINICONDA_VER }}
           activate-environment: 'upload'
 
       - name: Install anaconda-client
