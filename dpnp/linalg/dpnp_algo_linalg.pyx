@@ -366,7 +366,8 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
     cdef long size_input = input.size
     cdef shape_type_c shape_input = input.shape
 
-    if input.dtype == dpnp.float32:
+    dev = input.get_array().sycl_device
+    if input.dtype == dpnp.float32 or not dev.has_aspect_fp64:
         res_type = dpnp.float32
     else:
         res_type = dpnp.float64
@@ -387,7 +388,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
 
             input = dpnp.ravel(input, order='K')
             sqnorm = dpnp.dot(input, input)
-            ret = dpnp.sqrt(sqnorm)
+            ret = dpnp.sqrt([sqnorm], dtype=res_type)
             return dpnp.array(ret.reshape(1, *ret.shape), dtype=res_type)
 
     len_axis = 1 if axis is None else len(axis_)
@@ -400,7 +401,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
             return input.dtype.type(dpnp.count_nonzero(input, axis=axis))
         elif ord is None or ord == 2:
             s = input * input
-            return dpnp.sqrt(dpnp.sum(s, axis=axis))
+            return dpnp.sqrt(dpnp.sum(s, axis=axis), dtype=res_type)
         elif isinstance(ord, str):
             raise ValueError(f"Invalid norm order '{ord}' for vectors")
         else:

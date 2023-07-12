@@ -295,7 +295,7 @@ def test_norm2(array, ord, axis):
     ia = inp.array(a)
     result = inp.linalg.norm(ia, ord=ord, axis=axis)
     expected = numpy.linalg.norm(a, ord=ord, axis=axis)
-    assert_array_equal(expected, result)
+    assert_allclose(expected, result)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -325,7 +325,7 @@ def test_norm3(array, ord, axis):
     ia = inp.array(a)
     result = inp.linalg.norm(ia, ord=ord, axis=axis)
     expected = numpy.linalg.norm(a, ord=ord, axis=axis)
-    assert_array_equal(expected, result)
+    assert_allclose(expected, result)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
