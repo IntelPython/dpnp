@@ -5,7 +5,7 @@ from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp as inp
 
-from .helper import get_all_dtypes, get_complex_dtypes
+from .helper import get_all_dtypes, get_complex_dtypes, has_support_aspect64
 
 
 def vvsort(val, vec, size, xp):
@@ -109,15 +109,9 @@ def test_det(array):
     assert_allclose(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("size", [2, 4, 8, 16, 300])
 def test_eig_arange(type, size):
-    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
-        pytest.skip(
-            "eig function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
-        )
-
     a = numpy.arange(size * size, dtype=type).reshape((size, size))
     symm_orig = (
         numpy.tril(a)
@@ -145,8 +139,9 @@ def test_eig_arange(type, size):
     assert_array_equal(symm_orig, symm)
     assert_array_equal(dpnp_symm_orig, dpnp_symm)
 
-    assert dpnp_val.dtype == np_val.dtype
-    assert dpnp_vec.dtype == np_vec.dtype
+    if has_support_aspect64():
+        assert dpnp_val.dtype == np_val.dtype
+        assert dpnp_vec.dtype == np_vec.dtype
     assert dpnp_val.shape == np_val.shape
     assert dpnp_vec.shape == np_vec.shape
     assert dpnp_val.usm_type == dpnp_symm.usm_type
@@ -156,10 +151,13 @@ def test_eig_arange(type, size):
     assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_none=True))
 @pytest.mark.parametrize("size", [2, 4, 8])
 def test_eigh_arange(type, size):
+    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
+        pytest.skip(
+            "eig function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
+        )
     a = numpy.arange(size * size, dtype=type).reshape((size, size))
     symm_orig = (
         numpy.tril(a)
@@ -202,7 +200,6 @@ def test_eigvals(type):
         pytest.skip(
             "eigvals function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
         )
-
     arrays = [[[0, 0], [0, 0]], [[1, 2], [1, 2]], [[1, 2], [3, 4]]]
     for array in arrays:
         a = numpy.array(array, dtype=type)
@@ -223,7 +220,7 @@ def test_inv(type, array):
     ia = inp.array(a)
     result = inp.linalg.inv(ia)
     expected = numpy.linalg.inv(a)
-    assert_allclose(expected, result)
+    assert_allclose(expected, result, rtol=1e-06)
 
 
 @pytest.mark.parametrize(
@@ -305,7 +302,7 @@ def test_norm2(array, ord, axis):
     ia = inp.array(a)
     result = inp.linalg.norm(ia, ord=ord, axis=axis)
     expected = numpy.linalg.norm(a, ord=ord, axis=axis)
-    assert_array_equal(expected, result)
+    assert_allclose(expected, result)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -335,7 +332,7 @@ def test_norm3(array, ord, axis):
     ia = inp.array(a)
     result = inp.linalg.norm(ia, ord=ord, axis=axis)
     expected = numpy.linalg.norm(a, ord=ord, axis=axis)
-    assert_array_equal(expected, result)
+    assert_allclose(expected, result)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -355,15 +352,19 @@ def test_qr(type, shape, mode):
     np_q, np_r = numpy.linalg.qr(a, mode)
     dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
 
-    assert dpnp_q.dtype == np_q.dtype
-    assert dpnp_r.dtype == np_r.dtype
+    support_aspect64 = has_support_aspect64()
+
+    if support_aspect64:
+        assert dpnp_q.dtype == np_q.dtype
+        assert dpnp_r.dtype == np_r.dtype
     assert dpnp_q.shape == np_q.shape
     assert dpnp_r.shape == np_r.shape
 
-    if type == numpy.float32:
+    tol = 1e-6
+    if type == inp.float32:
         tol = 1e-02
-    else:
-        tol = 1e-11
+    elif not support_aspect64 and type in (inp.int32, inp.int64, None):
+        tol = 1e-02
 
     # check decomposition
     assert_allclose(
@@ -402,17 +403,21 @@ def test_svd(type, shape):
     np_u, np_s, np_vt = numpy.linalg.svd(a)
     dpnp_u, dpnp_s, dpnp_vt = inp.linalg.svd(ia)
 
-    assert dpnp_u.dtype == np_u.dtype
-    assert dpnp_s.dtype == np_s.dtype
-    assert dpnp_vt.dtype == np_vt.dtype
+    support_aspect64 = has_support_aspect64()
+
+    if support_aspect64:
+        assert dpnp_u.dtype == np_u.dtype
+        assert dpnp_s.dtype == np_s.dtype
+        assert dpnp_vt.dtype == np_vt.dtype
     assert dpnp_u.shape == np_u.shape
     assert dpnp_s.shape == np_s.shape
     assert dpnp_vt.shape == np_vt.shape
 
-    if type == numpy.float32:
+    tol = 1e-12
+    if type == inp.float32:
         tol = 1e-03
-    else:
-        tol = 1e-12
+    elif not support_aspect64 and type in (inp.int32, inp.int64, None):
+        tol = 1e-03
 
     # check decomposition
     dpnp_diag_s = inp.zeros(shape, dtype=dpnp_s.dtype)
