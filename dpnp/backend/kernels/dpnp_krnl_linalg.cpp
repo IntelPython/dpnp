@@ -839,13 +839,6 @@ DPCTLSyclEventRef (*dpnp_svd_ext_c)(DPCTLSyclQueueRef,
                                     const DPCTLEventVectorRef) =
     dpnp_svd_c<_InputDT, _ComputeDT, _SVDT>;
 
-template <typename has_fp64 = std::true_type>
-static constexpr DPNPFuncType get_res_type_with_aspect()
-{
-    return has_fp64::value ? DPNPFuncType::DPNP_FT_DOUBLE
-                           : DPNPFuncType::DPNP_FT_FLOAT;
-}
-
 void func_map_init_linalg_func(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_FLT][eft_FLT] = {
@@ -886,29 +879,29 @@ void func_map_init_linalg_func(func_map_t &fmap)
         eft_DBL, (void *)dpnp_inv_default_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_INV_EXT][eft_INT][eft_INT] = {
-        get_res_type_with_aspect<>(),
+        get_default_floating_type<>(),
         (void *)dpnp_inv_ext_c<
-            int32_t, func_type_map_t::find_type<get_res_type_with_aspect<>()>>,
-        get_res_type_with_aspect<std::false_type>(),
+            int32_t, func_type_map_t::find_type<get_default_floating_type<>()>>,
+        get_default_floating_type<std::false_type>(),
         (void *)dpnp_inv_ext_c<
             int32_t, func_type_map_t::find_type<
-                         get_res_type_with_aspect<std::false_type>()>>};
+                         get_default_floating_type<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_INV_EXT][eft_LNG][eft_LNG] = {
-        get_res_type_with_aspect<>(),
+        get_default_floating_type<>(),
         (void *)dpnp_inv_ext_c<
-            int64_t, func_type_map_t::find_type<get_res_type_with_aspect<>()>>,
-        get_res_type_with_aspect<std::false_type>(),
+            int64_t, func_type_map_t::find_type<get_default_floating_type<>()>>,
+        get_default_floating_type<std::false_type>(),
         (void *)dpnp_inv_ext_c<
             int64_t, func_type_map_t::find_type<
-                         get_res_type_with_aspect<std::false_type>()>>};
+                         get_default_floating_type<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_INV_EXT][eft_FLT][eft_FLT] = {
-        get_res_type_with_aspect<>(),
+        get_default_floating_type<>(),
         (void *)dpnp_inv_ext_c<
-            float, func_type_map_t::find_type<get_res_type_with_aspect<>()>>,
-        get_res_type_with_aspect<std::false_type>(),
+            float, func_type_map_t::find_type<get_default_floating_type<>()>>,
+        get_default_floating_type<std::false_type>(),
         (void *)dpnp_inv_ext_c<
             float, func_type_map_t::find_type<
-                       get_res_type_with_aspect<std::false_type>()>>};
+                       get_default_floating_type<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_INV_EXT][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_inv_ext_c<double, double>};
 
@@ -1064,21 +1057,21 @@ void func_map_init_linalg_func(func_map_t &fmap)
     // eft_C128, (void*)dpnp_qr_c<std::complex<double>, std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_QR_EXT][eft_INT][eft_INT] = {
-        get_res_type_with_aspect<>(),
+        get_default_floating_type<>(),
         (void *)dpnp_qr_ext_c<
-            int32_t, func_type_map_t::find_type<get_res_type_with_aspect<>()>>,
-        get_res_type_with_aspect<std::false_type>(),
+            int32_t, func_type_map_t::find_type<get_default_floating_type<>()>>,
+        get_default_floating_type<std::false_type>(),
         (void *)dpnp_qr_ext_c<
             int32_t, func_type_map_t::find_type<
-                         get_res_type_with_aspect<std::false_type>()>>};
+                         get_default_floating_type<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_QR_EXT][eft_LNG][eft_LNG] = {
-        get_res_type_with_aspect<>(),
+        get_default_floating_type<>(),
         (void *)dpnp_qr_ext_c<
-            int64_t, func_type_map_t::find_type<get_res_type_with_aspect<>()>>,
-        get_res_type_with_aspect<std::false_type>(),
+            int64_t, func_type_map_t::find_type<get_default_floating_type<>()>>,
+        get_default_floating_type<std::false_type>(),
         (void *)dpnp_qr_ext_c<
             int64_t, func_type_map_t::find_type<
-                         get_res_type_with_aspect<std::false_type>()>>};
+                         get_default_floating_type<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_QR_EXT][eft_FLT][eft_FLT] = {
         eft_FLT, (void *)dpnp_qr_ext_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_QR_EXT][eft_DBL][eft_DBL] = {
@@ -1099,29 +1092,29 @@ void func_map_init_linalg_func(func_map_t &fmap)
                                              std::complex<double>, double>};
 
     fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_INT][eft_INT] = {
-        get_res_type_with_aspect<>(),
+        get_default_floating_type<>(),
         (void *)dpnp_svd_ext_c<
-            int32_t, func_type_map_t::find_type<get_res_type_with_aspect<>()>,
-            func_type_map_t::find_type<get_res_type_with_aspect<>()>>,
-        get_res_type_with_aspect<std::false_type>(),
+            int32_t, func_type_map_t::find_type<get_default_floating_type<>()>,
+            func_type_map_t::find_type<get_default_floating_type<>()>>,
+        get_default_floating_type<std::false_type>(),
         (void *)
             dpnp_svd_ext_c<int32_t,
                            func_type_map_t::find_type<
-                               get_res_type_with_aspect<std::false_type>()>,
+                               get_default_floating_type<std::false_type>()>,
                            func_type_map_t::find_type<
-                               get_res_type_with_aspect<std::false_type>()>>};
+                               get_default_floating_type<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_LNG][eft_LNG] = {
-        get_res_type_with_aspect<>(),
+        get_default_floating_type<>(),
         (void *)dpnp_svd_ext_c<
-            int64_t, func_type_map_t::find_type<get_res_type_with_aspect<>()>,
-            func_type_map_t::find_type<get_res_type_with_aspect<>()>>,
-        get_res_type_with_aspect<std::false_type>(),
+            int64_t, func_type_map_t::find_type<get_default_floating_type<>()>,
+            func_type_map_t::find_type<get_default_floating_type<>()>>,
+        get_default_floating_type<std::false_type>(),
         (void *)
             dpnp_svd_ext_c<int64_t,
                            func_type_map_t::find_type<
-                               get_res_type_with_aspect<std::false_type>()>,
+                               get_default_floating_type<std::false_type>()>,
                            func_type_map_t::find_type<
-                               get_res_type_with_aspect<std::false_type>()>>};
+                               get_default_floating_type<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_FLT][eft_FLT] = {
         eft_FLT, (void *)dpnp_svd_ext_c<float, float, float>};
     fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_DBL][eft_DBL] = {

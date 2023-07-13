@@ -261,6 +261,17 @@ public:
 };
 
 /**
+ * A template function that determines the default floating-point type
+ * based on the value of the template parameter has_fp64.
+ */
+template <typename has_fp64 = std::true_type>
+static constexpr DPNPFuncType get_default_floating_type()
+{
+    return has_fp64::value ? DPNPFuncType::DPNP_FT_DOUBLE
+                           : DPNPFuncType::DPNP_FT_FLOAT;
+}
+
+/**
  * FPTR interface initialization functions
  */
 void func_map_init_arraycreation(func_map_t &fmap);
