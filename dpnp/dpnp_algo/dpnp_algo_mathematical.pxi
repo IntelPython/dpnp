@@ -60,7 +60,6 @@ __all__ += [
     "dpnp_nanprod",
     "dpnp_nansum",
     "dpnp_negative",
-    "dpnp_power",
     "dpnp_prod",
     "dpnp_remainder",
     "dpnp_sign",
@@ -474,14 +473,6 @@ cpdef utils.dpnp_descriptor dpnp_nansum(utils.dpnp_descriptor x1):
 
 cpdef utils.dpnp_descriptor dpnp_negative(dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_NEGATIVE_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_power(utils.dpnp_descriptor x1_obj,
-                                       utils.dpnp_descriptor x2_obj,
-                                       object dtype=None,
-                                       utils.dpnp_descriptor out=None,
-                                       object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_POWER_EXT, x1_obj, x2_obj, dtype, out, where, func_name="power")
 
 
 cpdef utils.dpnp_descriptor dpnp_prod(utils.dpnp_descriptor x1,
