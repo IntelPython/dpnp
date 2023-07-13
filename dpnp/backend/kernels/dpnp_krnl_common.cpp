@@ -227,12 +227,10 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
     DPCTLSyclEventRef event_ref = nullptr;
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(q_ref, input1_in,
-                                                   input1_size);
-    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(q_ref, input2_in,
-                                                   input2_size);
-    _DataType_input1 *input1 = input1_ptr.get_ptr();
-    _DataType_input2 *input2 = input2_ptr.get_ptr();
+    _DataType_input1 *input1 =
+        static_cast<_DataType_input1 *>(const_cast<void *>(input1_in));
+    _DataType_input2 *input2 =
+        static_cast<_DataType_input2 *>(const_cast<void *>(input2_in));
     _DataType_output *result = reinterpret_cast<_DataType_output *>(result_out);
 
     if (!input1_size || !input2_size) {
@@ -257,10 +255,12 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
     // if both arrays are vectors
     if ((input1_ndim == 1) && (input2_ndim == 1)) {
         assert(input1_size == input2_size);
+
         sycl::event event = dot(q, result, input1, input2, input1_strides[0],
                                 input2_strides[0], input1_size);
-        event.wait();
-        return event_ref;
+
+        event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
+        return DPCTLEvent_Copy(event_ref);
     }
 
     // 1D vector
@@ -318,10 +318,6 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
         // (looks like there are such another cases)
 
         if (ext_input1_ndim == 2 && ext_input2_ndim == 2) {
-// there is a difference of behavior with trans and sizes params in previous
-// version of GEMM only new version is supported, in case of old version
-// computation goes in common way
-#if INTEL_MKL_VERSION >= 20210004
             // is mat1 F-contiguous, C-contiguous
             bool mat1_f_contig =
                 (((ext_input1_shape[0] == 1) || (ext_input1_strides[0] == 1)) &&
@@ -389,7 +385,6 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
                 } catch (const std::exception &e) {
                     // do nothing, proceed to general case
                 }
-#endif
             }
         }
     }
