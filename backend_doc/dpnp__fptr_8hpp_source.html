@@ -273,23 +273,30 @@ $(document).ready(function(){initNavTree('dpnp__fptr_8hpp_source.html',''); init
 <div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    }</div>
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>};</div>
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span> </div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span><span class="keywordtype">void</span> func_map_init_arraycreation(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span><span class="keywordtype">void</span> func_map_init_bitwise(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span><span class="keywordtype">void</span> func_map_init_elemwise(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span><span class="keywordtype">void</span> func_map_init_fft_func(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span><span class="keywordtype">void</span> func_map_init_indexing_func(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span><span class="keywordtype">void</span> func_map_init_linalg(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span><span class="keywordtype">void</span> func_map_init_linalg_func(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span><span class="keywordtype">void</span> func_map_init_logic(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span><span class="keywordtype">void</span> func_map_init_manipulation(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span><span class="keywordtype">void</span> func_map_init_mathematical(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span><span class="keywordtype">void</span> func_map_init_random(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="keywordtype">void</span> func_map_init_reduction(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span><span class="keywordtype">void</span> func_map_init_searching(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span><span class="keywordtype">void</span> func_map_init_sorting(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span><span class="keywordtype">void</span> func_map_init_statistics(func_map_t &amp;fmap);</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span><span class="preprocessor">#endif </span><span class="comment">// BACKEND_FPTR_H</span></div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> has_fp64 = std::true_type&gt;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span><span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15">DPNPFuncType</a> get_default_floating_type()</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>{</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    <span class="keywordflow">return</span> has_fp64::value ? <a class="code hl_enumvalue" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15ac84f19e1412dd40492153e4cb0e27739">DPNPFuncType::DPNP_FT_DOUBLE</a></div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>                           : <a class="code hl_enumvalue" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15aea1ca4f8f623afaaf6072b0b6eb56c76">DPNPFuncType::DPNP_FT_FLOAT</a>;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>}</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="keywordtype">void</span> func_map_init_arraycreation(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span><span class="keywordtype">void</span> func_map_init_bitwise(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span><span class="keywordtype">void</span> func_map_init_elemwise(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span><span class="keywordtype">void</span> func_map_init_fft_func(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span><span class="keywordtype">void</span> func_map_init_indexing_func(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span><span class="keywordtype">void</span> func_map_init_linalg(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span><span class="keywordtype">void</span> func_map_init_linalg_func(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span><span class="keywordtype">void</span> func_map_init_logic(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span><span class="keywordtype">void</span> func_map_init_manipulation(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span><span class="keywordtype">void</span> func_map_init_mathematical(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span><span class="keywordtype">void</span> func_map_init_random(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span><span class="keywordtype">void</span> func_map_init_reduction(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span><span class="keywordtype">void</span> func_map_init_searching(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span><span class="keywordtype">void</span> func_map_init_sorting(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span><span class="keywordtype">void</span> func_map_init_statistics(func_map_t &amp;fmap);</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span> </div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span><span class="preprocessor">#endif </span><span class="comment">// BACKEND_FPTR_H</span></div>
 <div class="ttc" id="aclassdpnp__less__comp_html"><div class="ttname"><a href="classdpnp__less__comp.html">dpnp_less_comp</a></div><div class="ttdoc">&quot;&lt;&quot; comparison with complex types support.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__fptr_8hpp_source.html#l00227">dpnp_fptr.hpp:228</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i_html_gaec54569b58e937e84099479f078bce15"><div class="ttname"><a href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15">DPNPFuncType</a></div><div class="ttdeci">DPNPFuncType</div><div class="ttdoc">Template types which are used in this interface.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iface__fptr_8hpp_source.html#l00528">dpnp_iface_fptr.hpp:529</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i_html_ggaec54569b58e937e84099479f078bce15a1d41c2373d33a46bb47a6791a876c103"><div class="ttname"><a href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a1d41c2373d33a46bb47a6791a876c103">DPNPFuncType::DPNP_FT_BOOL</a></div><div class="ttdeci">@ DPNP_FT_BOOL</div></div>
