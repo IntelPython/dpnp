@@ -154,6 +154,10 @@ def test_eig_arange(type, size):
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_none=True))
 @pytest.mark.parametrize("size", [2, 4, 8])
 def test_eigh_arange(type, size):
+    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
+        pytest.skip(
+            "eig function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
+        )
     a = numpy.arange(size * size, dtype=type).reshape((size, size))
     symm_orig = (
         numpy.tril(a)
@@ -192,6 +196,10 @@ def test_eigh_arange(type, size):
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_eigvals(type):
+    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
+        pytest.skip(
+            "eigvals function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
+        )
     arrays = [[[0, 0], [0, 0]], [[1, 2], [1, 2]], [[1, 2], [3, 4]]]
     for array in arrays:
         a = numpy.array(array, dtype=type)
@@ -353,10 +361,9 @@ def test_qr(type, shape, mode):
     assert dpnp_r.shape == np_r.shape
 
     tol = 1e-6
-    if support_aspect64:
-        if type == numpy.float32:
-            tol = 1e-02
-    elif type in (numpy.float32, numpy.int32, numpy.int64, None):
+    if type == inp.float32:
+        tol = 1e-02
+    elif not support_aspect64 and type in (inp.int32, inp.int64, None):
         tol = 1e-02
 
     # check decomposition
@@ -407,10 +414,9 @@ def test_svd(type, shape):
     assert dpnp_vt.shape == np_vt.shape
 
     tol = 1e-12
-    if support_aspect64:
-        if type == numpy.float32:
-            tol = 1e-03
-    elif type in (numpy.float32, numpy.int32, numpy.int64, None):
+    if type == inp.float32:
+        tol = 1e-03
+    elif not support_aspect64 and type in (inp.int32, inp.int64, None):
         tol = 1e-03
 
     # check decomposition
