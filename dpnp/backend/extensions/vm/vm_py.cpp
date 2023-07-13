@@ -34,6 +34,7 @@
 #include "cos.hpp"
 #include "div.hpp"
 #include "ln.hpp"
+#include "pow.hpp"
 #include "sin.hpp"
 #include "sqr.hpp"
 #include "sqrt.hpp"
@@ -46,6 +47,7 @@ using vm_ext::binary_impl_fn_ptr_t;
 using vm_ext::unary_impl_fn_ptr_t;
 
 static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
+static binary_impl_fn_ptr_t pow_dispatch_vector[dpctl_td_ns::num_types];
 
 static unary_impl_fn_ptr_t cos_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ln_dispatch_vector[dpctl_td_ns::num_types];
@@ -142,6 +144,36 @@ PYBIND11_MODULE(_vm_impl, m)
               "Check input arguments to answer if `ln` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // BinaryUfunc: ==== Pow(x1, x2) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<binary_impl_fn_ptr_t,
+                                           vm_ext::PowContigFactory>(
+            pow_dispatch_vector);
+
+        auto pow_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                             arrayT dst, const event_vecT &depends = {}) {
+            return vm_ext::binary_ufunc(exec_q, src1, src2, dst, depends,
+                                        pow_dispatch_vector);
+        };
+        m.def("_pow", pow_pyapi,
+              "Call `pow` function from OneMKL VM library to performs element "
+              "by element exponentiation of vector `src1` raised to the power "
+              "of vector `src2` to resulting vector `dst`",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("depends") = py::list());
+
+        auto pow_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
+                                          arrayT src2, arrayT dst) {
+            return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
+                                                     pow_dispatch_vector);
+        };
+        m.def("_mkl_pow_to_call", pow_need_to_call_pyapi,
+              "Check input arguments to answer if `pow` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"));
     }
 
     // UnaryUfunc: ==== Sin(x) ====
