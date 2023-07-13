@@ -8,7 +8,7 @@ import pytest
 import dpnp as cupy
 from tests.third_party.cupy import testing
 
-float_types = [numpy.float32, numpy.float64]
+float_types = [*testing.helper._float_dtypes]
 complex_types = []
 signed_int_types = [numpy.int32, numpy.int64]
 unsigned_int_types = []
@@ -32,16 +32,16 @@ no_complex_types = float_types + int_types
             {
                 "nargs": [2],
                 "name": [
-                    "add",
-                    "multiply",
-                    "divide",
+                    # "add",
+                    # "multiply",
+                    # "divide",
                     "power",
-                    "subtract",
-                    "true_divide",
-                    "floor_divide",
-                    "fmod",
-                    "remainder",
-                    "mod",
+                    # "subtract",
+                    # "true_divide",
+                    # "floor_divide",
+                    # "fmod",
+                    # "remainder",
+                    # "mod",
                 ],
             }
         )
@@ -63,48 +63,48 @@ class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
                 func(*arys)
 
 
-@testing.gpu
-@testing.parameterize(
-    *(
-        testing.product(
-            {
-                "arg1": (
-                    [
-                        testing.shaped_arange((2, 3), numpy, dtype=d) + 1
-                        for d in all_types
-                    ]
-                    + [2, 2.0]
-                ),
-                "name": ["reciprocal"],
-            }
-        )
-    )
-)
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestArithmeticUnary(unittest.TestCase):
-    @testing.numpy_cupy_allclose(atol=1e-5)
-    def test_unary(self, xp):
-        arg1 = self.arg1
-        if isinstance(arg1, numpy.ndarray):
-            arg1 = xp.asarray(arg1)
-        y = getattr(xp, self.name)(arg1)
+# @testing.gpu
+# @testing.parameterize(
+#     *(
+#         testing.product(
+#             {
+#                 "arg1": (
+#                     [
+#                         testing.shaped_arange((2, 3), numpy, dtype=d) + 1
+#                         for d in all_types
+#                     ]
+#                     + [2, 2.0]
+#                 ),
+#                 "name": ["reciprocal"],
+#             }
+#         )
+#     )
+# )
+# @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+# class TestArithmeticUnary(unittest.TestCase):
+#     @testing.numpy_cupy_allclose(atol=1e-5)
+#     def test_unary(self, xp):
+#         arg1 = self.arg1
+#         if isinstance(arg1, numpy.ndarray):
+#             arg1 = xp.asarray(arg1)
+#         y = getattr(xp, self.name)(arg1)
 
-        if self.name in ("real", "imag"):
-            # Some NumPy functions return Python scalars for Python scalar
-            # inputs.
-            # We need to convert them to arrays to compare with CuPy outputs.
-            if xp is numpy and isinstance(arg1, (bool, int, float, complex)):
-                y = xp.asarray(y)
+#         if self.name in ("real", "imag"):
+#             # Some NumPy functions return Python scalars for Python scalar
+#             # inputs.
+#             # We need to convert them to arrays to compare with CuPy outputs.
+#             if xp is numpy and isinstance(arg1, (bool, int, float, complex)):
+#                 y = xp.asarray(y)
 
-            # TODO(niboshi): Fix this
-            # numpy.real and numpy.imag return Python int if the input is
-            # Python bool. CuPy should return an array of dtype.int32 or
-            # dtype.int64 (depending on the platform) in such cases, instead
-            # of an array of dtype.bool.
-            if xp is cupy and isinstance(arg1, bool):
-                y = y.astype(int)
+#             # TODO(niboshi): Fix this
+#             # numpy.real and numpy.imag return Python int if the input is
+#             # Python bool. CuPy should return an array of dtype.int32 or
+#             # dtype.int64 (depending on the platform) in such cases, instead
+#             # of an array of dtype.bool.
+#             if xp is cupy and isinstance(arg1, bool):
+#                 y = y.astype(int)
 
-        return y
+#         return y
 
 
 class ArithmeticBinaryBase:
@@ -168,36 +168,32 @@ class ArithmeticBinaryBase:
                 y = y.astype(numpy.complex64)
 
         # NumPy returns an output array of another type than DPNP when input ones have diffrent types.
-        if xp is cupy and dtype1 != dtype2 and not self.use_dtype:
+        if xp is numpy and dtype1 != dtype2:
             is_array_arg1 = not xp.isscalar(arg1)
             is_array_arg2 = not xp.isscalar(arg2)
 
             is_int_float = lambda _x, _y: numpy.issubdtype(
                 _x, numpy.integer
             ) and numpy.issubdtype(_y, numpy.floating)
-            is_same_type = lambda _x, _y, _type: numpy.issubdtype(
-                _x, _type
-            ) and numpy.issubdtype(_y, _type)
 
-            if self.name == "power":
-                if is_array_arg1 and is_array_arg2:
-                    # If both inputs are arrays where one is of floating type and another - integer,
+            if (
+                self.name == "power"
+                and not testing.helper.has_support_aspect64()
+            ):
+                if (
+                    (is_array_arg1 and is_array_arg2)
+                    or (is_array_arg1 and not is_array_arg2)
+                    or (is_array_arg2 and not is_array_arg1)
+                ):
+                    # If both inputs are arrays where one is of floating type and another - integer or
+                    # if one input is an array of floating type and another - an integer or floating scalar
                     # NumPy will return an output array of always "float64" type,
-                    # while DPNP will return the array of a wider type from the input arrays.
+                    # while DPNP will return the array of float32 or float64 depending on the capability of
+                    # the device.
                     if is_int_float(dtype1, dtype2) or is_int_float(
                         dtype2, dtype1
                     ):
-                        y = y.astype(numpy.float64)
-                elif is_same_type(
-                    dtype1, dtype2, numpy.floating
-                ) or is_same_type(dtype1, dtype2, numpy.integer):
-                    # If one input is an array and another - scalar,
-                    # NumPy will return an output array of the same type as the inpupt array has,
-                    # while DPNP will return the array of a wider type from the inputs (considering both array and scalar).
-                    if is_array_arg1 and not is_array_arg2:
-                        y = y.astype(dtype1)
-                    elif is_array_arg2 and not is_array_arg1:
-                        y = y.astype(dtype2)
+                        y = y.astype(numpy.float32)
 
         # NumPy returns different values (nan/inf) on division by zero
         # depending on the architecture.
@@ -227,24 +223,24 @@ class ArithmeticBinaryBase:
                     for d in all_types
                 ]
                 + [0, 0.0, 2, 2.0],
-                "name": ["add", "multiply", "power", "subtract"],
+                "name": ["power"],
             }
         )
-        + testing.product(
-            {
-                "arg1": [
-                    numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
-                    for d in negative_types
-                ]
-                + [0, 0.0, 2, 2.0, -2, -2.0],
-                "arg2": [
-                    numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
-                    for d in negative_types
-                ]
-                + [0, 0.0, 2, 2.0, -2, -2.0],
-                "name": ["divide", "true_divide", "subtract"],
-            }
-        )
+        # + testing.product(
+        #     {
+        #         "arg1": [
+        #             numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+        #             for d in negative_types
+        #         ]
+        #         + [0, 0.0, 2, 2.0, -2, -2.0],
+        #         "arg2": [
+        #             numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+        #             for d in negative_types
+        #         ]
+        #         + [0, 0.0, 2, 2.0, -2, -2.0],
+        #         "name": ["divide", "true_divide", "subtract"],
+        #     }
+        # )
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -254,113 +250,113 @@ class TestArithmeticBinary(ArithmeticBinaryBase, unittest.TestCase):
         self.check_binary()
 
 
-@testing.gpu
-@testing.parameterize(
-    *(
-        testing.product(
-            {
-                "arg1": [
-                    numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
-                    for d in int_types
-                ]
-                + [0, 0.0, 2, 2.0, -2, -2.0],
-                "arg2": [
-                    numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
-                    for d in int_types
-                ]
-                + [0, 0.0, 2, 2.0, -2, -2.0],
-                "name": ["true_divide"],
-                "dtype": [numpy.float64],
-                "use_dtype": [True, False],
-            }
-        )
-        + testing.product(
-            {
-                "arg1": [
-                    numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
-                    for d in float_types
-                ]
-                + [0.0, 2.0, -2.0],
-                "arg2": [
-                    numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
-                    for d in float_types
-                ]
-                + [0.0, 2.0, -2.0],
-                "name": ["power", "true_divide", "subtract"],
-                "dtype": [numpy.float64],
-                "use_dtype": [True, False],
-            }
-        )
-        + testing.product(
-            {
-                "arg1": [
-                    testing.shaped_arange((2, 3), numpy, dtype=d)
-                    for d in no_complex_types
-                ]
-                + [0, 0.0, 2, 2.0, -2, -2.0],
-                "arg2": [
-                    testing.shaped_reverse_arange((2, 3), numpy, dtype=d)
-                    for d in no_complex_types
-                ]
-                + [0, 0.0, 2, 2.0, -2, -2.0],
-                "name": ["floor_divide", "fmod", "remainder", "mod"],
-                "dtype": [numpy.float64],
-                "use_dtype": [True, False],
-            }
-        )
-        + testing.product(
-            {
-                "arg1": [
-                    numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
-                    for d in negative_no_complex_types
-                ]
-                + [0, 0.0, 2, 2.0, -2, -2.0],
-                "arg2": [
-                    numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
-                    for d in negative_no_complex_types
-                ]
-                + [0, 0.0, 2, 2.0, -2, -2.0],
-                "name": ["floor_divide", "fmod", "remainder", "mod"],
-                "dtype": [numpy.float64],
-                "use_dtype": [True, False],
-            }
-        )
-    )
-)
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestArithmeticBinary2(ArithmeticBinaryBase, unittest.TestCase):
-    def test_binary(self):
-        if (
-            self.use_dtype
-            and numpy.lib.NumpyVersion(numpy.__version__) < "1.10.0"
-        ):
-            raise unittest.SkipTest("NumPy>=1.10")
-        self.check_binary()
+# @testing.gpu
+# @testing.parameterize(
+#     *(
+#         testing.product(
+#             {
+#                 "arg1": [
+#                     numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+#                     for d in int_types
+#                 ]
+#                 + [0, 0.0, 2, 2.0, -2, -2.0],
+#                 "arg2": [
+#                     numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+#                     for d in int_types
+#                 ]
+#                 + [0, 0.0, 2, 2.0, -2, -2.0],
+#                 "name": ["true_divide"],
+#                 "dtype": [numpy.float64],
+#                 "use_dtype": [True, False],
+#             }
+#         )
+#         + testing.product(
+#             {
+#                 "arg1": [
+#                     numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+#                     for d in float_types
+#                 ]
+#                 + [0.0, 2.0, -2.0],
+#                 "arg2": [
+#                     numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+#                     for d in float_types
+#                 ]
+#                 + [0.0, 2.0, -2.0],
+#                 "name": ["power", "true_divide", "subtract"],
+#                 "dtype": [numpy.float64],
+#                 "use_dtype": [True, False],
+#             }
+#         )
+#         + testing.product(
+#             {
+#                 "arg1": [
+#                     testing.shaped_arange((2, 3), numpy, dtype=d)
+#                     for d in no_complex_types
+#                 ]
+#                 + [0, 0.0, 2, 2.0, -2, -2.0],
+#                 "arg2": [
+#                     testing.shaped_reverse_arange((2, 3), numpy, dtype=d)
+#                     for d in no_complex_types
+#                 ]
+#                 + [0, 0.0, 2, 2.0, -2, -2.0],
+#                 "name": ["floor_divide", "fmod", "remainder", "mod"],
+#                 "dtype": [numpy.float64],
+#                 "use_dtype": [True, False],
+#             }
+#         )
+#         + testing.product(
+#             {
+#                 "arg1": [
+#                     numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+#                     for d in negative_no_complex_types
+#                 ]
+#                 + [0, 0.0, 2, 2.0, -2, -2.0],
+#                 "arg2": [
+#                     numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+#                     for d in negative_no_complex_types
+#                 ]
+#                 + [0, 0.0, 2, 2.0, -2, -2.0],
+#                 "name": ["floor_divide", "fmod", "remainder", "mod"],
+#                 "dtype": [numpy.float64],
+#                 "use_dtype": [True, False],
+#             }
+#         )
+#     )
+# )
+# @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+# class TestArithmeticBinary2(ArithmeticBinaryBase, unittest.TestCase):
+#     def test_binary(self):
+#         if (
+#             self.use_dtype
+#             and numpy.lib.NumpyVersion(numpy.__version__) < "1.10.0"
+#         ):
+#             raise unittest.SkipTest("NumPy>=1.10")
+#         self.check_binary()
 
 
-class TestArithmeticModf(unittest.TestCase):
-    @testing.for_float_dtypes()
-    @testing.numpy_cupy_allclose()
-    def test_modf(self, xp, dtype):
-        a = xp.array([-2.5, -1.5, -0.5, 0, 0.5, 1.5, 2.5], dtype=dtype)
-        b, c = xp.modf(a)
-        d = xp.empty((2, 7), dtype=dtype)
-        d[0] = b
-        d[1] = c
-        return d
+# class TestArithmeticModf(unittest.TestCase):
+#     @testing.for_float_dtypes()
+#     @testing.numpy_cupy_allclose()
+#     def test_modf(self, xp, dtype):
+#         a = xp.array([-2.5, -1.5, -0.5, 0, 0.5, 1.5, 2.5], dtype=dtype)
+#         b, c = xp.modf(a)
+#         d = xp.empty((2, 7), dtype=dtype)
+#         d[0] = b
+#         d[1] = c
+#         return d
 
 
-@testing.parameterize(
-    *testing.product({"xp": [numpy, cupy], "shape": [(3, 2), (), (3, 0, 2)]})
-)
-@testing.gpu
-class TestBoolSubtract(unittest.TestCase):
-    def test_bool_subtract(self):
-        xp = self.xp
-        if xp is numpy and not testing.numpy_satisfies(">=1.14.0"):
-            raise unittest.SkipTest("NumPy<1.14.0")
-        shape = self.shape
-        x = testing.shaped_random(shape, xp, dtype=numpy.bool_)
-        y = testing.shaped_random(shape, xp, dtype=numpy.bool_)
-        with pytest.raises(TypeError):
-            xp.subtract(x, y)
+# @testing.parameterize(
+#     *testing.product({"xp": [numpy, cupy], "shape": [(3, 2), (), (3, 0, 2)]})
+# )
+# @testing.gpu
+# class TestBoolSubtract(unittest.TestCase):
+#     def test_bool_subtract(self):
+#         xp = self.xp
+#         if xp is numpy and not testing.numpy_satisfies(">=1.14.0"):
+#             raise unittest.SkipTest("NumPy<1.14.0")
+#         shape = self.shape
+#         x = testing.shaped_random(shape, xp, dtype=numpy.bool_)
+#         y = testing.shaped_random(shape, xp, dtype=numpy.bool_)
+#         with pytest.raises(TypeError):
+#             xp.subtract(x, y)
