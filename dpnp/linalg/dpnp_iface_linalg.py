@@ -97,9 +97,14 @@ def cholesky(input):
             pass
         else:
             if input.dtype == dpnp.int32 or input.dtype == dpnp.int64:
+                dev = x1_desc.get_array().sycl_device
+                if dev.has_aspect_fp64:
+                    dtype = dpnp.float64
+                else:
+                    dtype = dpnp.float32
                 # TODO memory copy. needs to move into DPNPC
                 input_ = dpnp.get_dpnp_descriptor(
-                    dpnp.astype(input, dpnp.float64),
+                    dpnp.astype(input, dtype=dtype),
                     copy_when_nondefault_queue=False,
                 )
             else:
