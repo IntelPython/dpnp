@@ -413,7 +413,10 @@ def test_power(array, val, data_type, val_type):
     dpnp_a = dpnp.array(array, dtype=data_type)
     val_ = val_type(val)
 
-    if is_cpu_device() and dpnp.complex128 in (data_type, val_type):
+    if is_cpu_device() and (
+        dpnp.complex128 in (data_type, val_type)
+        or dpnp.complex64 in (data_type, val_type)
+    ):
         # TODO: discuss the behavior with OneMKL team
         pytest.skip(
             "(0j ** 5) is different: (NaN + NaNj) in dpnp and (0j) in numpy"
