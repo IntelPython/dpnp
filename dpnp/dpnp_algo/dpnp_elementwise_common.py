@@ -614,7 +614,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    dpnp.ndarray:
         An array containing the element-wise logical AND results.
 """
 
@@ -650,7 +650,7 @@ Args:
         output array, if parameter `out` is `None`.
         Default: "K".
 Return:
-    usm_ndarray:
+    dpnp.ndarray:
         An array containing the element-wise logical NOT results.
 """
 
@@ -690,7 +690,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    dpnp.ndarray:
         An array containing the element-wise logical OR results.
 """
 
@@ -731,7 +731,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    dpnp.ndarray:
         An array containing the element-wise logical XOR results.
 """
 
@@ -861,7 +861,7 @@ Args:
         Output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_ndarray:
+    dpnp.ndarray:
         An array containing the result of element-wise of raising each element
         to a specified power.
         The data type of the returned array is determined by the Type Promotion Rules.
