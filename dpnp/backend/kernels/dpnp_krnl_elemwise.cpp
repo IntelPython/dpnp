@@ -1628,13 +1628,6 @@ static void func_map_elemwise_2arg_3type_core(func_map_t &fmap)
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>}),
      ...);
-    ((fmap[DPNPFuncName::DPNP_FN_POWER_EXT][FT1][FTs] =
-          {populate_func_types<FT1, FTs>(),
-           (void *)dpnp_power_c_ext<
-               func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>}),
-     ...);
     ((fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][FT1][FTs] =
           {populate_func_types<FT1, FTs>(),
            (void *)dpnp_subtract_c_ext<

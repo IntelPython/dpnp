@@ -1427,8 +1427,10 @@ def power(
     >>> a = dp.array([1, 2, 3, 4, 5])
     >>> b = dp.array([2, 2, 2, 2, 2])
     >>> result = dp.power(a, b)
-    >>> [x for x in result]
-    [1, 4, 9, 16, 25]
+    >>> result
+    array([ 1,  4,  9, 16, 25])
+    >>> dp.power(a, 3)
+    array([  1,   8,  27,  64, 125])
 
     """
 

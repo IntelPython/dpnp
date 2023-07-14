@@ -190,8 +190,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_PARTITION
         DPNP_FN_PARTITION_EXT
         DPNP_FN_PLACE
-        DPNP_FN_POWER
-        DPNP_FN_POWER_EXT
         DPNP_FN_PROD
         DPNP_FN_PROD_EXT
         DPNP_FN_PTP
