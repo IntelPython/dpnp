@@ -318,33 +318,17 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
         // (looks like there are such another cases)
 
         if (ext_input1_ndim == 2 && ext_input2_ndim == 2) {
-            // is mat1 F-contiguous, C-contiguous
-            bool mat1_f_contig =
-                (((ext_input1_shape[0] == 1) || (ext_input1_strides[0] == 1)) &&
-                 ((ext_input1_shape[1] == 1) ||
-                  (ext_input1_strides[1] == ext_input1_shape[0])));
-            bool mat1_c_contig =
-                (((ext_input1_shape[1] == 1) || (ext_input1_strides[1] == 1)) &&
-                 ((ext_input1_shape[0] == 1) ||
-                  (ext_input1_strides[0] == ext_input1_shape[1])));
-            // is mat2 F-contiguous, C-contiguous
-            bool mat2_f_contig =
-                (((ext_input2_shape[0] == 1) || (ext_input2_strides[0] == 1)) &&
-                 ((ext_input2_shape[1] == 1) ||
-                  (ext_input2_strides[1] == ext_input2_shape[0])));
-            bool mat2_c_contig =
-                (((ext_input2_shape[1] == 1) || (ext_input2_strides[1] == 1)) &&
-                 ((ext_input2_shape[0] == 1) ||
-                  (ext_input2_strides[0] == ext_input2_shape[1])));
-
-            if ((mat1_f_contig || mat1_c_contig) &&
-                (mat2_f_contig || mat2_c_contig)) {
+            // OneMKL gemm suports only arrays contiguous on inner dimension,
+            // so stride for at least one dimension should be equal to 1
+            if ((ext_input1_strides[0] == 1 || ext_input1_strides[1] == 1) &&
+                (ext_input2_strides[0] == 1 || ext_input2_strides[1] == 1))
+            {
                 oneapi::mkl::transpose trans1 =
-                    (mat1_f_contig && !mat1_c_contig)
+                    (ext_input1_strides[0] == 1)
                         ? oneapi::mkl::transpose::trans
                         : oneapi::mkl::transpose::nontrans;
                 oneapi::mkl::transpose trans2 =
-                    (mat2_f_contig && !mat2_c_contig)
+                    (ext_input2_strides[0] == 1)
                         ? oneapi::mkl::transpose::trans
                         : oneapi::mkl::transpose::nontrans;
 
@@ -352,39 +336,50 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
                 const size_t size_n = ext_input2_shape[1];
                 const size_t size_k = ext_input1_shape[1];
 
-                const std::int64_t lda =
+                const std::int64_t lda = static_cast<std::int64_t>(
                     trans1 == oneapi::mkl::transpose::nontrans
                         ? ext_input1_strides[0]
-                        : ext_input1_strides[1];
-                const std::int64_t ldb =
+                        : ext_input1_strides[1]);
+                const std::int64_t ldb = static_cast<std::int64_t>(
                     trans2 == oneapi::mkl::transpose::nontrans
                         ? ext_input2_strides[0]
-                        : ext_input2_strides[1];
-
-                // definition of ldc will be another for result with
-                // non-standard (c-contiguous) strides const std::int64_t ldc =
-                // result_strides[0] == 1 ? result_strides[1] :
-                // result_strides[0];
+                        : ext_input2_strides[1]);
                 const std::int64_t ldc = size_n;
 
-                try {
-                    sycl::event event = mkl_blas_rm::gemm(
-                        q, trans1, trans2, size_m, size_n, size_k,
-                        _DataType_output(1), // alpha
-                        input1, lda, input2, ldb,
-                        _DataType_output(0), // beta
-                        result, ldc);
-                    event.wait();
-                    delete[] ext_input1_shape;
-                    delete[] ext_input1_strides;
-                    delete[] ext_input2_shape;
-                    delete[] ext_input2_strides;
-                    delete[] ext_result_shape;
+                constexpr _DataType_output alpha = 1;
+                constexpr _DataType_output beta = 0;
 
-                    return event_ref;
+                std::stringstream error_msg;
+                std::int64_t info = 0;
+
+                try {
+                    mkl_blas_rm::gemm(q, trans1, trans2, size_m, size_n, size_k,
+                                      alpha, input1, lda, input2, ldb, beta,
+                                      result, ldc)
+                        .wait();
+                } catch (mkl_lapack::exception const &e) {
+                    error_msg << "Unexpected MKL exception caught during "
+                                 "gemm() call:\nreason: "
+                              << e.what() << "\ninfo: " << e.info();
+                    info = e.info();
                 } catch (const std::exception &e) {
-                    // do nothing, proceed to general case
+                    error_msg << "Unexpected SYCL exception caught during "
+                                 "gemm() call:\n"
+                              << e.what();
+                    info = -1;
                 }
+
+                if (info != 0) // an unexected error occurs
+                {
+                    throw std::runtime_error(error_msg.str());
+                }
+
+                delete[] ext_input1_shape;
+                delete[] ext_input1_strides;
+                delete[] ext_input2_shape;
+                delete[] ext_input2_strides;
+                delete[] ext_result_shape;
+                return event_ref;
             }
         }
     }
