@@ -1424,13 +1424,22 @@ def power(
     Example
     -------
     >>> import dpnp as dp
-    >>> a = dp.array([1, 2, 3, 4, 5])
-    >>> b = dp.array([2, 2, 2, 2, 2])
-    >>> result = dp.power(a, b)
-    >>> result
-    array([ 1,  4,  9, 16, 25])
+    >>> a = dp.arange(6)
     >>> dp.power(a, 3)
-    array([  1,   8,  27,  64, 125])
+    array([  0,   1,   8,  27,  64, 125])
+
+    >>> b = dp.array([1.0, 2.0, 3.0, 3.0, 2.0, 1.0])
+    >>> dp.power(a, b)
+    array([ 0.,  1.,  8., 27., 16.,  5.])
+
+    >>> c = dp.array([[1, 2, 3, 3, 2, 1], [1, 2, 3, 3, 2, 1]])
+    >>> dp.power(a, c)
+    array([[ 0,  1,  8, 27, 16,  5],
+           [ 0,  1,  8, 27, 16,  5]])
+
+    >>> d = dp.array([-1.0, -4.0])
+    >>> dp.power(d, 1.5)
+    array([nan, nan])
 
     """
 
