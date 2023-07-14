@@ -104,63 +104,6 @@ __all__ = [
 ]
 
 
-def _check_nd_call(
-    origin_func,
-    dpnp_func,
-    x1,
-    x2,
-    out=None,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Checks arguments and calls a function.
-
-    Chooses a common internal elementwise function to call in DPNP based on input arguments
-    or to fallback on NumPy call if any passed argument is not currently supported.
-
-    """
-
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        if order in "afkcAFKC":
-            order = order.upper()
-        elif order is None:
-            order = "K"
-        else:
-            raise ValueError(
-                "order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(
-                    order
-                )
-            )
-
-        return dpnp_func(x1, x2, out=out, order=order)
-    return call_origin(
-        origin_func,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
 def abs(*args, **kwargs):
     """
     Calculate the absolute value element-wise.
@@ -291,7 +234,7 @@ def add(
 
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.add,
         dpnp_add,
         x1,
@@ -689,7 +632,7 @@ def divide(
 
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.divide,
         dpnp_divide,
         x1,
@@ -864,7 +807,7 @@ def floor_divide(
 
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.floor_divide,
         dpnp_floor_divide,
         x1,
@@ -1256,7 +1199,7 @@ def multiply(
 
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.multiply,
         dpnp_multiply,
         x1,
@@ -1725,7 +1668,7 @@ def subtract(
 
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.subtract,
         dpnp_subtract,
         x1,
