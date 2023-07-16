@@ -34,6 +34,7 @@
 #include <dpnp_iface.hpp>
 
 namespace mkl_blas = oneapi::mkl::blas;
+namespace mkl_blas_cm = oneapi::mkl::blas::column_major;
 namespace mkl_blas_rm = oneapi::mkl::blas::row_major;
 namespace mkl_lapack = oneapi::mkl::lapack;
 
@@ -297,9 +298,12 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
     size_t ext_result_ndim =
         ((input1_ndim == 1) || (input2_ndim == 1)) ? 2 : result_ndim;
     shape_elem_type *ext_result_shape = new shape_elem_type[ext_result_ndim];
+    shape_elem_type *ext_result_strides = new shape_elem_type[ext_result_ndim];
     if ((input1_ndim == 1) || (input2_ndim == 1)) {
         ext_result_shape[0] = ext_input1_shape[0];
         ext_result_shape[1] = ext_input2_shape[1];
+        ext_result_strides[0] = result_strides[0];
+        ext_result_strides[1] = 0;
     }
     else {
         for (size_t i = 0; i < ext_result_ndim; ++i) {
@@ -321,30 +325,33 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
             // OneMKL gemm suports only arrays contiguous on inner dimension,
             // so stride for at least one dimension should be equal to 1
             if ((ext_input1_strides[0] == 1 || ext_input1_strides[1] == 1) &&
-                (ext_input2_strides[0] == 1 || ext_input2_strides[1] == 1))
+                (ext_input2_strides[0] == 1 || ext_input2_strides[1] == 1) &&
+                (ext_result_strides[0] == 1 || ext_result_strides[1] == 1))
             {
-                oneapi::mkl::transpose trans1 =
-                    (ext_input1_strides[0] == 1)
-                        ? oneapi::mkl::transpose::trans
-                        : oneapi::mkl::transpose::nontrans;
-                oneapi::mkl::transpose trans2 =
-                    (ext_input2_strides[0] == 1)
-                        ? oneapi::mkl::transpose::trans
-                        : oneapi::mkl::transpose::nontrans;
+                const bool isRowmA =
+                    (ext_input1_strides[1] == 1 || ext_input1_strides[1] == 0);
+                const bool isRowmB =
+                    (ext_input2_strides[1] == 1 || ext_input2_strides[1] == 0);
+                const bool isRowmC =
+                    (ext_result_strides[1] == 1 || ext_result_strides[1] == 0);
+
+                oneapi::mkl::transpose transA =
+                    (isRowmA != isRowmC) ? oneapi::mkl::transpose::trans
+                                         : oneapi::mkl::transpose::nontrans;
+                oneapi::mkl::transpose transB =
+                    (isRowmB != isRowmC) ? oneapi::mkl::transpose::trans
+                                         : oneapi::mkl::transpose::nontrans;
 
                 const size_t size_m = ext_input1_shape[0];
                 const size_t size_n = ext_input2_shape[1];
                 const size_t size_k = ext_input1_shape[1];
 
                 const std::int64_t lda = static_cast<std::int64_t>(
-                    trans1 == oneapi::mkl::transpose::nontrans
-                        ? ext_input1_strides[0]
-                        : ext_input1_strides[1]);
+                    isRowmA ? ext_input1_strides[0] : ext_input1_strides[1]);
                 const std::int64_t ldb = static_cast<std::int64_t>(
-                    trans2 == oneapi::mkl::transpose::nontrans
-                        ? ext_input2_strides[0]
-                        : ext_input2_strides[1]);
-                const std::int64_t ldc = size_n;
+                    isRowmB ? ext_input2_strides[0] : ext_input2_strides[1]);
+                const std::int64_t ldc = static_cast<std::int64_t>(
+                    isRowmC ? ext_result_strides[0] : ext_result_strides[1]);
 
                 constexpr _DataType_output alpha = 1;
                 constexpr _DataType_output beta = 0;
@@ -353,10 +360,18 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
                 std::int64_t info = 0;
 
                 try {
-                    mkl_blas_rm::gemm(q, trans1, trans2, size_m, size_n, size_k,
-                                      alpha, input1, lda, input2, ldb, beta,
-                                      result, ldc)
-                        .wait();
+                    if (isRowmC) {
+                        mkl_blas_rm::gemm(q, transA, transB, size_m, size_n,
+                                          size_k, alpha, input1, lda, input2,
+                                          ldb, beta, result, ldc)
+                            .wait();
+                    }
+                    else {
+                        mkl_blas_cm::gemm(q, transA, transB, size_m, size_n,
+                                          size_k, alpha, input1, lda, input2,
+                                          ldb, beta, result, ldc)
+                            .wait();
+                    }
                 } catch (mkl_lapack::exception const &e) {
                     error_msg << "Unexpected MKL exception caught during "
                                  "gemm() call:\nreason: "
@@ -379,6 +394,7 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
                 delete[] ext_input2_shape;
                 delete[] ext_input2_strides;
                 delete[] ext_result_shape;
+                delete[] ext_result_strides;
                 return event_ref;
             }
         }
@@ -427,6 +443,7 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
     delete[] ext_input2_shape;
     delete[] ext_input2_strides;
     delete[] ext_result_shape;
+    delete[] ext_result_strides;
 
     return event_ref;
 }
