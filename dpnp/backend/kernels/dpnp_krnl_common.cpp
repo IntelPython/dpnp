@@ -302,12 +302,13 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
     if ((input1_ndim == 1) || (input2_ndim == 1)) {
         ext_result_shape[0] = ext_input1_shape[0];
         ext_result_shape[1] = ext_input2_shape[1];
-        ext_result_strides[0] = result_strides[0];
-        ext_result_strides[1] = 0;
+        ext_result_strides[0] = 0;
+        ext_result_strides[1] = result_strides[0];
     }
     else {
         for (size_t i = 0; i < ext_result_ndim; ++i) {
             ext_result_shape[i] = result_shape[i];
+            ext_result_strides[i] = result_strides[i];
         }
     }
 
@@ -320,7 +321,6 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
         // check if GEMM can be executed (strides)
         // TODO: rewrite the condition in general case for ndims > 2
         // (looks like there are such another cases)
-
         if (ext_input1_ndim == 2 && ext_input2_ndim == 2) {
             // OneMKL gemm suports only arrays contiguous on inner dimension,
             // so stride for at least one dimension should be equal to 1
@@ -329,11 +329,11 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
                 (ext_result_strides[0] == 1 || ext_result_strides[1] == 1))
             {
                 const bool isRowmA =
-                    (ext_input1_strides[1] == 1 || ext_input1_strides[1] == 0);
+                    (ext_input1_strides[1] == 1 || ext_input1_strides[0] == 0);
                 const bool isRowmB =
                     (ext_input2_strides[1] == 1 || ext_input2_strides[1] == 0);
                 const bool isRowmC =
-                    (ext_result_strides[1] == 1 || ext_result_strides[1] == 0);
+                    (ext_result_strides[1] == 1 || ext_result_strides[0] == 0);
 
                 oneapi::mkl::transpose transA =
                     (isRowmA != isRowmC) ? oneapi::mkl::transpose::trans
@@ -346,12 +346,20 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
                 const size_t size_n = ext_input2_shape[1];
                 const size_t size_k = ext_input1_shape[1];
 
+                auto getLdaLdc = [](const bool isRown, shape_elem_type *strides,
+                                    shape_elem_type *shapes) {
+                    if (isRown) {
+                        return (strides[0] != 0) ? strides[0] : shapes[1];
+                    }
+                    return strides[1];
+                };
+
                 const std::int64_t lda = static_cast<std::int64_t>(
-                    isRowmA ? ext_input1_strides[0] : ext_input1_strides[1]);
+                    getLdaLdc(isRowmA, ext_input1_strides, ext_input1_shape));
                 const std::int64_t ldb = static_cast<std::int64_t>(
                     isRowmB ? ext_input2_strides[0] : ext_input2_strides[1]);
                 const std::int64_t ldc = static_cast<std::int64_t>(
-                    isRowmC ? ext_result_strides[0] : ext_result_strides[1]);
+                    getLdaLdc(isRowmC, ext_result_strides, ext_result_shape));
 
                 constexpr _DataType_output alpha = 1;
                 constexpr _DataType_output beta = 0;
