@@ -108,17 +108,16 @@ def dot(x1, x2, out=None, **kwargs):
             else (None, None)
         )
 
-        # TODO: copy_when_strides=False (now it's done for faster implementation with transpose arrays)
         x1_desc = dpnp.get_dpnp_descriptor(
             x1,
-            copy_when_strides=True,
+            copy_when_strides=False,
             copy_when_nondefault_queue=False,
             alloc_usm_type=usm_type,
             alloc_queue=queue,
         )
         x2_desc = dpnp.get_dpnp_descriptor(
             x2,
-            copy_when_strides=True,
+            copy_when_strides=False,
             copy_when_nondefault_queue=False,
             alloc_usm_type=usm_type,
             alloc_queue=queue,
@@ -131,7 +130,9 @@ def dot(x1, x2, out=None, **kwargs):
                     )
                 out_desc = (
                     dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
+                        out,
+                        copy_when_strides=False,
+                        copy_when_nondefault_queue=False,
                     )
                     or None
                 )

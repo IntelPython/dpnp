@@ -55,7 +55,7 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_dot_t)(c_dpctl.DPCTLSyclQueueR
                                                          const shape_elem_type *, const shape_elem_type * ,
                                                          void * , const size_t, const size_t,
                                                          const shape_elem_type *, const shape_elem_type * ,
-                                                         const c_dpctl.DPCTLEventVectorRef)
+                                                         const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_matmul_t)(c_dpctl.DPCTLSyclQueueRef,
                                                             void * , const size_t, const size_t,
                                                             const shape_elem_type *, const shape_elem_type * ,
