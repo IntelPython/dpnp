@@ -49,7 +49,7 @@ jobs:
         run: |
           sudo apt-get install intel-oneapi-mkl                \
                                intel-oneapi-mkl-devel          \
-                               intel-oneapi-dpcpp-cpp-compiler
+                               intel-oneapi-compiler-dpcpp-cpp
 
       # https://github.com/marketplace/actions/checkout
       - name: Install nvidia-cuda support drivers
