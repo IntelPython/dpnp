@@ -193,17 +193,16 @@
             <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="p">)</span>
 
-        <span class="c1"># TODO: copy_when_strides=False (now it&#39;s done for faster implementation with transpose arrays)</span>
         <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
             <span class="n">x1</span><span class="p">,</span>
-            <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">alloc_usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
             <span class="n">alloc_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
             <span class="n">x2</span><span class="p">,</span>
-            <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">alloc_usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
             <span class="n">alloc_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">,</span>
@@ -216,7 +215,9 @@
                     <span class="p">)</span>
                 <span class="n">out_desc</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-                        <span class="n">out</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
+                        <span class="n">out</span><span class="p">,</span>
+                        <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="ow">or</span> <span class="kc">None</span>
                 <span class="p">)</span>
