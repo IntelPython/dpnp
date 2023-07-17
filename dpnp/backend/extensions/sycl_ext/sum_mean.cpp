@@ -78,20 +78,28 @@ sycl::event mean_over_axis(usm_ndarray input,
     return mean_fn(input, output, depends);
 }
 
-py::cpp_function get_sum_over_axis(usm_ndarray input, usm_ndarray output)
+py::object get_sum_over_axis(usm_ndarray input, usm_ndarray output)
 {
     if (not sycl_ext::check_limitations(input, output))
-        return nullptr;
+        return py::none();
 
-    return (*sum_dispatcher)({input, output});
+    auto sum = (*sum_dispatcher)({input, output});
+    if (sum == nullptr)
+        return py::none();
+
+    return py::cpp_function(sum);
 }
 
-py::cpp_function get_mean_over_axis(usm_ndarray input, usm_ndarray output)
+py::object get_mean_over_axis(usm_ndarray input, usm_ndarray output)
 {
     if (not sycl_ext::check_limitations(input, output))
-        return nullptr;
+        return py::none();
 
-    return (*mean_dispatcher)({input, output});
+    auto mean = (*mean_dispatcher)({input, output});
+    if (mean == nullptr)
+        return py::none();
+
+    return py::cpp_function(mean);
 }
 
 PYBIND11_MODULE(_sycl_ext_impl, m)

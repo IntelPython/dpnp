@@ -171,6 +171,10 @@ struct sum_mean
             throw py::value_error(
                 "Input array axis 1 size must match output array size");
 
+        auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+        if (overlap(in, out))
+            throw py::value_error("Input and output array are overlapped");
+
         check_limitations(in, out, true);
     }
 };
@@ -209,7 +213,7 @@ using MeanOverAxisContigDispatcher =
                         dpctl::tensor::usm_ndarray,
                         UsmArrayMatcher,
                         SumInputTypes,
-                        SumOutputTypes>;
+                        MeanOutputTypes>;
 } // namespace sycl_ext
 } // namespace ext
 } // namespace backend

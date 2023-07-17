@@ -1828,7 +1828,7 @@ def sum(
     elif where is not True:
         pass
     else:
-        if axis == (0,) and len(x.shape) == 2:
+        if axis == (0,) and len(x.shape) == 2 and not keepdims:
             from dpctl.tensor._reduction import _default_reduction_dtype
 
             from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
@@ -1836,7 +1836,11 @@ def sum(
             input = dpnp.get_usm_ndarray(x)
 
             queue = input.sycl_queue
-            out_dtype = _default_reduction_dtype(input.dtype, queue)
+            out_dtype = (
+                _default_reduction_dtype(input.dtype, queue)
+                if dtype is None
+                else dtype
+            )
             output = dpt.empty(
                 input.shape[1], dtype=out_dtype, sycl_queue=queue
             )
