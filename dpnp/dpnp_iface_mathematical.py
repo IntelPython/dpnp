@@ -1814,6 +1814,13 @@ def sum(
 
     """
 
+    if not isinstance(axis, (tuple, list)):
+        axis = (axis,)
+
+    from numpy.core.numeric import normalize_axis_tuple
+
+    axis = normalize_axis_tuple(axis, x.ndim, "axis")
+
     if out is not None:
         pass
     elif initial != 0:
@@ -1821,6 +1828,24 @@ def sum(
     elif where is not True:
         pass
     else:
+        if (axis == (0,) and len(x.shape) == 2):
+            from dpctl.tensor._reduction import _default_reduction_dtype
+
+            from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
+
+            input = dpnp.get_usm_ndarray(x)
+
+            queue = input.sycl_queue
+            out_dtype = _default_reduction_dtype(input.dtype, queue)
+            output = dpt.empty(input.shape[1], dtype=out_dtype, sycl_queue=queue)
+
+            get_sum = _sycl_ext_impl._get_sum_over_axis_0
+            sum = get_sum(input, output)
+
+            if sum:
+                sum(input, output, []).wait()
+                return dpnp_array._create_from_usm_ndarray(output)
+
         y = dpt.sum(
             dpnp.get_usm_ndarray(x), axis=axis, dtype=dtype, keepdims=keepdims
         )
