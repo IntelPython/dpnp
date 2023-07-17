@@ -56,16 +56,23 @@ bool check_limitations(const dpctl::tensor::usm_ndarray &in,
         return false;
     }
 
-    // auto local_mem_size = in.get_sycl_device().local_mem_size();
-    // auto out_full_size = out.get_size()*out.get_elemsize();
-    // if (out_full_size > local_mem_size)
-    // {
-    //     if (throw_on_fail)
-    //         throw py::value_error("Resulting array exceeds local memroy size
-    //         " + std::to_string(local_mem_size));
+    auto device = in.get_queue().get_device();
+    auto local_mem_size = device.get_info<sycl::info::device::local_mem_size>();
+    size_t out_full_size = out.get_size() * out.get_elemsize();
+    if (out_full_size > local_mem_size) {
+        if (throw_on_fail)
+            throw py::value_error("Resulting array exceeds local memroy size" +
+                                  std::to_string(local_mem_size));
 
-    //     return false;
-    // }
+        return false;
+    }
+
+    if (out.get_elemsize() == 64 and not device.has(sycl::aspect::atomic64)) {
+        if (throw_on_fail)
+            throw py::value_error("64-bit atomics are not supported");
+
+        return false;
+    }
 
     return true;
 }

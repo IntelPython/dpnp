@@ -42,6 +42,7 @@ it contains:
 
 import dpctl.tensor as dpt
 import numpy
+from numpy.core.numeric import normalize_axis_tuple
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
@@ -1814,12 +1815,11 @@ def sum(
 
     """
 
-    if not isinstance(axis, (tuple, list)):
-        axis = (axis,)
+    if axis is not None:
+        if not isinstance(axis, (tuple, list)):
+            axis = (axis,)
 
-    from numpy.core.numeric import normalize_axis_tuple
-
-    axis = normalize_axis_tuple(axis, x.ndim, "axis")
+        axis = normalize_axis_tuple(axis, x.ndim, "axis")
 
     if out is not None:
         pass
@@ -1828,7 +1828,7 @@ def sum(
     elif where is not True:
         pass
     else:
-        if (axis == (0,) and len(x.shape) == 2):
+        if axis == (0,) and len(x.shape) == 2:
             from dpctl.tensor._reduction import _default_reduction_dtype
 
             from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
@@ -1837,7 +1837,9 @@ def sum(
 
             queue = input.sycl_queue
             out_dtype = _default_reduction_dtype(input.dtype, queue)
-            output = dpt.empty(input.shape[1], dtype=out_dtype, sycl_queue=queue)
+            output = dpt.empty(
+                input.shape[1], dtype=out_dtype, sycl_queue=queue
+            )
 
             get_sum = _sycl_ext_impl._get_sum_over_axis_0
             sum = get_sum(input, output)
