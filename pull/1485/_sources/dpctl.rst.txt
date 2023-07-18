@@ -1,5 +1,8 @@
-Cooperation with the `Data Parallel Control Library`_ interface
-===============================================================
+.. _dptcl:
+.. include:: ./ext_links.txt
+
+Interlay with the Data Parallel Control Library
+===============================================
 
 `Data Parallel Control Library`_ provides API to manage specific
 `SYCL*`_ resources for SYCL-based Python packages.
@@ -26,7 +29,7 @@ For more information please refer to `Data Parallel Control Library`_
 documentation.
 
 Example
-~~~~~~~
+-------
 .. literalinclude:: ../examples/example10.py
   :linenos:
   :language: python

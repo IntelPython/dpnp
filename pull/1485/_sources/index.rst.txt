@@ -14,7 +14,7 @@ Data Parallel Extension for NumPy*
    reference/index
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Development information
 
    dpnp_backend_api

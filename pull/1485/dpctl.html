@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cooperation with the `Data Parallel Control Library`_ interface &mdash; dpnp 0.12.1 documentation</title>
+  <title>Interlay with the Data Parallel Control Library &mdash; dpnp 0.12.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -61,7 +61,7 @@
 <p class="caption" role="heading"><span class="caption-text">Development information</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="dpnp_backend_api.html">C++ backend API Reference</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Cooperation with the `Data Parallel Control Library`_ interface</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Interlay with the Data Parallel Control Library</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
@@ -81,7 +81,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Cooperation with the `Data Parallel Control Library`_ interface</li>
+      <li class="breadcrumb-item active">Interlay with the Data Parallel Control Library</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/dpctl.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -91,10 +91,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="cooperation-with-the-data-parallel-control-library-interface">
-<h1>Cooperation with the <a href="#id1"><span class="problematic" id="id2">`Data Parallel Control Library`_</span></a> interface<a class="headerlink" href="#cooperation-with-the-data-parallel-control-library-interface" title="Permalink to this heading"></a></h1>
-<p><a href="#id3"><span class="problematic" id="id4">`Data Parallel Control Library`_</span></a> provides API to manage specific
-<a href="#id5"><span class="problematic" id="id6">`SYCL*`_</span></a> resources for SYCL-based Python packages.</p>
+  <span class="target" id="dptcl"></span><section id="interlay-with-the-data-parallel-control-library">
+<h1>Interlay with the Data Parallel Control Library<a class="headerlink" href="#interlay-with-the-data-parallel-control-library" title="Permalink to this heading"></a></h1>
+<p><a class="reference external" href="https://intelpython.github.io/dpctl/latest/index.html">Data Parallel Control Library</a> provides API to manage specific
+<a class="reference external" href="https://www.khronos.org/sycl/">SYCL*</a> resources for SYCL-based Python packages.</p>
 <p>An example below demonstrates how the Data Parallel Extension for NumPy* can be
 easily combined with the device management interface provided by dpctl package.</p>
 <p>Literally, the SYCL* queue manager interface from the dpctl package allows
@@ -109,7 +109,7 @@ which is defined inside the context will allocate the data using that queue.</p>
 <span class="linenos">6</span>    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>For more information please refer to <a href="#id7"><span class="problematic" id="id8">`Data Parallel Control Library`_</span></a>
+<p>For more information please refer to <a class="reference external" href="https://intelpython.github.io/dpctl/latest/index.html">Data Parallel Control Library</a>
 documentation.</p>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h2>
