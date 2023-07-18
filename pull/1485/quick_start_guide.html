@@ -73,7 +73,7 @@
 <p class="caption" role="heading"><span class="caption-text">Development information</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dpnp_backend_api.html">C++ backend API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dpctl.html">Interlay with the Data Parallel Control Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpctl.html">Interplay with the Data Parallel Control Library</a></li>
 </ul>
 
         </div>
@@ -130,8 +130,8 @@ in the next installation section.</p>
 <p>It is recommended to use conda packages from the <code class="docutils literal notranslate"><span class="pre">anaconda.org/intel</span></code>
 channel. You will need one of the commands below:</p>
 <ul class="simple">
-<li><p>Conda: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">numba-dpex</span></code></p></li>
-<li><p>Pip: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numba-dpex</span></code></p></li>
+<li><p>Conda: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">dpnp</span></code></p></li>
+<li><p>Pip: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">dpnp</span></code></p></li>
 </ul>
 <p>These commands install dpnp package along with its dependencies, including
 <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> package with <a class="reference external" href="https://intelpython.github.io/dpctl/latest/index.html">Data Parallel Control Library</a> and all required
@@ -178,6 +178,10 @@ conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </div>
 <p>To build and install the package on Windows OS, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>install<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icx
+</pre></div>
+</div>
+<p>Alternatively, to develop on Linux OS, you can use the driver script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py
 </pre></div>
 </div>
 </section>

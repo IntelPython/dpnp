@@ -1,7 +1,7 @@
 .. _dptcl:
 .. include:: ./ext_links.txt
 
-Interlay with the Data Parallel Control Library
+Interplay with the Data Parallel Control Library
 ===============================================
 
 `Data Parallel Control Library`_ provides API to manage specific
