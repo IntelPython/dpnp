@@ -28,8 +28,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Getting Started" href="getting_started.html" />
-    <link rel="prev" title="Data Parallel Extension for Numpy*" href="index.html" /> 
+    <link rel="next" title="Quick Start Guide" href="quick_start_guide.html" />
+    <link rel="prev" title="Data Parallel Extension for NumPy*" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -56,7 +56,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start_guide.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpnp_backend_api.html">C++ backend API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpctl.html">DPCtl Usage</a></li>
@@ -88,14 +88,14 @@
              
   <section id="module-dpnp">
 <span id="overview"></span><h1>Overview<a class="headerlink" href="#module-dpnp" title="Permalink to this heading"></a></h1>
-<p>The Data Parallel Extensions for Numpy (dpnp package) - a library that
+<p>The Data Parallel Extension for NumPy* (dpnp package) - a library that
 implements a subset of <a class="reference external" href="https://numpy.org/">NumPy*</a> that can be executed on any
 data parallel device. The subset is a drop-in replacement of core <a class="reference external" href="https://numpy.org/">NumPy*</a>
 functions and numerical data types.</p>
-<p>The Data Parallel Extensions for Numpy is being developed as part of
+<p>The Data Parallel Extension for NumPy* is being developed as part of
 <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/ai-analytics-toolkit.html">Intel AI Analytics Toolkit</a> and is distributed with the
 <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html">Intel Distribution for Python*</a>. The dpnp package is also available
-on Anaconda cloud. Please refer the <a class="reference internal" href="getting_started.html"><span class="doc">Getting Started</span></a> page to learn more.</p>
+on Anaconda cloud. Please refer the <span class="xref std std-doc">getting_started</span> page to learn more.</p>
 <p>Being drop-in replacement for <a class="reference external" href="https://numpy.org/">NumPy*</a> means that the usage is very similar:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 </pre></div>
@@ -106,16 +106,16 @@ on Anaconda cloud. Please refer the <a class="reference internal" href="getting_
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">x</span></code> in the above example is an instance of <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> that
-is created identically to <code class="docutils literal notranslate"><span class="pre">NumPy</span></code>’s one. The key difference of
+is created identically to <code class="docutils literal notranslate"><span class="pre">NumPy*</span></code>’s one. The key difference of
 <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> from <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.25)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> is that the memory
 is allocated on the default <a class="reference external" href="https://www.khronos.org/sycl/">SYCL*</a> device, which is a <code class="docutils literal notranslate"><span class="pre">&quot;gpu&quot;</span></code> on systems
 with integrated or discrete GPU (otherwise it is the <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code> device
 on systems that do not have GPU).</p>
-<p>Most of the array manipulations are also done in the way similar to NumPy such as:</p>
+<p>Most of the array manipulations are also done in the way similar to <a class="reference external" href="https://numpy.org/">NumPy*</a> such as:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Please see the <a class="reference internal" href="reference/index.html#dpnp-reference"><span class="std std-ref">API Reference</span></a> for the complete list of supported NumPy APIs
+<p>Please see the <a class="reference internal" href="reference/index.html#dpnp-reference"><span class="std std-ref">API Reference</span></a> for the complete list of supported <a class="reference external" href="https://numpy.org/">NumPy*</a> APIs
 along with their limitations.</p>
 </section>
 
@@ -123,8 +123,8 @@ along with their limitations.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Data Parallel Extension for Numpy*" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Data Parallel Extension for NumPy*" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="quick_start_guide.html" class="btn btn-neutral float-right" title="Quick Start Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
