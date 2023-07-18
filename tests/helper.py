@@ -90,6 +90,15 @@ def is_win_platform():
     return platform.startswith("win")
 
 
+def has_support_aspect16(device=None):
+    """
+    Return True if the device supports 16-bit precision floating point operations,
+    False otherwise.
+    """
+    dev = dpctl.select_default_device() if device is None else device
+    return dev.has_aspect_fp16
+
+
 def has_support_aspect64(device=None):
     """
     Return True if the device supports 64-bit precision floating point operations,

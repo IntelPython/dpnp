@@ -40,12 +40,20 @@ it contains:
 """
 
 
-import dpctl.tensor as dpt
 import numpy
 
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
+
+from .dpnp_algo.dpnp_elementwise_common import (
+    check_nd_call_func,
+    dpnp_cos,
+    dpnp_log,
+    dpnp_sin,
+    dpnp_sqrt,
+    dpnp_square,
+)
 
 __all__ = [
     "arccos",
@@ -403,39 +411,54 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
     )
 
 
-def cos(x1, out=None, **kwargs):
+def cos(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Trigonometric cosine, element-wise.
 
     For full documentation refer to :obj:`numpy.cos`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        The cosine of each element of `x`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([0, np.pi/2, np.pi])
-    >>> out = np.cos(x)
-    >>> [i for i in out]
-    [1.0, 6.123233995736766e-17, -1.0]
+    >>> np.cos(x)
+    array([ 1.000000e+00, -4.371139e-08, -1.000000e+00])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.cos,
+        dpnp_cos,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        out_desc = (
-            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-            if out is not None
-            else None
-        )
-        return dpnp_cos(x1_desc, out_desc).get_pyobj()
-
-    return call_origin(numpy.cos, x1, out=out, **kwargs)
 
 
 def cosh(x1):
@@ -693,15 +716,35 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
     )
 
 
-def log(x1, out=None, **kwargs):
+def log(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
-    Trigonometric logarithm, element-wise.
+    Natural logarithm, element-wise.
+
+    The natural logarithm `log` is the inverse of the exponential function,
+    so that `log(exp(x)) = x`. The natural logarithm is logarithm in base `e`.
 
     For full documentation refer to :obj:`numpy.log`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        The natural logarithm of `x`, element-wise.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -715,25 +758,23 @@ def log(x1, out=None, **kwargs):
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([1.0, np.e, np.e**2, 0.0])
-    >>> out = np.log(x)
-    >>> [i for i in out]
-    [0.0, 1.0, 2.0, -inf]
+    >>> x = np.array([1, np.e, np.e**2, 0])
+    >>> np.log(x)
+    array([  0.,   1.,   2., -inf])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.log,
+        dpnp_log,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        out_desc = (
-            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-            if out is not None
-            else None
-        )
-        return dpnp_log(x1_desc, out_desc).get_pyobj()
-
-    return call_origin(numpy.log, x1, out=out, **kwargs)
 
 
 def log10(x1):
@@ -922,18 +963,32 @@ def radians(x1):
     return call_origin(numpy.radians, x1, **kwargs)
 
 
-def sin(x1, out=None, **kwargs):
+def sin(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Trigonometric sine, element-wise.
 
     For full documentation refer to :obj:`numpy.sin`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        The sine of each element of `x`.
+
     Limitations
     -----------
-    Parameters ``x1`` is supported as :obj:`dpnp.ndarray`.
-    Parameter ``out`` is supported as default value ``None``.
-    Keyword arguments ``kwargs`` are currently unsupported.
-    Otherwise the functions will be executed sequentially on CPU.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -946,24 +1001,22 @@ def sin(x1, out=None, **kwargs):
     --------
     >>> import dpnp as np
     >>> x = np.array([0, np.pi/2, np.pi])
-    >>> out = np.sin(x)
-    >>> [i for i in out]
-    [0.0, 1.0, 1.2246467991473532e-16]
+    >>> np.sin(x)
+    array([ 0.000000e+00,  1.000000e+00, -8.742278e-08])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.sin,
+        dpnp_sin,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        out_desc = (
-            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-            if out is not None
-            else None
-        )
-        return dpnp_sin(x1_desc, out_desc).get_pyobj()
-
-    return call_origin(numpy.sin, x1, out=out, **kwargs)
 
 
 def sinh(x1):
@@ -996,66 +1049,100 @@ def sinh(x1):
     return call_origin(numpy.sinh, x1, **kwargs)
 
 
-def sqrt(x1, /, out=None, **kwargs):
+def sqrt(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
-    Return the positive square-root of an array, element-wise.
+    Return the non-negative square-root of an array, element-wise.
 
     For full documentation refer to :obj:`numpy.sqrt`.
+
+    Returns
+    -------
+    y : dpnp.ndarray
+        An array of the same shape as `x`, containing the positive
+        square-root of each element in `x`.  If any element in `x` is
+        complex, a complex array is returned (and the square-roots of
+        negative reals are calculated).  If all of the elements in `x`
+        are real, so is `y`, with negative elements returning ``nan``.
 
     Limitations
     -----------
     Input array is supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `out` is supported as class:`dpnp.ndarray`, class:`dpctl.tensor.usm_ndarray` or
     with default value ``None``.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([1, 4, 9])
-    >>> out = np.sqrt(x)
-    >>> [i for i in out]
-    [1.0, 2.0, 3.0]
+    >>> np.sqrt(x)
+    array([1., 2., 3.])
+
+    >>> x2 = np.array([4, -1, np.inf])
+    >>> np.sqrt(x2)
+    array([ 2., nan, inf])
 
     """
 
-    x1_desc = (
-        dpnp.get_dpnp_descriptor(
-            x1, copy_when_strides=False, copy_when_nondefault_queue=False
-        )
-        if not kwargs
-        else None
+    return check_nd_call_func(
+        numpy.sqrt,
+        dpnp_sqrt,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        if out is not None:
-            if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                raise TypeError("return array must be of supported array type")
-            out_desc = (
-                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-                or None
-            )
-        else:
-            out_desc = None
-        return dpnp_sqrt(x1_desc, out=out_desc).get_pyobj()
-
-    return call_origin(numpy.sqrt, x1, out=out, **kwargs)
 
 
-def square(x1):
+def square(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Return the element-wise square of the input.
 
     For full documentation refer to :obj:`numpy.square`.
 
+    Returns
+    -------
+    y : dpnp.ndarray
+        Element-wise `x * x`, of the same shape and dtype as `x`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array is supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `out` is supported as class:`dpnp.ndarray`, class:`dpctl.tensor.usm_ndarray` or
+    with default value ``None``.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
+    :obj:`dpnp..linalg.matrix_power` : Raise a square matrix
+                                       to the (integer) power `n`.
     :obj:`dpnp.sqrt` : Return the positive square-root of an array,
                        element-wise.
     :obj:`dpnp.power` : First array elements raised to powers
@@ -1064,20 +1151,23 @@ def square(x1):
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([1, 2, 3])
-    >>> out = np.square(x)
-    >>> [i for i in out]
-    [1, 4, 9]
+    >>> x = np.array([-1j, 1])
+    >>> np.square(x)
+    array([-1.+0.j,  1.+0.j])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.square,
+        dpnp_square,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_square(x1_desc).get_pyobj()
-
-    return call_origin(numpy.square, x1, **kwargs)
 
 
 def tan(x1, out=None, **kwargs):

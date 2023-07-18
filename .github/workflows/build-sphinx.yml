@@ -27,6 +27,8 @@ jobs:
 
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
+        with:
+          docker-images: false
 
       - name: Install Intel repository
         run: |
@@ -47,7 +49,7 @@ jobs:
         run: |
           sudo apt-get install intel-oneapi-mkl                \
                                intel-oneapi-mkl-devel          \
-                               intel-oneapi-dpcpp-cpp-compiler
+                               intel-oneapi-compiler-dpcpp-cpp
 
       # https://github.com/marketplace/actions/checkout
       - name: Install nvidia-cuda support drivers
@@ -78,7 +80,7 @@ jobs:
       - name: Install dpnp dependencies
         run: |
           conda install dpctl mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
-              cmake cython pytest ninja scikit-build sysroot_linux-64">=2.28" ${{ env.CHANNELS }}
+              cmake cython"<3" pytest ninja scikit-build sysroot_linux-64">=2.28" ${{ env.CHANNELS }}
 
       - name: Install cuPy dependencies
         run: conda install cupy cudatoolkit=10.0

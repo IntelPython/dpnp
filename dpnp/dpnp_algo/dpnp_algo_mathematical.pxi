@@ -49,7 +49,6 @@ __all__ += [
     "dpnp_ediff1d",
     "dpnp_fabs",
     "dpnp_floor",
-    "dpnp_floor_divide",
     "dpnp_fmod",
     "dpnp_gradient",
     'dpnp_hypot',
@@ -299,14 +298,6 @@ cpdef utils.dpnp_descriptor dpnp_fabs(utils.dpnp_descriptor x1):
 
 cpdef utils.dpnp_descriptor dpnp_floor(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
     return call_fptr_1in_1out_strides(DPNP_FN_FLOOR_EXT, x1, dtype=None, out=out, where=True, func_name='floor')
-
-
-cpdef utils.dpnp_descriptor dpnp_floor_divide(utils.dpnp_descriptor x1_obj,
-                                              utils.dpnp_descriptor x2_obj,
-                                              object dtype=None,
-                                              utils.dpnp_descriptor out=None,
-                                              object where=True):
-    return call_fptr_2in_1out(DPNP_FN_FLOOR_DIVIDE_EXT, x1_obj, x2_obj, dtype, out, where)
 
 
 cpdef utils.dpnp_descriptor dpnp_fmod(utils.dpnp_descriptor x1_obj,

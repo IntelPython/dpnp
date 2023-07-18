@@ -12,13 +12,42 @@ version_mod = imm.SourceFileLoader(
 ).load_module()
 __version__ = version_mod.__version__
 
+"""
+Set project auxilary data like readme and licence files
+"""
+with open("README.md") as f:
+    __readme_file__ = f.read()
+
+CLASSIFIERS = """\
+Development Status :: 4 - Beta
+Intended Audience :: Science/Research
+Intended Audience :: Developers
+License :: OSI Approved :: Apache Software License
+Programming Language :: C++
+Programming Language :: Cython
+Programming Language :: Python
+Programming Language :: Python :: 3
+Programming Language :: Python :: 3.8
+Programming Language :: Python :: 3.9
+Programming Language :: Python :: 3.10
+Programming Language :: Python :: Implementation :: CPython
+Topic :: Software Development
+Topic :: Scientific/Engineering
+Operating System :: Microsoft :: Windows
+Operating System :: POSIX
+Operating System :: Unix
+"""
+
 setup(
     name="dpnp",
     version=__version__,
-    description="",
-    long_description="",
+    description="Data Parallel Extension for NumPy",
+    long_description=__readme_file__,
     long_description_content_type="text/markdown",
     license="Apache 2.0",
+    classifiers=[_f for _f in CLASSIFIERS.split("\n") if _f],
+    keywords="sycl numpy python3 intel mkl oneapi gpu dpcpp",
+    platforms=["Linux", "Windows"],
     author="Intel Corporation",
     url="https://github.com/IntelPython/dpnp",
     packages=[

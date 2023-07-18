@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2023, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,9 +24,9 @@
 # *****************************************************************************
 
 
-set(python_module_name _vm_impl)
+set(python_module_name _sycl_ext_impl)
 pybind11_add_module(${python_module_name} MODULE
-    vm_py.cpp
+    sum_mean.cpp
 )
 
 if (WIN32)
@@ -67,8 +67,6 @@ if (DPNP_GENERATE_COVERAGE)
     target_link_options(${python_module_name} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endif()
 
-target_link_libraries(${python_module_name} PUBLIC MKL::MKL_DPCPP)
-
 install(TARGETS ${python_module_name}
-  DESTINATION "dpnp/backend/extensions/vm"
+  DESTINATION "dpnp/backend/extensions/sycl_ext"
 )
