@@ -1,0 +1,16 @@
+..
+    **********************************************************
+    THESE ARE EXTERNAL PROJECT LINKS USED IN THE DOCUMENTATION
+    **********************************************************
+
+.. _NumPy*: https://numpy.org/
+.. _Python* Array API Standard: https://data-apis.org/array-api/
+.. _OpenCl*: https://www.khronos.org/opencl/
+.. _oneAPI Level Zero: https://spec.oneapi.io/level-zero/latest/index.html
+.. _DPC++: https://www.apress.com/gp/book/9781484255735
+.. _SYCL*: https://www.khronos.org/sycl/
+.. _dpctl: https://intelpython.github.io/dpctl/latest/index.html
+.. _Data Parallel Control: https://intelpython.github.io/dpctl/latest/index.html
+.. _Intel oneAPI Base Toolkit: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html
+.. _Intel Distribution for Python*: https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html
+.. _Intel AI Analytics Toolkit: https://www.intel.com/content/www/us/en/developer/tools/oneapi/ai-analytics-toolkit.html
