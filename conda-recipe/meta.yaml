@@ -9,7 +9,7 @@ requirements:
       - python
       - setuptools
       - numpy >=1.19,<1.25a0
-      - cython
+      - cython <3
       - cmake >=3.21
       - ninja
       - git
