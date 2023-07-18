@@ -1,10 +1,16 @@
-DPCtl Usage
-===========
+Cooperation with the `Data Parallel Control Library`_ interface
+===============================================================
 
-`DPCtl <https://github.com/IntelPython/dpctl>`_ provides API to manage
-specific SYCL resources for SYCL-based Python packages. DPNP uses DPCtl as
-a global SYCL queue manager. Below code illustrates simple usage of DPNP
-in combination with dpCtl.
+`Data Parallel Control Library`_ provides API to manage specific
+`SYCL*`_ resources for SYCL-based Python packages.
+
+An example below demonstrates how the Data Parallel Extension for NumPy* can be
+easily combined with the device management interface provided by dpctl package.
+
+Literally, the SYCL* queue manager interface from the dpctl package allows
+to set an input queue as the currently usable queue inside the context
+manager's scope. This way an array creation function from the dpnp package
+which is defined inside the context will allocate the data using that queue.
 
 .. code-block:: python
   :linenos:
@@ -16,7 +22,8 @@ in combination with dpCtl.
       x = np.array([1, 2, 3])
       s = np.sum(x)
 
-For more information please refer to `DPCtl's documentation <https://intelpython.github.io/dpctl>`_.
+For more information please refer to `Data Parallel Control Library`_
+documentation.
 
 Example
 ~~~~~~~

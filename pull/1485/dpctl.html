@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DPCtl Usage &mdash; dpnp 0.12.1 documentation</title>
+  <title>Cooperation with the `Data Parallel Control Library`_ interface &mdash; dpnp 0.12.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -53,12 +53,15 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick_start_guide.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="dpnp_backend_api.html">C++ backend API Reference</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">DPCtl Usage</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Cooperation with the `Data Parallel Control Library`_ interface</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
@@ -78,7 +81,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">DPCtl Usage</li>
+      <li class="breadcrumb-item active">Cooperation with the `Data Parallel Control Library`_ interface</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/dpctl.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -88,12 +91,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dpctl-usage">
-<h1>DPCtl Usage<a class="headerlink" href="#dpctl-usage" title="Permalink to this heading"></a></h1>
-<p><a class="reference external" href="https://github.com/IntelPython/dpctl">DPCtl</a> provides API to manage
-specific SYCL resources for SYCL-based Python packages. DPNP uses DPCtl as
-a global SYCL queue manager. Below code illustrates simple usage of DPNP
-in combination with dpCtl.</p>
+  <section id="cooperation-with-the-data-parallel-control-library-interface">
+<h1>Cooperation with the <a href="#id1"><span class="problematic" id="id2">`Data Parallel Control Library`_</span></a> interface<a class="headerlink" href="#cooperation-with-the-data-parallel-control-library-interface" title="Permalink to this heading"></a></h1>
+<p><a href="#id3"><span class="problematic" id="id4">`Data Parallel Control Library`_</span></a> provides API to manage specific
+<a href="#id5"><span class="problematic" id="id6">`SYCL*`_</span></a> resources for SYCL-based Python packages.</p>
+<p>An example below demonstrates how the Data Parallel Extension for NumPy* can be
+easily combined with the device management interface provided by dpctl package.</p>
+<p>Literally, the SYCL* queue manager interface from the dpctl package allows
+to set an input queue as the currently usable queue inside the context
+manager’s scope. This way an array creation function from the dpnp package
+which is defined inside the context will allocate the data using that queue.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="linenos">2</span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="linenos">3</span>
@@ -102,7 +109,8 @@ in combination with dpCtl.</p>
 <span class="linenos">6</span>    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>For more information please refer to <a class="reference external" href="https://intelpython.github.io/dpctl">DPCtl’s documentation</a>.</p>
+<p>For more information please refer to <a href="#id7"><span class="problematic" id="id8">`Data Parallel Control Library`_</span></a>
+documentation.</p>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">time</span>
