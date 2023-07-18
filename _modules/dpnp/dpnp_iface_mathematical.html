@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; dpnp 0.12.1dev0 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; dpnp 0.12.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -127,6 +127,7 @@
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
@@ -1899,6 +1900,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="p">(</span><span class="n">axis</span><span class="p">,)</span>
+
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">initial</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -1906,6 +1913,30 @@
     <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">keepdims</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">dpctl.tensor._reduction</span> <span class="kn">import</span> <span class="n">_default_reduction_dtype</span>
+
+            <span class="kn">from</span> <span class="nn">dpnp.backend.extensions.sycl_ext</span> <span class="kn">import</span> <span class="n">_sycl_ext_impl</span>
+
+            <span class="nb">input</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="n">queue</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">sycl_queue</span>
+            <span class="n">out_dtype</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">_default_reduction_dtype</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">queue</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">dtype</span>
+            <span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">out_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span>
+            <span class="p">)</span>
+
+            <span class="n">get_sum</span> <span class="o">=</span> <span class="n">_sycl_ext_impl</span><span class="o">.</span><span class="n">_get_sum_over_axis_0</span>
+            <span class="nb">sum</span> <span class="o">=</span> <span class="n">get_sum</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">sum</span><span class="p">:</span>
+                <span class="nb">sum</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
         <span class="n">y</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
             <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span>
         <span class="p">)</span>

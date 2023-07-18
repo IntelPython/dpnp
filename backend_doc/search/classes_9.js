@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['mcg59_5fstruct_0',['mcg59_struct',['../structmcg59__struct.html',1,'']]],
-  ['mt19937_5fstruct_1',['mt19937_struct',['../structmt19937__struct.html',1,'']]]
+  ['lncontigfactory_0',['LnContigFactory',['../structdpnp_1_1backend_1_1ext_1_1vm_1_1_ln_contig_factory.html',1,'dpnp::backend::ext::vm']]],
+  ['lnoutputtype_1',['LnOutputType',['../structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ln_output_type.html',1,'dpnp::backend::ext::vm::types']]]
 ];
