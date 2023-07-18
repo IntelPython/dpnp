@@ -4,7 +4,7 @@
 API Reference
 *************
 
-This is the official DPNP API reference.
+API reference of the Data Parallel Extension for NumPy*
 
 ----
 

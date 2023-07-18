@@ -12,5 +12,10 @@ Data Parallel Extension for NumPy*
    overview
    quick_start_guide
    reference/index
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Development information
+
    dpnp_backend_api
    dpctl
