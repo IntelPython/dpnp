@@ -122,7 +122,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.PUBLISH_DIR }}
 
-      - name: Deploy docs [PR]
+      - name: Publish pull-request docs
         if: |
           !github.event.pull_request.head.repo.fork  && github.event.pull_request && github.event.action != 'closed'
         uses: peaceiris/actions-gh-pages@v3.9.3
@@ -135,6 +135,17 @@ jobs:
           publish_branch: gh-pages
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Comment with URL to published pull-request docs
+        if: |
+          !github.event.pull_request.head.repo.fork  && github.event.pull_request && github.event.action != 'closed'
+        env:
+          PR_NUM: ${{ github.event.number }}
+        uses: mshick/add-pr-comment@v2.8.1
+        with:
+          message: |
+            View rendered docs @ https://intelpython.github.io/dpnp/pulls/${{ env.PR_NUM }}/index.html
+          allow-repeats: false
 
   clean:
     if: |
@@ -162,3 +173,11 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git commit -m "Removing docs for closed pull request ${PR_NUM}"
           git push tokened_docs gh-pages
+
+      - name: Modify the comment with URL to official documentation
+        uses: mshick/add-pr-comment@v2.8.1
+        with:
+          find: |
+            View rendered docs @.+
+          replace: |
+            View rendered docs @ https://intelpython.github.io/dpnp/index.html

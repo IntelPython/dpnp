@@ -43,9 +43,9 @@ Install Package from Anaconda
 It is recommended to use conda packages from the ``anaconda.org/intel``
 channel. You will need one of the commands below:
 
-* Conda: ``conda install dpnp``
+* Conda: ``conda install dpnp -c intel -c conda-forge``
 
-* Pip: ``pip install dpnp``
+* Pip: ``pip install -i https://pypi.anaconda.org/intel/simple dpnp``
 
 These commands install dpnp package along with its dependencies, including
 ``dpctl`` package with `Data Parallel Control Library`_ and all required
