@@ -20,7 +20,6 @@ Basic creation routines
    dpnp.zeros_like
    dpnp.full
    dpnp.full_like
-   dpnp.vander
 
 
 Creation from other data
@@ -35,7 +34,13 @@ Creation from other data
    dpnp.asanyarray
    dpnp.ascontiguousarray
    dpnp.copy
+   dpnp.frombuffer
+   dpnp.from_dlpack
    dpnp.fromfile
+   dpnp.fromfunction
+   dpnp.fromiter
+   dpnp.fromstring
+   dpnp.loadtxt
 
 
 Numerical ranges
@@ -66,3 +71,14 @@ Matrix creation
    dpnp.tri
    dpnp.tril
    dpnp.triu
+   dpnp.vander
+
+
+The Matrix class
+----------------
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   dpnp.mat
+   dpnp.bmat
