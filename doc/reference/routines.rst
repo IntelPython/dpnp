@@ -13,7 +13,9 @@ These functions cover a subset of
 
    creation
    manipulation
+   indexing
    binary
+   dtype
    fft
    linalg
    logic
