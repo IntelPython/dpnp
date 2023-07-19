@@ -42,6 +42,7 @@ it contains:
 
 import dpctl.tensor as dpt
 import numpy
+from numpy.core.numeric import normalize_axis_tuple
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
@@ -50,6 +51,7 @@ from .dpnp_algo import *
 from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_add,
     dpnp_divide,
+    dpnp_floor_divide,
     dpnp_multiply,
     dpnp_subtract,
 )
@@ -821,7 +823,18 @@ def floor(x1, out=None, **kwargs):
     return call_origin(numpy.floor, x1, out=out, **kwargs)
 
 
-def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def floor_divide(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Compute the largest integer smaller or equal to the division of the inputs.
 
@@ -830,7 +843,7 @@ def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
     Limitations
     -----------
         Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-        Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+        Parameters ``where``, ``dtype`` and ``subok`` are supported with their default values.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -845,55 +858,22 @@ def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
     Examples
     --------
     >>> import dpnp as np
-    >>> result = np.floor_divide(np.array([1, -1, -2, -9]), np.array([-2, -2, -2, -2]))
-    >>> [x for x in result]
-    [-1, 0, 1, 4]
+    >>> np.floor_divide(np.array([1, -1, -2, -9]), np.array([-2, -2, -2, -2]))
+    array([-1,  0,  1,  4])
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif x2_is_scalar and not x2_desc:
-            pass
-        elif x1_desc and x2_desc and x1_desc.size != x2_desc.size:
-            # TODO: enable broadcasting
-            pass
-        elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        elif x1_is_scalar and x2_desc.ndim > 1:
-            pass
-        else:
-            out_desc = (
-                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-                if out is not None
-                else None
-            )
-            return dpnp_floor_divide(
-                x1_desc, x2_desc, dtype, out_desc, where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.floor_divide, x1, x2, out=out, where=where, dtype=dtype, **kwargs
+    return _check_nd_call(
+        numpy.floor_divide,
+        dpnp_floor_divide,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 
@@ -1835,6 +1815,12 @@ def sum(
 
     """
 
+    if axis is not None:
+        if not isinstance(axis, (tuple, list)):
+            axis = (axis,)
+
+        axis = normalize_axis_tuple(axis, x.ndim, "axis")
+
     if out is not None:
         pass
     elif initial != 0:
@@ -1842,6 +1828,30 @@ def sum(
     elif where is not True:
         pass
     else:
+        if axis == (0,) and len(x.shape) == 2 and not keepdims:
+            from dpctl.tensor._reduction import _default_reduction_dtype
+
+            from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
+
+            input = dpnp.get_usm_ndarray(x)
+
+            queue = input.sycl_queue
+            out_dtype = (
+                _default_reduction_dtype(input.dtype, queue)
+                if dtype is None
+                else dtype
+            )
+            output = dpt.empty(
+                input.shape[1], dtype=out_dtype, sycl_queue=queue
+            )
+
+            get_sum = _sycl_ext_impl._get_sum_over_axis_0
+            sum = get_sum(input, output)
+
+            if sum:
+                sum(input, output, []).wait()
+                return dpnp_array._create_from_usm_ndarray(output)
+
         y = dpt.sum(
             dpnp.get_usm_ndarray(x), axis=axis, dtype=dtype, keepdims=keepdims
         )

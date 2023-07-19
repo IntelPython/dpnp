@@ -145,8 +145,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CORRELATE_EXT, /**< Used in numpy.correlate() impl, requires extra
                               parameters */
     DPNP_FN_COS,           /**< Used in numpy.cos() impl  */
-    DPNP_FN_COS_EXT, /**< Used in numpy.cos() impl, requires extra parameters */
-    DPNP_FN_COSH,    /**< Used in numpy.cosh() impl  */
+    DPNP_FN_COSH,          /**< Used in numpy.cosh() impl  */
     DPNP_FN_COSH_EXT, /**< Used in numpy.cosh() impl, requires extra parameters
                        */
     DPNP_FN_COUNT_NONZERO,     /**< Used in numpy.count_nonzero() impl  */
@@ -271,15 +270,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_LOG1P,     /**< Used in numpy.log1p() impl  */
     DPNP_FN_LOG1P_EXT, /**< Used in numpy.log1p() impl, requires extra
                           parameters  */
-    DPNP_FN_LOGICAL_AND_EXT, /**< Used in numpy.logical_and() impl, requires
-                                extra parameters */
-    DPNP_FN_LOGICAL_NOT_EXT, /**< Used in numpy.logical_not() impl, requires
-                                extra parameters */
-    DPNP_FN_LOGICAL_OR_EXT, /**< Used in numpy.logical_or() impl, requires extra
-                               parameters */
-    DPNP_FN_LOGICAL_XOR_EXT, /**< Used in numpy.logical_xor() impl, requires
-                                extra parameters */
-    DPNP_FN_MATMUL,          /**< Used in numpy.matmul() impl  */
+    DPNP_FN_MATMUL,    /**< Used in numpy.matmul() impl  */
     DPNP_FN_MATMUL_EXT,      /**< Used in numpy.matmul() impl, requires extra
                                 parameters */
     DPNP_FN_MATRIX_RANK,     /**< Used in numpy.linalg.matrix_rank() impl  */
@@ -475,8 +466,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SIGN_EXT, /**< Used in numpy.sign() impl, requires extra parameters
                        */
     DPNP_FN_SIN,      /**< Used in numpy.sin() impl  */
-    DPNP_FN_SIN_EXT, /**< Used in numpy.sin() impl, requires extra parameters */
-    DPNP_FN_SINH,    /**< Used in numpy.sinh() impl  */
+    DPNP_FN_SINH,     /**< Used in numpy.sinh() impl  */
     DPNP_FN_SINH_EXT, /**< Used in numpy.sinh() impl, requires extra parameters
                        */
     DPNP_FN_SORT,     /**< Used in numpy.sort() impl  */
@@ -486,9 +476,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SQRT_EXT, /**< Used in numpy.sqrt() impl, requires extra parameters
                        */
     DPNP_FN_SQUARE,   /**< Used in numpy.square() impl  */
-    DPNP_FN_SQUARE_EXT, /**< Used in numpy.square() impl, requires extra
-                           parameters */
-    DPNP_FN_STD,        /**< Used in numpy.std() impl  */
+    DPNP_FN_STD,      /**< Used in numpy.std() impl  */
     DPNP_FN_STD_EXT, /**< Used in numpy.std() impl, requires extra parameters */
     DPNP_FN_SUBTRACT,     /**< Used in numpy.subtract() impl  */
     DPNP_FN_SUBTRACT_EXT, /**< Used in numpy.subtract() impl, requires extra

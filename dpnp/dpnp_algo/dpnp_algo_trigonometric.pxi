@@ -43,7 +43,6 @@ __all__ += [
     'dpnp_arctan',
     'dpnp_arctanh',
     'dpnp_cbrt',
-    'dpnp_cos',
     'dpnp_cosh',
     'dpnp_degrees',
     'dpnp_exp',
@@ -54,10 +53,7 @@ __all__ += [
     'dpnp_log2',
     'dpnp_radians',
     'dpnp_recip',
-    'dpnp_sin',
     'dpnp_sinh',
-    'dpnp_sqrt',
-    'dpnp_square',
     'dpnp_tan',
     'dpnp_tanh',
     'dpnp_unwrap'
@@ -90,10 +86,6 @@ cpdef utils.dpnp_descriptor dpnp_arctanh(utils.dpnp_descriptor x1):
 
 cpdef utils.dpnp_descriptor dpnp_cbrt(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_CBRT_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_cos(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_COS_EXT, x1, dtype=None, out=out, where=True, func_name='cos')
 
 
 cpdef utils.dpnp_descriptor dpnp_cosh(utils.dpnp_descriptor x1):
@@ -136,20 +128,8 @@ cpdef utils.dpnp_descriptor dpnp_radians(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_RADIANS_EXT, x1)
 
 
-cpdef utils.dpnp_descriptor dpnp_sin(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_SIN_EXT, x1, dtype=None, out=out, where=True, func_name='sin')
-
-
 cpdef utils.dpnp_descriptor dpnp_sinh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_SINH_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_sqrt(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_SQRT_EXT, x1, dtype=None, out=out, where=True, func_name='sqrt')
-
-
-cpdef utils.dpnp_descriptor dpnp_square(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_SQUARE_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_tan(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
