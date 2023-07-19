@@ -423,11 +423,15 @@
 
 
 <div class="viewcode-block" id="get_include"><a class="viewcode-back" href="../../reference/generated/dpnp.get_include.html#dpnp.get_include">[docs]</a><span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the directory that contains the DPNP C++ backend \*.h header files.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the directory that contains \*.h header files of dpnp C++ backend.</span>
 
-    <span class="n">dpnp_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;backend&quot;</span><span class="p">,</span> <span class="s2">&quot;include&quot;</span><span class="p">)</span>
+<span class="sd">    An extension module that needs to be compiled against dpnp backend</span>
+<span class="sd">    should use this function to locate the appropriate include directory.</span>
 
-    <span class="k">return</span> <span class="n">dpnp_path</span></div>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;backend&quot;</span><span class="p">,</span> <span class="s2">&quot;include&quot;</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">get_normalized_queue_device</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

@@ -14,7 +14,7 @@ functions and numerical data types.
 The Data Parallel Extension for NumPy* is being developed as part of
 `Intel AI Analytics Toolkit`_ and is distributed with the
 `Intel Distribution for Python*`_. The dpnp package is also available
-on Anaconda cloud. Please refer the :doc:`getting_started` page to learn more.
+on Anaconda cloud. Please refer the :doc:`quick_start_guide` page to learn more.
 
 Being drop-in replacement for `NumPy*`_ means that the usage is very similar:
 
