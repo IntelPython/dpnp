@@ -1,3 +1,5 @@
+.. _dtype:
+
 Data type routines
 ==================
 
