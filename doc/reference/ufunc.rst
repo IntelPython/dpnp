@@ -1,3 +1,5 @@
+.. _ufunc:
+
 Universal Functions (ufunc)
 ===========================
 

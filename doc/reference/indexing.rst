@@ -1,3 +1,5 @@
+.. _routines.indexing:
+
 Array Indexing Routines
 =======================
 

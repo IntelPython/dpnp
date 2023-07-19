@@ -1,3 +1,5 @@
+.. _routines.creation:
+
 Array Creation Routines
 =======================
 
