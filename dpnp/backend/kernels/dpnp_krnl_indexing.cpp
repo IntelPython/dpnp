@@ -1071,6 +1071,8 @@ void func_map_init_indexing_func(func_map_t &fmap)
         eft_FLT, (void *)dpnp_take_ext_c<float, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_DBL][eft_INT] = {
         eft_DBL, (void *)dpnp_take_ext_c<double, int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_C64][eft_INT] = {
+        eft_C64, (void *)dpnp_take_ext_c<std::complex<float>, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_C128][eft_INT] = {
         eft_C128, (void *)dpnp_take_ext_c<std::complex<double>, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_BLN][eft_LNG] = {
@@ -1083,6 +1085,8 @@ void func_map_init_indexing_func(func_map_t &fmap)
         eft_FLT, (void *)dpnp_take_ext_c<float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_DBL][eft_LNG] = {
         eft_DBL, (void *)dpnp_take_ext_c<double, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_C64][eft_LNG] = {
+        eft_C64, (void *)dpnp_take_ext_c<std::complex<float>, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_TAKE_EXT][eft_C128][eft_LNG] = {
         eft_C128, (void *)dpnp_take_ext_c<std::complex<double>, int64_t>};
 

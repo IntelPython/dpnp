@@ -630,8 +630,6 @@ def test_select():
     ],
 )
 def test_take(array, indices, array_type, indices_type):
-    if not has_support_aspect64() and array_type is numpy.complex64:
-        pytest.skip("The device does not support result of take function")
     a = numpy.array(array, dtype=array_type)
     ind = numpy.array(indices, dtype=indices_type)
     ia = dpnp.array(a)
