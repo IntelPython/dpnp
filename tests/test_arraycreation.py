@@ -17,7 +17,6 @@ import dpnp
 from .helper import (
     get_all_dtypes,
     has_support_aspect64,
-    skip_dtype_not_supported,
 )
 
 
@@ -119,9 +118,13 @@ def test_eye(N, M, k, dtype, order):
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize(
+    "dtype",
+    get_all_dtypes(
+        no_float16=False, no_none=False if has_support_aspect64() else True
+    ),
+)
 def test_frombuffer(dtype):
-    skip_dtype_not_supported(dtype)
     buffer = b"12345678ABCDEF00"
     func = lambda xp: xp.frombuffer(buffer, dtype=dtype)
     assert_allclose(func(dpnp), func(numpy))

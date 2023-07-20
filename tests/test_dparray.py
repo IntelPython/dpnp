@@ -7,8 +7,9 @@ import dpnp
 
 from .helper import (
     get_all_dtypes,
+    get_complex_dtypes,
+    get_float_dtypes,
     has_support_aspect64,
-    skip_dtype_not_supported,
 )
 
 
@@ -104,11 +105,8 @@ def test_print_dpnp_int():
     assert result == expected
 
 
-@pytest.mark.parametrize(
-    "dtype", [float, dpnp.float32], ids=["float", "dpnp.float32"]
-)
+@pytest.mark.parametrize("dtype", get_float_dtypes())
 def test_print_dpnp_float(dtype):
-    skip_dtype_not_supported(dtype)
     result = repr(dpnp.array([1, -1, 21], dtype=dtype))
     if dtype is dpnp.float32:
         expected = "array([ 1., -1., 21.], dtype=float32)"
@@ -121,11 +119,13 @@ def test_print_dpnp_float(dtype):
     assert result == expected
 
 
-def test_print_dpnp_complex():
-    dtype = complex
-    skip_dtype_not_supported(dtype)
+@pytest.mark.parametrize("dtype", get_complex_dtypes())
+def test_print_dpnp_complex(dtype):
     result = repr(dpnp.array([1, -1, 21], dtype=dtype))
-    expected = "array([ 1.+0.j, -1.+0.j, 21.+0.j])"
+    if dtype is dpnp.complex64:
+        expected = "array([ 1.+0.j, -1.+0.j, 21.+0.j], dtype=complex64)"
+    else:
+        expected = "array([ 1.+0.j, -1.+0.j, 21.+0.j])"
     assert result == expected
 
     result = str(dpnp.array([1, -1, 21], dtype=dtype))
@@ -159,11 +159,8 @@ def test_print_dpnp_special_character(character):
     assert result == expected
 
 
-@pytest.mark.parametrize(
-    "dtype", [float, dpnp.float32], ids=["float", "dpnp.float32"]
-)
+@pytest.mark.parametrize("dtype", get_float_dtypes())
 def test_print_dpnp_1_nd(dtype):
-    skip_dtype_not_supported(dtype)
     result = repr(dpnp.arange(10000, dtype=dtype))
     if has_support_aspect64():
         expected = "array([0.000e+00, 1.000e+00, 2.000e+00, ..., 9.997e+03, 9.998e+03,\n       9.999e+03])"
@@ -178,11 +175,8 @@ def test_print_dpnp_1_nd(dtype):
     assert result == expected
 
 
-@pytest.mark.parametrize(
-    "dtype", [float, dpnp.float32], ids=["float", "dpnp.float32"]
-)
+@pytest.mark.parametrize("dtype", get_float_dtypes())
 def test_print_dpnp_2_nd(dtype):
-    skip_dtype_not_supported(dtype)
     result = repr(dpnp.array([[1, 2], [3, 4]], dtype=dtype))
     if has_support_aspect64():
         expected = "array([[1., 2.],\n       [3., 4.]])"

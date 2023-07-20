@@ -107,21 +107,3 @@ def has_support_aspect64(device=None):
     """
     dev = dpctl.select_default_device() if device is None else device
     return dev.has_aspect_fp64
-
-
-def skip_dtype_not_supported(dtype, device=None):
-    """
-    The function to check input type supported in DPNP based on the device capabilities.
-    """
-
-    dev = dpctl.select_default_device() if device is None else device
-    if not dev.has_aspect_fp64 and dtype in [
-        None,
-        float,
-        complex,
-        dpnp.float64,
-        dpnp.complex128,
-    ]:
-        pytest.skip(
-            f"{dev.name} does not support double precision floating point types"
-        )
