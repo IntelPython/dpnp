@@ -1859,9 +1859,11 @@ def sum(
                 result = dpnp_array._create_from_usm_ndarray(output)
 
                 if keepdims:
-                    result = result.reshape((1,) + output.shape)
-                    if axis == (1,):
-                        result = result.T
+                    if axis == (0,):
+                        res_sh = (1,) + output.shape
+                    else:
+                        res_sh = output.shape + (1,)
+                    result = result.reshape(res_sh)
 
                 return result
 
