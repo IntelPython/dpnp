@@ -1057,14 +1057,10 @@ def test_sum_empty_out(dtype):
         (1, 10),
     ],
 )
-@pytest.mark.parametrize(
-    "dtype_in", get_all_dtypes(no_complex=True, no_bool=True)
-)
-@pytest.mark.parametrize(
-    "dtype_out", get_all_dtypes(no_complex=True, no_bool=True)
-)
+@pytest.mark.parametrize("dtype_in", get_all_dtypes())
+@pytest.mark.parametrize("dtype_out", get_all_dtypes())
 @pytest.mark.parametrize("transpose", [True, False])
-@pytest.mark.parametrize("keepdims", [False])
+@pytest.mark.parametrize("keepdims", [True, False])
 def test_sum(shape, dtype_in, dtype_out, transpose, keepdims):
     size = numpy.prod(shape)
     a_np = numpy.arange(size).astype(dtype_in).reshape(shape)
