@@ -663,6 +663,16 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
     return (common_sycl_queue.sycl_device, common_usm_type, common_sycl_queue)
 
 
+cdef (DPNPFuncType, void *) get_ret_type_and_func(x1_obj, DPNPFuncData kernel_data):
+    if dpnp.issubdtype(x1_obj.dtype, dpnp.integer) and not x1_obj.sycl_device.has_aspect_fp64:
+        return_type = kernel_data.return_type_no_fp64
+        func = kernel_data.ptr_no_fp64
+    else:
+        return_type = kernel_data.return_type
+        func = kernel_data.ptr
+    return return_type, func
+
+
 cdef class dpnp_descriptor:
     def __init__(self, obj, dpnp_descriptor orig_desc=None):
         """ Initialze variables """
