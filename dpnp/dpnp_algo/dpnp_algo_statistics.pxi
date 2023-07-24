@@ -265,8 +265,12 @@ cpdef utils.dpnp_descriptor dpnp_median(utils.dpnp_descriptor array1):
 
     array1_obj = array1.get_array()
 
+    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(array1_obj, kernel_data)
+    cdef DPNPFuncType return_type = ret_type_and_func[0]
+    cdef custom_statistic_1in_1out_func_ptr_t func = < custom_statistic_1in_1out_func_ptr_t > ret_type_and_func[1]
+
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor((1,),
-                                                                       kernel_data.return_type,
+                                                                       return_type,
                                                                        None,
                                                                        device=array1_obj.sycl_device,
                                                                        usm_type=array1_obj.usm_type,
@@ -276,8 +280,6 @@ cpdef utils.dpnp_descriptor dpnp_median(utils.dpnp_descriptor array1):
 
     cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
     cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
 
     # stub for interface support
     cdef shape_type_c axis

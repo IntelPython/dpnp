@@ -28,7 +28,7 @@
 from libcpp cimport bool as cpp_bool
 
 from dpnp.dpnp_algo cimport shape_type_c
-from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncName, DPNPFuncType
+from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncData, DPNPFuncName, DPNPFuncType
 
 
 cpdef checker_throw_runtime_error(function_name, message)
@@ -161,4 +161,10 @@ Get or calculate srtides based on shape.
 cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2)
 """
 Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)
+"""
+
+cdef (DPNPFuncType, void *) get_ret_type_and_func(x1_obj, DPNPFuncData kernel_data)
+"""
+Get the corresponding return type and function pointer based on the
+capability of the allocated input array device for the integer types.
 """
