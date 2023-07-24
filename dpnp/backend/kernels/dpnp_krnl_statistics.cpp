@@ -1330,17 +1330,17 @@ void func_map_init_statistics(func_map_t &fmap)
         eft_DBL, (void *)dpnp_median_default_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_MEDIAN_EXT][eft_INT][eft_INT] = {
-        get_default_floating_type<>(),
+        get_default_floating_type(),
         (void *)dpnp_median_ext_c<
-            int32_t, func_type_map_t::find_type<get_default_floating_type<>()>>,
+            int32_t, func_type_map_t::find_type<get_default_floating_type()>>,
         get_default_floating_type<std::false_type>(),
         (void *)dpnp_median_ext_c<
             int32_t, func_type_map_t::find_type<
                          get_default_floating_type<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_MEDIAN_EXT][eft_LNG][eft_LNG] = {
-        get_default_floating_type<>(),
+        get_default_floating_type(),
         (void *)dpnp_median_ext_c<
-            int64_t, func_type_map_t::find_type<get_default_floating_type<>()>>,
+            int64_t, func_type_map_t::find_type<get_default_floating_type()>>,
         get_default_floating_type<std::false_type>(),
         (void *)dpnp_median_ext_c<
             int64_t, func_type_map_t::find_type<
