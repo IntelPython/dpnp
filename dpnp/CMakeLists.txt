@@ -9,6 +9,7 @@ function(build_dpnp_cython_ext _trgt _src _dest)
   if (DPNP_GENERATE_COVERAGE)
     target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
   endif()
+  target_compile_definitions(${_trgt} PRIVATE NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION)
   # NumPy
   target_include_directories(${_trgt} PRIVATE ${NumPy_INCLUDE_DIR})
   # Dpctl
@@ -49,6 +50,7 @@ build_dpnp_cython_ext_with_backend(dparray ${CMAKE_CURRENT_SOURCE_DIR}/dparray.p
 add_subdirectory(backend)
 add_subdirectory(backend/extensions/lapack)
 add_subdirectory(backend/extensions/vm)
+add_subdirectory(backend/extensions/sycl_ext)
 
 add_subdirectory(dpnp_algo)
 add_subdirectory(dpnp_utils)

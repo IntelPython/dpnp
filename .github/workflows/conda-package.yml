@@ -22,6 +22,7 @@ env:
       test_special.py
       test_umath.py
       test_usm_type.py
+      third_party/cupy/linalg_tests/test_product.py
       third_party/cupy/math_tests/test_explog.py
       third_party/cupy/math_tests/test_misc.py
       third_party/cupy/math_tests/test_trigonometric.py

@@ -42,6 +42,7 @@ it contains:
 
 import dpctl.tensor as dpt
 import numpy
+from numpy.core.numeric import normalize_axis_tuple
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
@@ -1737,6 +1738,12 @@ def sum(
 
     """
 
+    if axis is not None:
+        if not isinstance(axis, (tuple, list)):
+            axis = (axis,)
+
+        axis = normalize_axis_tuple(axis, x.ndim, "axis")
+
     if out is not None:
         pass
     elif initial != 0:
@@ -1744,6 +1751,45 @@ def sum(
     elif where is not True:
         pass
     else:
+        if len(x.shape) == 2 and (
+            (axis == (0,) and x.flags.c_contiguous)
+            or (axis == (1,) and x.flags.f_contiguous)
+        ):
+            from dpctl.tensor._reduction import _default_reduction_dtype
+
+            from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
+
+            input = x
+            if axis == (1,):
+                input = input.T
+            input = dpnp.get_usm_ndarray(input)
+
+            queue = input.sycl_queue
+            out_dtype = (
+                _default_reduction_dtype(input.dtype, queue)
+                if dtype is None
+                else dtype
+            )
+            output = dpt.empty(
+                input.shape[1], dtype=out_dtype, sycl_queue=queue
+            )
+
+            get_sum = _sycl_ext_impl._get_sum_over_axis_0
+            sum = get_sum(input, output)
+
+            if sum:
+                sum(input, output, []).wait()
+                result = dpnp_array._create_from_usm_ndarray(output)
+
+                if keepdims:
+                    if axis == (0,):
+                        res_sh = (1,) + output.shape
+                    else:
+                        res_sh = output.shape + (1,)
+                    result = result.reshape(res_sh)
+
+                return result
+
         y = dpt.sum(
             dpnp.get_usm_ndarray(x), axis=axis, dtype=dtype, keepdims=keepdims
         )
