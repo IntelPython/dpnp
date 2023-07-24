@@ -23,8 +23,10 @@ def test_median(dtype, size):
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("axis", [0, 1, -1, 2, -2, (1, 2), (0, -2)])
-def test_max(axis):
-    dtype = dpnp.default_float_type()
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
+def test_max(axis, dtype):
     a = numpy.arange(768, dtype=dtype).reshape((4, 4, 6, 8))
     ia = dpnp.array(a)
 
@@ -70,7 +72,10 @@ def test_max(axis):
         "[[np.nan, np.nan], [np.inf, np.nan]]",
     ],
 )
-def test_nanvar(array):
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
+def test_nanvar(array, dtype):
     dtype = dpnp.default_float_type()
     a = numpy.array(array, dtype=dtype)
     ia = dpnp.array(a)
@@ -125,10 +130,8 @@ class TestBincount:
 def test_cov_rowvar(dtype):
     a = dpnp.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
     b = numpy.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
-    numpy.testing.assert_array_equal(dpnp.cov(a.T), dpnp.cov(a, rowvar=False))
-    numpy.testing.assert_array_equal(
-        numpy.cov(b, rowvar=False), dpnp.cov(a, rowvar=False)
-    )
+    assert_allclose(dpnp.cov(a.T), dpnp.cov(a, rowvar=False))
+    assert_allclose(numpy.cov(b, rowvar=False), dpnp.cov(a, rowvar=False))
 
 
 @pytest.mark.parametrize(
@@ -137,6 +140,4 @@ def test_cov_rowvar(dtype):
 def test_cov_1D_rowvar(dtype):
     a = dpnp.array([[0, 1, 2]], dtype=dtype)
     b = numpy.array([[0, 1, 2]], dtype=dtype)
-    numpy.testing.assert_array_equal(
-        numpy.cov(b, rowvar=False), dpnp.cov(a, rowvar=False)
-    )
+    assert_allclose(numpy.cov(b, rowvar=False), dpnp.cov(a, rowvar=False))

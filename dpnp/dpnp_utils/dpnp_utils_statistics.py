@@ -59,12 +59,6 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
         It casts to another dtype, if the input array differs from requested one.
 
         """
-        # dtype map for devices without double precision type support
-        dtype_map = {
-            dpnp.float64: dpnp.float32,
-            dpnp.complex128: dpnp.complex64,
-        }
-
         if x.ndim == 0:
             x = x.reshape((1, 1))
         elif x.ndim == 1:
@@ -74,10 +68,6 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
             x = x.T
 
         if x.dtype != dtype:
-            fp64 = x.sycl_device.has_aspect_fp64
-            # TODO: remove when dpctl.result_type() is fixed
-            if not fp64:
-                dtype = dtype_map[dtype.type]
             x = dpnp.astype(x, dtype)
         return x
 
@@ -90,6 +80,13 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
         if y is not None:
             dtypes.append(y.dtype)
         dtype = dpt.result_type(*dtypes)
+        # TODO: remove when dpctl.result_type() is fixed
+        fp64 = queue.sycl_device.has_aspect_fp64
+        if not fp64:
+            if dtype == dpnp.float64:
+                dtype = dpnp.float32
+            elif dtype == dpnp.complex128:
+                dtype = dpnp.complex64
 
     X = _get_2dmin_array(m, dtype)
     if y is not None:
