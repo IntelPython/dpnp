@@ -20,8 +20,10 @@ Set project auxilary data like readme and licence files
 with open("README.md") as f:
     __readme_file__ = f.read()
 
+
 def _get_cmdclass():
     return versioneer.get_cmdclass()
+
 
 CLASSIFIERS = """\
 Development Status :: 4 - Beta
