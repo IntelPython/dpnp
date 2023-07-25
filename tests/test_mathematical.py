@@ -924,7 +924,13 @@ class TestPower:
                 dpnp.power(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
-            out_dtype = dtype if dtype != dpnp.bool else dpnp.int64
+            if dtype == dpnp.bool:
+                if is_win_platform():
+                    out_dtype = dpnp.int32
+                else:
+                    out_dtype = dpnp.int64
+            else:
+                out_dtype = dtype
             dp_out = dpnp.empty(size, dtype=out_dtype)
 
         result = dpnp.power(dp_array1, dp_array2, out=dp_out)
