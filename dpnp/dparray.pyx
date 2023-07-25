@@ -40,7 +40,13 @@ from libcpp cimport bool as cpp_bool
 
 import numpy
 
+from dpnp.dpnp_algo import (
+    dpnp_astype,
+    dpnp_flatten,
+)
+
 # to avoid interference with Python internal functions
+from dpnp.dpnp_iface import asnumpy
 from dpnp.dpnp_iface import get_dpnp_descriptor as iface_get_dpnp_descriptor
 from dpnp.dpnp_iface import prod as iface_prod
 from dpnp.dpnp_iface import sum as iface_sum
@@ -86,29 +92,63 @@ from dpnp.dpnp_iface_arraycreation import (
     zeros,
     zeros_like,
 )
-from dpnp.dpnp_iface_bitwise import *
-from dpnp.dpnp_iface_counting import *
-from dpnp.dpnp_iface_indexing import *
-from dpnp.dpnp_iface_libmath import *
-from dpnp.dpnp_iface_linearalgebra import *
-from dpnp.dpnp_iface_logic import *
-from dpnp.dpnp_iface_logic import all, any  # TODO do the same as for iface_sum
-from dpnp.dpnp_iface_manipulation import *
-from dpnp.dpnp_iface_mathematical import *
-from dpnp.dpnp_iface_searching import *
-from dpnp.dpnp_iface_sorting import *
-from dpnp.dpnp_iface_statistics import *
+from dpnp.dpnp_iface_indexing import (
+    choose,
+    diagonal,
+    take,
+)
+from dpnp.dpnp_iface_linearalgebra import matmul
+from dpnp.dpnp_iface_logic import (  # TODO do the same as for iface_sum
+    all,
+    any,
+    equal,
+    greater,
+    greater_equal,
+    less,
+    less_equal,
+    not_equal,
+)
+from dpnp.dpnp_iface_manipulation import (
+    copyto,
+    repeat,
+    squeeze,
+    transpose,
+)
+from dpnp.dpnp_iface_mathematical import (
+    add,
+    around,
+    conjugate,
+    cumprod,
+    cumsum,
+    divide,
+    multiply,
+    negative,
+    power,
+    remainder,
+    subtract,
+)
+from dpnp.dpnp_iface_searching import argmax, argmin
+from dpnp.dpnp_iface_sorting import (
+    argsort,
+    partition,
+    sort,
+)
 from dpnp.dpnp_iface_statistics import (  # TODO do the same as for iface_sum
     max,
+    mean,
     min,
+    std,
+    var,
 )
-from dpnp.dpnp_iface_trigonometric import *
-from dpnp.dpnp_iface_types import *
+from dpnp.dpnp_iface_types import float64
 
 cimport numpy
 
 cimport dpnp.dpnp_utils as utils
-from dpnp.dpnp_algo cimport *
+from dpnp.dpnp_algo cimport (
+    dpnp_memory_alloc_c,
+    dpnp_memory_free_c,
+)
 
 
 # initially copied from original
