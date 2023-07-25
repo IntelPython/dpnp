@@ -96,7 +96,8 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_beta_c_1out_t)(c_dpctl.DPCTLSy
                                                                  const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_binomial_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                      void * ,
-                                                                     const int, const double,
+                                                                     const int,
+                                                                     const double,
                                                                      const size_t,
                                                                      const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_rng_chisquare_c_1out_t)(c_dpctl.DPCTLSyclQueueRef,
@@ -585,7 +586,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_chisquare(int df, size):
     """
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.default_float_type())
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_CHISQUARE_EXT, param1_type, param1_type)
@@ -1329,7 +1330,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_cauchy(size):
     """
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.default_float_type())
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_CAUCHY_EXT, param1_type, param1_type)
@@ -1364,7 +1365,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_exponential(size):
     cdef fptr_dpnp_rng_standard_exponential_c_1out_t func
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.default_float_type())
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_EXPONENTIAL_EXT, param1_type, param1_type)

@@ -4,19 +4,23 @@ from numpy.testing import assert_array_equal
 
 import dpnp
 
+from .helper import has_support_aspect64
+
 testdata = []
 testdata += [
     ([True, False, True], dtype)
-    for dtype in ["float32", "float64", "int32", "int64", "bool"]
+    for dtype in ["float32", "int32", "int64", "bool"]
 ]
-testdata += [
-    ([1, -1, 0], dtype) for dtype in ["float32", "float64", "int32", "int64"]
-]
-testdata += [([0.1, 0.0, -0.1], dtype) for dtype in ["float32", "float64"]]
-testdata += [([1j, -1j, 1 - 2j], dtype) for dtype in ["complex128"]]
+testdata += [([1, -1, 0], dtype) for dtype in ["float32", "int32", "int64"]]
+testdata += [([0.1, 0.0, -0.1], dtype) for dtype in ["float32"]]
+if has_support_aspect64():
+    testdata += [([True, False, True], dtype) for dtype in ["float64"]]
+    testdata += [([1, -1, 0], dtype) for dtype in ["float64"]]
+    testdata += [([0.1, 0.0, -0.1], dtype) for dtype in ["float64"]]
+    testdata += [([1j, -1j, 1 - 2j], dtype) for dtype in ["complex128"]]
 
 
-@pytest.mark.parametrize("in_obj,out_dtype", testdata)
+@pytest.mark.parametrize("in_obj, out_dtype", testdata)
 def test_copyto_dtype(in_obj, out_dtype):
     ndarr = numpy.array(in_obj)
     expected = numpy.empty(ndarr.size, dtype=out_dtype)
