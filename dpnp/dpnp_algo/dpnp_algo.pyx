@@ -348,7 +348,13 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    x1_obj = x1.get_array()
+
+    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(x1_obj.sycl_device, kernel_data)
+    cdef DPNPFuncType return_type = ret_type_and_func[0]
+    cdef fptr_1in_1out_strides_t func = < fptr_1in_1out_strides_t > ret_type_and_func[1]
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > return_type)
 
     cdef shape_type_c x1_shape = x1.shape
     cdef shape_type_c x1_strides = utils.strides_to_vector(x1.strides, x1_shape)
@@ -358,9 +364,8 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
 
     if out is None:
         """ Create result array with type given by FPTR data """
-        x1_obj = x1.get_array()
         result = utils.create_output_descriptor(result_shape,
-                                                kernel_data.return_type,
+                                                return_type,
                                                 None,
                                                 device=x1_obj.sycl_device,
                                                 usm_type=x1_obj.usm_type,
@@ -383,7 +388,6 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
     cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result_shape)
 
     """ Call FPTR function """
-    cdef fptr_1in_1out_strides_t func = <fptr_1in_1out_strides_t > kernel_data.ptr
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
                                                     result.get_data(),
                                                     result.size,
