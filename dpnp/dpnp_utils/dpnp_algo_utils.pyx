@@ -666,8 +666,7 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
 cdef (DPNPFuncType, void *) get_ret_type_and_func(device, DPNPFuncData kernel_data):
     """
     This function is responsible for determining the appropriate return type
-    and function pointer based on the capability of the allocated input array device
-    for integer types and its definition.
+    and function pointer based on the capability of the allocated input array device.
     """
     return_type = kernel_data.return_type
     func = kernel_data.ptr
