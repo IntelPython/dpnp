@@ -103,9 +103,8 @@ jobs:
 
       - name: Set a project number to current release
         run: |
-          set PROJECT_NUMBER=$(git describe --tags --abbrev=0)
+          export PROJECT_NUMBER=$(git describe --tags --abbrev=0)
           echo PROJECT_NUMBER=${PROJECT_NUMBER}
-          echo ref_name=${{github.ref_name}}
 
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
