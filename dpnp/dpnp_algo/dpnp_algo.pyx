@@ -350,6 +350,7 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
 
     x1_obj = x1.get_array()
 
+    # get FPTR function and return type
     cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(x1_obj.sycl_device, kernel_data)
     cdef DPNPFuncType return_type = ret_type_and_func[0]
     cdef fptr_1in_1out_strides_t func = < fptr_1in_1out_strides_t > ret_type_and_func[1]
@@ -425,6 +426,7 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
 
     result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
 
+    # get FPTR function and return type
     cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(result_sycl_device, kernel_data)
     cdef DPNPFuncType return_type = ret_type_and_func[0]
     cdef fptr_2in_1out_t func = < fptr_2in_1out_t > ret_type_and_func[1]
@@ -492,6 +494,13 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, x1_c_type, x2_c_type)
 
+    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
+
+    # get FPTR function and return type
+    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(result_sycl_device, kernel_data)
+    cdef DPNPFuncType return_type = ret_type_and_func[0]
+    cdef fptr_2in_1out_strides_t func = < fptr_2in_1out_strides_t > ret_type_and_func[1]
+
     # Create result array
     cdef shape_type_c x1_shape = x1_obj.shape
 
@@ -501,12 +510,6 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
 
     cdef shape_type_c result_shape = utils.get_common_shape(x1_shape, x2_shape)
     cdef utils.dpnp_descriptor result
-
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
-
-    # get FPTR function and return type
-    cdef fptr_2in_1out_strides_t func = < fptr_2in_1out_strides_t > kernel_data.ptr
-    cdef DPNPFuncType return_type = kernel_data.return_type
 
     # check 'out' parameter data
     if out is not None:
