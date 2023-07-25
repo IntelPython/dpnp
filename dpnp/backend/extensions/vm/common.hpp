@@ -37,6 +37,11 @@
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
+#include "dpnp_utils.hpp"
+
+static_assert(INTEL_MKL_VERSION >= __INTEL_MKL_2023_2_0_VERSION_REQUIRED,
+              "OneMKL does not meet minimum version requirement");
+
 // OneMKL namespace with VM functions
 namespace mkl_vm = oneapi::mkl::vm;
 
@@ -272,7 +277,6 @@ bool need_to_call_unary_ufunc(sycl::queue exec_q,
                               dpctl::tensor::usm_ndarray dst,
                               const dispatchT &dispatch_vector)
 {
-#if INTEL_MKL_VERSION >= 20230002
     // check type_nums
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
@@ -356,16 +360,6 @@ bool need_to_call_unary_ufunc(sycl::queue exec_q,
         return false;
     }
     return true;
-#else
-    // In OneMKL 2023.1.0 the call of oneapi::mkl::vm::div() is going to dead
-    // lock inside ~usm_wrapper_to_host()->{...; q_->wait_and_throw(); ...}
-
-    (void)exec_q;
-    (void)src;
-    (void)dst;
-    (void)dispatch_vector;
-    return false;
-#endif // INTEL_MKL_VERSION >= 20230002
 }
 
 template <typename dispatchT>
@@ -375,7 +369,6 @@ bool need_to_call_binary_ufunc(sycl::queue exec_q,
                                dpctl::tensor::usm_ndarray dst,
                                const dispatchT &dispatch_vector)
 {
-#if INTEL_MKL_VERSION >= 20230002
     // check type_nums
     int src1_typenum = src1.get_typenum();
     int src2_typenum = src2.get_typenum();
@@ -465,17 +458,6 @@ bool need_to_call_binary_ufunc(sycl::queue exec_q,
         return false;
     }
     return true;
-#else
-    // In OneMKL 2023.1.0 the call of oneapi::mkl::vm::div() is going to dead
-    // lock inside ~usm_wrapper_to_host()->{...; q_->wait_and_throw(); ...}
-
-    (void)exec_q;
-    (void)src1;
-    (void)src2;
-    (void)dst;
-    (void)dispatch_vector;
-    return false;
-#endif // INTEL_MKL_VERSION >= 20230002
 }
 
 template <typename dispatchT,
