@@ -99,6 +99,9 @@ jobs:
         run: make html
         working-directory: doc
 
+      - name: Set a project number to current release
+        run: set PROJECT_NUMBER=$(git describe --tags --abbrev=0)
+
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
         uses: mattnotmitt/doxygen-action@v1.9.5

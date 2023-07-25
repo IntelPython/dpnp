@@ -8,9 +8,9 @@ Get the project version
 """
 thefile_path = os.path.abspath(os.path.dirname(__file__))
 version_mod = imm.SourceFileLoader(
-    "version", os.path.join(thefile_path, "dpnp", "version.py")
+    "version", os.path.join(thefile_path, "dpnp", "_version.py")
 ).load_module()
-__version__ = version_mod.__version__
+__version__ = version_mod.get_versions()["version"]
 
 """
 Set project auxilary data like readme and licence files
