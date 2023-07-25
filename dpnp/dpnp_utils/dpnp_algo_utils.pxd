@@ -163,8 +163,8 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2)
 Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)
 """
 
-cdef (DPNPFuncType, void *) get_ret_type_and_func(x1_obj, DPNPFuncData kernel_data)
+cdef (DPNPFuncType, void *) get_ret_type_and_func(device, DPNPFuncData kernel_data)
 """
 Get the corresponding return type and function pointer based on the
-capability of the allocated input array device for the integer types.
+capability of the allocated input array device.
 """

@@ -265,7 +265,7 @@ cpdef utils.dpnp_descriptor dpnp_median(utils.dpnp_descriptor array1):
 
     array1_obj = array1.get_array()
 
-    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(array1_obj, kernel_data)
+    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(array1_obj.sycl_device, kernel_data)
     cdef DPNPFuncType return_type = ret_type_and_func[0]
     cdef custom_statistic_1in_1out_func_ptr_t func = < custom_statistic_1in_1out_func_ptr_t > ret_type_and_func[1]
 
