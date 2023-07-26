@@ -70,13 +70,6 @@ __all__ = [
 ]
 
 
-def _is_supported_class(x):
-    # Check if the given object `x` is an instance of either as :class:`dpnp.ndarray`
-    # or :class:`dpctl.tensor.usm_ndarray`.
-
-    return isinstance(x, (dpnp_array, dpt.usm_ndarray))
-
-
 def choose(x1, choices, out=None, mode="raise"):
     """
     Construct an array from an index array and a set of arrays to choose from.
@@ -556,7 +549,7 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     -------
     dpnp.ndarray
         An array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
-        filled with elements.
+        filled with elements from `x`.
 
     Limitations
     -----------
@@ -578,9 +571,29 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     How out-of-bounds indices will be handled.
     "wrap" - clamps indices to (-n <= i < n), then wraps negative indices.
     "clip" - clips indices to (0 <= i < n)
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([4, 3, 5, 7, 6, 8])
+    >>> indices = np.array([0, 1, 4])
+    >>> np.take(x, indices)
+    array([4, 3, 6])
+
+    >>> x[indices]
+    array([4, 3, 6])
+
+    >>> indices = dpnp.array([-1, -6, -7, 5, 6])
+    >>> np.take(x, indices)
+    array([8, 4, 4, 8, 8])
+
+    >>> np.take(x, indices, mode="clip")
+    array([4, 4, 4, 8, 8])
     """
 
-    if _is_supported_class(x) and _is_supported_class(indices):
+    if dpnp.is_supported_array_type(x) and dpnp.is_supported_array_type(
+        indices
+    ):
         if indices.ndim != 1 or not dpnp.issubdtype(
             indices.dtype, dpnp.integer
         ):
