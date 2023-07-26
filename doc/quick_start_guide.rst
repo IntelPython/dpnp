@@ -75,7 +75,7 @@ Finanly, to install the result package:
 
 .. code-block:: bash
 
-    conda install dpnp
+    conda install dpnp -c local
 
 
 Build and Install with scikit-build
@@ -127,3 +127,22 @@ by the source, you will need to run a command as below:
 .. code-block:: bash
 
     pytest -s tests
+
+Examples
+========
+
+The examples below demonstrates a simple usage of the Data Parallel Extension for NumPy*
+
+.. literalinclude:: ../examples/example_sum.py
+  :linenos:
+  :language: python
+  :lines: 35-
+  :caption: How to create an array and to sum the elements
+
+.. literalinclude:: ../examples/example_cfd.py
+  :linenos:
+  :language: python
+  :lines: 34-
+  :caption: How to create an array on the specific device type and how the next computations follow it
+
+More examples on how to use ``dpnp`` can be found in ``dpnp/examples``.

@@ -144,7 +144,7 @@ jobs:
         uses: mshick/add-pr-comment@v2.8.1
         with:
           message: |
-            View rendered docs @ https://intelpython.github.io/dpnp/pulls/${{ env.PR_NUM }}/index.html
+            View rendered docs @ https://intelpython.github.io/dpnp/pull/${{ env.PR_NUM }}/index.html
           allow-repeats: false
 
   clean:

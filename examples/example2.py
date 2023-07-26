@@ -36,36 +36,18 @@ over diffrent types of input data
 """
 
 
-try:
-    import dpnp
-except ImportError:
-    import os
-    import sys
-
-    root_dir = os.path.join(os.path.dirname(__file__), os.pardir)
-    sys.path.append(root_dir)
-
-    import dpnp
-
 import time
 
 import numpy
 
-common_function_one_input = numpy.sin
-"""
-Fixed third party function
-"""
+import dpnp
 
 
-def get_package_specific_input_data_type(input_type, size):
-    return input_type.arange(size)
-
-
-def run_third_party_function(input, repetition):
+def run_third_party_function(xp, input, repetition):
     times = []
     for _ in range(repetition):
         start_time = time.time()
-        result = common_function_one_input(input)
+        result = xp.sin(input)
         end_time = time.time()
         times.append(end_time - start_time)
 
@@ -75,18 +57,19 @@ def run_third_party_function(input, repetition):
 
 if __name__ == "__main__":
     test_repetition = 5
-    for input_type in [numpy, dpnp]:
-        type_name = input_type.__name__
+    for xp in [numpy, dpnp]:
+        type_name = xp.__name__
         print(
             f"...Test data type is {type_name}, each test repetitions {test_repetition}"
         )
 
-        for size in [2048, 4096, 8192, 16384, 32768, 65536]:
-            input_data = get_package_specific_input_data_type(input_type, size)
+        for size in range(20, 25):
+            size = 2**size
+            input_data = xp.arange(size)
             result_time, result = run_third_party_function(
-                input_data, test_repetition
+                xp, input_data, test_repetition
             )
 
             print(
-                f"type:{type_name}:N:{size:6}:Time:{result_time:.3e}:result:{result:.3e}"
+                f"type:{type_name}:N:{size:6}:Time:{result_time:.3e}:result:{result}"
             )

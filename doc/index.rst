@@ -18,4 +18,3 @@ Data Parallel Extension for NumPy*
    :caption: Development information
 
    dpnp_backend_api
-   dpctl
