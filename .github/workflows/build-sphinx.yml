@@ -79,8 +79,8 @@ jobs:
 
       - name: Install dpnp dependencies
         run: |
-          conda install dpctl mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
-              cmake cython"<3" pytest ninja scikit-build sysroot_linux-64">=2.28" ${{ env.CHANNELS }}
+          conda install numpy"<1.24" dpctl mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
+              cmake cython pytest ninja scikit-build sysroot_linux-64">=2.28" ${{ env.CHANNELS }}
 
       - name: Install cuPy dependencies
         run: conda install cupy cudatoolkit=10.0
