@@ -127,3 +127,20 @@ by the source, you will need to run a command as below:
 .. code-block:: bash
 
     pytest -s tests
+
+Examples
+========
+
+The examples below demonstrates a simple usage of the Data Parallel Extension for NumPy*
+
+.. literalinclude:: ../examples/example_sum.py
+   :language: python
+  :lines: 35-
+   :caption: Calculate sum of an array
+
+.. literalinclude:: ../examples/example_cfd.py
+   :language: python
+  :lines: 35-
+   :caption: Compute follows data paradigm
+
+More examples on how to use ``dpnp`` can be found in ``dpnp/examples``.
