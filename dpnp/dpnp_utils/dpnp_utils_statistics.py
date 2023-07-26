@@ -59,7 +59,6 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
         It casts to another dtype, if the input array differs from requested one.
 
         """
-
         if x.ndim == 0:
             x = x.reshape((1, 1))
         elif x.ndim == 1:
@@ -80,7 +79,14 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
         dtypes = [m.dtype, dpnp.default_float_type(sycl_queue=queue)]
         if y is not None:
             dtypes.append(y.dtype)
-        dtype = dpt.result_type(*dtypes)
+        dtype = dpnp.result_type(*dtypes)
+        # TODO: remove when dpctl.result_type() is returned dtype based on fp64
+        fp64 = queue.sycl_device.has_aspect_fp64
+        if not fp64:
+            if dtype == dpnp.float64:
+                dtype = dpnp.float32
+            elif dtype == dpnp.complex128:
+                dtype = dpnp.complex64
 
     X = _get_2dmin_array(m, dtype)
     if y is not None:
