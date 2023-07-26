@@ -145,9 +145,9 @@ MACRO_2ARG_3TYPES_OP(dpnp_fmod_c,
                      MACRO_UNPACK_TYPES(float, double))
 
 MACRO_2ARG_3TYPES_OP(dpnp_hypot_c,
-                     sycl::hypot((double)input1_elem, (double)input2_elem),
-                     nullptr,
-                     std::false_type,
+                     sycl::hypot(input1_elem, input2_elem),
+                     sycl::hypot(x1, x2),
+                     MACRO_UNPACK_TYPES(float, double),
                      oneapi::mkl::vm::hypot,
                      MACRO_UNPACK_TYPES(float, double))
 
