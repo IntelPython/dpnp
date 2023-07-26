@@ -75,7 +75,7 @@ Finanly, to install the result package:
 
 .. code-block:: bash
 
-    conda install dpnp
+    conda install dpnp -c local
 
 
 Build and Install with scikit-build
@@ -137,12 +137,12 @@ The examples below demonstrates a simple usage of the Data Parallel Extension fo
   :linenos:
   :language: python
   :lines: 35-
-  :caption: Calculate sum of an array
+  :caption: How to create an array and to sum the elements
 
 .. literalinclude:: ../examples/example_cfd.py
   :linenos:
   :language: python
-  :lines: 35-
-  :caption: Compute follows data paradigm
+  :lines: 34-
+  :caption: How to create an array on the specific device type and the next computation follows it
 
 More examples on how to use ``dpnp`` can be found in ``dpnp/examples``.
