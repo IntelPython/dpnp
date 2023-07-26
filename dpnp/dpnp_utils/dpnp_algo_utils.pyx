@@ -663,15 +663,16 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
     return (common_sycl_queue.sycl_device, common_usm_type, common_sycl_queue)
 
 
-cdef (DPNPFuncType, void *) get_ret_type_and_func(device, DPNPFuncData kernel_data):
+cdef (DPNPFuncType, void *) get_ret_type_and_func(DPNPFuncData kernel_data,
+                                                  cpp_bool has_aspect_fp64):
     """
     This function is responsible for determining the appropriate return type
-    and function pointer based on the capability of the allocated input array device.
+    and function pointer based on the capability of the allocated result array device.
     """
     return_type = kernel_data.return_type
     func = kernel_data.ptr
 
-    if kernel_data.ptr_no_fp64 != NULL and not device.has_aspect_fp64:
+    if kernel_data.ptr_no_fp64 != NULL and not has_aspect_fp64:
 
         return_type = kernel_data.return_type_no_fp64
         func = kernel_data.ptr_no_fp64
