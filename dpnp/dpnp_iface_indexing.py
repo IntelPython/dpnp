@@ -580,6 +580,8 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     >>> np.take(x, indices)
     array([4, 3, 6])
 
+    In this example "fancy" indexing can be used.
+
     >>> x[indices]
     array([4, 3, 6])
 
@@ -589,6 +591,7 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
 
     >>> np.take(x, indices, mode="clip")
     array([4, 4, 4, 8, 8])
+
     """
 
     if dpnp.is_supported_array_type(x) and dpnp.is_supported_array_type(
@@ -605,12 +608,8 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
         elif mode not in ("clip", "wrap"):
             pass
         else:
-            dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
-            dpt_indices = (
-                indices.get_array()
-                if isinstance(indices, dpnp_array)
-                else indices
-            )
+            dpt_array = dpnp.get_usm_ndarray(x)
+            dpt_indices = dpnp.get_usm_ndarray(indices)
             return dpnp_array._create_from_usm_ndarray(
                 dpt.take(dpt_array, dpt_indices, axis=axis, mode=mode)
             )
