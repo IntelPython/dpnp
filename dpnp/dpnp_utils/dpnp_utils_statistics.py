@@ -79,8 +79,8 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
         dtypes = [m.dtype, dpnp.default_float_type(sycl_queue=queue)]
         if y is not None:
             dtypes.append(y.dtype)
-        dtype = dpt.result_type(*dtypes)
-        # TODO: remove when dpctl.result_type() is fixed
+        dtype = dpnp.result_type(*dtypes)
+        # TODO: remove when dpctl.result_type() is returned dtype based on fp64
         fp64 = queue.sycl_device.has_aspect_fp64
         if not fp64:
             if dtype == dpnp.float64:
