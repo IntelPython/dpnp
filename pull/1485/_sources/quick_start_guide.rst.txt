@@ -134,13 +134,15 @@ Examples
 The examples below demonstrates a simple usage of the Data Parallel Extension for NumPy*
 
 .. literalinclude:: ../examples/example_sum.py
-   :language: python
+  :linenos:
+  :language: python
   :lines: 35-
-   :caption: Calculate sum of an array
+  :caption: Calculate sum of an array
 
 .. literalinclude:: ../examples/example_cfd.py
-   :language: python
+  :linenos:
+  :language: python
   :lines: 35-
-   :caption: Compute follows data paradigm
+  :caption: Compute follows data paradigm
 
 More examples on how to use ``dpnp`` can be found in ``dpnp/examples``.
