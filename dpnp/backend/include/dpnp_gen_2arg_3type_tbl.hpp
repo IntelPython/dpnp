@@ -114,9 +114,9 @@ MACRO_2ARG_3TYPES_OP(dpnp_add_c,
                                         std::complex<double>))
 
 MACRO_2ARG_3TYPES_OP(dpnp_arctan2_c,
-                     sycl::atan2((double)input1_elem, (double)input2_elem),
-                     nullptr,
-                     std::false_type,
+                     sycl::atan2(input1_elem, input2_elem),
+                     sycl::atan2(x1, x2),
+                     MACRO_UNPACK_TYPES(float, double),
                      oneapi::mkl::vm::atan2,
                      MACRO_UNPACK_TYPES(float, double))
 
