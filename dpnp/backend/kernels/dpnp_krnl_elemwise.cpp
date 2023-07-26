@@ -1849,25 +1849,89 @@ static void func_map_init_elemwise_2arg_3type(func_map_t &fmap)
         eft_DBL, (void *)dpnp_copysign_c_default<double, double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_copysign_c_ext<double, int32_t, int32_t>};
+        get_default_floating_type(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<get_default_floating_type()>, int32_t,
+            int32_t>,
+        get_default_floating_type<std::false_type>(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<
+                get_default_floating_type<std::false_type>()>,
+            int32_t, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][eft_INT][eft_LNG] = {
-        eft_DBL, (void *)dpnp_copysign_c_ext<double, int32_t, int64_t>};
+        get_default_floating_type(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<get_default_floating_type()>, int32_t,
+            int64_t>,
+        get_default_floating_type<std::false_type>(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<
+                get_default_floating_type<std::false_type>()>,
+            int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][eft_INT][eft_FLT] = {
-        eft_DBL, (void *)dpnp_copysign_c_ext<double, int32_t, float>};
+        get_default_floating_type(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<get_default_floating_type()>, int32_t,
+            float>,
+        get_default_floating_type<std::false_type>(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<
+                get_default_floating_type<std::false_type>()>,
+            int32_t, float>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][eft_INT][eft_DBL] = {
         eft_DBL, (void *)dpnp_copysign_c_ext<double, int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][eft_LNG][eft_INT] = {
-        eft_DBL, (void *)dpnp_copysign_c_ext<double, int64_t, int32_t>};
+        get_default_floating_type(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<get_default_floating_type()>, int64_t,
+            int32_t>,
+        get_default_floating_type<std::false_type>(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<
+                get_default_floating_type<std::false_type>()>,
+            int64_t, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_copysign_c_ext<double, int64_t, int64_t>};
+        get_default_floating_type(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<get_default_floating_type()>, int64_t,
+            int64_t>,
+        get_default_floating_type<std::false_type>(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<
+                get_default_floating_type<std::false_type>()>,
+            int64_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][eft_LNG][eft_FLT] = {
-        eft_DBL, (void *)dpnp_copysign_c_ext<double, int64_t, float>};
+        get_default_floating_type(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<get_default_floating_type()>, int64_t,
+            float>,
+        get_default_floating_type<std::false_type>(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<
+                get_default_floating_type<std::false_type>()>,
+            int64_t, float>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][eft_LNG][eft_DBL] = {
         eft_DBL, (void *)dpnp_copysign_c_ext<double, int64_t, double>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][eft_FLT][eft_INT] = {
-        eft_DBL, (void *)dpnp_copysign_c_ext<double, float, int32_t>};
+        get_default_floating_type(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<get_default_floating_type()>, float,
+            int32_t>,
+        get_default_floating_type<std::false_type>(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<
+                get_default_floating_type<std::false_type>()>,
+            float, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][eft_FLT][eft_LNG] = {
-        eft_DBL, (void *)dpnp_copysign_c_ext<double, float, int64_t>};
+        get_default_floating_type(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<get_default_floating_type()>, float,
+            int64_t>,
+        get_default_floating_type<std::false_type>(),
+        (void *)dpnp_copysign_c_ext<
+            func_type_map_t::find_type<
+                get_default_floating_type<std::false_type>()>,
+            float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][eft_FLT][eft_FLT] = {
         eft_FLT, (void *)dpnp_copysign_c_ext<float, float, float>};
     fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][eft_FLT][eft_DBL] = {

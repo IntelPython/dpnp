@@ -121,9 +121,9 @@ MACRO_2ARG_3TYPES_OP(dpnp_arctan2_c,
                      MACRO_UNPACK_TYPES(float, double))
 
 MACRO_2ARG_3TYPES_OP(dpnp_copysign_c,
-                     sycl::copysign((double)input1_elem, (double)input2_elem),
-                     nullptr,
-                     std::false_type,
+                     sycl::copysign(input1_elem, input2_elem),
+                     sycl::copysign(x1, x2),
+                     MACRO_UNPACK_TYPES(float, double),
                      oneapi::mkl::vm::copysign,
                      MACRO_UNPACK_TYPES(float, double))
 
