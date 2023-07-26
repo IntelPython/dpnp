@@ -16,7 +16,7 @@ jobs:
         shell: bash -l {0}
 
     env:
-      python-ver: '3.11'
+      python-ver: '3.9'
       CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
 
     steps:
