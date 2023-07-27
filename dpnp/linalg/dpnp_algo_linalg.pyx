@@ -79,16 +79,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_linalg_2in_1out_func_ptr_t)(c_dpctl.D
                                                                        const c_dpctl.DPCTLEventVectorRef)
 
 
-cdef (DPNPFuncType, void *) get_ret_type_and_func(x1_obj, DPNPFuncData kernel_data):
-    if dpnp.issubdtype(x1_obj.dtype, dpnp.integer) and not x1_obj.sycl_device.has_aspect_fp64:
-        return_type = kernel_data.return_type_no_fp64
-        func = kernel_data.ptr_no_fp64
-    else:
-        return_type = kernel_data.return_type
-        func = kernel_data.ptr
-    return return_type, func
-
-
 cpdef utils.dpnp_descriptor dpnp_cholesky(utils.dpnp_descriptor input_):
     size_ = input_.shape[-1]
 
@@ -206,7 +196,8 @@ cpdef tuple dpnp_eig(utils.dpnp_descriptor x1):
 
     x1_obj = x1.get_array()
 
-    cdef (DPNPFuncType, void *) ret_type_and_func = get_ret_type_and_func(x1_obj, kernel_data)
+    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(kernel_data,
+                                                                                x1_obj.sycl_device.has_aspect_fp64)
     cdef DPNPFuncType return_type = ret_type_and_func[0]
     cdef custom_linalg_2in_1out_func_ptr_t func = < custom_linalg_2in_1out_func_ptr_t > ret_type_and_func[1]
 
@@ -252,7 +243,8 @@ cpdef utils.dpnp_descriptor dpnp_eigvals(utils.dpnp_descriptor input):
 
     input_obj = input.get_array()
 
-    cdef (DPNPFuncType, void *) ret_type_and_func = get_ret_type_and_func(input_obj, kernel_data)
+    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(kernel_data,
+                                                                                input_obj.sycl_device.has_aspect_fp64)
     cdef DPNPFuncType return_type = ret_type_and_func[0]
     cdef custom_linalg_1in_1out_with_size_func_ptr_t_ func = < custom_linalg_1in_1out_with_size_func_ptr_t_ > ret_type_and_func[1]
 
@@ -291,7 +283,8 @@ cpdef utils.dpnp_descriptor dpnp_inv(utils.dpnp_descriptor input):
 
     input_obj = input.get_array()
 
-    cdef (DPNPFuncType, void *) ret_type_and_func = get_ret_type_and_func(input_obj, kernel_data)
+    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(kernel_data,
+                                                                                input_obj.sycl_device.has_aspect_fp64)
     cdef DPNPFuncType return_type = ret_type_and_func[0]
     cdef custom_linalg_1in_1out_func_ptr_t func = < custom_linalg_1in_1out_func_ptr_t > ret_type_and_func[1]
 
@@ -472,7 +465,8 @@ cpdef tuple dpnp_qr(utils.dpnp_descriptor x1, str mode):
 
     x1_obj = x1.get_array()
 
-    cdef (DPNPFuncType, void *) ret_type_and_func = get_ret_type_and_func(x1_obj, kernel_data)
+    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(kernel_data,
+                                                                                x1_obj.sycl_device.has_aspect_fp64)
     cdef DPNPFuncType return_type = ret_type_and_func[0]
     cdef custom_linalg_1in_3out_shape_t func = < custom_linalg_1in_3out_shape_t > ret_type_and_func[1]
 
@@ -525,7 +519,8 @@ cpdef tuple dpnp_svd(utils.dpnp_descriptor x1, cpp_bool full_matrices, cpp_bool 
 
     x1_obj = x1.get_array()
 
-    cdef (DPNPFuncType, void *) ret_type_and_func = get_ret_type_and_func(x1_obj, kernel_data)
+    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(kernel_data,
+                                                                                x1_obj.sycl_device.has_aspect_fp64)
     cdef DPNPFuncType return_type = ret_type_and_func[0]
     cdef custom_linalg_1in_3out_shape_t func = < custom_linalg_1in_3out_shape_t > ret_type_and_func[1]
 
