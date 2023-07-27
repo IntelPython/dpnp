@@ -40,5 +40,6 @@ class TestMatMul(unittest.TestCase):
 
         return out
 
+
 if __name__ == "__main__":
     unittest.main()
