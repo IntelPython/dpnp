@@ -143,6 +143,6 @@ The examples below demonstrates a simple usage of the Data Parallel Extension fo
   :linenos:
   :language: python
   :lines: 34-
-  :caption: How to create an array on the specific device type and the next computation follows it
+  :caption: How to create an array on the specific device type and how the next computations follow it
 
 More examples on how to use ``dpnp`` can be found in ``dpnp/examples``.
