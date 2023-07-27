@@ -4,24 +4,29 @@ from numpy.testing import assert_array_equal
 
 import dpnp
 
-from .helper import has_support_aspect64
+from .helper import (
+    get_all_dtypes,
+    get_complex_dtypes,
+    get_float_dtypes,
+)
 
 testdata = []
 testdata += [
     ([True, False, True], dtype)
-    for dtype in ["float32", "int32", "int64", "bool"]
+    for dtype in get_all_dtypes(no_none=True, no_complex=True)
 ]
-testdata += [([1, -1, 0], dtype) for dtype in ["float32", "int32", "int64"]]
-testdata += [([0.1, 0.0, -0.1], dtype) for dtype in ["float32"]]
-if has_support_aspect64():
-    testdata += [([True, False, True], dtype) for dtype in ["float64"]]
-    testdata += [([1, -1, 0], dtype) for dtype in ["float64"]]
-    testdata += [([0.1, 0.0, -0.1], dtype) for dtype in ["float64"]]
-    testdata += [([1j, -1j, 1 - 2j], dtype) for dtype in ["complex128"]]
+testdata += [
+    ([1, -1, 0], dtype)
+    for dtype in get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+]
+testdata += [([0.1, 0.0, -0.1], dtype) for dtype in get_float_dtypes()]
+testdata += [([1j, -1j, 1 - 2j], dtype) for dtype in get_complex_dtypes()]
 
 
 @pytest.mark.parametrize("in_obj, out_dtype", testdata)
 def test_copyto_dtype(in_obj, out_dtype):
+    if out_dtype == dpnp.complex64:
+        pytest.skip("SAT-6016: dpnp.copyto() do not work with complex64 dtype")
     ndarr = numpy.array(in_obj)
     expected = numpy.empty(ndarr.size, dtype=out_dtype)
     numpy.copyto(expected, ndarr)
