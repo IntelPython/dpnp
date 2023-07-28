@@ -624,39 +624,82 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">select</span><span class="p">,</span> <span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Take elements from an array.</span>
+<span class="sd">    Take elements from an array along an axis.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.take`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dpnp.ndarray</span>
+<span class="sd">        An array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]</span>
+<span class="sd">        filled with elements from `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Parameters ``axis``, ``out`` and ``mode`` are supported only with default values.</span>
-<span class="sd">    Parameter ``indices`` is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `x` and `indices` are supported either as :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameter `indices` is supported as 1-D array of integer data type.</span>
+<span class="sd">    Parameter `out` is supported only with default value.</span>
+<span class="sd">    Parameter `mode` is supported with ``wrap``(default) and ``clip`` mode.</span>
+<span class="sd">    Providing parameter `axis` is optional when `x` is a 1-D array.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.compress` : Take elements using a boolean mask.</span>
 <span class="sd">    :obj:`take_along_axis` : Take elements by matching the array and the index arrays.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    How out-of-bounds indices will be handled.</span>
+<span class="sd">    &quot;wrap&quot; - clamps indices to (-n &lt;= i &lt; n), then wraps negative indices.</span>
+<span class="sd">    &quot;clip&quot; - clips indices to (0 &lt;= i &lt; n)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([4, 3, 5, 7, 6, 8])</span>
+<span class="sd">    &gt;&gt;&gt; indices = np.array([0, 1, 4])</span>
+<span class="sd">    &gt;&gt;&gt; np.take(x, indices)</span>
+<span class="sd">    array([4, 3, 6])</span>
+
+<span class="sd">    In this example &quot;fancy&quot; indexing can be used.</span>
+
+<span class="sd">    &gt;&gt;&gt; x[indices]</span>
+<span class="sd">    array([4, 3, 6])</span>
+
+<span class="sd">    &gt;&gt;&gt; indices = dpnp.array([-1, -6, -7, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; np.take(x, indices)</span>
+<span class="sd">    array([8, 4, 4, 8, 8])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.take(x, indices, mode=&quot;clip&quot;)</span>
+<span class="sd">    array([4, 4, 4, 8, 8])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">indices_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">indices</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">indices_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span>
+        <span class="n">indices</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span>
+            <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span>
+        <span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;clip&quot;</span><span class="p">,</span> <span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_take</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">indices_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">dpt_indices</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+                <span class="n">dpt</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">dpt_indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+            <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">take</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">take</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">take_along_axis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
