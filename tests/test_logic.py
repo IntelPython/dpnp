@@ -4,7 +4,7 @@ from numpy.testing import assert_allclose, assert_equal
 
 import dpnp
 
-from .helper import get_all_dtypes
+from .helper import get_all_dtypes, get_float_dtypes
 
 
 @pytest.mark.parametrize("type", get_all_dtypes())
@@ -294,3 +294,25 @@ def test_comparison_no_broadcast_with_shapes(op, sh1, sh2):
     with pytest.raises(ValueError):
         getattr(dpnp, op)(x1, x2)
         getattr(numpy, op)(x1.asnumpy(), x2.asnumpy())
+
+
+@pytest.mark.parametrize(
+    "op", ["isfinite", "isinf", "isnan"], ids=["isfinite", "isinf", "isnan"]
+)
+@pytest.mark.parametrize(
+    "data",
+    [
+        [dpnp.inf, -1, 0, 1, dpnp.nan],
+        [[dpnp.inf, dpnp.nan], [dpnp.nan, 0], [1, dpnp.inf]],
+    ],
+    ids=[
+        "[dpnp.inf, -1, 0, 1, dpnp.nan]",
+        "[[dpnp.inf, dpnp.nan], [dpnp.nan, 0], [1, dpnp.inf]]",
+    ],
+)
+@pytest.mark.parametrize("dtype", get_float_dtypes())
+def test_finite(op, data, dtype):
+    x = dpnp.asarray(data, dtype=dtype)
+    np_res = getattr(dpnp, op)(x)
+    dpnp_res = getattr(numpy, op)(x.asnumpy())
+    assert_equal(dpnp_res, np_res)
