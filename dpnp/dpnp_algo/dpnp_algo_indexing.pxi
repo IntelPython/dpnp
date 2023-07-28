@@ -45,7 +45,6 @@ __all__ += [
     "dpnp_put_along_axis",
     "dpnp_putmask",
     "dpnp_select",
-    "dpnp_take",
     "dpnp_take_along_axis",
     "dpnp_tril_indices",
     "dpnp_tril_indices_from",
@@ -59,13 +58,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_choose_t)(c_dpctl.DPCTLSyclQueueRe
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_diag_indices)(c_dpctl.DPCTLSyclQueueRef,
                                                             void * , size_t,
                                                             const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_2in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                         void *,
-                                                                         const size_t,
-                                                                         void * ,
-                                                                         void * ,
-                                                                         size_t,
-                                                                         const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_2in_1out_func_ptr_t_)(c_dpctl.DPCTLSyclQueueRef,
                                                                           void * ,
                                                                           const size_t,
@@ -415,42 +407,6 @@ cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default)
         res_array.get_pyobj()[ind] = val
 
     return res_array
-
-
-cpdef utils.dpnp_descriptor dpnp_take(utils.dpnp_descriptor x1, utils.dpnp_descriptor indices):
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(indices.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TAKE_EXT, param1_type, param2_type)
-
-    x1_obj = x1.get_array()
-
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(indices.shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=x1_obj.sycl_device,
-                                                                       usm_type=x1_obj.usm_type,
-                                                                       sycl_queue=x1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_indexing_2in_1out_func_ptr_t func = <custom_indexing_2in_1out_func_ptr_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    x1.get_data(),
-                                                    x1.size,
-                                                    indices.get_data(),
-                                                    result.get_data(),
-                                                    indices.size,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
 
 
 cpdef object dpnp_take_along_axis(object arr, object indices, int axis):
