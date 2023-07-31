@@ -401,7 +401,6 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compr
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_empty_1dim_no_axis
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_no_axis
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_no_bool
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_index_range_overflow
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_choicelist_condlist_broadcast

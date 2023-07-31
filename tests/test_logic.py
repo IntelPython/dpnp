@@ -4,7 +4,7 @@ from numpy.testing import assert_allclose, assert_equal
 
 import dpnp
 
-from .helper import get_all_dtypes
+from .helper import get_all_dtypes, has_support_aspect64
 
 
 @pytest.mark.parametrize("type", get_all_dtypes())
@@ -40,6 +40,9 @@ def test_all(type, shape):
         assert_allclose(dpnp_res, np_res)
 
 
+@pytest.mark.skipif(
+    not has_support_aspect64(), reason="Aborted on Iris Xe: SAT-5988"
+)
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_allclose(type):
     a = numpy.random.rand(10)
