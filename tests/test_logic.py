@@ -4,7 +4,11 @@ from numpy.testing import assert_allclose, assert_equal
 
 import dpnp
 
-from .helper import get_all_dtypes, get_float_complex_dtypes, has_support_aspect64
+from .helper import (
+    get_all_dtypes,
+    get_float_complex_dtypes,
+    has_support_aspect64,
+)
 
 
 @pytest.mark.parametrize("type", get_all_dtypes())
