@@ -616,16 +616,10 @@ def test_linspace(start, stop, num, dtype):
         assert_allclose(func(numpy), func(dpnp), rtol=1)
     else:
         if dtype is None and not has_support_aspect64():
-            assert_allclose(
-                func(numpy),
-                func(dpnp),
-                rtol=1e-06,
-                atol=numpy.finfo("float32").eps,
-            )
-        else:
-            assert_allclose(
-                func(numpy), func(dpnp), rtol=1e-06, atol=numpy.finfo(dtype).eps
-            )
+            dtype = dpnp.float32
+        assert_allclose(
+            func(numpy), func(dpnp), rtol=1e-06, atol=numpy.finfo(dtype).eps
+        )
 
 
 @pytest.mark.parametrize(

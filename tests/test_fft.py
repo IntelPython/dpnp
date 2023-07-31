@@ -6,7 +6,7 @@ import dpnp
 from .helper import has_support_aspect64
 
 pytestmark = pytest.mark.skipif(
-    not has_support_aspect64(), reason="Aborted on Iris Xe"
+    not has_support_aspect64(), reason="Aborted on Iris Xe: SAT-6028"
 )
 
 

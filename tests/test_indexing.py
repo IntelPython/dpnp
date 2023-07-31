@@ -4,7 +4,7 @@ from numpy.testing import assert_, assert_array_equal, assert_equal
 
 import dpnp
 
-from .helper import get_all_dtypes, has_support_aspect64
+from .helper import get_all_dtypes
 
 
 class TestIndexing:

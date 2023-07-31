@@ -1,7 +1,6 @@
 from sys import platform
 
 import dpctl
-import pytest
 
 import dpnp
 
