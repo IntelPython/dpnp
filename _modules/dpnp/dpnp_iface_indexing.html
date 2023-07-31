@@ -520,7 +520,7 @@
     <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="p">(</span>
             <span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="ow">or</span> <span class="n">numpy</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="o">+</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">0</span>
