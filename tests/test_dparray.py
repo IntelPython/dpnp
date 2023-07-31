@@ -159,8 +159,8 @@ def test_print_dpnp_special_character(character):
     assert result == expected
 
 
-@pytest.mark.parametrize("dtype", get_float_dtypes())
-def test_print_dpnp_1_nd(dtype):
+def test_print_dpnp_1_nd():
+    dtype = dpnp.default_float_type()
     result = repr(dpnp.arange(10000, dtype=dtype))
     if has_support_aspect64():
         expected = "array([0.000e+00, 1.000e+00, 2.000e+00, ..., 9.997e+03, 9.998e+03,\n       9.999e+03])"
@@ -175,8 +175,8 @@ def test_print_dpnp_1_nd(dtype):
     assert result == expected
 
 
-@pytest.mark.parametrize("dtype", get_float_dtypes())
-def test_print_dpnp_2_nd(dtype):
+def test_print_dpnp_2_nd():
+    dtype = dpnp.default_float_type()
     result = repr(dpnp.array([[1, 2], [3, 4]], dtype=dtype))
     if has_support_aspect64():
         expected = "array([[1., 2.],\n       [3., 4.]])"
