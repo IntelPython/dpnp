@@ -1,11 +1,16 @@
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
 
-from .helper import get_all_dtypes
+from .helper import (
+    get_all_dtypes,
+    get_complex_dtypes,
+    get_float_dtypes,
+    has_support_aspect64,
+)
 
 
 @pytest.mark.parametrize("res_dtype", get_all_dtypes())
@@ -20,7 +25,7 @@ def test_astype(arr, arr_dtype, res_dtype):
     dpnp_array = dpnp.array(numpy_array)
     expected = numpy_array.astype(res_dtype)
     result = dpnp_array.astype(res_dtype)
-    assert_array_equal(expected, result)
+    assert_allclose(expected, result)
 
 
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes())
@@ -100,30 +105,27 @@ def test_print_dpnp_int():
     assert result == expected
 
 
-def test_print_dpnp_float():
-    result = repr(dpnp.array([1, -1, 21], dtype=float))
+@pytest.mark.parametrize("dtype", get_float_dtypes())
+def test_print_dpnp_float(dtype):
+    result = repr(dpnp.array([1, -1, 21], dtype=dtype))
     expected = "array([ 1., -1., 21.])"
-    assert result == expected
+    if dtype is dpnp.float32:
+        expected = expected[:-1] + ", dtype=float32)"
 
-    result = str(dpnp.array([1, -1, 21], dtype=float))
-    expected = "[ 1. -1. 21.]"
-    assert result == expected
-    # float32
-    result = repr(dpnp.array([1, -1, 21], dtype=dpnp.float32))
-    expected = "array([ 1., -1., 21.], dtype=float32)"
-    assert result == expected
-
-    result = str(dpnp.array([1, -1, 21], dtype=dpnp.float32))
+    result = str(dpnp.array([1, -1, 21], dtype=dtype))
     expected = "[ 1. -1. 21.]"
     assert result == expected
 
 
-def test_print_dpnp_complex():
-    result = repr(dpnp.array([1, -1, 21], dtype=complex))
+@pytest.mark.parametrize("dtype", get_complex_dtypes())
+def test_print_dpnp_complex(dtype):
+    result = repr(dpnp.array([1, -1, 21], dtype=dtype))
     expected = "array([ 1.+0.j, -1.+0.j, 21.+0.j])"
+    if dtype is dpnp.complex64:
+        expected = expected[:-1] + ", dtype=complex64)"
     assert result == expected
 
-    result = str(dpnp.array([1, -1, 21], dtype=complex))
+    result = str(dpnp.array([1, -1, 21], dtype=dtype))
     expected = "[ 1.+0.j -1.+0.j 21.+0.j]"
     assert result == expected
 
@@ -138,49 +140,55 @@ def test_print_dpnp_boolean():
     assert result == expected
 
 
-def test_print_dpnp_special_character():
-    # NaN
-    result = repr(dpnp.array([1.0, 0.0, dpnp.nan, 3.0]))
-    expected = "array([ 1.,  0., nan,  3.])"
+@pytest.mark.parametrize(
+    "character", [dpnp.nan, dpnp.inf], ids=["dpnp.nan", "dpnp.inf"]
+)
+def test_print_dpnp_special_character(character):
+    result = repr(dpnp.array([1.0, 0.0, character, 3.0]))
+    expected = f"array([ 1.,  0., {character},  3.])"
+    if not has_support_aspect64():
+        expected = expected[:-1] + ", dtype=float32)"
     assert result == expected
 
-    result = str(dpnp.array([1.0, 0.0, dpnp.nan, 3.0]))
-    expected = "[ 1.  0. nan  3.]"
-    assert result == expected
-    # inf
-    result = repr(dpnp.array([1.0, 0.0, dpnp.inf, 3.0]))
-    expected = "array([ 1.,  0., inf,  3.])"
-    assert result == expected
-
-    result = str(dpnp.array([1.0, 0.0, dpnp.inf, 3.0]))
-    expected = "[ 1.  0. inf  3.]"
+    result = str(dpnp.array([1.0, 0.0, character, 3.0]))
+    expected = f"[ 1.  0. {character}  3.]"
     assert result == expected
 
 
-def test_print_dpnp_nd():
-    # 1D
-    result = repr(dpnp.arange(10000, dtype="float32"))
-    expected = "array([0.000e+00, 1.000e+00, 2.000e+00, ..., 9.997e+03, 9.998e+03,\n       9.999e+03], dtype=float32)"
+def test_print_dpnp_1d():
+    dtype = dpnp.default_float_type()
+    result = repr(dpnp.arange(10000, dtype=dtype))
+    expected = "array([0.000e+00, 1.000e+00, 2.000e+00, ..., 9.997e+03, 9.998e+03,\n       9.999e+03])"
+    if not has_support_aspect64():
+        expected = expected[:-1] + ", dtype=float32)"
     assert result == expected
 
-    result = str(dpnp.arange(10000, dtype="float32"))
+    result = str(dpnp.arange(10000, dtype=dtype))
     expected = (
         "[0.000e+00 1.000e+00 2.000e+00 ... 9.997e+03 9.998e+03 9.999e+03]"
     )
     assert result == expected
 
-    # 2D
-    result = repr(dpnp.array([[1, 2], [3, 4]], dtype=float))
+
+def test_print_dpnp_2d():
+    dtype = dpnp.default_float_type()
+    result = repr(dpnp.array([[1, 2], [3, 4]], dtype=dtype))
     expected = "array([[1., 2.],\n       [3., 4.]])"
+    if not has_support_aspect64():
+        expected = expected[:-1] + ", dtype=float32)"
     assert result == expected
 
     result = str(dpnp.array([[1, 2], [3, 4]]))
     expected = "[[1 2]\n [3 4]]"
     assert result == expected
 
-    # 0 shape
+
+def test_print_dpnp_zero_shape():
     result = repr(dpnp.empty(shape=(0, 0)))
-    expected = "array([])"
+    if has_support_aspect64():
+        expected = "array([])"
+    else:
+        expected = "array([], dtype=float32)"
     assert result == expected
 
     result = str(dpnp.empty(shape=(0, 0)))

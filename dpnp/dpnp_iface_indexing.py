@@ -435,7 +435,7 @@ def put(x1, ind, v, mode="raise"):
     if x1_desc:
         if mode != "raise":
             pass
-        elif type(ind) != type(v):
+        elif type(ind) is not type(v):
             pass
         elif (
             numpy.max(ind) >= x1_desc.size or numpy.min(ind) + x1_desc.size < 0
