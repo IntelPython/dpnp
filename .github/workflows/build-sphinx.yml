@@ -131,6 +131,7 @@ jobs:
           publish_dir: ${{ env.PUBLISH_DIR }}
           destination_dir: ./pull/${{ github.event.number }}
           allow_empty_commit : true
+          keep_files: true
           commit_message: ${{ github.event.head_commit.message }}
           publish_branch: gh-pages
           user_name: 'github-actions[bot]'
