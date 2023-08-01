@@ -334,11 +334,15 @@ def get_dpnp_descriptor(
 
 
 def get_include():
-    r"""Return the directory that contains the DPNP C++ backend \*.h header files."""
+    r"""
+    Return the directory that contains \*.h header files of dpnp C++ backend.
 
-    dpnp_path = os.path.join(os.path.dirname(__file__), "backend", "include")
+    An extension module that needs to be compiled against dpnp backend
+    should use this function to locate the appropriate include directory.
 
-    return dpnp_path
+    """
+
+    return os.path.join(os.path.dirname(__file__), "backend", "include")
 
 
 def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
