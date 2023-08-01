@@ -136,6 +136,9 @@
     <span class="n">dpnp_equal</span><span class="p">,</span>
     <span class="n">dpnp_greater</span><span class="p">,</span>
     <span class="n">dpnp_greater_equal</span><span class="p">,</span>
+    <span class="n">dpnp_isfinite</span><span class="p">,</span>
+    <span class="n">dpnp_isinf</span><span class="p">,</span>
+    <span class="n">dpnp_isnan</span><span class="p">,</span>
     <span class="n">dpnp_less</span><span class="p">,</span>
     <span class="n">dpnp_less_equal</span><span class="p">,</span>
     <span class="n">dpnp_logical_and</span><span class="p">,</span>
@@ -577,7 +580,9 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="isfinite"><a class="viewcode-back" href="../../reference/generated/dpnp.isfinite.html#dpnp.isfinite">[docs]</a><span class="k">def</span> <span class="nf">isfinite</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="isfinite"><a class="viewcode-back" href="../../reference/generated/dpnp.isfinite.html#dpnp.isfinite">[docs]</a><span class="k">def</span> <span class="nf">isfinite</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test element-wise for finiteness (not infinity or not Not a Number).</span>
 
@@ -585,11 +590,10 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Parameter ``out`` is supported only with default value ``None``.</span>
-<span class="sd">    Parameter ``where`` is supported only with default value ``True``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -610,23 +614,27 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.isfinite(x)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [False, True, False]</span>
+<span class="sd">    &gt;&gt;&gt; np.isfinite(x)</span>
+<span class="sd">    array([False,  True, False])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># x1_desc = dpnp.get_dpnp_descriptor(x1)</span>
-    <span class="c1"># if x1_desc and kwargs:</span>
-    <span class="c1">#     if out is not None:</span>
-    <span class="c1">#         pass</span>
-    <span class="c1">#     else:</span>
-    <span class="c1">#         return dpnp_isfinite(x1_desc).get_pyobj()</span>
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">,</span>
+        <span class="n">dpnp_isfinite</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="isinf"><a class="viewcode-back" href="../../reference/generated/dpnp.isinf.html#dpnp.isinf">[docs]</a><span class="k">def</span> <span class="nf">isinf</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="isinf"><a class="viewcode-back" href="../../reference/generated/dpnp.isinf.html#dpnp.isinf">[docs]</a><span class="k">def</span> <span class="nf">isinf</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test element-wise for positive or negative infinity.</span>
 
@@ -634,11 +642,10 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Parameter ``out`` is supported only with default value ``None``.</span>
-<span class="sd">    Parameter ``where`` is supported only with default value ``True``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -654,23 +661,27 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.isinf(x)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [True, False, True]</span>
+<span class="sd">    &gt;&gt;&gt; np.isinf(x)</span>
+<span class="sd">    array([ True, False,  True])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># x1_desc = dpnp.get_dpnp_descriptor(x1)</span>
-    <span class="c1"># if x1_desc and kwargs:</span>
-    <span class="c1">#     if out is not None:</span>
-    <span class="c1">#         pass</span>
-    <span class="c1">#     else:</span>
-    <span class="c1">#         return dpnp_isinf(x1_desc).get_pyobj()</span>
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">isinf</span><span class="p">,</span>
+        <span class="n">dpnp_isinf</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isinf</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="isnan"><a class="viewcode-back" href="../../reference/generated/dpnp.isnan.html#dpnp.isnan">[docs]</a><span class="k">def</span> <span class="nf">isnan</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="isnan"><a class="viewcode-back" href="../../reference/generated/dpnp.isnan.html#dpnp.isnan">[docs]</a><span class="k">def</span> <span class="nf">isnan</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test element-wise for NaN and return result as a boolean array.</span>
 
@@ -678,11 +689,10 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Parameter ``out`` is supported only with default value ``None``.</span>
-<span class="sd">    Parameter ``where`` is supported only with default value ``True``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -699,20 +709,22 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([np.inf, 0., np.nan])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.isnan(x)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [False, False, True]</span>
+<span class="sd">    &gt;&gt;&gt; np.isnan(x)</span>
+<span class="sd">    array([False, False,  True])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># x1_desc = dpnp.get_dpnp_descriptor(x1)</span>
-    <span class="c1"># if x1_desc and kwargs:</span>
-    <span class="c1">#     if out is not None:</span>
-    <span class="c1">#         pass</span>
-    <span class="c1">#     else:</span>
-    <span class="c1">#         return dpnp_isnan(x1_desc).get_pyobj()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isnan</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">isnan</span><span class="p">,</span>
+        <span class="n">dpnp_isnan</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="less"><a class="viewcode-back" href="../../reference/generated/dpnp.less.html#dpnp.less">[docs]</a><span class="k">def</span> <span class="nf">less</span><span class="p">(</span>
