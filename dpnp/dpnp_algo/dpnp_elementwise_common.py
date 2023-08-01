@@ -49,6 +49,9 @@ __all__ = [
     "dpnp_floor_divide",
     "dpnp_greater",
     "dpnp_greater_equal",
+    "dpnp_isfinite",
+    "dpnp_isinf",
+    "dpnp_isnan",
     "dpnp_less",
     "dpnp_less_equal",
     "dpnp_log",
@@ -463,6 +466,112 @@ def dpnp_greater_equal(x1, x2, out=None, order="K"):
         _greater_equal_docstring_,
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_isfinite_docstring = """
+isfinite(x, out=None, order="K")
+
+Checks if each element of input array is a finite number.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array which is True where `x` is not positive infinity,
+        negative infinity, or NaN, False otherwise.
+        The data type of the returned array is `bool`.
+"""
+
+
+def dpnp_isfinite(x, out=None, order="K"):
+    """Invokes isfinite() from dpctl.tensor implementation for isfinite() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "isfinite", ti._isfinite_result_type, ti._isfinite, _isfinite_docstring
+    )
+    res_usm = func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_isinf_docstring = """
+isinf(x, out=None, order="K")
+
+Checks if each element of input array is an infinity.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array which is True where `x` is positive or negative infinity,
+        False otherwise. The data type of the returned array is `bool`.
+"""
+
+
+def dpnp_isinf(x, out=None, order="K"):
+    """Invokes isinf() from dpctl.tensor implementation for isinf() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "isinf", ti._isinf_result_type, ti._isinf, _isinf_docstring
+    )
+    res_usm = func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_isnan_docstring = """
+isnan(x, out=None, order="K")
+
+Checks if each element of an input array is a NaN.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array which is True where x is NaN, False otherwise.
+        The data type of the returned array is `bool`.
+"""
+
+
+def dpnp_isnan(x, out=None, order="K"):
+    """Invokes isnan() from dpctl.tensor implementation for isnan() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "isnan", ti._isnan_result_type, ti._isnan, _isnan_docstring
+    )
+    res_usm = func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
