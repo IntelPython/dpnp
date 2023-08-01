@@ -62,7 +62,7 @@ class dpnp_array:
     def __init__(
         self,
         shape,
-        dtype="f8",
+        dtype=None,
         buffer=None,
         offset=0,
         strides=None,
