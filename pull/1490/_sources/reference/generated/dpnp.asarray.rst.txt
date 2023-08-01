@@ -1,6 +1,0 @@
-﻿dpnp.asarray
-============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: asarray
