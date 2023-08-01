@@ -106,7 +106,11 @@ jobs:
         working-directory: doc
 
       - name: Set a project number to current release
-        run: export PROJECT_NUMBER=$(git describe --tags --abbrev=0)
+        run: |
+          export PROJECT_NUMBER=$(git describe --tags --abbrev=0)
+
+          echo PROJECT_NUMBER=${PROJECT_NUMBER}
+          echo "PROJECT_NUMBER=$PROJECT_NUMBER" >> $GITHUB_ENV
 
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
