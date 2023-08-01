@@ -487,9 +487,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SVD_EXT, /**< Used in numpy.linalg.svd() impl, requires extra
                         parameters */
     DPNP_FN_TAKE,    /**< Used in numpy.take() impl  */
-    DPNP_FN_TAKE_EXT, /**< Used in numpy.take() impl, requires extra parameters
-                       */
-    DPNP_FN_TAN,      /**< Used in numpy.tan() impl  */
+    DPNP_FN_TAN,     /**< Used in numpy.tan() impl  */
     DPNP_FN_TAN_EXT, /**< Used in numpy.tan() impl, requires extra parameters */
     DPNP_FN_TANH,    /**< Used in numpy.tanh() impl  */
     DPNP_FN_TANH_EXT,  /**< Used in numpy.tanh() impl, requires extra parameters

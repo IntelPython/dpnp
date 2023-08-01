@@ -51,6 +51,9 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_equal,
     dpnp_greater,
     dpnp_greater_equal,
+    dpnp_isfinite,
+    dpnp_isinf,
+    dpnp_isnan,
     dpnp_less,
     dpnp_less_equal,
     dpnp_logical_and,
@@ -492,7 +495,9 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     )
 
 
-def isfinite(x1, out=None, **kwargs):
+def isfinite(
+    x, /, out=None, *, where=True, order="K", dtype=None, subok=True, **kwargs
+):
     """
     Test element-wise for finiteness (not infinity or not Not a Number).
 
@@ -500,11 +505,10 @@ def isfinite(x1, out=None, **kwargs):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
@@ -525,23 +529,27 @@ def isfinite(x1, out=None, **kwargs):
     --------
     >>> import dpnp as np
     >>> x = np.array([-np.inf, 0., np.inf])
-    >>> out = np.isfinite(x)
-    >>> [i for i in out]
-    [False, True, False]
+    >>> np.isfinite(x)
+    array([False,  True, False])
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # if x1_desc and kwargs:
-    #     if out is not None:
-    #         pass
-    #     else:
-    #         return dpnp_isfinite(x1_desc).get_pyobj()
+    return check_nd_call_func(
+        numpy.isfinite,
+        dpnp_isfinite,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
-    return call_origin(numpy.isfinite, x1, out, **kwargs)
 
-
-def isinf(x1, out=None, **kwargs):
+def isinf(
+    x, /, out=None, *, where=True, order="K", dtype=None, subok=True, **kwargs
+):
     """
     Test element-wise for positive or negative infinity.
 
@@ -549,11 +557,10 @@ def isinf(x1, out=None, **kwargs):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
@@ -569,23 +576,27 @@ def isinf(x1, out=None, **kwargs):
     --------
     >>> import dpnp as np
     >>> x = np.array([-np.inf, 0., np.inf])
-    >>> out = np.isinf(x)
-    >>> [i for i in out]
-    [True, False, True]
+    >>> np.isinf(x)
+    array([ True, False,  True])
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # if x1_desc and kwargs:
-    #     if out is not None:
-    #         pass
-    #     else:
-    #         return dpnp_isinf(x1_desc).get_pyobj()
+    return check_nd_call_func(
+        numpy.isinf,
+        dpnp_isinf,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
-    return call_origin(numpy.isinf, x1, out, **kwargs)
 
-
-def isnan(x1, out=None, **kwargs):
+def isnan(
+    x, /, out=None, *, where=True, order="K", dtype=None, subok=True, **kwargs
+):
     """
     Test element-wise for NaN and return result as a boolean array.
 
@@ -593,11 +604,10 @@ def isnan(x1, out=None, **kwargs):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
@@ -614,20 +624,22 @@ def isnan(x1, out=None, **kwargs):
     --------
     >>> import dpnp as np
     >>> x = np.array([np.inf, 0., np.nan])
-    >>> out = np.isnan(x)
-    >>> [i for i in out]
-    [False, False, True]
+    >>> np.isnan(x)
+    array([False, False,  True])
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # if x1_desc and kwargs:
-    #     if out is not None:
-    #         pass
-    #     else:
-    #         return dpnp_isnan(x1_desc).get_pyobj()
-
-    return call_origin(numpy.isnan, x1, out, **kwargs)
+    return check_nd_call_func(
+        numpy.isnan,
+        dpnp_isnan,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def less(

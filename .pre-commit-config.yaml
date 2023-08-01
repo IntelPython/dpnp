@@ -43,7 +43,7 @@ repos:
     -   id: rst-inline-touching-normal
     -   id: text-unicode-replacement-char
 -   repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 23.7.0
     hooks:
     -   id: black
         args: ["--check", "--diff", "--color"]
@@ -59,7 +59,7 @@ repos:
         name: isort (pyi)
         types: [pyi]
 -   repo: https://github.com/pycqa/flake8
-    rev: 6.0.0
+    rev: 6.1.0
     hooks:
     -   id: flake8
         args: ["--config=.flake8"]
