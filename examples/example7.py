@@ -25,7 +25,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Example 1.
+"""Example 7.
 
 This example shows simple usage of the DPNP
 to calculate square matrix multiplication
@@ -35,21 +35,12 @@ and DPNP for several matrix multiplication
 
 """
 
-
-try:
-    import dpnp
-except ImportError:
-    import os
-    import sys
-
-    root_dir = os.path.join(os.path.dirname(__file__), os.pardir)
-    sys.path.append(root_dir)
-
-    import dpnp
-
 import time
 
+import dpctl
 import numpy
+
+import dpnp
 
 
 def run_function(executor, name, size, test_type, repetition):
@@ -69,15 +60,23 @@ def run_function(executor, name, size, test_type, repetition):
     return execution_time, result
 
 
+def get_dtypes():
+    _dtypes_list = [numpy.int32, numpy.int64, numpy.float32]
+    device = dpctl.select_default_device()
+    if device.has_aspect_fp64:
+        _dtypes_list.append(numpy.float64)
+    return _dtypes_list
+
+
 if __name__ == "__main__":
     test_repetition = 5
-    for test_type in [numpy.float64, numpy.float32, numpy.int64, numpy.int32]:
+    for test_type in get_dtypes():
         type_name = numpy.dtype(test_type).name
         print(
             f"...Test data type is {test_type}, each test repetitions {test_repetition}"
         )
 
-        for size in [16, 32, 64, 128, 256, 512, 1024, 2048, 4096]:
+        for size in [256, 512, 1024, 2048, 4096, 8192]:
             time_python, result_python = run_function(
                 numpy, "<NumPy>", size, test_type, test_repetition
             )
@@ -90,6 +89,6 @@ if __name__ == "__main__":
             else:
                 verification = f"({result_mkl} != {result_python})"
 
-            msg = f"type:{type_name}:N:{size:4}:NumPy:{time_python:.3e}:SYCL:{time_mkl:.3e}"
+            msg = f"type:{type_name}:N:{size:4}:NumPy:{time_python:.3e}:DPNP:{time_mkl:.3e}"
             msg += f":ratio:{time_python/time_mkl:6.2f}:verification:{verification}"
             print(msg)

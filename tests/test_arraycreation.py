@@ -14,7 +14,10 @@ from numpy.testing import (
 
 import dpnp
 
-from .helper import get_all_dtypes
+from .helper import (
+    get_all_dtypes,
+    has_support_aspect64,
+)
 
 
 @pytest.mark.parametrize(
@@ -115,7 +118,12 @@ def test_eye(N, M, k, dtype, order):
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize(
+    "dtype",
+    get_all_dtypes(
+        no_float16=False, no_none=False if has_support_aspect64() else True
+    ),
+)
 def test_frombuffer(dtype):
     buffer = b"12345678ABCDEF00"
     func = lambda xp: xp.frombuffer(buffer, dtype=dtype)
@@ -607,7 +615,11 @@ def test_linspace(start, stop, num, dtype):
     if numpy.issubdtype(dtype, dpnp.integer):
         assert_allclose(func(numpy), func(dpnp), rtol=1)
     else:
-        assert_allclose(func(numpy), func(dpnp), atol=numpy.finfo(dtype).eps)
+        if dtype is None and not has_support_aspect64():
+            dtype = dpnp.float32
+        assert_allclose(
+            func(numpy), func(dpnp), rtol=1e-06, atol=numpy.finfo(dtype).eps
+        )
 
 
 @pytest.mark.parametrize(

@@ -49,7 +49,6 @@ tests/test_sycl_queue.py::test_modf[level_zero:gpu:0]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-trapz-data19]
 tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-trapz-data19]
 
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_no_axis
 tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_0_{n=2, ndim=2}::test_diag_indices
 tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_1_{n=2, ndim=3}::test_diag_indices
 tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_2_{n=2, ndim=1}::test_diag_indices
@@ -239,43 +238,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMult
 tests/third_party/intel/test_zero_copy_test1.py::test_dpnp_interaction_with_dpctl_memory
 tests/test_arraymanipulation.py::TestHstack::test_generator
 tests/test_arraymanipulation.py::TestVstack::test_generator
-
-tests/test_dparray.py::test_astype[[]-float64-float64]
-tests/test_dparray.py::test_astype[[]-float64-float32]
-tests/test_dparray.py::test_astype[[]-float64-int64]
-tests/test_dparray.py::test_astype[[]-float64-int32]
-tests/test_dparray.py::test_astype[[]-float64-bool]
-tests/test_dparray.py::test_astype[[]-float64-complex]
-tests/test_dparray.py::test_astype[[]-float32-float64]
-tests/test_dparray.py::test_astype[[]-float32-float32]
-tests/test_dparray.py::test_astype[[]-float32-int64]
-tests/test_dparray.py::test_astype[[]-float32-int32]
-tests/test_dparray.py::test_astype[[]-float32-bool]
-tests/test_dparray.py::test_astype[[]-float32-complex]
-tests/test_dparray.py::test_astype[[]-int64-float64]
-tests/test_dparray.py::test_astype[[]-int64-float32]
-tests/test_dparray.py::test_astype[[]-int64-int64]
-tests/test_dparray.py::test_astype[[]-int64-int32]
-tests/test_dparray.py::test_astype[[]-int64-bool]
-tests/test_dparray.py::test_astype[[]-int64-complex]
-tests/test_dparray.py::test_astype[[]-int32-float64]
-tests/test_dparray.py::test_astype[[]-int32-float32]
-tests/test_dparray.py::test_astype[[]-int32-int64]
-tests/test_dparray.py::test_astype[[]-int32-int32]
-tests/test_dparray.py::test_astype[[]-int32-bool]
-tests/test_dparray.py::test_astype[[]-int32-complex]
-tests/test_dparray.py::test_astype[[]-bool-float64]
-tests/test_dparray.py::test_astype[[]-bool-float32]
-tests/test_dparray.py::test_astype[[]-bool-int64]
-tests/test_dparray.py::test_astype[[]-bool-int32]
-tests/test_dparray.py::test_astype[[]-bool-bool]
-tests/test_dparray.py::test_astype[[]-bool-complex]
-tests/test_dparray.py::test_astype[[]-complex-float64]
-tests/test_dparray.py::test_astype[[]-complex-float32]
-tests/test_dparray.py::test_astype[[]-complex-int64]
-tests/test_dparray.py::test_astype[[]-complex-int32]
-tests/test_dparray.py::test_astype[[]-complex-bool]
-tests/test_dparray.py::test_astype[[]-complex-complex]
 
 tests/test_linalg.py::test_cond[-1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
 tests/test_linalg.py::test_cond[1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
@@ -597,7 +559,6 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compr
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_empty_1dim_no_axis
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_no_axis
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_no_bool
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_index_range_overflow
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_choicelist_condlist_broadcast
