@@ -1,6 +1,7 @@
 import math
 
 import numpy
+from numpy.testing import assert_allclose
 
 import dpnp
 
@@ -9,7 +10,7 @@ def test_erf():
     a = numpy.linspace(2.0, 3.0, num=10)
     ia = dpnp.linspace(2.0, 3.0, num=10)
 
-    numpy.testing.assert_allclose(a, ia)
+    assert_allclose(a, ia)
 
     expected = numpy.empty_like(a)
     for idx, val in enumerate(a):
@@ -17,7 +18,7 @@ def test_erf():
 
     result = dpnp.erf(ia)
 
-    numpy.testing.assert_array_equal(result, expected)
+    assert_allclose(result, expected)
 
 
 def test_erf_fallback():
@@ -30,4 +31,4 @@ def test_erf_fallback():
 
     result = dpnp.erf(dpa)
 
-    numpy.testing.assert_array_equal(result, expected)
+    assert_allclose(result, expected)
