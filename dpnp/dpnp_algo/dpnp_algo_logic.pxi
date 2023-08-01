@@ -40,9 +40,6 @@ __all__ += [
     "dpnp_allclose",
     "dpnp_any",
     "dpnp_isclose",
-    "dpnp_isfinite",
-    "dpnp_isinf",
-    "dpnp_isnan",
 ]
 
 
@@ -172,50 +169,5 @@ cpdef utils.dpnp_descriptor dpnp_isclose(utils.dpnp_descriptor input1,
 
     for i in range(result.size):
         result.get_pyobj()[i] = numpy.isclose(input1.get_pyobj()[i], input2.get_pyobj()[i], rtol, atol, equal_nan)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_isfinite(utils.dpnp_descriptor input1):
-    input1_obj = input1.get_array()
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=input1_obj.sycl_device,
-                                                                             usm_type=input1_obj.usm_type,
-                                                                             sycl_queue=input1_obj.sycl_queue)
-
-    for i in range(result.size):
-        result.get_pyobj()[i] = numpy.isfinite(input1.get_pyobj()[i])
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_isinf(utils.dpnp_descriptor input1):
-    input1_obj = input1.get_array()
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=input1_obj.sycl_device,
-                                                                             usm_type=input1_obj.usm_type,
-                                                                             sycl_queue=input1_obj.sycl_queue)
-
-    for i in range(result.size):
-        result.get_pyobj()[i] = numpy.isinf(input1.get_pyobj()[i])
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_isnan(utils.dpnp_descriptor input1):
-    input1_obj = input1.get_array()
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=input1_obj.sycl_device,
-                                                                             usm_type=input1_obj.usm_type,
-                                                                             sycl_queue=input1_obj.sycl_queue)
-
-    for i in range(result.size):
-        result.get_pyobj()[i] = numpy.isnan(input1.get_pyobj()[i])
 
     return result
