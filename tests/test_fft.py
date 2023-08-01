@@ -1,6 +1,8 @@
 import numpy
 import pytest
 
+from .helper import assert_dtype_allclose
+
 import dpnp
 
 
@@ -14,10 +16,9 @@ def test_fft(type, norm):
     dpnp_data = dpnp.array(data)
 
     np_res = numpy.fft.fft(data, norm=norm)
-    dpnp_res = dpnp.asnumpy(dpnp.fft.fft(dpnp_data, norm=norm))
+    dpnp_res = dpnp.fft.fft(dpnp_data, norm=norm)
 
-    numpy.testing.assert_allclose(dpnp_res, np_res, rtol=1e-4, atol=1e-7)
-    assert dpnp_res.dtype == np_res.dtype
+    assert_dtype_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize(
@@ -32,8 +33,7 @@ def test_fft_ndim(type, shape, norm):
     np_res = numpy.fft.fft(np_data, norm=norm)
     dpnp_res = dpnp.fft.fft(dpnp_data, norm=norm)
 
-    numpy.testing.assert_allclose(dpnp_res, np_res, rtol=1e-4, atol=1e-7)
-    assert dpnp_res.dtype == np_res.dtype
+    assert_dtype_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize(
@@ -50,8 +50,7 @@ def test_fft_ifft(type, shape, norm):
     np_res = numpy.fft.ifft(np_data, norm=norm)
     dpnp_res = dpnp.fft.ifft(dpnp_data, norm=norm)
 
-    numpy.testing.assert_allclose(dpnp_res, np_res, rtol=1e-4, atol=1e-7)
-    assert dpnp_res.dtype == np_res.dtype
+    assert_dtype_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize("type", ["float32", "float64", "int32", "int64"])
@@ -65,5 +64,4 @@ def test_fft_rfft(type, shape):
     np_res = numpy.fft.rfft(np_data)
     dpnp_res = dpnp.fft.rfft(dpnp_data)
 
-    numpy.testing.assert_allclose(dpnp_res, np_res, rtol=1e-4, atol=1e-7)
-    assert dpnp_res.dtype == np_res.dtype
+    assert_dtype_allclose(dpnp_res, np_res)
