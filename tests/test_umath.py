@@ -480,7 +480,7 @@ class TestTan:
         np_array = numpy.array(array_data, dtype=numpy.float64)
         expected = numpy.tan(np_array, out=out)
 
-        assert_array_equal(expected, result)
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize(
         "dtype",

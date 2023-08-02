@@ -317,7 +317,11 @@ class TestArgsort(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_argsort_one_dim(self, xp, dtype):
         a = testing.shaped_random((10,), xp, dtype)
-        return self.argsort(a)
+        res = self.argsort(a)
+        print()
+        print(xp)
+        print(a, res)
+        return res
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()

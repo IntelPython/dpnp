@@ -2,9 +2,10 @@ from sys import platform
 
 import dpctl
 import numpy
-from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
+
+from numpy.testing import assert_allclose, assert_array_equal
 
 
 def assert_dtype_allclose(dpnp_arr, numpy_arr):
