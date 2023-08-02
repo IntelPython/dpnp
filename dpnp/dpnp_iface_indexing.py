@@ -435,7 +435,7 @@ def put(x1, ind, v, mode="raise"):
     if x1_desc:
         if mode != "raise":
             pass
-        elif type(ind) != type(v):
+        elif type(ind) is not type(v):
             pass
         elif (
             numpy.max(ind) >= x1_desc.size or numpy.min(ind) + x1_desc.size < 0
@@ -539,39 +539,82 @@ def select(condlist, choicelist, default=0):
     return call_origin(numpy.select, condlist, choicelist, default)
 
 
-def take(x1, indices, axis=None, out=None, mode="raise"):
+def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     """
-    Take elements from an array.
+    Take elements from an array along an axis.
 
     For full documentation refer to :obj:`numpy.take`.
 
+    Returns
+    -------
+    dpnp.ndarray
+        An array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
+        filled with elements from `x`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameters ``axis``, ``out`` and ``mode`` are supported only with default values.
-    Parameter ``indices`` is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` and `indices` are supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `indices` is supported as 1-D array of integer data type.
+    Parameter `out` is supported only with default value.
+    Parameter `mode` is supported with ``wrap``(default) and ``clip`` mode.
+    Providing parameter `axis` is optional when `x` is a 1-D array.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
     :obj:`dpnp.compress` : Take elements using a boolean mask.
     :obj:`take_along_axis` : Take elements by matching the array and the index arrays.
+
+    Notes
+    -----
+    How out-of-bounds indices will be handled.
+    "wrap" - clamps indices to (-n <= i < n), then wraps negative indices.
+    "clip" - clips indices to (0 <= i < n)
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([4, 3, 5, 7, 6, 8])
+    >>> indices = np.array([0, 1, 4])
+    >>> np.take(x, indices)
+    array([4, 3, 6])
+
+    In this example "fancy" indexing can be used.
+
+    >>> x[indices]
+    array([4, 3, 6])
+
+    >>> indices = dpnp.array([-1, -6, -7, 5, 6])
+    >>> np.take(x, indices)
+    array([8, 4, 4, 8, 8])
+
+    >>> np.take(x, indices, mode="clip")
+    array([4, 4, 4, 8, 8])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    indices_desc = dpnp.get_dpnp_descriptor(
-        indices, copy_when_nondefault_queue=False
-    )
-    if x1_desc and indices_desc:
-        if axis is not None:
+    if dpnp.is_supported_array_type(x) and dpnp.is_supported_array_type(
+        indices
+    ):
+        if indices.ndim != 1 or not dpnp.issubdtype(
+            indices.dtype, dpnp.integer
+        ):
+            pass
+        elif axis is None and x.ndim > 1:
             pass
         elif out is not None:
             pass
-        elif mode != "raise":
+        elif mode not in ("clip", "wrap"):
             pass
         else:
-            return dpnp_take(x1_desc, indices_desc).get_pyobj()
+            dpt_array = dpnp.get_usm_ndarray(x)
+            dpt_indices = dpnp.get_usm_ndarray(indices)
+            return dpnp_array._create_from_usm_ndarray(
+                dpt.take(dpt_array, dpt_indices, axis=axis, mode=mode)
+            )
 
-    return call_origin(numpy.take, x1, indices, axis, out, mode)
+    return call_origin(numpy.take, x, indices, axis, out, mode)
 
 
 def take_along_axis(x1, indices, axis):

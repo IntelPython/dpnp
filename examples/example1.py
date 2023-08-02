@@ -36,20 +36,12 @@ and DPNP for several matrix multiplication
 """
 
 
-try:
-    import dpnp
-except ImportError:
-    import os
-    import sys
-
-    root_dir = os.path.join(os.path.dirname(__file__), os.pardir)
-    sys.path.append(root_dir)
-
-    import dpnp
-
 import time
 
+import dpctl
 import numpy
+
+import dpnp
 
 
 def run_dgemm(executor, name, size, test_type, repetition):
@@ -75,15 +67,23 @@ def run_dgemm(executor, name, size, test_type, repetition):
     return (min_time, med_time, max_time), result.item(5)
 
 
+def get_dtypes():
+    _dtypes_list = [numpy.int32, numpy.int64, numpy.float32]
+    device = dpctl.select_default_device()
+    if device.has_aspect_fp64:
+        _dtypes_list.append(numpy.float64)
+    return _dtypes_list
+
+
 if __name__ == "__main__":
     test_repetition = 5
-    for test_type in [numpy.float64, numpy.float32, numpy.int64, numpy.int32]:
+    for test_type in get_dtypes():
         type_name = numpy.dtype(test_type).name
         print(
             f"...Test data type is {test_type}, each test repetitions {test_repetition}"
         )
 
-        for size in [16, 32, 64, 128]:  # , 256, 512, 1024, 2048, 4096]:
+        for size in [16, 32, 64, 128, 256, 512, 1024]:
             times_python, result_python = run_dgemm(
                 numpy, "<NumPy>", size, test_type, test_repetition
             )
@@ -97,6 +97,6 @@ if __name__ == "__main__":
 
             msg = f"type:{type_name}:N:{size:4}"
             msg += f":__NumPy__:{times_python[1]:.3e}:(min:{times_python[0]:.3e}:max:{times_python[2]:.3e})"
-            msg += f":__SYCL__:{times_sycl[1]:.3e}:(min:{times_sycl[0]:.3e}:max:{times_sycl[2]:.3e})"
+            msg += f":__DPNP__:{times_sycl[1]:.3e}:(min:{times_sycl[0]:.3e}:max:{times_sycl[2]:.3e})"
             msg += f":ratio:{times_python[1]/times_sycl[1]:6.2f}:verification:{verification}"
             print(msg)

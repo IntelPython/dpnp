@@ -4,4 +4,4 @@
 C++ backend API Reference
 *************************
 
-`DPNP C++ backend <backend_doc/>`_
+`C++ backend of Data Parallel Extension for NumPy* <backend_doc/>`_

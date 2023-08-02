@@ -5,6 +5,12 @@ from .helper import assert_dtype_allclose
 
 import dpnp
 
+from .helper import has_support_aspect64
+
+pytestmark = pytest.mark.skipif(
+    not has_support_aspect64(), reason="Aborted on Iris Xe: SAT-6028"
+)
+
 
 @pytest.mark.parametrize(
     "type", ["complex128", "complex64", "float32", "float64", "int32", "int64"]
