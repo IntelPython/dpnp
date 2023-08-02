@@ -15,7 +15,7 @@ For the basic concept of ``ndarray``\s, please refer to the `NumPy documentation
 
 
 Constructing arrays
-===================
+-------------------
 
 New arrays can be constructed using the routines detailed in
 :ref:`Array Creation Routines <routines.creation>`, and also by using the low-level
@@ -29,7 +29,7 @@ New arrays can be constructed using the routines detailed in
 
 
 Indexing arrays
-===============
+---------------
 
 Arrays can be indexed using an extended Python slicing syntax,
 ``array[selection]``.  Similar syntax is also used for accessing
@@ -39,7 +39,7 @@ fields in a :term:`structured data type`.
 
 
 Array attributes
-================
+----------------
 
 Array attributes reflect information that is intrinsic to the array
 itself. Generally, accessing an array through its attributes allows
@@ -73,7 +73,7 @@ of the array:
 Data type
 ---------
 
-.. seealso:: :ref:`Data type objects <dtype>`
+.. seealso:: :ref:`Available array data types <Data types>`
 
 The data type object associated with the array can be found in the
 :attr:`dtype <dpnp.ndarray.dtype>` attribute:
@@ -99,7 +99,7 @@ Other attributes
 
 
 Array methods
-=============
+-------------
 
 An :class:`dpnp.ndarray` object has many methods which operate on or with
 the array in some fashion, typically returning an array result. These
@@ -223,7 +223,7 @@ Calculation
 
 
 Arithmetic, matrix multiplication, and comparison operations
-============================================================
+------------------------------------------------------------
 
 Arithmetic and comparison operations on :class:`dpnp.ndarrays <dpnp.ndarray>`
 are defined as element-wise operations, and generally yield
@@ -306,7 +306,7 @@ Arithmetic, in-place:
 
 
 Special methods
-===============
+---------------
 
 For standard library functions:
 
