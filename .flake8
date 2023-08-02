@@ -57,7 +57,7 @@ exclude =
     conda.recipe,
     tests/*.py,
     tests_external/*.py,
-    version.py,
+    versioneer.py,
 
 # Print detailed statistic if any issue detected
 count = True
