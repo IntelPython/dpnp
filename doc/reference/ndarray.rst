@@ -73,7 +73,7 @@ of the array:
 Data type
 ---------
 
-.. seealso:: :ref:`Data type objects <dtype>`
+.. seealso:: :ref:`Available array data types <Data types>`
 
 The data type object associated with the array can be found in the
 :attr:`dtype <dpnp.ndarray.dtype>` attribute:
