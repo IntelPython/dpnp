@@ -872,9 +872,9 @@ class TestMultiply:
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
     def test_invalid_shape(self, shape):
-        dp_array1 = dpnp.arange(10, dtype=dpnp.float64)
-        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+        dp_array1 = dpnp.arange(10, dtype=dpnp.float32)
+        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float32)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float32)
 
         with pytest.raises(TypeError):
             dpnp.multiply(dp_array1, dp_array2, out=dp_out)
