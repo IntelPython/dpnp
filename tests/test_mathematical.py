@@ -165,10 +165,10 @@ class TestMathematical:
     def test_fmod(self, dtype, lhs, rhs):
         if dtype == None and rhs == 0.3 and not has_support_aspect64():
             """
-            Due to some reason NumPy behaves incorrectly, when:
+            Due to accuracy reason NumPy behaves differently, when:
                 >>> numpy.fmod(numpy.array([3.9], dtype=numpy.float32), 0.3)
                 array([0.29999995], dtype=float32)
-            while numpy with float64 returns something around zero which is expected:
+            while numpy with float64 returns something around zero which is aligned with dpnp:
                 >>> numpy.fmod(numpy.array([3.9], dtype=numpy.float64), 0.3)
                 array([9.53674318e-08])
             """
@@ -782,9 +782,9 @@ class TestAdd:
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
     def test_invalid_shape(self, shape):
-        dp_array1 = dpnp.arange(10, dtype=dpnp.float32)
-        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float32)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float32)
+        dp_array1 = dpnp.arange(10)
+        dp_array2 = dpnp.arange(5, 15)
+        dp_out = dpnp.empty(shape)
 
         with pytest.raises(TypeError):
             dpnp.add(dp_array1, dp_array2, out=dp_out)
@@ -872,9 +872,9 @@ class TestMultiply:
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
     def test_invalid_shape(self, shape):
-        dp_array1 = dpnp.arange(10, dtype=dpnp.float32)
-        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float32)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float32)
+        dp_array1 = dpnp.arange(10)
+        dp_array2 = dpnp.arange(5, 15)
+        dp_out = dpnp.empty(shape)
 
         with pytest.raises(TypeError):
             dpnp.multiply(dp_array1, dp_array2, out=dp_out)
