@@ -4,7 +4,7 @@ from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp as inp
 
-from .helper import get_all_dtypes
+from .helper import assert_dtype_allclose, get_all_dtypes
 
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
@@ -31,7 +31,7 @@ def test_dot_arange(type):
 
     result = inp.dot(ia, ib)
     expected = numpy.dot(a, b)
-    assert_allclose(expected, result)
+    assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
