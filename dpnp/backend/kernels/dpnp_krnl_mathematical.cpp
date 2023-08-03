@@ -1334,39 +1334,6 @@ void func_map_init_mathematical(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_floor_divide_default_c<double, double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_floor_divide_ext_c<int32_t, int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_INT][eft_LNG] = {
-        eft_LNG, (void *)dpnp_floor_divide_ext_c<int64_t, int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_INT][eft_FLT] = {
-        eft_DBL, (void *)dpnp_floor_divide_ext_c<double, int32_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_INT][eft_DBL] = {
-        eft_DBL, (void *)dpnp_floor_divide_ext_c<double, int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_LNG][eft_INT] = {
-        eft_LNG, (void *)dpnp_floor_divide_ext_c<int64_t, int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_floor_divide_ext_c<int64_t, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_LNG][eft_FLT] = {
-        eft_DBL, (void *)dpnp_floor_divide_ext_c<double, int64_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_LNG][eft_DBL] = {
-        eft_DBL, (void *)dpnp_floor_divide_ext_c<double, int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_FLT][eft_INT] = {
-        eft_DBL, (void *)dpnp_floor_divide_ext_c<double, float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_FLT][eft_LNG] = {
-        eft_DBL, (void *)dpnp_floor_divide_ext_c<double, float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_floor_divide_ext_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_FLT][eft_DBL] = {
-        eft_DBL, (void *)dpnp_floor_divide_ext_c<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_DBL][eft_INT] = {
-        eft_DBL, (void *)dpnp_floor_divide_ext_c<double, double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_DBL][eft_LNG] = {
-        eft_DBL, (void *)dpnp_floor_divide_ext_c<double, double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_DBL][eft_FLT] = {
-        eft_DBL, (void *)dpnp_floor_divide_ext_c<double, double, float>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_floor_divide_ext_c<double, double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_modf_default_c<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_LNG][eft_LNG] = {
