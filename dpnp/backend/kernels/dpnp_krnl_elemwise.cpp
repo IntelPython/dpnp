@@ -830,6 +830,18 @@ constexpr auto dispatch_fmod_op(T elem1, T elem2)
     }
 }
 
+template <typename vecT>
+constexpr auto dispatch_fmod_vec(vecT x1, vecT x2)
+{
+    using typeVec = typename vecT::element_type;
+    if constexpr (is_any_v<typeVec, std::int32_t, std::int64_t>) {
+        return x1 % x2;
+    }
+    else {
+        return sycl::fmod(x1, x2);
+    }
+}
+
 #define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)          \
     template <typename _KernelNameSpecialization>                              \
     class __name__##_kernel;                                                   \
