@@ -1,5 +1,5 @@
-Difference between DPNP and NumPy
-=================================
+Difference with NumPy*
+======================
 
 .. _Data types:
 
