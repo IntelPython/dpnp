@@ -211,13 +211,13 @@ class TestConcatenate:
         np_a = numpy.arange(start, stop, dtype=dtype)
         dp_a = dpnp.arange(start, stop, dtype=dtype)
 
-        np_res = numpy.concatenate(np_a, None)
-        dp_res = dpnp.concatenate(dp_a, None)
+        np_res = numpy.concatenate(np_a, axis=None)
+        dp_res = dpnp.concatenate(dp_a, axis=None)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
         # numpy doesn't raise an exception here but probably should
         with pytest.raises(numpy.AxisError):
-            dpnp.concatenate(dp_a, 100)
+            dpnp.concatenate(dp_a, axis=100)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_concatenate(self, dtype):
@@ -241,13 +241,13 @@ class TestConcatenate:
         assert_array_equal(dp_res.asnumpy(), np_res)
 
         # Explicit axis specification
-        np_res = numpy.concatenate((np_r4, np_r3), 0)
-        dp_res = dpnp.concatenate((dp_r4, dp_r3), 0)
+        np_res = numpy.concatenate((np_r4, np_r3), axis=0)
+        dp_res = dpnp.concatenate((dp_r4, dp_r3), axis=0)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
         # Including negative
-        np_res = numpy.concatenate((np_r4, np_r3), -1)
-        dp_res = dpnp.concatenate((dp_r4, dp_r3), -1)
+        np_res = numpy.concatenate((np_r4, np_r3), axis=-1)
+        dp_res = dpnp.concatenate((dp_r4, dp_r3), axis=-1)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
@@ -262,19 +262,19 @@ class TestConcatenate:
         dp_res = dpnp.concatenate((dp_a23, dp_a13))
         assert_array_equal(dp_res.asnumpy(), np_res)
 
-        np_res = numpy.concatenate((np_a23, np_a13), 0)
-        dp_res = dpnp.concatenate((dp_a23, dp_a13), 0)
+        np_res = numpy.concatenate((np_a23, np_a13), axis=0)
+        dp_res = dpnp.concatenate((dp_a23, dp_a13), axis=0)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
         for axis in [1, -1]:
-            np_res = numpy.concatenate((np_a23.T, np_a13.T), axis)
-            dp_res = dpnp.concatenate((dp_a23.T, dp_a13.T), axis)
+            np_res = numpy.concatenate((np_a23.T, np_a13.T), axis=axis)
+            dp_res = dpnp.concatenate((dp_a23.T, dp_a13.T), axis=axis)
             assert_array_equal(dp_res.asnumpy(), np_res)
 
         # Arrays much match shape
         with pytest.raises(ValueError):
-            numpy.concatenate((np_a23.T, np_a13.T), 0)
-            dpnp.concatenate((dp_a23.T, dp_a13.T), 0)
+            numpy.concatenate((np_a23.T, np_a13.T), axis=0)
+            dpnp.concatenate((dp_a23.T, dp_a13.T), axis=0)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
@@ -291,12 +291,12 @@ class TestConcatenate:
         dp_a2 = dp_a[..., 6:]
 
         for axis in [2, -1]:
-            np_res = numpy.concatenate((np_a0, np_a1, np_a2), axis)
-            dp_res = dpnp.concatenate((dp_a0, dp_a1, dp_a2), axis)
+            np_res = numpy.concatenate((np_a0, np_a1, np_a2), axis=axis)
+            dp_res = dpnp.concatenate((dp_a0, dp_a1, dp_a2), axis=axis)
             assert_array_equal(dp_res.asnumpy(), np_res)
 
-        np_res = numpy.concatenate((np_a0.T, np_a1.T, np_a2.T), 0)
-        dp_res = dpnp.concatenate((dp_a0.T, dp_a1.T, dp_a2.T), 0)
+        np_res = numpy.concatenate((np_a0.T, np_a1.T, np_a2.T), axis=0)
+        dp_res = dpnp.concatenate((dp_a0.T, dp_a1.T, dp_a2.T), axis=0)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
     @pytest.mark.skip("out keyword is currently unsupported")

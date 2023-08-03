@@ -237,7 +237,7 @@ def broadcast_to(x, /, shape, subok=False):
     return call_origin(numpy.broadcast_to, x, shape=shape, subok=subok)
 
 
-def concatenate(arrays, axis=0, out=None, *, dtype=None, **kwargs):
+def concatenate(arrays, *, axis=0, out=None, dtype=None, **kwargs):
     """
     Join a sequence of arrays along an existing axis.
 

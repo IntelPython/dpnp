@@ -1203,12 +1203,12 @@ def for_orders(orders, name="order"):
     """
 
     def decorator(impl):
-        @functools.wraps(impl)
-        def test_func(self, *args, **kw):
+        @_wraps_partial(impl, name)
+        def test_func(*args, **kw):
             for order in orders:
                 try:
                     kw[name] = order
-                    impl(self, *args, **kw)
+                    impl(*args, **kw)
                 except Exception:
                     print(name, "is", order)
                     raise
@@ -1228,6 +1228,38 @@ def for_CF_orders(name="order"):
 
     """
     return for_orders([None, "C", "c"], name)
+
+
+def for_castings(castings=None, name="casting"):
+    """Decorator to parameterize tests with casting.
+
+    Args:
+         castings(list of casting): casting to be tested.
+         name(str): Argument name to which the specified casting is passed.
+
+    This decorator adds a keyword argument specified by ``name``
+    to the test fixtures. Then, the fixtures run by passing each element of
+    ``castings`` to the named argument.
+
+    """
+
+    if castings is None:
+        castings = ["no", "equiv", "safe", "same_kind", "unsafe"]
+
+    def decorator(impl):
+        @_wraps_partial(impl, name)
+        def test_func(*args, **kw):
+            for casting in castings:
+                try:
+                    kw[name] = casting
+                    impl(*args, **kw)
+                except Exception:
+                    print(name, "is", casting)
+                    raise
+
+        return test_func
+
+    return decorator
 
 
 def with_requires(*requirements):
