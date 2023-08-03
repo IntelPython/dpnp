@@ -199,7 +199,7 @@ jobs:
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
         run: |
-          python -m pytest -s -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
         working-directory: ${{ env.tests-path }}
 
   test_windows:
@@ -336,7 +336,7 @@ jobs:
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
         run: |
-          python -m pytest -s -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
         working-directory: ${{ env.tests-path }}
 
   upload:
