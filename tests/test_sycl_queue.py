@@ -6,7 +6,7 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp
 
-from .helper import get_all_dtypes, is_win_platform
+from .helper import assert_dtype_allclose, get_all_dtypes, is_win_platform
 
 list_of_backend_str = [
     "host",
@@ -670,8 +670,7 @@ def test_fft_rfft(type, shape, device):
     np_res = numpy.fft.rfft(np_data)
     dpnp_res = dpnp.fft.rfft(dpnp_data)
 
-    numpy.testing.assert_allclose(dpnp_res, np_res, rtol=1e-4, atol=1e-7)
-    assert dpnp_res.dtype == np_res.dtype
+    assert_dtype_allclose(dpnp_res, np_res)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = dpnp_res.get_array().sycl_queue

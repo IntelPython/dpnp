@@ -1,11 +1,9 @@
 import numpy
 import pytest
 
-from .helper import assert_dtype_allclose
-
 import dpnp
 
-from .helper import has_support_aspect64
+from .helper import assert_dtype_allclose, has_support_aspect64
 
 pytestmark = pytest.mark.skipif(
     not has_support_aspect64(), reason="Aborted on Iris Xe: SAT-6028"
