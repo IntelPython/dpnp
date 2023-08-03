@@ -279,7 +279,7 @@ template <DPNPFuncType FT1,
           DPNPFuncType FT2,
           typename has_fp64 = std::true_type,
           typename keep_int = std::false_type>
-static constexpr DPNPFuncType get_res_type()
+static constexpr DPNPFuncType get_floating_res_type()
 {
     constexpr auto widest_type = populate_func_types<FT1, FT2>();
     constexpr auto shortes_type = (widest_type == FT1) ? FT2 : FT1;
@@ -304,27 +304,10 @@ static constexpr DPNPFuncType get_res_type()
         if constexpr (shortes_type == DPNPFuncType::DPNP_FT_FLOAT) {
             return widest_type;
         }
-        // Check if the shortest type is int or long
-        else if constexpr (shortes_type == DPNPFuncType::DPNP_FT_INT ||
-                           shortes_type == DPNPFuncType::DPNP_FT_LONG)
-        {
-            // Check if has_fp64
-            if constexpr (has_fp64::value) {
-                return DPNPFuncType::DPNP_FT_DOUBLE;
-            }
-            else {
-                return DPNPFuncType::DPNP_FT_FLOAT;
-            }
-        }
     }
 
     // Default case
-    if constexpr (has_fp64::value) {
-        return DPNPFuncType::DPNP_FT_DOUBLE;
-    }
-    else {
-        return DPNPFuncType::DPNP_FT_FLOAT;
-    }
+    return get_default_floating_type<has_fp64>();
 }
 
 /**

@@ -1145,16 +1145,16 @@ template <DPNPFuncType FT1, DPNPFuncType... FTs>
 static void func_map_elemwise_2arg_3type_core(func_map_t &fmap)
 {
     ((fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][FT1][FTs] =
-          {get_res_type<FT1, FTs, std::true_type, std::true_type>(),
+          {get_floating_res_type<FT1, FTs, std::true_type, std::true_type>(),
            (void *)dpnp_cross_ext_c<
-               func_type_map_t::find_type<
-                   get_res_type<FT1, FTs, std::true_type, std::true_type>()>,
+               func_type_map_t::find_type<get_floating_res_type<
+                   FT1, FTs, std::true_type, std::true_type>()>,
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>,
-           get_res_type<FT1, FTs, std::false_type, std::true_type>(),
+           get_floating_res_type<FT1, FTs, std::false_type, std::true_type>(),
            (void *)dpnp_cross_ext_c<
-               func_type_map_t::find_type<
-                   get_res_type<FT1, FTs, std::false_type, std::true_type>()>,
+               func_type_map_t::find_type<get_floating_res_type<
+                   FT1, FTs, std::false_type, std::true_type>()>,
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>}),
      ...);

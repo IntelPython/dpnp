@@ -1671,81 +1671,83 @@ template <DPNPFuncType FT1, DPNPFuncType... FTs>
 static void func_map_elemwise_2arg_3type_short_core(func_map_t &fmap)
 {
     ((fmap[DPNPFuncName::DPNP_FN_ARCTAN2_EXT][FT1][FTs] =
-          {get_res_type<FT1, FTs>(),
+          {get_floating_res_type<FT1, FTs>(),
            (void *)dpnp_arctan2_c_ext<
-               func_type_map_t::find_type<get_res_type<FT1, FTs>()>,
+               func_type_map_t::find_type<get_floating_res_type<FT1, FTs>()>,
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>,
-           get_res_type<FT1, FTs, std::false_type>(),
-           (void *)dpnp_arctan2_c_ext<func_type_map_t::find_type<get_res_type<
-                                          FT1, FTs, std::false_type>()>,
-                                      func_type_map_t::find_type<FT1>,
-                                      func_type_map_t::find_type<FTs>>}),
+           get_floating_res_type<FT1, FTs, std::false_type>(),
+           (void *)dpnp_arctan2_c_ext<
+               func_type_map_t::find_type<
+                   get_floating_res_type<FT1, FTs, std::false_type>()>,
+               func_type_map_t::find_type<FT1>,
+               func_type_map_t::find_type<FTs>>}),
      ...);
     ((fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][FT1][FTs] =
-          {get_res_type<FT1, FTs>(),
+          {get_floating_res_type<FT1, FTs>(),
            (void *)dpnp_copysign_c_ext<
-               func_type_map_t::find_type<get_res_type<FT1, FTs>()>,
+               func_type_map_t::find_type<get_floating_res_type<FT1, FTs>()>,
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>,
-           get_res_type<FT1, FTs, std::false_type>(),
-           (void *)dpnp_copysign_c_ext<func_type_map_t::find_type<get_res_type<
-                                           FT1, FTs, std::false_type>()>,
-                                       func_type_map_t::find_type<FT1>,
-                                       func_type_map_t::find_type<FTs>>}),
+           get_floating_res_type<FT1, FTs, std::false_type>(),
+           (void *)dpnp_copysign_c_ext<
+               func_type_map_t::find_type<
+                   get_floating_res_type<FT1, FTs, std::false_type>()>,
+               func_type_map_t::find_type<FT1>,
+               func_type_map_t::find_type<FTs>>}),
      ...);
     ((fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][FT1][FTs] =
-          {get_res_type<FT1, FTs, std::true_type, std::true_type>(),
+          {get_floating_res_type<FT1, FTs, std::true_type, std::true_type>(),
            (void *)
-               dpnp_fmod_c_ext<func_type_map_t::find_type<get_res_type<
+               dpnp_fmod_c_ext<func_type_map_t::find_type<get_floating_res_type<
                                    FT1, FTs, std::true_type, std::true_type>()>,
                                func_type_map_t::find_type<FT1>,
                                func_type_map_t::find_type<FTs>>,
-           get_res_type<FT1, FTs, std::false_type, std::true_type>(),
+           get_floating_res_type<FT1, FTs, std::false_type, std::true_type>(),
            (void *)dpnp_fmod_c_ext<
-               func_type_map_t::find_type<
-                   get_res_type<FT1, FTs, std::false_type, std::true_type>()>,
+               func_type_map_t::find_type<get_floating_res_type<
+                   FT1, FTs, std::false_type, std::true_type>()>,
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>}),
      ...);
     ((fmap[DPNPFuncName::DPNP_FN_HYPOT_EXT][FT1][FTs] =
-          {get_res_type<FT1, FTs>(),
+          {get_floating_res_type<FT1, FTs>(),
            (void *)dpnp_hypot_c_ext<
-               func_type_map_t::find_type<get_res_type<FT1, FTs>()>,
+               func_type_map_t::find_type<get_floating_res_type<FT1, FTs>()>,
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>,
-           get_res_type<FT1, FTs, std::false_type>(),
-           (void *)
-               dpnp_hypot_c_ext<func_type_map_t::find_type<
-                                    get_res_type<FT1, FTs, std::false_type>()>,
-                                func_type_map_t::find_type<FT1>,
-                                func_type_map_t::find_type<FTs>>}),
+           get_floating_res_type<FT1, FTs, std::false_type>(),
+           (void *)dpnp_hypot_c_ext<
+               func_type_map_t::find_type<
+                   get_floating_res_type<FT1, FTs, std::false_type>()>,
+               func_type_map_t::find_type<FT1>,
+               func_type_map_t::find_type<FTs>>}),
      ...);
     ((fmap[DPNPFuncName::DPNP_FN_MAXIMUM_EXT][FT1][FTs] =
-          {get_res_type<FT1, FTs, std::true_type, std::true_type>(),
+          {get_floating_res_type<FT1, FTs, std::true_type, std::true_type>(),
            (void *)dpnp_maximum_c_ext<
-               func_type_map_t::find_type<
-                   get_res_type<FT1, FTs, std::true_type, std::true_type>()>,
+               func_type_map_t::find_type<get_floating_res_type<
+                   FT1, FTs, std::true_type, std::true_type>()>,
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>,
-           get_res_type<FT1, FTs, std::false_type, std::true_type>(),
+           get_floating_res_type<FT1, FTs, std::false_type, std::true_type>(),
            (void *)dpnp_maximum_c_ext<
-               func_type_map_t::find_type<
-                   get_res_type<FT1, FTs, std::false_type, std::true_type>()>,
+               func_type_map_t::find_type<get_floating_res_type<
+                   FT1, FTs, std::false_type, std::true_type>()>,
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>}),
      ...);
     ((fmap[DPNPFuncName::DPNP_FN_MINIMUM_EXT][FT1][FTs] =
-          {get_res_type<FT1, FTs, std::true_type, std::true_type>(),
+          {get_floating_res_type<FT1, FTs, std::true_type, std::true_type>(),
            (void *)dpnp_minimum_c_ext<
-               func_type_map_t::find_type<
-                   get_res_type<FT1, FTs, std::true_type, std::true_type>()>,
+               func_type_map_t::find_type<get_floating_res_type<
+                   FT1, FTs, std::true_type, std::true_type>()>,
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>,
-           get_res_type<FT1, FTs, std::false_type, std::true_type>(),
+           get_floating_res_type<FT1, FTs, std::false_type, std::true_type>(),
            (void *)dpnp_minimum_c_ext<
-               func_type_map_t::find_type<
-                   get_res_type<FT1, FTs, std::false_type, std::true_type>()>,
+               func_type_map_t::find_type<get_floating_res_type<
+                   FT1, FTs, std::false_type, std::true_type>()>,
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>}),
      ...);
