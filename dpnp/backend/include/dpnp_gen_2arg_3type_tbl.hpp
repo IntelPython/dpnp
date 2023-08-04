@@ -140,7 +140,7 @@ MACRO_2ARG_3TYPES_OP(dpnp_divide_c,
 MACRO_2ARG_3TYPES_OP(
     dpnp_fmod_c,
     dispatch_fmod_op(input1_elem, input2_elem),
-    dispatch_fmod_vec(x1, x2),
+    dispatch_fmod_op(x1, x2),
     MACRO_UNPACK_TYPES(std::int32_t, std::int64_t, float, double),
     oneapi::mkl::vm::fmod,
     MACRO_UNPACK_TYPES(float, double))

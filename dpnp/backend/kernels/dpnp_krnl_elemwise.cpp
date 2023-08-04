@@ -822,23 +822,11 @@ constexpr T dispatch_sign_op(T elem)
 template <typename T>
 constexpr auto dispatch_fmod_op(T elem1, T elem2)
 {
-    if constexpr (is_any_v<T, std::int32_t, std::int64_t>) {
+    if constexpr (sycl::detail::is_integral<T>::value) {
         return elem1 % elem2;
     }
     else {
         return sycl::fmod(elem1, elem2);
-    }
-}
-
-template <typename vecT>
-constexpr auto dispatch_fmod_vec(vecT x1, vecT x2)
-{
-    using typeVec = typename vecT::element_type;
-    if constexpr (is_any_v<typeVec, std::int32_t, std::int64_t>) {
-        return x1 % x2;
-    }
-    else {
-        return sycl::fmod(x1, x2);
     }
 }
 
