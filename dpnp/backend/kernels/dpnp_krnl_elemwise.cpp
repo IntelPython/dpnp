@@ -823,7 +823,26 @@ template <typename T>
 constexpr auto dispatch_fmod_op(T elem1, T elem2)
 {
     if constexpr (sycl::detail::is_integral<T>::value) {
-        return elem1 % elem2;
+        if constexpr (sycl::detail::is_vec<T>::value) {
+            T rem;
+            using ElemT = typename T::element_type;
+#pragma unroll
+            for (size_t i = 0; i < rem.size(); i++) {
+                if (elem2[i] == ElemT(0)) {
+                    rem[i] = ElemT(0);
+                }
+                else {
+                    rem[i] = elem1[i] % elem2[i];
+                }
+            }
+            return rem;
+        }
+        else {
+            if (elem2 == T(0)) {
+                return T(0);
+            }
+            return elem1 % elem2;
+        }
     }
     else {
         return sycl::fmod(elem1, elem2);
