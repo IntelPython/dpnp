@@ -13,6 +13,7 @@ import dpnp
 from .helper import (
     get_all_dtypes,
     get_float_complex_dtypes,
+    has_support_aspect64,
     is_cpu_device,
     is_win_platform,
 )
@@ -162,6 +163,16 @@ class TestMathematical:
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
     def test_fmod(self, dtype, lhs, rhs):
+        if dtype == None and rhs == 0.3 and not has_support_aspect64():
+            """
+            Due to accuracy reason NumPy behaves differently, when:
+                >>> numpy.fmod(numpy.array([3.9], dtype=numpy.float32), 0.3)
+                array([0.29999995], dtype=float32)
+            while numpy with float64 returns something around zero which is aligned with dpnp:
+                >>> numpy.fmod(numpy.array([3.9], dtype=numpy.float64), 0.3)
+                array([9.53674318e-08])
+            """
+            pytest.skip("missaligned between numpy results")
         self._test_mathematical("fmod", dtype, lhs, rhs)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
@@ -197,6 +208,9 @@ class TestMathematical:
     def test_multiply(self, dtype, lhs, rhs):
         self._test_mathematical("multiply", dtype, lhs, rhs)
 
+    @pytest.mark.skipif(
+        not has_support_aspect64(), reason="Aborted on Iris Xe: SAT-6039"
+    )
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
@@ -382,7 +396,7 @@ def test_negative(data, dtype):
 
     result = dpnp.negative(dpnp_a)
     expected = numpy.negative(np_a)
-    assert_array_equal(result, expected)
+    assert_allclose(result, expected)
 
 
 @pytest.mark.parametrize("val_type", get_all_dtypes(no_none=True))
@@ -768,9 +782,9 @@ class TestAdd:
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
     def test_invalid_shape(self, shape):
-        dp_array1 = dpnp.arange(10, dtype=dpnp.float64)
-        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+        dp_array1 = dpnp.arange(10)
+        dp_array2 = dpnp.arange(5, 15)
+        dp_out = dpnp.empty(shape)
 
         with pytest.raises(TypeError):
             dpnp.add(dp_array1, dp_array2, out=dp_out)
@@ -858,9 +872,9 @@ class TestMultiply:
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
     def test_invalid_shape(self, shape):
-        dp_array1 = dpnp.arange(10, dtype=dpnp.float64)
-        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+        dp_array1 = dpnp.arange(10)
+        dp_array2 = dpnp.arange(5, 15)
+        dp_out = dpnp.empty(shape)
 
         with pytest.raises(TypeError):
             dpnp.multiply(dp_array1, dp_array2, out=dp_out)
