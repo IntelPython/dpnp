@@ -194,7 +194,9 @@ jobs:
         run: conda list
 
       - name: Smoke test
-        run: python -c "import dpnp, dpctl; dpctl.lsplatform()"
+        run: |
+          python -c "import dpnp, dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
@@ -331,7 +333,9 @@ jobs:
           Get-Content -Tail 5 -Path $cl_cfg
 
       - name: Smoke test
-        run: python -c "import dpnp, dpctl; dpctl.lsplatform()"
+        run: |
+          python -c "import dpnp, dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests

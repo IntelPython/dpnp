@@ -3,20 +3,27 @@ import os
 
 from skbuild import setup
 
+import versioneer
+
 """
 Get the project version
 """
 thefile_path = os.path.abspath(os.path.dirname(__file__))
 version_mod = imm.SourceFileLoader(
-    "version", os.path.join(thefile_path, "dpnp", "version.py")
+    "version", os.path.join(thefile_path, "dpnp", "_version.py")
 ).load_module()
-__version__ = version_mod.__version__
+__version__ = version_mod.get_versions()["version"]
 
 """
 Set project auxilary data like readme and licence files
 """
 with open("README.md") as f:
     __readme_file__ = f.read()
+
+
+def _get_cmdclass():
+    return versioneer.get_cmdclass()
+
 
 CLASSIFIERS = """\
 Development Status :: 4 - Beta
@@ -42,6 +49,7 @@ Operating System :: Unix
 setup(
     name="dpnp",
     version=__version__,
+    cmdclass=_get_cmdclass(),
     description="Data Parallel Extension for NumPy",
     long_description=__readme_file__,
     long_description_content_type="text/markdown",

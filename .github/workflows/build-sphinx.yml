@@ -71,6 +71,8 @@ jobs:
 
       - name: Checkout repo
         uses: actions/checkout@v3.5.2
+        with:
+          fetch-depth: 0
 
       # https://github.com/marketplace/actions/setup-miniconda
       - name: Setup miniconda
@@ -108,6 +110,13 @@ jobs:
       - name: Build docs
         run: make html
         working-directory: doc
+
+      - name: Set a project number to current release
+        run: |
+          export PROJECT_NUMBER=$(git describe --tags --abbrev=0)
+
+          echo PROJECT_NUMBER=${PROJECT_NUMBER}
+          echo "PROJECT_NUMBER=$PROJECT_NUMBER" >> $GITHUB_ENV
 
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs

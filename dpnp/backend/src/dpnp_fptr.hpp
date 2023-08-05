@@ -272,6 +272,45 @@ static constexpr DPNPFuncType get_default_floating_type()
 }
 
 /**
+ * A template function that determines the resulting floating-point type
+ * based on the value of the template parameter has_fp64.
+ */
+template <DPNPFuncType FT1,
+          DPNPFuncType FT2,
+          typename has_fp64 = std::true_type,
+          typename keep_int = std::false_type>
+static constexpr DPNPFuncType get_floating_res_type()
+{
+    constexpr auto widest_type = populate_func_types<FT1, FT2>();
+    constexpr auto shortes_type = (widest_type == FT1) ? FT2 : FT1;
+
+    // Return integer result type if save_int is True
+    if constexpr (keep_int::value) {
+        if constexpr (widest_type == DPNPFuncType::DPNP_FT_INT ||
+                      widest_type == DPNPFuncType::DPNP_FT_LONG)
+        {
+            return widest_type;
+        }
+    }
+
+    // Check for double
+    if constexpr (widest_type == DPNPFuncType::DPNP_FT_DOUBLE) {
+        return widest_type;
+    }
+
+    // Check for float
+    else if constexpr (widest_type == DPNPFuncType::DPNP_FT_FLOAT) {
+        // Check if the shortest type is also float
+        if constexpr (shortes_type == DPNPFuncType::DPNP_FT_FLOAT) {
+            return widest_type;
+        }
+    }
+
+    // Default case
+    return get_default_floating_type<has_fp64>();
+}
+
+/**
  * FPTR interface initialization functions
  */
 void func_map_init_arraycreation(func_map_t &fmap);
