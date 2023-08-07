@@ -1,0 +1,6 @@
+﻿dpnp.arctan2
+============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: arctan2
