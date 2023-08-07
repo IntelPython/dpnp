@@ -375,7 +375,6 @@ class TestJoin(unittest.TestCase):
         # may raise TypeError or ComplexWarning
         return xp.vstack((a, b), dtype=dtype2, casting=casting)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_stack(self, xp):
         a = testing.shaped_arange((2, 3), xp)
@@ -383,61 +382,53 @@ class TestJoin(unittest.TestCase):
         c = testing.shaped_arange((2, 3), xp)
         return xp.stack((a, b, c))
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
     def test_stack_value(self):
         a = testing.shaped_arange((2, 3), cupy)
         b = testing.shaped_arange((2, 3), cupy)
         c = testing.shaped_arange((2, 3), cupy)
         s = cupy.stack((a, b, c))
         assert s.shape == (3, 2, 3)
-        cupy.testing.assert_array_equal(s[0], a)
-        cupy.testing.assert_array_equal(s[1], b)
-        cupy.testing.assert_array_equal(s[2], c)
+        testing.assert_array_equal(s[0], a)
+        testing.assert_array_equal(s[1], b)
+        testing.assert_array_equal(s[2], c)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_stack_with_axis1(self, xp):
         a = testing.shaped_arange((2, 3), xp)
         return xp.stack((a, a), axis=1)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_stack_with_axis2(self, xp):
         a = testing.shaped_arange((2, 3), xp)
         return xp.stack((a, a), axis=2)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
     def test_stack_with_axis_over(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3), xp)
             with pytest.raises(ValueError):
                 xp.stack((a, a), axis=3)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
     def test_stack_with_axis_value(self):
         a = testing.shaped_arange((2, 3), cupy)
         s = cupy.stack((a, a), axis=1)
 
         assert s.shape == (2, 2, 3)
-        cupy.testing.assert_array_equal(s[:, 0, :], a)
-        cupy.testing.assert_array_equal(s[:, 1, :], a)
+        testing.assert_array_equal(s[:, 0, :], a)
+        testing.assert_array_equal(s[:, 1, :], a)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_stack_with_negative_axis(self, xp):
         a = testing.shaped_arange((2, 3), xp)
         return xp.stack((a, a), axis=-1)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
     def test_stack_with_negative_axis_value(self):
         a = testing.shaped_arange((2, 3), cupy)
         s = cupy.stack((a, a), axis=-1)
 
         assert s.shape == (2, 3, 2)
-        cupy.testing.assert_array_equal(s[:, :, 0], a)
-        cupy.testing.assert_array_equal(s[:, :, 1], a)
+        testing.assert_array_equal(s[:, :, 0], a)
+        testing.assert_array_equal(s[:, :, 1], a)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
     def test_stack_different_shape(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3), xp)
@@ -445,20 +436,18 @@ class TestJoin(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.stack([a, b])
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
     def test_stack_out_of_bounds1(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3), xp)
             with pytest.raises(ValueError):
                 xp.stack([a, a], axis=3)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
     def test_stack_out_of_bounds2(self):
         a = testing.shaped_arange((2, 3), cupy)
         with pytest.raises(numpy.AxisError):
             return cupy.stack([a, a], axis=3)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(name="dtype")
     @testing.numpy_cupy_array_equal()
     def test_stack_out(self, xp, dtype):
@@ -469,47 +458,47 @@ class TestJoin(unittest.TestCase):
         xp.stack((a, b, c), axis=1, out=out)
         return out
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_stack_out_same_kind(self, xp):
-        a = testing.shaped_arange((3, 4), xp, xp.float64)
-        b = testing.shaped_reverse_arange((3, 4), xp, xp.float64)
-        c = testing.shaped_arange((3, 4), xp, xp.float64)
+        a = testing.shaped_arange((3, 4), xp, xp.float32)
+        b = testing.shaped_reverse_arange((3, 4), xp, xp.float32)
+        c = testing.shaped_arange((3, 4), xp, xp.float32)
         out = xp.zeros((3, 3, 4), dtype=xp.float32)
         xp.stack((a, b, c), axis=1, out=out)
         return out
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_stack_out_invalid_shape(self):
         for xp in (numpy, cupy):
-            a = testing.shaped_arange((3, 4), xp, xp.float64)
-            b = testing.shaped_reverse_arange((3, 4), xp, xp.float64)
-            c = testing.shaped_arange((3, 4), xp, xp.float64)
-            out = xp.zeros((3, 3, 10), dtype=xp.float64)
+            a = testing.shaped_arange((3, 4), xp, xp.float32)
+            b = testing.shaped_reverse_arange((3, 4), xp, xp.float32)
+            c = testing.shaped_arange((3, 4), xp, xp.float32)
+            out = xp.zeros((3, 3, 10), dtype=xp.float32)
             with pytest.raises(ValueError):
                 xp.stack((a, b, c), axis=1, out=out)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_stack_out_invalid_shape_2(self):
         for xp in (numpy, cupy):
-            a = testing.shaped_arange((3, 4), xp, xp.float64)
-            b = testing.shaped_reverse_arange((3, 4), xp, xp.float64)
-            c = testing.shaped_arange((3, 4), xp, xp.float64)
-            out = xp.zeros((3, 3, 3, 10), dtype=xp.float64)
+            a = testing.shaped_arange((3, 4), xp, xp.float32)
+            b = testing.shaped_reverse_arange((3, 4), xp, xp.float32)
+            c = testing.shaped_arange((3, 4), xp, xp.float32)
+            out = xp.zeros((3, 3, 3, 10), dtype=xp.float32)
             with pytest.raises(ValueError):
                 xp.stack((a, b, c), axis=1, out=out)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_stack_out_invalid_dtype(self):
         for xp in (numpy, cupy):
-            a = testing.shaped_arange((3, 4), xp, xp.float64)
-            b = testing.shaped_reverse_arange((3, 4), xp, xp.float64)
-            c = testing.shaped_arange((3, 4), xp, xp.float64)
+            a = testing.shaped_arange((3, 4), xp, xp.float32)
+            b = testing.shaped_reverse_arange((3, 4), xp, xp.float32)
+            c = testing.shaped_arange((3, 4), xp, xp.float32)
             out = xp.zeros((3, 3, 4), dtype=xp.int64)
             with pytest.raises(TypeError):
                 xp.stack((a, b, c), axis=1, out=out)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.24.0")
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(accept_error=TypeError)
@@ -518,18 +507,9 @@ class TestJoin(unittest.TestCase):
         b = testing.shaped_arange((3, 4), xp, dtype1)
         return xp.stack((a, b), dtype=dtype2)
 
-    @pytest.mark.skip("dpnp.stack() is not implemented yet")
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.24.0")
-    @pytest.mark.parametrize(
-        "casting",
-        [
-            "no",
-            "equiv",
-            "safe",
-            "same_kind",
-            "unsafe",
-        ],
-    )
+    @testing.for_castings()
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(
         accept_error=(TypeError, numpy.ComplexWarning)
@@ -537,7 +517,6 @@ class TestJoin(unittest.TestCase):
     def test_stack_casting(self, xp, dtype1, dtype2, casting):
         a = testing.shaped_arange((3, 4), xp, dtype1)
         b = testing.shaped_arange((3, 4), xp, dtype1)
-        # may raise TypeError or ComplexWarning
         return xp.stack((a, b), dtype=dtype2, casting=casting)
 
     @pytest.mark.skip("dpnp.row_stack() is not implemented yet")

@@ -237,7 +237,7 @@ def broadcast_to(x, /, shape, subok=False):
     return call_origin(numpy.broadcast_to, x, shape=shape, subok=subok)
 
 
-def concatenate(arrays, *, axis=0, out=None, dtype=None, **kwargs):
+def concatenate(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     """
     Join a sequence of arrays along an existing axis.
 
@@ -253,8 +253,7 @@ def concatenate(arrays, *, axis=0, out=None, dtype=None, **kwargs):
     Each array in `arrays` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exeption
     will be raised.
-    Parameter `out` is supported with default value.
-    Parameter `dtype` is supported with default value.
+    Parameters `out` and `dtype are supported with default value.
     Keyword argument ``kwargs`` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -834,15 +833,77 @@ def squeeze(x, /, axis=None):
     return call_origin(numpy.squeeze, x, axis)
 
 
-def stack(arrays, axis=0, out=None):
+def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     """
     Join a sequence of arrays along a new axis.
 
     For full documentation refer to :obj:`numpy.stack`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The stacked array which has one more dimension than the input arrays.
+
+    Limitations
+    -----------
+    Each array in `arrays` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exeption
+    will be raised.
+    Parameters `out` and `dtype are supported with default value.
+    Keyword argument ``kwargs`` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> arrays = [np.random.randn(3, 4) for _ in range(10)]
+    >>> np.stack(arrays, axis=0).shape
+    (10, 3, 4)
+
+    >>> np.stack(arrays, axis=1).shape
+    (3, 10, 4)
+
+    >>> np.stack(arrays, axis=2).shape
+    (3, 4, 10)
+
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([4, 5, 6])
+    >>> np.stack((a, b))
+    array([[1, 2, 3],
+           [4, 5, 6]])
+
+    >>> np.stack((a, b), axis=-1)
+    array([[1, 4],
+           [2, 5],
+           [3, 6]])
+
     """
 
-    return call_origin(numpy.stack, arrays, axis, out)
+    if kwargs:
+        pass
+    elif out is not None:
+        pass
+    elif dtype is not None:
+        pass
+    else:
+        usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
+        usm_res = dpt.stack(usm_arrays, axis=axis)
+        return dpnp_array._create_from_usm_ndarray(usm_res)
+
+    return call_origin(
+        numpy.stack,
+        arrays,
+        axis=axis,
+        out=out,
+        dtype=dtype,
+        **kwargs,
+    )
 
 
 def swapaxes(x1, axis1, axis2):
