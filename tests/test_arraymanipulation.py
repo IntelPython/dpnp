@@ -1,7 +1,6 @@
 import numpy
 import pytest
 from numpy.testing import (
-    assert_,
     assert_allclose,
     assert_array_equal,
     assert_equal,
@@ -11,7 +10,7 @@ from numpy.testing import (
 
 import dpnp
 
-from .helper import get_all_dtypes
+from .helper import get_all_dtypes, get_float_complex_dtypes
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -145,9 +144,12 @@ class TestConcatenate:
         assert_equal(dp_res.asnumpy(), np_res)
 
         for axis in [ndim, -(ndim + 1)]:
-            with pytest.raises(numpy.AxisError):
-                dpnp.concatenate((dp_a, dp_a), axis=axis)
-                numpy.concatenate((np_a, np_a), axis=axis)
+            assert_raises(
+                numpy.AxisError, dpnp.concatenate, (dp_a, dp_a), axis=axis
+            )
+            assert_raises(
+                numpy.AxisError, numpy.concatenate, (np_a, np_a), axis=axis
+            )
 
     def test_scalar_exceptions(self):
         assert_raises(TypeError, dpnp.concatenate, (0,))
@@ -177,9 +179,12 @@ class TestConcatenate:
             assert_equal(dp_res.asnumpy(), np_res)
 
             for i in range(1, 3):
-                with pytest.raises(ValueError):
-                    numpy.concatenate((np_a, np_b), axis=axis[i])
-                    dpnp.concatenate((dp_a, dp_b), axis=axis[i])
+                assert_raises(
+                    ValueError, numpy.concatenate, (np_a, np_b), axis=axis[i]
+                )
+                assert_raises(
+                    ValueError, dpnp.concatenate, (dp_a, dp_b), axis=axis[i]
+                )
 
             np_a = numpy.moveaxis(np_a, -1, 0)
             dp_a = dpnp.moveaxis(dp_a, -1, 0)
@@ -189,8 +194,7 @@ class TestConcatenate:
             axis.append(axis.pop(0))
 
     def test_no_array_exception(self):
-        with pytest.raises(ValueError):
-            numpy.concatenate(())
+        with pytest.raises(TypeError):
             dpnp.concatenate(())
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
@@ -272,9 +276,12 @@ class TestConcatenate:
             assert_array_equal(dp_res.asnumpy(), np_res)
 
         # Arrays much match shape
-        with pytest.raises(ValueError):
-            numpy.concatenate((np_a23.T, np_a13.T), axis=0)
-            dpnp.concatenate((dp_a23.T, dp_a13.T), axis=0)
+        assert_raises(
+            ValueError, numpy.concatenate, (np_a23.T, np_a13.T), axis=0
+        )
+        assert_raises(
+            ValueError, dpnp.concatenate, (dp_a23.T, dp_a13.T), axis=0
+        )
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
@@ -299,7 +306,7 @@ class TestConcatenate:
         dp_res = dpnp.concatenate((dp_a0.T, dp_a1.T, dp_a2.T), axis=0)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
-    @pytest.mark.skip("out keyword is currently unsupported")
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
     )
@@ -361,6 +368,198 @@ class TestHstack:
             dpnp.hstack((numpy.arange(3) for _ in range(2)))
         with assert_warns(FutureWarning):
             dpnp.hstack(map(lambda x: x, numpy.ones((3, 2))))
+
+
+class TestStack:
+    def test_non_iterable_input(self):
+        with pytest.raises(TypeError):
+            dpnp.stack(1)
+
+    @pytest.mark.parametrize(
+        "input", [(1, 2, 3), [dpnp.int32(1), dpnp.int32(2), dpnp.int32(3)]]
+    )
+    def test_scalar_input(self, input):
+        with pytest.raises(TypeError):
+            dpnp.stack(input)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_0d_array_input(self, dtype):
+        np_arrays = []
+        dp_arrays = []
+
+        for x in (1, 2, 3):
+            np_arrays.append(numpy.array(x, dtype=dtype))
+            dp_arrays.append(dpnp.array(x, dtype=dtype))
+
+        np_res = numpy.stack(np_arrays)
+        dp_res = dpnp.stack(dp_arrays)
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_1d_array_input(self, dtype):
+        np_a = numpy.array([1, 2, 3], dtype=dtype)
+        np_b = numpy.array([4, 5, 6], dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+        dp_b = dpnp.array(np_b, dtype=dtype)
+
+        np_res = numpy.stack((np_a, np_b))
+        dp_res = dpnp.stack((dp_a, dp_b))
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
+        np_res = numpy.stack((np_a, np_b), axis=1)
+        dp_res = dpnp.stack((dp_a, dp_b), axis=1)
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
+        np_res = numpy.stack(list([np_a, np_b]))
+        dp_res = dpnp.stack(list([dp_a, dp_b]))
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
+        np_res = numpy.stack(numpy.array([np_a, np_b]))
+        dp_res = dpnp.stack(dpnp.array([dp_a, dp_b]))
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
+    @pytest.mark.parametrize("axis", [0, 1, -1, -2])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    def test_1d_array_axis(self, axis, dtype):
+        arrays = [numpy.random.randn(3) for _ in range(10)]
+        np_arrays = numpy.array(arrays, dtype=dtype)
+        dp_arrays = dpnp.array(arrays, dtype=dtype)
+
+        np_res = numpy.stack(np_arrays, axis=axis)
+        dp_res = dpnp.stack(dp_arrays, axis=axis)
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
+    @pytest.mark.parametrize("axis", [2, -3])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    def test_1d_array_invalid_axis(self, axis, dtype):
+        arrays = [numpy.random.randn(3) for _ in range(10)]
+        np_arrays = numpy.array(arrays, dtype=dtype)
+        dp_arrays = dpnp.array(arrays, dtype=dtype)
+
+        assert_raises(numpy.AxisError, numpy.stack, np_arrays, axis=axis)
+        assert_raises(numpy.AxisError, dpnp.stack, dp_arrays, axis=axis)
+
+    @pytest.mark.parametrize("axis", [0, 1, 2, -1, -2, -3])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    def test_2d_array_axis(self, axis, dtype):
+        arrays = [numpy.random.randn(3, 4) for _ in range(10)]
+        np_arrays = numpy.array(arrays, dtype=dtype)
+        dp_arrays = dpnp.array(arrays, dtype=dtype)
+
+        np_res = numpy.stack(np_arrays, axis=axis)
+        dp_res = dpnp.stack(dp_arrays, axis=axis)
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_empty_arrays_input(self, dtype):
+        arrays = [[], [], []]
+        np_arrays = numpy.array(arrays, dtype=dtype)
+        dp_arrays = dpnp.array(arrays, dtype=dtype)
+
+        np_res = numpy.stack(np_arrays)
+        dp_res = dpnp.stack(dp_arrays)
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
+        np_res = numpy.stack(np_arrays, axis=1)
+        dp_res = dpnp.stack(dp_arrays, axis=1)
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_out(self, dtype):
+        np_a = numpy.array([1, 2, 3], dtype=dtype)
+        np_b = numpy.array([4, 5, 6], dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+        dp_b = dpnp.array(np_b, dtype=dtype)
+
+        np_out = numpy.empty_like(np_a, shape=(2, 3))
+        dp_out = dpnp.empty_like(dp_a, shape=(2, 3))
+
+        np_res = numpy.stack((np_a, np_b), out=np_out)
+        dp_res = dpnp.stack((dp_a, dp_b), out=dp_out)
+
+        assert dp_out is dp_res
+        assert_array_equal(dp_out.asnumpy(), np_out)
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
+    def test_empty_list_input(self):
+        with pytest.raises(TypeError):
+            dpnp.stack([])
+
+    @pytest.mark.parametrize(
+        "sh1, sh2",
+        [
+            pytest.param((), (3,), id="()-(3,)"),
+            pytest.param((3,), (), id="(3,)-()"),
+            pytest.param((3, 3), (3,), id="(3, 3)-(3,)"),
+            pytest.param((2,), (3,), id="(2,)-(3,)"),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    def test_invalid_shapes_input(self, sh1, sh2, dtype):
+        np_a = numpy.ones(sh1, dtype=dtype)
+        np_b = numpy.ones(sh2, dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+        dp_b = dpnp.array(np_b, dtype=dtype)
+
+        assert_raises(ValueError, numpy.stack, [np_a, np_b])
+        assert_raises(ValueError, dpnp.stack, [dp_a, dp_b])
+        assert_raises(ValueError, numpy.stack, [np_a, np_b], axis=1)
+        assert_raises(ValueError, dpnp.stack, [dp_a, dp_b], axis=1)
+
+    def test_generator_input(self):
+        with pytest.raises(TypeError):
+            dpnp.stack((x for x in range(3)))
+
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("arr_dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_casting_dtype(self, arr_dtype, dtype):
+        np_a = numpy.array([1, 2, 3], dtype=arr_dtype)
+        np_b = numpy.array([2.5, 3.5, 4.5], dtype=arr_dtype)
+        dp_a = dpnp.array(np_a, dtype=arr_dtype)
+        dp_b = dpnp.array(np_b, dtype=arr_dtype)
+
+        np_res = numpy.stack(
+            (np_a, np_b), axis=1, casting="unsafe", dtype=dtype
+        )
+        dp_res = dpnp.stack((dp_a, dp_b), axis=1, casting="unsafe", dtype=dtype)
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.parametrize("arr_dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("dtype", [dpnp.bool, dpnp.int32, dpnp.int64])
+    def test_invalid_casting_dtype(self, arr_dtype, dtype):
+        np_a = numpy.array([1, 2, 3], dtype=arr_dtype)
+        np_b = numpy.array([2.5, 3.5, 4.5], dtype=arr_dtype)
+        dp_a = dpnp.array(np_a, dtype=arr_dtype)
+        dp_b = dpnp.array(np_b, dtype=arr_dtype)
+
+        assert_raises(
+            TypeError,
+            numpy.stack,
+            (np_a, np_b),
+            axis=1,
+            casting="safe",
+            dtype=dtype,
+        )
+        assert_raises(
+            TypeError,
+            dpnp.stack,
+            (dp_a, dp_b),
+            axis=1,
+            casting="safe",
+            dtype=dtype,
+        )
 
 
 class TestVstack:

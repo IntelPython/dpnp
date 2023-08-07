@@ -100,7 +100,7 @@ def test_array_creation(func, arg, kwargs, device):
     dpnp_kwargs["device"] = device
     dpnp_array = getattr(dpnp, func)(*arg, **dpnp_kwargs)
 
-    numpy.testing.assert_array_equal(numpy_array, dpnp_array)
+    assert_allclose(numpy_array, dpnp_array)
     assert dpnp_array.sycl_device == device
 
 
@@ -125,7 +125,7 @@ def test_empty(device):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_empty_like(device_x, device_y):
-    x = dpnp.ndarray([1, 2, 3], device=device_x)
+    x = dpnp.array([1, 2, 3], device=device_x)
     y = dpnp.empty_like(x)
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
     y = dpnp.empty_like(x, device=device_y)
@@ -158,7 +158,7 @@ def test_array_creation_follow_device(func, args, kwargs, device):
     dpnp_args = [eval(val, {"x0": x}) for val in args]
 
     y = getattr(dpnp, func)(*dpnp_args, **kwargs)
-    numpy.testing.assert_allclose(y_orig, y)
+    assert_allclose(y_orig, y)
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
 
@@ -197,7 +197,7 @@ def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
     dpnp_kwargs["device"] = device_y
 
     y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
-    numpy.testing.assert_allclose(y_orig, y)
+    assert_allclose(y_orig, y)
 
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
@@ -382,7 +382,7 @@ def test_broadcasting(func, data1, data2, device):
     x2 = dpnp.array(data2, device=device)
     result = getattr(dpnp, func)(x1, x2)
 
-    numpy.testing.assert_array_equal(result, expected)
+    assert_array_equal(result, expected)
 
     expected_queue = x1.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -623,8 +623,8 @@ def test_modf(device):
     x = dpnp.array(data, device=device)
     result1, result2 = dpnp.modf(x)
 
-    numpy.testing.assert_array_equal(result1, expected1)
-    numpy.testing.assert_array_equal(result2, expected2)
+    assert_array_equal(result1, expected1)
+    assert_array_equal(result2, expected2)
 
     expected_queue = x.get_array().sycl_queue
     result1_queue = result1.get_array().sycl_queue
@@ -648,7 +648,7 @@ def test_fft(type, device):
     expected = numpy.fft.fft(data)
     result = dpnp.fft.fft(dpnp_data)
 
-    numpy.testing.assert_allclose(result, expected, rtol=1e-4, atol=1e-7)
+    assert_allclose(result, expected, rtol=1e-4, atol=1e-7)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -690,7 +690,7 @@ def test_cholesky(device):
 
     result = dpnp.linalg.cholesky(dpnp_data)
     expected = numpy.linalg.cholesky(numpy_data)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -710,7 +710,7 @@ def test_det(device):
 
     result = dpnp.linalg.det(dpnp_data)
     expected = numpy.linalg.det(numpy_data)
-    numpy.testing.assert_allclose(expected, result)
+    assert_allclose(expected, result)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -755,8 +755,8 @@ def test_eig(device):
         if numpy_vec[0, i] * dpnp_vec[0, i] < 0:
             numpy_vec[:, i] = -numpy_vec[:, i]
 
-    numpy.testing.assert_allclose(dpnp_val, numpy_val, rtol=1e-05, atol=1e-05)
-    numpy.testing.assert_allclose(dpnp_vec, numpy_vec, rtol=1e-05, atol=1e-05)
+    assert_allclose(dpnp_val, numpy_val, rtol=1e-05, atol=1e-05)
+    assert_allclose(dpnp_vec, numpy_vec, rtol=1e-05, atol=1e-05)
 
     assert dpnp_val.dtype == numpy_val.dtype
     assert dpnp_vec.dtype == numpy_vec.dtype
@@ -827,7 +827,7 @@ def test_eigvals(device):
 
     result = dpnp.linalg.eigvals(dpnp_data)
     expected = numpy.linalg.eigvals(numpy_data)
-    numpy.testing.assert_allclose(expected, result, atol=0.5)
+    assert_allclose(expected, result, atol=0.5)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -847,7 +847,7 @@ def test_inv(device):
 
     result = dpnp.linalg.inv(dpnp_data)
     expected = numpy.linalg.inv(numpy_data)
-    numpy.testing.assert_allclose(expected, result)
+    assert_allclose(expected, result)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -867,7 +867,7 @@ def test_matrix_rank(device):
 
     result = dpnp.linalg.matrix_rank(dpnp_data)
     expected = numpy.linalg.matrix_rank(numpy_data)
-    numpy.testing.assert_array_equal(expected, result)
+    assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize(
@@ -889,8 +889,8 @@ def test_qr(device):
     assert dpnp_q.shape == np_q.shape
     assert dpnp_r.shape == np_r.shape
 
-    numpy.testing.assert_allclose(dpnp_q, np_q, rtol=tol, atol=tol)
-    numpy.testing.assert_allclose(dpnp_r, np_r, rtol=tol, atol=tol)
+    assert_allclose(dpnp_q, np_q, rtol=tol, atol=tol)
+    assert_allclose(dpnp_r, np_r, rtol=tol, atol=tol)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     dpnp_q_queue = dpnp_q.get_array().sycl_queue
@@ -927,7 +927,7 @@ def test_svd(device):
         dpnp_diag_s[i, i] = dpnp_s[i]
 
     # check decomposition
-    numpy.testing.assert_allclose(
+    assert_allclose(
         dpnp_data,
         dpnp.dot(dpnp_u, dpnp.dot(dpnp_diag_s, dpnp_vt)),
         rtol=tol,
@@ -941,10 +941,10 @@ def test_svd(device):
 
     # compare vectors for non-zero values
     for i in range(numpy.count_nonzero(np_s > tol)):
-        numpy.testing.assert_allclose(
+        assert_allclose(
             dpnp.asnumpy(dpnp_u)[:, i], np_u[:, i], rtol=tol, atol=tol
         )
-        numpy.testing.assert_allclose(
+        assert_allclose(
             dpnp.asnumpy(dpnp_vt)[i, :], np_vt[i, :], rtol=tol, atol=tol
         )
 
