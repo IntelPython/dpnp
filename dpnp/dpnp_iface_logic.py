@@ -102,9 +102,8 @@ def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
     -----------
     Parameters `x` is supported either as :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `out` and `dtype are supported with default value.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter `out` is supported only with default value `None`.
-    Parameter `where` is supported only with default value `True`.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -118,20 +117,20 @@ def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> x = dp.array([[True, False], [True, True]])
-    >>> dp.all(x)
+    >>> import dpnp as np
+    >>> x = np.array([[True, False], [True, True]])
+    >>> np.all(x)
     array(False)
 
-    >>> dp.all(x, axis=0)
+    >>> np.all(x, axis=0)
     array([ True, False])
 
-    >>> x2 = dp.array([-1, 4, 5])
-    >>> dp.all(x2)
+    >>> x2 = np.array([-1, 4, 5])
+    >>> np.all(x2)
     array(True)
 
-    >>> x3 = dp.array([1.0, dp.nan])
-    >>> dp.all(x3)
+    >>> x3 = np.array([1.0, np.nan])
+    >>> np.all(x3)
     array(True)
 
     """
@@ -190,21 +189,25 @@ def allclose(x1, x2, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     return call_origin(numpy.allclose, x1, x2, rtol=rtol, atol=atol, **kwargs)
 
 
-def any(x1, /, axis=None, out=None, keepdims=False, *, where=True):
+def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
     """
     Test whether any array element along a given axis evaluates to True.
 
     For full documentation refer to :obj:`numpy.any`.
 
+    Returns
+    -------
+    dpnp.ndarray
+        An array with a data type of `bool`
+        containing the results of the logical OR reduction.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `x` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `out` and `dtype are supported with default value.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter `axis` is supported only with default value `None`.
-    Parameter `out` is supported only with default value `None`.
-    Parameter `keepdims` is supported only with default value `False`.
-    Parameter `where` is supported only with default value `True`.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -217,35 +220,37 @@ def any(x1, /, axis=None, out=None, keepdims=False, *, where=True):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> x = dp.array([[True, False], [True, True]])
-    >>> dp.any(x)
-    True
-    >>> x2 = dp.array([0, 0, 0])
-    >>> dp.any(x2)
-    False
-    >>> x3 = dp.array([1.0, dp.nan])
-    >>> dp.any(x3)
-    True
+    >>> import dpnp as np
+    >>> x = np.array([[True, False], [True, True]])
+    >>> np.any(x)
+    array(True)
+
+    >>> np.any(x, axis=0)
+    array([ True,  True])
+
+    >>> x2 = np.array([0, 0, 0])
+    >>> np.any(x2)
+    array(False)
+
+    >>> x3 = np.array([1.0, np.nan])
+    >>> np.any(x3)
+    array(True)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axis is not None:
-            pass
-        elif out is not None:
-            pass
-        elif keepdims is not False:
+    if dpnp.is_supported_array_type(x):
+        if out is not None:
             pass
         elif where is not True:
             pass
         else:
-            result_obj = dpnp_any(x1_desc).get_pyobj()
-            return dpnp.convert_single_elem_array_to_scalar(result_obj)
+            dpt_array = dpnp.get_usm_ndarray(x)
+            return dpnp_array._create_from_usm_ndarray(
+                dpt.any(dpt_array, axis=axis, keepdims=keepdims)
+            )
 
     return call_origin(
-        numpy.any, x1, axis=axis, out=out, keepdims=keepdims, where=where
+        numpy.any, x, axis=axis, out=out, keepdims=keepdims, where=where
     )
 
 

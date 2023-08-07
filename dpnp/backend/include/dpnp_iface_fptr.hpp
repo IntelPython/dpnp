@@ -65,13 +65,12 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ADD,          /**< Used in numpy.add() impl  */
     DPNP_FN_ADD_EXT, /**< Used in numpy.add() impl, requires extra parameters */
     DPNP_FN_ALL,     /**< Used in numpy.all() impl  */
-    DPNP_FN_ALLCLOSE,     /**< Used in numpy.allclose() impl  */
-    DPNP_FN_ALLCLOSE_EXT, /**< Used in numpy.allclose() impl, requires extra
-                             parameters */
-    DPNP_FN_ANY,          /**< Used in numpy.any() impl  */
-    DPNP_FN_ANY_EXT, /**< Used in numpy.any() impl, requires extra parameters */
-    DPNP_FN_ARANGE,  /**< Used in numpy.arange() impl  */
-    DPNP_FN_ARCCOS,  /**< Used in numpy.arccos() impl  */
+    DPNP_FN_ALLCLOSE,        /**< Used in numpy.allclose() impl  */
+    DPNP_FN_ALLCLOSE_EXT,    /**< Used in numpy.allclose() impl, requires extra
+                                parameters */
+    DPNP_FN_ANY,             /**< Used in numpy.any() impl  */
+    DPNP_FN_ARANGE,          /**< Used in numpy.arange() impl  */
+    DPNP_FN_ARCCOS,          /**< Used in numpy.arccos() impl  */
     DPNP_FN_ARCCOS_EXT,      /**< Used in numpy.arccos() impl, requires extra
                                 parameters */
     DPNP_FN_ARCCOSH,         /**< Used in numpy.arccosh() impl  */
