@@ -1,0 +1,6 @@
+﻿dpnp.random.binomial
+====================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: binomial
