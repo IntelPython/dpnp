@@ -852,15 +852,15 @@ DPCTLSyclEventRef dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
     {
         // using std::max for these ldx variables is required by math library
         const std::int64_t lda =
-            std::max<size_t>(1UL, size_k); // First dimensions of array_1
+            std::max<size_t>(1UL, size_n); // First dimensions of array_1
         const std::int64_t ldb =
-            std::max<size_t>(1UL, size_n); // First dimensions of array_2
+            std::max<size_t>(1UL, size_k); // First dimensions of array_2
         const std::int64_t ldc =
             std::max<size_t>(1UL, size_n); // Fast dimensions of result
 
         event = mkl_blas::gemm(q, oneapi::mkl::transpose::nontrans,
                                oneapi::mkl::transpose::nontrans, size_n, size_m,
-                               size_k, _DataType(1), array_2, ldb, array_1, lda,
+                               size_k, _DataType(1), array_2, lda, array_1, ldb,
                                _DataType(0), result, ldc, dep_events);
     }
     else {
