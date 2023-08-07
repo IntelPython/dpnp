@@ -1,0 +1,6 @@
+﻿dpnp.atleast\_2d
+================
+
+.. currentmodule:: dpnp
+
+.. autofunction:: atleast_2d
