@@ -65,7 +65,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ADD,          /**< Used in numpy.add() impl  */
     DPNP_FN_ADD_EXT, /**< Used in numpy.add() impl, requires extra parameters */
     DPNP_FN_ALL,     /**< Used in numpy.all() impl  */
-    DPNP_FN_ALL_EXT, /**< Used in numpy.all() impl, requires extra parameters */
     DPNP_FN_ALLCLOSE,     /**< Used in numpy.allclose() impl  */
     DPNP_FN_ALLCLOSE_EXT, /**< Used in numpy.allclose() impl, requires extra
                              parameters */

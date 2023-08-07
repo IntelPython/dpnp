@@ -36,7 +36,6 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_all",
     "dpnp_allclose",
     "dpnp_any",
     "dpnp_isclose",
@@ -54,35 +53,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_allclose_1in_1out_func_ptr_t)(c_dpctl
                                                                          double,
                                                                          double,
                                                                          const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef utils.dpnp_descriptor dpnp_all(utils.dpnp_descriptor array1):
-    array1_obj = array1.get_array()
-
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py((1,),
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=array1_obj.sycl_device,
-                                                                             usm_type=array1_obj.usm_type,
-                                                                             sycl_queue=array1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ALL_EXT, param1_type, param1_type)
-
-    cdef custom_logic_1in_1out_func_ptr_t func = <custom_logic_1in_1out_func_ptr_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, array1.get_data(), result.get_data(), array1.size, NULL)
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_allclose(utils.dpnp_descriptor array1,

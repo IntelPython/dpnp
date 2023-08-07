@@ -40,10 +40,12 @@ it contains:
 """
 
 
+import dpctl.tensor as dpt
 import numpy
 
 import dpnp
 from dpnp.dpnp_algo import *
+from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
 
 from .dpnp_algo.dpnp_elementwise_common import (
@@ -84,21 +86,26 @@ __all__ = [
 ]
 
 
-def all(x1, /, axis=None, out=None, keepdims=False, *, where=True):
+def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
     """
     Test whether all array elements along a given axis evaluate to True.
 
     For full documentation refer to :obj:`numpy.all`.
 
+    Returns
+    -------
+    dpnp.ndarray
+        An array with a data type of `bool`
+        containing the results of the logical AND reduction.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `x` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter `axis` is supported only with default value `None`.
     Parameter `out` is supported only with default value `None`.
-    Parameter `keepdims` is supported only with default value `False`.
     Parameter `where` is supported only with default value `True`.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -114,32 +121,34 @@ def all(x1, /, axis=None, out=None, keepdims=False, *, where=True):
     >>> import dpnp as dp
     >>> x = dp.array([[True, False], [True, True]])
     >>> dp.all(x)
-    False
+    array(False)
+
+    >>> dp.all(x, axis=0)
+    array([ True, False])
+
     >>> x2 = dp.array([-1, 4, 5])
     >>> dp.all(x2)
-    True
+    array(True)
+
     >>> x3 = dp.array([1.0, dp.nan])
     >>> dp.all(x3)
-    True
+    array(True)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axis is not None:
-            pass
-        elif out is not None:
-            pass
-        elif keepdims is not False:
+    if dpnp.is_supported_array_type(x):
+        if out is not None:
             pass
         elif where is not True:
             pass
         else:
-            result_obj = dpnp_all(x1_desc).get_pyobj()
-            return dpnp.convert_single_elem_array_to_scalar(result_obj)
+            dpt_array = dpnp.get_usm_ndarray(x)
+            return dpnp_array._create_from_usm_ndarray(
+                dpt.all(dpt_array, axis=axis, keepdims=keepdims)
+            )
 
     return call_origin(
-        numpy.all, x1, axis=axis, out=out, keepdims=keepdims, where=where
+        numpy.all, x, axis=axis, out=out, keepdims=keepdims, where=where
     )
 
 

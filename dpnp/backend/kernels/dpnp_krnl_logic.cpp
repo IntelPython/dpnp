@@ -640,21 +640,6 @@ void func_map_init_logic(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_ALL][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_all_default_c<double, bool>};
 
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_BLN][eft_BLN] = {
-        eft_BLN, (void *)dpnp_all_ext_c<bool, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_all_ext_c<int32_t, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_all_ext_c<int64_t, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_all_ext_c<float, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_all_ext_c<double, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_C64][eft_C64] = {
-        eft_C64, (void *)dpnp_all_ext_c<std::complex<float>, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void *)dpnp_all_ext_c<std::complex<double>, bool>};
-
     fmap[DPNPFuncName::DPNP_FN_ALLCLOSE][eft_INT][eft_INT] = {
         eft_BLN, (void *)dpnp_allclose_default_c<int32_t, int32_t, bool>};
     fmap[DPNPFuncName::DPNP_FN_ALLCLOSE][eft_LNG][eft_INT] = {
