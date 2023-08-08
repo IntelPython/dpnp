@@ -186,55 +186,6 @@ def dpnp_add(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_cos_docstring = """
-cos(x, out=None, order='K')
-Computes cosine for each element `x_i` for input array `x`.
-Args:
-    x (dpnp.ndarray):
-        Input array, expected to have numeric data type.
-    out ({None, dpnp.ndarray}, optional):
-        Output array to populate. Array must have the correct
-        shape and the expected data type.
-    order ("C","F","A","K", optional): memory layout of the new
-        output array, if parameter `out` is `None`.
-        Default: "K".
-Return:
-    dpnp.ndarray:
-        An array containing the element-wise cosine. The data type
-        of the returned array is determined by the Type Promotion Rules.
-"""
-
-
-def dpnp_cos(x, out=None, order="K"):
-    """
-    Invokes cos() function from pybind11 extension of OneMKL VM if possible.
-
-    Otherwise fully relies on dpctl.tensor implementation for cos() function.
-
-    """
-
-    def _call_cos(src, dst, sycl_queue, depends=None):
-        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-        if depends is None:
-            depends = []
-
-        if vmi._mkl_cos_to_call(sycl_queue, src, dst):
-            # call pybind11 extension for cos() function from OneMKL VM
-            return vmi._cos(sycl_queue, src, dst, depends)
-        return ti._cos(src, dst, sycl_queue, depends)
-
-    # dpctl.tensor only works with usm_ndarray
-    x1_usm = dpnp.get_usm_ndarray(x)
-    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
-
-    func = UnaryElementwiseFunc(
-        "cos", ti._cos_result_type, _call_cos, _cos_docstring
-    )
-    res_usm = func(x1_usm, out=out_usm, order=order)
-    return dpnp_array._create_from_usm_ndarray(res_usm)
-
-
 _bitwise_and_docstring_ = """
 bitwise_and(x1, x2, out=None, order='K')
 
@@ -364,6 +315,55 @@ def dpnp_bitwise_xor(x1, x2, out=None, order="K"):
         _bitwise_xor_docstring_,
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_cos_docstring = """
+cos(x, out=None, order='K')
+Computes cosine for each element `x_i` for input array `x`.
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise cosine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_cos(x, out=None, order="K"):
+    """
+    Invokes cos() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for cos() function.
+
+    """
+
+    def _call_cos(src, dst, sycl_queue, depends=None):
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
+
+        if vmi._mkl_cos_to_call(sycl_queue, src, dst):
+            # call pybind11 extension for cos() function from OneMKL VM
+            return vmi._cos(sycl_queue, src, dst, depends)
+        return ti._cos(src, dst, sycl_queue, depends)
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "cos", ti._cos_result_type, _call_cos, _cos_docstring
+    )
+    res_usm = func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 

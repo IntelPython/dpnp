@@ -68,6 +68,7 @@ class TestBitwise:
         assert_array_equal(dp_a & dp_b, np_a & np_b)
 
         """
+        TODO: unmute once dpctl support that
         if (
             not (inp.isscalar(dp_a) or inp.isscalar(dp_b))
             and dp_a.shape == dp_b.shape
@@ -84,6 +85,7 @@ class TestBitwise:
         assert_array_equal(dp_a | dp_b, np_a | np_b)
 
         """
+        TODO: unmute once dpctl support that
         if (
             not (inp.isscalar(dp_a) or inp.isscalar(dp_b))
             and dp_a.shape == dp_b.shape
@@ -100,6 +102,7 @@ class TestBitwise:
         assert_array_equal(dp_a ^ dp_b, np_a ^ np_b)
 
         """
+        TODO: unmute once dpctl support that
         if (
             not (inp.isscalar(dp_a) or inp.isscalar(dp_b))
             and dp_a.shape == dp_b.shape
@@ -120,6 +123,7 @@ class TestBitwise:
         assert_array_equal(dp_a << dp_b, np_a << np_b)
 
         """
+        TODO: unmute once dpctl support that
         if (
             not (inp.isscalar(dp_a) or inp.isscalar(dp_b))
             and dp_a.shape == dp_b.shape
@@ -136,6 +140,7 @@ class TestBitwise:
         assert_array_equal(dp_a >> dp_b, np_a >> np_b)
 
         """
+        TODO: unmute once dpctl support that
         if (
             not (inp.isscalar(dp_a) or inp.isscalar(dp_b))
             and dp_a.shape == dp_b.shape
