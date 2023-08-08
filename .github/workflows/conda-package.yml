@@ -12,6 +12,7 @@ env:
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   TEST_SCOPE: >-
       test_arraycreation.py
+      test_arraymanipulation.py
       test_dot.py
       test_dparray.py
       test_fft.py
@@ -23,6 +24,7 @@ env:
       test_umath.py
       test_usm_type.py
       third_party/cupy/linalg_tests/test_product.py
+      third_party/cupy/manipulation_tests/test_join.py
       third_party/cupy/math_tests/test_explog.py
       third_party/cupy/math_tests/test_misc.py
       third_party/cupy/math_tests/test_trigonometric.py

@@ -84,6 +84,14 @@ def allow_fall_back_on_numpy(monkeypatch):
 
 
 @pytest.fixture
+def suppress_complex_warning():
+    sup = numpy.testing.suppress_warnings("always")
+    sup.filter(numpy.ComplexWarning)
+    with sup:
+        yield
+
+
+@pytest.fixture
 def suppress_divide_numpy_warnings():
     # divide: treatment for division by zero (infinite result obtained from finite numbers)
     old_settings = numpy.seterr(divide="ignore")
