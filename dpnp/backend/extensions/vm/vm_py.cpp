@@ -34,6 +34,7 @@
 #include "cos.hpp"
 #include "div.hpp"
 #include "ln.hpp"
+#include "remainder.hpp"
 #include "sin.hpp"
 #include "sqr.hpp"
 #include "sqrt.hpp"
@@ -46,6 +47,7 @@ using vm_ext::binary_impl_fn_ptr_t;
 using vm_ext::unary_impl_fn_ptr_t;
 
 static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
+static binary_impl_fn_ptr_t remainder_dispatch_vector[dpctl_td_ns::num_types];
 
 static unary_impl_fn_ptr_t cos_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ln_dispatch_vector[dpctl_td_ns::num_types];
@@ -83,6 +85,37 @@ PYBIND11_MODULE(_vm_impl, m)
         };
         m.def("_mkl_div_to_call", div_need_to_call_pyapi,
               "Check input arguments to answer if `div` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"));
+    }
+
+    // BinaryUfunc: ==== REMAINDER(x1, x2) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<binary_impl_fn_ptr_t,
+                                           vm_ext::RemainderContigFactory>(
+            remainder_dispatch_vector);
+
+        auto remainder_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                                   arrayT dst, const event_vecT &depends = {}) {
+            return vm_ext::binary_ufunc(exec_q, src1, src2, dst, depends,
+                                        remainder_dispatch_vector);
+        };
+        m.def("_remainder", remainder_pyapi,
+              "Call `remainder` function from OneMKL VM library to performs "
+              "element "
+              "by element remainder of vector `src1` by vector `src2` "
+              "to resulting vector `dst`",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("depends") = py::list());
+
+        auto remainder_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
+                                                arrayT src2, arrayT dst) {
+            return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
+                                                     remainder_dispatch_vector);
+        };
+        m.def("_mkl_remainder_to_call", remainder_need_to_call_pyapi,
+              "Check input arguments to answer if `remainder` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
               py::arg("dst"));

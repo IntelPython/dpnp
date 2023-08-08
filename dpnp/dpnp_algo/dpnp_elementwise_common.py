@@ -66,6 +66,7 @@ __all__ = [
     "dpnp_logical_xor",
     "dpnp_multiply",
     "dpnp_not_equal",
+    "dpnp_remainder",
     "dpnp_right_shift",
     "dpnp_sin",
     "dpnp_sqrt",
@@ -86,7 +87,7 @@ def check_nd_call_func(
     **kwargs,
 ):
     """
-    Checks arguments and calls function with a single input array.
+    Checks arguments and calls a function.
 
     Chooses a common internal elementwise function to call in DPNP based on input arguments
     or to fallback on NumPy call if any passed argument is not currently supported.
@@ -127,7 +128,6 @@ def check_nd_call_func(
                     order
                 )
             )
-
         return dpnp_func(*x_args, out=out, order=order)
     return call_origin(
         origin_func,
@@ -1173,6 +1173,48 @@ def dpnp_not_equal(x1, x2, out=None, order="K"):
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
+
+_remainder_docstring_ = """
+remainder(x1, x2, out=None, order='K')
+Calculates the remainder of division for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+This function is equivalent to the Python modulus operator.
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have a real-valued data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have a real-valued data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the element-wise remainders. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+
+
+remainder_func = BinaryElementwiseFunc(
+    "remainder",
+    ti._remainder_result_type,
+    ti._remainder,
+    _remainder_docstring_,
+)
+
+
+def dpnp_remainder(x1, x2, out=None, order="K"):
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = remainder_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
 
 _right_shift_docstring_ = """
 right_shift(x1, x2, out=None, order='K')

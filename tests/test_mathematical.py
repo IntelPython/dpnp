@@ -210,10 +210,6 @@ class TestMathematical:
     def test_multiply(self, dtype, lhs, rhs):
         self._test_mathematical("multiply", dtype, lhs, rhs)
 
-    @pytest.mark.skipif(
-        not has_support_aspect64(), reason="Aborted on Iris Xe: SAT-6039"
-    )
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
