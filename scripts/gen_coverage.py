@@ -41,13 +41,15 @@ def run(
         "-DDPNP_GENERATE_COVERAGE=ON",
     ]
 
-    env = None
+    env = {}
     if bin_llvm:
         env = {
             "PATH": ":".join((os.environ.get("PATH", ""), bin_llvm)),
             "LLVM_TOOLS_HOME": bin_llvm,
         }
-        env.update({k: v for k, v in os.environ.items() if k != "PATH"})
+
+    # extend with global enviroment variables
+    env.update({k: v for k, v in os.environ.items() if k != "PATH"})
 
     subprocess.check_call(cmake_args, shell=False, cwd=setup_dir, env=env)
 
