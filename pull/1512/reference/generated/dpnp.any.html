@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.any &mdash; Data Parallel Extension for NumPy 0.12.2dev0+22.ge9955f38 documentation</title>
+  <title>dpnp.any &mdash; Data Parallel Extension for NumPy 0.12.2dev0+27.g52f47608 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+22.ge9955f38
+                0.12.2dev0+27.g52f47608
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -140,12 +140,14 @@ containing the results of the logical OR reduction.</p>
 <p class="rubric">Limitations</p>
 <p>Parameters <cite>x</cite> is supported either as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
 or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
-Parameters <cite>out</cite> and <cite>dtype are supported with default value.
-Input array data types are limited by supported DPNP :ref:`Data types</cite>.
+Parameters <cite>out</cite> and <cite>where</cite> are supported with default value.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.
 Otherwise the function will be executed sequentially on CPU.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.any</span></code></dt><dd><p>equivalent method</p>
+</dd>
 <dt><a class="reference internal" href="dpnp.all.html#dpnp.all" title="dpnp.all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.all</span></code></a></dt><dd><p>Test whether all elements along a given axis evaluate to True.</p>
 </dd>
 </dl>
