@@ -35,7 +35,7 @@ def _calc_out_shape(shape, axis, keepdims):
                 numpy.zeros((0, 3, 4)),
                 numpy.ones((0, 3, 4)),
             ],
-            "axis": [0],
+            "axis": [None, (0, 1, 2), 0, 1, 2, (0, 1)],
             "keepdims": [False, True],
         }
     )

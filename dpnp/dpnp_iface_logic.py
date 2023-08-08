@@ -102,12 +102,13 @@ def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
     -----------
     Parameters `x` is supported either as :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out` and `dtype are supported with default value.
+    Parameters `out` and `where` are supported with default value.
     Input array data types are limited by supported DPNP :ref:`Data types`.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
+    :obj:`dpnp.ndarray.all` : equivalent method
     :obj:`dpnp.any` : Test whether any element along a given axis evaluates to True.
 
     Notes
@@ -205,12 +206,13 @@ def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
     -----------
     Parameters `x` is supported either as :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out` and `dtype are supported with default value.
+    Parameters `out` and `where` are supported with default value.
     Input array data types are limited by supported DPNP :ref:`Data types`.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
+    :obj:`dpnp.ndarray.any` : equivalent method
     :obj:`dpnp.all` : Test whether all elements along a given axis evaluate to True.
 
     Notes

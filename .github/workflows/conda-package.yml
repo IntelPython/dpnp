@@ -16,6 +16,7 @@ env:
       test_dparray.py
       test_fft.py
       test_linalg.py
+      test_logic.py
       test_mathematical.py
       test_random_state.py
       test_sort.py
