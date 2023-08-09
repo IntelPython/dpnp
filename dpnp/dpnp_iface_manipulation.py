@@ -64,6 +64,7 @@ __all__ = [
     "repeat",
     "reshape",
     "result_type",
+    "roll",
     "rollaxis",
     "shape",
     "squeeze",
@@ -692,6 +693,65 @@ def result_type(*arrays_and_dtypes):
         for X in arrays_and_dtypes
     ]
     return dpt.result_type(*usm_arrays_and_dtypes)
+
+
+def roll(x, shift, axis=None):
+    """
+    Roll the elements of an array by a number of positions along a given axis.
+
+    Array elements that roll beyond the last position are re-introduced
+    at the first position. Array elements that roll beyond the first position
+    are re-introduced at the last position.
+
+    For full documentation refer to :obj:`numpy.roll`.
+
+    Returns
+    -------
+    dpnp.ndarray
+        An array with a data type as `x`
+        containing elements are shifted relative to `x`.
+
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.moveaxis` : Move array axes to new positions.
+    :obj:`dpnp.rollaxis` : Roll the specified axis backwards
+                       until it lies in a given position.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.arange(10)
+    >>> np.roll(x1, 2)
+    array([8, 9, 0, 1, 2, 3, 4, 5, 6, 7])
+
+    >>> np.roll(x1, -2)
+    array([2, 3, 4, 5, 6, 7, 8, 9, 0, 1])
+
+    >>> x2 = np.reshape(x1, (2, 5))
+    >>> np.roll(x2, 1, axis=0)
+    array([[5, 6, 7, 8, 9],
+           [0, 1, 2, 3, 4]])
+
+    >>> np.roll(x2, (2, 1), axis=(1, 0))
+    array([[8, 9, 5, 6, 7],
+           [3, 4, 0, 1, 2]])
+
+    """
+
+    if dpnp.is_supported_array_type(x):
+        dpt_array = dpnp.get_usm_ndarray(x)
+        return dpnp_array._create_from_usm_ndarray(
+            dpt.roll(dpt_array, shift=shift, axis=axis)
+        )
+
+    return call_origin(numpy.roll, x, shift=shift, axis=axis)
 
 
 def rollaxis(x1, axis, start=0):
