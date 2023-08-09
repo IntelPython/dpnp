@@ -708,7 +708,7 @@ def roll(x, shift, axis=None):
     Returns
     -------
     dpnp.ndarray
-        An array with a data type as `x`
+        An array with the same data type as `x`
         containing elements are shifted relative to `x`.
 
     Limitations
@@ -754,19 +754,25 @@ def roll(x, shift, axis=None):
     return call_origin(numpy.roll, x, shift=shift, axis=axis)
 
 
-def rollaxis(x1, axis, start=0):
+def rollaxis(x, axis, start=0):
     """
     Roll the specified axis backwards, until it lies in a given position.
 
     For full documentation refer to :obj:`numpy.rollaxis`.
 
+    Returns
+    -------
+    dpnp.ndarray
+        An array with the same data type as `x` where the specified axis
+        has been repositioned to the desired position.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter ``axis`` is supported as integer only.
-    Parameter ``start`` is limited by ``-a.ndim <= start <= a.ndim``.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameter `x` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `start` is limited by `-x.ndim <= start <= x.ndim`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -787,19 +793,22 @@ def rollaxis(x1, axis, start=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not isinstance(axis, int):
-            pass
-        elif start < -x1_desc.ndim or start > x1_desc.ndim:
+    if dpnp.is_supported_array_type(x):
+        if start < -x.ndim or start > x.ndim:
             pass
         else:
-            start_norm = start + x1_desc.ndim if start < 0 else start
-            destination = start_norm - 1 if start_norm > axis else start_norm
+            axis_norm = axis + x.ndim if axis < 0 else axis
+            start_norm = start + x.ndim if start < 0 else start
+            destination = (
+                start_norm - 1 if start_norm > axis_norm else start_norm
+            )
 
-            return dpnp.moveaxis(x1_desc.get_pyobj(), axis, destination)
+            dpt_array = dpnp.get_usm_ndarray(x)
+            return dpnp.moveaxis(
+                dpt_array, source=axis, destination=destination
+            )
 
-    return call_origin(numpy.rollaxis, x1, axis, start)
+    return call_origin(numpy.rollaxis, x, axis=axis, start=start)
 
 
 def shape(a):
