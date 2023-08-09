@@ -127,8 +127,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_COPYSIGN_EXT,  /**< Used in numpy.copysign() impl, requires extra
                               parameters */
     DPNP_FN_COPYTO,        /**< Used in numpy.copyto() impl  */
-    DPNP_FN_COPYTO_EXT,    /**< Used in numpy.copyto() impl, requires extra
-                              parameters */
     DPNP_FN_CORRELATE,     /**< Used in numpy.correlate() impl  */
     DPNP_FN_CORRELATE_EXT, /**< Used in numpy.correlate() impl, requires extra
                               parameters */

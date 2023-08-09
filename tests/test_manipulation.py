@@ -25,8 +25,6 @@ testdata += [([1j, -1j, 1 - 2j], dtype) for dtype in get_complex_dtypes()]
 
 @pytest.mark.parametrize("in_obj, out_dtype", testdata)
 def test_copyto_dtype(in_obj, out_dtype):
-    if out_dtype == dpnp.complex64:
-        pytest.skip("SAT-6016: dpnp.copyto() do not work with complex64 dtype")
     ndarr = numpy.array(in_obj)
     expected = numpy.empty(ndarr.size, dtype=out_dtype)
     numpy.copyto(expected, ndarr)

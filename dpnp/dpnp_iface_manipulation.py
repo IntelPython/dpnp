@@ -313,64 +313,79 @@ def copyto(dst, src, casting="same_kind", where=True):
     """
     Copies values from one array to another, broadcasting as necessary.
 
+    Raises a ``TypeError`` if the `casting` rule is violated, and if
+    `where` is provided, it selects which elements to copy.
+
     For full documentation refer to :obj:`numpy.copyto`.
 
     Limitations
     -----------
-    Input arrays are supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Parameter ``casting`` is supported only with default value ``"same_kind"``.
-    Parameter ``where`` is supported only with default value ``True``.
-    Shapes of input arrays are supported to be equal.
+    The `dst` parameter is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    The `where` parameter is supported as either :class:`dpnp.ndarray`,
+    :class:`dpctl.tensor.usm_ndarray` or scalar.
+    Otherwise ``TypeError`` exeption will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> A = np.array([4, 5, 6])
+    >>> B = [1, 2, 3]
+    >>> np.copyto(A, B)
+    >>> A
+    array([1, 2, 3])
+
+    >>> A = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> B = [[4, 5, 6], [7, 8, 9]]
+    >>> np.copyto(A, B)
+    >>> A
+    array([[4, 5, 6],
+           [7, 8, 9]])
 
     """
 
-    dst_desc = dpnp.get_dpnp_descriptor(
-        dst, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    src_desc = dpnp.get_dpnp_descriptor(src, copy_when_nondefault_queue=False)
-    if dst_desc and src_desc:
-        if casting != "same_kind":
-            pass
-        elif (
-            dst_desc.dtype == dpnp.bool
-            and src_desc.dtype  # due to 'same_kind' casting
-            in [
-                dpnp.int32,
-                dpnp.int64,
-                dpnp.float32,
-                dpnp.float64,
-                dpnp.complex128,
-            ]
-        ):
-            pass
-        elif dst_desc.dtype in [
-            dpnp.int32,
-            dpnp.int64,
-        ] and src_desc.dtype in [  # due to 'same_kind' casting
-            dpnp.float32,
-            dpnp.float64,
-            dpnp.complex128,
-        ]:
-            pass
-        elif (
-            dst_desc.dtype in [dpnp.float32, dpnp.float64]
-            and src_desc.dtype == dpnp.complex128
-        ):  # due to 'same_kind' casting
-            pass
-        elif where is not True:
-            pass
-        elif dst_desc.shape != src_desc.shape:
-            pass
-        elif dst_desc.strides != src_desc.strides:
-            pass
-        else:
-            return dpnp_copyto(dst_desc, src_desc, where=where)
+    if not dpnp.is_supported_array_type(dst):
+        raise TypeError(
+            "Destination array must be any of supported type, "
+            f"but got {type(dst)}"
+        )
+    elif not dpnp.is_supported_array_type(src):
+        src = dpnp.array(src, sycl_queue=dst.sycl_queue)
 
-    return call_origin(
-        numpy.copyto, dst, src, casting, where, dpnp_inplace=True
-    )
+    if not dpt.can_cast(src.dtype, dst.dtype, casting=casting):
+        raise TypeError(
+            f"Cannot cast from {src.dtype} to {dst.dtype} "
+            f"according to the rule {casting}."
+        )
+
+    if where is True:
+        dst[...] = src
+    elif where is False:
+        # nothing to copy
+        pass
+    else:
+        if dpnp.isscalar(where):
+            where = dpnp.array(
+                where, dtype=dpnp.bool, sycl_queue=dst.sycl_queue
+            )
+        elif not dpnp.is_supported_array_type(where):
+            raise TypeError(
+                "`where` array must be any of supported type, "
+                f"but got {type(where)}"
+            )
+        elif where.dtype != dpnp.bool:
+            raise TypeError(
+                "`where` keyword argument must be of boolean type, "
+                f"but got {where.dtype}"
+            )
+
+        dst_usm, src_usm, mask_usm = dpt.broadcast_arrays(
+            dpnp.get_usm_ndarray(dst),
+            dpnp.get_usm_ndarray(src),
+            dpnp.get_usm_ndarray(where),
+        )
+        dst_usm[mask_usm] = src_usm[mask_usm]
 
 
 def expand_dims(x1, axis):
