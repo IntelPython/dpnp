@@ -251,7 +251,7 @@ def concatenate(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     Limitations
     -----------
     Each array in `arrays` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exeption
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
     will be raised.
     Parameters `out` and `dtype are supported with default value.
     Keyword argument ``kwargs`` is currently unsupported.
@@ -324,7 +324,7 @@ def copyto(dst, src, casting="same_kind", where=True):
     or :class:`dpctl.tensor.usm_ndarray`.
     The `where` parameter is supported as either :class:`dpnp.ndarray`,
     :class:`dpctl.tensor.usm_ndarray` or scalar.
-    Otherwise ``TypeError`` exeption will be raised.
+    Otherwise ``TypeError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -862,7 +862,7 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     Limitations
     -----------
     Each array in `arrays` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exeption
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
     will be raised.
     Parameters `out` and `dtype are supported with default value.
     Keyword argument ``kwargs`` is currently unsupported.
