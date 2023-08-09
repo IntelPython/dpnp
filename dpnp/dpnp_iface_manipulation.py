@@ -494,8 +494,8 @@ def moveaxis(x, source, destination):
 
     """
 
-    if isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
-        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+    if dpnp.is_supported_array_type(x):
+        dpt_array = dpnp.get_usm_ndarray(x)
         return dpnp_array._create_from_usm_ndarray(
             dpt.moveaxis(dpt_array, source, destination)
         )
