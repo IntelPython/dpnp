@@ -18,6 +18,7 @@ env:
       test_fft.py
       test_linalg.py
       test_logic.py
+      test_manipulation.py
       test_mathematical.py
       test_random_state.py
       test_sort.py
@@ -26,6 +27,7 @@ env:
       test_usm_type.py
       third_party/cupy/linalg_tests/test_product.py
       third_party/cupy/logic_tests/test_truth.py
+      third_party/cupy/manipulation_tests/test_basic.py
       third_party/cupy/manipulation_tests/test_join.py
       third_party/cupy/math_tests/test_explog.py
       third_party/cupy/math_tests/test_misc.py
