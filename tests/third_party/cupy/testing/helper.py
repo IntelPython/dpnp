@@ -460,12 +460,20 @@ def _convert_output_to_ndarray(c_out, n_out, sp_name, check_sparse_format):
     ):
         # ndarray output case.
         return c_out, n_out
-    if isinstance(c_out, cupy.poly1d) and isinstance(n_out, numpy.poly1d):
+    if (
+        hasattr(cupy, "poly1d")
+        and isinstance(c_out, cupy.poly1d)
+        and hasattr(numpy, "poly1d")
+        and isinstance(n_out, numpy.poly1d)
+    ):
         # poly1d output case.
         assert c_out.variable == n_out.variable
         return c_out.coeffs, n_out.coeffs
     if isinstance(c_out, numpy.generic) and isinstance(n_out, numpy.generic):
         # numpy scalar output case.
+        return c_out, n_out
+    if isinstance(c_out, numpy.ndarray) and isinstance(n_out, numpy.ndarray):
+        # fallback on numpy output case.
         return c_out, n_out
     if numpy.isscalar(c_out) and numpy.isscalar(n_out):
         # python scalar output case.

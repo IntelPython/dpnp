@@ -414,6 +414,18 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
         (void *)
             dpnp_copyto_c_default<std::complex<double>, std::complex<double>>};
 
+    // required by dpnp_fft_fft_c and dpnp_fft_rfft_c
+    fmap[DPNPFuncName::DPNP_FN_COPYTO_EXT][eft_BLN][eft_DBL] = {
+        eft_DBL, (void *)dpnp_copyto_c_ext<bool, double>};
+    fmap[DPNPFuncName::DPNP_FN_COPYTO_EXT][eft_INT][eft_DBL] = {
+        eft_DBL, (void *)dpnp_copyto_c_ext<int32_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_COPYTO_EXT][eft_LNG][eft_DBL] = {
+        eft_DBL, (void *)dpnp_copyto_c_ext<int64_t, double>};
+    fmap[DPNPFuncName::DPNP_FN_COPYTO_EXT][eft_FLT][eft_DBL] = {
+        eft_DBL, (void *)dpnp_copyto_c_ext<float, double>};
+    fmap[DPNPFuncName::DPNP_FN_COPYTO_EXT][eft_DBL][eft_DBL] = {
+        eft_DBL, (void *)dpnp_copyto_c_ext<double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_COS][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_cos_c_default<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_COS][eft_LNG][eft_LNG] = {

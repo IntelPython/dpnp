@@ -33,7 +33,6 @@ class TestBasic:
         xp.copyto(b, a)
         return b
 
-    @pytest.mark.skip("blocked by dpctl gh-1330")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_copyto_broadcast(self, xp, dtype):
@@ -74,7 +73,6 @@ class TestBasic:
         xp.copyto(b, a)
         return b
 
-    @pytest.mark.skip("blocked by dpctl gh-1330")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_copyto_squeeze_broadcast(self, xp, dtype):
@@ -149,9 +147,6 @@ class TestCopytoFromScalar:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_copyto(self, xp, dtype):
-        if self.dst_shape == (0,):
-            pytest.skip("blocked by dpctl gh-1324")
-
         dst = xp.ones(self.dst_shape, dtype=dtype)
         xp.copyto(dst, self.src)
         return dst
@@ -200,9 +195,6 @@ class TestCopytoFromNumpyScalar:
     def test_copyto2(self, xp, make_src, dtype, casting):
         dst = xp.zeros((2, 3, 4), dtype=dtype)
         src = make_src(dtype)
-
-        if isinstance(src, numpy.ndarray):
-            pytest.skip("blocked by dpctl gh-1330")
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", numpy.ComplexWarning)
