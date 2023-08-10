@@ -109,15 +109,6 @@ template <typename _DataType>
 void (*dpnp_around_default_c)(const void *, void *, const size_t, const int) =
     dpnp_around_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_around_ext_c)(DPCTLSyclQueueRef,
-                                       const void *,
-                                       void *,
-                                       const size_t,
-                                       const int,
-                                       const DPCTLEventVectorRef) =
-    dpnp_around_c<_DataType>;
-
 template <typename _KernelNameSpecialization1,
           typename _KernelNameSpecialization2>
 class dpnp_elemwise_absolute_c_kernel;
@@ -1183,15 +1174,6 @@ void func_map_init_mathematical(func_map_t &fmap)
         eft_FLT, (void *)dpnp_around_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_AROUND][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_around_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_AROUND_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_around_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_AROUND_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_around_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_AROUND_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_around_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_AROUND_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_around_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_CROSS][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_cross_default_c<int32_t, int32_t, int32_t>};

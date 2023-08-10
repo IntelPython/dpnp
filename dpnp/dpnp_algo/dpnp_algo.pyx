@@ -170,7 +170,7 @@ cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1):
 
 cpdef utils.dpnp_descriptor dpnp_init_val(shape, dtype, value):
     """
-    same as dpnp_full(). TODO remove code dumplication
+    same as dpnp_full(). TODO remove code duplication
     """
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 

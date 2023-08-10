@@ -50,6 +50,7 @@ class TestRound(unittest.TestCase):
         }
     )
 )
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRoundHalfway(unittest.TestCase):
     shape = (20,)
 

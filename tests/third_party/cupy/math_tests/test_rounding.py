@@ -4,6 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -70,8 +71,8 @@ class TestRounding(unittest.TestCase):
         self.check_unary("around")
         self.check_unary_complex("around")
 
-    def test_round_(self):
-        self.check_unary("round_")
+    def test_round(self):
+        self.check_unary("round")
         self.check_unary_complex("around")
 
 
@@ -115,6 +116,7 @@ class TestRound(unittest.TestCase):
         }
     )
 )
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRoundExtreme(unittest.TestCase):
     shape = (20,)
 
@@ -150,23 +152,23 @@ class TestRoundExtreme(unittest.TestCase):
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRoundBorder(unittest.TestCase):
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_positive1(self, xp):
         a, decimals = self.value
         return xp.around(a, decimals)
 
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_positive2(self, xp):
         a, decimals = self.value
         a = xp.asarray(a)
         return xp.around(a, decimals)
 
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_negative1(self, xp):
         a, decimals = self.value
         return xp.around(-a, decimals)
 
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_negative2(self, xp):
         a, decimals = self.value
         a = xp.asarray(a)
