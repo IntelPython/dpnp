@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.12.2dev0+26.g4f82757c documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.12.2dev0+26.g41bdeb4c documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+26.g4f82757c
+                0.12.2dev0+26.g41bdeb4c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1690,12 +1690,12 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">        Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.</span>
-<span class="sd">        Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.</span>
-<span class="sd">        Keyword arguments ``kwargs`` are currently unsupported.</span>
+<span class="sd">        Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray`,</span>
+<span class="sd">        :class:`dpctl.tensor.usm_ndarray` or scalar.</span>
+<span class="sd">        Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">        Keyword arguments `kwargs` are currently unsupported.</span>
 <span class="sd">        Otherwise the functions will be executed sequentially on CPU.</span>
 <span class="sd">        Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
