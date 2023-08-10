@@ -237,38 +237,75 @@ def broadcast_to(x, /, shape, subok=False):
     return call_origin(numpy.broadcast_to, x, shape=shape, subok=subok)
 
 
-def concatenate(arrs, axis=0, out=None, dtype=None, casting="same_kind"):
+def concatenate(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     """
     Join a sequence of arrays along an existing axis.
 
     For full documentation refer to :obj:`numpy.concatenate`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The concatenated array.
+
+    Limitations
+    -----------
+    Each array in `arrays` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exeption
+    will be raised.
+    Parameters `out` and `dtype are supported with default value.
+    Keyword argument ``kwargs`` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.array_split` : Split an array into multiple sub-arrays of equal or near-equal size.
+    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
+    :obj:`dpnp.hsplit` : Split array into multiple sub-arrays horizontally (column wise).
+    :obj:`dpnp.vsplit` : Split array into multiple sub-arrays vertically (row wise).
+    :obj:`dpnp.dsplit` : Split array into multiple sub-arrays along the 3rd axis (depth).
+    :obj:`dpnp.stack` : Stack a sequence of arrays along a new axis.
+    :obj:`dpnp.block` : Assemble arrays from blocks.
+    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
+    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
+    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third dimension).
+    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
+
     Examples
     --------
-    >>> import dpnp
-    >>> a = dpnp.array([[1, 2], [3, 4]])
-    >>> b = dpnp.array([[5, 6]])
-    >>> res = dpnp.concatenate((a, b), axis=0)
-    >>> print(res)
-    [[1 2]
-     [3 4]
-     [5 6]]
-    >>> res = dpnp.concatenate((a, b.T), axis=1)
-    >>> print(res)
-    [[1 2 5]
-     [3 4 6]]
-    >>> res = dpnp.concatenate((a, b), axis=None)
-    >>> print(res)
-    [1 2 3 4 5 6]
+    >>> import dpnp as np
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> b = np.array([[5, 6]])
+    >>> np.concatenate((a, b), axis=0)
+    array([[1, 2],
+           [3, 4],
+           [5, 6]])
+    >>> np.concatenate((a, b.T), axis=1)
+    array([[1, 2, 5],
+           [3, 4, 6]])
+    >>> np.concatenate((a, b), axis=None)
+    array([1, 2, 3, 4, 5, 6])
 
     """
+
+    if kwargs:
+        pass
+    elif out is not None:
+        pass
+    elif dtype is not None:
+        pass
+    else:
+        usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
+        usm_res = dpt.concat(usm_arrays, axis=axis)
+        return dpnp_array._create_from_usm_ndarray(usm_res)
+
     return call_origin(
         numpy.concatenate,
-        arrs,
+        arrays,
         axis=axis,
         out=out,
         dtype=dtype,
-        casting=casting,
+        **kwargs,
     )
 
 
@@ -796,15 +833,77 @@ def squeeze(x, /, axis=None):
     return call_origin(numpy.squeeze, x, axis)
 
 
-def stack(arrays, axis=0, out=None):
+def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     """
     Join a sequence of arrays along a new axis.
 
     For full documentation refer to :obj:`numpy.stack`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The stacked array which has one more dimension than the input arrays.
+
+    Limitations
+    -----------
+    Each array in `arrays` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exeption
+    will be raised.
+    Parameters `out` and `dtype are supported with default value.
+    Keyword argument ``kwargs`` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> arrays = [np.random.randn(3, 4) for _ in range(10)]
+    >>> np.stack(arrays, axis=0).shape
+    (10, 3, 4)
+
+    >>> np.stack(arrays, axis=1).shape
+    (3, 10, 4)
+
+    >>> np.stack(arrays, axis=2).shape
+    (3, 4, 10)
+
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([4, 5, 6])
+    >>> np.stack((a, b))
+    array([[1, 2, 3],
+           [4, 5, 6]])
+
+    >>> np.stack((a, b), axis=-1)
+    array([[1, 4],
+           [2, 5],
+           [3, 6]])
+
     """
 
-    return call_origin(numpy.stack, arrays, axis, out)
+    if kwargs:
+        pass
+    elif out is not None:
+        pass
+    elif dtype is not None:
+        pass
+    else:
+        usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
+        usm_res = dpt.stack(usm_arrays, axis=axis)
+        return dpnp_array._create_from_usm_ndarray(usm_res)
+
+    return call_origin(
+        numpy.stack,
+        arrays,
+        axis=axis,
+        out=out,
+        dtype=dtype,
+        **kwargs,
+    )
 
 
 def swapaxes(x1, axis1, axis2):

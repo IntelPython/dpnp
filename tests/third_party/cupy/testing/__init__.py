@@ -32,6 +32,7 @@ from tests.third_party.cupy.testing.helper import (
     assert_warns,
     for_all_dtypes,
     for_all_dtypes_combination,
+    for_castings,
     for_CF_orders,
     for_complex_dtypes,
     for_dtypes,

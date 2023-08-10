@@ -251,6 +251,7 @@ DPCTLSyclEventRef
         auto event_out =
             mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
         event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
+        return DPCTLEvent_Copy(event_ref);
     }
     return DPCTLEvent_Copy(event_ref);
 }

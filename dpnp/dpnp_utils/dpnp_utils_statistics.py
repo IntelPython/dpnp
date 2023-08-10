@@ -27,12 +27,7 @@
 # *****************************************************************************
 
 
-import dpctl
-import dpctl.tensor as dpt
-import dpctl.tensor._tensor_impl as ti
-
 import dpnp
-from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 
 __all__ = ["dpnp_cov"]
@@ -92,35 +87,7 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
     if y is not None:
         y = _get_2dmin_array(y, dtype)
 
-        # TODO: replace with dpnp.concatenate((X, y), axis=0) once dpctl implementation is ready
-        if X.ndim != y.ndim:
-            raise ValueError(
-                "all the input arrays must have same number of dimensions"
-            )
-
-        if X.shape[1:] != y.shape[1:]:
-            raise ValueError(
-                "all the input array dimensions for the concatenation axis must match exactly"
-            )
-
-        res_shape = tuple(
-            X.shape[i] if i > 0 else (X.shape[i] + y.shape[i])
-            for i in range(X.ndim)
-        )
-        res_usm = dpt.empty(
-            res_shape, dtype=dtype, usm_type=usm_type, sycl_queue=queue
-        )
-
-        # concatenate input arrays 'm' and 'y' into single array among 0-axis
-        hev1, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=X.get_array(), dst=res_usm[: X.shape[0]], sycl_queue=queue
-        )
-        hev2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=y.get_array(), dst=res_usm[X.shape[0] :], sycl_queue=queue
-        )
-        dpctl.SyclEvent.wait_for([hev1, hev2])
-
-        X = dpnp_array._create_from_usm_ndarray(res_usm)
+        X = dpnp.concatenate((X, y), axis=0)
 
     avg = X.mean(axis=1)
 

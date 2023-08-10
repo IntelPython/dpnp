@@ -29,6 +29,12 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         with:
@@ -65,6 +71,8 @@ jobs:
 
       - name: Checkout repo
         uses: actions/checkout@v3.5.2
+        with:
+          fetch-depth: 0
 
       # https://github.com/marketplace/actions/setup-miniconda
       - name: Setup miniconda
@@ -103,6 +111,13 @@ jobs:
         run: make html
         working-directory: doc
 
+      - name: Set a project number to current release
+        run: |
+          export PROJECT_NUMBER=$(git describe --tags --abbrev=0)
+
+          echo PROJECT_NUMBER=${PROJECT_NUMBER}
+          echo "PROJECT_NUMBER=$PROJECT_NUMBER" >> $GITHUB_ENV
+
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
         uses: mattnotmitt/doxygen-action@v1.9.5
@@ -115,7 +130,7 @@ jobs:
       # https://github.com/marketplace/actions/github-pages-action
       - name: Deploy docs
         if: |
-          !github.event.pull_request.head.repo.fork  &&
+          github.event.pull_request && !github.event.pull_request.head.repo.fork  &&
           (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
         uses: peaceiris/actions-gh-pages@v3.9.3
         with:
@@ -124,7 +139,7 @@ jobs:
 
       - name: Publish pull-request docs
         if: |
-          !github.event.pull_request.head.repo.fork  && github.event.pull_request && github.event.action != 'closed'
+          github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action != 'closed'
         uses: peaceiris/actions-gh-pages@v3.9.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -139,7 +154,7 @@ jobs:
 
       - name: Comment with URL to published pull-request docs
         if: |
-          !github.event.pull_request.head.repo.fork  && github.event.pull_request && github.event.action != 'closed'
+          github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action != 'closed'
         env:
           PR_NUM: ${{ github.event.number }}
         uses: mshick/add-pr-comment@v2.8.1
@@ -150,7 +165,7 @@ jobs:
 
   clean:
     if: |
-      !github.event.pull_request.head.repo.fork  && github.event.pull_request && github.event.action == 'closed'
+      github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action == 'closed'
 
     needs: build-and-deploy
 

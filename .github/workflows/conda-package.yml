@@ -12,6 +12,7 @@ env:
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   TEST_SCOPE: >-
       test_arraycreation.py
+      test_arraymanipulation.py
       test_dot.py
       test_dparray.py
       test_fft.py
@@ -23,6 +24,7 @@ env:
       test_umath.py
       test_usm_type.py
       third_party/cupy/linalg_tests/test_product.py
+      third_party/cupy/manipulation_tests/test_join.py
       third_party/cupy/math_tests/test_explog.py
       third_party/cupy/math_tests/test_misc.py
       third_party/cupy/math_tests/test_trigonometric.py
@@ -37,7 +39,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10']
+        python: ['3.8', '3.9', '3.10', '3.11']
         os: [ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.os }}
@@ -114,7 +116,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10']
+        python: ['3.8', '3.9', '3.10', '3.11']
         os: [ubuntu-20.04, ubuntu-latest]
 
         experimental: [false]
@@ -194,7 +196,9 @@ jobs:
         run: conda list
 
       - name: Smoke test
-        run: python -c "import dpnp, dpctl; dpctl.lsplatform()"
+        run: |
+          python -c "import dpnp, dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
@@ -215,7 +219,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10']
+        python: ['3.8', '3.9', '3.10', '3.11']
         experimental: [false]
 
     continue-on-error: ${{ matrix.experimental }}
@@ -331,7 +335,9 @@ jobs:
           Get-Content -Tail 5 -Path $cl_cfg
 
       - name: Smoke test
-        run: python -c "import dpnp, dpctl; dpctl.lsplatform()"
+        run: |
+          python -c "import dpnp, dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
 
       # TODO: run the whole scope once the issues on CPU are resolved
       - name: Run tests
@@ -346,7 +352,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10']
+        python: ['3.8', '3.9', '3.10', '3.11']
         os: [ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.os }}
