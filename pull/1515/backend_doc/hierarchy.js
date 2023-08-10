@@ -56,8 +56,6 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::populate_table< C, FnT, std::tuple< Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1populate__table_3_01_c_00_01_fn_t_00_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::populate_table< C, FnT, std::tuple< std::tuple< Args... > > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1populate__table_3_01_c_00_01_fn_t_00_01std_1_1tuple0f7ffe7646d3c8f7f12eca20777caefd.html", null ],
     [ "python_constants", "structpython__constants.html", null ],
-    [ "dpnp::backend::ext::vm::RemainderContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_remainder_contig_factory.html", null ],
-    [ "dpnp::backend::ext::vm::types::RemainderOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_remainder_output_type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::resolve_type< C, Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1resolve__type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::resolve_type< C, std::tuple< Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1resolve__type_3_01_c_00_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::vm::SinContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sin_contig_factory.html", null ],
