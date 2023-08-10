@@ -42,6 +42,7 @@ it contains:
 
 import dpctl.tensor as dpt
 import numpy
+from numpy.core.numeric import normalize_axis_index
 
 import dpnp
 from dpnp.dpnp_algo import *
@@ -474,8 +475,8 @@ def moveaxis(x, source, destination):
     Limitations
     -----------
     Parameters `x` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
+    will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -494,13 +495,10 @@ def moveaxis(x, source, destination):
 
     """
 
-    if dpnp.is_supported_array_type(x):
-        dpt_array = dpnp.get_usm_ndarray(x)
-        return dpnp_array._create_from_usm_ndarray(
-            dpt.moveaxis(dpt_array, source, destination)
-        )
-
-    return call_origin(numpy.moveaxis, x, source, destination)
+    dpt_array = dpnp.get_usm_ndarray(x)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.moveaxis(dpt_array, source, destination)
+    )
 
 
 def ravel(x1, order="C"):
@@ -709,14 +707,15 @@ def roll(x, shift, axis=None):
     -------
     dpnp.ndarray
         An array with the same data type as `x`
-        containing elements are shifted relative to `x`.
+        and whose elements, relative to `x`, are shifted.
 
     Limitations
     -----------
     Parameter `x` is supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
+    will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Otherwise the function will be executed sequentially on CPU.
+
 
     See Also
     --------
@@ -745,13 +744,10 @@ def roll(x, shift, axis=None):
 
     """
 
-    if dpnp.is_supported_array_type(x):
-        dpt_array = dpnp.get_usm_ndarray(x)
-        return dpnp_array._create_from_usm_ndarray(
-            dpt.roll(dpt_array, shift=shift, axis=axis)
-        )
-
-    return call_origin(numpy.roll, x, shift=shift, axis=axis)
+    dpt_array = dpnp.get_usm_ndarray(x)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.roll(dpt_array, shift=shift, axis=axis)
+    )
 
 
 def rollaxis(x, axis, start=0):
@@ -769,10 +765,9 @@ def rollaxis(x, axis, start=0):
     Limitations
     -----------
     Parameter `x` is supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `start` is limited by `-x.ndim <= start <= x.ndim`.
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
+    will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -793,22 +788,19 @@ def rollaxis(x, axis, start=0):
 
     """
 
-    if dpnp.is_supported_array_type(x):
-        if start < -x.ndim or start > x.ndim:
-            pass
-        else:
-            axis_norm = axis + x.ndim if axis < 0 else axis
-            start_norm = start + x.ndim if start < 0 else start
-            destination = (
-                start_norm - 1 if start_norm > axis_norm else start_norm
-            )
-
-            dpt_array = dpnp.get_usm_ndarray(x)
-            return dpnp.moveaxis(
-                dpt_array, source=axis, destination=destination
-            )
-
-    return call_origin(numpy.rollaxis, x, axis=axis, start=start)
+    n = x.ndim
+    axis = normalize_axis_index(axis, n)
+    if start < 0:
+        start += n
+    msg = "'%s' arg requires %d <= %s < %d, but %d was passed in"
+    if not (0 <= start < n + 1):
+        raise numpy.AxisError(msg % ("start", -n, "start", n + 1, start))
+    if axis < start:
+        start -= 1
+    if axis == start:
+        return x
+    dpt_array = dpnp.get_usm_ndarray(x)
+    return dpnp.moveaxis(dpt_array, source=axis, destination=start)
 
 
 def shape(a):

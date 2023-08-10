@@ -631,7 +631,6 @@ class TestRollaxis:
         (3, 4),
     ]
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_exceptions(self):
         a = dpnp.arange(1 * 2 * 3 * 4).reshape(1, 2, 3, 4)
         assert_raises(numpy.AxisError, dpnp.rollaxis, a, -5, 0)

@@ -3,7 +3,7 @@ import unittest
 import numpy
 import pytest
 
-import dpnp
+import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
@@ -23,6 +23,8 @@ from tests.third_party.cupy import testing
     {"shape": (5, 2), "shift": (2, 1), "axis": (0, -1)},
     {"shape": (5, 2), "shift": (2, 1), "axis": (1, -1)},
     {"shape": (5, 2), "shift": (2, 1, 3), "axis": 0},
+    # TODO: remove when dpctl is fixed
+    # {'shape': (5, 2), 'shift': (2, 1, 3), 'axis': None},
 )
 class TestRoll(unittest.TestCase):
     @testing.for_all_dtypes()
@@ -41,13 +43,13 @@ class TestRoll(unittest.TestCase):
 
 class TestRollTypeError(unittest.TestCase):
     def test_roll_invalid_shift(self):
-        for xp in (numpy, dpnp):
+        for xp in (numpy, cupy):
             x = testing.shaped_arange((5, 2), xp)
             with pytest.raises(TypeError):
                 xp.roll(x, "0", axis=0)
 
     def test_roll_invalid_axis_type(self):
-        for xp in (numpy, dpnp):
+        for xp in (numpy, cupy):
             x = testing.shaped_arange((5, 2), xp)
             with pytest.raises(TypeError):
                 xp.roll(x, 2, axis="0")
@@ -63,13 +65,13 @@ class TestRollTypeError(unittest.TestCase):
 )
 class TestRollValueError(unittest.TestCase):
     def test_roll_invalid(self):
-        for xp in (numpy, dpnp):
+        for xp in (numpy, cupy):
             x = testing.shaped_arange(self.shape, xp)
             with pytest.raises(ValueError):
                 xp.roll(x, self.shift, axis=self.axis)
 
     def test_roll_invalid_cupy_shift(self):
-        for xp in (numpy, dpnp):
+        for xp in (numpy, cupy):
             x = testing.shaped_arange(self.shape, xp)
             shift = self.shift
             with pytest.raises(ValueError):
