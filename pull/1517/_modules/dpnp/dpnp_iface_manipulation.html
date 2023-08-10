@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.12.2dev0+29.g9e5650e1 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.12.2dev0+30.g837ffcfc documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+29.g9e5650e1
+                0.12.2dev0+30.g837ffcfc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -882,7 +882,7 @@
         <span class="n">start</span> <span class="o">+=</span> <span class="n">n</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; arg requires </span><span class="si">%d</span><span class="s2"> &lt;= </span><span class="si">%s</span><span class="s2"> &lt; </span><span class="si">%d</span><span class="s2">, but </span><span class="si">%d</span><span class="s2"> was passed in&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="n">numpy</span><span class="o">.</span><span class="n">AxisError</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">start</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">start</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="n">start</span><span class="p">:</span>
         <span class="n">start</span> <span class="o">-=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="n">start</span><span class="p">:</span>
