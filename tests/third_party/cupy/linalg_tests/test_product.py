@@ -100,7 +100,7 @@ class TestDot(unittest.TestCase):
 @testing.gpu
 class TestCrossProduct(unittest.TestCase):
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
-    # TODO: remove once fixed
+    # TODO: remove 'contiguous_check=False' once fixed in dpnp.cross()
     @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_cross(self, xp, dtype_a, dtype_b):
         if dtype_a == dtype_b == numpy.bool_:
