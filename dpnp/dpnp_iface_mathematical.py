@@ -1602,12 +1602,12 @@ def remainder(
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-        Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
-        Keyword arguments ``kwargs`` are currently unsupported.
+        Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray`,
+        :class:`dpctl.tensor.usm_ndarray` or scalar.
+        Parameters `where`, `dtype` and `subok` are supported with their default values.
+        Keyword arguments `kwargs` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
 
     See Also
     --------
