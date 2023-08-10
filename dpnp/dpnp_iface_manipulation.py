@@ -794,7 +794,7 @@ def rollaxis(x, axis, start=0):
         start += n
     msg = "'%s' arg requires %d <= %s < %d, but %d was passed in"
     if not (0 <= start < n + 1):
-        raise numpy.AxisError(msg % ("start", -n, "start", n + 1, start))
+        raise ValueError(msg % ("start", -n, "start", n + 1, start))
     if axis < start:
         start -= 1
     if axis == start:

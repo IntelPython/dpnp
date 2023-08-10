@@ -631,12 +631,18 @@ class TestRollaxis:
         (3, 4),
     ]
 
-    def test_exceptions(self):
+    @pytest.mark.parametrize(
+        ("axis", "start"),
+        [
+            (-5, 0),
+            (0, -5),
+            (4, 0),
+            (0, 5),
+        ],
+    )
+    def test_exceptions(self, axis, start):
         a = dpnp.arange(1 * 2 * 3 * 4).reshape(1, 2, 3, 4)
-        assert_raises(numpy.AxisError, dpnp.rollaxis, a, -5, 0)
-        assert_raises(numpy.AxisError, dpnp.rollaxis, a, 0, -5)
-        assert_raises(numpy.AxisError, dpnp.rollaxis, a, 4, 0)
-        assert_raises(numpy.AxisError, dpnp.rollaxis, a, 0, 5)
+        assert_raises(ValueError, dpnp.rollaxis, a, axis, start)
 
     def test_results(self):
         np_a = numpy.arange(1 * 2 * 3 * 4).reshape(1, 2, 3, 4)
