@@ -315,7 +315,7 @@ For standard library functions:
 
    dpnp.ndarray.__copy__
    dpnp.ndarray.__deepcopy__
-   dpnp.ndarray.__reduce__
+   .. dpnp.ndarray.__reduce__
    dpnp.ndarray.__setstate__
 
 Basic customization:
