@@ -52,6 +52,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     check_nd_call_func,
     dpnp_add,
     dpnp_ceil,
+    dpnp_conj,
     dpnp_divide,
     dpnp_floor,
     dpnp_floor_divide,
@@ -362,7 +363,17 @@ def ceil(
     )
 
 
-def conjugate(x1, **kwargs):
+def conjugate(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Return the complex conjugate, element-wise.
 
@@ -370,6 +381,18 @@ def conjugate(x1, **kwargs):
     sign of its imaginary part.
 
     For full documentation refer to :obj:`numpy.conjugate`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The conjugate of each element of `x`.
+
+    Limitations
+    -----------
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -384,13 +407,17 @@ def conjugate(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.conjugate,
+        dpnp_conj,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc and not kwargs:
-        return dpnp_conjugate(x1_desc).get_pyobj()
-
-    return call_origin(numpy.conjugate, x1, **kwargs)
 
 
 conj = conjugate

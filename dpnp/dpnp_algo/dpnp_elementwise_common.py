@@ -47,6 +47,7 @@ __all__ = [
     "dpnp_bitwise_or",
     "dpnp_bitwise_xor",
     "dpnp_ceil",
+    "dpnp_conj",
     "dpnp_cos",
     "dpnp_divide",
     "dpnp_equal",
@@ -448,6 +449,58 @@ def dpnp_cos(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = cos_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_conj_docstring = """
+conj(x, out=None, order='K')
+
+Computes conjugate for each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise conjugate.
+        The returned array has the same data type as `x`.
+"""
+
+
+def _call_conj(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_conj_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for conj() function from OneMKL VM
+        return vmi._conj(sycl_queue, src, dst, depends)
+    return ti._conj(src, dst, sycl_queue, depends)
+
+
+conj_func = UnaryElementwiseFunc(
+    "conj", ti._conj_result_type, _call_conj, _conj_docstring
+)
+
+
+def dpnp_conj(x, out=None, order="K"):
+    """
+    Invokes conj() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for conj() function.
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = conj_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
