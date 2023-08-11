@@ -136,6 +136,12 @@ class TestMathematical:
         else:
             result = getattr(dpnp, name)(a_dpnp, b_dpnp)
             expected = getattr(numpy, name)(a_np, b_np)
+            if (
+                name == "remainder"
+                and result.dtype != expected.dtype
+                and not has_support_aspect64()
+            ):
+                pytest.skip("skipping since output is promoted differently")
             assert_allclose(result, expected, rtol=1e-6)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
@@ -210,9 +216,7 @@ class TestMathematical:
     def test_multiply(self, dtype, lhs, rhs):
         self._test_mathematical("multiply", dtype, lhs, rhs)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_remainder(self, dtype, lhs, rhs):
         self._test_mathematical("remainder", dtype, lhs, rhs)
 

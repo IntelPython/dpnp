@@ -199,16 +199,6 @@ class ArithmeticBinaryBase:
                     elif is_array_arg2 and not is_array_arg1:
                         y = y.astype(dtype2)
 
-        # NumPy returns different values (nan/inf) on division by zero
-        # depending on the architecture.
-        # As it is not possible for CuPy to replicate this behavior, we ignore
-        # the difference here.
-        # if self.name in ('floor_divide', 'remainder', 'mod'):
-        #     if y.dtype in (float_types + complex_types) and (np2 == 0).any():
-        #         y = xp.asarray(y)
-        #         y[y == numpy.inf] = numpy.nan
-        #        y[y == -numpy.inf] = numpy.nan
-
         return y
 
 

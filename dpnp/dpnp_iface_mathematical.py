@@ -220,7 +220,7 @@ def add(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -626,14 +626,14 @@ def divide(
     Returns
     -------
     y : dpnp.ndarray
-        The quotient ``x1/x2``, element-wise.
+        The quotient `x1/x2`, element-wise.
 
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -823,7 +823,7 @@ def floor_divide(
 
     See Also
     --------
-    :obj:`dpnp.reminder` : Remainder complementary to floor_divide.
+    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
     :obj:`dpnp.divide` : Standard division.
     :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
     :obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
@@ -910,7 +910,7 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     See Also
     --------
-    :obj:`dpnp.reminder` : Remainder complementary to floor_divide.
+    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
     :obj:`dpnp.divide` : Standard division.
 
     Examples
@@ -1137,16 +1137,36 @@ def minimum(x1, x2, dtype=None, out=None, where=True, **kwargs):
     )
 
 
-def mod(*args, **kwargs):
+def mod(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Compute element-wise remainder of division.
 
     For full documentation refer to :obj:`numpy.mod`.
 
+    Limitations
+    -----------
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
     See Also
     --------
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division
-    :obj:`dpnp.reminder` : Remainder complementary to floor_divide.
+    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
     :obj:`dpnp.divide` : Standard division.
 
     Notes
@@ -1155,7 +1175,16 @@ def mod(*args, **kwargs):
 
     """
 
-    return dpnp.remainder(*args, **kwargs)
+    return dpnp.remainder(
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def modf(x1, **kwargs):
@@ -1602,18 +1631,20 @@ def remainder(
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray`,
-        :class:`dpctl.tensor.usm_ndarray` or scalar.
-        Parameters `where`, `dtype` and `subok` are supported with their default values.
-        Keyword arguments `kwargs` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-        :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
-        :obj:`dpnp.divide` : Standard division.
-        :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
+    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+    :obj:`dpnp.divide` : Standard division.
+    :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
+    :obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the division of the inputs.
+    :obj:`dpnp.mod` : Calculate the element-wise remainder of division.
 
     Example
     -------
@@ -1718,8 +1749,8 @@ def subtract(
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
