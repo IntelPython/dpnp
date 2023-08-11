@@ -62,7 +62,6 @@ var hierarchy =
     [ "python_constants", "structpython__constants.html", null ],
     [ "dpnp::backend::ext::sycl_ext::resolve_type< C, Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1resolve__type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::resolve_type< C, std::tuple< Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1resolve__type_3_01_c_00_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html", null ],
-    [ "dpnp::backend::ext::vm::types::RoundOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_round_output_type.html", null ],
     [ "dpnp::backend::ext::vm::SinContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sin_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::SinOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sin_output_type.html", null ],
     [ "dpnp::backend::ext::vm::SqrContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqr_contig_factory.html", null ],

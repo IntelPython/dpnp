@@ -59,7 +59,6 @@ var annotated_dup =
               [ "DivOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_output_type.html", null ],
               [ "FloorOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_floor_output_type.html", null ],
               [ "LnOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ln_output_type.html", null ],
-              [ "RoundOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_round_output_type.html", null ],
               [ "SinOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sin_output_type.html", null ],
               [ "SqrOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqr_output_type.html", null ],
               [ "SqrtOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqrt_output_type.html", null ],
