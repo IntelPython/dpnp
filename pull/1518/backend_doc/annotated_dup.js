@@ -70,7 +70,6 @@ var annotated_dup =
             [ "DivContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_div_contig_factory.html", null ],
             [ "FloorContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_floor_contig_factory.html", null ],
             [ "LnContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ln_contig_factory.html", null ],
-            [ "RoundContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_round_contig_factory.html", null ],
             [ "SinContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sin_contig_factory.html", null ],
             [ "SqrContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqr_contig_factory.html", null ],
             [ "SqrtContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqrt_contig_factory.html", null ],
