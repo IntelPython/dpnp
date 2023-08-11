@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_flatiter &mdash; Data Parallel Extension for NumPy 0.12.2dev0+32.gf925a6a9 documentation</title>
+  <title>dpnp.dpnp_flatiter &mdash; Data Parallel Extension for NumPy 0.12.2dev0+35.ga0b2b4a4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+32.gf925a6a9
+                0.12.2dev0+35.ga0b2b4a4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -118,6 +118,8 @@
 
 
 <div class="viewcode-block" id="flatiter"><a class="viewcode-back" href="../../reference/generated/dpnp.flatiter.html#dpnp.flatiter">[docs]</a><span class="k">class</span> <span class="nc">flatiter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Flat iterator object to iterate over arrays.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>

@@ -32,8 +32,7 @@ Indexing arrays
 ---------------
 
 Arrays can be indexed using an extended Python slicing syntax,
-``array[selection]``.  Similar syntax is also used for accessing
-fields in a :term:`structured data type`.
+``array[selection]``.
 
 .. seealso:: :ref:`Array Indexing Routines <routines.indexing>`.
 
@@ -316,7 +315,7 @@ For standard library functions:
 
    dpnp.ndarray.__copy__
    dpnp.ndarray.__deepcopy__
-   dpnp.ndarray.__reduce__
+   .. dpnp.ndarray.__reduce__
    dpnp.ndarray.__setstate__
 
 Basic customization:

@@ -20,8 +20,8 @@ These functions cover a subset of
    linalg
    logic
    math
-   pad
-   polynomials
+   .. pad
+   .. polynomials
    random
    sorting
    statistics
