@@ -1,8 +1,30 @@
 from sys import platform
 
 import dpctl
+import numpy
+from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
+
+
+def assert_dtype_allclose(dpnp_arr, numpy_arr):
+    """
+    Assert DPNP and NumPy array based on maximum dtype resolution of input arrays
+    for floating and complex types.
+    For other dtypes the assertion is based on exact matching of the arrays.
+
+    """
+
+    is_inexact = lambda x: dpnp.issubdtype(x.dtype, dpnp.inexact)
+    if is_inexact(dpnp_arr) or is_inexact(numpy_arr):
+        tol = 8 * max(
+            numpy.finfo(dpnp_arr.dtype).resolution,
+            numpy.finfo(numpy_arr.dtype).resolution,
+        )
+        assert_allclose(dpnp_arr.asnumpy(), numpy_arr, atol=tol, rtol=tol)
+    else:
+        assert_array_equal(dpnp_arr.asnumpy(), numpy_arr)
+        assert dpnp_arr.dtype == numpy_arr.dtype
 
 
 def get_complex_dtypes(device=None):

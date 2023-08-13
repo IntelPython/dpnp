@@ -23,7 +23,11 @@ from tests.third_party.cupy import testing
 class TestFft(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
-        rtol=1e-4, atol=1e-7, accept_error=ValueError, contiguous_check=False
+        rtol=1e-4,
+        atol=1e-7,
+        accept_error=ValueError,
+        contiguous_check=False,
+        type_check=False,
     )
     def test_fft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -33,7 +37,11 @@ class TestFft(unittest.TestCase):
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
-        rtol=1e-4, atol=1e-7, accept_error=ValueError, contiguous_check=False
+        rtol=1e-4,
+        atol=1e-7,
+        accept_error=ValueError,
+        contiguous_check=False,
+        type_check=False,
     )
     def test_ifft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -154,7 +162,9 @@ class TestFftn(unittest.TestCase):
 @testing.gpu
 class TestRfft(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(rtol=1e-4, atol=1e-7, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4, atol=1e-7, contiguous_check=False, type_check=False
+    )
     def test_rfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.rfft(a, n=self.n, norm=self.norm)

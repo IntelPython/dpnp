@@ -851,17 +851,18 @@ DPCTLSyclEventRef dpnp_matmul_c(DPCTLSyclQueueRef q_ref,
                   std::is_same<_DataType, float>::value)
     {
         // using std::max for these ldx variables is required by math library
-        const std::int64_t lda =
-            std::max<size_t>(1UL, size_k); // First dimensions of array_1
-        const std::int64_t ldb =
+        const std::int64_t ld_array_2 =
             std::max<size_t>(1UL, size_n); // First dimensions of array_2
-        const std::int64_t ldc =
+        const std::int64_t ld_array_1 =
+            std::max<size_t>(1UL, size_k); // First dimensions of array_1
+        const std::int64_t ld_result =
             std::max<size_t>(1UL, size_n); // Fast dimensions of result
 
         event = mkl_blas::gemm(q, oneapi::mkl::transpose::nontrans,
                                oneapi::mkl::transpose::nontrans, size_n, size_m,
-                               size_k, _DataType(1), array_2, ldb, array_1, lda,
-                               _DataType(0), result, ldc, dep_events);
+                               size_k, _DataType(1), array_2, ld_array_2,
+                               array_1, ld_array_1, _DataType(0), result,
+                               ld_result, dep_events);
     }
     else {
         // input1: M x K
@@ -1167,17 +1168,17 @@ void func_map_init_linalg(func_map_t &fmap)
         eft_DBL, (void *)dpnp_eig_default_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_INT][eft_INT] = {
-        get_default_floating_type<>(),
+        get_default_floating_type(),
         (void *)dpnp_eig_ext_c<
-            int32_t, func_type_map_t::find_type<get_default_floating_type<>()>>,
+            int32_t, func_type_map_t::find_type<get_default_floating_type()>>,
         get_default_floating_type<std::false_type>(),
         (void *)dpnp_eig_ext_c<
             int32_t, func_type_map_t::find_type<
                          get_default_floating_type<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_LNG][eft_LNG] = {
-        get_default_floating_type<>(),
+        get_default_floating_type(),
         (void *)dpnp_eig_ext_c<
-            int64_t, func_type_map_t::find_type<get_default_floating_type<>()>>,
+            int64_t, func_type_map_t::find_type<get_default_floating_type()>>,
         get_default_floating_type<std::false_type>(),
         (void *)dpnp_eig_ext_c<
             int64_t, func_type_map_t::find_type<
@@ -1197,17 +1198,17 @@ void func_map_init_linalg(func_map_t &fmap)
         eft_DBL, (void *)dpnp_eigvals_default_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_EIGVALS_EXT][eft_INT][eft_INT] = {
-        get_default_floating_type<>(),
+        get_default_floating_type(),
         (void *)dpnp_eigvals_ext_c<
-            int32_t, func_type_map_t::find_type<get_default_floating_type<>()>>,
+            int32_t, func_type_map_t::find_type<get_default_floating_type()>>,
         get_default_floating_type<std::false_type>(),
         (void *)dpnp_eigvals_ext_c<
             int32_t, func_type_map_t::find_type<
                          get_default_floating_type<std::false_type>()>>};
     fmap[DPNPFuncName::DPNP_FN_EIGVALS_EXT][eft_LNG][eft_LNG] = {
-        get_default_floating_type<>(),
+        get_default_floating_type(),
         (void *)dpnp_eigvals_ext_c<
-            int64_t, func_type_map_t::find_type<get_default_floating_type<>()>>,
+            int64_t, func_type_map_t::find_type<get_default_floating_type()>>,
         get_default_floating_type<std::false_type>(),
         (void *)dpnp_eigvals_ext_c<
             int64_t, func_type_map_t::find_type<

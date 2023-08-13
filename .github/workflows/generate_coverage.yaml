@@ -14,7 +14,7 @@ jobs:
         shell: bash -l {0}
 
     env:
-      python-ver: '3.10'
+      python-ver: '3.11'
       CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
 
     steps:
@@ -41,7 +41,7 @@ jobs:
           sudo apt-get install lcov
       - name: Install dpnp dependencies
         run: |
-          conda install cython"<3" llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
+          conda install cython llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
               dpctl dpcpp_linux-64 sysroot_linux-64">=2.28" mkl-devel-dpcpp tbb-devel onedpl-devel ${{ env.CHANNELS }}
       - name: Conda info
         run: |

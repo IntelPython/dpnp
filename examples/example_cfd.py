@@ -1,6 +1,7 @@
+# cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,39 +25,24 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import os
+"""Example CFD.
 
-mypath = os.path.dirname(os.path.realpath(__file__))
+This example shows how DPNP follows compute follows data paradigm
 
-# workaround against hanging in OneMKL calls and in DPCTL
-os.environ.setdefault("SYCL_QUEUE_THREAD_POOL_SIZE", "6")
+"""
 
-import dpctl
+import dpnp as np
 
-dpctlpath = os.path.dirname(dpctl.__file__)
+x = np.empty(3)
+try:
+    x = np.asarray([1, 2, 3], device="gpu")
+except Exception:
+    print("GPU device is not available")
 
-# For Windows OS with Python >= 3.7, it is required to explicitly define a path
-# where to search for DLLs towards both DPNP backend and DPCTL Sycl interface,
-# otherwise DPNP import will be failing. This is because the libraries
-# are not installed under any of default paths where Python is searching.
-from platform import system
+print("Array x allocated on the device:", x.device)
 
-if system() == "Windows":
-    if hasattr(os, "add_dll_directory"):
-        os.add_dll_directory(mypath)
-        os.add_dll_directory(dpctlpath)
-    os.environ["PATH"] = os.pathsep.join(
-        [os.getenv("PATH", ""), mypath, dpctlpath]
-    )
+y = np.sum(x)
 
-from dpnp.dpnp_array import dpnp_array as ndarray
-from dpnp.dpnp_flatiter import flatiter as flatiter
-from dpnp.dpnp_iface_types import *
-from dpnp.dpnp_iface import *
-from dpnp.dpnp_iface import __all__ as _iface__all__
-from dpnp._version import get_versions
-
-__all__ = _iface__all__
-
-__version__ = get_versions()["version"]
-del get_versions
+print("Result y is located on the device:", y.device)  # The same device as x
+print("Shape of y is:", y.shape)  # 0-dimensional array
+print("y=", y)  # Expect 6
