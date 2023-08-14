@@ -46,9 +46,11 @@ __all__ = [
     "dpnp_bitwise_and",
     "dpnp_bitwise_or",
     "dpnp_bitwise_xor",
+    "dpnp_ceil",
     "dpnp_cos",
     "dpnp_divide",
     "dpnp_equal",
+    "dpnp_floor",
     "dpnp_floor_divide",
     "dpnp_greater",
     "dpnp_greater_equal",
@@ -72,6 +74,7 @@ __all__ = [
     "dpnp_sqrt",
     "dpnp_square",
     "dpnp_subtract",
+    "dpnp_trunc",
 ]
 
 
@@ -318,6 +321,59 @@ def dpnp_bitwise_xor(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_ceil_docstring = """
+ceil(x, out=None, order='K')
+
+Returns the ceiling for each element `x_i` for input array `x`.
+The ceil of the scalar `x` is the smallest integer `i`, such that `i >= x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have a real-valued data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise ceiling of input array.
+        The returned array has the same data type as `x`.
+"""
+
+
+def _call_ceil(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_ceil_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for ceil() function from OneMKL VM
+        return vmi._ceil(sycl_queue, src, dst, depends)
+    return ti._ceil(src, dst, sycl_queue, depends)
+
+
+ceil_func = UnaryElementwiseFunc(
+    "ceil", ti._ceil_result_type, _call_ceil, _ceil_docstring
+)
+
+
+def dpnp_ceil(x, out=None, order="K"):
+    """
+    Invokes ceil() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for ceil() function.
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = ceil_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _cos_docstring = """
 cos(x, out=None, order='K')
 Computes cosine for each element `x_i` for input array `x`.
@@ -481,6 +537,59 @@ def dpnp_equal(x1, x2, out=None, order="K"):
         "equal", ti._equal_result_type, ti._equal, _equal_docstring_
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_floor_docstring = """
+floor(x, out=None, order='K')
+
+Returns the floor for each element `x_i` for input array `x`.
+The floor of the scalar `x` is the largest integer `i`, such that `i <= x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have a real-valued data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise floor of input array.
+        The returned array has the same data type as `x`.
+"""
+
+
+def _call_floor(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_floor_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for floor() function from OneMKL VM
+        return vmi._floor(sycl_queue, src, dst, depends)
+    return ti._floor(src, dst, sycl_queue, depends)
+
+
+floor_func = UnaryElementwiseFunc(
+    "floor", ti._floor_result_type, _call_floor, _floor_docstring
+)
+
+
+def dpnp_floor(x, out=None, order="K"):
+    """
+    Invokes floor() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for floor() function.
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = floor_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1468,4 +1577,59 @@ def dpnp_subtract(x1, x2, out=None, order="K"):
         ti._subtract_inplace,
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_trunc_docstring = """
+trunc(x, out=None, order='K')
+
+Returns the truncated value for each element `x_i` for input array `x`.
+The truncated value of the scalar `x` is the nearest integer `i` which is
+closer to zero than `x` is. In short, the fractional part of the
+signed number `x` is discarded.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have a real-valued data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the truncated value of each element in `x`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_trunc(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_trunc_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for trunc() function from OneMKL VM
+        return vmi._trunc(sycl_queue, src, dst, depends)
+    return ti._trunc(src, dst, sycl_queue, depends)
+
+
+trunc_func = UnaryElementwiseFunc(
+    "trunc", ti._trunc_result_type, _call_trunc, _trunc_docstring
+)
+
+
+def dpnp_trunc(x, out=None, order="K"):
+    """
+    Invokes trunc() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for trunc() function.
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = trunc_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)

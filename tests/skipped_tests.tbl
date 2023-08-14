@@ -806,13 +806,10 @@ tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_5_{de
 tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_6_{decimals=100}::test_round_large
 tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_6_{decimals=100}::test_round_small
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_around
-tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_ceil
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
-tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_floor
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint_negative
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_round_
-tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_trunc
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out_wrong_shape
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_ndarray_cumprod_2dim_with_axis

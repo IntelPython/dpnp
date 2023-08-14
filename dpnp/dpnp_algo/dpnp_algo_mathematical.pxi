@@ -39,7 +39,6 @@ __all__ += [
     "dpnp_absolute",
     "dpnp_arctan2",
     "dpnp_around",
-    "dpnp_ceil",
     "dpnp_conjugate",
     "dpnp_copysign",
     "dpnp_cross",
@@ -48,7 +47,6 @@ __all__ += [
     "dpnp_diff",
     "dpnp_ediff1d",
     "dpnp_fabs",
-    "dpnp_floor",
     "dpnp_fmod",
     "dpnp_gradient",
     'dpnp_hypot',
@@ -65,7 +63,6 @@ __all__ += [
     "dpnp_sign",
     "dpnp_sum",
     "dpnp_trapz",
-    "dpnp_trunc"
 ]
 
 
@@ -156,10 +153,6 @@ cpdef utils.dpnp_descriptor dpnp_around(utils.dpnp_descriptor x1, int decimals):
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_ceil(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_CEIL_EXT, x1, dtype=None, out=out, where=True, func_name='ceil')
 
 
 cpdef utils.dpnp_descriptor dpnp_conjugate(utils.dpnp_descriptor x1):
@@ -293,10 +286,6 @@ cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):
 
 cpdef utils.dpnp_descriptor dpnp_fabs(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_FABS_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_floor(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_FLOOR_EXT, x1, dtype=None, out=out, where=True, func_name='floor')
 
 
 cpdef utils.dpnp_descriptor dpnp_fmod(utils.dpnp_descriptor x1_obj,
@@ -641,7 +630,3 @@ cpdef utils.dpnp_descriptor dpnp_trapz(utils.dpnp_descriptor y1, utils.dpnp_desc
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_trunc(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_TRUNC_EXT, x1, dtype=None, out=out, where=True, func_name='trunc')

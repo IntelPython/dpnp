@@ -113,8 +113,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CBRT_EXT, /**< Used in numpy.cbrt() impl, requires extra parameters
                        */
     DPNP_FN_CEIL,     /**< Used in numpy.ceil() impl  */
-    DPNP_FN_CEIL_EXT, /**< Used in numpy.ceil() impl, requires extra parameters
-                       */
     DPNP_FN_CHOLESKY, /**< Used in numpy.linalg.cholesky() impl  */
     DPNP_FN_CHOLESKY_EXT,   /**< Used in numpy.linalg.cholesky() impl, requires
                                extra parameters */
@@ -212,8 +210,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FLATTEN_EXT,       /**< Used in numpy.flatten() impl, requires extra
                                   parameters  */
     DPNP_FN_FLOOR,             /**< Used in numpy.floor() impl  */
-    DPNP_FN_FLOOR_EXT,         /**< Used in numpy.floor() impl, requires extra
-                                  parameters  */
     DPNP_FN_FLOOR_DIVIDE,      /**< Used in numpy.floor_divide() impl  */
     DPNP_FN_FLOOR_DIVIDE_EXT,  /**< Used in numpy.floor_divide() impl, requires
                                   extra parameters  */
@@ -488,9 +484,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TRIL,    /**< Used in numpy.tril() impl  */
     DPNP_FN_TRIU,    /**< Used in numpy.triu() impl  */
     DPNP_FN_TRUNC,   /**< Used in numpy.trunc() impl  */
-    DPNP_FN_TRUNC_EXT,  /**< Used in numpy.trunc() impl, requires extra
-                           parameters */
-    DPNP_FN_VANDER,     /**< Used in numpy.vander() impl  */
+    DPNP_FN_VANDER,  /**< Used in numpy.vander() impl  */
     DPNP_FN_VANDER_EXT, /**< Used in numpy.vander() impl, requires extra
                            parameters */
     DPNP_FN_VAR,        /**< Used in numpy.var() impl  */
