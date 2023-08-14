@@ -15,6 +15,7 @@ import dpnp
 from .helper import (
     get_all_dtypes,
     get_float_complex_dtypes,
+    get_float_dtypes,
     has_support_aspect64,
     is_cpu_device,
     is_win_platform,
@@ -597,119 +598,125 @@ class TestGradient:
 
 
 class TestCeil:
-    def test_ceil(self):
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_ceil(self, dtype):
         array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=numpy.float64)
+        out = numpy.empty(10, dtype)
 
         # DPNP
-        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
-        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
         result = dpnp.ceil(dp_array, out=dp_out)
 
         # original
-        np_array = numpy.array(array_data, dtype=numpy.float64)
+        np_array = numpy.array(array_data, dtype=dtype)
         expected = numpy.ceil(np_array, out=out)
 
         assert_array_equal(expected, result)
 
     @pytest.mark.parametrize(
-        "dtype",
-        [numpy.float32, numpy.int64, numpy.int32],
-        ids=["numpy.float32", "numpy.int64", "numpy.int32"],
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
     )
     def test_invalid_dtype(self, dtype):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dpnp_dtype = dpnp.float64 if has_support_aspect64() else dpnp.float32
+        pytest.skip("similar data types") if dpnp_dtype == dtype else None
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.ceil(dp_array, out=dp_out)
 
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
-    def test_invalid_shape(self, shape):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.ceil(dp_array, out=dp_out)
 
 
 class TestFloor:
-    def test_floor(self):
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_floor(self, dtype):
         array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=numpy.float64)
+        out = numpy.empty(10, dtype=dtype)
 
         # DPNP
-        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
-        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
         result = dpnp.floor(dp_array, out=dp_out)
 
         # original
-        np_array = numpy.array(array_data, dtype=numpy.float64)
+        np_array = numpy.array(array_data, dtype=dtype)
         expected = numpy.floor(np_array, out=out)
 
         assert_array_equal(expected, result)
 
     @pytest.mark.parametrize(
-        "dtype",
-        [numpy.float32, numpy.int64, numpy.int32],
-        ids=["numpy.float32", "numpy.int64", "numpy.int32"],
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
     )
     def test_invalid_dtype(self, dtype):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dpnp_dtype = dpnp.float64 if has_support_aspect64() else dpnp.float32
+        pytest.skip("similar data types") if dpnp_dtype == dtype else None
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.floor(dp_array, out=dp_out)
 
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
-    def test_invalid_shape(self, shape):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.floor(dp_array, out=dp_out)
 
 
 class TestTrunc:
-    def test_trunc(self):
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_trunc(self, dtype):
         array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=numpy.float64)
+        out = numpy.empty(10, dtype=dtype)
 
         # DPNP
-        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
-        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
         result = dpnp.trunc(dp_array, out=dp_out)
 
         # original
-        np_array = numpy.array(array_data, dtype=numpy.float64)
+        np_array = numpy.array(array_data, dtype=dtype)
         expected = numpy.trunc(np_array, out=out)
 
         assert_array_equal(expected, result)
 
     @pytest.mark.parametrize(
-        "dtype",
-        [numpy.float32, numpy.int64, numpy.int32],
-        ids=["numpy.float32", "numpy.int64", "numpy.int32"],
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
     )
     def test_invalid_dtype(self, dtype):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dpnp_dtype = dpnp.float64 if has_support_aspect64() else dpnp.float32
+        pytest.skip("similar data types") if dpnp_dtype == dtype else None
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.trunc(dp_array, out=dp_out)
 
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
-    def test_invalid_shape(self, shape):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.trunc(dp_array, out=dp_out)
 
 
