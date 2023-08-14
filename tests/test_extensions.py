@@ -193,8 +193,6 @@ def test_mean_over_axis_0_unsupported_out_types(
     input = dpt.empty((height, width), dtype=input_type, device=device)
     output = dpt.empty(width, dtype=output_type, device=device)
 
-    if func(input, output):
-        print(output_type)
     assert func(input, output) is None
 
 
@@ -202,7 +200,9 @@ def test_mean_over_axis_0_unsupported_out_types(
     "func, device, input_type, output_type",
     product(mean_sum, all_devices, [dpt.float32], [dpt.float32]),
 )
-def test_mean_over_axis_0_f_contig_input(func, device, input_type, output_type):
+def test_mean_sum_over_axis_0_f_contig_input(
+    func, device, input_type, output_type
+):
     skip_unsupported(device, input_type)
     skip_unsupported(device, output_type)
 
@@ -212,8 +212,6 @@ def test_mean_over_axis_0_f_contig_input(func, device, input_type, output_type):
     input = dpt.empty((height, width), dtype=input_type, device=device).T
     output = dpt.empty(width, dtype=output_type, device=device)
 
-    if func(input, output):
-        print(output_type)
     assert func(input, output) is None
 
 
@@ -221,7 +219,7 @@ def test_mean_over_axis_0_f_contig_input(func, device, input_type, output_type):
     "func, device, input_type, output_type",
     product(mean_sum, all_devices, [dpt.float32], [dpt.float32]),
 )
-def test_mean_over_axis_0_f_contig_output(
+def test_mean_sum_over_axis_0_f_contig_output(
     func, device, input_type, output_type
 ):
     skip_unsupported(device, input_type)
@@ -230,9 +228,25 @@ def test_mean_over_axis_0_f_contig_output(
     height = 1
     width = 10
 
-    input = dpt.empty((height, 10), dtype=input_type, device=device)
-    output = dpt.empty(20, dtype=output_type, device=device)[::2]
+    input = dpt.empty((height, width), dtype=input_type, device=device)
+    output = dpt.empty(width * 2, dtype=output_type, device=device)[::2]
 
-    if func(input, output):
-        print(output_type)
+    assert func(input, output) is None
+
+
+@pytest.mark.parametrize(
+    "func, device, input_type, output_type",
+    product(mean_sum, all_devices, [dpt.float32], [dpt.float32, dpt.float64]),
+)
+def test_mean_sum_over_axis_0_big_output(func, device, input_type, output_type):
+    skip_unsupported(device, input_type)
+    skip_unsupported(device, output_type)
+
+    local_mem_size = device.local_mem_size
+    height = 1
+    width = 1 + local_mem_size // output_type.itemsize
+
+    input = dpt.empty((height, width), dtype=input_type, device=device)
+    output = dpt.empty(width, dtype=output_type, device=device)
+
     assert func(input, output) is None
