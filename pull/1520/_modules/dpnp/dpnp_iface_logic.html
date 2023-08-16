@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.12.2dev0+28.g823f9b99 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.12.2dev0+29.g16ca9309 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+28.g823f9b99
+                0.12.2dev0+29.g16ca9309
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -128,10 +128,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
+<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
@@ -172,24 +174,29 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="all"><a class="viewcode-back" href="../../reference/generated/dpnp.all.html#dpnp.all">[docs]</a><span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="all"><a class="viewcode-back" href="../../reference/generated/dpnp.all.html#dpnp.all">[docs]</a><span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test whether all array elements along a given axis evaluate to True.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.all`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dpnp.ndarray</span>
+<span class="sd">        An array with a data type of `bool`</span>
+<span class="sd">        containing the results of the logical AND reduction.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Parameters `x` is supported either as :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `out` and `where` are supported with default value.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Parameter `axis` is supported only with default value `None`.</span>
-<span class="sd">    Parameter `out` is supported only with default value `None`.</span>
-<span class="sd">    Parameter `keepdims` is supported only with default value `False`.</span>
-<span class="sd">    Parameter `where` is supported only with default value `True`.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ndarray.all` : equivalent method</span>
 <span class="sd">    :obj:`dpnp.any` : Test whether any element along a given axis evaluates to True.</span>
 
 <span class="sd">    Notes</span>
@@ -199,35 +206,37 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
-<span class="sd">    &gt;&gt;&gt; x = dp.array([[True, False], [True, True]])</span>
-<span class="sd">    &gt;&gt;&gt; dp.all(x)</span>
-<span class="sd">    False</span>
-<span class="sd">    &gt;&gt;&gt; x2 = dp.array([-1, 4, 5])</span>
-<span class="sd">    &gt;&gt;&gt; dp.all(x2)</span>
-<span class="sd">    True</span>
-<span class="sd">    &gt;&gt;&gt; x3 = dp.array([1.0, dp.nan])</span>
-<span class="sd">    &gt;&gt;&gt; dp.all(x3)</span>
-<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([[True, False], [True, True]])</span>
+<span class="sd">    &gt;&gt;&gt; np.all(x)</span>
+<span class="sd">    array(False)</span>
+
+<span class="sd">    &gt;&gt;&gt; np.all(x, axis=0)</span>
+<span class="sd">    array([ True, False])</span>
+
+<span class="sd">    &gt;&gt;&gt; x2 = np.array([-1, 4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; np.all(x2)</span>
+<span class="sd">    array(True)</span>
+
+<span class="sd">    &gt;&gt;&gt; x3 = np.array([1.0, np.nan])</span>
+<span class="sd">    &gt;&gt;&gt; np.all(x3)</span>
+<span class="sd">    array(True)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">keepdims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_all</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
+            <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+                <span class="n">dpt</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
+            <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
     <span class="p">)</span></div>
 
 
@@ -269,24 +278,29 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">allclose</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="any"><a class="viewcode-back" href="../../reference/generated/dpnp.any.html#dpnp.any">[docs]</a><span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="any"><a class="viewcode-back" href="../../reference/generated/dpnp.any.html#dpnp.any">[docs]</a><span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test whether any array element along a given axis evaluates to True.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.any`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dpnp.ndarray</span>
+<span class="sd">        An array with a data type of `bool`</span>
+<span class="sd">        containing the results of the logical OR reduction.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Parameters `x` is supported either as :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `out` and `where` are supported with default value.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Parameter `axis` is supported only with default value `None`.</span>
-<span class="sd">    Parameter `out` is supported only with default value `None`.</span>
-<span class="sd">    Parameter `keepdims` is supported only with default value `False`.</span>
-<span class="sd">    Parameter `where` is supported only with default value `True`.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ndarray.any` : equivalent method</span>
 <span class="sd">    :obj:`dpnp.all` : Test whether all elements along a given axis evaluate to True.</span>
 
 <span class="sd">    Notes</span>
@@ -296,35 +310,37 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
-<span class="sd">    &gt;&gt;&gt; x = dp.array([[True, False], [True, True]])</span>
-<span class="sd">    &gt;&gt;&gt; dp.any(x)</span>
-<span class="sd">    True</span>
-<span class="sd">    &gt;&gt;&gt; x2 = dp.array([0, 0, 0])</span>
-<span class="sd">    &gt;&gt;&gt; dp.any(x2)</span>
-<span class="sd">    False</span>
-<span class="sd">    &gt;&gt;&gt; x3 = dp.array([1.0, dp.nan])</span>
-<span class="sd">    &gt;&gt;&gt; dp.any(x3)</span>
-<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([[True, False], [True, True]])</span>
+<span class="sd">    &gt;&gt;&gt; np.any(x)</span>
+<span class="sd">    array(True)</span>
+
+<span class="sd">    &gt;&gt;&gt; np.any(x, axis=0)</span>
+<span class="sd">    array([ True,  True])</span>
+
+<span class="sd">    &gt;&gt;&gt; x2 = np.array([0, 0, 0])</span>
+<span class="sd">    &gt;&gt;&gt; np.any(x2)</span>
+<span class="sd">    array(False)</span>
+
+<span class="sd">    &gt;&gt;&gt; x3 = np.array([1.0, np.nan])</span>
+<span class="sd">    &gt;&gt;&gt; np.any(x3)</span>
+<span class="sd">    array(True)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">keepdims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_any</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
+            <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+                <span class="n">dpt</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
+            <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">any</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">any</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
     <span class="p">)</span></div>
 
 
