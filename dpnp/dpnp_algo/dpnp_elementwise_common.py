@@ -1390,6 +1390,42 @@ def dpnp_multiply(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_negative_docstring = """
+negative(x, out=None, order="K")
+
+Computes the numerical negative for each element `x_i` of input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the negative of `x`.
+"""
+
+
+negative_func = UnaryElementwiseFunc(
+    "negative", ti._negative_result_type, ti._negative, _negative_docstring
+)
+
+
+def dpnp_negative(x, out=None, order="K"):
+    """Invokes negative() from dpctl.tensor implementation for negative() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = negative_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _not_equal_docstring_ = """
 not_equal(x1, x2, out=None, order="K")
 
@@ -1522,6 +1558,47 @@ def dpnp_right_shift(x1, x2, out=None, order="K"):
     res_usm = right_shift_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_sign_docstring = """
+sign(x, out=None, order="K")
+
+Computes an indication of the sign of each element `x_i` of input array `x`
+using the signum function.
+
+The signum function returns `-1` if `x_i` is less than `0`,
+`0` if `x_i` is equal to `0`, and `1` if `x_i` is greater than `0`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise results. The data type of the
+        returned array is determined by the Type Promotion Rules.
+"""
+
+
+sign_func = UnaryElementwiseFunc(
+    "sign", ti._sign_result_type, ti._sign, _sign_docstring
+)
+
+
+def dpnp_sign(x, out=None, order="K"):
+    """Invokes sign() from dpctl.tensor implementation for sign() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = sign_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 

@@ -160,8 +160,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MODF_EXT
         DPNP_FN_NANVAR
         DPNP_FN_NANVAR_EXT
-        DPNP_FN_NEGATIVE
-        DPNP_FN_NEGATIVE_EXT
         DPNP_FN_NONZERO
         DPNP_FN_ONES
         DPNP_FN_ONES_LIKE
@@ -257,8 +255,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_ZIPF_EXT
         DPNP_FN_SEARCHSORTED
         DPNP_FN_SEARCHSORTED_EXT
-        DPNP_FN_SIGN
-        DPNP_FN_SIGN_EXT
         DPNP_FN_SINH
         DPNP_FN_SINH_EXT
         DPNP_FN_SORT
@@ -427,7 +423,6 @@ cpdef dpnp_descriptor dpnp_maximum(dpnp_descriptor x1_obj, dpnp_descriptor x2_ob
                                    dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_minimum(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
-cpdef dpnp_descriptor dpnp_negative(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_power(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                  dpnp_descriptor out=*, object where=*)
 

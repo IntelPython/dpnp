@@ -57,7 +57,9 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_floor,
     dpnp_floor_divide,
     dpnp_multiply,
+    dpnp_negative,
     dpnp_remainder,
+    dpnp_sign,
     dpnp_subtract,
     dpnp_trunc,
 )
@@ -1486,39 +1488,64 @@ def nansum(x1, **kwargs):
     return call_origin(numpy.nansum, x1, **kwargs)
 
 
-def negative(x1, **kwargs):
+def negative(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Negative element-wise.
 
     For full documentation refer to :obj:`numpy.negative`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The numerical negative of each element of `x`.
+
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.ndarray`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.copysign` : Change the sign of x1 to that of x2, element-wise.
+    :obj:`dpnp.copysign` : Change the sign of `x1` to that of `x2`, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> result = np.negative([1, -1])
-    >>> [x for x in result]
-    [-1, 1]
+    >>> np.negative(np.array([1, -1]))
+    array([-1, 1])
 
+    The ``-`` operator can be used as a shorthand for ``negative`` on
+    :class:`dpnp.ndarray`.
+
+    >>> x = np.array([1., -1.])
+    >>> -x
+    array([-1.,  1.])
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.negative,
+        dpnp_negative,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc and not kwargs:
-        return dpnp_negative(x1_desc).get_pyobj()
-
-    return call_origin(numpy.negative, x1, **kwargs)
 
 
 def power(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
@@ -1759,35 +1786,70 @@ def round_(a, decimals=0, out=None):
     return around(a, decimals, out)
 
 
-def sign(x1, **kwargs):
+def sign(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Returns an element-wise indication of the sign of a number.
 
     For full documentation refer to :obj:`numpy.sign`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The indication of the sign of each element of `x`.
+
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> result = np.sign(np.array([-5., 4.5]))
-    >>> [x for x in result]
-    [-1.0, 1.0]
+    >>> np.sign(np.array([-5., 4.5]))
+    array([-1.0, 1.0])
+    >>> np.sign(np.array(0))
+    array(0)
+    >>> np.sign(np.array(5-2j))
+    array([1+0j])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    if x1_desc and not kwargs:
-        return dpnp_sign(x1_desc).get_pyobj()
-
-    return call_origin(numpy.sign, x1, **kwargs)
+    if numpy.iscomplexobj(x):
+        return call_origin(
+            numpy.sign,
+            x,
+            out=out,
+            where=where,
+            order=order,
+            dtype=dtype,
+            subok=subok,
+            **kwargs,
+        )
+    else:
+        return check_nd_call_func(
+            numpy.sign,
+            dpnp_sign,
+            x,
+            out=out,
+            where=where,
+            order=order,
+            dtype=dtype,
+            subok=subok,
+            **kwargs,
+        )
 
 
 def subtract(

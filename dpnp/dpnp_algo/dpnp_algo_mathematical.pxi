@@ -56,10 +56,8 @@ __all__ += [
     "dpnp_nancumsum",
     "dpnp_nanprod",
     "dpnp_nansum",
-    "dpnp_negative",
     "dpnp_power",
     "dpnp_prod",
-    "dpnp_sign",
     "dpnp_sum",
     "dpnp_trapz",
 ]
@@ -455,10 +453,6 @@ cpdef utils.dpnp_descriptor dpnp_nansum(utils.dpnp_descriptor x1):
     return dpnp_sum(result)
 
 
-cpdef utils.dpnp_descriptor dpnp_negative(dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_NEGATIVE_EXT, x1)
-
-
 cpdef utils.dpnp_descriptor dpnp_power(utils.dpnp_descriptor x1_obj,
                                        utils.dpnp_descriptor x2_obj,
                                        object dtype=None,
@@ -527,10 +521,6 @@ cpdef utils.dpnp_descriptor dpnp_prod(utils.dpnp_descriptor x1,
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_sign(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_SIGN_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor x1,
