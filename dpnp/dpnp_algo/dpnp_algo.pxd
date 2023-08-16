@@ -62,12 +62,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_AROUND_EXT
         DPNP_FN_ASTYPE
         DPNP_FN_ASTYPE_EXT
-        DPNP_FN_BITWISE_AND
-        DPNP_FN_BITWISE_AND_EXT
-        DPNP_FN_BITWISE_OR
-        DPNP_FN_BITWISE_OR_EXT
-        DPNP_FN_BITWISE_XOR
-        DPNP_FN_BITWISE_XOR_EXT
         DPNP_FN_CBRT
         DPNP_FN_CBRT_EXT
         DPNP_FN_CEIL
@@ -148,12 +142,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_INITVAL_EXT
         DPNP_FN_INV
         DPNP_FN_INV_EXT
-        DPNP_FN_INVERT
-        DPNP_FN_INVERT_EXT
         DPNP_FN_KRON
         DPNP_FN_KRON_EXT
-        DPNP_FN_LEFT_SHIFT
-        DPNP_FN_LEFT_SHIFT_EXT
         DPNP_FN_LOG10
         DPNP_FN_LOG10_EXT
         DPNP_FN_LOG1P
@@ -204,8 +194,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RECIP_EXT
         DPNP_FN_REPEAT
         DPNP_FN_REPEAT_EXT
-        DPNP_FN_RIGHT_SHIFT
-        DPNP_FN_RIGHT_SHIFT_EXT
         DPNP_FN_RNG_BETA
         DPNP_FN_RNG_BETA_EXT
         DPNP_FN_RNG_BINOMIAL
@@ -419,37 +407,6 @@ Internal functions
 """
 cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype)
 cdef dpnp_DPNPFuncType_to_dtype(size_t type)
-
-
-"""
-Bitwise functions
-"""
-cpdef dpnp_descriptor dpnp_bitwise_and(dpnp_descriptor x1_obj,
-                                       dpnp_descriptor x2_obj,
-                                       object dtype=*,
-                                       dpnp_descriptor out=*,
-                                       object where=*)
-cpdef dpnp_descriptor dpnp_bitwise_or(dpnp_descriptor x1_obj,
-                                      dpnp_descriptor x2_obj,
-                                      object dtype=*,
-                                      dpnp_descriptor out=*,
-                                      object where=*)
-cpdef dpnp_descriptor dpnp_bitwise_xor(dpnp_descriptor x1_obj,
-                                       dpnp_descriptor x2_obj,
-                                       object dtype=*,
-                                       dpnp_descriptor out=*,
-                                       object where=*)
-cpdef dpnp_descriptor dpnp_invert(dpnp_descriptor x1)
-cpdef dpnp_descriptor dpnp_left_shift(dpnp_descriptor x1_obj,
-                                      dpnp_descriptor x2_obj,
-                                      object dtype=*,
-                                      dpnp_descriptor out=*,
-                                      object where=*)
-cpdef dpnp_descriptor dpnp_right_shift(dpnp_descriptor x1_obj,
-                                       dpnp_descriptor x2_obj,
-                                       object dtype=*,
-                                       dpnp_descriptor out=*,
-                                       object where=*)
 
 
 """
