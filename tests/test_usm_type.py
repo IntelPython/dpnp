@@ -10,7 +10,7 @@ list_of_usm_types = ["device", "shared", "host"]
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-def test_coerced_usm_types_sum(usm_type_x, usm_type_y):
+def test_coerced_usm_types_add(usm_type_x, usm_type_y):
     x = dp.arange(1000, usm_type=usm_type_x)
     y = dp.arange(1000, usm_type=usm_type_y)
 

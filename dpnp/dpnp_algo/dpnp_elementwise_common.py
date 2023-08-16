@@ -163,18 +163,33 @@ Args:
         Default: "K".
 Returns:
     dpnp.ndarray:
-        an array containing the result of element-wise division. The data type
+        an array containing the result of element-wise addition. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
 
+def _call_add(src1, src2, dst, sycl_queue, depends=None):
+    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_add_to_call(sycl_queue, src1, src2, dst):
+        # call pybind11 extension for add() function from OneMKL VM
+        return vmi._add(sycl_queue, src1, src2, dst, depends)
+    return ti._add(src1, src2, dst, sycl_queue, depends)
+
+
+add_func = BinaryElementwiseFunc(
+    "add", ti._add_result_type, _call_add, _add_docstring_, ti._add_inplace
+)
+
+
 def dpnp_add(x1, x2, out=None, order="K"):
     """
-    Invokes add() from dpctl.tensor implementation for add() function.
+    Invokes add() function from pybind11 extension of OneMKL VM if possible.
 
-    TODO: add a pybind11 extension of add() from OneMKL VM where possible
-    and would be performance effective.
-
+    Otherwise fully relies on dpctl.tensor implementation for add() function.
     """
 
     # dpctl.tensor only works with usm_ndarray or scalar
@@ -182,10 +197,9 @@ def dpnp_add(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "add", ti._add_result_type, ti._add, _add_docstring_, ti._add_inplace
+    res_usm = add_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1281,18 +1295,37 @@ Args:
         Default: "K".
 Returns:
     dpnp.ndarray:
-        an array containing the result of element-wise division. The data type
+        an array containing the result of element-wise multiplication. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
 
+def _call_multiply(src1, src2, dst, sycl_queue, depends=None):
+    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_mul_to_call(sycl_queue, src1, src2, dst):
+        # call pybind11 extension for mul() function from OneMKL VM
+        return vmi._mul(sycl_queue, src1, src2, dst, depends)
+    return ti._multiply(src1, src2, dst, sycl_queue, depends)
+
+
+multiply_func = BinaryElementwiseFunc(
+    "multiply",
+    ti._multiply_result_type,
+    _call_multiply,
+    _multiply_docstring_,
+    ti._multiply_inplace,
+)
+
+
 def dpnp_multiply(x1, x2, out=None, order="K"):
     """
-    Invokes multiply() from dpctl.tensor implementation for multiply() function.
+    Invokes mul() function from pybind11 extension of OneMKL VM if possible.
 
-    TODO: add a pybind11 extension of mul() from OneMKL VM where possible
-    and would be performance effective.
-
+    Otherwise fully relies on dpctl.tensor implementation for multiply() function.
     """
 
     # dpctl.tensor only works with usm_ndarray or scalar
@@ -1300,14 +1333,9 @@ def dpnp_multiply(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "multiply",
-        ti._multiply_result_type,
-        ti._multiply,
-        _multiply_docstring_,
-        ti._multiply_inplace,
+    res_usm = multiply_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1622,18 +1650,37 @@ Args:
         Default: "K".
 Returns:
     dpnp.ndarray:
-        an array containing the result of element-wise division. The data type
+        an array containing the result of element-wise subtraction. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
 
+def _call_subtract(src1, src2, dst, sycl_queue, depends=None):
+    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_sub_to_call(sycl_queue, src1, src2, dst):
+        # call pybind11 extension for sub() function from OneMKL VM
+        return vmi._sub(sycl_queue, src1, src2, dst, depends)
+    return ti._subtract(src1, src2, dst, sycl_queue, depends)
+
+
+subtract_func = BinaryElementwiseFunc(
+    "subtract",
+    ti._subtract_result_type,
+    _call_subtract,
+    _subtract_docstring_,
+    ti._subtract_inplace,
+)
+
+
 def dpnp_subtract(x1, x2, out=None, order="K"):
     """
-    Invokes subtract() from dpctl.tensor implementation for subtract() function.
+    Invokes sub() function from pybind11 extension of OneMKL VM if possible.
 
-    TODO: add a pybind11 extension of sub() from OneMKL VM where possible
-    and would be performance effective.
-
+    Otherwise fully relies on dpctl.tensor implementation for subtract() function.
     """
 
     # TODO: discuss with dpctl if the check is needed to be moved there
@@ -1652,14 +1699,9 @@ def dpnp_subtract(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "subtract",
-        ti._subtract_result_type,
-        ti._subtract,
-        _subtract_docstring_,
-        ti._subtract_inplace,
+    res_usm = subtract_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
