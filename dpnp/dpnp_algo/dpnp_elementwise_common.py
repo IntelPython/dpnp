@@ -1213,9 +1213,9 @@ def dpnp_remainder(x1, x2, out=None, order="K"):
 
     res_usm = remainder_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
-<<<<<<< HEAD
     )
     return dpnp_array._create_from_usm_ndarray(res_usm)
+
 
 _right_shift_docstring_ = """
 right_shift(x1, x2, out=None, order='K')
@@ -1255,9 +1255,8 @@ def dpnp_right_shift(x1, x2, out=None, order="K"):
         ti._bitwise_right_shift_result_type,
         ti._bitwise_right_shift,
         _right_shift_docstring_,
-=======
->>>>>>> address reviewer's comments
     )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
