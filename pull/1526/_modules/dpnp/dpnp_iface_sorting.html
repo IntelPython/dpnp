@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.12.2dev0+38.ged63bfddf documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+              <div class="version">
+                0.12.2dev0+38.ged63bfddf
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dpnp.dpnp_iface_sorting</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dpnp.dpnp_iface_sorting</h1><div class="highlight"><pre>
+<span></span><span class="c1"># cython: language_level=3</span>
+<span class="c1"># distutils: language = c++</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># *****************************************************************************</span>
+<span class="c1"># Copyright (c) 2016-2023, Intel Corporation</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Redistribution and use in source and binary forms, with or without</span>
+<span class="c1"># modification, are permitted provided that the following conditions are met:</span>
+<span class="c1"># - Redistributions of source code must retain the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer.</span>
+<span class="c1"># - Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer in the documentation</span>
+<span class="c1">#   and/or other materials provided with the distribution.</span>
+<span class="c1">#</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
+<span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
+<span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
+<span class="c1"># LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR</span>
+<span class="c1"># CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF</span>
+<span class="c1"># SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS</span>
+<span class="c1"># INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN</span>
+<span class="c1"># CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)</span>
+<span class="c1"># ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF</span>
+<span class="c1"># THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c1"># *****************************************************************************</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Interface of the sorting function of the dpnp</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">This module is a face or public interface file for the library</span>
+<span class="sd">it contains:</span>
+<span class="sd"> - Interface functions</span>
+<span class="sd"> - documentation for the functions</span>
+<span class="sd"> - The functions parameters check</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span> <span class="s2">&quot;partition&quot;</span><span class="p">,</span> <span class="s2">&quot;searchsorted&quot;</span><span class="p">,</span> <span class="s2">&quot;sort&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="argsort"><a class="viewcode-back" href="../../reference/generated/dpnp.argsort.html#dpnp.argsort">[docs]</a><span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the indices that would sort an array.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.argsort`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Prameters ``axis`` is supported only with default value ``-1``.</span>
+<span class="sd">    Prameters ``kind`` is supported only with default value ``None``.</span>
+<span class="sd">    Prameters ``order`` is supported only with default value ``None``.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.sort` : Describes sorting algorithms used.</span>
+<span class="sd">    :obj:`dpnp.lexsort` : Indirect stable sort with multiple keys.</span>
+<span class="sd">    :obj:`dpnp.argpartition` : Indirect partial sort.</span>
+<span class="sd">    :obj:`dpnp.take_along_axis` : Apply ``index_array`` from argsort to</span>
+<span class="sd">                                  an array as if by calling sort.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([3, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; out = np.argsort(x)</span>
+<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
+<span class="sd">    [1, 2, 0]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
+        <span class="n">in_array1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_argsort</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">argsort</span><span class="p">,</span> <span class="n">in_array1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="partition"><a class="viewcode-back" href="../../reference/generated/dpnp.partition.html#dpnp.partition">[docs]</a><span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;introselect&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a partitioned copy of an array.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.partition`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Input kth is supported as :obj:`int`.</span>
+<span class="sd">    Parameters ``axis``, ``kind`` and ``order`` are supported only with default values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kth</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">kth</span> <span class="o">&gt;=</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">+</span> <span class="n">kth</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">axis</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;introselect&quot;</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_partition</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">partition</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="searchsorted"><a class="viewcode-back" href="../../reference/generated/dpnp.searchsorted.html#dpnp.searchsorted">[docs]</a><span class="k">def</span> <span class="nf">searchsorted</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">sorter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find indices where elements should be inserted to maintain order.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.searchsorted`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Input arrays is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Input array is supported only sorted.</span>
+<span class="sd">    Input side is supported only values ``left``, ``right``.</span>
+<span class="sd">    Parameters ``sorter`` is supported only with default values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">side</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">sorter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_searchsorted</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">,</span> <span class="n">sorter</span><span class="o">=</span><span class="n">sorter</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sort"><a class="viewcode-back" href="../../reference/generated/dpnp.sort.html#dpnp.sort">[docs]</a><span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a sorted copy of an array.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.sort`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Keyword arguments ``kwargs`` are currently unsupported.</span>
+<span class="sd">    Dimension of input array is supported to be equal to ``1``.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.argsort` : Indirect sort.</span>
+<span class="sd">    :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.</span>
+<span class="sd">    :obj:`dpnp.searchsorted` : Find elements in a sorted array.</span>
+<span class="sd">    :obj:`dpnp.partition` : Partial sort.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 4, 3, 1])</span>
+<span class="sd">    &gt;&gt;&gt; out = np.sort(a)</span>
+<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
+<span class="sd">    [1, 1, 3, 4]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_sort</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sort</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2023, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
