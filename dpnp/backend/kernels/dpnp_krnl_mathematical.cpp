@@ -988,23 +988,6 @@ void (*dpnp_remainder_default_c)(void *,
                                  const size_t *) =
     dpnp_remainder_c<_DataType_output, _DataType_input1, _DataType_input2>;
 
-template <typename _DataType_output,
-          typename _DataType_input1,
-          typename _DataType_input2>
-DPCTLSyclEventRef (*dpnp_remainder_ext_c)(DPCTLSyclQueueRef,
-                                          void *,
-                                          const void *,
-                                          const size_t,
-                                          const shape_elem_type *,
-                                          const size_t,
-                                          const void *,
-                                          const size_t,
-                                          const shape_elem_type *,
-                                          const size_t,
-                                          const size_t *,
-                                          const DPCTLEventVectorRef) =
-    dpnp_remainder_c<_DataType_output, _DataType_input1, _DataType_input2>;
-
 template <typename _KernelNameSpecialization1,
           typename _KernelNameSpecialization2,
           typename _KernelNameSpecialization3>
@@ -1384,39 +1367,6 @@ void func_map_init_mathematical(func_map_t &fmap)
         eft_DBL, (void *)dpnp_remainder_default_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_remainder_default_c<double, double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_remainder_ext_c<int32_t, int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_INT][eft_LNG] = {
-        eft_LNG, (void *)dpnp_remainder_ext_c<int64_t, int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_INT][eft_FLT] = {
-        eft_DBL, (void *)dpnp_remainder_ext_c<double, int32_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_INT][eft_DBL] = {
-        eft_DBL, (void *)dpnp_remainder_ext_c<double, int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_LNG][eft_INT] = {
-        eft_LNG, (void *)dpnp_remainder_ext_c<int64_t, int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_remainder_ext_c<int64_t, int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_LNG][eft_FLT] = {
-        eft_DBL, (void *)dpnp_remainder_ext_c<double, int64_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_LNG][eft_DBL] = {
-        eft_DBL, (void *)dpnp_remainder_ext_c<double, int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_FLT][eft_INT] = {
-        eft_DBL, (void *)dpnp_remainder_ext_c<double, float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_FLT][eft_LNG] = {
-        eft_DBL, (void *)dpnp_remainder_ext_c<double, float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_remainder_ext_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_FLT][eft_DBL] = {
-        eft_DBL, (void *)dpnp_remainder_ext_c<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_DBL][eft_INT] = {
-        eft_DBL, (void *)dpnp_remainder_ext_c<double, double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_DBL][eft_LNG] = {
-        eft_DBL, (void *)dpnp_remainder_ext_c<double, double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_DBL][eft_FLT] = {
-        eft_DBL, (void *)dpnp_remainder_ext_c<double, double, float>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_remainder_ext_c<double, double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_trapz_default_c<int32_t, int32_t, double>};

@@ -188,8 +188,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_QR_EXT
         DPNP_FN_RADIANS
         DPNP_FN_RADIANS_EXT
-        DPNP_FN_REMAINDER
-        DPNP_FN_REMAINDER_EXT
         DPNP_FN_RECIP
         DPNP_FN_RECIP_EXT
         DPNP_FN_REPEAT
@@ -442,9 +440,6 @@ cpdef dpnp_descriptor dpnp_minimum(dpnp_descriptor x1_obj, dpnp_descriptor x2_ob
 cpdef dpnp_descriptor dpnp_negative(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_power(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                  dpnp_descriptor out=*, object where=*)
-cpdef dpnp_descriptor dpnp_remainder(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                     dpnp_descriptor out=*, object where=*)
-
 
 """
 Array manipulation routines

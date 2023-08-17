@@ -313,25 +313,23 @@ enum class DPNPFuncName : size_t
     DPNP_FN_PUT_ALONG_AXIS_EXT, /**< Used in numpy.put_along_axis() impl,
                                    requires extra parameters */
     DPNP_FN_QR,                 /**< Used in numpy.linalg.qr() impl  */
-    DPNP_FN_QR_EXT,        /**< Used in numpy.linalg.qr() impl, requires extra
-                              parameters */
-    DPNP_FN_RADIANS,       /**< Used in numpy.radians() impl  */
-    DPNP_FN_RADIANS_EXT,   /**< Used in numpy.radians() impl, requires extra
-                              parameters */
-    DPNP_FN_REMAINDER,     /**< Used in numpy.remainder() impl  */
-    DPNP_FN_REMAINDER_EXT, /**< Used in numpy.remainder() impl, requires extra
-                              parameters */
-    DPNP_FN_RECIP,         /**< Used in numpy.recip() impl  */
-    DPNP_FN_RECIP_EXT,     /**< Used in numpy.recip() impl, requires extra
-                              parameters */
-    DPNP_FN_REPEAT,        /**< Used in numpy.repeat() impl  */
-    DPNP_FN_REPEAT_EXT,    /**< Used in numpy.repeat() impl, requires extra
-                              parameters */
-    DPNP_FN_RIGHT_SHIFT,   /**< Used in numpy.right_shift() impl  */
-    DPNP_FN_RNG_BETA,      /**< Used in numpy.random.beta() impl  */
-    DPNP_FN_RNG_BETA_EXT,  /**< Used in numpy.random.beta() impl, requires extra
-                              parameters */
-    DPNP_FN_RNG_BINOMIAL,  /**< Used in numpy.random.binomial() impl  */
+    DPNP_FN_QR_EXT,       /**< Used in numpy.linalg.qr() impl, requires extra
+                             parameters */
+    DPNP_FN_RADIANS,      /**< Used in numpy.radians() impl  */
+    DPNP_FN_RADIANS_EXT,  /**< Used in numpy.radians() impl, requires extra
+                             parameters */
+    DPNP_FN_REMAINDER,    /**< Used in numpy.remainder() impl  */
+    DPNP_FN_RECIP,        /**< Used in numpy.recip() impl  */
+    DPNP_FN_RECIP_EXT,    /**< Used in numpy.recip() impl, requires extra
+                             parameters */
+    DPNP_FN_REPEAT,       /**< Used in numpy.repeat() impl  */
+    DPNP_FN_REPEAT_EXT,   /**< Used in numpy.repeat() impl, requires extra
+                             parameters */
+    DPNP_FN_RIGHT_SHIFT,  /**< Used in numpy.right_shift() impl  */
+    DPNP_FN_RNG_BETA,     /**< Used in numpy.random.beta() impl  */
+    DPNP_FN_RNG_BETA_EXT, /**< Used in numpy.random.beta() impl, requires extra
+                             parameters */
+    DPNP_FN_RNG_BINOMIAL, /**< Used in numpy.random.binomial() impl  */
     DPNP_FN_RNG_BINOMIAL_EXT,  /**< Used in numpy.random.binomial() impl,
                                   requires extra parameters */
     DPNP_FN_RNG_CHISQUARE,     /**< Used in numpy.random.chisquare() impl  */
