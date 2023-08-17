@@ -27,7 +27,7 @@ class TestFft(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_fft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -40,7 +40,7 @@ class TestFft(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_ifft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -82,7 +82,7 @@ class TestFft2(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_fft2(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -95,7 +95,7 @@ class TestFft2(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_ifft2(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -138,7 +138,7 @@ class TestFftn(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_fftn(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -151,7 +151,7 @@ class TestFftn(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_ifftn(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -176,7 +176,7 @@ class TestRfft(unittest.TestCase):
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_rfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -188,7 +188,7 @@ class TestRfft(unittest.TestCase):
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_irfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -257,7 +257,7 @@ class TestHfft(unittest.TestCase):
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_hfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -269,7 +269,7 @@ class TestHfft(unittest.TestCase):
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_ihfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -290,7 +290,7 @@ class TestFftfreq(unittest.TestCase):
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_fftfreq(self, xp, dtype):
         out = xp.fft.fftfreq(self.n, self.d)
@@ -301,7 +301,7 @@ class TestFftfreq(unittest.TestCase):
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_rfftfreq(self, xp, dtype):
         out = xp.fft.rfftfreq(self.n, self.d)
@@ -325,7 +325,7 @@ class TestFftshift(unittest.TestCase):
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_fftshift(self, xp, dtype):
         x = testing.shaped_random(self.shape, xp, dtype)
@@ -337,7 +337,7 @@ class TestFftshift(unittest.TestCase):
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
-        type_check=True if has_support_aspect64() else False,
+        type_check=has_support_aspect64(),
     )
     def test_ifftshift(self, xp, dtype):
         x = testing.shaped_random(self.shape, xp, dtype)
