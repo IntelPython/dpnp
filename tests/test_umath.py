@@ -73,9 +73,9 @@ def get_id(val):
 def test_umaths(test_cases):
     umath, args_str = test_cases
     if umath == "matmul":
-        sh = (4, 4) 
+        sh = (4, 4)
     elif umath == "power":
-        sh = (2, 3) 
+        sh = (2, 3)
     else:
         sh = (3, 4)
 
