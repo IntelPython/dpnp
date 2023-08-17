@@ -1789,12 +1789,8 @@ def subtract(
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-<<<<<<< HEAD
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-=======
-    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
->>>>>>> use_dpctl_ceil_floor_trunc_in_dpnp
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
