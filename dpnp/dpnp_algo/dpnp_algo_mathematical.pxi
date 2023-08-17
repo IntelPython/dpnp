@@ -62,7 +62,6 @@ __all__ += [
     "dpnp_negative",
     "dpnp_power",
     "dpnp_prod",
-    "dpnp_remainder",
     "dpnp_sign",
     "dpnp_sum",
     "dpnp_trapz",
@@ -544,14 +543,6 @@ cpdef utils.dpnp_descriptor dpnp_prod(utils.dpnp_descriptor x1,
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_remainder(utils.dpnp_descriptor x1_obj,
-                                           utils.dpnp_descriptor x2_obj,
-                                           object dtype=None,
-                                           utils.dpnp_descriptor out=None,
-                                           object where=True):
-    return call_fptr_2in_1out(DPNP_FN_REMAINDER_EXT, x1_obj, x2_obj, dtype, out, where)
 
 
 cpdef utils.dpnp_descriptor dpnp_sign(utils.dpnp_descriptor x1):

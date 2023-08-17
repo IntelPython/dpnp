@@ -49,10 +49,12 @@ from dpnp.dpnp_array import dpnp_array
 
 from .dpnp_algo import *
 from .dpnp_algo.dpnp_elementwise_common import (
+    check_nd_call_func,
     dpnp_add,
     dpnp_divide,
     dpnp_floor_divide,
     dpnp_multiply,
+    dpnp_remainder,
     dpnp_subtract,
 )
 from .dpnp_utils import *
@@ -101,63 +103,6 @@ __all__ = [
     "true_divide",
     "trunc",
 ]
-
-
-def _check_nd_call(
-    origin_func,
-    dpnp_func,
-    x1,
-    x2,
-    out=None,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Checks arguments and calls a function.
-
-    Chooses a common internal elementwise function to call in DPNP based on input arguments
-    or to fallback on NumPy call if any passed argument is not currently supported.
-
-    """
-
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        if order in "afkcAFKC":
-            order = order.upper()
-        elif order is None:
-            order = "K"
-        else:
-            raise ValueError(
-                "order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(
-                    order
-                )
-            )
-
-        return dpnp_func(x1, x2, out=out, order=order)
-    return call_origin(
-        origin_func,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
 
 
 def abs(*args, **kwargs):
@@ -275,22 +220,35 @@ def add(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> a = dp.array([1, 2, 3])
-    >>> b = dp.array([1, 2, 3])
-    >>> result = dp.add(a, b)
-    >>> print(result)
-    [2, 4, 6]
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([1, 2, 3])
+    >>> np.add(a, b)
+    array([2, 4, 6])
 
+    >>> x1 = np.arange(9.0).reshape((3, 3))
+    >>> x2 = np.arange(3.0)
+    >>> np.add(x1, x2)
+    array([[  0.,   2.,   4.],
+        [  3.,   5.,   7.],
+        [  6.,   8.,  10.]])
+
+    The ``+`` operator can be used as a shorthand for ``add`` on
+    :class:`dpnp.ndarray`.
+
+    >>> x1 + x2
+    array([[  0.,   2.,   4.],
+        [  3.,   5.,   7.],
+        [  6.,   8.,  10.]])
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.add,
         dpnp_add,
         x1,
@@ -668,27 +626,42 @@ def divide(
     Returns
     -------
     y : dpnp.ndarray
-        The quotient ``x1/x2``, element-wise.
+        The quotient `x1/x2`, element-wise.
 
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> result = dp.divide(dp.array([1, -2, 6, -9]), dp.array([-2, -2, -2, -2]))
-    >>> print(result)
-    [-0.5, 1.0, -3.0, 4.5]
+    >>> import dpnp as np
+    >>> np.divide(dp.array([1, -2, 6, -9]), np.array([-2, -2, -2, -2]))
+    array([-0.5,  1. , -3. ,  4.5])
 
+    >>> x1 = np.arange(9.0).reshape((3, 3))
+    >>> x2 = np.arange(3.0)
+    >>> np.divide(x1, x2)
+    array([[nan, 1. , 1. ],
+        [inf, 4. , 2.5],
+        [inf, 7. , 4. ]])
+
+    The ``/`` operator can be used as a shorthand for ``divide`` on
+    :class:`dpnp.ndarray`.
+
+    >>> x1 = np.arange(9.0).reshape((3, 3))
+    >>> x2 = 2 * np.ones(3)
+    >>> x1/x2
+    array([[0. , 0.5, 1. ],
+        [1.5, 2. , 2.5],
+        [3. , 3.5, 4. ]])
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.divide,
         dpnp_divide,
         x1,
@@ -850,7 +823,7 @@ def floor_divide(
 
     See Also
     --------
-    :obj:`dpnp.reminder` : Remainder complementary to floor_divide.
+    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
     :obj:`dpnp.divide` : Standard division.
     :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
     :obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
@@ -858,12 +831,14 @@ def floor_divide(
     Examples
     --------
     >>> import dpnp as np
-    >>> np.floor_divide(np.array([1, -1, -2, -9]), np.array([-2, -2, -2, -2]))
+    >>> np.floor_divide(np.array([1, -1, -2, -9]), -2)
     array([-1,  0,  1,  4])
 
+    >>> np.floor_divide(np.array([1., 2., 3., 4.]), 2.5)
+    array([ 0.,  0.,  1.,  1.])
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.floor_divide,
         dpnp_floor_divide,
         x1,
@@ -935,7 +910,7 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     See Also
     --------
-    :obj:`dpnp.reminder` : Remainder complementary to floor_divide.
+    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
     :obj:`dpnp.divide` : Standard division.
 
     Examples
@@ -1162,16 +1137,36 @@ def minimum(x1, x2, dtype=None, out=None, where=True, **kwargs):
     )
 
 
-def mod(*args, **kwargs):
+def mod(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Compute element-wise remainder of division.
 
     For full documentation refer to :obj:`numpy.mod`.
 
+    Limitations
+    -----------
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
     See Also
     --------
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division
-    :obj:`dpnp.reminder` : Remainder complementary to floor_divide.
+    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
     :obj:`dpnp.divide` : Standard division.
 
     Notes
@@ -1180,7 +1175,16 @@ def mod(*args, **kwargs):
 
     """
 
-    return dpnp.remainder(*args, **kwargs)
+    return dpnp.remainder(
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def modf(x1, **kwargs):
@@ -1247,15 +1251,28 @@ def multiply(
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> a = dp.array([1, 2, 3, 4, 5])
-    >>> result = dp.multiply(a, a)
-    >>> print(result)
-    [1, 4, 9, 16, 25]
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3, 4, 5])
+    >>> np.multiply(a, a)
+    array([ 1,  4,  9, 16, 25])]
 
+    >>> x1 = np.arange(9.0).reshape((3, 3))
+    >>> x2 = np.arange(3.0)
+    >>> np.multiply(x1, x2)
+    array([[  0.,   1.,   4.],
+        [  0.,   4.,  10.],
+        [  0.,   7.,  16.]])
+
+    The ``*`` operator can be used as a shorthand for ``multiply`` on
+    :class:`dpnp.ndarray`.
+
+    >>> x1 * x2
+    array([[  0.,   1.,   4.],
+        [  0.,   4.,  10.],
+        [  0.,   7.,  16.]])
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.multiply,
         dpnp_multiply,
         x1,
@@ -1595,7 +1612,18 @@ def prod(
     )
 
 
-def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):
+def remainder(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Return element-wise remainder of division.
 
@@ -1603,71 +1631,49 @@ def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-        Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-        :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
-        :obj:`dpnp.divide` : Standard division.
-        :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
+    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+    :obj:`dpnp.divide` : Standard division.
+    :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
+    :obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the division of the inputs.
+    :obj:`dpnp.mod` : Calculate the element-wise remainder of division.
 
     Example
     -------
     >>> import dpnp as np
-    >>> result = np.remainder(np.array([4, 7]), np.array([2, 3]))
-    >>> [x for x in result]
-    [0, 1]
+    >>> np.remainder(np.array([4, 7]), np.array([2, 3]))
+    array([0, 1])
 
+    >>> np.remainder(np.arange(7), 5)
+    array([0, 1, 2, 3, 4, 0, 1])
+
+    The ``%`` operator can be used as a shorthand for ``remainder`` on
+    :class:`dpnp.ndarray`.
+
+    >>> x1 = np.arange(7)
+    >>> x1 % 5
+    array([0, 1, 2, 3, 4, 0, 1])
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif x2_is_scalar and not x2_desc:
-            pass
-        elif x1_desc and x2_desc and x1_desc.size != x2_desc.size:
-            # TODO: enable broadcasting
-            pass
-        elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        elif x1_is_scalar and x2_desc.ndim > 1:
-            pass
-        else:
-            out_desc = (
-                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-                if out is not None
-                else None
-            )
-            return dpnp_remainder(
-                x1_desc, x2_desc, dtype, out_desc, where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.remainder, x1, x2, out=out, where=where, dtype=dtype, **kwargs
+    return check_nd_call_func(
+        numpy.remainder,
+        dpnp_remainder,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 
@@ -1743,21 +1749,34 @@ def subtract(
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Example
     -------
-    >>> import dpnp as dp
-    >>> result = dp.subtract(dp.array([4, 3]), dp.array([2, 7]))
-    >>> print(result)
-    [2, -4]
+    >>> import dpnp as np
+    >>> np.subtract(dp.array([4, 3]), np.array([2, 7]))
+    array([ 2, -4])
 
+    >>> x1 = np.arange(9.0).reshape((3, 3))
+    >>> x2 = np.arange(3.0)
+    >>> np.subtract(x1, x2)
+    array([[ 0.,  0.,  0.],
+        [ 3.,  3.,  3.],
+        [ 6.,  6.,  6.]])
+
+    The ``-`` operator can be used as a shorthand for ``subtract`` on
+    :class:`dpnp.ndarray`.
+
+    >>> x1 - x2
+    array([[ 0.,  0.,  0.],
+        [ 3.,  3.,  3.],
+        [ 6.,  6.,  6.]])
     """
 
-    return _check_nd_call(
+    return check_nd_call_func(
         numpy.subtract,
         dpnp_subtract,
         x1,

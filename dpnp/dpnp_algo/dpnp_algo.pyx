@@ -58,12 +58,10 @@ __all__ = [
     "dpnp_flatten",
     "dpnp_init_val",
     "dpnp_queue_initialize",
-    "dpnp_queue_is_cpu"
 ]
 
 
 include "dpnp_algo_arraycreation.pxi"
-include "dpnp_algo_bitwise.pxi"
 include "dpnp_algo_counting.pxi"
 include "dpnp_algo_indexing.pxi"
 include "dpnp_algo_linearalgebra.pxi"
@@ -222,13 +220,6 @@ cpdef dpnp_queue_initialize():
     # choose seed number as is in numpy
     seed_from_time = time(NULL)
     dpnp_rng_srand_c(seed_from_time)
-
-
-cpdef dpnp_queue_is_cpu():
-    """Return 1 if current queue is CPU. Return 0 otherwise.
-
-    """
-    return dpnp_queue_is_cpu_c()
 
 
 """
