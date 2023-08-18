@@ -81,7 +81,7 @@ struct CeilOutputType
         dpctl_td_ns::TypeMapResultEntry<T, double, double>,
         dpctl_td_ns::TypeMapResultEntry<T, float, float>,
         dpctl_td_ns::DefaultResultEntry<void>>::result_type;
-}
+};
 
 /**
  * @brief A factory to define pairs of supported types for which
@@ -89,6 +89,7 @@ struct CeilOutputType
  *
  * @tparam T Type of input vector `a` and of result vector `y`.
  */
+template <typename T>
 struct ConjOutputType
 {
     using value_type = typename std::disjunction<
