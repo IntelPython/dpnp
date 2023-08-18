@@ -26,7 +26,12 @@ no_complex_types = float_types + int_types
         testing.product(
             {
                 "nargs": [1],
-                "name": ["reciprocal", "angle"],
+                "name": [
+                    "reciprocal",
+                    "conj",
+                    "conjugate",
+                    "angle",
+                ],
             }
         )
         + testing.product(
@@ -68,6 +73,18 @@ class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
 @testing.parameterize(
     *(
         testing.product(
+            {
+                "arg1": (
+                    [
+                        testing.shaped_arange((2, 3), numpy, dtype=d)
+                        for d in all_types
+                    ]
+                    + [0, 0.0j, 0j, 2, 2.0, 2j, True, False]
+                ),
+                "name": ["conj", "conjugate"],
+            }
+        )
+        + testing.product(
             {
                 "arg1": (
                     [

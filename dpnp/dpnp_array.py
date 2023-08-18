@@ -622,7 +622,7 @@ class dpnp_array:
 
         """
 
-        if not dpnp.issubsctype(self.dtype, dpnp.complex_):
+        if not dpnp.issubsctype(self.dtype, dpnp.complexfloating):
             return self
         else:
             return dpnp.conjugate(self)
@@ -635,7 +635,7 @@ class dpnp_array:
 
         """
 
-        if not dpnp.issubsctype(self.dtype, dpnp.complex_):
+        if not dpnp.issubsctype(self.dtype, dpnp.complexfloating):
             return self
         else:
             return dpnp.conjugate(self)

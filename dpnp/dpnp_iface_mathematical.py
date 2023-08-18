@@ -397,7 +397,7 @@ def conjugate(
     Examples
     --------
     >>> import dpnp as np
-    >>> np.conjugate(1+2j)
+    >>> np.conjugate(np.array(1+2j))
     (1-2j)
 
     >>> x = np.eye(2) + 1j * np.eye(2)

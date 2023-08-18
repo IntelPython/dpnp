@@ -420,38 +420,6 @@ Return:
 """
 
 
-def _call_cos(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_cos_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for cos() function from OneMKL VM
-        return vmi._cos(sycl_queue, src, dst, depends)
-    return ti._cos(src, dst, sycl_queue, depends)
-
-
-cos_func = UnaryElementwiseFunc(
-    "cos", ti._cos_result_type, _call_cos, _cos_docstring
-)
-
-
-def dpnp_cos(x, out=None, order="K"):
-    """
-    Invokes cos() function from pybind11 extension of OneMKL VM if possible.
-
-    Otherwise fully relies on dpctl.tensor implementation for cos() function.
-    """
-
-    # dpctl.tensor only works with usm_ndarray
-    x1_usm = dpnp.get_usm_ndarray(x)
-    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
-
-    res_usm = cos_func(x1_usm, out=out_usm, order=order)
-    return dpnp_array._create_from_usm_ndarray(res_usm)
-
-
 _conj_docstring = """
 conj(x, out=None, order='K')
 
@@ -488,6 +456,36 @@ def _call_conj(src, dst, sycl_queue, depends=None):
 conj_func = UnaryElementwiseFunc(
     "conj", ti._conj_result_type, _call_conj, _conj_docstring
 )
+
+
+def dpnp_cos(x, out=None, order="K"):
+    """
+    Invokes cos() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for cos() function.
+
+    """
+
+    def _call_cos(src, dst, sycl_queue, depends=None):
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
+
+        if vmi._mkl_cos_to_call(sycl_queue, src, dst):
+            # call pybind11 extension for cos() function from OneMKL VM
+            return vmi._cos(sycl_queue, src, dst, depends)
+        return ti._cos(src, dst, sycl_queue, depends)
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "cos", ti._cos_result_type, _call_cos, _cos_docstring
+    )
+    res_usm = func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
 def dpnp_conj(x, out=None, order="K"):
