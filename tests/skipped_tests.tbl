@@ -111,7 +111,6 @@ tests/test_umath.py::test_umaths[('positive', 'i')]
 tests/test_umath.py::test_umaths[('positive', 'l')]
 tests/test_umath.py::test_umaths[('positive', 'f')]
 tests/test_umath.py::test_umaths[('positive', 'd')]
-
 tests/test_umath.py::test_umaths[('rint', 'f')]
 tests/test_umath.py::test_umaths[('rint', 'd')]
 tests/test_umath.py::test_umaths[('signbit', 'f')]
