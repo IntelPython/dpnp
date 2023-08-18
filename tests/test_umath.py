@@ -17,26 +17,6 @@ from .helper import (
 
 # full list of umaths
 umaths = [i for i in dir(numpy) if isinstance(getattr(numpy, i), numpy.ufunc)]
-# print(umaths)
-umaths = ["equal"]
-# trigonometric
-umaths.extend(
-    [
-        "arccos",
-        "arcsin",
-        "arctan",
-        "cos",
-        "deg2rad",
-        "degrees",
-        "rad2deg",
-        "radians",
-        "sin",
-        "tan",
-        "arctan2",
-        "hypot",
-    ]
-)
-# 'unwrap'
 
 types = {
     "d": numpy.float64,
@@ -45,7 +25,9 @@ types = {
     "i": numpy.int32,
 }
 
-supported_types = "dfli"
+supported_types = "fli"
+if has_support_aspect64():
+    supported_types += "d"
 
 
 def check_types(args_str):
@@ -63,21 +45,23 @@ def shaped_arange(shape, xp=numpy, dtype=numpy.float32):
     return xp.reshape(xp.array(array_data, dtype=dtype), shape)
 
 
-def get_args(args_str, xp=numpy):
+def get_args(args_str, sh, xp=numpy):
     args = []
     for s in args_str:
-        args.append(shaped_arange(shape=(3, 4), xp=xp, dtype=types[s]))
+        args.append(shaped_arange(shape=sh, xp=xp, dtype=types[s]))
     return tuple(args)
 
 
 test_cases = []
 for umath in umaths:
     np_umath = getattr(numpy, umath)
-    _types = np_umath.types
-    for type in _types:
-        args_str = type[: type.find("->")]
+
+    for type_ in np_umath.types:
+        args_str = type_[: type_.find("->")]
         if check_types(args_str):
-            test_cases.append((umath, args_str))
+            val_ = (umath, args_str)
+            if val_ not in test_cases:
+                test_cases.append(val_)
 
 
 def get_id(val):
@@ -85,11 +69,19 @@ def get_id(val):
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
 @pytest.mark.parametrize("test_cases", test_cases, ids=get_id)
 def test_umaths(test_cases):
     umath, args_str = test_cases
-    args = get_args(args_str, xp=numpy)
-    iargs = get_args(args_str, xp=dpnp)
+    if umath == "matmul":
+        sh = (4, 4)
+    elif umath == "power":
+        sh = (2, 3)
+    else:
+        sh = (3, 4)
+
+    args = get_args(args_str, sh, xp=numpy)
+    iargs = get_args(args_str, sh, xp=dpnp)
 
     # original
     expected = getattr(numpy, umath)(*args)
