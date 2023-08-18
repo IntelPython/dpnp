@@ -1,3 +1,5 @@
+from math import prod
+
 import dpctl.utils as du
 import pytest
 
@@ -123,6 +125,22 @@ def test_array_creation(func, args, usm_type_x, usm_type_y):
 
     x = getattr(dp, func)(*new_args)
     y = getattr(dp, func)(*new_args, usm_type=usm_type_y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+
+
+@pytest.mark.parametrize(
+    "func",
+    ["array", "asarray", "asanyarray", "ascontiguousarray", "asfortranarray"],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_array_copy(func, usm_type_x, usm_type_y):
+    sh = (3, 7, 5)
+    x = dp.arange(1, prod(sh) + 1, 1, usm_type=usm_type_x).reshape(sh)
+
+    y = getattr(dp, func)(x, usm_type=usm_type_y)
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
