@@ -60,7 +60,6 @@ __all__ = [
     "convert_single_elem_array_to_scalar",
     "default_float_type",
     "dpnp_queue_initialize",
-    "dpnp_queue_is_cpu",
     "from_dlpack",
     "get_dpnp_descriptor",
     "get_include",

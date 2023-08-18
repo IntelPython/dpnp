@@ -11,7 +11,6 @@ set(dpnp_algo_pyx_deps
   ${CMAKE_CURRENT_SOURCE_DIR}/dpnp_algo_searching.pxi
   ${CMAKE_CURRENT_SOURCE_DIR}/dpnp_algo_indexing.pxi
   ${CMAKE_CURRENT_SOURCE_DIR}/dpnp_algo_logic.pxi
-  ${CMAKE_CURRENT_SOURCE_DIR}/dpnp_algo_bitwise.pxi
   ${CMAKE_CURRENT_SOURCE_DIR}/dpnp_algo_special.pxi
   )
 

@@ -1,3 +1,5 @@
+from itertools import permutations
+
 import numpy
 import pytest
 from numpy.testing import (
@@ -134,6 +136,12 @@ class TestMathematical:
         else:
             result = getattr(dpnp, name)(a_dpnp, b_dpnp)
             expected = getattr(numpy, name)(a_np, b_np)
+            if (
+                name == "remainder"
+                and result.dtype != expected.dtype
+                and not has_support_aspect64()
+            ):
+                pytest.skip("skipping since output is promoted differently")
             assert_allclose(result, expected, rtol=1e-6)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
@@ -208,13 +216,7 @@ class TestMathematical:
     def test_multiply(self, dtype, lhs, rhs):
         self._test_mathematical("multiply", dtype, lhs, rhs)
 
-    @pytest.mark.skipif(
-        not has_support_aspect64(), reason="Aborted on Iris Xe: SAT-6039"
-    )
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_remainder(self, dtype, lhs, rhs):
         self._test_mathematical("remainder", dtype, lhs, rhs)
 
@@ -1056,23 +1058,42 @@ def test_sum_empty_out(dtype):
 
 
 @pytest.mark.parametrize(
-    "shape", [(), (1, 2, 3), (1, 0, 2), (10), (3, 3, 3), (5, 5), (0, 6)]
+    "shape",
+    [
+        (),
+        (1, 2, 3),
+        (1, 0, 2),
+        (10,),
+        (3, 3, 3),
+        (5, 5),
+        (0, 6),
+        (10, 1),
+        (1, 10),
+    ],
 )
-@pytest.mark.parametrize(
-    "dtype_in", get_all_dtypes(no_complex=True, no_bool=True)
-)
-@pytest.mark.parametrize(
-    "dtype_out", get_all_dtypes(no_complex=True, no_bool=True)
-)
-def test_sum(shape, dtype_in, dtype_out):
-    a_np = numpy.ones(shape, dtype=dtype_in)
-    a = dpnp.ones(shape, dtype=dtype_in)
-    axes = [None, 0, 1, 2]
+@pytest.mark.parametrize("dtype_in", get_all_dtypes())
+@pytest.mark.parametrize("dtype_out", get_all_dtypes())
+@pytest.mark.parametrize("transpose", [True, False])
+@pytest.mark.parametrize("keepdims", [True, False])
+def test_sum(shape, dtype_in, dtype_out, transpose, keepdims):
+    size = numpy.prod(shape)
+    a_np = numpy.arange(size).astype(dtype_in).reshape(shape)
+    a = dpnp.asarray(a_np)
+
+    if transpose:
+        a_np = a_np.T
+        a = a.T
+
+    axes_range = list(numpy.arange(len(shape)))
+    axes = [None]
+    axes += axes_range
+    axes += permutations(axes_range, 2)
+    axes.append(tuple(axes_range))
+
     for axis in axes:
-        if axis is None or axis < a.ndim:
-            numpy_res = a_np.sum(axis=axis, dtype=dtype_out)
-            dpnp_res = a.sum(axis=axis, dtype=dtype_out)
-            assert_array_equal(numpy_res, dpnp_res.asnumpy())
+        numpy_res = a_np.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
+        dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
+        assert_array_equal(numpy_res, dpnp_res.asnumpy())
 
 
 class TestMean:

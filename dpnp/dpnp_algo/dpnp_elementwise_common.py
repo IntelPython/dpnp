@@ -43,15 +43,20 @@ from dpnp.dpnp_utils import call_origin
 __all__ = [
     "check_nd_call_func",
     "dpnp_add",
+    "dpnp_bitwise_and",
+    "dpnp_bitwise_or",
+    "dpnp_bitwise_xor",
     "dpnp_cos",
     "dpnp_divide",
     "dpnp_equal",
     "dpnp_floor_divide",
     "dpnp_greater",
     "dpnp_greater_equal",
+    "dpnp_invert",
     "dpnp_isfinite",
     "dpnp_isinf",
     "dpnp_isnan",
+    "dpnp_left_shift",
     "dpnp_less",
     "dpnp_less_equal",
     "dpnp_log",
@@ -61,6 +66,8 @@ __all__ = [
     "dpnp_logical_xor",
     "dpnp_multiply",
     "dpnp_not_equal",
+    "dpnp_remainder",
+    "dpnp_right_shift",
     "dpnp_sin",
     "dpnp_sqrt",
     "dpnp_square",
@@ -80,7 +87,7 @@ def check_nd_call_func(
     **kwargs,
 ):
     """
-    Checks arguments and calls function with a single input array.
+    Checks arguments and calls a function.
 
     Chooses a common internal elementwise function to call in DPNP based on input arguments
     or to fallback on NumPy call if any passed argument is not currently supported.
@@ -121,7 +128,6 @@ def check_nd_call_func(
                     order
                 )
             )
-
         return dpnp_func(*x_args, out=out, order=order)
     return call_origin(
         origin_func,
@@ -175,6 +181,138 @@ def dpnp_add(x1, x2, out=None, order="K"):
 
     func = BinaryElementwiseFunc(
         "add", ti._add_result_type, ti._add, _add_docstring_, ti._add_inplace
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_bitwise_and_docstring_ = """
+bitwise_and(x1, x2, out=None, order='K')
+
+Computes the bitwise AND of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have integer or boolean data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have integer or boolean data
+        type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_bitwise_and(x1, x2, out=None, order="K"):
+    """Invokes bitwise_and() from dpctl.tensor implementation for bitwise_and() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "bitwise_and",
+        ti._bitwise_and_result_type,
+        ti._bitwise_and,
+        _bitwise_and_docstring_,
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_bitwise_or_docstring_ = """
+bitwise_or(x1, x2, out=None, order='K')
+
+Computes the bitwise OR of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have integer or boolean data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have integer or boolean data
+        type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_bitwise_or(x1, x2, out=None, order="K"):
+    """Invokes bitwise_or() from dpctl.tensor implementation for bitwise_or() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "bitwise_or",
+        ti._bitwise_or_result_type,
+        ti._bitwise_or,
+        _bitwise_or_docstring_,
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_bitwise_xor_docstring_ = """
+bitwise_xor(x1, x2, out=None, order='K')
+
+Computes the bitwise XOR of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have integer or boolean data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have integer or boolean data
+        type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_bitwise_xor(x1, x2, out=None, order="K"):
+    """Invokes bitwise_xor() from dpctl.tensor implementation for bitwise_xor() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "bitwise_xor",
+        ti._bitwise_xor_result_type,
+        ti._bitwise_xor,
+        _bitwise_xor_docstring_,
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
@@ -469,6 +607,45 @@ def dpnp_greater_equal(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_invert_docstring = """
+invert(x, out=None, order='K')
+
+Inverts (flips) each bit for each element `x_i` of the input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have integer or boolean data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise results.
+        The data type of the returned array is same as the data type of the
+        input array.
+"""
+
+
+def dpnp_invert(x, out=None, order="K"):
+    """Invokes bitwise_invert() from dpctl.tensor implementation for invert() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = UnaryElementwiseFunc(
+        "invert",
+        ti._bitwise_invert_result_type,
+        ti._bitwise_invert,
+        _invert_docstring,
+    )
+    res_usm = func(x_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _isfinite_docstring = """
 isfinite(x, out=None, order="K")
 
@@ -572,6 +749,50 @@ def dpnp_isnan(x, out=None, order="K"):
         "isnan", ti._isnan_result_type, ti._isnan, _isnan_docstring
     )
     res_usm = func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_left_shift_docstring_ = """
+left_shift(x1, x2, out=None, order='K')
+
+Shifts the bits of each element `x1_i` of the input array x1 to the left by
+appending `x2_i` (i.e., the respective element in the input array `x2`) zeros to
+the right of `x1_i`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have integer data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have integer data type.
+        Each element must be greater than or equal to 0.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_left_shift(x1, x2, out=None, order="K"):
+    """Invokes bitwise_left_shift() from dpctl.tensor implementation for left_shift() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "bitwise_leftt_shift",
+        ti._bitwise_left_shift_result_type,
+        ti._bitwise_left_shift,
+        _left_shift_docstring_,
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -722,7 +943,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    dpnp.ndarray:
         An array containing the element-wise logical AND results.
 """
 
@@ -758,7 +979,7 @@ Args:
         output array, if parameter `out` is `None`.
         Default: "K".
 Return:
-    usm_ndarray:
+    dpnp.ndarray:
         An array containing the element-wise logical NOT results.
 """
 
@@ -798,7 +1019,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    dpnp.ndarray:
         An array containing the element-wise logical OR results.
 """
 
@@ -839,7 +1060,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    dpnp.ndarray:
         An array containing the element-wise logical XOR results.
 """
 
@@ -948,6 +1169,92 @@ def dpnp_not_equal(x1, x2, out=None, order="K"):
         ti._not_equal_result_type,
         ti._not_equal,
         _not_equal_docstring_,
+    )
+    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_remainder_docstring_ = """
+remainder(x1, x2, out=None, order='K')
+Calculates the remainder of division for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+This function is equivalent to the Python modulus operator.
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have a real-valued data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have a real-valued data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        an array containing the element-wise remainders. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+
+
+remainder_func = BinaryElementwiseFunc(
+    "remainder",
+    ti._remainder_result_type,
+    ti._remainder,
+    _remainder_docstring_,
+)
+
+
+def dpnp_remainder(x1, x2, out=None, order="K"):
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = remainder_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_right_shift_docstring_ = """
+right_shift(x1, x2, out=None, order='K')
+
+Shifts the bits of each element `x1_i` of the input array `x1` to the right
+according to the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have integer data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have integer data type.
+        Each element must be greater than or equal to 0.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def dpnp_right_shift(x1, x2, out=None, order="K"):
+    """Invokes bitwise_right_shift() from dpctl.tensor implementation for right_shift() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    func = BinaryElementwiseFunc(
+        "bitwise_right_shift",
+        ti._bitwise_right_shift_result_type,
+        ti._bitwise_right_shift,
+        _right_shift_docstring_,
     )
     res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)

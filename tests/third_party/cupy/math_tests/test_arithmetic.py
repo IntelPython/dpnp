@@ -6,6 +6,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 float_types = [numpy.float32, numpy.float64]
@@ -108,7 +109,7 @@ class TestArithmeticUnary(unittest.TestCase):
 
 
 class ArithmeticBinaryBase:
-    @testing.numpy_cupy_allclose(atol=1e-4)
+    @testing.numpy_cupy_allclose(atol=1e-4, type_check=has_support_aspect64())
     def check_binary(self, xp):
         arg1 = self.arg1
         arg2 = self.arg2
@@ -198,16 +199,6 @@ class ArithmeticBinaryBase:
                         y = y.astype(dtype1)
                     elif is_array_arg2 and not is_array_arg1:
                         y = y.astype(dtype2)
-
-        # NumPy returns different values (nan/inf) on division by zero
-        # depending on the architecture.
-        # As it is not possible for CuPy to replicate this behavior, we ignore
-        # the difference here.
-        # if self.name in ('floor_divide', 'remainder', 'mod'):
-        #     if y.dtype in (float_types + complex_types) and (np2 == 0).any():
-        #         y = xp.asarray(y)
-        #         y[y == numpy.inf] = numpy.nan
-        #        y[y == -numpy.inf] = numpy.nan
 
         return y
 
