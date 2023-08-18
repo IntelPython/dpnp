@@ -37,6 +37,7 @@ Searching
    dpnp.where
    dpnp.argwhere
    dpnp.searchsorted
+   dpnp.extract
 
 Counting
 --------

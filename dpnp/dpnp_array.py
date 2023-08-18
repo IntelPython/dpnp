@@ -138,12 +138,15 @@ class dpnp_array:
         return self._array_obj.usm_type
 
     def __abs__(self):
+        r"""Return \|self\|."""
         return dpnp.abs(self)
 
     def __add__(self, other):
+        """Return self+value."""
         return dpnp.add(self, other)
 
     def __and__(self, other):
+        """Return self&value."""
         return dpnp.bitwise_and(self, other)
 
     # '__array__',
@@ -194,6 +197,7 @@ class dpnp_array:
     # '__getattribute__',
 
     def __getitem__(self, key):
+        """Return self[key]."""
         key = _get_unwrapped_index_key(key)
 
         item = self._array_obj.__getitem__(key)
@@ -214,16 +218,19 @@ class dpnp_array:
     # '__hash__',
 
     def __iadd__(self, other):
+        """Return self+=value."""
         dpnp.add(self, other, out=self)
         return self
 
     def __iand__(self, other):
+        """Return self&=value."""
         dpnp.bitwise_and(self, other, out=self)
         return self
 
     # '__ifloordiv__',
 
     def __ilshift__(self, other):
+        """Return self<<=value."""
         dpnp.left_shift(self, other, out=self)
         return self
 
@@ -231,6 +238,7 @@ class dpnp_array:
     # '__imod__',
 
     def __imul__(self, other):
+        """Return self*=value."""
         dpnp.multiply(self, other, out=self)
         return self
 
@@ -244,31 +252,38 @@ class dpnp_array:
         return self._array_obj.__int__()
 
     def __invert__(self):
+        """Return ~self."""
         return dpnp.invert(self)
 
     def __ior__(self, other):
+        """Return self|=value."""
         dpnp.bitwise_or(self, other, out=self)
         return self
 
     def __ipow__(self, other):
+        """Return self**=value."""
         dpnp.power(self, other, out=self)
         return self
 
     def __irshift__(self, other):
+        """Return self>>=value."""
         dpnp.right_shift(self, other, out=self)
         return self
 
     def __isub__(self, other):
+        """Return self-=value."""
         dpnp.subtract(self, other, out=self)
         return self
 
     # '__iter__',
 
     def __itruediv__(self, other):
+        """Return self/=value."""
         dpnp.true_divide(self, other, out=self)
         return self
 
     def __ixor__(self, other):
+        """Return self^=value."""
         dpnp.bitwise_xor(self, other, out=self)
         return self
 
@@ -276,11 +291,12 @@ class dpnp_array:
         return dpnp.less_equal(self, other)
 
     def __len__(self):
-        """Performs the operation __len__."""
+        """Return len(self)."""
 
         return self._array_obj.__len__()
 
     def __lshift__(self, other):
+        """Return self<<value."""
         return dpnp.left_shift(self, other)
 
     def __lt__(self, other):
@@ -290,25 +306,30 @@ class dpnp_array:
         return dpnp.matmul(self, other)
 
     def __mod__(self, other):
+        """Return self%value."""
         return dpnp.remainder(self, other)
 
     def __mul__(self, other):
+        """Return self*value."""
         return dpnp.multiply(self, other)
 
     def __ne__(self, other):
         return dpnp.not_equal(self, other)
 
     def __neg__(self):
+        """Return -self."""
         return dpnp.negative(self)
 
     # '__new__',
 
     def __or__(self, other):
+        """Return self|value."""
         return dpnp.bitwise_or(self, other)
 
     # '__pos__',
 
     def __pow__(self, other):
+        """Return self**value."""
         return dpnp.power(self, other)
 
     def __radd__(self, other):
@@ -348,6 +369,7 @@ class dpnp_array:
         return dpnp.right_shift(other, self)
 
     def __rshift__(self, other):
+        """Return self>>value."""
         return dpnp.right_shift(self, other)
 
     def __rsub__(self, other):
@@ -362,6 +384,7 @@ class dpnp_array:
     # '__setattr__',
 
     def __setitem__(self, key, val):
+        """Set self[key] to value."""
         key = _get_unwrapped_index_key(key)
 
         if isinstance(val, dpnp_array):
@@ -388,14 +411,17 @@ class dpnp_array:
         return self._array_obj.__str__()
 
     def __sub__(self, other):
+        """Return self-value."""
         return dpnp.subtract(self, other)
 
     # '__subclasshook__',
 
     def __truediv__(self, other):
+        """Return self/value."""
         return dpnp.true_divide(self, other)
 
     def __xor__(self, other):
+        """Return self^value."""
         return dpnp.bitwise_xor(self, other)
 
     @staticmethod
@@ -823,6 +849,8 @@ class dpnp_array:
     # 'newbyteorder',
 
     def nonzero(self):
+        """Return the indices of the elements that are non-zero."""
+
         return dpnp.nonzero(self)
 
     def partition(self, kth, axis=-1, kind="introselect", order=None):
