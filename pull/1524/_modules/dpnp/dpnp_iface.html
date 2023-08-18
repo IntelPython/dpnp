@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.12.2dev0+42.gae22a419a documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.12.2dev0+54.g2a7df71e4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+42.gae22a419a
+                0.12.2dev0+54.g2a7df71e4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -313,7 +313,7 @@
     <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">float64</span><span class="p">,</span> <span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">from_dlpack</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<div class="viewcode-block" id="from_dlpack"><a class="viewcode-back" href="../../reference/generated/dpnp.from_dlpack.html#dpnp.from_dlpack">[docs]</a><span class="k">def</span> <span class="nf">from_dlpack</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a dpnp array from a Python object implementing the ``__dlpack__``</span>
 <span class="sd">    protocol.</span>
@@ -335,7 +335,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">usm_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">get_dpnp_descriptor</span><span class="p">(</span>
@@ -398,7 +398,7 @@
 
         <span class="k">if</span> <span class="n">ext_obj</span><span class="o">.</span><span class="n">strides</span> <span class="o">!=</span> <span class="n">shape_offsets</span> <span class="ow">or</span> <span class="n">ext_obj_offset</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">orig_desc</span> <span class="o">=</span> <span class="n">dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
-            <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
+            <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
 
     <span class="c1"># while dpnp functions are based on DPNP_QUEUE</span>
     <span class="c1"># we need to create a copy on device associated with DPNP_QUEUE</span>

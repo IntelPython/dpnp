@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comparison Table &mdash; Data Parallel Extension for NumPy 0.12.2dev0+42.gae22a419a documentation</title>
+  <title>Comparison Table NumPy/ DPNP/ CuPy &mdash; Data Parallel Extension for NumPy 0.12.2dev0+54.g2a7df71e4 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Miscellaneous routines" href="misc.html" />
-    <link rel="prev" title="Difference with NumPy*" href="difference.html" /> 
+    <link rel="prev" title="Available array data types" href="dtypes_table.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+42.gae22a419a
+                0.12.2dev0+54.g2a7df71e4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -62,8 +62,8 @@
 <li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="routines.html">Routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="difference.html">Difference with NumPy*</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Comparison Table</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Comparison Table NumPy/ DPNP/ CuPy</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#summary">Summary</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-level">Module-Level</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#multi-dimensional-array">Multi-Dimensional Array</a></li>
@@ -96,7 +96,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
-      <li class="breadcrumb-item active">Comparison Table</li>
+      <li class="breadcrumb-item active">Comparison Table NumPy/ DPNP/ CuPy</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/reference/comparison.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -106,11 +106,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="comparison-table">
-<h1>Comparison Table<a class="headerlink" href="#comparison-table" title="Permalink to this heading"></a></h1>
-<p>Here is a list of NumPy APIs and its corresponding DPNP implementations.</p>
+  <section id="comparison-table-numpy-dpnp-cupy">
+<h1>Comparison Table NumPy/ DPNP/ CuPy<a class="headerlink" href="#comparison-table-numpy-dpnp-cupy" title="Permalink to this heading"></a></h1>
+<p>Here is a list of NumPy and CuPy APIs and its corresponding DPNP implementations.</p>
 <p><code class="docutils literal notranslate"><span class="pre">-</span></code> in DPNP column means that DPNP implementation is not provided yet.</p>
-<p><strong>NumPy(v1.23.5) / DPNP(v0.12.2dev0+42.gae22a419a) / CuPy(v8.3.0) APIs</strong></p>
+<p><strong>NumPy(v1.23.5) / DPNP(v0.12.2dev0+54.g2a7df71e4) / CuPy(v8.3.0) APIs</strong></p>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading"></a></h2>
 <table class="docutils align-default">
@@ -122,7 +122,7 @@
 </tr>
 <tr class="row-even"><td><p>Module-Level</p></td>
 <td><p>397</p></td>
-<td><p>208</p></td>
+<td><p>209</p></td>
 <td><p>286</p></td>
 </tr>
 <tr class="row-odd"><td><p>Multi-Dimensional Array</p></td>
@@ -147,7 +147,7 @@
 </tr>
 <tr class="row-odd"><td><p>Total</p></td>
 <td><p>545</p></td>
-<td><p>316</p></td>
+<td><p>317</p></td>
 <td><p>415</p></td>
 </tr>
 </tbody>
@@ -332,7 +332,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.asfortranarray.html#numpy.asfortranarray" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.asfortranarray</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.asfortranarray.html#dpnp.asfortranarray" title="dpnp.asfortranarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asfortranarray</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.asfortranarray</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.asmatrix.html#numpy.asmatrix" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.asmatrix</span></code></a></p></td>
@@ -436,7 +436,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.ceil</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.choose.html#numpy.choose" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.choose</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.choose</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.choose.html#dpnp.choose" title="dpnp.choose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.choose</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.choose</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.clip.html#numpy.clip" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.clip</span></code></a></p></td>
@@ -468,7 +468,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.conj</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.conjugate.html#numpy.conjugate" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.conjugate</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.conjugate</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.conjugate.html#dpnp.conjugate" title="dpnp.conjugate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.conjugate</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.conjugate</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.convolve.html#numpy.convolve" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.convolve</span></code></a></p></td>
@@ -560,11 +560,11 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.diag</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.diag_indices.html#numpy.diag_indices" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.diag_indices</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diag_indices</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.diag_indices.html#dpnp.diag_indices" title="dpnp.diag_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diag_indices</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.diag_indices</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.diag_indices_from.html#numpy.diag_indices_from" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.diag_indices_from</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diag_indices_from</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.diag_indices_from.html#dpnp.diag_indices_from" title="dpnp.diag_indices_from"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diag_indices_from</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.diag_indices_from</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.diagflat.html#numpy.diagflat" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.diagflat</span></code></a></p></td>
@@ -572,7 +572,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.diagflat</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.diagonal.html#numpy.diagonal" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.diagonal</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diagonal</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.diagonal.html#dpnp.diagonal" title="dpnp.diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diagonal</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.diagonal</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.diff.html#numpy.diff" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.diff</span></code></a></p></td>
@@ -648,7 +648,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.expm1</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.extract.html#numpy.extract" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.extract</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.extract</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.extract.html#dpnp.extract" title="dpnp.extract"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.extract</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.extract</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.eye.html#numpy.eye" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.eye</span></code></a></p></td>
@@ -664,7 +664,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fill_diagonal.html#numpy.fill_diagonal" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fill_diagonal</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fill_diagonal</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.fill_diagonal.html#dpnp.fill_diagonal" title="dpnp.fill_diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fill_diagonal</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.fill_diagonal</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.find_common_type.html#numpy.find_common_type" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.find_common_type</span></code></a></p></td>
@@ -728,11 +728,11 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.frexp</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.from_dlpack.html#numpy.from_dlpack" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.from_dlpack</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.from_dlpack</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.from_dlpack.html#dpnp.from_dlpack" title="dpnp.from_dlpack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.from_dlpack</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.frombuffer.html#numpy.frombuffer" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.frombuffer</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.frombuffer</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.frombuffer.html#dpnp.frombuffer" title="dpnp.frombuffer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.frombuffer</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fromfile.html#numpy.fromfile" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fromfile</span></code></a></p></td>
@@ -740,11 +740,11 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.fromfile</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fromfunction.html#numpy.fromfunction" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fromfunction</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromfunction</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.fromfunction.html#dpnp.fromfunction" title="dpnp.fromfunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromfunction</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fromiter.html#numpy.fromiter" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fromiter</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromiter</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.fromiter.html#dpnp.fromiter" title="dpnp.fromiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromiter</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.frompyfunc.html#numpy.frompyfunc" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.frompyfunc</span></code></a></p></td>
@@ -756,7 +756,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fromstring.html#numpy.fromstring" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fromstring</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromstring</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.fromstring.html#dpnp.fromstring" title="dpnp.fromstring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromstring</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.full.html#numpy.full" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.full</span></code></a></p></td>
@@ -876,7 +876,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.in1d</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.indices.html#numpy.indices" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.indices</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.indices</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.indices.html#dpnp.indices" title="dpnp.indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.indices</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.indices</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.info.html#numpy.info" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.info</span></code></a></p></td>
@@ -972,11 +972,11 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.issubclass_</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.issubdtype.html#numpy.issubdtype" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.issubdtype</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.issubdtype</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.issubdtype.html#dpnp.issubdtype" title="dpnp.issubdtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.issubdtype</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.issubdtype</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.issubsctype.html#numpy.issubsctype" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.issubsctype</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.issubsctype</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.issubsctype.html#dpnp.issubsctype" title="dpnp.issubsctype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.issubsctype</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.issubsctype</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.iterable.html#numpy.iterable" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.iterable</span></code></a></p></td>
@@ -1028,7 +1028,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.load</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.loadtxt.html#numpy.loadtxt" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.loadtxt</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.loadtxt</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.loadtxt.html#dpnp.loadtxt" title="dpnp.loadtxt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.loadtxt</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.log.html#numpy.log" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.log</span></code></a></p></td>
@@ -1276,7 +1276,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.piecewise</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.place.html#numpy.place" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.place</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.place</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.place.html#dpnp.place" title="dpnp.place"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.place</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.place</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.poly.html#numpy.poly" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.poly</span></code></a></p></td>
@@ -1340,19 +1340,19 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.promote_types</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ptp.html#numpy.ptp" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ptp</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ptp</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ptp.html#dpnp.ptp" title="dpnp.ptp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ptp</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.ptp</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.put.html#numpy.put" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.put</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.put</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.put.html#dpnp.put" title="dpnp.put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.put</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.put</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.put_along_axis.html#numpy.put_along_axis" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.put_along_axis</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.put_along_axis</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.put_along_axis.html#dpnp.put_along_axis" title="dpnp.put_along_axis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.put_along_axis</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.putmask.html#numpy.putmask" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.putmask</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.putmask</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.putmask.html#dpnp.putmask" title="dpnp.putmask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.putmask</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.putmask</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.quantile.html#numpy.quantile" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.quantile</span></code></a></p></td>
@@ -1416,7 +1416,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.result_type.html#numpy.result_type" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.result_type</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.result_type</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.result_type.html#dpnp.result_type" title="dpnp.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.result_type</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.result_type</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.right_shift.html#numpy.right_shift" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.right_shift</span></code></a></p></td>
@@ -1448,7 +1448,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.round_</span></code></p></td>
-<td><p><a class="reference internal" href="generated/dpnp.round_.html#dpnp.round_" title="dpnp.round_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.round_</span></code></a></p></td>
+<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.round_</span></code></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.round_</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.row_stack.html#numpy.row_stack" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.row_stack</span></code></a></p></td>
@@ -1484,7 +1484,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.searchsorted</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.select.html#numpy.select" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.select</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.select</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.select.html#dpnp.select" title="dpnp.select"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.select</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.select</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.set_numeric_ops</span></code></p></td>
@@ -1524,7 +1524,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.shape.html#numpy.shape" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.shape</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.shape</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.shape.html#dpnp.shape" title="dpnp.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.shape</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.shape</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.shares_memory.html#numpy.shares_memory" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.shares_memory</span></code></a></p></td>
@@ -1616,11 +1616,11 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.swapaxes</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.take.html#numpy.take" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.take</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.take</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.take.html#dpnp.take" title="dpnp.take"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.take</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.take</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.take_along_axis.html#numpy.take_along_axis" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.take_along_axis</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.take_along_axis</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.take_along_axis.html#dpnp.take_along_axis" title="dpnp.take_along_axis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.take_along_axis</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.take_along_axis</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tan.html#numpy.tan" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tan</span></code></a></p></td>
@@ -1660,11 +1660,11 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.tril</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tril_indices.html#numpy.tril_indices" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tril_indices</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tril_indices</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.tril_indices.html#dpnp.tril_indices" title="dpnp.tril_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tril_indices</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tril_indices_from.html#numpy.tril_indices_from" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tril_indices_from</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tril_indices_from</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.tril_indices_from.html#dpnp.tril_indices_from" title="dpnp.tril_indices_from"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tril_indices_from</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.trim_zeros.html#numpy.trim_zeros" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.trim_zeros</span></code></a></p></td>
@@ -1676,11 +1676,11 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.triu</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.triu_indices.html#numpy.triu_indices" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.triu_indices</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.triu_indices</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.triu_indices.html#dpnp.triu_indices" title="dpnp.triu_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.triu_indices</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.triu_indices_from.html#numpy.triu_indices_from" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.triu_indices_from</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.triu_indices_from</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.triu_indices_from.html#dpnp.triu_indices_from" title="dpnp.triu_indices_from"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.triu_indices_from</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.true_divide.html#numpy.true_divide" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.true_divide</span></code></a></p></td>
@@ -1756,7 +1756,7 @@
 <td><p><strong>CuPy Total</strong></p></td>
 </tr>
 <tr class="row-even"><td><p>397</p></td>
-<td><p>208</p></td>
+<td><p>209</p></td>
 <td><p>286</p></td>
 </tr>
 </tbody>
@@ -1773,19 +1773,19 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.all.html#numpy.ndarray.all" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.all()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.all()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.all.html#dpnp.ndarray.all" title="dpnp.ndarray.all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.all()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.all()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.any.html#numpy.ndarray.any" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.any()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.any()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.any.html#dpnp.ndarray.any" title="dpnp.ndarray.any"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.any()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.any()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.argmax.html#numpy.ndarray.argmax" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.argmax()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.argmax()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.argmax.html#dpnp.ndarray.argmax" title="dpnp.ndarray.argmax"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.argmax()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.argmax()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.argmin.html#numpy.ndarray.argmin" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.argmin()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.argmin()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.argmin.html#dpnp.ndarray.argmin" title="dpnp.ndarray.argmin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.argmin()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.argmin()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.argpartition.html#numpy.ndarray.argpartition" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.argpartition()</span></code></a></p></td>
@@ -1793,11 +1793,11 @@
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.argpartition()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.argsort.html#numpy.ndarray.argsort" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.argsort()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.argsort()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.argsort.html#dpnp.ndarray.argsort" title="dpnp.ndarray.argsort"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.argsort()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.argsort()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.astype.html#numpy.ndarray.astype" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.astype()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.astype()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.astype.html#dpnp.ndarray.astype" title="dpnp.ndarray.astype"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.astype()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.astype()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.byteswap.html#numpy.ndarray.byteswap" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.byteswap()</span></code></a></p></td>
@@ -1805,7 +1805,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.choose.html#numpy.ndarray.choose" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.choose()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.choose()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.choose.html#dpnp.ndarray.choose" title="dpnp.ndarray.choose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.choose()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.choose()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.clip.html#numpy.ndarray.clip" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.clip()</span></code></a></p></td>
@@ -1817,11 +1817,11 @@
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.compress()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.conj.html#numpy.ndarray.conj" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.conj()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.conj()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.conj.html#dpnp.ndarray.conj" title="dpnp.ndarray.conj"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.conj()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.conj()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.conjugate.html#numpy.ndarray.conjugate" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.conjugate()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.conjugate()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.conjugate.html#dpnp.ndarray.conjugate" title="dpnp.ndarray.conjugate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.conjugate()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.conjugate()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.copy.html#numpy.ndarray.copy" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.copy()</span></code></a></p></td>
@@ -1833,11 +1833,11 @@
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.cumprod()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.cumsum.html#numpy.ndarray.cumsum" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.cumsum()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.cumsum()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.cumsum.html#dpnp.ndarray.cumsum" title="dpnp.ndarray.cumsum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.cumsum()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.cumsum()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.diagonal.html#numpy.ndarray.diagonal" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.diagonal()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.diagonal()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.diagonal.html#dpnp.ndarray.diagonal" title="dpnp.ndarray.diagonal"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.diagonal()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.diagonal()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.dot.html#numpy.ndarray.dot" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.dot()</span></code></a></p></td>
@@ -1853,11 +1853,11 @@
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.dumps()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.fill.html#numpy.ndarray.fill" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.fill()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.fill()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.fill.html#dpnp.ndarray.fill" title="dpnp.ndarray.fill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.fill()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.fill()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.flatten.html#numpy.ndarray.flatten" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.flatten()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.flatten()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.flatten.html#dpnp.ndarray.flatten" title="dpnp.ndarray.flatten"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.flatten()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.flatten()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.getfield.html#numpy.ndarray.getfield" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.getfield()</span></code></a></p></td>
@@ -1865,7 +1865,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.item.html#numpy.ndarray.item" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.item()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.item()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.item.html#dpnp.ndarray.item" title="dpnp.ndarray.item"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.item()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.item()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.itemset.html#numpy.ndarray.itemset" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.itemset()</span></code></a></p></td>
@@ -1873,15 +1873,15 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.max.html#numpy.ndarray.max" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.max()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.max()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.max.html#dpnp.ndarray.max" title="dpnp.ndarray.max"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.max()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.max()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.mean.html#numpy.ndarray.mean" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.mean()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.mean()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.mean.html#dpnp.ndarray.mean" title="dpnp.ndarray.mean"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.mean()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.mean()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.min.html#numpy.ndarray.min" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.min()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.min()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.min.html#dpnp.ndarray.min" title="dpnp.ndarray.min"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.min()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.min()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.newbyteorder.html#numpy.ndarray.newbyteorder" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.newbyteorder()</span></code></a></p></td>
@@ -1889,15 +1889,15 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.nonzero.html#numpy.ndarray.nonzero" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.nonzero()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.nonzero()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.nonzero.html#dpnp.ndarray.nonzero" title="dpnp.ndarray.nonzero"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.nonzero()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.nonzero()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.partition.html#numpy.ndarray.partition" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.partition()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.partition()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.partition.html#dpnp.ndarray.partition" title="dpnp.ndarray.partition"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.partition()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.partition()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.prod.html#numpy.ndarray.prod" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.prod()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.prod()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.prod.html#dpnp.ndarray.prod" title="dpnp.ndarray.prod"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.prod()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.prod()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.ptp.html#numpy.ndarray.ptp" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.ptp()</span></code></a></p></td>
@@ -1917,7 +1917,7 @@
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.repeat()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.reshape.html#numpy.ndarray.reshape" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.reshape()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.reshape()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.reshape.html#dpnp.ndarray.reshape" title="dpnp.ndarray.reshape"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.reshape()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.reshape()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.resize.html#numpy.ndarray.resize" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.resize()</span></code></a></p></td>
@@ -1925,7 +1925,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.round.html#numpy.ndarray.round" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.round()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.round()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.round.html#dpnp.ndarray.round" title="dpnp.ndarray.round"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.round()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.round()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.searchsorted.html#numpy.ndarray.searchsorted" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.searchsorted()</span></code></a></p></td>
@@ -1945,15 +1945,15 @@
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.sort()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.squeeze.html#numpy.ndarray.squeeze" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.squeeze()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.squeeze()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.squeeze.html#dpnp.ndarray.squeeze" title="dpnp.ndarray.squeeze"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.squeeze()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.squeeze()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.std.html#numpy.ndarray.std" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.std()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.std()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.std.html#dpnp.ndarray.std" title="dpnp.ndarray.std"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.std()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.std()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.sum.html#numpy.ndarray.sum" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.sum()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.sum()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.sum.html#dpnp.ndarray.sum" title="dpnp.ndarray.sum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.sum()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.sum()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.swapaxes.html#numpy.ndarray.swapaxes" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.swapaxes()</span></code></a></p></td>
@@ -1961,7 +1961,7 @@
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.swapaxes()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.take.html#numpy.ndarray.take" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.take()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.take()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.take.html#dpnp.ndarray.take" title="dpnp.ndarray.take"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.take()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.take()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tobytes.html#numpy.ndarray.tobytes" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.tobytes()</span></code></a></p></td>
@@ -1985,11 +1985,11 @@
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.trace()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.transpose.html#numpy.ndarray.transpose" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.transpose()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.transpose()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.transpose.html#dpnp.ndarray.transpose" title="dpnp.ndarray.transpose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.transpose()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.transpose()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.var.html#numpy.ndarray.var" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.var()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.var()</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.var.html#dpnp.ndarray.var" title="dpnp.ndarray.var"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.var()</span></code></a></p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.var()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.view.html#numpy.ndarray.view" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.view()</span></code></a></p></td>
@@ -2022,7 +2022,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.linalg.cholesky</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.cond.html#numpy.linalg.cond" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.cond</span></code></a></p></td>
-<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.cond</span></code></p></td>
+<td><p><a class="reference internal" href="generated/dpnp.linalg.cond.html#dpnp.linalg.cond" title="dpnp.linalg.cond"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.cond</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.det.html#numpy.linalg.det" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.det</span></code></a></p></td>
@@ -2444,7 +2444,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="difference.html" class="btn btn-neutral float-left" title="Difference with NumPy*" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dtypes_table.html" class="btn btn-neutral float-left" title="Available array data types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="misc.html" class="btn btn-neutral float-right" title="Miscellaneous routines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
