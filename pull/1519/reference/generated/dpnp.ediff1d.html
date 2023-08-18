@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ediff1d &mdash; Data Parallel Extension for NumPy 0.12.2dev0+41.g1d555ccc0 documentation</title>
+  <title>dpnp.ediff1d &mdash; Data Parallel Extension for NumPy 0.12.2dev0+48.g83b68b09a documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+41.g1d555ccc0
+                0.12.2dev0+48.g83b68b09a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -136,11 +136,17 @@
 <dd><p>The differences between consecutive elements of an array.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ediff1d.html#numpy.ediff1d" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ediff1d</span></code></a>.</p>
 <p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">x1``is</span> <span class="pre">supported</span> <span class="pre">as</span> <span class="pre">:obj:`dpnp.ndarray`.</span>
-<span class="pre">Keyword</span> <span class="pre">arguments</span> <span class="pre">``to_end</span></code> and <code class="docutils literal notranslate"><span class="pre">to_begin</span></code> are currently supported only with default values <cite>None</cite>.
+<p>Parameter <cite>x1`is supported as :class:`dpnp.ndarray</cite>.
+Keyword arguments <cite>to_end</cite> and <cite>to_begin</cite> are currently supported only with default values <cite>None</cite>.
 Otherwise the function will be executed sequentially on CPU.
 Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
-<p>..seealso:: <a class="reference internal" href="dpnp.diff.html#dpnp.diff" title="dpnp.diff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diff</span></code></a> : Calculate the n-th discrete difference along the given axis.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.diff.html#dpnp.diff" title="dpnp.diff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diff</span></code></a></dt><dd><p>Calculate the n-th discrete difference along the given axis.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
