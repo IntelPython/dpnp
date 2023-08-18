@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.expand_dims &mdash; Data Parallel Extension for NumPy 0.12.2dev0+44.g41b769a62 documentation</title>
+  <title>dpnp.asfortranarray &mdash; Data Parallel Extension for NumPy 0.12.2dev0+44.g41b769a62 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,8 +28,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.squeeze" href="dpnp.squeeze.html" />
-    <link rel="prev" title="dpnp.broadcast_to" href="dpnp.broadcast_to.html" /> 
+    <link rel="next" title="dpnp.concatenate" href="dpnp.concatenate.html" />
+    <link rel="prev" title="dpnp.asfarray" href="dpnp.asfarray.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -66,8 +66,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#basic-operations">Basic operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-array-shape">Changing array shape</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#transpose-like-operations">Transpose-like operations</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#joining-arrays">Joining arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#splitting-arrays">Splitting arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#tiling-arrays">Tiling arrays</a></li>
@@ -116,9 +116,9 @@
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
           <li class="breadcrumb-item"><a href="../manipulation.html">Array Manipulation Routines</a></li>
-      <li class="breadcrumb-item active">dpnp.expand_dims</li>
+      <li class="breadcrumb-item active">dpnp.asfortranarray</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/reference/generated/dpnp.expand_dims.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.asfortranarray.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -126,64 +126,56 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dpnp-expand-dims">
-<h1>dpnp.expand_dims<a class="headerlink" href="#dpnp-expand-dims" title="Permalink to this heading"></a></h1>
+  <section id="dpnp-asfortranarray">
+<h1>dpnp.asfortranarray<a class="headerlink" href="#dpnp-asfortranarray" title="Permalink to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpnp.expand_dims">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">expand_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#expand_dims"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.expand_dims" title="Permalink to this definition"></a></dt>
-<dd><p>Expand the shape of an array.</p>
-<p>Insert a new axis that will appear at the <cite>axis</cite> position in the expanded
-array shape.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.expand_dims.html#numpy.expand_dims" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.expand_dims</span></code></a>.</p>
+<dt class="sig sig-object py" id="dpnp.asfortranarray">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">asfortranarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">like</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#asfortranarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.asfortranarray" title="Permalink to this definition"></a></dt>
+<dd><p>Return an array (ndim &gt;= 1) laid out in Fortran order in memory.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.asfortranarray.html#numpy.asfortranarray" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.asfortranarray</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Parameter <cite>like</cite> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Otherwise, the function raises <cite>ValueError</cite> exception.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.squeeze.html#dpnp.squeeze" title="dpnp.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.squeeze</span></code></a></dt><dd><p>The inverse operation, removing singleton dimensions</p>
+<dt><a class="reference internal" href="dpnp.ascontiguousarray.html#dpnp.ascontiguousarray" title="dpnp.ascontiguousarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ascontiguousarray</span></code></a></dt><dd><p>Convert input to a contiguous (C order) array.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a></dt><dd><p>Insert, remove, and combine dimensions, and resize existing ones</p>
+<dt><a class="reference internal" href="dpnp.asanyarray.html#dpnp.asanyarray" title="dpnp.asanyarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asanyarray</span></code></a></dt><dd><p>Convert input to an ndarray with either row or column-major memory order.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.require</span></code></dt><dd><p>Return an ndarray that satisfies requirements.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.ndarray.flags.html#dpnp.ndarray.flags" title="dpnp.ndarray.flags"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.flags</span></code></a></dt><dd><p>Information about the memory layout of the array.</p>
 </dd>
 </dl>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.indexing</span></code>, <a class="reference internal" href="dpnp.atleast_1d.html#dpnp.atleast_1d" title="dpnp.atleast_1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_1d</span></code></a>, <a class="reference internal" href="dpnp.atleast_2d.html#dpnp.atleast_2d" title="dpnp.atleast_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_2d</span></code></a>, <a class="reference internal" href="dpnp.atleast_3d.html#dpnp.atleast_3d" title="dpnp.atleast_3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_3d</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(2,)</span>
 </pre></div>
 </div>
-<p>The following is equivalent to <code class="docutils literal notranslate"><span class="pre">x[np.newaxis,</span> <span class="pre">:]</span></code> or <code class="docutils literal notranslate"><span class="pre">x[np.newaxis]</span></code>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
-<span class="go">array([[1, 2]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(1, 2)</span>
+<p>Starting with a C-contiguous array:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">]</span>
+<span class="go">True</span>
 </pre></div>
 </div>
-<p>The following is equivalent to <code class="docutils literal notranslate"><span class="pre">x[:,</span> <span class="pre">np.newaxis]</span></code>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
-<span class="go">array([[1],</span>
-<span class="go">       [2]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(2, 1)</span>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">asfortranarray</span></code> makes a Fortran-contiguous copy:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s1">&#39;F_CONTIGUOUS&#39;</span><span class="p">]</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="ow">is</span> <span class="n">y</span>
+<span class="go">False</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">axis</span></code> may also be a tuple:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
-<span class="go">array([[[1, 2]]])</span>
+<p>Now, starting with a Fortran-contiguous array:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s1">&#39;F_CONTIGUOUS&#39;</span><span class="p">]</span>
+<span class="go">True</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
-<span class="go">array([[[1],</span>
-<span class="go">        [2]]])</span>
-</pre></div>
-</div>
-<p>Note that some examples may use <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of <code class="docutils literal notranslate"><span class="pre">np.newaxis</span></code>.  These
-are the same objects:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span> <span class="ow">is</span> <span class="kc">None</span>
+<p>Then, calling <code class="docutils literal notranslate"><span class="pre">asfortranarray</span></code> returns the same object:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="ow">is</span> <span class="n">y</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -195,8 +187,8 @@ are the same objects:</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.broadcast_to.html" class="btn btn-neutral float-left" title="dpnp.broadcast_to" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.squeeze.html" class="btn btn-neutral float-right" title="dpnp.squeeze" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.asfarray.html" class="btn btn-neutral float-left" title="dpnp.asfarray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.concatenate.html" class="btn btn-neutral float-right" title="dpnp.concatenate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
