@@ -772,7 +772,6 @@ class TestAdd:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
     )
-    @pytest.mark.skip("mute unttil in-place support in dpctl is done")
     def test_inplace_strided_out(self, dtype):
         size = 21
 
@@ -862,7 +861,6 @@ class TestMultiply:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
     )
-    @pytest.mark.skip("mute unttil in-place support in dpctl is done")
     def test_inplace_strided_out(self, dtype):
         size = 21
 
