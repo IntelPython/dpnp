@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.asarray &mdash; Data Parallel Extension for NumPy 0.12.2dev0+30.g41f8caf4 documentation</title>
+  <title>dpnp.asarray &mdash; Data Parallel Extension for NumPy 0.12.2dev0+41.g1d555ccc0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+30.g41f8caf4
+                0.12.2dev0+41.g1d555ccc0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -75,21 +75,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#rearranging-elements">Rearranging elements</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../difference.html">Difference with NumPy*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
@@ -130,11 +130,12 @@
 <h1>dpnp.asarray<a class="headerlink" href="#dpnp-asarray" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.asarray">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">asarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">like</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#asarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.asarray" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">asarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">like</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#asarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.asarray" title="Permalink to this definition"></a></dt>
 <dd><p>Converts an input object into array.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.asarray.html#numpy.asarray" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.asarray</span></code></a>.</p>
 <p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">like</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>Parameter <cite>like</cite> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Otherwise, the function raises <cite>ValueError</cite> exception.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -144,21 +145,20 @@
 </dd>
 <dt><a class="reference internal" href="dpnp.asfarray.html#dpnp.asfarray" title="dpnp.asfarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asfarray</span></code></a></dt><dd><p>Convert input to a floating point ndarray.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asfortranarray</span></code></dt><dd><p>Convert input to an ndarray with column-major memory order.</p>
+<dt><a class="reference internal" href="dpnp.asfortranarray.html#dpnp.asfortranarray" title="dpnp.asfortranarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asfortranarray</span></code></a></dt><dd><p>Convert input to an ndarray with column-major memory order.</p>
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asarray_chkfinite</span></code></dt><dd><p>Similar function which checks input for NaNs and Infs.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromiter</span></code></dt><dd><p>Create an array from an iterator.</p>
+<dt><a class="reference internal" href="dpnp.fromiter.html#dpnp.fromiter" title="dpnp.fromiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromiter</span></code></a></dt><dd><p>Create an array from an iterator.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromfunction</span></code></dt><dd><p>Construct an array by executing a function on grid positions.</p>
+<dt><a class="reference internal" href="dpnp.fromfunction.html#dpnp.fromfunction" title="dpnp.fromfunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromfunction</span></code></a></dt><dd><p>Construct an array by executing a function on grid positions.</p>
 </dd>
 </dl>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="go">[1 2 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="go">array([1, 2, 3])</span>
 </pre></div>
 </div>
 </dd></dl>
