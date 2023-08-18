@@ -98,8 +98,8 @@ def fft(x, n=None, axis=-1, norm=None):
     Parameter `axis` is supported with its default value.
     Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
     `dpnp.complex128`, `dpnp.complex64` data types are supported.
+    The `dpnp.bool` data type is not supported and will raise a `RuntimeError` exception.
     Otherwise the function will be executed sequentially on CPU.
-
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
@@ -338,6 +338,7 @@ def ifft(x, n=None, axis=-1, norm=None):
     Parameter `axis` is supported with its default value.
     Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,,
     `dpnp.complex128`, `dpnp.complex64` data types are supported.
+    The `dpnp.bool` data type is not supported and will raise a `RuntimeError` exception.
     Otherwise the function will be executed sequentially on CPU.
 
     """
@@ -723,8 +724,8 @@ def rfft(x, n=None, axis=-1, norm=None):
     Parameter `norm` is unsupported.
     Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
     `dpnp.complex128` data types are supported.
+    The `dpnp.bool` data type is not supported and will raise a `RuntimeError` exception.
     Otherwise the function will be executed sequentially on CPU.
-
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)

@@ -414,6 +414,9 @@ DPCTLSyclEventRef dpnp_fft_fft_c(DPCTLSyclQueueRef q_ref,
                                  const size_t norm,
                                  const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    static_assert(sycl::detail::is_complex<_DataType_output>::value,
+                  "Output data type must be a complex type.");
+
     DPCTLSyclEventRef event_ref = nullptr;
 
     if (!shape_size || !array1_in || !result_out) {
@@ -476,9 +479,7 @@ DPCTLSyclEventRef dpnp_fft_fft_c(DPCTLSyclQueueRef q_ref,
         else if constexpr (std::is_same<_DataType_input, int32_t>::value ||
                            std::is_same<_DataType_input, int64_t>::value)
         {
-            using CastType = std::conditional_t<
-                std::is_same<_DataType_output, std::complex<double>>::value,
-                double, float>;
+            using CastType = typename _DataType_output::value_type;
 
             CastType *array1_copy = reinterpret_cast<CastType *>(
                 dpnp_memory_alloc_c(q_ref, input_size * sizeof(CastType)));
@@ -583,6 +584,8 @@ DPCTLSyclEventRef dpnp_fft_rfft_c(DPCTLSyclQueueRef q_ref,
                                   const size_t norm,
                                   const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    static_assert(sycl::detail::is_complex<_DataType_output>::value,
+                  "Output data type must be a complex type.");
     DPCTLSyclEventRef event_ref = nullptr;
 
     if (!shape_size || !array1_in || !result_out) {
@@ -623,9 +626,7 @@ DPCTLSyclEventRef dpnp_fft_rfft_c(DPCTLSyclQueueRef q_ref,
         else if constexpr (std::is_same<_DataType_input, int32_t>::value ||
                            std::is_same<_DataType_input, int64_t>::value)
         {
-            using CastType = std::conditional_t<
-                std::is_same<_DataType_output, std::complex<double>>::value,
-                double, float>;
+            using CastType = typename _DataType_output::value_type;
 
             CastType *array1_copy = reinterpret_cast<CastType *>(
                 dpnp_memory_alloc_c(q_ref, input_size * sizeof(CastType)));
