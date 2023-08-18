@@ -64,8 +64,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ASTYPE_EXT
         DPNP_FN_CBRT
         DPNP_FN_CBRT_EXT
-        DPNP_FN_CEIL
-        DPNP_FN_CEIL_EXT
         DPNP_FN_CHOLESKY
         DPNP_FN_CHOLESKY_EXT
         DPNP_FN_CHOOSE
@@ -128,8 +126,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FILL_DIAGONAL_EXT
         DPNP_FN_FLATTEN
         DPNP_FN_FLATTEN_EXT
-        DPNP_FN_FLOOR
-        DPNP_FN_FLOOR_EXT
         DPNP_FN_FMOD
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
@@ -292,8 +288,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TRIL_EXT
         DPNP_FN_TRIU
         DPNP_FN_TRIU_EXT
-        DPNP_FN_TRUNC
-        DPNP_FN_TRUNC_EXT
         DPNP_FN_VANDER
         DPNP_FN_VANDER_EXT
         DPNP_FN_VAR

@@ -6,6 +6,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 float_types = [numpy.float32, numpy.float64]
@@ -108,7 +109,7 @@ class TestArithmeticUnary(unittest.TestCase):
 
 
 class ArithmeticBinaryBase:
-    @testing.numpy_cupy_allclose(atol=1e-4)
+    @testing.numpy_cupy_allclose(atol=1e-4, type_check=has_support_aspect64())
     def check_binary(self, xp):
         arg1 = self.arg1
         arg2 = self.arg2

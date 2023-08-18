@@ -1,3 +1,5 @@
+from math import prod
+
 import dpctl.utils as du
 import pytest
 
@@ -129,6 +131,22 @@ def test_array_creation(func, args, usm_type_x, usm_type_y):
 
 
 @pytest.mark.parametrize(
+    "func",
+    ["array", "asarray", "asanyarray", "ascontiguousarray", "asfortranarray"],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_array_copy(func, usm_type_x, usm_type_y):
+    sh = (3, 7, 5)
+    x = dp.arange(1, prod(sh) + 1, 1, usm_type=usm_type_x).reshape(sh)
+
+    y = getattr(dp, func)(x, usm_type=usm_type_y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+
+
+@pytest.mark.parametrize(
     "usm_type_start", list_of_usm_types, ids=list_of_usm_types
 )
 @pytest.mark.parametrize(
@@ -230,10 +248,10 @@ def test_meshgrid(usm_type_x, usm_type_y):
 @pytest.mark.parametrize(
     "func,data",
     [
-        pytest.param(
-            "sqrt",
-            [1.0, 3.0, 9.0],
-        ),
+        pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("sqrt", [1.0, 3.0, 9.0]),
     ],
 )
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)

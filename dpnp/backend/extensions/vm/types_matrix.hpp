@@ -70,6 +70,21 @@ struct DivOutputType
 
 /**
  * @brief A factory to define pairs of supported types for which
+ * MKL VM library provides support in oneapi::mkl::vm::ceil<T> function.
+ *
+ * @tparam T Type of input vector `a` and of result vector `y`.
+ */
+template <typename T>
+struct CeilOutputType
+{
+    using value_type = typename std::disjunction<
+        dpctl_td_ns::TypeMapResultEntry<T, double, double>,
+        dpctl_td_ns::TypeMapResultEntry<T, float, float>,
+        dpctl_td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
  * MKL VM library provides support in oneapi::mkl::vm::cos<T> function.
  *
  * @tparam T Type of input vector `a` and of result vector `y`.
@@ -82,6 +97,21 @@ struct CosOutputType
             TypeMapResultEntry<T, std::complex<double>, std::complex<double>>,
         dpctl_td_ns::
             TypeMapResultEntry<T, std::complex<float>, std::complex<float>>,
+        dpctl_td_ns::TypeMapResultEntry<T, double, double>,
+        dpctl_td_ns::TypeMapResultEntry<T, float, float>,
+        dpctl_td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL VM library provides support in oneapi::mkl::vm::floor<T> function.
+ *
+ * @tparam T Type of input vector `a` and of result vector `y`.
+ */
+template <typename T>
+struct FloorOutputType
+{
+    using value_type = typename std::disjunction<
         dpctl_td_ns::TypeMapResultEntry<T, double, double>,
         dpctl_td_ns::TypeMapResultEntry<T, float, float>,
         dpctl_td_ns::DefaultResultEntry<void>>::result_type;
@@ -158,6 +188,22 @@ struct SqrtOutputType
         dpctl_td_ns::TypeMapResultEntry<T, float, float>,
         dpctl_td_ns::DefaultResultEntry<void>>::result_type;
 };
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL VM library provides support in oneapi::mkl::vm::trunc<T> function.
+ *
+ * @tparam T Type of input vector `a` and of result vector `y`.
+ */
+template <typename T>
+struct TruncOutputType
+{
+    using value_type = typename std::disjunction<
+        dpctl_td_ns::TypeMapResultEntry<T, double, double>,
+        dpctl_td_ns::TypeMapResultEntry<T, float, float>,
+        dpctl_td_ns::DefaultResultEntry<void>>::result_type;
+};
+
 } // namespace types
 } // namespace vm
 } // namespace ext
