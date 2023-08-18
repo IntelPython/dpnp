@@ -3,7 +3,6 @@
 Random Sampling (``dpnp.random``)
 =================================
 
-.. https://docs.scipy.org/doc/numpy-1.16.1/reference/routines.random.html
 .. https://docs.scipy.org/doc/numpy/reference/random/legacy.html
 
 
