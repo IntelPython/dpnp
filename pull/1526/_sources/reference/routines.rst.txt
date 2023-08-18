@@ -13,13 +13,15 @@ These functions cover a subset of
 
    creation
    manipulation
+   indexing
    binary
+   dtype
    fft
    linalg
    logic
    math
-   pad
-   polynomials
+   .. pad
+   .. polynomials
    random
    sorting
    statistics
