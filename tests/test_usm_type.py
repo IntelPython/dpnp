@@ -248,10 +248,10 @@ def test_meshgrid(usm_type_x, usm_type_y):
 @pytest.mark.parametrize(
     "func,data",
     [
-        pytest.param(
-            "sqrt",
-            [1.0, 3.0, 9.0],
-        ),
+        pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("sqrt", [1.0, 3.0, 9.0]),
     ],
 )
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)

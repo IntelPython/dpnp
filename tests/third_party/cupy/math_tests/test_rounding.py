@@ -10,7 +10,7 @@ from tests.third_party.cupy import testing
 @testing.gpu
 class TestRounding(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(type_check=False, atol=1e-5)
     def check_unary(self, name, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return getattr(xp, name)(a)

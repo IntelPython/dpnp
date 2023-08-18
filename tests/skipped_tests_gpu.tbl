@@ -12,23 +12,19 @@ tests/test_random.py::TestPermutationsTestShuffle::test_no_miss_numbers[int64]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.array([])]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32)]
 
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-ceil-data1]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-conjugate-data2]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-copy-data3]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-cumprod-data4]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-cumsum-data5]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-ediff1d-data7]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-fabs-data8]
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-floor-data9]
 
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-ceil-data1]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-conjugate-data2]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-copy-data3]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-cumprod-data4]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-cumsum-data5]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-ediff1d-data7]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-fabs-data8]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-floor-data9]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nancumprod-data11]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nancumsum-data12]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nanprod-data13]
@@ -38,7 +34,6 @@ tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-prod-data16]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-sign-data17]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-sum-data18]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-trapz-data19]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-trunc-data20]
 
 tests/test_sycl_queue.py::test_modf[level_zero:gpu:0]
 
@@ -932,13 +927,10 @@ tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_5_{de
 tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_6_{decimals=100}::test_round_large
 tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_6_{decimals=100}::test_round_small
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_around
-tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_ceil
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
-tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_floor
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint_negative
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_round_
-tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_trunc
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_ndarray_cumprod_2dim_with_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim_with_n
