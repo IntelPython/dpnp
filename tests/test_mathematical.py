@@ -615,11 +615,10 @@ class TestCeil:
         assert_array_equal(expected, result)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
     )
     def test_invalid_dtype(self, dtype):
-        dpnp_dtype = dpnp.float64 if has_support_aspect64() else dpnp.float32
-        pytest.skip("similar data types") if dpnp_dtype == dtype else None
+        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
@@ -656,11 +655,10 @@ class TestFloor:
         assert_array_equal(expected, result)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
     )
     def test_invalid_dtype(self, dtype):
-        dpnp_dtype = dpnp.float64 if has_support_aspect64() else dpnp.float32
-        pytest.skip("similar data types") if dpnp_dtype == dtype else None
+        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
@@ -697,11 +695,10 @@ class TestTrunc:
         assert_array_equal(expected, result)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
     )
     def test_invalid_dtype(self, dtype):
-        dpnp_dtype = dpnp.float64 if has_support_aspect64() else dpnp.float32
-        pytest.skip("similar data types") if dpnp_dtype == dtype else None
+        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
