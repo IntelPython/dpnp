@@ -11,3 +11,8 @@ Utility
    :nosignatures:
 
    dpnp.get_include
+   dpnp.show_config
+   dpnp.show_runtime
+   dpnp.deprecate
+   dpnp.deprecate_with_doc
+   dpnp.broadcast_shapes

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mathematical Functions &mdash; Data Parallel Extension for NumPy 0.12.2dev0+29.g16ca9309 documentation</title>
+  <title>Mathematical Functions &mdash; Data Parallel Extension for NumPy 0.12.2dev0+50.g15b454684 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+29.g16ca9309
+                0.12.2dev0+50.g15b454684
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -63,7 +63,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="creation.html">Array Creation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array Manipulation Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="indexing.html">Array Indexing Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fft.html">FFT Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="logic.html">Logic Functions</a></li>
@@ -75,21 +77,21 @@
 <li class="toctree-l4"><a class="reference internal" href="#exponents-and-logarithms">Exponents and logarithms</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#other-special-functions">Other special functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#floating-point-routines">Floating point routines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rational-routines">Rational routines</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#arithmetic-operations">Arithmetic operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#handling-complex-numbers">Handling complex numbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#extrema-finding">Extrema Finding</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="pad.html">Padding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="polynomials.html">Polynomials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, Searching, and Counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="difference.html">Difference with NumPy*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
@@ -205,13 +207,16 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.around.html#dpnp.around" title="dpnp.around"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.around</span></code></a></p></td>
 <td><p>Round an array to the given number of decimals.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.floor.html#dpnp.floor" title="dpnp.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.floor</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.round.html#dpnp.round" title="dpnp.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.round</span></code></a></p></td>
+<td><p>Evenly round to the given number of decimals.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.floor.html#dpnp.floor" title="dpnp.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.floor</span></code></a></p></td>
 <td><p>Round a number to the nearest integer toward minus infinity.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ceil.html#dpnp.ceil" title="dpnp.ceil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ceil</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ceil.html#dpnp.ceil" title="dpnp.ceil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ceil</span></code></a></p></td>
 <td><p>Compute the ceiling of the input, element-wise.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.trunc.html#dpnp.trunc" title="dpnp.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.trunc</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.trunc.html#dpnp.trunc" title="dpnp.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.trunc</span></code></a></p></td>
 <td><p>Compute the truncated value of the input, element-wise.</p></td>
 </tr>
 </tbody>
@@ -308,6 +313,13 @@
 </tbody>
 </table>
 </section>
+<section id="rational-routines">
+<h2>Rational routines<a class="headerlink" href="#rational-routines" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+</tbody>
+</table>
+</section>
 <section id="arithmetic-operations">
 <h2>Arithmetic operations<a class="headerlink" href="#arithmetic-operations" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
@@ -361,6 +373,40 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.conj.html#dpnp.conj" title="dpnp.conj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.conj</span></code></a></p></td>
 <td><p>Return the complex conjugate, element-wise.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.conjugate.html#dpnp.conjugate" title="dpnp.conjugate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.conjugate</span></code></a></p></td>
+<td><p>Return the complex conjugate, element-wise.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="extrema-finding">
+<h2>Extrema Finding<a class="headerlink" href="#extrema-finding" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.maximum.html#dpnp.maximum" title="dpnp.maximum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.maximum</span></code></a></p></td>
+<td><p>Element-wise maximum of array elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.max.html#dpnp.max" title="dpnp.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.max</span></code></a></p></td>
+<td><p>Return the maximum of an array or maximum along an axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.amax.html#dpnp.amax" title="dpnp.amax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.amax</span></code></a></p></td>
+<td><p>Return the maximum of an array or maximum along an axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fmax.html#dpnp.fmax" title="dpnp.fmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fmax</span></code></a></p></td>
+<td><p>Element-wise maximum of array elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.minimum.html#dpnp.minimum" title="dpnp.minimum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.minimum</span></code></a></p></td>
+<td><p>Element-wise minimum of array elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.min.html#dpnp.min" title="dpnp.min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.min</span></code></a></p></td>
+<td><p>Return the minimum along a given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.amin.html#dpnp.amin" title="dpnp.amin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.amin</span></code></a></p></td>
+<td><p>Return the minimum of an array or minimum along an axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fmin.html#dpnp.fmin" title="dpnp.fmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fmin</span></code></a></p></td>
+<td><p>Element-wise minimum of array elements.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -391,18 +437,6 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.sign.html#dpnp.sign" title="dpnp.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sign</span></code></a></p></td>
 <td><p>Returns an element-wise indication of the sign of a number.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.maximum.html#dpnp.maximum" title="dpnp.maximum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.maximum</span></code></a></p></td>
-<td><p>Element-wise maximum of array elements.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.minimum.html#dpnp.minimum" title="dpnp.minimum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.minimum</span></code></a></p></td>
-<td><p>Element-wise minimum of array elements.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fmax.html#dpnp.fmax" title="dpnp.fmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fmax</span></code></a></p></td>
-<td><p>Element-wise maximum of array elements.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fmin.html#dpnp.fmin" title="dpnp.fmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fmin</span></code></a></p></td>
-<td><p>Element-wise minimum of array elements.</p></td>
 </tr>
 </tbody>
 </table>

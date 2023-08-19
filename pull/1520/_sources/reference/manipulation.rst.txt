@@ -11,6 +11,7 @@ Basic operations
    :nosignatures:
 
    dpnp.copyto
+   dpnp.shape
 
 
 Changing array shape
@@ -22,6 +23,8 @@ Changing array shape
 
    dpnp.reshape
    dpnp.ravel
+   dpnp.ndarray.flat
+   dpnp.ndarray.flatten
 
 
 Transpose-like operations
@@ -34,10 +37,9 @@ Transpose-like operations
    dpnp.moveaxis
    dpnp.rollaxis
    dpnp.swapaxes
+   dpnp.ndarray.T
    dpnp.transpose
 
-.. seealso::
-   :attr:`dpnp.dparray.T`
 
 Changing number of dimensions
 -----------------------------
@@ -66,6 +68,7 @@ Changing kind of array
    dpnp.asarray
    dpnp.asnumpy
    dpnp.asanyarray
+   dpnp.asmatrix
    dpnp.asfarray
    dpnp.asfortranarray
    dpnp.ascontiguousarray
@@ -81,10 +84,12 @@ Joining arrays
 
    dpnp.concatenate
    dpnp.stack
-   dpnp.column_stack
-   dpnp.dstack
-   dpnp.hstack
+   dpnp.block
    dpnp.vstack
+   dpnp.hstack
+   dpnp.column_stack
+   dpnp.row_stack
+   dpnp.dstack
 
 
 Splitting arrays
@@ -119,6 +124,10 @@ Adding and removing elements
    :toctree: generated/
    :nosignatures:
 
+   dpnp.delete
+   dpnp.insert
+   dpnp.append
+   dpnp.resize
    dpnp.unique
    dpnp.trim_zeros
 

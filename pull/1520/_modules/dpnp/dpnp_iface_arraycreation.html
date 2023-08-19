@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.12.2dev0+29.g16ca9309 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.12.2dev0+50.g15b454684 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+29.g16ca9309
+                0.12.2dev0+50.g15b454684
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -144,6 +144,7 @@
     <span class="s2">&quot;asanyarray&quot;</span><span class="p">,</span>
     <span class="s2">&quot;asarray&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ascontiguousarray&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;asfortranarray&quot;</span><span class="p">,</span>
     <span class="s2">&quot;copy&quot;</span><span class="p">,</span>
     <span class="s2">&quot;diag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;diagflat&quot;</span><span class="p">,</span>
@@ -238,10 +239,11 @@
 
 
 <div class="viewcode-block" id="array"><a class="viewcode-back" href="../../reference/generated/dpnp.array.html#dpnp.array">[docs]</a><span class="k">def</span> <span class="nf">array</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
+    <span class="n">x</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
     <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
     <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">ndmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -250,15 +252,16 @@
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates an array.</span>
+<span class="sd">    Create an array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.array`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``subok`` is supported only with default value ``False``.</span>
-<span class="sd">    Parameter ``ndmin`` is supported only with default value ``0``.</span>
-<span class="sd">    Parameter ``like`` is supported only with default value ``None``.</span>
+<span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
+<span class="sd">    Parameter `ndmin` is supported only with default value ``0``.</span>
+<span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
+<span class="sd">    Otherwise, the function raises `ValueError` exception.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -292,35 +295,47 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="k">pass</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Keyword argument `subok` is supported only with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``False``, but got </span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="n">ndmin</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">pass</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Keyword argument `ndmin` is supported only with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``0``, but got </span><span class="si">{</span><span class="n">ndmin</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-            <span class="n">x1</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span>
-            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Keyword argument `like` is supported only with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">like</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
+    <span class="c1"># `False`` in numpy means exactly the same like `None` in python array API:</span>
+    <span class="c1"># that is to reuse existing memory buffer if possible or to copy otherwise.</span>
+    <span class="k">if</span> <span class="n">copy</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">copy</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="n">ndmin</span><span class="o">=</span><span class="n">ndmin</span><span class="p">,</span>
-        <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="asanyarray"><a class="viewcode-back" href="../../reference/generated/dpnp.asanyarray.html#dpnp.asanyarray">[docs]</a><span class="k">def</span> <span class="nf">asanyarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="asanyarray"><a class="viewcode-back" href="../../reference/generated/dpnp.asanyarray.html#dpnp.asanyarray">[docs]</a><span class="k">def</span> <span class="nf">asanyarray</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert the input to an ndarray, but pass ndarray subclasses through.</span>
 
@@ -328,7 +343,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``order`` is supported only with default value ``&quot;C&quot;``.</span>
+<span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
+<span class="sd">    Otherwise, the function raises `ValueError` exception.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -346,29 +362,31 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.asanyarray([1, 2, 3])</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in x]</span>
-<span class="sd">    [1, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; np.asanyarray([1, 2, 3])</span>
+<span class="sd">    array([1, 2, 3])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-        <span class="c1"># if it is already dpnp.ndarray then same object should be returned</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">a</span>
+    <span class="k">if</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Keyword argument `like` is supported only with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">like</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">order</span> <span class="o">!=</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="asarray"><a class="viewcode-back" href="../../reference/generated/dpnp.asarray.html#dpnp.asarray">[docs]</a><span class="k">def</span> <span class="nf">asarray</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
+    <span class="n">x</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -381,7 +399,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``like`` is supported only with default value ``None``.</span>
+<span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
+<span class="sd">    Otherwise, the function raises `ValueError` exception.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -399,64 +418,168 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.asarray([1, 2, 3])</span>
-<span class="sd">    &gt;&gt;&gt; print(x)</span>
-<span class="sd">    [1 2 3]</span>
+<span class="sd">    &gt;&gt;&gt; np.asarray([1, 2, 3])</span>
+<span class="sd">    array([1, 2, 3])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-            <span class="n">x1</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Converting Python sequence to usm_ndarray requires a copy</span>
-            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Keyword argument `like` is supported only with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">like</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ascontiguousarray"><a class="viewcode-back" href="../../reference/generated/dpnp.ascontiguousarray.html#dpnp.ascontiguousarray">[docs]</a><span class="k">def</span> <span class="nf">ascontiguousarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ascontiguousarray"><a class="viewcode-back" href="../../reference/generated/dpnp.ascontiguousarray.html#dpnp.ascontiguousarray">[docs]</a><span class="k">def</span> <span class="nf">ascontiguousarray</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a contiguous array (ndim &gt;= 1) in memory (C order).</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.ascontiguousarray`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
+<span class="sd">    Otherwise, the function raises `ValueError` exception.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-major</span>
 <span class="sd">                     memory order.</span>
 <span class="sd">    :obj:`dpnp.require` : Return an ndarray that satisfies requirements.</span>
+<span class="sd">    :obj:`dpnp.ndarray.flags` : Information about the memory layout of the array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.arange(6).reshape((2, 3))</span>
-<span class="sd">    &gt;&gt;&gt; out = np.ascontiguousarray(x)</span>
-<span class="sd">    &gt;&gt;&gt; out.shape</span>
-<span class="sd">    (2, 3)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [0, 1, 2, 3, 4, 5]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.ones((2, 3), order=&#39;F&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; x.flags[&#39;F_CONTIGUOUS&#39;]</span>
+<span class="sd">    True</span>
+
+<span class="sd">    Calling ``ascontiguousarray`` makes a C-contiguous copy:</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.ascontiguousarray(x)</span>
+<span class="sd">    &gt;&gt;&gt; y.flags[&#39;F_CONTIGUOUS&#39;]</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; x is y</span>
+<span class="sd">    False</span>
+
+<span class="sd">    Now, starting with a C-contiguous array:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.ones((2, 3), order=&#39;C&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; x.flags[&#39;C_CONTIGUOUS&#39;]</span>
+<span class="sd">    True</span>
+
+<span class="sd">    Then, calling ``ascontiguousarray`` returns the same object:</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.ascontiguousarray(x)</span>
+<span class="sd">    &gt;&gt;&gt; x is y</span>
+<span class="sd">    True</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-        <span class="c1"># we support only c-contiguous arrays for now</span>
-        <span class="c1"># if type is the same then same object should be returned</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dtype</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">a</span>
+    <span class="k">if</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Keyword argument `like` is supported only with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">like</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="c1"># at least 1-d array has to be returned</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
-<span class="c1"># numpy.copy(a, order=&#39;K&#39;, subok=False)</span>
+<div class="viewcode-block" id="asfortranarray"><a class="viewcode-back" href="../../reference/generated/dpnp.asfortranarray.html#dpnp.asfortranarray">[docs]</a><span class="k">def</span> <span class="nf">asfortranarray</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an array (ndim &gt;= 1) laid out in Fortran order in memory.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.asfortranarray`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
+<span class="sd">    Otherwise, the function raises `ValueError` exception.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous (C order) array.</span>
+<span class="sd">    :obj:`dpnp.asanyarray` : Convert input to an ndarray with either row or column-major memory order.</span>
+<span class="sd">    :obj:`dpnp.require` : Return an ndarray that satisfies requirements.</span>
+<span class="sd">    :obj:`dpnp.ndarray.flags` : Information about the memory layout of the array.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+
+<span class="sd">    Starting with a C-contiguous array:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.ones((2, 3), order=&#39;C&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; x.flags[&#39;C_CONTIGUOUS&#39;]</span>
+<span class="sd">    True</span>
+
+<span class="sd">    Calling ``asfortranarray`` makes a Fortran-contiguous copy:</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.asfortranarray(x)</span>
+<span class="sd">    &gt;&gt;&gt; y.flags[&#39;F_CONTIGUOUS&#39;]</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; x is y</span>
+<span class="sd">    False</span>
+
+<span class="sd">    Now, starting with a Fortran-contiguous array:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.ones((2, 3), order=&#39;F&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; x.flags[&#39;F_CONTIGUOUS&#39;]</span>
+<span class="sd">    True</span>
+
+<span class="sd">    Then, calling ``asfortranarray`` returns the same object:</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.asfortranarray(x)</span>
+<span class="sd">    &gt;&gt;&gt; x is y</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Keyword argument `like` is supported only with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">like</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># at least 1-d array has to be returned</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="copy"><a class="viewcode-back" href="../../reference/generated/dpnp.copy.html#dpnp.copy">[docs]</a><span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array copy of the given object.</span>
@@ -736,7 +859,7 @@
     <span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">frombuffer</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="frombuffer"><a class="viewcode-back" href="../../reference/generated/dpnp.frombuffer.html#dpnp.frombuffer">[docs]</a><span class="k">def</span> <span class="nf">frombuffer</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpret a buffer as a 1-dimensional array.</span>
 
@@ -748,7 +871,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="fromfile"><a class="viewcode-back" href="../../reference/generated/dpnp.fromfile.html#dpnp.fromfile">[docs]</a><span class="k">def</span> <span class="nf">fromfile</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -770,7 +893,7 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fromfile</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">fromfunction</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="fromfunction"><a class="viewcode-back" href="../../reference/generated/dpnp.fromfunction.html#dpnp.fromfunction">[docs]</a><span class="k">def</span> <span class="nf">fromfunction</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct an array by executing a function over each coordinate.</span>
 
@@ -785,10 +908,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fromfunction</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fromfunction</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">fromiter</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">count</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="fromiter"><a class="viewcode-back" href="../../reference/generated/dpnp.fromiter.html#dpnp.fromiter">[docs]</a><span class="k">def</span> <span class="nf">fromiter</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">count</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a new 1-dimensional array from an iterable object.</span>
 
@@ -800,10 +923,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fromiter</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fromiter</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">fromstring</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="fromstring"><a class="viewcode-back" href="../../reference/generated/dpnp.fromstring.html#dpnp.fromstring">[docs]</a><span class="k">def</span> <span class="nf">fromstring</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A new 1-D array initialized from text data in a string.</span>
 
@@ -815,7 +938,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="full"><a class="viewcode-back" href="../../reference/generated/dpnp.full.html#dpnp.full">[docs]</a><span class="k">def</span> <span class="nf">full</span><span class="p">(</span>
@@ -1084,7 +1207,7 @@
     <span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">loadtxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="loadtxt"><a class="viewcode-back" href="../../reference/generated/dpnp.loadtxt.html#dpnp.loadtxt">[docs]</a><span class="k">def</span> <span class="nf">loadtxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load data from a text file.</span>
 
@@ -1107,7 +1230,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="logspace"><a class="viewcode-back" href="../../reference/generated/dpnp.logspace.html#dpnp.logspace">[docs]</a><span class="k">def</span> <span class="nf">logspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -1405,7 +1528,7 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ones_like</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">ptp</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">):</span>
+<div class="viewcode-block" id="ptp"><a class="viewcode-back" href="../../reference/generated/dpnp.ptp.html#dpnp.ptp">[docs]</a><span class="k">def</span> <span class="nf">ptp</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Range of values (maximum - minimum) along an axis.</span>
 
@@ -1431,7 +1554,7 @@
 
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ptp</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ptp</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="trace"><a class="viewcode-back" href="../../reference/generated/dpnp.trace.html#dpnp.trace">[docs]</a><span class="k">def</span> <span class="nf">trace</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

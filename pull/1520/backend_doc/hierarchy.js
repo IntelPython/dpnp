@@ -1,5 +1,7 @@
 var hierarchy =
 [
+    [ "dpnp::backend::ext::vm::AddContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_add_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::AddOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_add_output_type.html", null ],
     [ "backend_sycl", "classbackend__sycl.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product< Args >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product< std::tuple< std::tuple< FirstTupleArgs... > > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product_3_01std_1_1tuple_3_01std_1_1tupl8eeb66d10f7723d0fc0b38e3d181763c.html", null ],
@@ -54,6 +56,8 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::merge_two_inner_tuple_types< std::tuple< std::tuple< FirstTupleArgs... > >, std::tuple< std::tuple< SecondTupleArgs... > > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__inner__tuple__types_3_01std_1_1tuple_3_61a32514aa73a4b8a3b7c6a5b4f77028.html", null ],
     [ "dpnp::backend::ext::sycl_ext::merge_two_tuple_types< FirstTuple, SecondTuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__tuple__types.html", null ],
     [ "dpnp::backend::ext::sycl_ext::merge_two_tuple_types< std::tuple< FirstTupleArgs... >, std::tuple< SecondTupleArgs... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__tuple__types_3_01std_1_1tuple_3_01_firsbb11e9f600ace9f62066d6e14ad141b6.html", null ],
+    [ "dpnp::backend::ext::vm::MulContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_mul_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::MulOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_mul_output_type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::pop_tuple_type< Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1pop__tuple__type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::pop_tuple_type< std::tuple< T, Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1pop__tuple__type_3_01std_1_1tuple_3_01_t_00_01_args_8_8_8_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::populate_table< C, FnT, Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1populate__table.html", null ],
@@ -70,6 +74,8 @@ var hierarchy =
     [ "dpnp::backend::ext::vm::types::SqrOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqr_output_type.html", null ],
     [ "dpnp::backend::ext::vm::SqrtContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqrt_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::SqrtOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqrt_output_type.html", null ],
+    [ "dpnp::backend::ext::vm::SubContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sub_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::SubOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sub_output_type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::sum_mean< InT, OutT, Mean >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1sum__mean.html", null ],
     [ "dpnp::backend::ext::lapack::types::SyevdTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::vm::TruncContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_trunc_contig_factory.html", null ],

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Routines &mdash; Data Parallel Extension for NumPy 0.12.2dev0+29.g16ca9309 documentation</title>
+  <title>Routines &mdash; Data Parallel Extension for NumPy 0.12.2dev0+50.g15b454684 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+29.g16ca9309
+                0.12.2dev0+50.g15b454684
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -63,21 +63,21 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Routines</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="creation.html">Array Creation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array Manipulation Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="indexing.html">Array Indexing Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fft.html">FFT Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="logic.html">Logic Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pad.html">Padding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="polynomials.html">Polynomials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, Searching, and Counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="difference.html">Difference with NumPy*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
@@ -124,6 +124,7 @@ These functions cover a subset of
 <li class="toctree-l2"><a class="reference internal" href="creation.html#creation-from-other-data">Creation from other data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="creation.html#numerical-ranges">Numerical ranges</a></li>
 <li class="toctree-l2"><a class="reference internal" href="creation.html#matrix-creation">Matrix creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creation.html#the-matrix-class">The Matrix class</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="manipulation.html">Array Manipulation Routines</a><ul>
@@ -139,10 +140,25 @@ These functions cover a subset of
 <li class="toctree-l2"><a class="reference internal" href="manipulation.html#rearranging-elements">Rearranging elements</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="indexing.html">Array Indexing Routines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#generating-index-arrays">Generating index arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#indexing-like-operations">Indexing-like operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#inserting-data-into-arrays">Inserting data into arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#iterating-over-arrays">Iterating over arrays</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="binary.html">Binary Operations</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="binary.html#elementwise-bit-operations">Elementwise bit operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="binary.html#bit-packing">Bit packing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="binary.html#output-formatting">Output formatting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dtype.html">Data type routines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/dpnp.result_type.html">dpnp.result_type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtype.html#creating-data-types">Creating data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtype.html#data-type-information">Data type information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtype.html#data-type-testing">Data type testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtype.html#miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="fft.html">FFT Functions</a><ul>
@@ -156,9 +172,8 @@ These functions cover a subset of
 <li class="toctree-l2"><a class="reference internal" href="linalg.html#matrix-and-vector-products">Matrix and vector products</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linalg.html#decompositions">Decompositions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linalg.html#matrix-eigenvalues">Matrix eigenvalues</a></li>
-<li class="toctree-l2"><a class="reference internal" href="linalg.html#norms-etc">Norms etc.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linalg.html#norms-and-other-numbers">Norms and other numbers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linalg.html#solving-linear-equations">Solving linear equations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="linalg.html#special-matrices">Special Matrices</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="logic.html">Logic Functions</a><ul>
@@ -177,15 +192,11 @@ These functions cover a subset of
 <li class="toctree-l2"><a class="reference internal" href="math.html#exponents-and-logarithms">Exponents and logarithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html#other-special-functions">Other special functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html#floating-point-routines">Floating point routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#rational-routines">Rational routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html#arithmetic-operations">Arithmetic operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html#handling-complex-numbers">Handling complex numbers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#extrema-finding">Extrema Finding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html#miscellaneous">Miscellaneous</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pad.html">Padding</a></li>
-<li class="toctree-l1"><a class="reference internal" href="polynomials.html">Polynomials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="polynomials.html#polynomial-package">Polynomial Package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="polynomials.html#poly1d">Poly1d</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><ul>
@@ -203,7 +214,7 @@ These functions cover a subset of
 </li>
 <li class="toctree-l1"><a class="reference internal" href="statistics.html">Statistical Functions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="statistics.html#order-statistics">Order statistics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="statistics.html#means-and-variances">Means and variances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#averages-and-variances">Averages and variances</a></li>
 <li class="toctree-l2"><a class="reference internal" href="statistics.html#histograms">Histograms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="statistics.html#correlations">Correlations</a></li>
 </ul>

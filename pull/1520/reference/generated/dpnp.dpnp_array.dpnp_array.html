@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.12.2dev0+29.g16ca9309 documentation</title>
+  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.12.2dev0+50.g15b454684 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Universal Functions (ufunc)" href="../ufunc.html" />
+    <link rel="next" title="dpnp.ndarray.flags" href="dpnp.ndarray.flags.html" />
     <link rel="prev" title="dpnp.ndarray" href="dpnp.ndarray.html" /> 
 </head>
 
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+29.g16ca9309
+                0.12.2dev0+50.g15b454684
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -64,13 +64,26 @@
 <li class="toctree-l4"><a class="reference internal" href="#dpnp.dpnp_array.dpnp_array"><code class="docutils literal notranslate"><span class="pre">dpnp_array</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#constructing-arrays">Constructing arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#indexing-arrays">Indexing arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-attributes">Array attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#memory-layout">Memory layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#data-type">Data type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#other-attributes">Other attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-methods">Array methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-conversion">Array conversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#shape-manipulation">Shape manipulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#item-selection-and-manipulation">Item selection and manipulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#calculation">Calculation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#arithmetic-matrix-multiplication-and-comparison-operations">Arithmetic, matrix multiplication, and comparison operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#special-methods">Special methods</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../routines.html">Routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../difference.html">Difference with NumPy*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
@@ -118,17 +131,19 @@ methods to be compliant with original Numpy.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.__getitem__">
 <span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.__getitem__" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Return self[key].</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.__setitem__">
 <span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.__setitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.__setitem__" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Set self[key] to value.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.__len__">
 <span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.__len__" title="Permalink to this definition"></a></dt>
-<dd><p>Performs the operation __len__.</p>
+<dd><p>Return len(self).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -342,7 +357,7 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 <dd><p>Return specified diagonals.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diagonal</span></code></p>
+<p><a class="reference internal" href="dpnp.diagonal.html#dpnp.diagonal" title="dpnp.diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diagonal</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -448,7 +463,8 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.nonzero">
 <span class="sig-name descname"><span class="pre">nonzero</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.nonzero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.nonzero" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Return the indices of the elements that are non-zero.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.partition">
@@ -590,7 +606,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">a.resh
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.ndarray.T</span></code></dt><dd><p>Array property returning the array transposed.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.reshape</span></code></dt><dd><p>Give a new shape to an array without changing its data.</p>
+<dt><a class="reference internal" href="dpnp.ndarray.reshape.html#dpnp.ndarray.reshape" title="dpnp.ndarray.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.reshape</span></code></a></dt><dd><p>Give a new shape to an array without changing its data.</p>
 </dd>
 </dl>
 </div>
@@ -774,7 +790,7 @@ change of respective index.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="dpnp.ndarray.html" class="btn btn-neutral float-left" title="dpnp.ndarray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../ufunc.html" class="btn btn-neutral float-right" title="Universal Functions (ufunc)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.ndarray.flags.html" class="btn btn-neutral float-right" title="dpnp.ndarray.flags" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
