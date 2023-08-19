@@ -10,7 +10,6 @@ Matrix and vector products
    :toctree: generated/
    :nosignatures:
 
-   dpnp.cross
    dpnp.dot
    dpnp.linalg.multi_dot
    dpnp.vdot
@@ -46,15 +45,16 @@ Matrix eigenvalues
    dpnp.linalg.eigvals
    dpnp.linalg.eigvalsh
 
-Norms etc.
+Norms and other numbers
 ----------
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
 
-   dpnp.linalg.det
    dpnp.linalg.norm
+   dpnp.linalg.cond
+   dpnp.linalg.det
    dpnp.linalg.matrix_rank
    dpnp.linalg.slogdet
    dpnp.trace
@@ -73,14 +73,3 @@ Solving linear equations
    dpnp.linalg.inv
    dpnp.linalg.pinv
    dpnp.linalg.tensorinv
-
-Special Matrices
-----------------
-
-.. autosummary::
-   :toctree: generated/
-   :nosignatures:
-
-   dpnp.tri
-   dpnp.tril
-   dpnp.triu

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Universal Functions (ufunc) &mdash; Data Parallel Extension for NumPy 0.12.2dev0+31.g9cd179528 documentation</title>
+  <title>Universal Functions (ufunc) &mdash; Data Parallel Extension for NumPy 0.12.2dev0+55.gbfc6d866a documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="dpnp.add" href="generated/dpnp.add.html" />
-    <link rel="prev" title="dpnp.dpnp_array.dpnp_array" href="generated/dpnp.dpnp_array.dpnp_array.html" /> 
+    <link rel="prev" title="dpnp.ndarray.__repr__" href="generated/dpnp.ndarray.__repr__.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+31.g9cd179528
+                0.12.2dev0+55.gbfc6d866a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -72,8 +72,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="routines.html">Routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="difference.html">Difference with NumPy*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
@@ -109,7 +109,7 @@
            <div itemprop="articleBody">
              
   <section id="universal-functions-ufunc">
-<h1>Universal Functions (ufunc)<a class="headerlink" href="#universal-functions-ufunc" title="Permalink to this heading"></a></h1>
+<span id="ufunc"></span><h1>Universal Functions (ufunc)<a class="headerlink" href="#universal-functions-ufunc" title="Permalink to this heading"></a></h1>
 <p>DPNP provides universal functions (a.k.a. ufuncs) to support various elementwise operations.</p>
 <section id="available-ufuncs">
 <h2>Available ufuncs<a class="headerlink" href="#available-ufuncs" title="Permalink to this heading"></a></h2>
@@ -337,22 +337,25 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.isnan.html#dpnp.isnan" title="dpnp.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isnan</span></code></a></p></td>
 <td><p>Test element-wise for NaN and return result as a boolean array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.copysign.html#dpnp.copysign" title="dpnp.copysign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.copysign</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fabs.html#dpnp.fabs" title="dpnp.fabs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fabs</span></code></a></p></td>
+<td><p>Compute the absolute values element-wise.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.copysign.html#dpnp.copysign" title="dpnp.copysign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.copysign</span></code></a></p></td>
 <td><p>Change the sign of x1 to that of x2, element-wise.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.modf.html#dpnp.modf" title="dpnp.modf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.modf</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.modf.html#dpnp.modf" title="dpnp.modf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.modf</span></code></a></p></td>
 <td><p>Return the fractional and integral parts of an array, element-wise.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fmod.html#dpnp.fmod" title="dpnp.fmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fmod</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fmod.html#dpnp.fmod" title="dpnp.fmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fmod</span></code></a></p></td>
 <td><p>Calculate the element-wise remainder of division.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.floor.html#dpnp.floor" title="dpnp.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.floor</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.floor.html#dpnp.floor" title="dpnp.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.floor</span></code></a></p></td>
 <td><p>Round a number to the nearest integer toward minus infinity.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ceil.html#dpnp.ceil" title="dpnp.ceil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ceil</span></code></a></p></td>
-<td><p>Compute  the ceiling of the input, element-wise.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ceil.html#dpnp.ceil" title="dpnp.ceil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ceil</span></code></a></p></td>
+<td><p>Compute the ceiling of the input, element-wise.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.trunc.html#dpnp.trunc" title="dpnp.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.trunc</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.trunc.html#dpnp.trunc" title="dpnp.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.trunc</span></code></a></p></td>
 <td><p>Compute the truncated value of the input, element-wise.</p></td>
 </tr>
 </tbody>
@@ -365,7 +368,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="generated/dpnp.dpnp_array.dpnp_array.html" class="btn btn-neutral float-left" title="dpnp.dpnp_array.dpnp_array" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generated/dpnp.ndarray.__repr__.html" class="btn btn-neutral float-left" title="dpnp.ndarray.__repr__" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="generated/dpnp.add.html" class="btn btn-neutral float-right" title="dpnp.add" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

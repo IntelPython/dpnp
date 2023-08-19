@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.argmin &mdash; Data Parallel Extension for NumPy 0.12.2dev0+31.g9cd179528 documentation</title>
+  <title>dpnp.argmin &mdash; Data Parallel Extension for NumPy 0.12.2dev0+55.gbfc6d866a documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.nonzero" href="dpnp.nonzero.html" />
+    <link rel="next" title="dpnp.searchsorted" href="dpnp.searchsorted.html" />
     <link rel="prev" title="dpnp.argmax" href="dpnp.argmax.html" /> 
 </head>
 
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+31.g9cd179528
+                0.12.2dev0+55.gbfc6d866a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -63,13 +63,13 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../sorting.html#sorting">Sorting</a></li>
@@ -81,8 +81,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../difference.html">Difference with NumPy*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
@@ -131,7 +131,7 @@
 Otherwise the function will be executed sequentially on CPU.
 Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 Parameter <code class="docutils literal notranslate"><span class="pre">out</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
-Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
+Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -141,7 +141,7 @@ Input array data types are limited by supported DPNP <a class="reference interna
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.unravel_index</span></code></dt><dd><p>Convert a flat index into an index tuple.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.take_along_axis</span></code></dt><dd><p>Apply <code class="docutils literal notranslate"><span class="pre">np.expand_dims(index_array,</span> <span class="pre">axis)</span></code> from argmin to an array as if by calling min.</p>
+<dt><a class="reference internal" href="dpnp.take_along_axis.html#dpnp.take_along_axis" title="dpnp.take_along_axis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.take_along_axis</span></code></a></dt><dd><p>Apply <code class="docutils literal notranslate"><span class="pre">np.expand_dims(index_array,</span> <span class="pre">axis)</span></code> from argmin to an array as if by calling min.</p>
 </dd>
 </dl>
 </div>
@@ -168,7 +168,7 @@ corresponding to the first occurrence are returned.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="dpnp.argmax.html" class="btn btn-neutral float-left" title="dpnp.argmax" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.nonzero.html" class="btn btn-neutral float-right" title="dpnp.nonzero" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.searchsorted.html" class="btn btn-neutral float-right" title="dpnp.searchsorted" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
