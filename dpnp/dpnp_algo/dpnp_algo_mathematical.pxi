@@ -39,7 +39,6 @@ __all__ += [
     "dpnp_absolute",
     "dpnp_arctan2",
     "dpnp_around",
-    "dpnp_conjugate",
     "dpnp_copysign",
     "dpnp_cross",
     "dpnp_cumprod",
@@ -153,10 +152,6 @@ cpdef utils.dpnp_descriptor dpnp_around(utils.dpnp_descriptor x1, int decimals):
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_conjugate(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_CONJIGUATE_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_copysign(utils.dpnp_descriptor x1_obj,

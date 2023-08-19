@@ -68,8 +68,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CHOLESKY_EXT
         DPNP_FN_CHOOSE
         DPNP_FN_CHOOSE_EXT
-        DPNP_FN_CONJIGUATE
-        DPNP_FN_CONJIGUATE_EXT
         DPNP_FN_COPY
         DPNP_FN_COPY_EXT
         DPNP_FN_COPYSIGN

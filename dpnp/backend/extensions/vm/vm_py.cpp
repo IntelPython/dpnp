@@ -33,6 +33,7 @@
 #include "add.hpp"
 #include "ceil.hpp"
 #include "common.hpp"
+#include "conj.hpp"
 #include "cos.hpp"
 #include "div.hpp"
 #include "floor.hpp"
@@ -56,6 +57,7 @@ static unary_impl_fn_ptr_t ceil_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t cos_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t floor_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t conj_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ln_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t mul_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t sin_dispatch_vector[dpctl_td_ns::num_types];
@@ -123,6 +125,34 @@ PYBIND11_MODULE(_vm_impl, m)
         };
         m.def("_mkl_ceil_to_call", ceil_need_to_call_pyapi,
               "Check input arguments to answer if `ceil` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Conj(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::ConjContigFactory>(
+            conj_dispatch_vector);
+
+        auto conj_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                              const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       conj_dispatch_vector);
+        };
+        m.def("_conj", conj_pyapi,
+              "Call `conj` function from OneMKL VM library to compute "
+              "conjugate of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto conj_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                           arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    conj_dispatch_vector);
+        };
+        m.def("_mkl_conj_to_call", conj_need_to_call_pyapi,
+              "Check input arguments to answer if `conj` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }
