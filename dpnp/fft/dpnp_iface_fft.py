@@ -98,12 +98,16 @@ def fft(x, n=None, axis=-1, norm=None):
     Parameter `axis` is supported with its default value.
     Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
     `dpnp.complex128`, `dpnp.complex64` data types are supported.
-    The `dpnp.bool` data type is not supported and will raise a `RuntimeError` exception.
+    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.
     Otherwise the function will be executed sequentially on CPU.
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
     if x_desc:
+        dt = x_desc.dtype
+        if dpnp.issubdtype(dt, dpnp.bool):
+            raise TypeError(f"The `{dt}` data type is unsupported.")
+
         norm_ = get_validated_norm(norm)
 
         if axis is None:
@@ -338,13 +342,17 @@ def ifft(x, n=None, axis=-1, norm=None):
     Parameter `axis` is supported with its default value.
     Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,,
     `dpnp.complex128`, `dpnp.complex64` data types are supported.
-    The `dpnp.bool` data type is not supported and will raise a `RuntimeError` exception.
+    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.
     Otherwise the function will be executed sequentially on CPU.
 
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
     if x_desc:
+        dt = x_desc.dtype
+        if dpnp.issubdtype(dt, dpnp.bool):
+            raise TypeError(f"The `{dt}` data type is unsupported.")
+
         norm_ = get_validated_norm(norm)
 
         if axis is None:
@@ -724,12 +732,16 @@ def rfft(x, n=None, axis=-1, norm=None):
     Parameter `norm` is unsupported.
     Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
     `dpnp.complex128` data types are supported.
-    The `dpnp.bool` data type is not supported and will raise a `RuntimeError` exception.
+    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.
     Otherwise the function will be executed sequentially on CPU.
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
     if x_desc:
+        dt = x_desc.dtype
+        if dpnp.issubdtype(dt, dpnp.bool):
+            raise TypeError(f"The `{dt}` data type is unsupported.")
+
         norm_ = get_validated_norm(norm)
 
         if axis is None:
