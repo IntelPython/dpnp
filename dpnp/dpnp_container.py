@@ -86,8 +86,8 @@ def arange(
 def asarray(
     x1,
     dtype=None,
-    copy=False,
-    order="C",
+    copy=None,
+    order=None,
     device=None,
     usm_type=None,
     sycl_queue=None,
@@ -96,7 +96,7 @@ def asarray(
     dpu.validate_usm_type(usm_type, allow_none=True)
 
     if order is None:
-        order = "C"
+        order = "K"
 
     """Converts incoming 'x1' object to 'dpnp_array'."""
     if isinstance(x1, (list, tuple, range)):
@@ -127,6 +127,11 @@ def asarray(
             usm_type=usm_type,
             sycl_queue=sycl_queue_normalized,
         )
+
+        # return x1 if dpctl returns a zero copy of x1_obj
+        if array_obj is x1_obj:
+            return x1
+
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
 

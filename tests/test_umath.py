@@ -171,7 +171,7 @@ class TestSin:
         dp_array = dpnp.arange(10)
         dp_out = dpnp.empty(shape, dtype=dp_array.dtype)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpnp.sin(dp_array, out=dp_out)
 
 
@@ -254,7 +254,7 @@ class TestCos:
         dp_array = dpnp.arange(10)
         dp_out = dpnp.empty(shape, dtype=dp_array.dtype)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpnp.cos(dp_array, out=dp_out)
 
 
@@ -337,7 +337,7 @@ class TestsLog:
         dp_array = dpnp.arange(10)
         dp_out = dpnp.empty(shape, dtype=dp_array.dtype)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpnp.log(dp_array, out=dp_out)
 
 
@@ -613,7 +613,7 @@ class TestSqrt:
         dp_array = dpnp.arange(10, dtype=dpnp.float32)
         dp_out = dpnp.empty(shape, dtype=dpnp.float32)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpnp.sqrt(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -675,7 +675,7 @@ class TestSquare:
         dp_array = dpnp.arange(10, dtype=dpnp.float32)
         dp_out = dpnp.empty(shape, dtype=dpnp.float32)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpnp.square(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(

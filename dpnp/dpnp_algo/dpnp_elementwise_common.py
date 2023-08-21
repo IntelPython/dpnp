@@ -46,9 +46,12 @@ __all__ = [
     "dpnp_bitwise_and",
     "dpnp_bitwise_or",
     "dpnp_bitwise_xor",
+    "dpnp_ceil",
+    "dpnp_conj",
     "dpnp_cos",
     "dpnp_divide",
     "dpnp_equal",
+    "dpnp_floor",
     "dpnp_floor_divide",
     "dpnp_greater",
     "dpnp_greater_equal",
@@ -72,6 +75,7 @@ __all__ = [
     "dpnp_sqrt",
     "dpnp_square",
     "dpnp_subtract",
+    "dpnp_trunc",
 ]
 
 
@@ -160,18 +164,33 @@ Args:
         Default: "K".
 Returns:
     dpnp.ndarray:
-        an array containing the result of element-wise division. The data type
+        an array containing the result of element-wise addition. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
 
+def _call_add(src1, src2, dst, sycl_queue, depends=None):
+    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_add_to_call(sycl_queue, src1, src2, dst):
+        # call pybind11 extension for add() function from OneMKL VM
+        return vmi._add(sycl_queue, src1, src2, dst, depends)
+    return ti._add(src1, src2, dst, sycl_queue, depends)
+
+
+add_func = BinaryElementwiseFunc(
+    "add", ti._add_result_type, _call_add, _add_docstring_, ti._add_inplace
+)
+
+
 def dpnp_add(x1, x2, out=None, order="K"):
     """
-    Invokes add() from dpctl.tensor implementation for add() function.
+    Invokes add() function from pybind11 extension of OneMKL VM if possible.
 
-    TODO: add a pybind11 extension of add() from OneMKL VM where possible
-    and would be performance effective.
-
+    Otherwise fully relies on dpctl.tensor implementation for add() function.
     """
 
     # dpctl.tensor only works with usm_ndarray or scalar
@@ -179,10 +198,9 @@ def dpnp_add(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "add", ti._add_result_type, ti._add, _add_docstring_, ti._add_inplace
+    res_usm = add_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -212,6 +230,14 @@ Returns:
 """
 
 
+bitwise_and_func = BinaryElementwiseFunc(
+    "bitwise_and",
+    ti._bitwise_and_result_type,
+    ti._bitwise_and,
+    _bitwise_and_docstring_,
+)
+
+
 def dpnp_bitwise_and(x1, x2, out=None, order="K"):
     """Invokes bitwise_and() from dpctl.tensor implementation for bitwise_and() function."""
 
@@ -220,13 +246,9 @@ def dpnp_bitwise_and(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "bitwise_and",
-        ti._bitwise_and_result_type,
-        ti._bitwise_and,
-        _bitwise_and_docstring_,
+    res_usm = bitwise_and_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -256,6 +278,14 @@ Returns:
 """
 
 
+bitwise_or_func = BinaryElementwiseFunc(
+    "bitwise_or",
+    ti._bitwise_or_result_type,
+    ti._bitwise_or,
+    _bitwise_or_docstring_,
+)
+
+
 def dpnp_bitwise_or(x1, x2, out=None, order="K"):
     """Invokes bitwise_or() from dpctl.tensor implementation for bitwise_or() function."""
 
@@ -264,13 +294,9 @@ def dpnp_bitwise_or(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "bitwise_or",
-        ti._bitwise_or_result_type,
-        ti._bitwise_or,
-        _bitwise_or_docstring_,
+    res_usm = bitwise_or_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -300,6 +326,14 @@ Returns:
 """
 
 
+bitwise_xor_func = BinaryElementwiseFunc(
+    "bitwise_xor",
+    ti._bitwise_xor_result_type,
+    ti._bitwise_xor,
+    _bitwise_xor_docstring_,
+)
+
+
 def dpnp_bitwise_xor(x1, x2, out=None, order="K"):
     """Invokes bitwise_xor() from dpctl.tensor implementation for bitwise_xor() function."""
 
@@ -308,13 +342,62 @@ def dpnp_bitwise_xor(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "bitwise_xor",
-        ti._bitwise_xor_result_type,
-        ti._bitwise_xor,
-        _bitwise_xor_docstring_,
+    res_usm = bitwise_xor_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_ceil_docstring = """
+ceil(x, out=None, order='K')
+
+Returns the ceiling for each element `x_i` for input array `x`.
+The ceil of the scalar `x` is the smallest integer `i`, such that `i >= x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have a real-valued data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise ceiling of input array.
+        The returned array has the same data type as `x`.
+"""
+
+
+def _call_ceil(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_ceil_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for ceil() function from OneMKL VM
+        return vmi._ceil(sycl_queue, src, dst, depends)
+    return ti._ceil(src, dst, sycl_queue, depends)
+
+
+ceil_func = UnaryElementwiseFunc(
+    "ceil", ti._ceil_result_type, _call_ceil, _ceil_docstring
+)
+
+
+def dpnp_ceil(x, out=None, order="K"):
+    """
+    Invokes ceil() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for ceil() function.
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = ceil_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -335,6 +418,44 @@ Return:
         An array containing the element-wise cosine. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
+
+
+_conj_docstring = """
+conj(x, out=None, order='K')
+
+Computes conjugate for each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise conjugate.
+        The returned array has the same data type as `x`.
+"""
+
+
+def _call_conj(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_conj_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for conj() function from OneMKL VM
+        return vmi._conj(sycl_queue, src, dst, depends)
+    return ti._conj(src, dst, sycl_queue, depends)
+
+
+conj_func = UnaryElementwiseFunc(
+    "conj", ti._conj_result_type, _call_conj, _conj_docstring
+)
 
 
 def dpnp_cos(x, out=None, order="K"):
@@ -367,6 +488,20 @@ def dpnp_cos(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+def dpnp_conj(x, out=None, order="K"):
+    """
+    Invokes conj() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for conj() function.
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = conj_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _divide_docstring_ = """
 divide(x1, x2, out=None, order="K")
 
@@ -391,57 +526,62 @@ Returns:
 """
 
 
+def _call_divide(src1, src2, dst, sycl_queue, depends=None):
+    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_div_to_call(sycl_queue, src1, src2, dst):
+        # call pybind11 extension for div() function from OneMKL VM
+        return vmi._div(sycl_queue, src1, src2, dst, depends)
+    return ti._divide(src1, src2, dst, sycl_queue, depends)
+
+
+def _call_divide_inplace(lhs, rhs, sycl_queue, depends=None):
+    """In place workaround until dpctl.tensor provides the functionality."""
+
+    if depends is None:
+        depends = []
+
+    # allocate temporary memory for out array
+    out = dpt.empty_like(lhs, dtype=dpnp.result_type(lhs.dtype, rhs.dtype))
+
+    # call a general callback
+    div_ht_, div_ev_ = _call_divide(lhs, rhs, out, sycl_queue, depends)
+
+    # store the result into left input array and return events
+    cp_ht_, cp_ev_ = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=out, dst=lhs, sycl_queue=sycl_queue, depends=[div_ev_]
+    )
+    dpctl.SyclEvent.wait_for([div_ht_])
+    return (cp_ht_, cp_ev_)
+
+
+divide_func = BinaryElementwiseFunc(
+    "divide",
+    ti._divide_result_type,
+    _call_divide,
+    _divide_docstring_,
+    _call_divide_inplace,
+)
+
+
 def dpnp_divide(x1, x2, out=None, order="K"):
     """
     Invokes div() function from pybind11 extension of OneMKL VM if possible.
 
     Otherwise fully relies on dpctl.tensor implementation for divide() function.
-
     """
-
-    def _call_divide(src1, src2, dst, sycl_queue, depends=None):
-        """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
-
-        if depends is None:
-            depends = []
-
-        if vmi._mkl_div_to_call(sycl_queue, src1, src2, dst):
-            # call pybind11 extension for div() function from OneMKL VM
-            return vmi._div(sycl_queue, src1, src2, dst, depends)
-        return ti._divide(src1, src2, dst, sycl_queue, depends)
-
-    def _call_divide_inplace(lhs, rhs, sycl_queue, depends=None):
-        """In place workaround until dpctl.tensor provides the functionality."""
-
-        if depends is None:
-            depends = []
-
-        # allocate temporary memory for out array
-        out = dpt.empty_like(lhs, dtype=dpnp.result_type(lhs.dtype, rhs.dtype))
-
-        # call a general callback
-        div_ht_, div_ev_ = _call_divide(lhs, rhs, out, sycl_queue, depends)
-
-        # store the result into left input array and return events
-        cp_ht_, cp_ev_ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=out, dst=lhs, sycl_queue=sycl_queue, depends=[div_ev_]
-        )
-        dpctl.SyclEvent.wait_for([div_ht_])
-        return (cp_ht_, cp_ev_)
 
     # dpctl.tensor only works with usm_ndarray or scalar
     x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "divide",
-        ti._divide_result_type,
-        _call_divide,
-        _divide_docstring_,
-        _call_divide_inplace,
+    res_usm = divide_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -469,6 +609,11 @@ Returns:
 """
 
 
+equal_func = BinaryElementwiseFunc(
+    "equal", ti._equal_result_type, ti._equal, _equal_docstring_
+)
+
+
 def dpnp_equal(x1, x2, out=None, order="K"):
     """Invokes equal() from dpctl.tensor implementation for equal() function."""
 
@@ -477,10 +622,62 @@ def dpnp_equal(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "equal", ti._equal_result_type, ti._equal, _equal_docstring_
+    res_usm = equal_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_floor_docstring = """
+floor(x, out=None, order='K')
+
+Returns the floor for each element `x_i` for input array `x`.
+The floor of the scalar `x` is the largest integer `i`, such that `i <= x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have a real-valued data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise floor of input array.
+        The returned array has the same data type as `x`.
+"""
+
+
+def _call_floor(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_floor_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for floor() function from OneMKL VM
+        return vmi._floor(sycl_queue, src, dst, depends)
+    return ti._floor(src, dst, sycl_queue, depends)
+
+
+floor_func = UnaryElementwiseFunc(
+    "floor", ti._floor_result_type, _call_floor, _floor_docstring
+)
+
+
+def dpnp_floor(x, out=None, order="K"):
+    """
+    Invokes floor() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for floor() function.
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = floor_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -508,6 +705,14 @@ Returns:
 """
 
 
+floor_divide_func = BinaryElementwiseFunc(
+    "floor_divide",
+    ti._floor_divide_result_type,
+    ti._floor_divide,
+    _floor_divide_docstring_,
+)
+
+
 def dpnp_floor_divide(x1, x2, out=None, order="K"):
     """Invokes floor_divide() from dpctl.tensor implementation for floor_divide() function."""
 
@@ -516,13 +721,9 @@ def dpnp_floor_divide(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "floor_divide",
-        ti._floor_divide_result_type,
-        ti._floor_divide,
-        _floor_divide_docstring_,
+    res_usm = floor_divide_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -550,6 +751,11 @@ Returns:
 """
 
 
+greater_func = BinaryElementwiseFunc(
+    "greater", ti._greater_result_type, ti._greater, _greater_docstring_
+)
+
+
 def dpnp_greater(x1, x2, out=None, order="K"):
     """Invokes greater() from dpctl.tensor implementation for greater() function."""
 
@@ -558,10 +764,9 @@ def dpnp_greater(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "greater", ti._greater_result_type, ti._greater, _greater_docstring_
+    res_usm = greater_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -589,6 +794,14 @@ Returns:
 """
 
 
+greater_equal_func = BinaryElementwiseFunc(
+    "greater_equal",
+    ti._greater_equal_result_type,
+    ti._greater_equal,
+    _greater_equal_docstring_,
+)
+
+
 def dpnp_greater_equal(x1, x2, out=None, order="K"):
     """Invokes greater_equal() from dpctl.tensor implementation for greater_equal() function."""
 
@@ -597,13 +810,9 @@ def dpnp_greater_equal(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "greater_equal",
-        ti._greater_equal_result_type,
-        ti._greater_equal,
-        _greater_equal_docstring_,
+    res_usm = greater_equal_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -629,6 +838,14 @@ Return:
 """
 
 
+invert_func = UnaryElementwiseFunc(
+    "invert",
+    ti._bitwise_invert_result_type,
+    ti._bitwise_invert,
+    _invert_docstring,
+)
+
+
 def dpnp_invert(x, out=None, order="K"):
     """Invokes bitwise_invert() from dpctl.tensor implementation for invert() function."""
 
@@ -636,13 +853,7 @@ def dpnp_invert(x, out=None, order="K"):
     x_usm = dpnp.get_usm_ndarray(x)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = UnaryElementwiseFunc(
-        "invert",
-        ti._bitwise_invert_result_type,
-        ti._bitwise_invert,
-        _invert_docstring,
-    )
-    res_usm = func(x_usm, out=out_usm, order=order)
+    res_usm = invert_func(x_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -668,6 +879,11 @@ Returns:
 """
 
 
+isfinite_func = UnaryElementwiseFunc(
+    "isfinite", ti._isfinite_result_type, ti._isfinite, _isfinite_docstring
+)
+
+
 def dpnp_isfinite(x, out=None, order="K"):
     """Invokes isfinite() from dpctl.tensor implementation for isfinite() function."""
 
@@ -675,10 +891,7 @@ def dpnp_isfinite(x, out=None, order="K"):
     x1_usm = dpnp.get_usm_ndarray(x)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = UnaryElementwiseFunc(
-        "isfinite", ti._isfinite_result_type, ti._isfinite, _isfinite_docstring
-    )
-    res_usm = func(x1_usm, out=out_usm, order=order)
+    res_usm = isfinite_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -703,6 +916,11 @@ Returns:
 """
 
 
+isinf_func = UnaryElementwiseFunc(
+    "isinf", ti._isinf_result_type, ti._isinf, _isinf_docstring
+)
+
+
 def dpnp_isinf(x, out=None, order="K"):
     """Invokes isinf() from dpctl.tensor implementation for isinf() function."""
 
@@ -710,10 +928,7 @@ def dpnp_isinf(x, out=None, order="K"):
     x1_usm = dpnp.get_usm_ndarray(x)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = UnaryElementwiseFunc(
-        "isinf", ti._isinf_result_type, ti._isinf, _isinf_docstring
-    )
-    res_usm = func(x1_usm, out=out_usm, order=order)
+    res_usm = isinf_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -738,6 +953,11 @@ Returns:
 """
 
 
+isnan_func = UnaryElementwiseFunc(
+    "isnan", ti._isnan_result_type, ti._isnan, _isnan_docstring
+)
+
+
 def dpnp_isnan(x, out=None, order="K"):
     """Invokes isnan() from dpctl.tensor implementation for isnan() function."""
 
@@ -745,10 +965,7 @@ def dpnp_isnan(x, out=None, order="K"):
     x1_usm = dpnp.get_usm_ndarray(x)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = UnaryElementwiseFunc(
-        "isnan", ti._isnan_result_type, ti._isnan, _isnan_docstring
-    )
-    res_usm = func(x1_usm, out=out_usm, order=order)
+    res_usm = isnan_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -778,6 +995,14 @@ Returns:
 """
 
 
+leftt_shift_func = BinaryElementwiseFunc(
+    "bitwise_leftt_shift",
+    ti._bitwise_left_shift_result_type,
+    ti._bitwise_left_shift,
+    _left_shift_docstring_,
+)
+
+
 def dpnp_left_shift(x1, x2, out=None, order="K"):
     """Invokes bitwise_left_shift() from dpctl.tensor implementation for left_shift() function."""
 
@@ -786,13 +1011,9 @@ def dpnp_left_shift(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "bitwise_leftt_shift",
-        ti._bitwise_left_shift_result_type,
-        ti._bitwise_left_shift,
-        _left_shift_docstring_,
+    res_usm = leftt_shift_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -820,6 +1041,11 @@ Returns:
 """
 
 
+less_func = BinaryElementwiseFunc(
+    "less", ti._less_result_type, ti._less, _less_docstring_
+)
+
+
 def dpnp_less(x1, x2, out=None, order="K"):
     """Invokes less() from dpctl.tensor implementation for less() function."""
 
@@ -828,10 +1054,9 @@ def dpnp_less(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "less", ti._less_result_type, ti._less, _less_docstring_
+    res_usm = less_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -859,6 +1084,14 @@ Returns:
 """
 
 
+less_equal_func = BinaryElementwiseFunc(
+    "less_equal",
+    ti._less_equal_result_type,
+    ti._less_equal,
+    _less_equal_docstring_,
+)
+
+
 def dpnp_less_equal(x1, x2, out=None, order="K"):
     """Invokes less_equal() from dpctl.tensor implementation for less_equal() function."""
 
@@ -867,13 +1100,9 @@ def dpnp_less_equal(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "less_equal",
-        ti._less_equal_result_type,
-        ti._less_equal,
-        _less_equal_docstring_,
+    res_usm = less_equal_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -895,33 +1124,35 @@ Return:
 """
 
 
+def _call_log(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_ln_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for ln() function from OneMKL VM
+        return vmi._ln(sycl_queue, src, dst, depends)
+    return ti._log(src, dst, sycl_queue, depends)
+
+
+log_func = UnaryElementwiseFunc(
+    "log", ti._log_result_type, _call_log, _log_docstring
+)
+
+
 def dpnp_log(x, out=None, order="K"):
     """
     Invokes log() function from pybind11 extension of OneMKL VM if possible.
 
     Otherwise fully relies on dpctl.tensor implementation for log() function.
-
     """
-
-    def _call_log(src, dst, sycl_queue, depends=None):
-        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-        if depends is None:
-            depends = []
-
-        if vmi._mkl_ln_to_call(sycl_queue, src, dst):
-            # call pybind11 extension for ln() function from OneMKL VM
-            return vmi._ln(sycl_queue, src, dst, depends)
-        return ti._log(src, dst, sycl_queue, depends)
 
     # dpctl.tensor only works with usm_ndarray
     x1_usm = dpnp.get_usm_ndarray(x)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = UnaryElementwiseFunc(
-        "log", ti._log_result_type, _call_log, _log_docstring
-    )
-    res_usm = func(x1_usm, out=out_usm, order=order)
+    res_usm = log_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -948,6 +1179,14 @@ Returns:
 """
 
 
+logical_and_func = BinaryElementwiseFunc(
+    "logical_and",
+    ti._logical_and_result_type,
+    ti._logical_and,
+    _logical_and_docstring_,
+)
+
+
 def dpnp_logical_and(x1, x2, out=None, order="K"):
     """Invokes logical_and() from dpctl.tensor implementation for logical_and() function."""
 
@@ -956,13 +1195,9 @@ def dpnp_logical_and(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "logical_and",
-        ti._logical_and_result_type,
-        ti._logical_and,
-        _logical_and_docstring_,
+    res_usm = logical_and_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -984,6 +1219,14 @@ Return:
 """
 
 
+logical_not_func = UnaryElementwiseFunc(
+    "logical_not",
+    ti._logical_not_result_type,
+    ti._logical_not,
+    _logical_not_docstring_,
+)
+
+
 def dpnp_logical_not(x, out=None, order="K"):
     """Invokes logical_not() from dpctl.tensor implementation for logical_not() function."""
 
@@ -991,13 +1234,7 @@ def dpnp_logical_not(x, out=None, order="K"):
     x_usm = dpnp.get_usm_ndarray(x)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = UnaryElementwiseFunc(
-        "logical_not",
-        ti._logical_not_result_type,
-        ti._logical_not,
-        _logical_not_docstring_,
-    )
-    res_usm = func(x_usm, out=out_usm, order=order)
+    res_usm = logical_not_func(x_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1024,6 +1261,14 @@ Returns:
 """
 
 
+logical_or_func = BinaryElementwiseFunc(
+    "logical_or",
+    ti._logical_or_result_type,
+    ti._logical_or,
+    _logical_or_docstring_,
+)
+
+
 def dpnp_logical_or(x1, x2, out=None, order="K"):
     """Invokes logical_or() from dpctl.tensor implementation for logical_or() function."""
 
@@ -1032,13 +1277,9 @@ def dpnp_logical_or(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "logical_or",
-        ti._logical_or_result_type,
-        ti._logical_or,
-        _logical_or_docstring_,
+    res_usm = logical_or_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1064,6 +1305,13 @@ Returns:
         An array containing the element-wise logical XOR results.
 """
 
+logical_xor_func = BinaryElementwiseFunc(
+    "logical_xor",
+    ti._logical_xor_result_type,
+    ti._logical_xor,
+    _logical_xor_docstring_,
+)
+
 
 def dpnp_logical_xor(x1, x2, out=None, order="K"):
     """Invokes logical_xor() from dpctl.tensor implementation for logical_xor() function."""
@@ -1073,13 +1321,9 @@ def dpnp_logical_xor(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "logical_xor",
-        ti._logical_xor_result_type,
-        ti._logical_xor,
-        _logical_xor_docstring_,
+    res_usm = logical_xor_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1102,18 +1346,37 @@ Args:
         Default: "K".
 Returns:
     dpnp.ndarray:
-        an array containing the result of element-wise division. The data type
+        an array containing the result of element-wise multiplication. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
 
+def _call_multiply(src1, src2, dst, sycl_queue, depends=None):
+    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_mul_to_call(sycl_queue, src1, src2, dst):
+        # call pybind11 extension for mul() function from OneMKL VM
+        return vmi._mul(sycl_queue, src1, src2, dst, depends)
+    return ti._multiply(src1, src2, dst, sycl_queue, depends)
+
+
+multiply_func = BinaryElementwiseFunc(
+    "multiply",
+    ti._multiply_result_type,
+    _call_multiply,
+    _multiply_docstring_,
+    ti._multiply_inplace,
+)
+
+
 def dpnp_multiply(x1, x2, out=None, order="K"):
     """
-    Invokes multiply() from dpctl.tensor implementation for multiply() function.
+    Invokes mul() function from pybind11 extension of OneMKL VM if possible.
 
-    TODO: add a pybind11 extension of mul() from OneMKL VM where possible
-    and would be performance effective.
-
+    Otherwise fully relies on dpctl.tensor implementation for multiply() function.
     """
 
     # dpctl.tensor only works with usm_ndarray or scalar
@@ -1121,14 +1384,9 @@ def dpnp_multiply(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "multiply",
-        ti._multiply_result_type,
-        ti._multiply,
-        _multiply_docstring_,
-        ti._multiply_inplace,
+    res_usm = multiply_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1155,6 +1413,13 @@ Returns:
         The data type of the returned array is determined by the Type Promotion Rules.
 """
 
+not_equal_func = BinaryElementwiseFunc(
+    "not_equal",
+    ti._not_equal_result_type,
+    ti._not_equal,
+    _not_equal_docstring_,
+)
+
 
 def dpnp_not_equal(x1, x2, out=None, order="K"):
     """Invokes not_equal() from dpctl.tensor implementation for not_equal() function."""
@@ -1164,13 +1429,9 @@ def dpnp_not_equal(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "not_equal",
-        ti._not_equal_result_type,
-        ti._not_equal,
-        _not_equal_docstring_,
+    res_usm = not_equal_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1242,6 +1503,14 @@ Returns:
 """
 
 
+right_shift_func = BinaryElementwiseFunc(
+    "bitwise_right_shift",
+    ti._bitwise_right_shift_result_type,
+    ti._bitwise_right_shift,
+    _right_shift_docstring_,
+)
+
+
 def dpnp_right_shift(x1, x2, out=None, order="K"):
     """Invokes bitwise_right_shift() from dpctl.tensor implementation for right_shift() function."""
 
@@ -1250,13 +1519,9 @@ def dpnp_right_shift(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "bitwise_right_shift",
-        ti._bitwise_right_shift_result_type,
-        ti._bitwise_right_shift,
-        _right_shift_docstring_,
+    res_usm = right_shift_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1279,33 +1544,35 @@ Return:
 """
 
 
+def _call_sin(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_sin_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for sin() function from OneMKL VM
+        return vmi._sin(sycl_queue, src, dst, depends)
+    return ti._sin(src, dst, sycl_queue, depends)
+
+
+sin_func = UnaryElementwiseFunc(
+    "sin", ti._sin_result_type, _call_sin, _sin_docstring
+)
+
+
 def dpnp_sin(x, out=None, order="K"):
     """
     Invokes sin() function from pybind11 extension of OneMKL VM if possible.
 
     Otherwise fully relies on dpctl.tensor implementation for sin() function.
-
     """
-
-    def _call_sin(src, dst, sycl_queue, depends=None):
-        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-        if depends is None:
-            depends = []
-
-        if vmi._mkl_sin_to_call(sycl_queue, src, dst):
-            # call pybind11 extension for sin() function from OneMKL VM
-            return vmi._sin(sycl_queue, src, dst, depends)
-        return ti._sin(src, dst, sycl_queue, depends)
 
     # dpctl.tensor only works with usm_ndarray
     x1_usm = dpnp.get_usm_ndarray(x)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = UnaryElementwiseFunc(
-        "sin", ti._sin_result_type, _call_sin, _sin_docstring
-    )
-    res_usm = func(x1_usm, out=out_usm, order=order)
+    res_usm = sin_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1327,36 +1594,38 @@ Return:
 """
 
 
+def _call_sqrt(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_sqrt_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for sqrt() function from OneMKL VM
+        return vmi._sqrt(sycl_queue, src, dst, depends)
+    return ti._sqrt(src, dst, sycl_queue, depends)
+
+
+sqrt_func = UnaryElementwiseFunc(
+    "sqrt",
+    ti._sqrt_result_type,
+    _call_sqrt,
+    _sqrt_docstring_,
+)
+
+
 def dpnp_sqrt(x, out=None, order="K"):
     """
     Invokes sqrt() function from pybind11 extension of OneMKL VM if possible.
 
     Otherwise fully relies on dpctl.tensor implementation for sqrt() function.
-
     """
-
-    def _call_sqrt(src, dst, sycl_queue, depends=None):
-        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-        if depends is None:
-            depends = []
-
-        if vmi._mkl_sqrt_to_call(sycl_queue, src, dst):
-            # call pybind11 extension for sqrt() function from OneMKL VM
-            return vmi._sqrt(sycl_queue, src, dst, depends)
-        return ti._sqrt(src, dst, sycl_queue, depends)
 
     # dpctl.tensor only works with usm_ndarray or scalar
     x_usm = dpnp.get_usm_ndarray(x)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = UnaryElementwiseFunc(
-        "sqrt",
-        ti._sqrt_result_type,
-        _call_sqrt,
-        _sqrt_docstring_,
-    )
-    res_usm = func(x_usm, out=out_usm, order=order)
+    res_usm = sqrt_func(x_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1378,36 +1647,38 @@ Return:
 """
 
 
+def _call_square(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_sqr_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for sqr() function from OneMKL VM
+        return vmi._sqr(sycl_queue, src, dst, depends)
+    return ti._square(src, dst, sycl_queue, depends)
+
+
+square_func = UnaryElementwiseFunc(
+    "square",
+    ti._square_result_type,
+    _call_square,
+    _square_docstring_,
+)
+
+
 def dpnp_square(x, out=None, order="K"):
     """
     Invokes sqr() function from pybind11 extension of OneMKL VM if possible.
 
     Otherwise fully relies on dpctl.tensor implementation for square() function.
-
     """
-
-    def _call_square(src, dst, sycl_queue, depends=None):
-        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-        if depends is None:
-            depends = []
-
-        if vmi._mkl_sqr_to_call(sycl_queue, src, dst):
-            # call pybind11 extension for sqr() function from OneMKL VM
-            return vmi._sqr(sycl_queue, src, dst, depends)
-        return ti._square(src, dst, sycl_queue, depends)
 
     # dpctl.tensor only works with usm_ndarray or scalar
     x_usm = dpnp.get_usm_ndarray(x)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = UnaryElementwiseFunc(
-        "square",
-        ti._square_result_type,
-        _call_square,
-        _square_docstring_,
-    )
-    res_usm = func(x_usm, out=out_usm, order=order)
+    res_usm = square_func(x_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1430,18 +1701,37 @@ Args:
         Default: "K".
 Returns:
     dpnp.ndarray:
-        an array containing the result of element-wise division. The data type
+        an array containing the result of element-wise subtraction. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
 
+def _call_subtract(src1, src2, dst, sycl_queue, depends=None):
+    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_sub_to_call(sycl_queue, src1, src2, dst):
+        # call pybind11 extension for sub() function from OneMKL VM
+        return vmi._sub(sycl_queue, src1, src2, dst, depends)
+    return ti._subtract(src1, src2, dst, sycl_queue, depends)
+
+
+subtract_func = BinaryElementwiseFunc(
+    "subtract",
+    ti._subtract_result_type,
+    _call_subtract,
+    _subtract_docstring_,
+    ti._subtract_inplace,
+)
+
+
 def dpnp_subtract(x1, x2, out=None, order="K"):
     """
-    Invokes subtract() from dpctl.tensor implementation for subtract() function.
+    Invokes sub() function from pybind11 extension of OneMKL VM if possible.
 
-    TODO: add a pybind11 extension of sub() from OneMKL VM where possible
-    and would be performance effective.
-
+    Otherwise fully relies on dpctl.tensor implementation for subtract() function.
     """
 
     # TODO: discuss with dpctl if the check is needed to be moved there
@@ -1460,12 +1750,62 @@ def dpnp_subtract(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "subtract",
-        ti._subtract_result_type,
-        ti._subtract,
-        _subtract_docstring_,
-        ti._subtract_inplace,
+    res_usm = subtract_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_trunc_docstring = """
+trunc(x, out=None, order='K')
+
+Returns the truncated value for each element `x_i` for input array `x`.
+The truncated value of the scalar `x` is the nearest integer `i` which is
+closer to zero than `x` is. In short, the fractional part of the
+signed number `x` is discarded.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have a real-valued data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the truncated value of each element in `x`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_trunc(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_trunc_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for trunc() function from OneMKL VM
+        return vmi._trunc(sycl_queue, src, dst, depends)
+    return ti._trunc(src, dst, sycl_queue, depends)
+
+
+trunc_func = UnaryElementwiseFunc(
+    "trunc", ti._trunc_result_type, _call_trunc, _trunc_docstring
+)
+
+
+def dpnp_trunc(x, out=None, order="K"):
+    """
+    Invokes trunc() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for trunc() function.
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = trunc_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)

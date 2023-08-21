@@ -350,27 +350,6 @@ tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array2]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array0]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array1]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array2]
-tests/test_mathematical.py::TestCeil::test_ceil
-tests/test_mathematical.py::TestCeil::test_invalid_dtype[numpy.float32]
-tests/test_mathematical.py::TestCeil::test_invalid_dtype[numpy.int64]
-tests/test_mathematical.py::TestCeil::test_invalid_dtype[numpy.int32]
-tests/test_mathematical.py::TestCeil::test_invalid_shape[(0,)]
-tests/test_mathematical.py::TestCeil::test_invalid_shape[(15, )]
-tests/test_mathematical.py::TestCeil::test_invalid_shape[(2,2)]
-tests/test_mathematical.py::TestFloor::test_floor
-tests/test_mathematical.py::TestFloor::test_invalid_dtype[numpy.float32]
-tests/test_mathematical.py::TestFloor::test_invalid_dtype[numpy.int64]
-tests/test_mathematical.py::TestFloor::test_invalid_dtype[numpy.int32]
-tests/test_mathematical.py::TestFloor::test_invalid_shape[(0,)]
-tests/test_mathematical.py::TestFloor::test_invalid_shape[(15, )]
-tests/test_mathematical.py::TestFloor::test_invalid_shape[(2,2)]
-tests/test_mathematical.py::TestTrunc::test_trunc
-tests/test_mathematical.py::TestTrunc::test_invalid_dtype[numpy.float32]
-tests/test_mathematical.py::TestTrunc::test_invalid_dtype[numpy.int64]
-tests/test_mathematical.py::TestTrunc::test_invalid_dtype[numpy.int32]
-tests/test_mathematical.py::TestTrunc::test_invalid_shape[(0,)]
-tests/test_mathematical.py::TestTrunc::test_invalid_shape[(15, )]
-tests/test_mathematical.py::TestTrunc::test_invalid_shape[(2,2)]
 tests/test_mathematical.py::TestPower::test_power[complex64]
 tests/test_mathematical.py::TestPower::test_out_dtypes[bool_]
 tests/test_mathematical.py::TestPower::test_out_dtypes[int32]
@@ -397,21 +376,18 @@ tests/test_strides.py::test_strides_1arg[(10,)-int32-arcsinh]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-arctan]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-arctanh]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-cbrt]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-ceil]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-cosh]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-exp2]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-expm1]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-floor]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-log10]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-radians]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-sinh]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-tanh]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-trunc]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-arccos]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-arccosh]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-arcsin]
@@ -419,21 +395,18 @@ tests/test_strides.py::test_strides_1arg[(10,)-int64-arcsinh]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-arctan]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-arctanh]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-cbrt]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-ceil]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-cosh]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-exp2]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-expm1]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-floor]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-log10]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-radians]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-sinh]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-tanh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-trunc]
 tests/test_strides.py::test_strides_1arg[(10,)-None-arccos]
 tests/test_strides.py::test_strides_1arg[(10,)-None-arccosh]
 tests/test_strides.py::test_strides_1arg[(10,)-None-arcsin]
@@ -441,21 +414,18 @@ tests/test_strides.py::test_strides_1arg[(10,)-None-arcsinh]
 tests/test_strides.py::test_strides_1arg[(10,)-None-arctan]
 tests/test_strides.py::test_strides_1arg[(10,)-None-arctanh]
 tests/test_strides.py::test_strides_1arg[(10,)-None-cbrt]
-tests/test_strides.py::test_strides_1arg[(10,)-None-ceil]
 tests/test_strides.py::test_strides_1arg[(10,)-None-cosh]
 tests/test_strides.py::test_strides_1arg[(10,)-None-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-None-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-None-exp2]
 tests/test_strides.py::test_strides_1arg[(10,)-None-expm1]
 tests/test_strides.py::test_strides_1arg[(10,)-None-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-None-floor]
 tests/test_strides.py::test_strides_1arg[(10,)-None-log10]
 tests/test_strides.py::test_strides_1arg[(10,)-None-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-None-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-None-radians]
 tests/test_strides.py::test_strides_1arg[(10,)-None-sinh]
 tests/test_strides.py::test_strides_1arg[(10,)-None-tanh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-trunc]
 tests/test_strides.py::test_strides_tan[(10,)-int32]
 tests/test_strides.py::test_strides_tan[(10,)-int64]
 tests/test_strides.py::test_strides_tan[(10,)-None]
@@ -524,6 +494,8 @@ tests/test_umath.py::TestArctan2::test_arctan2
 tests/test_umath.py::TestArctan2::test_invalid_shape[(0,)]
 tests/test_umath.py::TestArctan2::test_invalid_shape[(15, )]
 tests/test_umath.py::TestArctan2::test_invalid_shape[(2,2)]
+
+tests/test_umath.py::TestSqrt::test_sqrt_complex[complex64]
 
 tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_2_{decimals=0}::test_round
 tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_0_{decimals=-2}::test_round_out
@@ -915,39 +887,59 @@ tests/third_party/cupy/logic_tests/test_content.py::TestContent::test_isnan
 
 tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_6_{dst_shape=(), src=(1+1j)}::test_copyto
 
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticUnary_param_5_{arg1=2.0, name='reciprocal'}::test_unary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticUnary_param_29_{arg1=2.0, name='reciprocal'}::test_unary
 
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_6_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_10_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_10_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_14_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_14_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int64), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_38_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_42_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_42_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_46_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_46_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int64), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_66_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0., 1., 2.],       [3., 4., 5.]], dtype=float32), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_66_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0., 1., 2.],       [3., 4., 5.]], dtype=float32), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_70_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_70_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_74_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_74_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_78_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_78_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int64), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_82_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=0, name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_82_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=0, name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_86_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=0.0, name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_90_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=2, name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_90_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=2, name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_94_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=2.0, name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_98_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0., 1., 2.],       [3., 4., 5.]], dtype=float32), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_98_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int64), arg2=array([[0., 1., 2.],       [3., 4., 5.]], dtype=float32), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_102_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_102_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int64), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_106_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_106_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int64), arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_110_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_110_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int64), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int64), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_114_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=0, name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_114_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int64), arg2=0, name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_118_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=0.0, name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_122_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=2, name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_122_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int64), arg2=2, name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_126_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=2.0, name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_134_{arg1=0, arg2=array([[0., 1., 2.],       [3., 4., 5.]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_138_{arg1=0, arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_138_{arg1=0, arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_142_{arg1=0, arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_142_{arg1=0, arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int64), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_166_{arg1=0.0, arg2=array([[0., 1., 2.],       [3., 4., 5.]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_170_{arg1=0.0, arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_174_{arg1=0.0, arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_198_{arg1=2, arg2=array([[0., 1., 2.],       [3., 4., 5.]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_202_{arg1=2, arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_202_{arg1=2, arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_206_{arg1=2, arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_206_{arg1=2, arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int64), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_230_{arg1=2.0, arg2=array([[0., 1., 2.],       [3., 4., 5.]]), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_234_{arg1=2.0, arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), name='power'}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_238_{arg1=2.0, arg2=array([[0, 1, 2],       [3, 4, 5]]), name='power'}::test_binary
