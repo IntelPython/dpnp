@@ -59,3 +59,18 @@ def test_fft_rfft(dtype, shape):
     dpnp_res = dpnp.fft.rfft(dpnp_data)
 
     assert_dtype_allclose(dpnp_res, np_res)
+
+
+@pytest.mark.parametrize(
+    "func_name",
+    [
+        "fft",
+        "ifft",
+        "rfft",
+    ],
+)
+def test_fft_invalid_dtype(func_name):
+    a = dpnp.array([True, False, True])
+    dpnp_func = getattr(dpnp.fft, func_name)
+    with pytest.raises(TypeError):
+        dpnp_func(a)
