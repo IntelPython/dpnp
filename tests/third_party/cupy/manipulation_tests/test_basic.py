@@ -155,13 +155,8 @@ class TestCopytoFromScalar:
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_copyto_where(self, xp, dtype):
         dst = xp.ones(self.dst_shape, dtype=dtype)
-        # TODO: replace with
-        # mask = (testing.shaped_arange(
-        #     self.dst_shape, xp, dtype) % 2).astype(xp.bool_)
-        # once dpnp.reminder() is fully implemented
-        mask = xp.array(
-            testing.shaped_arange(self.dst_shape, numpy, dtype) % 2,
-            dtype=xp.bool_,
+        mask = (testing.shaped_arange(self.dst_shape, xp, dtype) % 2).astype(
+            xp.bool_
         )
         xp.copyto(dst, self.src, where=mask)
         return dst
@@ -212,12 +207,7 @@ class TestCopytoFromNumpyScalar:
         shape = (2, 3, 4)
         dst = xp.ones(shape, dtype=dtype1)
         src = numpy.array(1, dtype=dtype2)
-        # TODO: replace with
-        # mask = (testing.shaped_arange(shape, xp, dtype1) % 2).astype(xp.bool_)
-        # once dpnp.reminder() is fully implemented
-        mask = xp.array(
-            testing.shaped_arange(shape, numpy, dtype1) % 2, dtype=xp.bool_
-        )
+        mask = (testing.shaped_arange(shape, xp, dtype1) % 2).astype(xp.bool_)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", numpy.ComplexWarning)
             xp.copyto(dst, src, casting=casting, where=mask)

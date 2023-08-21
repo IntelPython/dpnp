@@ -36,6 +36,27 @@ def test_copyto_dtype(in_obj, out_dtype):
     assert_array_equal(result, expected)
 
 
+@pytest.mark.parametrize("dst", [7, numpy.ones(10), (2, 7), [5], range(3)])
+def test_copyto_dst_raises(dst):
+    a = dpnp.array(4)
+    with pytest.raises(
+        TypeError,
+        match="Destination array must be any of supported type, but got",
+    ):
+        dpnp.copyto(dst, a)
+
+
+@pytest.mark.parametrize("where", [numpy.ones(10), (2, 7), [5], range(3)])
+def test_copyto_where_raises(where):
+    a = dpnp.empty((2, 3))
+    b = dpnp.arange(6).reshape((2, 3))
+
+    with pytest.raises(
+        TypeError, match="`where` array must be any of supported type, but got"
+    ):
+        dpnp.copyto(a, b, where=where)
+
+
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "arr",

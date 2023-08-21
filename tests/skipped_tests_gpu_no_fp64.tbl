@@ -885,8 +885,6 @@ tests/third_party/cupy/logic_tests/test_content.py::TestContent::test_isfinite
 tests/third_party/cupy/logic_tests/test_content.py::TestContent::test_isinf
 tests/third_party/cupy/logic_tests/test_content.py::TestContent::test_isnan
 
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_6_{dst_shape=(), src=(1+1j)}::test_copyto
-
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticUnary_param_29_{arg1=2.0, name='reciprocal'}::test_unary
 
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary_param_6_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), name='power'}::test_binary
