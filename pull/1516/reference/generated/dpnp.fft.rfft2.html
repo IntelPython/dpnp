@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.rfft2 &mdash; Data Parallel Extension for NumPy 0.12.2dev0+33.g9cf29515 documentation</title>
+  <title>dpnp.fft.rfft2 &mdash; Data Parallel Extension for NumPy 0.12.2dev0+65.g97fa3903e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+33.g9cf29515
+                0.12.2dev0+65.g97fa3903e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -63,7 +63,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../fft.html">FFT Functions</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../fft.html#standard-ffts">Standard FFTs</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="../fft.html#real-ffts">Real FFTs</a></li>
@@ -74,16 +76,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../difference.html">Difference with NumPy*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
@@ -124,14 +124,16 @@
 <h1>dpnp.fft.rfft2<a class="headerlink" href="#dpnp-fft-rfft2" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.fft.rfft2">
-<span class="sig-prename descclassname"><span class="pre">dpnp.fft.</span></span><span class="sig-name descname"><span class="pre">rfft2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(-2,</span> <span class="pre">-1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#rfft2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.fft.rfft2" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.fft.</span></span><span class="sig-name descname"><span class="pre">rfft2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(-2,</span> <span class="pre">-1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#rfft2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.fft.rfft2" title="Permalink to this definition"></a></dt>
 <dd><p>Compute the 2-dimensional discrete Fourier Transform for real input.</p>
-<p>Multi-dimensional arrays computed as batch of 1-D arrays</p>
-<p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">norm</span></code> is unsupported.
-Parameter <code class="docutils literal notranslate"><span class="pre">x1</span></code> supports <code class="docutils literal notranslate"><span class="pre">dpnp.int32</span></code>, <code class="docutils literal notranslate"><span class="pre">dpnp.int64</span></code>, <code class="docutils literal notranslate"><span class="pre">dpnp.float32</span></code>, <code class="docutils literal notranslate"><span class="pre">dpnp.float64</span></code> and
-<code class="docutils literal notranslate"><span class="pre">dpnp.complex128</span></code> datatypes only.</p>
+<p>Multi-dimensional arrays computed as batch of 1-D arrays.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.rfft2.html#numpy.fft.rfft2" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.rfft2</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Parameter <cite>x</cite> is supported either as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Parameter <cite>norm</cite> is unsupported.
+Only <cite>dpnp.float64</cite>, <cite>dpnp.float32</cite>, <cite>dpnp.int64</cite>, <cite>dpnp.int32</cite>,
+<cite>dpnp.complex128</cite> data types are supported.
+Otherwise the function will be executed sequentially on CPU.</p>
 </dd></dl>
 
 </section>

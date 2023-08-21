@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.12.2dev0+33.g9cf29515 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.12.2dev0+65.g97fa3903e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+33.g9cf29515
+                0.12.2dev0+65.g97fa3903e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -158,7 +158,7 @@
 <span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">choose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="choose"><a class="viewcode-back" href="../../reference/generated/dpnp.choose.html#dpnp.choose">[docs]</a><span class="k">def</span> <span class="nf">choose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct an array from an index array and a set of arrays to choose from.</span>
 
@@ -200,10 +200,10 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">dpnp_choose</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">choices_list</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">choose</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">choose</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">diag_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<div class="viewcode-block" id="diag_indices"><a class="viewcode-back" href="../../reference/generated/dpnp.diag_indices.html#dpnp.diag_indices">[docs]</a><span class="k">def</span> <span class="nf">diag_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices to access the main diagonal of an array.</span>
 
@@ -262,10 +262,10 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">dpnp_diag_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diag_indices</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diag_indices</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">diag_indices_from</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+<div class="viewcode-block" id="diag_indices_from"><a class="viewcode-back" href="../../reference/generated/dpnp.diag_indices_from.html#dpnp.diag_indices_from">[docs]</a><span class="k">def</span> <span class="nf">diag_indices_from</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices to access the main diagonal of an n-dimensional array.</span>
 
@@ -294,10 +294,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dpnp_diag_indices</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diag_indices_from</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diag_indices_from</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">diagonal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="diagonal"><a class="viewcode-back" href="../../reference/generated/dpnp.diagonal.html#dpnp.diagonal">[docs]</a><span class="k">def</span> <span class="nf">diagonal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return specified diagonals.</span>
 
@@ -323,10 +323,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dpnp_diagonal</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diagonal</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diagonal</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="extract"><a class="viewcode-back" href="../../reference/generated/dpnp.extract.html#dpnp.extract">[docs]</a><span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the elements of an array that satisfy some condition.</span>
 
@@ -361,10 +361,10 @@
                 <span class="n">dpt</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">dpt_condition</span><span class="p">,</span> <span class="n">dpt_array</span><span class="p">)</span>
             <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">extract</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">extract</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">fill_diagonal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="fill_diagonal"><a class="viewcode-back" href="../../reference/generated/dpnp.fill_diagonal.html#dpnp.fill_diagonal">[docs]</a><span class="k">def</span> <span class="nf">fill_diagonal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fill the main diagonal of the given array of any dimensionality.</span>
 
@@ -391,10 +391,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dpnp_fill_diagonal</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">indices</span><span class="p">(</span><span class="n">dimensions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="indices"><a class="viewcode-back" href="../../reference/generated/dpnp.indices.html#dpnp.indices">[docs]</a><span class="k">def</span> <span class="nf">indices</span><span class="p">(</span><span class="n">dimensions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array representing the indices of a grid.</span>
 
@@ -417,7 +417,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_indices</span><span class="p">(</span><span class="n">dimensions</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">sparse</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">sparse</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="nonzero"><a class="viewcode-back" href="../../reference/generated/dpnp.nonzero.html#dpnp.nonzero">[docs]</a><span class="k">def</span> <span class="nf">nonzero</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
@@ -479,7 +479,7 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<div class="viewcode-block" id="place"><a class="viewcode-back" href="../../reference/generated/dpnp.place.html#dpnp.place">[docs]</a><span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change elements of an array based on conditional and input values.</span>
 
@@ -502,10 +502,10 @@
         <span class="n">dpt_vals</span> <span class="o">=</span> <span class="n">vals</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">vals</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">dpt_mask</span><span class="p">,</span> <span class="n">dpt_vals</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">place</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">place</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="put"><a class="viewcode-back" href="../../reference/generated/dpnp.put.html#dpnp.put">[docs]</a><span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replaces specified elements of an array with given values.</span>
 
@@ -532,10 +532,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dpnp_put</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">put</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">put</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">put_along_axis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<div class="viewcode-block" id="put_along_axis"><a class="viewcode-back" href="../../reference/generated/dpnp.put_along_axis.html#dpnp.put_along_axis">[docs]</a><span class="k">def</span> <span class="nf">put_along_axis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Put values into the destination array by matching 1d index and data slices.</span>
 
@@ -567,10 +567,10 @@
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
         <span class="n">numpy</span><span class="o">.</span><span class="n">put_along_axis</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">)</span>
+    <span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">putmask</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<div class="viewcode-block" id="putmask"><a class="viewcode-back" href="../../reference/generated/dpnp.putmask.html#dpnp.putmask">[docs]</a><span class="k">def</span> <span class="nf">putmask</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Changes elements of an array based on conditional and input values.</span>
 
@@ -591,10 +591,10 @@
     <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">mask_desc</span> <span class="ow">and</span> <span class="n">values_desc</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_putmask</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">mask_desc</span><span class="p">,</span> <span class="n">values_desc</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">putmask</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">putmask</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="select"><a class="viewcode-back" href="../../reference/generated/dpnp.select.html#dpnp.select">[docs]</a><span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array drawn from elements in choicelist, depending on conditions.</span>
 
@@ -624,10 +624,10 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">dpnp_select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">select</span><span class="p">,</span> <span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">select</span><span class="p">,</span> <span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="take"><a class="viewcode-back" href="../../reference/generated/dpnp.take.html#dpnp.take">[docs]</a><span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take elements from an array along an axis.</span>
 
@@ -702,10 +702,10 @@
                 <span class="n">dpt</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">dpt_indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
             <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">take</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">take</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">take_along_axis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<div class="viewcode-block" id="take_along_axis"><a class="viewcode-back" href="../../reference/generated/dpnp.take_along_axis.html#dpnp.take_along_axis">[docs]</a><span class="k">def</span> <span class="nf">take_along_axis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take values from the input array by matching 1d index and data slices.</span>
 
@@ -742,10 +742,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dpnp_take_along_axis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">tril_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="tril_indices"><a class="viewcode-back" href="../../reference/generated/dpnp.tril_indices.html#dpnp.tril_indices">[docs]</a><span class="k">def</span> <span class="nf">tril_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices for the lower-triangle of an (n, m) array.</span>
 
@@ -779,10 +779,10 @@
         <span class="p">):</span>
             <span class="k">return</span> <span class="n">dpnp_tril_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">tril_indices_from</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="tril_indices_from"><a class="viewcode-back" href="../../reference/generated/dpnp.tril_indices_from.html#dpnp.tril_indices_from">[docs]</a><span class="k">def</span> <span class="nf">tril_indices_from</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices for the lower-triangle of arr.</span>
 
@@ -803,10 +803,10 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">dpnp_tril_indices_from</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">tril_indices_from</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">tril_indices_from</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">triu_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="triu_indices"><a class="viewcode-back" href="../../reference/generated/dpnp.triu_indices.html#dpnp.triu_indices">[docs]</a><span class="k">def</span> <span class="nf">triu_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices for the upper-triangle of an (n, m) array.</span>
 
@@ -840,10 +840,10 @@
         <span class="p">):</span>
             <span class="k">return</span> <span class="n">dpnp_triu_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">triu_indices_from</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="triu_indices_from"><a class="viewcode-back" href="../../reference/generated/dpnp.triu_indices_from.html#dpnp.triu_indices_from">[docs]</a><span class="k">def</span> <span class="nf">triu_indices_from</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices for the lower-triangle of arr.</span>
 
@@ -864,7 +864,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">dpnp_triu_indices_from</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">triu_indices_from</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">triu_indices_from</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
