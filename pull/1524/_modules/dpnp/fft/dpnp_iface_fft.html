@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.12.2dev0+54.g2a7df71e4 documentation</title>
+  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.12.2dev0+66.g374e7b224 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+54.g2a7df71e4
+                0.12.2dev0+66.g374e7b224
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -186,12 +186,16 @@
 <span class="sd">    Parameter `axis` is supported with its default value.</span>
 <span class="sd">    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,</span>
 <span class="sd">    `dpnp.complex128`, `dpnp.complex64` data types are supported.</span>
-<span class="sd">    The `dpnp.bool` data type is not supported and will raise a `RuntimeError` exception.</span>
+<span class="sd">    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x_desc</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">x_desc</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The `</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">` data type is unsupported.&quot;</span><span class="p">)</span>
+
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -426,13 +430,17 @@
 <span class="sd">    Parameter `axis` is supported with its default value.</span>
 <span class="sd">    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,,</span>
 <span class="sd">    `dpnp.complex128`, `dpnp.complex64` data types are supported.</span>
-<span class="sd">    The `dpnp.bool` data type is not supported and will raise a `RuntimeError` exception.</span>
+<span class="sd">    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x_desc</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">x_desc</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The `</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">` data type is unsupported.&quot;</span><span class="p">)</span>
+
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -812,12 +820,16 @@
 <span class="sd">    Parameter `norm` is unsupported.</span>
 <span class="sd">    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,</span>
 <span class="sd">    `dpnp.complex128` data types are supported.</span>
-<span class="sd">    The `dpnp.bool` data type is not supported and will raise a `RuntimeError` exception.</span>
+<span class="sd">    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x_desc</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">x_desc</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The `</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">` data type is unsupported.&quot;</span><span class="p">)</span>
+
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
