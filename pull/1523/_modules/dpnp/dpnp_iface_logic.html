@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.12.2dev0+55.gbfc6d866a documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.12.2dev0+59.g58de9c41 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+55.gbfc6d866a
+                0.12.2dev0+59.g58de9c41
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -183,8 +183,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dpnp.ndarray</span>
-<span class="sd">        An array with a data type of `bool`</span>
-<span class="sd">        containing the results of the logical AND reduction.</span>
+<span class="sd">    An array with a data type of `bool`</span>
+<span class="sd">    containing the results of the logical AND reduction.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -248,8 +248,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.</span>
-<span class="sd">    Keyword arguments ``kwargs`` are currently unsupported.</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the functions will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -364,7 +364,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="sd">    Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -440,7 +440,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="sd">    Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -510,7 +510,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="sd">    Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -568,8 +568,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    ``x2`` is supported to be integer if ``x1`` is :obj:`dpnp.ndarray` or</span>
-<span class="sd">    at least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    `x2` is supported to be integer if `x1` is :class:`dpnp.ndarray` or</span>
+<span class="sd">    at least either `x1` or `x2` should be as :class:`dpnp.ndarray`.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -766,7 +766,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="sd">    Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -836,7 +836,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="sd">    Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -906,8 +906,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Boolean result of the logical AND operation applied to the elements</span>
-<span class="sd">        of `x1` and `x2`; the shape is determined by broadcasting.</span>
+<span class="sd">    Boolean result of the logical AND operation applied to the elements</span>
+<span class="sd">    of `x1` and `x2`; the shape is determined by broadcasting.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -979,8 +979,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Boolean result with the same shape as `x` of the NOT operation</span>
-<span class="sd">        on elements of `x`.</span>
+<span class="sd">    Boolean result with the same shape as `x` of the NOT operation</span>
+<span class="sd">    on elements of `x`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -1041,8 +1041,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Boolean result of the logical OR operation applied to the elements</span>
-<span class="sd">        of `x1` and `x2`; the shape is determined by broadcasting.</span>
+<span class="sd">    Boolean result of the logical OR operation applied to the elements</span>
+<span class="sd">    of `x1` and `x2`; the shape is determined by broadcasting.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -1115,8 +1115,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Boolean result of the logical XOR operation applied to the elements</span>
-<span class="sd">        of `x1` and `x2`; the shape is determined by broadcasting.</span>
+<span class="sd">    Boolean result of the logical XOR operation applied to the elements</span>
+<span class="sd">    of `x1` and `x2`; the shape is determined by broadcasting.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.sign &mdash; Data Parallel Extension for NumPy 0.12.2dev0+55.gbfc6d866a documentation</title>
+  <title>dpnp.sign &mdash; Data Parallel Extension for NumPy 0.12.2dev0+59.g58de9c41 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+55.gbfc6d866a
+                0.12.2dev0+59.g58de9c41
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -118,10 +118,11 @@
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.sign.html#numpy.sign" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.sign</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>out</strong> – The indication of the sign of each element of <cite>x</cite>.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dpnp.ndarray</p>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>out</strong> (<em>dpnp.ndarray</em>)</p></li>
+<li><p>The indication of the sign of each element of <cite>x</cite>.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
@@ -129,7 +130,8 @@
 Parameters <cite>where</cite>, <cite>dtype</cite> and <cite>subok</cite> are supported with their default values.
 Keyword argument <cite>kwargs</cite> is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
+Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.
+However, if the input array data type is complex, the function will be executed sequentially on CPU.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">]))</span>
