@@ -1418,6 +1418,13 @@ negative_func = UnaryElementwiseFunc(
 def dpnp_negative(x, out=None, order="K"):
     """Invokes negative() from dpctl.tensor implementation for negative() function."""
 
+    # TODO: discuss with dpctl if the check is needed to be moved there
+    if not dpnp.isscalar(x) and x.dtype == dpnp.bool:
+        raise TypeError(
+            "DPNP boolean negative, the `-` operator, is not supported, "
+            "use the `~` operator or the logical_not function instead."
+        )
+
     # dpctl.tensor only works with usm_ndarray
     x1_usm = dpnp.get_usm_ndarray(x)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
@@ -1593,6 +1600,10 @@ sign_func = UnaryElementwiseFunc(
 
 def dpnp_sign(x, out=None, order="K"):
     """Invokes sign() from dpctl.tensor implementation for sign() function."""
+
+    # TODO: discuss with dpctl if the check is needed to be moved there
+    if not dpnp.isscalar(x) and x.dtype == dpnp.bool:
+        raise TypeError("DPNP boolean sign is not supported.")
 
     # dpctl.tensor only works with usm_ndarray
     x1_usm = dpnp.get_usm_ndarray(x)

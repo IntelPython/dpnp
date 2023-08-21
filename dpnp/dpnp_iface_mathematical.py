@@ -1507,7 +1507,7 @@ def negative(
     Returns
     -------
     out : dpnp.ndarray
-        The numerical negative of each element of `x`.
+    The numerical negative of each element of `x`.
 
     Limitations
     -----------
@@ -1805,7 +1805,7 @@ def sign(
     Returns
     -------
     out : dpnp.ndarray
-        The indication of the sign of each element of `x`.
+    The indication of the sign of each element of `x`.
 
     Limitations
     -----------
@@ -1814,6 +1814,7 @@ def sign(
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+    However, if the input array data type is complex, the function will be executed sequentially on CPU.
 
     Examples
     --------

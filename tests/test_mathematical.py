@@ -392,7 +392,7 @@ def test_nancumsum(array):
     [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
     ids=["[[1., -1.], [0.1, -0.1]]", "[-2, -1, 0, 1, 2]"],
 )
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 def test_negative(data, dtype):
     np_a = numpy.array(data, dtype=dtype)
     dpnp_a = dpnp.array(data, dtype=dtype)
@@ -400,6 +400,35 @@ def test_negative(data, dtype):
     result = dpnp.negative(dpnp_a)
     expected = numpy.negative(np_a)
     assert_allclose(result, expected)
+
+
+def test_negative_boolean():
+    dpnp_a = dpnp.array([True, False])
+
+    with pytest.raises(TypeError):
+        dpnp.negative(dpnp_a)
+
+
+@pytest.mark.parametrize(
+    "data",
+    [[2, 0, -2], [1.1, -1.1]],
+    ids=["[2, 0, -2]", "[1.1, -1.1]"],
+)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_sign(data, dtype):
+    np_a = numpy.array(data, dtype=dtype)
+    dpnp_a = dpnp.array(data, dtype=dtype)
+
+    result = dpnp.sign(dpnp_a)
+    expected = numpy.sign(np_a)
+    assert_allclose(result, expected)
+
+
+def test_sign_boolean():
+    dpnp_a = dpnp.array([True, False])
+
+    with pytest.raises(TypeError):
+        dpnp.sign(dpnp_a)
 
 
 @pytest.mark.parametrize("val_type", get_all_dtypes(no_none=True))
