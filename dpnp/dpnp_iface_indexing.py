@@ -417,34 +417,74 @@ def place(x, mask, vals, /):
     return call_origin(numpy.place, x, mask, vals, dpnp_inplace=True)
 
 
-def put(x1, ind, v, mode="raise"):
+def put(x, indices, vals, /, *, axis=None, mode="wrap"):
     """
-    Replaces specified elements of an array with given values.
+    Puts values of an array into another array along a given axis.
 
     For full documentation refer to :obj:`numpy.put`.
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Not supported parameter mode.
+    Parameters `x` and `indices` are supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `indices` is supported as 1-D array of integer data type.
+    Paramenet `vals` must be broadcastable to the shape of `indices`
+    and be of the same data type as `x` if it is as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `mode` is supported with ``wrap``(default) and ``clip`` mode.
+    Parameter `axis` is supported as integer only.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.putmask` : Changes elements of an array based on conditional and input values.
+    :obj:`dpnp.place` : Change elements of an array based on conditional and input values.
+    :obj:`dpnp.put_along_axis` : Put values into the destination array by matching 1d index and data slices.
+
+    Notes
+    -----
+    How out-of-bounds indices will be handled.
+    "wrap" - clamps indices to (-n <= i < n), then wraps negative indices.
+    "clip" - clips indices to (0 <= i < n).
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(5)
+    >>> indices = np.array([0, 1])
+    >>> np.put(x, indices, [-44, -55])
+    >>> x
+    array([-44, -55, 2, 3, 4])
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    if x1_desc:
-        if mode != "raise":
-            pass
-        elif type(ind) is not type(v):
-            pass
-        elif (
-            numpy.max(ind) >= x1_desc.size or numpy.min(ind) + x1_desc.size < 0
+    if dpnp.is_supported_array_type(x) and dpnp.is_supported_array_type(
+        indices
+    ):
+        if indices.ndim != 1 or not dpnp.issubdtype(
+            indices.dtype, dpnp.integer
         ):
             pass
+        elif mode not in ("clip", "wrap"):
+            pass
+        elif axis is not None and not isinstance(axis, int):
+            raise TypeError(f"`axis` must be of integer type, got {type(axis)}")
+        elif dpnp.is_supported_array_type(vals) and x.dtype is not vals.dtype:
+            pass
         else:
-            return dpnp_put(x1_desc, ind, v)
+            if axis is None and x.ndim > 1:
+                x = dpnp.reshape(x, -1)
+            dpt_array = dpnp.get_usm_ndarray(x)
+            dpt_indices = dpnp.get_usm_ndarray(indices)
+            dpt_vals = (
+                dpnp.get_usm_ndarray(vals)
+                if isinstance(vals, dpnp_array)
+                else vals
+            )
+            return dpt.put(
+                dpt_array, dpt_indices, dpt_vals, axis=axis, mode=mode
+            )
 
-    return call_origin(numpy.put, x1, ind, v, mode, dpnp_inplace=True)
+    return call_origin(numpy.put, x, indices, vals, mode, dpnp_inplace=True)
 
 
 def put_along_axis(x1, indices, values, axis):

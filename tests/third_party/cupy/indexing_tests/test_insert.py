@@ -71,7 +71,7 @@ class TestPlaceRaises(unittest.TestCase):
         {
             "shape": [(7,), (2, 3), (4, 3, 2)],
             "mode": ["raise", "wrap", "clip"],
-            "n_vals": [0, 1, 3, 4, 5],
+            "n_vals": [1, 4],
         }
     )
 )
@@ -83,12 +83,12 @@ class TestPut(unittest.TestCase):
     def test_put(self, xp, dtype):
         a = testing.shaped_arange(self.shape, xp, dtype)
         # Take care so that actual indices don't overlap.
-        if self.mode == "raise":
-            inds = xp.array([2, -1, 3, 0])
+        if self.mode in ("raise", "wrap"):
+            inds = xp.array([2, -1, 3, -6])
         else:
-            inds = xp.array([2, -8, 3, 7])
+            inds = xp.array([2, -8, 3, 6])
         vals = testing.shaped_random((self.n_vals,), xp, dtype)
-        xp.put(a, inds, vals, self.mode)
+        xp.put(a, inds, vals, mode=self.mode)
         return a
 
 

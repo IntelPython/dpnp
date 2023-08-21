@@ -182,8 +182,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_PROD_EXT
         DPNP_FN_PTP
         DPNP_FN_PTP_EXT
-        DPNP_FN_PUT
-        DPNP_FN_PUT_EXT
         DPNP_FN_QR
         DPNP_FN_QR_EXT
         DPNP_FN_RADIANS
