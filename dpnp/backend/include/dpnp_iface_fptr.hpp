@@ -114,15 +114,13 @@ enum class DPNPFuncName : size_t
                        */
     DPNP_FN_CEIL,     /**< Used in numpy.ceil() impl  */
     DPNP_FN_CHOLESKY, /**< Used in numpy.linalg.cholesky() impl  */
-    DPNP_FN_CHOLESKY_EXT,   /**< Used in numpy.linalg.cholesky() impl, requires
-                               extra parameters */
-    DPNP_FN_CONJIGUATE,     /**< Used in numpy.conjugate() impl  */
-    DPNP_FN_CONJIGUATE_EXT, /**< Used in numpy.conjugate() impl, requires extra
-                               parameters */
-    DPNP_FN_CHOOSE,         /**< Used in numpy.choose() impl  */
-    DPNP_FN_CHOOSE_EXT,     /**< Used in numpy.choose() impl, requires extra
-                               parameters */
-    DPNP_FN_COPY,           /**< Used in numpy.copy() impl  */
+    DPNP_FN_CHOLESKY_EXT, /**< Used in numpy.linalg.cholesky() impl, requires
+                             extra parameters */
+    DPNP_FN_CONJUGATE,    /**< Used in numpy.conjugate() impl  */
+    DPNP_FN_CHOOSE,       /**< Used in numpy.choose() impl  */
+    DPNP_FN_CHOOSE_EXT,   /**< Used in numpy.choose() impl, requires extra
+                             parameters */
+    DPNP_FN_COPY,         /**< Used in numpy.copy() impl  */
     DPNP_FN_COPY_EXT, /**< Used in numpy.copy() impl, requires extra parameters
                        */
     DPNP_FN_COPYSIGN, /**< Used in numpy.copysign() impl  */

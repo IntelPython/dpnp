@@ -633,7 +633,7 @@ class TestCeil:
         dp_array = dpnp.arange(10, dtype=dtype)
         dp_out = dpnp.empty(shape, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpnp.ceil(dp_array, out=dp_out)
 
 
@@ -673,7 +673,7 @@ class TestFloor:
         dp_array = dpnp.arange(10, dtype=dtype)
         dp_out = dpnp.empty(shape, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpnp.floor(dp_array, out=dp_out)
 
 
@@ -713,7 +713,7 @@ class TestTrunc:
         dp_array = dpnp.arange(10, dtype=dtype)
         dp_out = dpnp.empty(shape, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpnp.trunc(dp_array, out=dp_out)
 
 
@@ -765,14 +765,19 @@ class TestAdd:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_out_overlap(self, dtype):
         size = 1 if dtype == dpnp.bool else 15
+        # DPNP
         dp_a = dpnp.arange(2 * size, dtype=dtype)
-        with pytest.raises(TypeError):
-            dpnp.add(dp_a[size::], dp_a[::2], out=dp_a[:size:])
+        dpnp.add(dp_a[size::], dp_a[::2], out=dp_a[:size:])
+
+        # original
+        np_a = numpy.arange(2 * size, dtype=dtype)
+        numpy.add(np_a[size::], np_a[::2], out=np_a[:size:])
+
+        assert_allclose(np_a, dp_a)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
     )
-    @pytest.mark.skip("mute unttil in-place support in dpctl is done")
     def test_inplace_strided_out(self, dtype):
         size = 21
 
@@ -792,7 +797,7 @@ class TestAdd:
         dp_array2 = dpnp.arange(5, 15)
         dp_out = dpnp.empty(shape)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpnp.add(dp_array1, dp_array2, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -855,14 +860,19 @@ class TestMultiply:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_out_overlap(self, dtype):
         size = 1 if dtype == dpnp.bool else 15
+        # DPNP
         dp_a = dpnp.arange(2 * size, dtype=dtype)
-        with pytest.raises(TypeError):
-            dpnp.multiply(dp_a[size::], dp_a[::2], out=dp_a[:size:])
+        dpnp.multiply(dp_a[size::], dp_a[::2], out=dp_a[:size:])
+
+        # original
+        np_a = numpy.arange(2 * size, dtype=dtype)
+        numpy.multiply(np_a[size::], np_a[::2], out=np_a[:size:])
+
+        assert_allclose(np_a, dp_a)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
     )
-    @pytest.mark.skip("mute unttil in-place support in dpctl is done")
     def test_inplace_strided_out(self, dtype):
         size = 21
 
@@ -882,7 +892,7 @@ class TestMultiply:
         dp_array2 = dpnp.arange(5, 15)
         dp_out = dpnp.empty(shape)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpnp.multiply(dp_array1, dp_array2, out=dp_out)
 
     @pytest.mark.parametrize(
