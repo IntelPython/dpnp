@@ -39,7 +39,6 @@ __all__ += [
     "dpnp_atleast_2d",
     "dpnp_atleast_3d",
     "dpnp_copyto",
-    "dpnp_expand_dims",
     "dpnp_repeat",
     "dpnp_reshape",
 ]
@@ -142,35 +141,6 @@ cpdef dpnp_copyto(utils.dpnp_descriptor dst, utils.dpnp_descriptor src, where=Tr
 
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
-
-
-cpdef utils.dpnp_descriptor dpnp_expand_dims(utils.dpnp_descriptor in_array, axis):
-    axis_tuple = utils._object_to_tuple(axis)
-    result_ndim = len(axis_tuple) + in_array.ndim
-
-    if len(axis_tuple) == 0:
-        axis_ndim = 0
-    else:
-        axis_ndim = max(-min(0, min(axis_tuple)), max(0, max(axis_tuple))) + 1
-
-    axis_norm = utils._object_to_tuple(utils.normalize_axis(axis_tuple, result_ndim))
-
-    if axis_ndim - len(axis_norm) > in_array.ndim:
-        utils.checker_throw_axis_error("dpnp_expand_dims", "axis", axis, axis_ndim)
-
-    if len(axis_norm) > len(set(axis_norm)):
-        utils.checker_throw_value_error("dpnp_expand_dims", "axis", axis, "no repeated axis")
-
-    cdef shape_type_c shape_list
-    axis_idx = 0
-    for i in range(result_ndim):
-        if i in axis_norm:
-            shape_list.push_back(1)
-        else:
-            shape_list.push_back(in_array.shape[axis_idx])
-            axis_idx = axis_idx + 1
-
-    return dpnp_reshape(in_array, shape_list)
 
 
 cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, axes=None):

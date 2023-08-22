@@ -373,7 +373,7 @@ def copyto(dst, src, casting="same_kind", where=True):
     )
 
 
-def expand_dims(x1, axis):
+def expand_dims(x, axis):
     """
     Expand the shape of an array.
 
@@ -381,6 +381,30 @@ def expand_dims(x1, axis):
     array shape.
 
     For full documentation refer to :obj:`numpy.expand_dims`.
+
+    Returns
+    -------
+    dpnp.ndarray
+        An array with the number of dimensions increased.
+        A view is returned whenever possible.
+
+    Limitations
+    -----------
+    Parameters `x` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
+
+    Notes
+    -----
+    If `x` has rank (i.e, number of dimensions) `N`, a valid `axis` must reside
+    in the closed-interval `[-N-1, N]`.
+    If provided a negative `axis`, the `axis` position at which to insert a
+    singleton dimension is computed as `N + axis + 1`.
+    Hence, if provided `-1`, the resolved axis position is `N` (i.e.,
+    a singleton dimension must be appended to the input array `x`).
+    If provided `-N-1`, the resolved axis position is `0` (i.e., a
+    singleton dimension is prepended to the input array `x`).
 
     See Also
     --------
@@ -431,11 +455,15 @@ def expand_dims(x1, axis):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        return dpnp_expand_dims(x1_desc, axis).get_pyobj()
+    if not dpnp.is_supported_array_type(x):
+        raise TypeError(
+            f"An array must be any of supported type, but got {type(x)}"
+        )
 
-    return call_origin(numpy.expand_dims, x1, axis)
+    dpt_array = dpnp.get_usm_ndarray(x)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.expand_dims(dpt_array, axis=axis)
+    )
 
 
 def hstack(tup):
