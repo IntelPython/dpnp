@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.12.2dev0+60.g047df4176 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.12.2dev0+62.gbc15eebf8 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8e17af76"></script>
+        <script src="../../_static/documentation_options.js?v=5a1f1e87"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+60.g047df4176
+                0.12.2dev0+62.gbc15eebf8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -356,7 +356,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Each array in `arrays` is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exeption</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception</span>
 <span class="sd">    will be raised.</span>
 <span class="sd">    Parameters `out` and `dtype are supported with default value.</span>
 <span class="sd">    Keyword argument ``kwargs`` is currently unsupported.</span>
@@ -421,64 +421,79 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copies values from one array to another, broadcasting as necessary.</span>
 
+<span class="sd">    Raises a ``TypeError`` if the `casting` rule is violated, and if</span>
+<span class="sd">    `where` is provided, it selects which elements to copy.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.copyto`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input arrays are supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Parameter ``casting`` is supported only with default value ``&quot;same_kind&quot;``.</span>
-<span class="sd">    Parameter ``where`` is supported only with default value ``True``.</span>
-<span class="sd">    Shapes of input arrays are supported to be equal.</span>
+<span class="sd">    The `dst` parameter is supported as either :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    The `where` parameter is supported as either :class:`dpnp.ndarray`,</span>
+<span class="sd">    :class:`dpctl.tensor.usm_ndarray` or scalar.</span>
+<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; A = np.array([4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; B = [1, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; np.copyto(A, B)</span>
+<span class="sd">    &gt;&gt;&gt; A</span>
+<span class="sd">    array([1, 2, 3])</span>
+
+<span class="sd">    &gt;&gt;&gt; A = np.array([[1, 2, 3], [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; B = [[4, 5, 6], [7, 8, 9]]</span>
+<span class="sd">    &gt;&gt;&gt; np.copyto(A, B)</span>
+<span class="sd">    &gt;&gt;&gt; A</span>
+<span class="sd">    array([[4, 5, 6],</span>
+<span class="sd">           [7, 8, 9]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dst_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">dst</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="n">src_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dst_desc</span> <span class="ow">and</span> <span class="n">src_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">casting</span> <span class="o">!=</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="p">(</span>
-            <span class="n">dst_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span>
-            <span class="ow">and</span> <span class="n">src_desc</span><span class="o">.</span><span class="n">dtype</span>  <span class="c1"># due to &#39;same_kind&#39; casting</span>
-            <span class="ow">in</span> <span class="p">[</span>
-                <span class="n">dpnp</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
-                <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
-                <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-                <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
-                <span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span>
-            <span class="p">]</span>
-        <span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">dst_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
-        <span class="p">]</span> <span class="ow">and</span> <span class="n">src_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span>  <span class="c1"># due to &#39;same_kind&#39; casting</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span>
-        <span class="p">]:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="p">(</span>
-            <span class="n">dst_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
-            <span class="ow">and</span> <span class="n">src_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span>
-        <span class="p">):</span>  <span class="c1"># due to &#39;same_kind&#39; casting</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">dst_desc</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">src_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">dst_desc</span><span class="o">.</span><span class="n">strides</span> <span class="o">!=</span> <span class="n">src_desc</span><span class="o">.</span><span class="n">strides</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_copyto</span><span class="p">(</span><span class="n">dst_desc</span><span class="p">,</span> <span class="n">src_desc</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">dst</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Destination array must be any of supported type, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">dst</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">copyto</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">casting</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">)</span></div>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpt</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dst</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Cannot cast from </span><span class="si">{</span><span class="n">src</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">dst</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;according to the rule </span><span class="si">{</span><span class="n">casting</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">dst</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">src</span>
+    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="c1"># nothing to copy</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">where</span><span class="p">):</span>
+            <span class="n">where</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="n">where</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">dst</span><span class="o">.</span><span class="n">sycl_queue</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">where</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;`where` array must be any of supported type, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">where</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">where</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;`where` keyword argument must be of boolean type, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="n">where</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">dst_usm</span><span class="p">,</span> <span class="n">src_usm</span><span class="p">,</span> <span class="n">mask_usm</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">dst</span><span class="p">),</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">src</span><span class="p">),</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">where</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">dst_usm</span><span class="p">[</span><span class="n">mask_usm</span><span class="p">]</span> <span class="o">=</span> <span class="n">src_usm</span><span class="p">[</span><span class="n">mask_usm</span><span class="p">]</span></div>
 
 
 
@@ -988,7 +1003,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Each array in `arrays` is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exeption</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception</span>
 <span class="sd">    will be raised.</span>
 <span class="sd">    Parameters `out` and `dtype are supported with default value.</span>
 <span class="sd">    Keyword argument ``kwargs`` is currently unsupported.</span>
