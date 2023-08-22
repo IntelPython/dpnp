@@ -414,7 +414,8 @@ def test_negative_boolean():
     [[2, 0, -2], [1.1, -1.1]],
     ids=["[2, 0, -2]", "[1.1, -1.1]"],
 )
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_sign(data, dtype):
     np_a = numpy.array(data, dtype=dtype)
     dpnp_a = dpnp.array(data, dtype=dtype)

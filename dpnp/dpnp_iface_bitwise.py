@@ -374,7 +374,7 @@ def left_shift(
     >>> np.left_shift(x1, x2)
     array([10, 20, 40])
 
-    The ``<<`` operator can be used as a shorthand for ``right_shift`` on
+    The ``<<`` operator can be used as a shorthand for ``left_shift`` on
     :class:`dpnp.ndarray`.
 
     >>> x1 << x2
@@ -437,7 +437,7 @@ def right_shift(
     >>> np.right_shift(x1, x2)
     array([5, 2, 1])
 
-    The ``>>`` operator can be used as a shorthand for ``left_shift`` on
+    The ``>>`` operator can be used as a shorthand for ``right_shift`` on
     :class:`dpnp.ndarray`.
 
     >>> x1 >> x2
