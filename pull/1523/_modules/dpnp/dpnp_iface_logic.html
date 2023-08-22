@@ -12,18 +12,18 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.12.2dev0+59.gef7a4e588 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.12.2dev0+62.g6313a3a43 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=ad639a80"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+59.gef7a4e588
+                0.12.2dev0+62.g6313a3a43
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -174,7 +174,9 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="all"><a class="viewcode-back" href="../../reference/generated/dpnp.all.html#dpnp.all">[docs]</a><span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="all">
+<a class="viewcode-back" href="../../reference/generated/dpnp.all.html#dpnp.all">[docs]</a>
+<span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test whether all array elements along a given axis evaluate to True.</span>
 
@@ -240,7 +242,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="allclose"><a class="viewcode-back" href="../../reference/generated/dpnp.allclose.html#dpnp.allclose">[docs]</a><span class="k">def</span> <span class="nf">allclose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-5</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="allclose">
+<a class="viewcode-back" href="../../reference/generated/dpnp.allclose.html#dpnp.allclose">[docs]</a>
+<span class="k">def</span> <span class="nf">allclose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-5</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns True if two arrays are element-wise equal within a tolerance.</span>
 
@@ -278,7 +283,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">allclose</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="any"><a class="viewcode-back" href="../../reference/generated/dpnp.any.html#dpnp.any">[docs]</a><span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="any">
+<a class="viewcode-back" href="../../reference/generated/dpnp.any.html#dpnp.any">[docs]</a>
+<span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test whether any array element along a given axis evaluates to True.</span>
 
@@ -344,7 +352,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="equal"><a class="viewcode-back" href="../../reference/generated/dpnp.equal.html#dpnp.equal">[docs]</a><span class="k">def</span> <span class="nf">equal</span><span class="p">(</span>
+
+<div class="viewcode-block" id="equal">
+<a class="viewcode-back" href="../../reference/generated/dpnp.equal.html#dpnp.equal">[docs]</a>
+<span class="k">def</span> <span class="nf">equal</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -420,7 +431,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="greater"><a class="viewcode-back" href="../../reference/generated/dpnp.greater.html#dpnp.greater">[docs]</a><span class="k">def</span> <span class="nf">greater</span><span class="p">(</span>
+
+<div class="viewcode-block" id="greater">
+<a class="viewcode-back" href="../../reference/generated/dpnp.greater.html#dpnp.greater">[docs]</a>
+<span class="k">def</span> <span class="nf">greater</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -490,7 +504,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="greater_equal"><a class="viewcode-back" href="../../reference/generated/dpnp.greater_equal.html#dpnp.greater_equal">[docs]</a><span class="k">def</span> <span class="nf">greater_equal</span><span class="p">(</span>
+
+<div class="viewcode-block" id="greater_equal">
+<a class="viewcode-back" href="../../reference/generated/dpnp.greater_equal.html#dpnp.greater_equal">[docs]</a>
+<span class="k">def</span> <span class="nf">greater_equal</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -560,7 +577,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="isclose"><a class="viewcode-back" href="../../reference/generated/dpnp.isclose.html#dpnp.isclose">[docs]</a><span class="k">def</span> <span class="nf">isclose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="isclose">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isclose.html#dpnp.isclose">[docs]</a>
+<span class="k">def</span> <span class="nf">isclose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a boolean array where two arrays are element-wise equal within a tolerance.</span>
 
@@ -599,7 +619,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="isfinite"><a class="viewcode-back" href="../../reference/generated/dpnp.isfinite.html#dpnp.isfinite">[docs]</a><span class="k">def</span> <span class="nf">isfinite</span><span class="p">(</span>
+
+<div class="viewcode-block" id="isfinite">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isfinite.html#dpnp.isfinite">[docs]</a>
+<span class="k">def</span> <span class="nf">isfinite</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -651,7 +674,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="isinf"><a class="viewcode-back" href="../../reference/generated/dpnp.isinf.html#dpnp.isinf">[docs]</a><span class="k">def</span> <span class="nf">isinf</span><span class="p">(</span>
+
+<div class="viewcode-block" id="isinf">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isinf.html#dpnp.isinf">[docs]</a>
+<span class="k">def</span> <span class="nf">isinf</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -698,7 +724,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="isnan"><a class="viewcode-back" href="../../reference/generated/dpnp.isnan.html#dpnp.isnan">[docs]</a><span class="k">def</span> <span class="nf">isnan</span><span class="p">(</span>
+
+<div class="viewcode-block" id="isnan">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isnan.html#dpnp.isnan">[docs]</a>
+<span class="k">def</span> <span class="nf">isnan</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -746,7 +775,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="less"><a class="viewcode-back" href="../../reference/generated/dpnp.less.html#dpnp.less">[docs]</a><span class="k">def</span> <span class="nf">less</span><span class="p">(</span>
+
+<div class="viewcode-block" id="less">
+<a class="viewcode-back" href="../../reference/generated/dpnp.less.html#dpnp.less">[docs]</a>
+<span class="k">def</span> <span class="nf">less</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -816,7 +848,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="less_equal"><a class="viewcode-back" href="../../reference/generated/dpnp.less_equal.html#dpnp.less_equal">[docs]</a><span class="k">def</span> <span class="nf">less_equal</span><span class="p">(</span>
+
+<div class="viewcode-block" id="less_equal">
+<a class="viewcode-back" href="../../reference/generated/dpnp.less_equal.html#dpnp.less_equal">[docs]</a>
+<span class="k">def</span> <span class="nf">less_equal</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -886,7 +921,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="logical_and"><a class="viewcode-back" href="../../reference/generated/dpnp.logical_and.html#dpnp.logical_and">[docs]</a><span class="k">def</span> <span class="nf">logical_and</span><span class="p">(</span>
+
+<div class="viewcode-block" id="logical_and">
+<a class="viewcode-back" href="../../reference/generated/dpnp.logical_and.html#dpnp.logical_and">[docs]</a>
+<span class="k">def</span> <span class="nf">logical_and</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -960,7 +998,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="logical_not"><a class="viewcode-back" href="../../reference/generated/dpnp.logical_not.html#dpnp.logical_not">[docs]</a><span class="k">def</span> <span class="nf">logical_not</span><span class="p">(</span>
+
+<div class="viewcode-block" id="logical_not">
+<a class="viewcode-back" href="../../reference/generated/dpnp.logical_not.html#dpnp.logical_not">[docs]</a>
+<span class="k">def</span> <span class="nf">logical_not</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1021,7 +1062,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="logical_or"><a class="viewcode-back" href="../../reference/generated/dpnp.logical_or.html#dpnp.logical_or">[docs]</a><span class="k">def</span> <span class="nf">logical_or</span><span class="p">(</span>
+
+<div class="viewcode-block" id="logical_or">
+<a class="viewcode-back" href="../../reference/generated/dpnp.logical_or.html#dpnp.logical_or">[docs]</a>
+<span class="k">def</span> <span class="nf">logical_or</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -1095,7 +1139,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="logical_xor"><a class="viewcode-back" href="../../reference/generated/dpnp.logical_xor.html#dpnp.logical_xor">[docs]</a><span class="k">def</span> <span class="nf">logical_xor</span><span class="p">(</span>
+
+<div class="viewcode-block" id="logical_xor">
+<a class="viewcode-back" href="../../reference/generated/dpnp.logical_xor.html#dpnp.logical_xor">[docs]</a>
+<span class="k">def</span> <span class="nf">logical_xor</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -1167,7 +1214,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="not_equal"><a class="viewcode-back" href="../../reference/generated/dpnp.not_equal.html#dpnp.not_equal">[docs]</a><span class="k">def</span> <span class="nf">not_equal</span><span class="p">(</span>
+
+<div class="viewcode-block" id="not_equal">
+<a class="viewcode-back" href="../../reference/generated/dpnp.not_equal.html#dpnp.not_equal">[docs]</a>
+<span class="k">def</span> <span class="nf">not_equal</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -1235,6 +1285,7 @@
         <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span></div>
+
 </pre></div>
 
            </div>

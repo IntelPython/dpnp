@@ -13,18 +13,18 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.12.2dev0+59.gef7a4e588 documentation</title>
+  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.12.2dev0+62.g6313a3a43 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=ad639a80"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+59.gef7a4e588
+                0.12.2dev0+62.g6313a3a43
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -101,9 +101,9 @@
            <div itemprop="articleBody">
              
   <span class="target" id="quick-start-guide"></span><section id="id1">
-<h1>Quick Start Guide<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<h1>Quick Start Guide<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
 <section id="device-drivers">
-<h2>Device Drivers<a class="headerlink" href="#device-drivers" title="Permalink to this heading"></a></h2>
+<h2>Device Drivers<a class="headerlink" href="#device-drivers" title="Link to this heading"></a></h2>
 <p>To start programming data parallel devices beyond CPU, you will need
 an appropriate hardware. The Data Parallel Extension for NumPy* works fine
 on Intel © laptops with integrated graphics. In majority of cases,
@@ -113,7 +113,7 @@ But if you want the most up-to-date driver, you can always
 Follow device driver installation instructions to complete the step.</p>
 </section>
 <section id="python-interpreter">
-<h2>Python Interpreter<a class="headerlink" href="#python-interpreter" title="Permalink to this heading"></a></h2>
+<h2>Python Interpreter<a class="headerlink" href="#python-interpreter" title="Link to this heading"></a></h2>
 <p>You will need Python 3.8, 3.9, or 3.10 installed on your system. If you
 do not have one yet the easiest way to do that is to install
 <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html">Intel Distribution for Python*</a>. It installs all essential Python numerical
@@ -124,9 +124,9 @@ need is to install Data Parallel Extension for NumPy* manually as shown
 in the next installation section.</p>
 </section>
 <section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
 <section id="install-package-from-anaconda">
-<h3>Install Package from Anaconda<a class="headerlink" href="#install-package-from-anaconda" title="Permalink to this heading"></a></h3>
+<h3>Install Package from Anaconda<a class="headerlink" href="#install-package-from-anaconda" title="Link to this heading"></a></h3>
 <p>It is recommended to use conda packages from the <code class="docutils literal notranslate"><span class="pre">anaconda.org/intel</span></code>
 channel. You will need one of the commands below:</p>
 <ul class="simple">
@@ -142,7 +142,7 @@ compiler runtimes and OneMKL.</p>
 </div>
 </section>
 <section id="build-and-install-conda-package">
-<h3>Build and Install Conda Package<a class="headerlink" href="#build-and-install-conda-package" title="Permalink to this heading"></a></h3>
+<h3>Build and Install Conda Package<a class="headerlink" href="#build-and-install-conda-package" title="Link to this heading"></a></h3>
 <p>Alternatively you can create and activate a local conda build environment:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>conda-build
 conda<span class="w"> </span>activate<span class="w"> </span>build-env
@@ -158,7 +158,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </div>
 </section>
 <section id="build-and-install-with-scikit-build">
-<h3>Build and Install with scikit-build<a class="headerlink" href="#build-and-install-with-scikit-build" title="Permalink to this heading"></a></h3>
+<h3>Build and Install with scikit-build<a class="headerlink" href="#build-and-install-with-scikit-build" title="Link to this heading"></a></h3>
 <p>Another way to build and install dpnp package from the source is to use Python
 <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> and <code class="docutils literal notranslate"><span class="pre">scikit-build</span></code>. You will need to create a local conda
 build environment by command below depending on hosting OS.</p>
@@ -187,7 +187,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </section>
 </section>
 <section id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading"></a></h2>
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
 <p>If you want to execute the scope of Python test suites which are available
 by the source, you will need to run a command as below:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-s<span class="w"> </span>tests
@@ -195,10 +195,10 @@ by the source, you will need to run a command as below:</p>
 </div>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <p>The examples below demonstrates a simple usage of the Data Parallel Extension for NumPy*</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">How to create an array and to sum the elements</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
+<div class="code-block-caption"><span class="caption-text">How to create an array and to sum the elements</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
@@ -213,7 +213,7 @@ by the source, you will need to run a command as below:</p>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">How to create an array on the specific device type and how the next computations follow it</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
+<div class="code-block-caption"><span class="caption-text">How to create an array on the specific device type and how the next computations follow it</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>

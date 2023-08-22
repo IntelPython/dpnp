@@ -12,18 +12,18 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.12.2dev0+59.gef7a4e588 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.12.2dev0+62.g6313a3a43 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=ad639a80"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+59.gef7a4e588
+                0.12.2dev0+62.g6313a3a43
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -154,7 +154,9 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="cholesky"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.cholesky.html#dpnp.linalg.cholesky">[docs]</a><span class="k">def</span> <span class="nf">cholesky</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+<div class="viewcode-block" id="cholesky">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.cholesky.html#dpnp.linalg.cholesky">[docs]</a>
+<span class="k">def</span> <span class="nf">cholesky</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cholesky decomposition.</span>
 
@@ -202,7 +204,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="cond"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.cond.html#dpnp.linalg.cond">[docs]</a><span class="k">def</span> <span class="nf">cond</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="cond">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.cond.html#dpnp.linalg.cond">[docs]</a>
+<span class="k">def</span> <span class="nf">cond</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the condition number of a matrix.</span>
 
@@ -230,7 +235,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="det"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.det.html#dpnp.linalg.det">[docs]</a><span class="k">def</span> <span class="nf">det</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+
+<div class="viewcode-block" id="det">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.det.html#dpnp.linalg.det">[docs]</a>
+<span class="k">def</span> <span class="nf">det</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the determinant of an array.</span>
 
@@ -256,7 +264,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="eig"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eig.html#dpnp.linalg.eig">[docs]</a><span class="k">def</span> <span class="nf">eig</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+
+<div class="viewcode-block" id="eig">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eig.html#dpnp.linalg.eig">[docs]</a>
+<span class="k">def</span> <span class="nf">eig</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the eigenvalues and right eigenvectors of a square array.</span>
 
@@ -272,7 +283,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="eigh"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eigh.html#dpnp.linalg.eigh">[docs]</a><span class="k">def</span> <span class="nf">eigh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="eigh">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eigh.html#dpnp.linalg.eigh">[docs]</a>
+<span class="k">def</span> <span class="nf">eigh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    eigh(a, UPLO=&quot;L&quot;)</span>
 
@@ -340,7 +354,10 @@
     <span class="k">return</span> <span class="n">dpnp_eigh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="n">UPLO</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="eigvals"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eigvals.html#dpnp.linalg.eigvals">[docs]</a><span class="k">def</span> <span class="nf">eigvals</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+
+<div class="viewcode-block" id="eigvals">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eigvals.html#dpnp.linalg.eigvals">[docs]</a>
+<span class="k">def</span> <span class="nf">eigvals</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the eigenvalues of a general matrix.</span>
 
@@ -368,7 +385,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="inv"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.inv.html#dpnp.linalg.inv">[docs]</a><span class="k">def</span> <span class="nf">inv</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+
+<div class="viewcode-block" id="inv">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.inv.html#dpnp.linalg.inv">[docs]</a>
+<span class="k">def</span> <span class="nf">inv</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Divide arguments element-wise.</span>
 
@@ -394,7 +414,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="matrix_power"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.matrix_power.html#dpnp.linalg.matrix_power">[docs]</a><span class="k">def</span> <span class="nf">matrix_power</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+
+<div class="viewcode-block" id="matrix_power">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.matrix_power.html#dpnp.linalg.matrix_power">[docs]</a>
+<span class="k">def</span> <span class="nf">matrix_power</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raise a square matrix to the (integer) power `count`.</span>
 
@@ -423,7 +446,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_power</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="matrix_rank"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.matrix_rank.html#dpnp.linalg.matrix_rank">[docs]</a><span class="k">def</span> <span class="nf">matrix_rank</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="matrix_rank">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.matrix_rank.html#dpnp.linalg.matrix_rank">[docs]</a>
+<span class="k">def</span> <span class="nf">matrix_rank</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return matrix rank of array.</span>
 
@@ -466,7 +492,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_rank</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">hermitian</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="multi_dot"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.multi_dot.html#dpnp.linalg.multi_dot">[docs]</a><span class="k">def</span> <span class="nf">multi_dot</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="multi_dot">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.multi_dot.html#dpnp.linalg.multi_dot">[docs]</a>
+<span class="k">def</span> <span class="nf">multi_dot</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the dot product of two or more arrays in a single function call</span>
 
@@ -502,7 +531,10 @@
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="norm"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.norm.html#dpnp.linalg.norm">[docs]</a><span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="norm">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.norm.html#dpnp.linalg.norm">[docs]</a>
+<span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matrix or vector norm.</span>
 
@@ -558,7 +590,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="nb">ord</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="qr"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.qr.html#dpnp.linalg.qr">[docs]</a><span class="k">def</span> <span class="nf">qr</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reduced&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="qr">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.qr.html#dpnp.linalg.qr">[docs]</a>
+<span class="k">def</span> <span class="nf">qr</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reduced&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the qr factorization of a matrix.</span>
 
@@ -586,7 +621,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="svd"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.svd.html#dpnp.linalg.svd">[docs]</a><span class="k">def</span> <span class="nf">svd</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="svd">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.svd.html#dpnp.linalg.svd">[docs]</a>
+<span class="k">def</span> <span class="nf">svd</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Singular Value Decomposition.</span>
 
@@ -661,6 +699,7 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
         <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">full_matrices</span><span class="p">,</span> <span class="n">compute_uv</span><span class="p">,</span> <span class="n">hermitian</span>
     <span class="p">)</span></div>
+
 </pre></div>
 
            </div>
