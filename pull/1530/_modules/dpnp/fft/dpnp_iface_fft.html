@@ -12,18 +12,18 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.12.2dev0+58.gb8e128a54 documentation</title>
+  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.12.2dev0+65.gab9f11689 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=41a63d47"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+58.gb8e128a54
+                0.12.2dev0+65.gab9f11689
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -174,7 +174,9 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown norm value.&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="fft"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fft.html#dpnp.fft.fft">[docs]</a><span class="k">def</span> <span class="nf">fft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="fft">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fft.html#dpnp.fft.fft">[docs]</a>
+<span class="k">def</span> <span class="nf">fft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the one-dimensional discrete Fourier Transform.</span>
 
@@ -229,7 +231,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fft2"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fft2.html#dpnp.fft.fft2">[docs]</a><span class="k">def</span> <span class="nf">fft2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="fft2">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fft2.html#dpnp.fft.fft2">[docs]</a>
+<span class="k">def</span> <span class="nf">fft2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the 2-dimensional discrete Fourier Transform.</span>
 
@@ -257,7 +262,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fftfreq"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fftfreq.html#dpnp.fft.fftfreq">[docs]</a><span class="k">def</span> <span class="nf">fftfreq</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="fftfreq">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fftfreq.html#dpnp.fft.fftfreq">[docs]</a>
+<span class="k">def</span> <span class="nf">fftfreq</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the one-dimensional discrete Fourier Transform sample frequencies.</span>
 
@@ -272,7 +280,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fftn"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fftn.html#dpnp.fft.fftn">[docs]</a><span class="k">def</span> <span class="nf">fftn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="fftn">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fftn.html#dpnp.fft.fftn">[docs]</a>
+<span class="k">def</span> <span class="nf">fftn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the N-dimensional FFT.</span>
 
@@ -327,7 +338,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftn</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fftshift"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fftshift.html#dpnp.fft.fftshift">[docs]</a><span class="k">def</span> <span class="nf">fftshift</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="fftshift">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fftshift.html#dpnp.fft.fftshift">[docs]</a>
+<span class="k">def</span> <span class="nf">fftshift</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shift the zero-frequency component to the center of the spectrum.</span>
 
@@ -367,7 +381,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="hfft"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.hfft.html#dpnp.fft.hfft">[docs]</a><span class="k">def</span> <span class="nf">hfft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="hfft">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.hfft.html#dpnp.fft.hfft">[docs]</a>
+<span class="k">def</span> <span class="nf">hfft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the one-dimensional discrete Fourier Transform of a signal that has Hermitian symmetry.</span>
 
@@ -418,7 +435,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">hfft</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ifft"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ifft.html#dpnp.fft.ifft">[docs]</a><span class="k">def</span> <span class="nf">ifft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ifft">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ifft.html#dpnp.fft.ifft">[docs]</a>
+<span class="k">def</span> <span class="nf">ifft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the one-dimensional inverse discrete Fourier Transform.</span>
 
@@ -473,7 +493,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ifft2"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ifft2.html#dpnp.fft.ifft2">[docs]</a><span class="k">def</span> <span class="nf">ifft2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ifft2">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ifft2.html#dpnp.fft.ifft2">[docs]</a>
+<span class="k">def</span> <span class="nf">ifft2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the 2-dimensional inverse discrete Fourier Transform.</span>
 
@@ -501,7 +524,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft2</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ifftshift"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ifftshift.html#dpnp.fft.ifftshift">[docs]</a><span class="k">def</span> <span class="nf">ifftshift</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ifftshift">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ifftshift.html#dpnp.fft.ifftshift">[docs]</a>
+<span class="k">def</span> <span class="nf">ifftshift</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inverse shift the zero-frequency component to the center of the spectrum.</span>
 
@@ -547,7 +573,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ifftn"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ifftn.html#dpnp.fft.ifftn">[docs]</a><span class="k">def</span> <span class="nf">ifftn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ifftn">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ifftn.html#dpnp.fft.ifftn">[docs]</a>
+<span class="k">def</span> <span class="nf">ifftn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the N-dimensional inverse discrete Fourier Transform.</span>
 
@@ -608,7 +637,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftn</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ihfft"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ihfft.html#dpnp.fft.ihfft">[docs]</a><span class="k">def</span> <span class="nf">ihfft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ihfft">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ihfft.html#dpnp.fft.ihfft">[docs]</a>
+<span class="k">def</span> <span class="nf">ihfft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute inverse one-dimensional discrete Fourier Transform of a signal that has Hermitian symmetry.</span>
 
@@ -661,7 +693,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ihfft</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="irfft"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.irfft.html#dpnp.fft.irfft">[docs]</a><span class="k">def</span> <span class="nf">irfft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="irfft">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.irfft.html#dpnp.fft.irfft">[docs]</a>
+<span class="k">def</span> <span class="nf">irfft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the one-dimensional inverse discrete Fourier Transform for real input.</span>
 
@@ -719,7 +754,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="irfft2"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.irfft2.html#dpnp.fft.irfft2">[docs]</a><span class="k">def</span> <span class="nf">irfft2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="irfft2">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.irfft2.html#dpnp.fft.irfft2">[docs]</a>
+<span class="k">def</span> <span class="nf">irfft2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the 2-dimensional inverse discrete Fourier Transform for real input.</span>
 
@@ -747,7 +785,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft2</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="irfftn"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.irfftn.html#dpnp.fft.irfftn">[docs]</a><span class="k">def</span> <span class="nf">irfftn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="irfftn">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.irfftn.html#dpnp.fft.irfftn">[docs]</a>
+<span class="k">def</span> <span class="nf">irfftn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the N-dimensional inverse discrete Fourier Transform for real input.</span>
 
@@ -808,7 +849,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfftn</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="rfft"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfft.html#dpnp.fft.rfft">[docs]</a><span class="k">def</span> <span class="nf">rfft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="rfft">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfft.html#dpnp.fft.rfft">[docs]</a>
+<span class="k">def</span> <span class="nf">rfft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the one-dimensional discrete Fourier Transform for real input.</span>
 
@@ -870,7 +914,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="rfft2"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfft2.html#dpnp.fft.rfft2">[docs]</a><span class="k">def</span> <span class="nf">rfft2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="rfft2">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfft2.html#dpnp.fft.rfft2">[docs]</a>
+<span class="k">def</span> <span class="nf">rfft2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the 2-dimensional discrete Fourier Transform for real input.</span>
 
@@ -898,7 +945,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft2</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="rfftfreq"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfftfreq.html#dpnp.fft.rfftfreq">[docs]</a><span class="k">def</span> <span class="nf">rfftfreq</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="rfftfreq">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfftfreq.html#dpnp.fft.rfftfreq">[docs]</a>
+<span class="k">def</span> <span class="nf">rfftfreq</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the one-dimensional discrete Fourier Transform sample frequencies.</span>
 
@@ -913,7 +963,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="rfftn"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfftn.html#dpnp.fft.rfftn">[docs]</a><span class="k">def</span> <span class="nf">rfftn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="rfftn">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfftn.html#dpnp.fft.rfftn">[docs]</a>
+<span class="k">def</span> <span class="nf">rfftn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the N-dimensional discrete Fourier Transform for real input.</span>
 
@@ -976,6 +1029,7 @@
             <span class="k">return</span> <span class="n">x_iter</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftn</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

@@ -12,18 +12,18 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.12.2dev0+58.gb8e128a54 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.12.2dev0+65.gab9f11689 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=41a63d47"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+58.gb8e128a54
+                0.12.2dev0+65.gab9f11689
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -145,7 +145,9 @@
     <span class="n">dpnp_floor</span><span class="p">,</span>
     <span class="n">dpnp_floor_divide</span><span class="p">,</span>
     <span class="n">dpnp_multiply</span><span class="p">,</span>
+    <span class="n">dpnp_negative</span><span class="p">,</span>
     <span class="n">dpnp_remainder</span><span class="p">,</span>
+    <span class="n">dpnp_sign</span><span class="p">,</span>
     <span class="n">dpnp_subtract</span><span class="p">,</span>
     <span class="n">dpnp_trunc</span><span class="p">,</span>
 <span class="p">)</span>
@@ -197,7 +199,9 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="abs"><a class="viewcode-back" href="../../reference/generated/dpnp.abs.html#dpnp.abs">[docs]</a><span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="abs">
+<a class="viewcode-back" href="../../reference/generated/dpnp.abs.html#dpnp.abs">[docs]</a>
+<span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the absolute value element-wise.</span>
 
@@ -220,7 +224,10 @@
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="absolute"><a class="viewcode-back" href="../../reference/generated/dpnp.absolute.html#dpnp.absolute">[docs]</a><span class="k">def</span> <span class="nf">absolute</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="absolute">
+<a class="viewcode-back" href="../../reference/generated/dpnp.absolute.html#dpnp.absolute">[docs]</a>
+<span class="k">def</span> <span class="nf">absolute</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the absolute value element-wise.</span>
 
@@ -285,7 +292,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="add"><a class="viewcode-back" href="../../reference/generated/dpnp.add.html#dpnp.add">[docs]</a><span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
+
+<div class="viewcode-block" id="add">
+<a class="viewcode-back" href="../../reference/generated/dpnp.add.html#dpnp.add">[docs]</a>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -354,7 +364,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="around"><a class="viewcode-back" href="../../reference/generated/dpnp.around.html#dpnp.around">[docs]</a><span class="k">def</span> <span class="nf">around</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="around">
+<a class="viewcode-back" href="../../reference/generated/dpnp.around.html#dpnp.around">[docs]</a>
+<span class="k">def</span> <span class="nf">around</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evenly round to the given number of decimals.</span>
 
@@ -395,7 +408,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">around</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="n">decimals</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ceil"><a class="viewcode-back" href="../../reference/generated/dpnp.ceil.html#dpnp.ceil">[docs]</a><span class="k">def</span> <span class="nf">ceil</span><span class="p">(</span>
+
+<div class="viewcode-block" id="ceil">
+<a class="viewcode-back" href="../../reference/generated/dpnp.ceil.html#dpnp.ceil">[docs]</a>
+<span class="k">def</span> <span class="nf">ceil</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -451,7 +467,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="conjugate"><a class="viewcode-back" href="../../reference/generated/dpnp.conjugate.html#dpnp.conjugate">[docs]</a><span class="k">def</span> <span class="nf">conjugate</span><span class="p">(</span>
+
+<div class="viewcode-block" id="conjugate">
+<a class="viewcode-back" href="../../reference/generated/dpnp.conjugate.html#dpnp.conjugate">[docs]</a>
+<span class="k">def</span> <span class="nf">conjugate</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -508,10 +527,13 @@
     <span class="p">)</span></div>
 
 
+
 <span class="n">conj</span> <span class="o">=</span> <span class="n">conjugate</span>
 
 
-<div class="viewcode-block" id="convolve"><a class="viewcode-back" href="../../reference/generated/dpnp.convolve.html#dpnp.convolve">[docs]</a><span class="k">def</span> <span class="nf">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="convolve">
+<a class="viewcode-back" href="../../reference/generated/dpnp.convolve.html#dpnp.convolve">[docs]</a>
+<span class="k">def</span> <span class="nf">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the discrete, linear convolution of two one-dimensional sequences.</span>
 
@@ -528,7 +550,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">convolve</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="copysign"><a class="viewcode-back" href="../../reference/generated/dpnp.copysign.html#dpnp.copysign">[docs]</a><span class="k">def</span> <span class="nf">copysign</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="copysign">
+<a class="viewcode-back" href="../../reference/generated/dpnp.copysign.html#dpnp.copysign">[docs]</a>
+<span class="k">def</span> <span class="nf">copysign</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change the sign of x1 to that of x2, element-wise.</span>
 
@@ -587,7 +612,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="cross"><a class="viewcode-back" href="../../reference/generated/dpnp.cross.html#dpnp.cross">[docs]</a><span class="k">def</span> <span class="nf">cross</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axisa</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisb</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisc</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="cross">
+<a class="viewcode-back" href="../../reference/generated/dpnp.cross.html#dpnp.cross">[docs]</a>
+<span class="k">def</span> <span class="nf">cross</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axisa</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisb</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisc</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the cross product of two (arrays of) vectors.</span>
 
@@ -635,7 +663,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cross</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axisa</span><span class="p">,</span> <span class="n">axisb</span><span class="p">,</span> <span class="n">axisc</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="cumprod"><a class="viewcode-back" href="../../reference/generated/dpnp.cumprod.html#dpnp.cumprod">[docs]</a><span class="k">def</span> <span class="nf">cumprod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="cumprod">
+<a class="viewcode-back" href="../../reference/generated/dpnp.cumprod.html#dpnp.cumprod">[docs]</a>
+<span class="k">def</span> <span class="nf">cumprod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the cumulative product of elements along a given axis.</span>
 
@@ -669,7 +700,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cumprod</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="cumsum"><a class="viewcode-back" href="../../reference/generated/dpnp.cumsum.html#dpnp.cumsum">[docs]</a><span class="k">def</span> <span class="nf">cumsum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="cumsum">
+<a class="viewcode-back" href="../../reference/generated/dpnp.cumsum.html#dpnp.cumsum">[docs]</a>
+<span class="k">def</span> <span class="nf">cumsum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the cumulative sum of the elements along a given axis.</span>
 
@@ -703,7 +737,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cumsum</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="diff"><a class="viewcode-back" href="../../reference/generated/dpnp.diff.html#dpnp.diff">[docs]</a><span class="k">def</span> <span class="nf">diff</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">):</span>
+
+<div class="viewcode-block" id="diff">
+<a class="viewcode-back" href="../../reference/generated/dpnp.diff.html#dpnp.diff">[docs]</a>
+<span class="k">def</span> <span class="nf">diff</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the n-th discrete difference along the given axis.</span>
 
@@ -738,7 +775,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="divide"><a class="viewcode-back" href="../../reference/generated/dpnp.divide.html#dpnp.divide">[docs]</a><span class="k">def</span> <span class="nf">divide</span><span class="p">(</span>
+
+<div class="viewcode-block" id="divide">
+<a class="viewcode-back" href="../../reference/generated/dpnp.divide.html#dpnp.divide">[docs]</a>
+<span class="k">def</span> <span class="nf">divide</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -807,7 +847,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ediff1d"><a class="viewcode-back" href="../../reference/generated/dpnp.ediff1d.html#dpnp.ediff1d">[docs]</a><span class="k">def</span> <span class="nf">ediff1d</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">to_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_begin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ediff1d">
+<a class="viewcode-back" href="../../reference/generated/dpnp.ediff1d.html#dpnp.ediff1d">[docs]</a>
+<span class="k">def</span> <span class="nf">ediff1d</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">to_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_begin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The differences between consecutive elements of an array.</span>
 
@@ -850,7 +893,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ediff1d</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">to_end</span><span class="o">=</span><span class="n">to_end</span><span class="p">,</span> <span class="n">to_begin</span><span class="o">=</span><span class="n">to_begin</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fabs"><a class="viewcode-back" href="../../reference/generated/dpnp.fabs.html#dpnp.fabs">[docs]</a><span class="k">def</span> <span class="nf">fabs</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="fabs">
+<a class="viewcode-back" href="../../reference/generated/dpnp.fabs.html#dpnp.fabs">[docs]</a>
+<span class="k">def</span> <span class="nf">fabs</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the absolute values element-wise.</span>
 
@@ -885,7 +931,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fabs</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="floor"><a class="viewcode-back" href="../../reference/generated/dpnp.floor.html#dpnp.floor">[docs]</a><span class="k">def</span> <span class="nf">floor</span><span class="p">(</span>
+
+<div class="viewcode-block" id="floor">
+<a class="viewcode-back" href="../../reference/generated/dpnp.floor.html#dpnp.floor">[docs]</a>
+<span class="k">def</span> <span class="nf">floor</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -946,7 +995,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="floor_divide"><a class="viewcode-back" href="../../reference/generated/dpnp.floor_divide.html#dpnp.floor_divide">[docs]</a><span class="k">def</span> <span class="nf">floor_divide</span><span class="p">(</span>
+
+<div class="viewcode-block" id="floor_divide">
+<a class="viewcode-back" href="../../reference/generated/dpnp.floor_divide.html#dpnp.floor_divide">[docs]</a>
+<span class="k">def</span> <span class="nf">floor_divide</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -987,6 +1039,14 @@
 
 <span class="sd">    &gt;&gt;&gt; np.floor_divide(np.array([1., 2., 3., 4.]), 2.5)</span>
 <span class="sd">    array([ 0.,  0.,  1.,  1.])</span>
+
+<span class="sd">    The ``//`` operator can be used as a shorthand for ``floor_divide`` on</span>
+<span class="sd">    :class:`dpnp.ndarray`.</span>
+
+<span class="sd">    &gt;&gt;&gt; x1 = np.array([1., 2., 3., 4.])</span>
+<span class="sd">    &gt;&gt;&gt; x1 // 2.5</span>
+<span class="sd">    array([0., 0., 1., 1.])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
@@ -1003,7 +1063,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fmax"><a class="viewcode-back" href="../../reference/generated/dpnp.fmax.html#dpnp.fmax">[docs]</a><span class="k">def</span> <span class="nf">fmax</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="fmax">
+<a class="viewcode-back" href="../../reference/generated/dpnp.fmax.html#dpnp.fmax">[docs]</a>
+<span class="k">def</span> <span class="nf">fmax</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Element-wise maximum of array elements.</span>
 
@@ -1024,7 +1087,10 @@
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fmin"><a class="viewcode-back" href="../../reference/generated/dpnp.fmin.html#dpnp.fmin">[docs]</a><span class="k">def</span> <span class="nf">fmin</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="fmin">
+<a class="viewcode-back" href="../../reference/generated/dpnp.fmin.html#dpnp.fmin">[docs]</a>
+<span class="k">def</span> <span class="nf">fmin</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Element-wise minimum of array elements.</span>
 
@@ -1045,7 +1111,10 @@
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fmod"><a class="viewcode-back" href="../../reference/generated/dpnp.fmod.html#dpnp.fmod">[docs]</a><span class="k">def</span> <span class="nf">fmod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="fmod">
+<a class="viewcode-back" href="../../reference/generated/dpnp.fmod.html#dpnp.fmod">[docs]</a>
+<span class="k">def</span> <span class="nf">fmod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the element-wise remainder of division.</span>
 
@@ -1116,7 +1185,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="gradient"><a class="viewcode-back" href="../../reference/generated/dpnp.gradient.html#dpnp.gradient">[docs]</a><span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="gradient">
+<a class="viewcode-back" href="../../reference/generated/dpnp.gradient.html#dpnp.gradient">[docs]</a>
+<span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the gradient of an array.</span>
 
@@ -1158,7 +1230,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">gradient</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="maximum"><a class="viewcode-back" href="../../reference/generated/dpnp.maximum.html#dpnp.maximum">[docs]</a><span class="k">def</span> <span class="nf">maximum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="maximum">
+<a class="viewcode-back" href="../../reference/generated/dpnp.maximum.html#dpnp.maximum">[docs]</a>
+<span class="k">def</span> <span class="nf">maximum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Element-wise maximum of array elements.</span>
 
@@ -1223,7 +1298,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="minimum"><a class="viewcode-back" href="../../reference/generated/dpnp.minimum.html#dpnp.minimum">[docs]</a><span class="k">def</span> <span class="nf">minimum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="minimum">
+<a class="viewcode-back" href="../../reference/generated/dpnp.minimum.html#dpnp.minimum">[docs]</a>
+<span class="k">def</span> <span class="nf">minimum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Element-wise minimum of array elements.</span>
 
@@ -1288,7 +1366,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="mod"><a class="viewcode-back" href="../../reference/generated/dpnp.mod.html#dpnp.mod">[docs]</a><span class="k">def</span> <span class="nf">mod</span><span class="p">(</span>
+
+<div class="viewcode-block" id="mod">
+<a class="viewcode-back" href="../../reference/generated/dpnp.mod.html#dpnp.mod">[docs]</a>
+<span class="k">def</span> <span class="nf">mod</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -1338,7 +1419,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="modf"><a class="viewcode-back" href="../../reference/generated/dpnp.modf.html#dpnp.modf">[docs]</a><span class="k">def</span> <span class="nf">modf</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="modf">
+<a class="viewcode-back" href="../../reference/generated/dpnp.modf.html#dpnp.modf">[docs]</a>
+<span class="k">def</span> <span class="nf">modf</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the fractional and integral parts of an array, element-wise.</span>
 
@@ -1369,7 +1453,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">modf</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="multiply"><a class="viewcode-back" href="../../reference/generated/dpnp.multiply.html#dpnp.multiply">[docs]</a><span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span>
+
+<div class="viewcode-block" id="multiply">
+<a class="viewcode-back" href="../../reference/generated/dpnp.multiply.html#dpnp.multiply">[docs]</a>
+<span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -1437,7 +1524,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="nancumprod"><a class="viewcode-back" href="../../reference/generated/dpnp.nancumprod.html#dpnp.nancumprod">[docs]</a><span class="k">def</span> <span class="nf">nancumprod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="nancumprod">
+<a class="viewcode-back" href="../../reference/generated/dpnp.nancumprod.html#dpnp.nancumprod">[docs]</a>
+<span class="k">def</span> <span class="nf">nancumprod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the cumulative product of array elements over a given axis treating Not a Numbers (NaNs) as one.</span>
 
@@ -1474,7 +1564,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nancumprod</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="nancumsum"><a class="viewcode-back" href="../../reference/generated/dpnp.nancumsum.html#dpnp.nancumsum">[docs]</a><span class="k">def</span> <span class="nf">nancumsum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="nancumsum">
+<a class="viewcode-back" href="../../reference/generated/dpnp.nancumsum.html#dpnp.nancumsum">[docs]</a>
+<span class="k">def</span> <span class="nf">nancumsum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the cumulative sum of the elements along a given axis.</span>
 
@@ -1512,7 +1605,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nancumsum</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="nanprod"><a class="viewcode-back" href="../../reference/generated/dpnp.nanprod.html#dpnp.nanprod">[docs]</a><span class="k">def</span> <span class="nf">nanprod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="nanprod">
+<a class="viewcode-back" href="../../reference/generated/dpnp.nanprod.html#dpnp.nanprod">[docs]</a>
+<span class="k">def</span> <span class="nf">nanprod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate prod() function treating &#39;Not a Numbers&#39; (NaN) as ones.</span>
 
@@ -1542,7 +1638,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nanprod</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="nansum"><a class="viewcode-back" href="../../reference/generated/dpnp.nansum.html#dpnp.nansum">[docs]</a><span class="k">def</span> <span class="nf">nansum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="nansum">
+<a class="viewcode-back" href="../../reference/generated/dpnp.nansum.html#dpnp.nansum">[docs]</a>
+<span class="k">def</span> <span class="nf">nansum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate sum() function treating &#39;Not a Numbers&#39; (NaN) as zero.</span>
 
@@ -1574,42 +1673,73 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nansum</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="negative"><a class="viewcode-back" href="../../reference/generated/dpnp.negative.html#dpnp.negative">[docs]</a><span class="k">def</span> <span class="nf">negative</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="negative">
+<a class="viewcode-back" href="../../reference/generated/dpnp.negative.html#dpnp.negative">[docs]</a>
+<span class="k">def</span> <span class="nf">negative</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Negative element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.negative`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">    The numerical negative of each element of `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.ndarray`.</span>
+<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.copysign` : Change the sign of x1 to that of x2, element-wise.</span>
+<span class="sd">    :obj:`dpnp.copysign` : Change the sign of `x1` to that of `x2`, element-wise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; result = np.negative([1, -1])</span>
-<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
-<span class="sd">    [-1, 1]</span>
+<span class="sd">    &gt;&gt;&gt; np.negative(np.array([1, -1]))</span>
+<span class="sd">    array([-1, 1])</span>
 
+<span class="sd">    The ``-`` operator can be used as a shorthand for ``negative`` on</span>
+<span class="sd">    :class:`dpnp.ndarray`.</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([1., -1.])</span>
+<span class="sd">    &gt;&gt;&gt; -x</span>
+<span class="sd">    array([-1.,  1.])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_negative</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">negative</span><span class="p">,</span>
+        <span class="n">dpnp_negative</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">negative</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="power"><a class="viewcode-back" href="../../reference/generated/dpnp.power.html#dpnp.power">[docs]</a><span class="k">def</span> <span class="nf">power</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="power">
+<a class="viewcode-back" href="../../reference/generated/dpnp.power.html#dpnp.power">[docs]</a>
+<span class="k">def</span> <span class="nf">power</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    First array elements raised to powers from second array, element-wise.</span>
 
@@ -1707,7 +1837,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="prod"><a class="viewcode-back" href="../../reference/generated/dpnp.prod.html#dpnp.prod">[docs]</a><span class="k">def</span> <span class="nf">prod</span><span class="p">(</span>
+
+<div class="viewcode-block" id="prod">
+<a class="viewcode-back" href="../../reference/generated/dpnp.prod.html#dpnp.prod">[docs]</a>
+<span class="k">def</span> <span class="nf">prod</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1767,7 +1900,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="remainder"><a class="viewcode-back" href="../../reference/generated/dpnp.remainder.html#dpnp.remainder">[docs]</a><span class="k">def</span> <span class="nf">remainder</span><span class="p">(</span>
+
+<div class="viewcode-block" id="remainder">
+<a class="viewcode-back" href="../../reference/generated/dpnp.remainder.html#dpnp.remainder">[docs]</a>
+<span class="k">def</span> <span class="nf">remainder</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -1832,6 +1968,7 @@
     <span class="p">)</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">round_</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Round an array to the given number of decimals.</span>
@@ -1847,38 +1984,79 @@
     <span class="k">return</span> <span class="n">around</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">decimals</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="sign"><a class="viewcode-back" href="../../reference/generated/dpnp.sign.html#dpnp.sign">[docs]</a><span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="sign">
+<a class="viewcode-back" href="../../reference/generated/dpnp.sign.html#dpnp.sign">[docs]</a>
+<span class="k">def</span> <span class="nf">sign</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an element-wise indication of the sign of a number.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.sign`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">    The indication of the sign of each element of `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    However, if the input array data type is complex, the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; result = np.sign(np.array([-5., 4.5]))</span>
-<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
-<span class="sd">    [-1.0, 1.0]</span>
+<span class="sd">    &gt;&gt;&gt; np.sign(np.array([-5., 4.5]))</span>
+<span class="sd">    array([-1.0, 1.0])</span>
+<span class="sd">    &gt;&gt;&gt; np.sign(np.array(0))</span>
+<span class="sd">    array(0)</span>
+<span class="sd">    &gt;&gt;&gt; np.sign(np.array(5-2j))</span>
+<span class="sd">    array([1+0j])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_sign</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">sign</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+            <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">sign</span><span class="p">,</span>
+            <span class="n">dpnp_sign</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+            <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sign</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="subtract"><a class="viewcode-back" href="../../reference/generated/dpnp.subtract.html#dpnp.subtract">[docs]</a><span class="k">def</span> <span class="nf">subtract</span><span class="p">(</span>
+<div class="viewcode-block" id="subtract">
+<a class="viewcode-back" href="../../reference/generated/dpnp.subtract.html#dpnp.subtract">[docs]</a>
+<span class="k">def</span> <span class="nf">subtract</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">,</span>
     <span class="n">x2</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -1945,7 +2123,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="sum"><a class="viewcode-back" href="../../reference/generated/dpnp.sum.html#dpnp.sum">[docs]</a><span class="k">def</span> <span class="nf">sum</span><span class="p">(</span>
+
+<div class="viewcode-block" id="sum">
+<a class="viewcode-back" href="../../reference/generated/dpnp.sum.html#dpnp.sum">[docs]</a>
+<span class="k">def</span> <span class="nf">sum</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -2058,7 +2239,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="trapz"><a class="viewcode-back" href="../../reference/generated/dpnp.trapz.html#dpnp.trapz">[docs]</a><span class="k">def</span> <span class="nf">trapz</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+
+<div class="viewcode-block" id="trapz">
+<a class="viewcode-back" href="../../reference/generated/dpnp.trapz.html#dpnp.trapz">[docs]</a>
+<span class="k">def</span> <span class="nf">trapz</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Integrate along the given axis using the composite trapezoidal rule.</span>
 
@@ -2118,7 +2302,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">trapz</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="true_divide"><a class="viewcode-back" href="../../reference/generated/dpnp.true_divide.html#dpnp.true_divide">[docs]</a><span class="k">def</span> <span class="nf">true_divide</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="true_divide">
+<a class="viewcode-back" href="../../reference/generated/dpnp.true_divide.html#dpnp.true_divide">[docs]</a>
+<span class="k">def</span> <span class="nf">true_divide</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a true division of the inputs, element-wise.</span>
 
@@ -2138,7 +2325,10 @@
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="trunc"><a class="viewcode-back" href="../../reference/generated/dpnp.trunc.html#dpnp.trunc">[docs]</a><span class="k">def</span> <span class="nf">trunc</span><span class="p">(</span>
+
+<div class="viewcode-block" id="trunc">
+<a class="viewcode-back" href="../../reference/generated/dpnp.trunc.html#dpnp.trunc">[docs]</a>
+<span class="k">def</span> <span class="nf">trunc</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2192,6 +2382,7 @@
         <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span></div>
+
 </pre></div>
 
            </div>
