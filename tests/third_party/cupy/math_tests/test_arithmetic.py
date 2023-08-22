@@ -6,6 +6,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 float_types = [numpy.float32, numpy.float64]
@@ -25,7 +26,12 @@ no_complex_types = float_types + int_types
         testing.product(
             {
                 "nargs": [1],
-                "name": ["reciprocal", "angle"],
+                "name": [
+                    "reciprocal",
+                    "conj",
+                    "conjugate",
+                    "angle",
+                ],
             }
         )
         + testing.product(
@@ -70,6 +76,18 @@ class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
             {
                 "arg1": (
                     [
+                        testing.shaped_arange((2, 3), numpy, dtype=d)
+                        for d in all_types
+                    ]
+                    + [0, 0.0j, 0j, 2, 2.0, 2j, True, False]
+                ),
+                "name": ["conj", "conjugate"],
+            }
+        )
+        + testing.product(
+            {
+                "arg1": (
+                    [
                         testing.shaped_arange((2, 3), numpy, dtype=d) + 1
                         for d in all_types
                     ]
@@ -108,7 +126,7 @@ class TestArithmeticUnary(unittest.TestCase):
 
 
 class ArithmeticBinaryBase:
-    @testing.numpy_cupy_allclose(atol=1e-4)
+    @testing.numpy_cupy_allclose(atol=1e-4, type_check=has_support_aspect64())
     def check_binary(self, xp):
         arg1 = self.arg1
         arg2 = self.arg2
@@ -198,16 +216,6 @@ class ArithmeticBinaryBase:
                         y = y.astype(dtype1)
                     elif is_array_arg2 and not is_array_arg1:
                         y = y.astype(dtype2)
-
-        # NumPy returns different values (nan/inf) on division by zero
-        # depending on the architecture.
-        # As it is not possible for CuPy to replicate this behavior, we ignore
-        # the difference here.
-        # if self.name in ('floor_divide', 'remainder', 'mod'):
-        #     if y.dtype in (float_types + complex_types) and (np2 == 0).any():
-        #         y = xp.asarray(y)
-        #         y[y == numpy.inf] = numpy.nan
-        #        y[y == -numpy.inf] = numpy.nan
 
         return y
 

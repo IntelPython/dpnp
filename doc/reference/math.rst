@@ -48,7 +48,7 @@ Rounding
    :nosignatures:
 
    dpnp.around
-   dpnp.round_
+   dpnp.round
    dpnp.rint
    dpnp.fix
    dpnp.floor
@@ -119,6 +119,17 @@ Floating point routines
    dpnp.frexp
    dpnp.ldexp
    dpnp.nextafter
+   dpnp.spacing
+
+
+Rational routines
+-----------------
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   dpnp.lcm
+   dpnp.gcd
 
 
 Arithmetic operations
@@ -131,12 +142,14 @@ Arithmetic operations
    dpnp.add
    dpnp.reciprocal
    dpnp.negative
+   dpnp.positive
    dpnp.multiply
    dpnp.divide
    dpnp.power
    dpnp.subtract
    dpnp.true_divide
    dpnp.floor_divide
+   dpnp.floor_power
    dpnp.fmod
    dpnp.mod
    dpnp.modf
@@ -155,6 +168,26 @@ Handling complex numbers
    dpnp.real
    dpnp.imag
    dpnp.conj
+   dpnp.conjugate
+
+
+Extrema Finding
+---------------
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   dpnp.maximum
+   dpnp.max
+   dpnp.amax
+   dpnp.fmax
+   dpnp.nanmax
+   dpnp.minimum
+   dpnp.min
+   dpnp.amin
+   dpnp.fmin
+   dpnp.nanmin
 
 
 Miscellaneous
@@ -173,10 +206,6 @@ Miscellaneous
    dpnp.absolute
    dpnp.fabs
    dpnp.sign
-   dpnp.maximum
-   dpnp.minimum
-   dpnp.fmax
-   dpnp.fmin
    dpnp.nan_to_num
    dpnp.bartlett
    dpnp.blackman

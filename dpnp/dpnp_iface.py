@@ -60,7 +60,6 @@ __all__ = [
     "convert_single_elem_array_to_scalar",
     "default_float_type",
     "dpnp_queue_initialize",
-    "dpnp_queue_is_cpu",
     "from_dlpack",
     "get_dpnp_descriptor",
     "get_include",
@@ -311,7 +310,7 @@ def get_dpnp_descriptor(
 
         if ext_obj.strides != shape_offsets or ext_obj_offset != 0:
             orig_desc = dpnp_descriptor(ext_obj)
-            ext_obj = array(ext_obj)
+            ext_obj = array(ext_obj, order="C")
 
     # while dpnp functions are based on DPNP_QUEUE
     # we need to create a copy on device associated with DPNP_QUEUE
