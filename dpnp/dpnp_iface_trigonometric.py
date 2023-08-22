@@ -97,7 +97,7 @@ def arccos(x1):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array is supported as :class:`dpnp.ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -133,7 +133,7 @@ def arccosh(x1):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array is supported as :class:`dpnp.ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -171,8 +171,8 @@ def arcsin(x1, out=None, **kwargs):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Input array is supported as :class:`dpnp.ndarray`.
+    Keyword argument `kwargs` is currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -217,7 +217,7 @@ def arcsinh(x1):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array is supported as :class:`dpnp.ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -247,8 +247,8 @@ def arctan(x1, out=None, **kwargs):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Input array is supported as :class:`dpnp.ndarray`.
+    Keyword argument `kwargs` is currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -289,7 +289,7 @@ def arctanh(x1):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array is supported as :class:`dpnp.ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -319,7 +319,7 @@ def cbrt(x1):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array is supported as :class:`dpnp.ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -349,10 +349,10 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
-    Keyword arguments ``kwargs`` are currently unsupported.
-    Otherwise the functions will be executed sequentially on CPU.
+    Parameters `x1` and `x2` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters `dtype`, `out` and `where` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -436,7 +436,7 @@ def cos(
     -----------
     Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -659,10 +659,10 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
-    Keyword arguments ``kwargs`` are currently unsupported.
-    Otherwise the functions will be executed sequentially on CPU.
+    Parameters `x1` and `x2` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters `dtype`, `out` and `where` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -889,7 +889,7 @@ def reciprocal(x1, **kwargs):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -989,7 +989,7 @@ def sin(
     -----------
     Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1180,8 +1180,8 @@ def tan(x1, out=None, **kwargs):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Input array is supported as :class:`dpnp.ndarray`.
+    Keyword argument `kwargs` is currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -1216,7 +1216,7 @@ def tanh(x1):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array is supported as :class:`dpnp.ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -1246,7 +1246,7 @@ def unwrap(x1):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array is supported as :class:`dpnp.ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also

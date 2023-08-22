@@ -282,8 +282,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NANVAR_EXT,    /**< Used in numpy.nanvar() impl, requires extra
                               parameters */
     DPNP_FN_NEGATIVE,      /**< Used in numpy.negative() impl  */
-    DPNP_FN_NEGATIVE_EXT,  /**< Used in numpy.negative() impl, requires extra
-                              parameters */
     DPNP_FN_NONZERO,       /**< Used in numpy.nonzero() impl  */
     DPNP_FN_NOT_EQUAL_EXT, /**< Used in numpy.not_equal() impl, requires extra
                               parameters */
@@ -441,10 +439,8 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SEARCHSORTED_EXT, /**< Used in numpy.searchsorted() impl, requires
                                  extra parameters */
     DPNP_FN_SIGN,             /**< Used in numpy.sign() impl  */
-    DPNP_FN_SIGN_EXT, /**< Used in numpy.sign() impl, requires extra parameters
-                       */
-    DPNP_FN_SIN,      /**< Used in numpy.sin() impl  */
-    DPNP_FN_SINH,     /**< Used in numpy.sinh() impl  */
+    DPNP_FN_SIN,              /**< Used in numpy.sin() impl  */
+    DPNP_FN_SINH,             /**< Used in numpy.sinh() impl  */
     DPNP_FN_SINH_EXT, /**< Used in numpy.sinh() impl, requires extra parameters
                        */
     DPNP_FN_SORT,     /**< Used in numpy.sort() impl  */
