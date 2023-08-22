@@ -100,7 +100,7 @@ class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestArithmeticUnary(unittest.TestCase):
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_unary(self, xp):
         arg1 = self.arg1
         if isinstance(arg1, numpy.ndarray):
