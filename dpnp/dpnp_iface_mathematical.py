@@ -901,6 +901,14 @@ def floor_divide(
 
     >>> np.floor_divide(np.array([1., 2., 3., 4.]), 2.5)
     array([ 0.,  0.,  1.,  1.])
+
+    The ``//`` operator can be used as a shorthand for ``floor_divide`` on
+    :class:`dpnp.ndarray`.
+
+    >>> x1 = np.array([1., 2., 3., 4.])
+    >>> x1 // 2.5
+    array([0., 0., 1., 1.])
+
     """
 
     return check_nd_call_func(

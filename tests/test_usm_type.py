@@ -85,6 +85,10 @@ def test_coerced_usm_types_remainder(usm_type_x, usm_type_y):
 
     z = x % y
 
+    # inplace remainder
+    z %= y
+    z %= 5
+
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
