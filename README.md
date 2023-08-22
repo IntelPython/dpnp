@@ -29,7 +29,7 @@ cd dpnp
 python scripts/build_locally.py
 ```
 
-## Install Wheel Package from Pypi
+## Install Wheel Package via pip
 Install DPNP
 ```cmd
 python -m pip install --index-url https://pypi.anaconda.org/intel/simple dpnp
