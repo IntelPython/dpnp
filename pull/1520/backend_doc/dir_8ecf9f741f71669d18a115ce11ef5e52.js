@@ -3,6 +3,7 @@ var dir_8ecf9f741f71669d18a115ce11ef5e52 =
     [ "add.hpp", "add_8hpp_source.html", null ],
     [ "ceil.hpp", "ceil_8hpp_source.html", null ],
     [ "common.hpp", "common_8hpp_source.html", null ],
+    [ "conj.hpp", "conj_8hpp_source.html", null ],
     [ "cos.hpp", "cos_8hpp_source.html", null ],
     [ "div.hpp", "div_8hpp_source.html", null ],
     [ "floor.hpp", "floor_8hpp_source.html", null ],

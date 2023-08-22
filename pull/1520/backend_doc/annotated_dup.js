@@ -56,6 +56,7 @@ var annotated_dup =
             [ "types", null, [
               [ "AddOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_add_output_type.html", null ],
               [ "CeilOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ceil_output_type.html", null ],
+              [ "ConjOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_conj_output_type.html", null ],
               [ "CosOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cos_output_type.html", null ],
               [ "DivOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_output_type.html", null ],
               [ "FloorOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_floor_output_type.html", null ],
@@ -70,6 +71,7 @@ var annotated_dup =
             ] ],
             [ "AddContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_add_contig_factory.html", null ],
             [ "CeilContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ceil_contig_factory.html", null ],
+            [ "ConjContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_conj_contig_factory.html", null ],
             [ "CosContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_cos_contig_factory.html", null ],
             [ "DivContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_div_contig_factory.html", null ],
             [ "FloorContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_floor_contig_factory.html", null ],

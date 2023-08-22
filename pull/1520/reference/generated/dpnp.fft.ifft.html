@@ -13,18 +13,18 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.ifft &mdash; Data Parallel Extension for NumPy 0.12.2dev0+50.g15b454684 documentation</title>
+  <title>dpnp.fft.ifft &mdash; Data Parallel Extension for NumPy 0.12.2dev0+64.g3c689fc6e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=3c206a80"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+50.g15b454684
+                0.12.2dev0+64.g3c689fc6e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -121,16 +121,19 @@
            <div itemprop="articleBody">
              
   <section id="dpnp-fft-ifft">
-<h1>dpnp.fft.ifft<a class="headerlink" href="#dpnp-fft-ifft" title="Permalink to this heading"></a></h1>
+<h1>dpnp.fft.ifft<a class="headerlink" href="#dpnp-fft-ifft" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.fft.ifft">
-<span class="sig-prename descclassname"><span class="pre">dpnp.fft.</span></span><span class="sig-name descname"><span class="pre">ifft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#ifft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.fft.ifft" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.fft.</span></span><span class="sig-name descname"><span class="pre">ifft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#ifft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.fft.ifft" title="Link to this definition"></a></dt>
 <dd><p>Compute the one-dimensional inverse discrete Fourier Transform.</p>
-<p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported with its default value.
-Parameter <code class="docutils literal notranslate"><span class="pre">x1</span></code> supports <code class="docutils literal notranslate"><span class="pre">dpnp.int32</span></code>, <code class="docutils literal notranslate"><span class="pre">dpnp.int64</span></code>, <code class="docutils literal notranslate"><span class="pre">dpnp.float32</span></code>, <code class="docutils literal notranslate"><span class="pre">dpnp.float64</span></code>,
-<code class="docutils literal notranslate"><span class="pre">dpnp.complex64``and</span> <span class="pre">``dpnp.complex128</span></code> datatypes only.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.ifft.html#numpy.fft.ifft" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.ifft</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Parameter <cite>x</cite> is supported either as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Parameter <cite>axis</cite> is supported with its default value.
+Only <cite>dpnp.float64</cite>, <cite>dpnp.float32</cite>, <cite>dpnp.int64</cite>, <cite>dpnp.int32</cite>,,
+<cite>dpnp.complex128</cite>, <cite>dpnp.complex64</cite> data types are supported.
+The <cite>dpnp.bool</cite> data type is not supported and will raise a <cite>TypeError</cite> exception.
+Otherwise the function will be executed sequentially on CPU.</p>
 </dd></dl>
 
 </section>

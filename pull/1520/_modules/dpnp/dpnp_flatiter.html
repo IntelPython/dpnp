@@ -12,18 +12,18 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_flatiter &mdash; Data Parallel Extension for NumPy 0.12.2dev0+50.g15b454684 documentation</title>
+  <title>dpnp.dpnp_flatiter &mdash; Data Parallel Extension for NumPy 0.12.2dev0+64.g3c689fc6e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=3c206a80"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+50.g15b454684
+                0.12.2dev0+64.g3c689fc6e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -117,7 +117,9 @@
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
 
-<div class="viewcode-block" id="flatiter"><a class="viewcode-back" href="../../reference/generated/dpnp.flatiter.html#dpnp.flatiter">[docs]</a><span class="k">class</span> <span class="nc">flatiter</span><span class="p">:</span>
+<div class="viewcode-block" id="flatiter">
+<a class="viewcode-back" href="../../reference/generated/dpnp.flatiter.html#dpnp.flatiter">[docs]</a>
+<span class="k">class</span> <span class="nc">flatiter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Flat iterator object to iterate over arrays.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
@@ -148,7 +150,9 @@
         <span class="n">multi_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">i_</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">multi_index</span><span class="p">)</span>
 
-<div class="viewcode-block" id="flatiter.__getitem__"><a class="viewcode-back" href="../../reference/generated/dpnp.flatiter.html#dpnp.flatiter.__getitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="flatiter.__getitem__">
+<a class="viewcode-back" href="../../reference/generated/dpnp.flatiter.html#dpnp.flatiter.__getitem__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;__index__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -156,7 +160,10 @@
         <span class="n">mi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multiindex</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arr_</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">mi</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="flatiter.__setitem__"><a class="viewcode-back" href="../../reference/generated/dpnp.flatiter.html#dpnp.flatiter.__setitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+
+<div class="viewcode-block" id="flatiter.__setitem__">
+<a class="viewcode-back" href="../../reference/generated/dpnp.flatiter.html#dpnp.flatiter.__setitem__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;__index__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -164,16 +171,24 @@
         <span class="n">mi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multiindex</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arr_</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">mi</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="flatiter.__iter__"><a class="viewcode-back" href="../../reference/generated/dpnp.flatiter.html#dpnp.flatiter.__iter__">[docs]</a>    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="flatiter.__iter__">
+<a class="viewcode-back" href="../../reference/generated/dpnp.flatiter.html#dpnp.flatiter.__iter__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="flatiter.__next__"><a class="viewcode-back" href="../../reference/generated/dpnp.flatiter.html#dpnp.flatiter.__next__">[docs]</a>    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="flatiter.__next__">
+<a class="viewcode-back" href="../../reference/generated/dpnp.flatiter.html#dpnp.flatiter.__next__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">size_</span><span class="p">:</span>
             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i_</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">i_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="k">return</span> <span class="n">val</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">StopIteration</span></div></div>
+            <span class="k">raise</span> <span class="ne">StopIteration</span></div>
+</div>
+
 </pre></div>
 
            </div>

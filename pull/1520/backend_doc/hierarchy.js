@@ -12,6 +12,8 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::CartesianDispatcher< C, FnT, DispatchT, Matcher, Axis >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_cartesian_dispatcher.html", null ],
     [ "dpnp::backend::ext::vm::CeilContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ceil_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::CeilOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ceil_output_type.html", null ],
+    [ "dpnp::backend::ext::vm::ConjContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_conj_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::ConjOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_conj_output_type.html", null ],
     [ "std::conjunction", null, [
       [ "are_same< T, Ts >", "structare__same.html", null ]
     ] ],
