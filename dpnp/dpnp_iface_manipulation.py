@@ -934,11 +934,16 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     )
 
 
-def swapaxes(x1, axis1, axis2):
+def swapaxes(x, axis1, axis2):
     """
     Interchange two axes of an array.
 
     For full documentation refer to :obj:`numpy.swapaxes`.
+
+    Returns
+    -------
+    dpnp.ndarray
+        An array with with swapped axes.
 
     Limitations
     -----------
@@ -947,6 +952,18 @@ def swapaxes(x1, axis1, axis2):
     Parameter ``axis1`` is limited by ``axis1 < x1.ndim``.
     Parameter ``axis2`` is limited by ``axis2 < x1.ndim``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Limitations
+    -----------
+    Parameters `x` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
+
+    Notes
+    -----
+    If `x` has rank (i.e., number of dimensions) `N`,
+    a valid `axis` must be in the half-open interval `[-N, N)`.
 
     Examples
     --------
@@ -960,24 +977,15 @@ def swapaxes(x1, axis1, axis2):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axis1 >= x1_desc.ndim:
-            pass
-        elif axis2 >= x1_desc.ndim:
-            pass
-        else:
-            # 'do nothing' pattern for transpose()
-            input_permute = [i for i in range(x1.ndim)]
-            # swap axes
-            input_permute[axis1], input_permute[axis2] = (
-                input_permute[axis2],
-                input_permute[axis1],
-            )
+    if not dpnp.is_supported_array_type(x):
+        raise TypeError(
+            f"An array must be any of supported type, but got {type(x)}"
+        )
 
-            return transpose(x1_desc.get_pyobj(), axes=input_permute)
-
-    return call_origin(numpy.swapaxes, x1, axis1, axis2)
+    dpt_array = dpnp.get_usm_ndarray(x)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.swapaxes(dpt_array, axis1=axis1, axis2=axis2)
+    )
 
 
 def transpose(a, axes=None):

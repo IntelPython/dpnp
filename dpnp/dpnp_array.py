@@ -1059,7 +1059,14 @@ class dpnp_array:
             where=where,
         )
 
-    # 'swapaxes',
+    def swapaxes(self, axis1, axis2):
+        """
+        Interchange two axes of an array.
+
+        For full documentation refer to :obj:`numpy.swapaxes`.
+        """
+
+        return dpnp.swapaxes(self, axis1=axis1, axis2=axis2)
 
     def take(self, indices, /, *, axis=None, out=None, mode="wrap"):
         """
