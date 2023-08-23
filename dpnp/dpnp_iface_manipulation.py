@@ -229,10 +229,8 @@ def broadcast_to(array, /, shape, subok=False):
 
     if subok is not False:
         pass
-    elif isinstance(array, dpnp_array) or isinstance(array, dpt.usm_ndarray):
-        dpt_array = (
-            array.get_array() if isinstance(array, dpnp_array) else array
-        )
+    elif dpnp.is_supported_array_type(array):
+        dpt_array = dpnp.get_usm_ndarray(array)
         new_array = dpt.broadcast_to(dpt_array, shape)
         return dpnp_array._create_from_usm_ndarray(new_array)
 
