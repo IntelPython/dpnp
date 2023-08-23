@@ -58,9 +58,11 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_floor_divide,
     dpnp_multiply,
     dpnp_negative,
+    dpnp_proj,
     dpnp_remainder,
     dpnp_round,
     dpnp_sign,
+    dpnp_signbit,
     dpnp_subtract,
     dpnp_trunc,
 )
@@ -101,10 +103,12 @@ __all__ = [
     "negative",
     "power",
     "prod",
+    "proj",
     "remainder",
     "rint",
     "round",
     "sign",
+    "signbit",
     "subtract",
     "sum",
     "trapz",
@@ -1562,6 +1566,64 @@ def negative(
     )
 
 
+def proj(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Returns the projection of a number onto the Riemann sphere.
+
+    For all infinite complex numbers (including the cases where one component is infinite and the other is `NaN`),
+    the function returns `(inf, 0.0)` or `(inf, -0.0)`.
+    For finite complex numbers, the input is returned.
+    All real-valued numbers are treated as complex numbers with positive zero imaginary part.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+    The projection of each element of `x`.
+
+    Limitations
+    -----------
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.abs` : Returns the magnitude of a complex number, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.proj(np.array([1, -2.3, 2.1-1.7j]))
+    array([ 1. +0.j, -2.3+0.j,  2.1-1.7.j])
+
+    >>> np.proj(np.array([complex(1,np.inf), complex(1,-np.inf), complex(np.inf,-1),]))
+    array([inf+0.j, inf-0.j, inf-0.j])
+    """
+
+    return check_nd_call_func(
+        None,
+        dpnp_proj,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
+
+
 def power(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     """
     First array elements raised to powers from second array, element-wise.
@@ -1931,6 +1993,10 @@ def sign(
     Input array data types are limited by supported DPNP :ref:`Data types`.
     However, if the input array data type is complex, the function will be executed sequentially on CPU.
 
+    See Also
+    --------
+    :obj:`dpnp.signbit` : Returns element-wise `True` where signbit is set (less than zero).
+
     Examples
     --------
     >>> import dpnp as np
@@ -1966,6 +2032,62 @@ def sign(
             subok=subok,
             **kwargs,
         )
+
+
+def signbit(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Returns element-wise `True` where signbit is set (less than zero).
+
+    For full documentation refer to :obj:`numpy.signbit`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+    A boolean array with indication of the sign of each element of `x`.
+
+    Limitations
+    -----------
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported real-valued data types.
+
+    See Also
+    --------
+    :obj:`dpnp.sign` : Returns an element-wise indication of the sign of a number.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.signbit(np.array([-1.2]))
+    array([True])
+    >>> np.signbit(np.array([1, -2.3, 2.1]))
+    array([False,  True, False])
+
+    """
+
+    return check_nd_call_func(
+        numpy.signbit,
+        dpnp_signbit,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def subtract(
