@@ -118,6 +118,9 @@
    .. automethod:: sum
 
 
+   .. automethod:: swapaxes
+
+
    .. automethod:: take
 
 

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.expand_dims &mdash; Data Parallel Extension for NumPy 0.12.2dev0+64.g982dda33c documentation</title>
+  <title>dpnp.expand_dims &mdash; Data Parallel Extension for NumPy 0.12.2dev1+4.g6119c467e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=b6c0f31d"></script>
+        <script src="../../_static/documentation_options.js?v=fc22db2f"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+64.g982dda33c
+                0.12.2dev1+4.g6119c467e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -130,11 +130,34 @@
 <h1>dpnp.expand_dims<a class="headerlink" href="#dpnp-expand-dims" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.expand_dims">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">expand_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#expand_dims"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.expand_dims" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">expand_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#expand_dims"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.expand_dims" title="Link to this definition"></a></dt>
 <dd><p>Expand the shape of an array.</p>
 <p>Insert a new axis that will appear at the <cite>axis</cite> position in the expanded
 array shape.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.expand_dims.html#numpy.expand_dims" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.expand_dims</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An array with the number of dimensions increased.
+A view is returned whenever possible.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dpnp.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Limitations</p>
+<p>Parameters <cite>a</cite> is supported either as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
+or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
+Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.
+Otherwise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> exception will be raised.</p>
+<p class="rubric">Notes</p>
+<p>If <cite>a</cite> has rank (i.e, number of dimensions) <cite>N</cite>, a valid <cite>axis</cite> must reside
+in the closed-interval <cite>[-N-1, N]</cite>.
+If provided a negative <cite>axis</cite>, the <cite>axis</cite> position at which to insert a
+singleton dimension is computed as <cite>N + axis + 1</cite>.
+Hence, if provided <cite>-1</cite>, the resolved axis position is <cite>N</cite> (i.e.,
+a singleton dimension must be appended to the input array <cite>a</cite>).
+If provided <cite>-N-1</cite>, the resolved axis position is <cite>0</cite> (i.e., a
+singleton dimension is prepended to the input array <cite>a</cite>).</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -143,7 +166,7 @@ array shape.</p>
 <dt><a class="reference internal" href="dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a></dt><dd><p>Insert, remove, and combine dimensions, and resize existing ones</p>
 </dd>
 </dl>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.indexing</span></code>, <a class="reference internal" href="dpnp.atleast_1d.html#dpnp.atleast_1d" title="dpnp.atleast_1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_1d</span></code></a>, <a class="reference internal" href="dpnp.atleast_2d.html#dpnp.atleast_2d" title="dpnp.atleast_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_2d</span></code></a>, <a class="reference internal" href="dpnp.atleast_3d.html#dpnp.atleast_3d" title="dpnp.atleast_3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_3d</span></code></a></p>
+<p><a class="reference internal" href="dpnp.atleast_1d.html#dpnp.atleast_1d" title="dpnp.atleast_1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_1d</span></code></a>, <a class="reference internal" href="dpnp.atleast_2d.html#dpnp.atleast_2d" title="dpnp.atleast_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_2d</span></code></a>, <a class="reference internal" href="dpnp.atleast_3d.html#dpnp.atleast_3d" title="dpnp.atleast_3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_3d</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
