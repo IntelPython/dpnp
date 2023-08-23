@@ -4,6 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -34,7 +35,8 @@ class TestRound(unittest.TestCase):
 
     @testing.numpy_cupy_array_equal()
     def test_round_out(self, xp):
-        a = testing.shaped_random(self.shape, xp, scale=100, dtype="d")
+        dtype = "d" if has_support_aspect64() else "f"
+        a = testing.shaped_random(self.shape, xp, scale=100, dtype=dtype)
         out = xp.empty_like(a)
         a.round(self.decimals, out)
         return out
