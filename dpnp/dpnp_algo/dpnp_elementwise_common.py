@@ -27,8 +27,6 @@
 # *****************************************************************************
 
 
-import dpctl
-import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 from dpctl.tensor._elementwise_common import (
     BinaryElementwiseFunc,
@@ -538,32 +536,11 @@ def _call_divide(src1, src2, dst, sycl_queue, depends=None):
     return ti._divide(src1, src2, dst, sycl_queue, depends)
 
 
-def _call_divide_inplace(lhs, rhs, sycl_queue, depends=None):
-    """In place workaround until dpctl.tensor provides the functionality."""
-
-    if depends is None:
-        depends = []
-
-    # allocate temporary memory for out array
-    out = dpt.empty_like(lhs, dtype=dpnp.result_type(lhs.dtype, rhs.dtype))
-
-    # call a general callback
-    div_ht_, div_ev_ = _call_divide(lhs, rhs, out, sycl_queue, depends)
-
-    # store the result into left input array and return events
-    cp_ht_, cp_ev_ = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=out, dst=lhs, sycl_queue=sycl_queue, depends=[div_ev_]
-    )
-    dpctl.SyclEvent.wait_for([div_ht_])
-    return (cp_ht_, cp_ev_)
-
-
 divide_func = BinaryElementwiseFunc(
     "divide",
     ti._divide_result_type,
     _call_divide,
     _divide_docstring_,
-    _call_divide_inplace,
 )
 
 

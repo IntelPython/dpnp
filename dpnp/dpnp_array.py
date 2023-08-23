@@ -188,7 +188,10 @@ class dpnp_array:
     def __float__(self):
         return self._array_obj.__float__()
 
-    # '__floordiv__',
+    def __floordiv__(self, other):
+        """Return self//value."""
+        return dpnp.floor_divide(self, other)
+
     # '__format__',
 
     def __ge__(self, other):
@@ -227,7 +230,10 @@ class dpnp_array:
         dpnp.bitwise_and(self, other, out=self)
         return self
 
-    # '__ifloordiv__',
+    def __ifloordiv__(self, other):
+        """Return self//=value."""
+        dpnp.floor_divide(self, other, out=self)
+        return self
 
     def __ilshift__(self, other):
         """Return self<<=value."""
@@ -235,7 +241,11 @@ class dpnp_array:
         return self
 
     # '__imatmul__',
-    # '__imod__',
+
+    def __imod__(self, other):
+        """Return self%=value."""
+        dpnp.remainder(self, other, out=self)
+        return self
 
     def __imul__(self, other):
         """Return self*=value."""
@@ -345,7 +355,8 @@ class dpnp_array:
     def __repr__(self):
         return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
 
-    # '__rfloordiv__',
+    def __rfloordiv__(self, other):
+        return dpnp.floor_divide(self, other)
 
     def __rlshift__(self, other):
         return dpnp.left_shift(other, self)
