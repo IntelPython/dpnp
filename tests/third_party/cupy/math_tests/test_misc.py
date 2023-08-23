@@ -193,6 +193,7 @@ class TestMisc:
     def test_sign(self):
         self.check_unary("sign", no_bool=True)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_sign_negative(self):
         self.check_unary_negative("sign", no_bool=True)
 

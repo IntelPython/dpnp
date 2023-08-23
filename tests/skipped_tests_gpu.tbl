@@ -27,9 +27,7 @@ tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nancumprod-data11]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nancumsum-data12]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nanprod-data13]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nansum-data14]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-negative-data15]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-prod-data16]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-sign-data17]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-sum-data18]
 tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-trapz-data19]
 
@@ -676,7 +674,6 @@ tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_signbit
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip_min_max_none
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip4
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_absolute_negative
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_sign_negative
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_maximum_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_minimum_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fmax_nan

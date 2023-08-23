@@ -1220,6 +1220,8 @@ tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_cosh
 tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_sinh
 tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_tanh
 
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_sign_negative
+
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_0_{axis=0, func='nansum', keepdims=True, shape=(2, 3, 4), transpose_axes=True}::test_nansum_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_0_{axis=0, func='nansum', keepdims=True, shape=(2, 3, 4), transpose_axes=True}::test_nansum_axis_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_1_{axis=0, func='nansum', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_all

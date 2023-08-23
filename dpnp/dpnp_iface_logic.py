@@ -95,8 +95,8 @@ def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
     Returns
     -------
     dpnp.ndarray
-        An array with a data type of `bool`
-        containing the results of the logical AND reduction.
+    An array with a data type of `bool`
+    containing the results of the logical AND reduction.
 
     Limitations
     -----------
@@ -160,8 +160,8 @@ def allclose(x1, x2, rtol=1.0e-5, atol=1.0e-8, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the functions will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -276,7 +276,7 @@ def equal(
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+    Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -352,7 +352,7 @@ def greater(
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+    Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -422,7 +422,7 @@ def greater_equal(
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+    Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -480,8 +480,8 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
 
     Limitations
     -----------
-    ``x2`` is supported to be integer if ``x1`` is :obj:`dpnp.ndarray` or
-    at least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
+    `x2` is supported to be integer if `x1` is :class:`dpnp.ndarray` or
+    at least either `x1` or `x2` should be as :class:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -678,7 +678,7 @@ def less(
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+    Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -748,7 +748,7 @@ def less_equal(
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+    Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -818,8 +818,8 @@ def logical_and(
     Returns
     -------
     out : dpnp.ndarray
-        Boolean result of the logical AND operation applied to the elements
-        of `x1` and `x2`; the shape is determined by broadcasting.
+    Boolean result of the logical AND operation applied to the elements
+    of `x1` and `x2`; the shape is determined by broadcasting.
 
     Limitations
     -----------
@@ -891,8 +891,8 @@ def logical_not(
     Returns
     -------
     out : dpnp.ndarray
-        Boolean result with the same shape as `x` of the NOT operation
-        on elements of `x`.
+    Boolean result with the same shape as `x` of the NOT operation
+    on elements of `x`.
 
     Limitations
     -----------
@@ -953,8 +953,8 @@ def logical_or(
     Returns
     -------
     out : dpnp.ndarray
-        Boolean result of the logical OR operation applied to the elements
-        of `x1` and `x2`; the shape is determined by broadcasting.
+    Boolean result of the logical OR operation applied to the elements
+    of `x1` and `x2`; the shape is determined by broadcasting.
 
     Limitations
     -----------
@@ -1027,8 +1027,8 @@ def logical_xor(
     Returns
     -------
     out : dpnp.ndarray
-        Boolean result of the logical XOR operation applied to the elements
-        of `x1` and `x2`; the shape is determined by broadcasting.
+    Boolean result of the logical XOR operation applied to the elements
+    of `x1` and `x2`; the shape is determined by broadcasting.
 
     Limitations
     -----------
