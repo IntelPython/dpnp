@@ -512,8 +512,8 @@ def moveaxis(a, source, destination):
     -----------
     Parameters `a` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
 
     See Also
     --------
@@ -531,13 +531,10 @@ def moveaxis(a, source, destination):
 
     """
 
-    if isinstance(a, dpnp_array) or isinstance(a, dpt.usm_ndarray):
-        dpt_array = a.get_array() if isinstance(a, dpnp_array) else a
-        return dpnp_array._create_from_usm_ndarray(
-            dpt.moveaxis(dpt_array, source, destination)
-        )
-
-    return call_origin(numpy.moveaxis, a, source, destination)
+    dpt_array = dpnp.get_usm_ndarray(a)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.moveaxis(dpt_array, source, destination)
+    )
 
 
 def ravel(a, order="C"):
