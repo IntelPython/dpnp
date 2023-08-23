@@ -840,7 +840,8 @@ def squeeze(a, /, axis=None):
     -----------
     Parameters `a` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
 
     Examples
     --------
@@ -861,11 +862,10 @@ def squeeze(a, /, axis=None):
 
     """
 
-    if isinstance(a, dpnp_array) or isinstance(a, dpt.usm_ndarray):
-        dpt_array = a.get_array() if isinstance(a, dpnp_array) else a
-        return dpnp_array._create_from_usm_ndarray(dpt.squeeze(dpt_array, axis))
-
-    return call_origin(numpy.squeeze, a, axis)
+    dpt_array = dpnp.get_usm_ndarray(a)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.squeeze(dpt_array, axis=axis)
+    )
 
 
 def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
