@@ -39,7 +39,6 @@ __all__ += [
     "dpnp_atleast_2d",
     "dpnp_atleast_3d",
     "dpnp_repeat",
-    "dpnp_reshape",
 ]
 
 
@@ -135,17 +134,3 @@ cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, a
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_reshape(utils.dpnp_descriptor array1, newshape, order="C"):
-    # return dpnp.get_dpnp_descriptor(dpctl.tensor.usm_ndarray(newshape, dtype=numpy.dtype(array1.dtype).name, buffer=array1.get_pyobj()))
-    # return dpnp.get_dpnp_descriptor(dpctl.tensor.reshape(array1.get_pyobj(), newshape))
-    array1_obj = array1.get_array()
-    array_obj = dpctl.tensor.reshape(array1_obj, newshape, order=order)
-    return dpnp.get_dpnp_descriptor(dpnp_array(array_obj.shape,
-                                               buffer=array_obj,
-                                               order=order,
-                                               device=array1_obj.sycl_device,
-                                               usm_type=array1_obj.usm_type,
-                                               sycl_queue=array1_obj.sycl_queue),
-                                    copy_when_nondefault_queue=False)
