@@ -27,6 +27,8 @@
 # *****************************************************************************
 
 
+from sys import platform
+
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
@@ -1616,8 +1618,10 @@ def dpnp_sign(x, out=None, order="K"):
 
 _power_docstring_ = """
 power(x1, x2, out=None, order="K")
+
 Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
 `x1` with the respective element `x2_i` of the input array `x2`.
+
 Args:
     x1 (dpnp.ndarray):
         First input array, expected to have numeric data type.
@@ -1637,34 +1641,40 @@ Returns:
 """
 
 
+def _call_pow(src1, src2, dst, sycl_queue, depends=None):
+    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    # TODO: remove this check when OneMKL is fixed on Windows
+    is_win = platform.startswith("win")
+
+    if not is_win and vmi._mkl_pow_to_call(sycl_queue, src1, src2, dst):
+        # call pybind11 extension for pow() function from OneMKL VM
+        return vmi._pow(sycl_queue, src1, src2, dst, depends)
+    return ti._pow(src1, src2, dst, sycl_queue, depends)
+
+
+pow_func = BinaryElementwiseFunc(
+    "pow", ti._pow_result_type, _call_pow, _power_docstring_
+)
+
+
 def dpnp_power(x1, x2, out=None, order="K"):
     """
     Invokes pow() function from pybind11 extension of OneMKL VM if possible.
 
     Otherwise fully relies on dpctl.tensor implementation for pow() function.
-
     """
-
-    def _call_pow(src1, src2, dst, sycl_queue, depends=None):
-        """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
-
-        if depends is None:
-            depends = []
-
-        if vmi._mkl_pow_to_call(sycl_queue, src1, src2, dst):
-            # call pybind11 extension for pow() function from OneMKL VM
-            return vmi._pow(sycl_queue, src1, src2, dst, depends)
-        return ti._pow(src1, src2, dst, sycl_queue, depends)
-
     # dpctl.tensor only works with usm_ndarray or scalar
     x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    func = BinaryElementwiseFunc(
-        "pow", ti._pow_result_type, _call_pow, _power_docstring_
+    res_usm = pow_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    res_usm = func(x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
