@@ -985,10 +985,7 @@ class TestPower:
 
             # allocate new out with expected type
             if dtype == dpnp.bool:
-                if is_win_platform():
-                    out_dtype = dpnp.int32
-                else:
-                    out_dtype = dpnp.int64
+                out_dtype = numpy.int8
             else:
                 out_dtype = dtype
             dp_out = dpnp.empty(size, dtype=out_dtype)

@@ -135,20 +135,6 @@ class ArithmeticBinaryBase:
         dtype1 = np1.dtype
         dtype2 = np2.dtype
 
-        if self.name == "power":
-            # TODO(niboshi): Fix this: power(0, 1j)
-            #     numpy => 1+0j
-            #     cupy => 0j
-            if dtype2 in complex_types and (np1 == 0).any():
-                return xp.array(True)
-
-            # TODO(niboshi): Fix this: xp.power(0j, 0)
-            #     numpy => 1+0j
-            #     cupy => 0j
-            c_arg1 = dtype1 in complex_types
-            if c_arg1 and (np1 == 0j).any() and (np2 == 0).any():
-                return xp.array(True)
-
         # TODO(niboshi): Fix this: xp.add(0j, xp.array([2.], 'f')).dtype
         #     numpy => complex64
         #     cupy => complex128
@@ -193,25 +179,6 @@ class ArithmeticBinaryBase:
             is_int_float = lambda _x, _y: numpy.issubdtype(
                 _x, numpy.integer
             ) and numpy.issubdtype(_y, numpy.floating)
-
-            if (
-                self.name == "power"
-                and not testing.helper.has_support_aspect64()
-            ):
-                if (
-                    (is_array_arg1 and is_array_arg2)
-                    or (is_array_arg1 and not is_array_arg2)
-                    or (is_array_arg2 and not is_array_arg1)
-                ):
-                    # If both inputs are arrays where one is of floating type and another - integer or
-                    # if one input is an array of floating type and another - an integer or floating scalar
-                    # NumPy will return an output array of always "float64" type,
-                    # while DPNP will return the array of float32 or float64 depending on the capability of
-                    # the device.
-                    if is_int_float(dtype1, dtype2) or is_int_float(
-                        dtype2, dtype1
-                    ):
-                        y = y.astype(numpy.float32)
 
         return y
 
