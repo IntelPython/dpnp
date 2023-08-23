@@ -35,12 +35,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_ABSOLUTE
         DPNP_FN_ABSOLUTE_EXT
-        DPNP_FN_ALL
-        DPNP_FN_ALL_EXT
         DPNP_FN_ALLCLOSE
         DPNP_FN_ALLCLOSE_EXT
-        DPNP_FN_ANY
-        DPNP_FN_ANY_EXT
         DPNP_FN_ARANGE
         DPNP_FN_ARCCOS
         DPNP_FN_ARCCOS_EXT
@@ -66,28 +62,16 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_AROUND_EXT
         DPNP_FN_ASTYPE
         DPNP_FN_ASTYPE_EXT
-        DPNP_FN_BITWISE_AND
-        DPNP_FN_BITWISE_AND_EXT
-        DPNP_FN_BITWISE_OR
-        DPNP_FN_BITWISE_OR_EXT
-        DPNP_FN_BITWISE_XOR
-        DPNP_FN_BITWISE_XOR_EXT
         DPNP_FN_CBRT
         DPNP_FN_CBRT_EXT
-        DPNP_FN_CEIL
-        DPNP_FN_CEIL_EXT
         DPNP_FN_CHOLESKY
         DPNP_FN_CHOLESKY_EXT
         DPNP_FN_CHOOSE
         DPNP_FN_CHOOSE_EXT
-        DPNP_FN_CONJIGUATE
-        DPNP_FN_CONJIGUATE_EXT
         DPNP_FN_COPY
         DPNP_FN_COPY_EXT
         DPNP_FN_COPYSIGN
         DPNP_FN_COPYSIGN_EXT
-        DPNP_FN_COPYTO
-        DPNP_FN_COPYTO_EXT
         DPNP_FN_CORRELATE
         DPNP_FN_CORRELATE_EXT
         DPNP_FN_COSH
@@ -138,8 +122,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FILL_DIAGONAL_EXT
         DPNP_FN_FLATTEN
         DPNP_FN_FLATTEN_EXT
-        DPNP_FN_FLOOR
-        DPNP_FN_FLOOR_EXT
         DPNP_FN_FMOD
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
@@ -152,12 +134,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_INITVAL_EXT
         DPNP_FN_INV
         DPNP_FN_INV_EXT
-        DPNP_FN_INVERT
-        DPNP_FN_INVERT_EXT
         DPNP_FN_KRON
         DPNP_FN_KRON_EXT
-        DPNP_FN_LEFT_SHIFT
-        DPNP_FN_LEFT_SHIFT_EXT
         DPNP_FN_LOG10
         DPNP_FN_LOG10_EXT
         DPNP_FN_LOG1P
@@ -182,8 +160,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MODF_EXT
         DPNP_FN_NANVAR
         DPNP_FN_NANVAR_EXT
-        DPNP_FN_NEGATIVE
-        DPNP_FN_NEGATIVE_EXT
         DPNP_FN_NONZERO
         DPNP_FN_ONES
         DPNP_FN_ONES_LIKE
@@ -200,14 +176,10 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_QR_EXT
         DPNP_FN_RADIANS
         DPNP_FN_RADIANS_EXT
-        DPNP_FN_REMAINDER
-        DPNP_FN_REMAINDER_EXT
         DPNP_FN_RECIP
         DPNP_FN_RECIP_EXT
         DPNP_FN_REPEAT
         DPNP_FN_REPEAT_EXT
-        DPNP_FN_RIGHT_SHIFT
-        DPNP_FN_RIGHT_SHIFT_EXT
         DPNP_FN_RNG_BETA
         DPNP_FN_RNG_BETA_EXT
         DPNP_FN_RNG_BINOMIAL
@@ -281,8 +253,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_ZIPF_EXT
         DPNP_FN_SEARCHSORTED
         DPNP_FN_SEARCHSORTED_EXT
-        DPNP_FN_SIGN
-        DPNP_FN_SIGN_EXT
         DPNP_FN_SINH
         DPNP_FN_SINH_EXT
         DPNP_FN_SORT
@@ -293,8 +263,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SUM_EXT
         DPNP_FN_SVD
         DPNP_FN_SVD_EXT
-        DPNP_FN_TAKE
-        DPNP_FN_TAKE_EXT
         DPNP_FN_TAN
         DPNP_FN_TAN_EXT
         DPNP_FN_TANH
@@ -310,8 +278,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TRIL_EXT
         DPNP_FN_TRIU
         DPNP_FN_TRIU_EXT
-        DPNP_FN_TRUNC
-        DPNP_FN_TRUNC_EXT
         DPNP_FN_VANDER
         DPNP_FN_VANDER_EXT
         DPNP_FN_VAR
@@ -351,7 +317,6 @@ cdef extern from "constants.hpp":
 
 cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
-    size_t dpnp_queue_is_cpu_c() except +
 
     char * dpnp_memory_alloc_c(size_t size_in_bytes) except +
     void dpnp_memory_free_c(void * ptr)
@@ -426,37 +391,6 @@ cdef dpnp_DPNPFuncType_to_dtype(size_t type)
 
 
 """
-Bitwise functions
-"""
-cpdef dpnp_descriptor dpnp_bitwise_and(dpnp_descriptor x1_obj,
-                                       dpnp_descriptor x2_obj,
-                                       object dtype=*,
-                                       dpnp_descriptor out=*,
-                                       object where=*)
-cpdef dpnp_descriptor dpnp_bitwise_or(dpnp_descriptor x1_obj,
-                                      dpnp_descriptor x2_obj,
-                                      object dtype=*,
-                                      dpnp_descriptor out=*,
-                                      object where=*)
-cpdef dpnp_descriptor dpnp_bitwise_xor(dpnp_descriptor x1_obj,
-                                       dpnp_descriptor x2_obj,
-                                       object dtype=*,
-                                       dpnp_descriptor out=*,
-                                       object where=*)
-cpdef dpnp_descriptor dpnp_invert(dpnp_descriptor x1)
-cpdef dpnp_descriptor dpnp_left_shift(dpnp_descriptor x1_obj,
-                                      dpnp_descriptor x2_obj,
-                                      object dtype=*,
-                                      dpnp_descriptor out=*,
-                                      object where=*)
-cpdef dpnp_descriptor dpnp_right_shift(dpnp_descriptor x1_obj,
-                                       dpnp_descriptor x2_obj,
-                                       object dtype=*,
-                                       dpnp_descriptor out=*,
-                                       object where=*)
-
-
-"""
 Logic functions
 """
 cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input2,
@@ -487,10 +421,6 @@ cpdef dpnp_descriptor dpnp_maximum(dpnp_descriptor x1_obj, dpnp_descriptor x2_ob
                                    dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_minimum(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
-cpdef dpnp_descriptor dpnp_negative(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_remainder(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                     dpnp_descriptor out=*, object where=*)
-
 
 """
 Array manipulation routines

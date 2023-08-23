@@ -4,7 +4,7 @@
 API Reference
 *************
 
-This is the official DPNP API reference.
+API reference of the Data Parallel Extension for NumPy*
 
 ----
 
@@ -30,6 +30,6 @@ This is the official DPNP API reference.
    testing
    prof
    environment
-   difference
+   dtypes_table
    comparison
    misc

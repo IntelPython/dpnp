@@ -1,3 +1,5 @@
+.. _ufunc:
+
 Universal Functions (ufunc)
 ===========================
 
@@ -120,9 +122,12 @@ Floating functions
    dpnp.isfinite
    dpnp.isinf
    dpnp.isnan
+   dpnp.isnat
+   dpnp.fabs
    dpnp.signbit
    dpnp.copysign
    dpnp.nextafter
+   dpnp.spacing
    dpnp.modf
    dpnp.ldexp
    dpnp.frexp

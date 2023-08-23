@@ -40,10 +40,12 @@ it contains:
 """
 
 
+import dpctl.tensor as dpt
 import numpy
 
 import dpnp
 from dpnp.dpnp_algo import *
+from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
 
 from .dpnp_algo.dpnp_elementwise_common import (
@@ -51,6 +53,9 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_equal,
     dpnp_greater,
     dpnp_greater_equal,
+    dpnp_isfinite,
+    dpnp_isinf,
+    dpnp_isnan,
     dpnp_less,
     dpnp_less_equal,
     dpnp_logical_and,
@@ -81,24 +86,29 @@ __all__ = [
 ]
 
 
-def all(x1, /, axis=None, out=None, keepdims=False, *, where=True):
+def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
     """
     Test whether all array elements along a given axis evaluate to True.
 
     For full documentation refer to :obj:`numpy.all`.
 
+    Returns
+    -------
+    dpnp.ndarray
+    An array with a data type of `bool`
+    containing the results of the logical AND reduction.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `x` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `out` and `where` are supported with default value.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter `axis` is supported only with default value `None`.
-    Parameter `out` is supported only with default value `None`.
-    Parameter `keepdims` is supported only with default value `False`.
-    Parameter `where` is supported only with default value `True`.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
+    :obj:`dpnp.ndarray.all` : equivalent method
     :obj:`dpnp.any` : Test whether any element along a given axis evaluates to True.
 
     Notes
@@ -108,35 +118,37 @@ def all(x1, /, axis=None, out=None, keepdims=False, *, where=True):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> x = dp.array([[True, False], [True, True]])
-    >>> dp.all(x)
-    False
-    >>> x2 = dp.array([-1, 4, 5])
-    >>> dp.all(x2)
-    True
-    >>> x3 = dp.array([1.0, dp.nan])
-    >>> dp.all(x3)
-    True
+    >>> import dpnp as np
+    >>> x = np.array([[True, False], [True, True]])
+    >>> np.all(x)
+    array(False)
+
+    >>> np.all(x, axis=0)
+    array([ True, False])
+
+    >>> x2 = np.array([-1, 4, 5])
+    >>> np.all(x2)
+    array(True)
+
+    >>> x3 = np.array([1.0, np.nan])
+    >>> np.all(x3)
+    array(True)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axis is not None:
-            pass
-        elif out is not None:
-            pass
-        elif keepdims is not False:
+    if dpnp.is_supported_array_type(x):
+        if out is not None:
             pass
         elif where is not True:
             pass
         else:
-            result_obj = dpnp_all(x1_desc).get_pyobj()
-            return dpnp.convert_single_elem_array_to_scalar(result_obj)
+            dpt_array = dpnp.get_usm_ndarray(x)
+            return dpnp_array._create_from_usm_ndarray(
+                dpt.all(dpt_array, axis=axis, keepdims=keepdims)
+            )
 
     return call_origin(
-        numpy.all, x1, axis=axis, out=out, keepdims=keepdims, where=where
+        numpy.all, x, axis=axis, out=out, keepdims=keepdims, where=where
     )
 
 
@@ -148,8 +160,8 @@ def allclose(x1, x2, rtol=1.0e-5, atol=1.0e-8, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the functions will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -178,24 +190,29 @@ def allclose(x1, x2, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     return call_origin(numpy.allclose, x1, x2, rtol=rtol, atol=atol, **kwargs)
 
 
-def any(x1, /, axis=None, out=None, keepdims=False, *, where=True):
+def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
     """
     Test whether any array element along a given axis evaluates to True.
 
     For full documentation refer to :obj:`numpy.any`.
 
+    Returns
+    -------
+    dpnp.ndarray
+        An array with a data type of `bool`
+        containing the results of the logical OR reduction.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `x` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `out` and `where` are supported with default value.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter `axis` is supported only with default value `None`.
-    Parameter `out` is supported only with default value `None`.
-    Parameter `keepdims` is supported only with default value `False`.
-    Parameter `where` is supported only with default value `True`.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
+    :obj:`dpnp.ndarray.any` : equivalent method
     :obj:`dpnp.all` : Test whether all elements along a given axis evaluate to True.
 
     Notes
@@ -205,35 +222,37 @@ def any(x1, /, axis=None, out=None, keepdims=False, *, where=True):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> x = dp.array([[True, False], [True, True]])
-    >>> dp.any(x)
-    True
-    >>> x2 = dp.array([0, 0, 0])
-    >>> dp.any(x2)
-    False
-    >>> x3 = dp.array([1.0, dp.nan])
-    >>> dp.any(x3)
-    True
+    >>> import dpnp as np
+    >>> x = np.array([[True, False], [True, True]])
+    >>> np.any(x)
+    array(True)
+
+    >>> np.any(x, axis=0)
+    array([ True,  True])
+
+    >>> x2 = np.array([0, 0, 0])
+    >>> np.any(x2)
+    array(False)
+
+    >>> x3 = np.array([1.0, np.nan])
+    >>> np.any(x3)
+    array(True)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axis is not None:
-            pass
-        elif out is not None:
-            pass
-        elif keepdims is not False:
+    if dpnp.is_supported_array_type(x):
+        if out is not None:
             pass
         elif where is not True:
             pass
         else:
-            result_obj = dpnp_any(x1_desc).get_pyobj()
-            return dpnp.convert_single_elem_array_to_scalar(result_obj)
+            dpt_array = dpnp.get_usm_ndarray(x)
+            return dpnp_array._create_from_usm_ndarray(
+                dpt.any(dpt_array, axis=axis, keepdims=keepdims)
+            )
 
     return call_origin(
-        numpy.any, x1, axis=axis, out=out, keepdims=keepdims, where=where
+        numpy.any, x, axis=axis, out=out, keepdims=keepdims, where=where
     )
 
 
@@ -257,7 +276,7 @@ def equal(
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+    Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -333,7 +352,7 @@ def greater(
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+    Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -403,7 +422,7 @@ def greater_equal(
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+    Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -461,8 +480,8 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
 
     Limitations
     -----------
-    ``x2`` is supported to be integer if ``x1`` is :obj:`dpnp.ndarray` or
-    at least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
+    `x2` is supported to be integer if `x1` is :class:`dpnp.ndarray` or
+    at least either `x1` or `x2` should be as :class:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -492,7 +511,9 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     )
 
 
-def isfinite(x1, out=None, **kwargs):
+def isfinite(
+    x, /, out=None, *, where=True, order="K", dtype=None, subok=True, **kwargs
+):
     """
     Test element-wise for finiteness (not infinity or not Not a Number).
 
@@ -500,11 +521,10 @@ def isfinite(x1, out=None, **kwargs):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
@@ -525,23 +545,27 @@ def isfinite(x1, out=None, **kwargs):
     --------
     >>> import dpnp as np
     >>> x = np.array([-np.inf, 0., np.inf])
-    >>> out = np.isfinite(x)
-    >>> [i for i in out]
-    [False, True, False]
+    >>> np.isfinite(x)
+    array([False,  True, False])
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # if x1_desc and kwargs:
-    #     if out is not None:
-    #         pass
-    #     else:
-    #         return dpnp_isfinite(x1_desc).get_pyobj()
+    return check_nd_call_func(
+        numpy.isfinite,
+        dpnp_isfinite,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
-    return call_origin(numpy.isfinite, x1, out, **kwargs)
 
-
-def isinf(x1, out=None, **kwargs):
+def isinf(
+    x, /, out=None, *, where=True, order="K", dtype=None, subok=True, **kwargs
+):
     """
     Test element-wise for positive or negative infinity.
 
@@ -549,11 +573,10 @@ def isinf(x1, out=None, **kwargs):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
@@ -569,23 +592,27 @@ def isinf(x1, out=None, **kwargs):
     --------
     >>> import dpnp as np
     >>> x = np.array([-np.inf, 0., np.inf])
-    >>> out = np.isinf(x)
-    >>> [i for i in out]
-    [True, False, True]
+    >>> np.isinf(x)
+    array([ True, False,  True])
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # if x1_desc and kwargs:
-    #     if out is not None:
-    #         pass
-    #     else:
-    #         return dpnp_isinf(x1_desc).get_pyobj()
+    return check_nd_call_func(
+        numpy.isinf,
+        dpnp_isinf,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
-    return call_origin(numpy.isinf, x1, out, **kwargs)
 
-
-def isnan(x1, out=None, **kwargs):
+def isnan(
+    x, /, out=None, *, where=True, order="K", dtype=None, subok=True, **kwargs
+):
     """
     Test element-wise for NaN and return result as a boolean array.
 
@@ -593,11 +620,10 @@ def isnan(x1, out=None, **kwargs):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter ``out`` is supported only with default value ``None``.
-    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
@@ -614,20 +640,22 @@ def isnan(x1, out=None, **kwargs):
     --------
     >>> import dpnp as np
     >>> x = np.array([np.inf, 0., np.nan])
-    >>> out = np.isnan(x)
-    >>> [i for i in out]
-    [False, False, True]
+    >>> np.isnan(x)
+    array([False, False,  True])
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1)
-    # if x1_desc and kwargs:
-    #     if out is not None:
-    #         pass
-    #     else:
-    #         return dpnp_isnan(x1_desc).get_pyobj()
-
-    return call_origin(numpy.isnan, x1, out, **kwargs)
+    return check_nd_call_func(
+        numpy.isnan,
+        dpnp_isnan,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def less(
@@ -650,7 +678,7 @@ def less(
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+    Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -720,7 +748,7 @@ def less_equal(
     Returns
     -------
     out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+    Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -790,8 +818,8 @@ def logical_and(
     Returns
     -------
     out : dpnp.ndarray
-        Boolean result of the logical AND operation applied to the elements
-        of `x1` and `x2`; the shape is determined by broadcasting.
+    Boolean result of the logical AND operation applied to the elements
+    of `x1` and `x2`; the shape is determined by broadcasting.
 
     Limitations
     -----------
@@ -863,8 +891,8 @@ def logical_not(
     Returns
     -------
     out : dpnp.ndarray
-        Boolean result with the same shape as `x` of the NOT operation
-        on elements of `x`.
+    Boolean result with the same shape as `x` of the NOT operation
+    on elements of `x`.
 
     Limitations
     -----------
@@ -925,8 +953,8 @@ def logical_or(
     Returns
     -------
     out : dpnp.ndarray
-        Boolean result of the logical OR operation applied to the elements
-        of `x1` and `x2`; the shape is determined by broadcasting.
+    Boolean result of the logical OR operation applied to the elements
+    of `x1` and `x2`; the shape is determined by broadcasting.
 
     Limitations
     -----------
@@ -999,8 +1027,8 @@ def logical_xor(
     Returns
     -------
     out : dpnp.ndarray
-        Boolean result of the logical XOR operation applied to the elements
-        of `x1` and `x2`; the shape is determined by broadcasting.
+    Boolean result of the logical XOR operation applied to the elements
+    of `x1` and `x2`; the shape is determined by broadcasting.
 
     Limitations
     -----------

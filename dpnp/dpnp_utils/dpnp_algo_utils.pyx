@@ -131,8 +131,8 @@ def call_origin(function, *args, **kwargs):
     if not allow_fallback and config.__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ == 1:
         raise NotImplementedError(f"Requested funtion={function.__name__} with args={args} and kwargs={kwargs} "
                                    "isn't currently supported and would fall back on NumPy implementation. "
-                                   "Define enviroment variable `DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK` to `0` "
-                                   "if the fall back is required to be supported without rasing an exception.")
+                                   "Define environment variable `DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK` to `0` "
+                                   "if the fall back is required to be supported without raising an exception.")
 
     dpnp_inplace = kwargs.pop("dpnp_inplace", False)
     sycl_queue = kwargs.pop("sycl_queue", None)
@@ -663,13 +663,20 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
     return (common_sycl_queue.sycl_device, common_usm_type, common_sycl_queue)
 
 
-cdef (DPNPFuncType, void *) get_ret_type_and_func(x1_obj, DPNPFuncData kernel_data):
-    if dpnp.issubdtype(x1_obj.dtype, dpnp.integer) and not x1_obj.sycl_device.has_aspect_fp64:
+cdef (DPNPFuncType, void *) get_ret_type_and_func(DPNPFuncData kernel_data,
+                                                  cpp_bool has_aspect_fp64):
+    """
+    This function is responsible for determining the appropriate return type
+    and function pointer based on the capability of the allocated result array device.
+    """
+    return_type = kernel_data.return_type
+    func = kernel_data.ptr
+
+    if kernel_data.ptr_no_fp64 != NULL and not has_aspect_fp64:
+
         return_type = kernel_data.return_type_no_fp64
         func = kernel_data.ptr_no_fp64
-    else:
-        return_type = kernel_data.return_type
-        func = kernel_data.ptr
+
     return return_type, func
 
 
