@@ -14,7 +14,8 @@ def _get_hermitian(xp, a, UPLO):
         return xp.tril(a) + xp.tril(a, k=-1).swapaxes(-2, -1).conj()
 
 
-# TODO: remove once all required functionality is supported
+# TODO:
+# remove once dpnp.dot and dpnp.matmul support complex types
 def _wrap_as_numpy_array(xp, a):
     return a.asnumpy() if xp is cupy else a
 
