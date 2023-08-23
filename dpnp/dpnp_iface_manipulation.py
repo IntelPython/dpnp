@@ -75,7 +75,7 @@ __all__ = [
 ]
 
 
-def asfarray(x1, dtype=None):
+def asfarray(a, dtype=None):
     """
     Return an array converted to a float type.
 
@@ -89,18 +89,18 @@ def asfarray(x1, dtype=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
+    if a_desc:
         if dtype is None or not numpy.issubdtype(dtype, dpnp.inexact):
-            dtype = dpnp.default_float_type(sycl_queue=x1.sycl_queue)
+            dtype = dpnp.default_float_type(sycl_queue=a.sycl_queue)
 
         # if type is the same then same object should be returned
-        if x1_desc.dtype == dtype:
-            return x1
+        if a_desc.dtype == dtype:
+            return a
 
-        return array(x1, dtype=dtype)
+        return array(a, dtype=dtype)
 
-    return call_origin(numpy.asfarray, x1, dtype)
+    return call_origin(numpy.asfarray, a, dtype)
 
 
 def atleast_1d(*arys):
@@ -197,7 +197,7 @@ def atleast_3d(*arys):
     return call_origin(numpy.atleast_3d, *arys)
 
 
-def broadcast_to(x, /, shape, subok=False):
+def broadcast_to(array, /, shape, subok=False):
     """
     Broadcast an array to a new shape.
 
@@ -206,15 +206,15 @@ def broadcast_to(x, /, shape, subok=False):
     Returns
     -------
     y : dpnp.ndarray
-        An array having a specified shape. Must have the same data type as `x`.
+        An array having a specified shape. Must have the same data type as `array`.
 
     Limitations
     -----------
-    Parameter `x` is supported as either :class:`dpnp.ndarray`
+    Parameter `array` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `subok` is supported with default value.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types of `x` is limited by supported DPNP :ref:`Data types`.
+    Input array data types of `array` is limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -229,12 +229,14 @@ def broadcast_to(x, /, shape, subok=False):
 
     if subok is not False:
         pass
-    elif isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
-        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+    elif isinstance(array, dpnp_array) or isinstance(array, dpt.usm_ndarray):
+        dpt_array = (
+            array.get_array() if isinstance(array, dpnp_array) else array
+        )
         new_array = dpt.broadcast_to(dpt_array, shape)
         return dpnp_array._create_from_usm_ndarray(new_array)
 
-    return call_origin(numpy.broadcast_to, x, shape=shape, subok=subok)
+    return call_origin(numpy.broadcast_to, array, shape=shape, subok=subok)
 
 
 def concatenate(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
@@ -388,7 +390,7 @@ def copyto(dst, src, casting="same_kind", where=True):
         dst_usm[mask_usm] = src_usm[mask_usm]
 
 
-def expand_dims(x, axis):
+def expand_dims(a, axis):
     """
     Expand the shape of an array.
 
@@ -405,21 +407,21 @@ def expand_dims(x, axis):
 
     Limitations
     -----------
-    Parameters `x` is supported either as :class:`dpnp.ndarray`
+    Parameters `a` is supported either as :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
     Otherwise ``TypeError`` exception will be raised.
 
     Notes
     -----
-    If `x` has rank (i.e, number of dimensions) `N`, a valid `axis` must reside
+    If `a` has rank (i.e, number of dimensions) `N`, a valid `axis` must reside
     in the closed-interval `[-N-1, N]`.
     If provided a negative `axis`, the `axis` position at which to insert a
     singleton dimension is computed as `N + axis + 1`.
     Hence, if provided `-1`, the resolved axis position is `N` (i.e.,
-    a singleton dimension must be appended to the input array `x`).
+    a singleton dimension must be appended to the input array `a`).
     If provided `-N-1`, the resolved axis position is `0` (i.e., a
-    singleton dimension is prepended to the input array `x`).
+    singleton dimension is prepended to the input array `a`).
 
     See Also
     --------
@@ -470,7 +472,7 @@ def expand_dims(x, axis):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(x)
+    dpt_array = dpnp.get_usm_ndarray(a)
     return dpnp_array._create_from_usm_ndarray(
         dpt.expand_dims(dpt_array, axis=axis)
     )
@@ -495,7 +497,7 @@ def hstack(tup):
     return call_origin(numpy.hstack, tup_new)
 
 
-def moveaxis(x, source, destination):
+def moveaxis(a, source, destination):
     """
     Move axes of an array to new positions. Other axes remain in their original order.
 
@@ -506,11 +508,11 @@ def moveaxis(x, source, destination):
     out : dpnp.ndarray
         Array with moved axes.
         The returned array will have the same data and
-        the same USM allocation type as `x`.
+        the same USM allocation type as `a`.
 
     Limitations
     -----------
-    Parameters `x` is supported as either :class:`dpnp.ndarray`
+    Parameters `a` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -531,16 +533,16 @@ def moveaxis(x, source, destination):
 
     """
 
-    if isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
-        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+    if isinstance(a, dpnp_array) or isinstance(a, dpt.usm_ndarray):
+        dpt_array = a.get_array() if isinstance(a, dpnp_array) else a
         return dpnp_array._create_from_usm_ndarray(
             dpt.moveaxis(dpt_array, source, destination)
         )
 
-    return call_origin(numpy.moveaxis, x, source, destination)
+    return call_origin(numpy.moveaxis, a, source, destination)
 
 
-def ravel(x1, order="C"):
+def ravel(a, order="C"):
     """
     Return a contiguous flattened array.
 
@@ -562,14 +564,14 @@ def ravel(x1, order="C"):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        return dpnp_flatten(x1_desc).get_pyobj()
+    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
+    if a_desc:
+        return dpnp_flatten(a_desc).get_pyobj()
 
-    return call_origin(numpy.ravel, x1, order=order)
+    return call_origin(numpy.ravel, a, order=order)
 
 
-def repeat(x1, repeats, axis=None):
+def repeat(a, repeats, axis=None):
     """
     Repeat elements of an array.
 
@@ -595,22 +597,22 @@ def repeat(x1, repeats, axis=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
+    if a_desc:
         if axis is not None and axis != 0:
             pass
-        elif x1_desc.ndim >= 2:
+        elif a_desc.ndim >= 2:
             pass
         elif not dpnp.isscalar(repeats) and len(repeats) > 1:
             pass
         else:
             repeat_val = repeats if dpnp.isscalar(repeats) else repeats[0]
-            return dpnp_repeat(x1_desc, repeat_val, axis).get_pyobj()
+            return dpnp_repeat(a_desc, repeat_val, axis).get_pyobj()
 
-    return call_origin(numpy.repeat, x1, repeats, axis)
+    return call_origin(numpy.repeat, a, repeats, axis)
 
 
-def reshape(x, /, newshape, order="C", copy=None):
+def reshape(a, /, newshape, order="C", copy=None):
     """
     Gives a new shape to an array without changing its data.
 
@@ -618,7 +620,7 @@ def reshape(x, /, newshape, order="C", copy=None):
 
     Parameters
     ----------
-    x : {dpnp_array, usm_ndarray}
+    a : {dpnp_array, usm_ndarray}
         Array to be reshaped.
     newshape : int or tuple of ints
         The new shape should be compatible with the original shape. If
@@ -626,7 +628,7 @@ def reshape(x, /, newshape, order="C", copy=None):
         One shape dimension can be -1. In this case, the value is
         inferred from the length of the array and remaining dimensions.
     order : {'C', 'F'}, optional
-        Read the elements of `x` using this index order, and place the
+        Read the elements of `a` using this index order, and place the
         elements into the reshaped array using this index order.  'C'
         means to read / write the elements using C-like index order,
         with the last axis index changing fastest, back to the first
@@ -637,10 +639,10 @@ def reshape(x, /, newshape, order="C", copy=None):
         the underlying array, and only refer to the order of indexing.
     copy : bool, optional
         Boolean indicating whether or not to copy the input array.
-        If ``True``, the result array will always be a copy of input `x`.
+        If ``True``, the result array will always be a copy of input `a`.
         If ``False``, the result array can never be a copy
         and a ValueError exception will be raised in case the copy is necessary.
-        If ``None``, the result array will reuse existing memory buffer of `x`
+        If ``None``, the result array will reuse existing memory buffer of `a`
         if possible and copy otherwise. Default: None.
 
     Returns
@@ -675,14 +677,14 @@ def reshape(x, /, newshape, order="C", copy=None):
     """
 
     if newshape is None:
-        newshape = x.shape
+        newshape = a.shape
 
     if order is None:
         order = "C"
     elif order not in "cfCF":
         raise ValueError(f"order must be one of 'C' or 'F' (got {order})")
 
-    usm_arr = dpnp.get_usm_ndarray(x)
+    usm_arr = dpnp.get_usm_ndarray(a)
     usm_arr = dpt.reshape(usm_arr, shape=newshape, order=order, copy=copy)
     return dpnp_array._create_from_usm_ndarray(usm_arr)
 
@@ -823,9 +825,9 @@ def shape(a):
         return numpy.shape(a)
 
 
-def squeeze(x, /, axis=None):
+def squeeze(a, /, axis=None):
     """
-    Removes singleton dimensions (axes) from array `x`.
+    Removes singleton dimensions (axes) from array `a`.
 
     For full documentation refer to :obj:`numpy.squeeze`.
 
@@ -837,11 +839,11 @@ def squeeze(x, /, axis=None):
         dimensions of length 1 removed. Output has the same data
         type as the input, is allocated on the same device as the
         input and has the same USM allocation type as the input
-        array `x`.
+        array `a`.
 
     Limitations
     -----------
-    Parameters `x` is supported as either :class:`dpnp.ndarray`
+    Parameters `a` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -864,11 +866,11 @@ def squeeze(x, /, axis=None):
 
     """
 
-    if isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
-        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+    if isinstance(a, dpnp_array) or isinstance(a, dpt.usm_ndarray):
+        dpt_array = a.get_array() if isinstance(a, dpnp_array) else a
         return dpnp_array._create_from_usm_ndarray(dpt.squeeze(dpt_array, axis))
 
-    return call_origin(numpy.squeeze, x, axis)
+    return call_origin(numpy.squeeze, a, axis)
 
 
 def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
@@ -944,7 +946,7 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     )
 
 
-def swapaxes(x, axis1, axis2):
+def swapaxes(a, axis1, axis2):
     """
     Interchange two axes of an array.
 
@@ -958,14 +960,14 @@ def swapaxes(x, axis1, axis2):
 
     Limitations
     -----------
-    Parameters `x` is supported either as :class:`dpnp.ndarray`
+    Parameters `a` is supported either as :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
     Otherwise ``TypeError`` exception will be raised.
 
     Notes
     -----
-    If `x` has rank (i.e., number of dimensions) `N`,
+    If `a` has rank (i.e., number of dimensions) `N`,
     a valid `axis` must be in the half-open interval `[-N, N)`.
 
     Examples
@@ -991,7 +993,7 @@ def swapaxes(x, axis1, axis2):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(x)
+    dpt_array = dpnp.get_usm_ndarray(a)
     return dpnp_array._create_from_usm_ndarray(
         dpt.swapaxes(dpt_array, axis1=axis1, axis2=axis2)
     )
@@ -1060,7 +1062,7 @@ def transpose(a, axes=None):
     return array.transpose(*axes)
 
 
-def unique(x1, **kwargs):
+def unique(ar, **kwargs):
     """
     Find the unique elements of an array.
 
@@ -1076,7 +1078,7 @@ def unique(x1, **kwargs):
 
     """
 
-    return call_origin(numpy.unique, x1, **kwargs)
+    return call_origin(numpy.unique, ar, **kwargs)
 
 
 def vstack(tup):
