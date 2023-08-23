@@ -30,13 +30,20 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "add.hpp"
+#include "ceil.hpp"
 #include "common.hpp"
+#include "conj.hpp"
 #include "cos.hpp"
 #include "div.hpp"
+#include "floor.hpp"
 #include "ln.hpp"
+#include "mul.hpp"
 #include "sin.hpp"
 #include "sqr.hpp"
 #include "sqrt.hpp"
+#include "sub.hpp"
+#include "trunc.hpp"
 #include "types_matrix.hpp"
 
 namespace py = pybind11;
@@ -45,18 +52,138 @@ namespace vm_ext = dpnp::backend::ext::vm;
 using vm_ext::binary_impl_fn_ptr_t;
 using vm_ext::unary_impl_fn_ptr_t;
 
-static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
-
+static binary_impl_fn_ptr_t add_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t ceil_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t cos_dispatch_vector[dpctl_td_ns::num_types];
+static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t floor_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t conj_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ln_dispatch_vector[dpctl_td_ns::num_types];
+static binary_impl_fn_ptr_t mul_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t sin_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t sqr_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t sqrt_dispatch_vector[dpctl_td_ns::num_types];
+static binary_impl_fn_ptr_t sub_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t trunc_dispatch_vector[dpctl_td_ns::num_types];
 
 PYBIND11_MODULE(_vm_impl, m)
 {
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
+
+    // BinaryUfunc: ==== Add(x1, x2) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<binary_impl_fn_ptr_t,
+                                           vm_ext::AddContigFactory>(
+            add_dispatch_vector);
+
+        auto add_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                             arrayT dst, const event_vecT &depends = {}) {
+            return vm_ext::binary_ufunc(exec_q, src1, src2, dst, depends,
+                                        add_dispatch_vector);
+        };
+        m.def("_add", add_pyapi,
+              "Call `add` function from OneMKL VM library to performs element "
+              "by element addition of vector `src1` by vector `src2` "
+              "to resulting vector `dst`",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("depends") = py::list());
+
+        auto add_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
+                                          arrayT src2, arrayT dst) {
+            return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
+                                                     add_dispatch_vector);
+        };
+        m.def("_mkl_add_to_call", add_need_to_call_pyapi,
+              "Check input arguments to answer if `add` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Ceil(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::CeilContigFactory>(
+            ceil_dispatch_vector);
+
+        auto ceil_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                              const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       ceil_dispatch_vector);
+        };
+        m.def("_ceil", ceil_pyapi,
+              "Call `ceil` function from OneMKL VM library to compute "
+              "ceiling of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto ceil_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                           arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    ceil_dispatch_vector);
+        };
+        m.def("_mkl_ceil_to_call", ceil_need_to_call_pyapi,
+              "Check input arguments to answer if `ceil` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Conj(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::ConjContigFactory>(
+            conj_dispatch_vector);
+
+        auto conj_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                              const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       conj_dispatch_vector);
+        };
+        m.def("_conj", conj_pyapi,
+              "Call `conj` function from OneMKL VM library to compute "
+              "conjugate of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto conj_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                           arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    conj_dispatch_vector);
+        };
+        m.def("_mkl_conj_to_call", conj_need_to_call_pyapi,
+              "Check input arguments to answer if `conj` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Cos(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::CosContigFactory>(
+            cos_dispatch_vector);
+
+        auto cos_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                             const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       cos_dispatch_vector);
+        };
+        m.def("_cos", cos_pyapi,
+              "Call `cos` function from OneMKL VM library to compute "
+              "cosine of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto cos_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                          arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    cos_dispatch_vector);
+        };
+        m.def("_mkl_cos_to_call", cos_need_to_call_pyapi,
+              "Check input arguments to answer if `cos` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
 
     // BinaryUfunc: ==== Div(x1, x2) ====
     {
@@ -88,30 +215,30 @@ PYBIND11_MODULE(_vm_impl, m)
               py::arg("dst"));
     }
 
-    // UnaryUfunc: ==== Cos(x) ====
+    // UnaryUfunc: ==== Floor(x) ====
     {
         vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::CosContigFactory>(
-            cos_dispatch_vector);
+                                           vm_ext::FloorContigFactory>(
+            floor_dispatch_vector);
 
-        auto cos_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                             const event_vecT &depends = {}) {
+        auto floor_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                               const event_vecT &depends = {}) {
             return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       cos_dispatch_vector);
+                                       floor_dispatch_vector);
         };
-        m.def("_cos", cos_pyapi,
-              "Call `cos` function from OneMKL VM library to compute "
-              "cosine of vector elements",
+        m.def("_floor", floor_pyapi,
+              "Call `floor` function from OneMKL VM library to compute "
+              "floor of vector elements",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
               py::arg("depends") = py::list());
 
-        auto cos_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                          arrayT dst) {
+        auto floor_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                            arrayT dst) {
             return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    cos_dispatch_vector);
+                                                    floor_dispatch_vector);
         };
-        m.def("_mkl_cos_to_call", cos_need_to_call_pyapi,
-              "Check input arguments to answer if `cos` function from "
+        m.def("_mkl_floor_to_call", floor_need_to_call_pyapi,
+              "Check input arguments to answer if `floor` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }
@@ -142,6 +269,36 @@ PYBIND11_MODULE(_vm_impl, m)
               "Check input arguments to answer if `ln` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // BinaryUfunc: ==== Mul(x1, x2) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<binary_impl_fn_ptr_t,
+                                           vm_ext::MulContigFactory>(
+            mul_dispatch_vector);
+
+        auto mul_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                             arrayT dst, const event_vecT &depends = {}) {
+            return vm_ext::binary_ufunc(exec_q, src1, src2, dst, depends,
+                                        mul_dispatch_vector);
+        };
+        m.def("_mul", mul_pyapi,
+              "Call `mul` function from OneMKL VM library to performs element "
+              "by element multiplication of vector `src1` by vector `src2` "
+              "to resulting vector `dst`",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("depends") = py::list());
+
+        auto mul_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
+                                          arrayT src2, arrayT dst) {
+            return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
+                                                     mul_dispatch_vector);
+        };
+        m.def("_mkl_mul_to_call", mul_need_to_call_pyapi,
+              "Check input arguments to answer if `mul` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"));
     }
 
     // UnaryUfunc: ==== Sin(x) ====
@@ -227,6 +384,64 @@ PYBIND11_MODULE(_vm_impl, m)
         };
         m.def("_mkl_sqrt_to_call", sqrt_need_to_call_pyapi,
               "Check input arguments to answer if `sqrt` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // BinaryUfunc: ==== Sub(x1, x2) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<binary_impl_fn_ptr_t,
+                                           vm_ext::SubContigFactory>(
+            sub_dispatch_vector);
+
+        auto sub_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                             arrayT dst, const event_vecT &depends = {}) {
+            return vm_ext::binary_ufunc(exec_q, src1, src2, dst, depends,
+                                        sub_dispatch_vector);
+        };
+        m.def("_sub", sub_pyapi,
+              "Call `sub` function from OneMKL VM library to performs element "
+              "by element subtraction of vector `src1` by vector `src2` "
+              "to resulting vector `dst`",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("depends") = py::list());
+
+        auto sub_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
+                                          arrayT src2, arrayT dst) {
+            return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
+                                                     sub_dispatch_vector);
+        };
+        m.def("_mkl_sub_to_call", sub_need_to_call_pyapi,
+              "Check input arguments to answer if `sub` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Trunc(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::TruncContigFactory>(
+            trunc_dispatch_vector);
+
+        auto trunc_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                               const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       trunc_dispatch_vector);
+        };
+        m.def("_trunc", trunc_pyapi,
+              "Call `trunc` function from OneMKL VM library to compute "
+              "the truncated value of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto trunc_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                            arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    trunc_dispatch_vector);
+        };
+        m.def("_mkl_trunc_to_call", trunc_need_to_call_pyapi,
+              "Check input arguments to answer if `trunc` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }

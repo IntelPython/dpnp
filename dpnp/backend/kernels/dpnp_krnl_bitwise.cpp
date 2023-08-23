@@ -127,14 +127,6 @@ void (*dpnp_invert_default_c)(void *,
                               void *,
                               size_t) = dpnp_invert_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_invert_ext_c)(DPCTLSyclQueueRef,
-                                       void *,
-                                       void *,
-                                       size_t,
-                                       const DPCTLEventVectorRef) =
-    dpnp_invert_c<_DataType>;
-
 static void func_map_init_bitwise_1arg_1type(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_INVERT][eft_BLN][eft_BLN] = {
@@ -143,13 +135,6 @@ static void func_map_init_bitwise_1arg_1type(func_map_t &fmap)
         eft_INT, (void *)dpnp_invert_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_INVERT][eft_LNG][eft_LNG] = {
         eft_LNG, (void *)dpnp_invert_default_c<int64_t>};
-
-    fmap[DPNPFuncName::DPNP_FN_INVERT_EXT][eft_BLN][eft_BLN] = {
-        eft_BLN, (void *)dpnp_invert_ext_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_INVERT_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_invert_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_INVERT_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_invert_ext_c<int64_t>};
 
     return;
 }
@@ -399,16 +384,7 @@ static void func_map_init_bitwise_1arg_1type(func_map_t &fmap)
         const shape_elem_type *, const void *, const size_t, const size_t,     \
         const shape_elem_type *, const shape_elem_type *, const void *,        \
         const size_t, const size_t, const shape_elem_type *,                   \
-        const shape_elem_type *, const size_t *) = __name__<_DataType>;        \
-                                                                               \
-    template <typename _DataType>                                              \
-    DPCTLSyclEventRef (*__name__##_ext)(                                       \
-        DPCTLSyclQueueRef, void *, const size_t, const size_t,                 \
-        const shape_elem_type *, const shape_elem_type *, const void *,        \
-        const size_t, const size_t, const shape_elem_type *,                   \
-        const shape_elem_type *, const void *, const size_t, const size_t,     \
-        const shape_elem_type *, const shape_elem_type *, const size_t *,      \
-        const DPCTLEventVectorRef) = __name__<_DataType>;
+        const shape_elem_type *, const size_t *) = __name__<_DataType>;
 
 #include <dpnp_gen_2arg_1type_tbl.hpp>
 
@@ -419,56 +395,25 @@ static void func_map_init_bitwise_2arg_1type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_BITWISE_AND][eft_LNG][eft_LNG] = {
         eft_LNG, (void *)dpnp_bitwise_and_c_default<int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_AND_EXT][eft_BLN][eft_BLN] = {
-        eft_BLN, (void *)dpnp_bitwise_and_c_ext<bool>};
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_AND_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_bitwise_and_c_ext<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_AND_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_bitwise_and_c_ext<int64_t>};
-
     fmap[DPNPFuncName::DPNP_FN_BITWISE_OR][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_bitwise_or_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_OR][eft_LNG][eft_LNG] = {
         eft_LNG, (void *)dpnp_bitwise_or_c_default<int64_t>};
-
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_OR_EXT][eft_BLN][eft_BLN] = {
-        eft_BLN, (void *)dpnp_bitwise_or_c_ext<bool>};
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_OR_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_bitwise_or_c_ext<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_OR_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_bitwise_or_c_ext<int64_t>};
 
     fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_bitwise_xor_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR][eft_LNG][eft_LNG] = {
         eft_LNG, (void *)dpnp_bitwise_xor_c_default<int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR_EXT][eft_BLN][eft_BLN] = {
-        eft_BLN, (void *)dpnp_bitwise_xor_c_ext<bool>};
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_bitwise_xor_c_ext<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_BITWISE_XOR_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_bitwise_xor_c_ext<int64_t>};
-
     fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_left_shift_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT][eft_LNG][eft_LNG] = {
         eft_LNG, (void *)dpnp_left_shift_c_default<int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_left_shift_c_ext<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_LEFT_SHIFT_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_left_shift_c_ext<int64_t>};
-
     fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_right_shift_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT][eft_LNG][eft_LNG] = {
         eft_LNG, (void *)dpnp_right_shift_c_default<int64_t>};
-
-    fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_right_shift_c_ext<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_RIGHT_SHIFT_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_right_shift_c_ext<int64_t>};
 
     return;
 }

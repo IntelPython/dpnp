@@ -28,22 +28,15 @@
 """Example 10.
 
 This example shows simple usage of the DPNP
-in combination with dpCtl.
+in combination with dpctl.
 
 """
 
 import time
 
-try:
-    import dpnp
-except ImportError:
-    import os
-    import sys
-
-    sys.path.insert(0, os.path.abspath("."))
-    import dpnp
-
 import numpy
+
+import dpnp
 
 
 def run(executor, size, test_type, repetition):
@@ -61,9 +54,17 @@ def run(executor, size, test_type, repetition):
     return numpy.median(times), result
 
 
+def get_dtypes():
+    _dtypes_list = [numpy.int32, numpy.int64, numpy.float32]
+    device = dpctl.select_default_device()
+    if device.has_aspect_fp64:
+        _dtypes_list.append(numpy.float64)
+    return _dtypes_list
+
+
 def example():
     test_repetition = 5
-    for test_type in [numpy.float64, numpy.float32, numpy.int64, numpy.int32]:
+    for test_type in get_dtypes():
         type_name = numpy.dtype(test_type).name
         print(
             f"...Test data type is {type_name}, each test repetitions {test_repetition}"
@@ -80,7 +81,7 @@ def example():
             else:
                 verification = f"({result_dpnp} != {result_numpy})"
 
-            msg = f"type:{type_name}:N:{size:4}:NumPy:{time_numpy:.3e}:SYCL:{time_dpnp:.3e}"
+            msg = f"type:{type_name}:N:{size:4}:NumPy:{time_numpy:.3e}:DPNP:{time_dpnp:.3e}"
             msg += f":ratio:{time_numpy/time_dpnp:6.2f}:verification:{verification}"
             print(msg)
 
@@ -90,7 +91,7 @@ if __name__ == "__main__":
         import dpctl
 
         with dpctl.device_context("opencl:gpu") as gpu_queue:
-            gpu_queue.get_sycl_device().dump_device_info()
+            gpu_queue.get_sycl_device().print_device_info()
             example()
 
     except ImportError:

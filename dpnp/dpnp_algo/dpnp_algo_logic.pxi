@@ -36,19 +36,11 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_all",
     "dpnp_allclose",
-    "dpnp_any",
     "dpnp_isclose",
-    "dpnp_isfinite",
-    "dpnp_isinf",
-    "dpnp_isnan",
 ]
 
 
-ctypedef c_dpctl.DPCTLSyclEventRef(*custom_logic_1in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                      void *, void * , const size_t,
-                                                                      const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_allclose_1in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                          void * ,
                                                                          void * ,
@@ -57,35 +49,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_allclose_1in_1out_func_ptr_t)(c_dpctl
                                                                          double,
                                                                          double,
                                                                          const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef utils.dpnp_descriptor dpnp_all(utils.dpnp_descriptor array1):
-    array1_obj = array1.get_array()
-
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py((1,),
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=array1_obj.sycl_device,
-                                                                             usm_type=array1_obj.usm_type,
-                                                                             sycl_queue=array1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ALL_EXT, param1_type, param1_type)
-
-    cdef custom_logic_1in_1out_func_ptr_t func = <custom_logic_1in_1out_func_ptr_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, array1.get_data(), result.get_data(), array1.size, NULL)
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_allclose(utils.dpnp_descriptor array1,
@@ -128,35 +91,6 @@ cpdef utils.dpnp_descriptor dpnp_allclose(utils.dpnp_descriptor array1,
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_any(utils.dpnp_descriptor array1):
-    array1_obj = array1.get_array()
-
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py((1,),
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=array1_obj.sycl_device,
-                                                                             usm_type=array1_obj.usm_type,
-                                                                             sycl_queue=array1_obj.sycl_queue)
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ANY_EXT, param1_type, param1_type)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_logic_1in_1out_func_ptr_t func = <custom_logic_1in_1out_func_ptr_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, array1.get_data(), result.get_data(), array1.size, NULL)
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
 cpdef utils.dpnp_descriptor dpnp_isclose(utils.dpnp_descriptor input1,
                                          utils.dpnp_descriptor input2,
                                          double rtol=1e-05,
@@ -172,50 +106,5 @@ cpdef utils.dpnp_descriptor dpnp_isclose(utils.dpnp_descriptor input1,
 
     for i in range(result.size):
         result.get_pyobj()[i] = numpy.isclose(input1.get_pyobj()[i], input2.get_pyobj()[i], rtol, atol, equal_nan)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_isfinite(utils.dpnp_descriptor input1):
-    input1_obj = input1.get_array()
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=input1_obj.sycl_device,
-                                                                             usm_type=input1_obj.usm_type,
-                                                                             sycl_queue=input1_obj.sycl_queue)
-
-    for i in range(result.size):
-        result.get_pyobj()[i] = numpy.isfinite(input1.get_pyobj()[i])
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_isinf(utils.dpnp_descriptor input1):
-    input1_obj = input1.get_array()
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=input1_obj.sycl_device,
-                                                                             usm_type=input1_obj.usm_type,
-                                                                             sycl_queue=input1_obj.sycl_queue)
-
-    for i in range(result.size):
-        result.get_pyobj()[i] = numpy.isinf(input1.get_pyobj()[i])
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_isnan(utils.dpnp_descriptor input1):
-    input1_obj = input1.get_array()
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
-                                                                             dpnp.bool,
-                                                                             None,
-                                                                             device=input1_obj.sycl_device,
-                                                                             usm_type=input1_obj.usm_type,
-                                                                             sycl_queue=input1_obj.sycl_queue)
-
-    for i in range(result.size):
-        result.get_pyobj()[i] = numpy.isnan(input1.get_pyobj()[i])
 
     return result

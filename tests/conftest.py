@@ -27,6 +27,7 @@
 import os
 import sys
 
+import dpctl
 import numpy
 import pytest
 
@@ -52,15 +53,28 @@ def pytest_collection_modifyitems(config, items):
     # global skip file, where gpu device is not supported
     test_exclude_file_gpu = os.path.join(test_path, "skipped_tests_gpu.tbl")
 
-    current_queue_is_cpu = dpnp.dpnp_queue_is_cpu()
+    # global skip file, where gpu device with no fp64 support
+    test_exclude_file_gpu_no_fp64 = os.path.join(
+        test_path, "skipped_tests_gpu_no_fp64.tbl"
+    )
+
+    dev = dpctl.select_default_device()
+    is_cpu = dev.is_cpu
+    is_gpu_no_fp64 = not dev.has_aspect_fp64
+
     print("")
-    print(f"DPNP current queue is CPU: {current_queue_is_cpu}")
+    print(f"DPNP current device is CPU: {is_cpu}")
+    print(f"DPNP current device is GPU without fp64 support: {is_gpu_no_fp64}")
     print(f"DPNP version: {dpnp.__version__}, location: {dpnp}")
     print(f"NumPy version: {numpy.__version__}, location: {numpy}")
     print(f"Python version: {sys.version}")
     print("")
-    if not current_queue_is_cpu or os.getenv("DPNP_QUEUE_GPU") == "1":
+    if not is_cpu or os.getenv("DPNP_QUEUE_GPU") == "1":
         excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
+        if is_gpu_no_fp64:
+            excluded_tests.extend(
+                get_excluded_tests(test_exclude_file_gpu_no_fp64)
+            )
     else:
         excluded_tests.extend(get_excluded_tests(test_exclude_file))
 
@@ -81,6 +95,14 @@ def allow_fall_back_on_numpy(monkeypatch):
     monkeypatch.setattr(
         dpnp.config, "__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__", 0
     )
+
+
+@pytest.fixture
+def suppress_complex_warning():
+    sup = numpy.testing.suppress_warnings("always")
+    sup.filter(numpy.ComplexWarning)
+    with sup:
+        yield
 
 
 @pytest.fixture

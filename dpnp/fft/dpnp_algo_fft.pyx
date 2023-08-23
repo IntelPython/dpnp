@@ -68,9 +68,15 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
 
     input_obj = input.get_array()
 
+    # get FPTR function and return type
+    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(kernel_data,
+                                                                                input_obj.sycl_device.has_aspect_fp64)
+    cdef DPNPFuncType return_type = ret_type_and_func[0]
+    cdef fptr_dpnp_fft_fft_t func = < fptr_dpnp_fft_fft_t > ret_type_and_func[1]
+
     # ceate result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(output_shape,
-                                                                       kernel_data.return_type,
+                                                                       return_type,
                                                                        None,
                                                                        device=input_obj.sycl_device,
                                                                        usm_type=input_obj.usm_type,
@@ -81,7 +87,6 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
     cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
     cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
-    cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
     # call FPTR function
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
                                                     input.get_data(),
@@ -122,9 +127,15 @@ cpdef utils.dpnp_descriptor dpnp_rfft(utils.dpnp_descriptor input,
 
     input_obj = input.get_array()
 
+    # get FPTR function and return type
+    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(kernel_data,
+                                                                                input_obj.sycl_device.has_aspect_fp64)
+    cdef DPNPFuncType return_type = ret_type_and_func[0]
+    cdef fptr_dpnp_fft_fft_t func = < fptr_dpnp_fft_fft_t > ret_type_and_func[1]
+
     # ceate result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(output_shape,
-                                                                       kernel_data.return_type,
+                                                                       return_type,
                                                                        None,
                                                                        device=input_obj.sycl_device,
                                                                        usm_type=input_obj.usm_type,
@@ -135,7 +146,6 @@ cpdef utils.dpnp_descriptor dpnp_rfft(utils.dpnp_descriptor input,
     cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
     cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
 
-    cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
     # call FPTR function
     cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
                                                     input.get_data(),

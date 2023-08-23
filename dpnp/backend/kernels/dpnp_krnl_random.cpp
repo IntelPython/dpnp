@@ -37,8 +37,8 @@
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
-static_assert(INTEL_MKL_VERSION >= __INTEL_MKL_2023_VERSION_REQUIRED,
-              "MKL does not meet minimum version requirement");
+static_assert(INTEL_MKL_VERSION >= __INTEL_MKL_2023_0_0_VERSION_REQUIRED,
+              "OneMKL does not meet minimum version requirement");
 
 namespace mkl_blas = oneapi::mkl::blas;
 namespace mkl_rng = oneapi::mkl::rng;
@@ -251,6 +251,7 @@ DPCTLSyclEventRef
         auto event_out =
             mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
         event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event_out);
+        return DPCTLEvent_Copy(event_ref);
     }
     return DPCTLEvent_Copy(event_ref);
 }
@@ -2988,9 +2989,13 @@ void func_map_init_random(func_map_t &fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_rng_chisquare_default_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_FLT][eft_FLT] = {
+        eft_FLT, (void *)dpnp_rng_chisquare_default_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE_EXT][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_rng_chisquare_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE_EXT][eft_FLT][eft_FLT] = {
+        eft_FLT, (void *)dpnp_rng_chisquare_ext_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_rng_exponential_default_c<double>};
@@ -3136,15 +3141,23 @@ void func_map_init_random(func_map_t &fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_rng_standard_cauchy_default_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_FLT][eft_FLT] = {
+        eft_FLT, (void *)dpnp_rng_standard_cauchy_default_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY_EXT][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_rng_standard_cauchy_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY_EXT][eft_FLT][eft_FLT] = {
+        eft_FLT, (void *)dpnp_rng_standard_cauchy_ext_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_EXPONENTIAL][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_rng_standard_exponential_default_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_EXPONENTIAL][eft_FLT][eft_FLT] = {
+        eft_FLT, (void *)dpnp_rng_standard_exponential_default_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_EXPONENTIAL_EXT][eft_DBL][eft_DBL] =
         {eft_DBL, (void *)dpnp_rng_standard_exponential_ext_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_EXPONENTIAL_EXT][eft_FLT][eft_FLT] =
+        {eft_FLT, (void *)dpnp_rng_standard_exponential_ext_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_GAMMA][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_rng_standard_gamma_default_c<double>};

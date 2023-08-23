@@ -4,16 +4,20 @@ on:
     branches:
       - master
   pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+env:
+  PUBLISH_DIR: doc/_build/html/
+
+defaults:
+  run:
+    shell: bash -l {0}
 
 jobs:
   build-and-deploy:
     name: Build and Deploy Docs
 
     runs-on: ubuntu-20.04
-
-    defaults:
-      run:
-        shell: bash -l {0}
 
     env:
       python-ver: '3.9'
@@ -24,6 +28,12 @@ jobs:
         uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
 
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
@@ -61,6 +71,8 @@ jobs:
 
       - name: Checkout repo
         uses: actions/checkout@v3.5.2
+        with:
+          fetch-depth: 0
 
       # https://github.com/marketplace/actions/setup-miniconda
       - name: Setup miniconda
@@ -79,8 +91,8 @@ jobs:
 
       - name: Install dpnp dependencies
         run: |
-          conda install dpctl mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
-              cmake cython"<3" pytest ninja scikit-build sysroot_linux-64">=2.28" ${{ env.CHANNELS }}
+          conda install numpy"<1.24" dpctl mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
+              cmake cython pytest ninja scikit-build sysroot_linux-64">=2.28" ${{ env.CHANNELS }}
 
       - name: Install cuPy dependencies
         run: conda install cupy cudatoolkit=10.0
@@ -99,6 +111,13 @@ jobs:
         run: make html
         working-directory: doc
 
+      - name: Set a project number to current release
+        run: |
+          export PROJECT_NUMBER=$(git describe --tags --abbrev=0)
+
+          echo PROJECT_NUMBER=${PROJECT_NUMBER}
+          echo "PROJECT_NUMBER=$PROJECT_NUMBER" >> $GITHUB_ENV
+
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
         uses: mattnotmitt/doxygen-action@v1.9.5
@@ -111,9 +130,70 @@ jobs:
       # https://github.com/marketplace/actions/github-pages-action
       - name: Deploy docs
         if: |
-          !github.event.pull_request.head.repo.fork  &&
+          github.event.pull_request && !github.event.pull_request.head.repo.fork  &&
           (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
         uses: peaceiris/actions-gh-pages@v3.9.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: doc/_build/html/
+          publish_dir: ${{ env.PUBLISH_DIR }}
+
+      - name: Publish pull-request docs
+        if: |
+          github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action != 'closed'
+        uses: peaceiris/actions-gh-pages@v3.9.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{ env.PUBLISH_DIR }}
+          destination_dir: ./pull/${{ github.event.number }}
+          allow_empty_commit : true
+          keep_files: true
+          commit_message: ${{ github.event.head_commit.message }}
+          publish_branch: gh-pages
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Comment with URL to published pull-request docs
+        if: |
+          github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action != 'closed'
+        env:
+          PR_NUM: ${{ github.event.number }}
+        uses: mshick/add-pr-comment@v2.8.1
+        with:
+          message: |
+            View rendered docs @ https://intelpython.github.io/dpnp/pull/${{ env.PR_NUM }}/index.html
+          allow-repeats: false
+
+  clean:
+    if: |
+      github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action == 'closed'
+
+    needs: build-and-deploy
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          fetch-depth: 0
+
+      - name: Remove docs [PR closed]
+        env:
+          PR_NUM: ${{ github.event.number }}
+        run: |
+          git remote add tokened_docs https://IntelPython:${{ secrets.GITHUB_TOKEN }}@github.com/IntelPython/dpnp.git
+          git fetch tokened_docs
+          git checkout --track tokened_docs/gh-pages
+          echo `pwd`
+          [ -d pull/${PR_NUM} ] && git rm -rf pull/${PR_NUM}
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -m "Removing docs for closed pull request ${PR_NUM}"
+          git push tokened_docs gh-pages
+
+      - name: Modify the comment with URL to official documentation
+        uses: mshick/add-pr-comment@v2.8.1
+        with:
+          find: |
+            View rendered docs @.+
+          replace: |
+            View rendered docs @ https://intelpython.github.io/dpnp/index.html

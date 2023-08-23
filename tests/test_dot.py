@@ -20,11 +20,11 @@ def test_dot_ones(type):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-def test_dot_arange(type):
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_dot_arange(dtype):
     n = 10**2
-    m = 10**3
-    a = numpy.hstack((numpy.arange(n, dtype=type),) * m)
+    m = 10**3 if dtype is not inp.float32 else 10**2
+    a = numpy.hstack((numpy.arange(n, dtype=dtype),) * m)
     b = numpy.flipud(a)
     ia = inp.array(a)
     ib = inp.array(b)

@@ -1,7 +1,7 @@
 Statistical Functions
 =====================
 
-.. https://docs.scipy.org/doc/scipy/reference/stats.html
+.. https://docs.scipy.org/doc/numpy/reference/routines.statistics.html
 
 Order statistics
 ----------------
@@ -10,16 +10,14 @@ Order statistics
    :toctree: generated/
    :nosignatures:
 
-   dpnp.amin
-   dpnp.amax
-   dpnp.min
-   dpnp.max
-   dpnp.nanmin
-   dpnp.nanmax
+   dpnp.ptp
    dpnp.percentile
+   dpnp.nanpercentile
+   dpnp.quantile
+   dpnp.nanquantile
 
 
-Means and variances
+Averages and variances
 -------------------
 
 .. autosummary::
@@ -44,7 +42,11 @@ Histograms
    :nosignatures:
 
    dpnp.histogram
+   dpnp.histogram2d
+   dpnp.histogramdd
    dpnp.bincount
+   dpnp.histogram_bin_edges
+   dpnp.digitize
 
 
 Correlations
