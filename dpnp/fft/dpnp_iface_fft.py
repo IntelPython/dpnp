@@ -86,23 +86,28 @@ def get_validated_norm(norm):
     raise ValueError("Unknown norm value.")
 
 
-def fft(x1, n=None, axis=-1, norm=None):
+def fft(x, n=None, axis=-1, norm=None):
     """
     Compute the one-dimensional discrete Fourier Transform.
 
-    Limitations
-    -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``axis`` is supported with its default value.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64``,
-    ``dpnp.complex64`` and ``dpnp.complex128`` datatypes only.
-
     For full documentation refer to :obj:`numpy.fft.fft`.
 
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `axis` is supported with its default value.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128`, `dpnp.complex64` data types are supported.
+    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.
+    Otherwise the function will be executed sequentially on CPU.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc:
+        dt = x_desc.dtype
+        if dpnp.issubdtype(dt, dpnp.bool):
+            raise TypeError(f"The `{dt}` data type is unsupported.")
+
         norm_ = get_validated_norm(norm)
 
         if axis is None:
@@ -111,11 +116,11 @@ def fft(x1, n=None, axis=-1, norm=None):
             axis_param = axis
 
         if n is None:
-            input_boundarie = x1_desc.shape[axis_param]
+            input_boundarie = x_desc.shape[axis_param]
         else:
             input_boundarie = n
 
-        if x1_desc.size < 1:
+        if x_desc.size < 1:
             pass  # let fallback to handle exception
         elif input_boundarie < 1:
             pass  # let fallback to handle exception
@@ -126,89 +131,93 @@ def fft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
             return dpnp_fft(
-                x1_desc,
+                x_desc,
                 input_boundarie,
                 output_boundarie,
                 axis_param,
                 False,
                 norm_.value,
             ).get_pyobj()
-    return call_origin(numpy.fft.fft, x1, n, axis, norm)
+    return call_origin(numpy.fft.fft, x, n, axis, norm)
 
 
-def fft2(x1, s=None, axes=(-2, -1), norm=None):
+def fft2(x, s=None, axes=(-2, -1), norm=None):
     """
-    Compute the 2-dimensional discrete Fourier Transform
+    Compute the 2-dimensional discrete Fourier Transform.
 
-    Multi-dimensional arrays computed as batch of 1-D arrays
-
-    Limitations
-    -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Multi-dimensional arrays computed as batch of 1-D arrays.
 
     For full documentation refer to :obj:`numpy.fft.fft2`.
 
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `norm` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc:
         if norm is not None:
             pass
         else:
-            return fftn(x1, s, axes, norm)
+            return fftn(x, s, axes, norm)
 
-    return call_origin(numpy.fft.fft2, x1, s, axes, norm)
+    return call_origin(numpy.fft.fft2, x, s, axes, norm)
 
 
 def fftfreq(n=None, d=1.0):
     """
     Compute the one-dimensional discrete Fourier Transform sample frequencies.
 
+    For full documentation refer to :obj:`numpy.fft.fftfreq`.
+
     Limitations
     -----------
-    Parameter ``d`` is unsupported.
-
-    For full documentation refer to :obj:`numpy.fft.fftfreq`.
+    Parameter `d` is unsupported.
 
     """
 
     return call_origin(numpy.fft.fftfreq, n, d)
 
 
-def fftn(x1, s=None, axes=None, norm=None):
+def fftn(x, s=None, axes=None, norm=None):
     """
     Compute the N-dimensional FFT.
 
-    Multi-dimensional arrays computed as batch of 1-D arrays
-
-    Limitations
-    -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Multi-dimensional arrays computed as batch of 1-D arrays.
 
     For full documentation refer to :obj:`numpy.fft.fftn`.
 
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `norm` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc:
         if s is None:
-            boundaries = tuple([x1_desc.shape[i] for i in range(x1_desc.ndim)])
+            boundaries = tuple([x_desc.shape[i] for i in range(x_desc.ndim)])
         else:
             boundaries = s
 
         if axes is None:
-            axes_param = tuple([i for i in range(x1_desc.ndim)])
+            axes_param = tuple([i for i in range(x_desc.ndim)])
         else:
             axes_param = axes
 
         if norm is not None:
             pass
         else:
-            x1_iter = x1
+            x_iter = x
             iteration_list = list(range(len(axes_param)))
             iteration_list.reverse()  # inplace operation
             for it in iteration_list:
@@ -223,41 +232,43 @@ def fftn(x1, s=None, axes=None, norm=None):
                         f"< {len(boundaries)}",
                     )
 
-                x1_iter = fft(x1_iter, n=param_n, axis=param_axis, norm=norm)
+                x_iter = fft(x_iter, n=param_n, axis=param_axis, norm=norm)
 
-            return x1_iter
+            return x_iter
 
-    return call_origin(numpy.fft.fftn, x1, s, axes, norm)
+    return call_origin(numpy.fft.fftn, x, s, axes, norm)
 
 
-def fftshift(x1, axes=None):
+def fftshift(x, axes=None):
     """
     Shift the zero-frequency component to the center of the spectrum.
 
+    For full documentation refer to :obj:`numpy.fft.fftshift`.
+
     Limitations
     -----------
-    Parameter ``axes`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
-
-    For full documentation refer to :obj:`numpy.fft.fftshift`.
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `axes` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and 0:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc and 0:
         norm_ = Norm.backward
 
-        if axis is None:
+        if axes is None:
             axis_param = -1  # the most right dimension (default value)
         else:
             axis_param = axes
 
-        if x1_desc.size < 1:
+        if x_desc.size < 1:
             pass  # let fallback to handle exception
         else:
             return dpnp_fft(
-                x1_desc,
+                x_desc,
                 input_boundarie,
                 output_boundarie,
                 axis_param,
@@ -265,25 +276,27 @@ def fftshift(x1, axes=None):
                 norm_.value,
             ).get_pyobj()
 
-    return call_origin(numpy.fft.fftshift, x1, axes)
+    return call_origin(numpy.fft.fftshift, x, axes)
 
 
-def hfft(x1, n=None, axis=-1, norm=None):
+def hfft(x, n=None, axis=-1, norm=None):
     """
     Compute the one-dimensional discrete Fourier Transform of a signal that has Hermitian symmetry.
 
+    For full documentation refer to :obj:`numpy.fft.hfft`.
+
     Limitations
     -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
-
-    For full documentation refer to :obj:`numpy.fft.hfft`.
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `norm` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and 0:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc and 0:
         norm_ = get_validated_norm(norm)
 
         if axis is None:
@@ -292,11 +305,11 @@ def hfft(x1, n=None, axis=-1, norm=None):
             axis_param = axis
 
         if n is None:
-            input_boundarie = x1_desc.shape[axis_param]
+            input_boundarie = x_desc.shape[axis_param]
         else:
             input_boundarie = n
 
-        if x1.size < 1:
+        if x.size < 1:
             pass  # let fallback to handle exception
         elif input_boundarie < 1:
             pass  # let fallback to handle exception
@@ -306,7 +319,7 @@ def hfft(x1, n=None, axis=-1, norm=None):
             output_boundarie = input_boundarie
 
             return dpnp_fft(
-                x1_desc,
+                x_desc,
                 input_boundarie,
                 output_boundarie,
                 axis_param,
@@ -314,25 +327,32 @@ def hfft(x1, n=None, axis=-1, norm=None):
                 norm_.value,
             ).get_pyobj()
 
-    return call_origin(numpy.fft.hfft, x1, n, axis, norm)
+    return call_origin(numpy.fft.hfft, x, n, axis, norm)
 
 
-def ifft(x1, n=None, axis=-1, norm=None):
+def ifft(x, n=None, axis=-1, norm=None):
     """
     Compute the one-dimensional inverse discrete Fourier Transform.
 
+    For full documentation refer to :obj:`numpy.fft.ifft`.
+
     Limitations
     -----------
-    Parameter ``axis`` is supported with its default value.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64``,
-    ``dpnp.complex64``and ``dpnp.complex128`` datatypes only.
-
-    For full documentation refer to :obj:`numpy.fft.ifft`.
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `axis` is supported with its default value.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,,
+    `dpnp.complex128`, `dpnp.complex64` data types are supported.
+    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.
+    Otherwise the function will be executed sequentially on CPU.
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc:
+        dt = x_desc.dtype
+        if dpnp.issubdtype(dt, dpnp.bool):
+            raise TypeError(f"The `{dt}` data type is unsupported.")
+
         norm_ = get_validated_norm(norm)
 
         if axis is None:
@@ -341,11 +361,11 @@ def ifft(x1, n=None, axis=-1, norm=None):
             axis_param = axis
 
         if n is None:
-            input_boundarie = x1_desc.shape[axis_param]
+            input_boundarie = x_desc.shape[axis_param]
         else:
             input_boundarie = n
 
-        if x1_desc.size < 1:
+        if x_desc.size < 1:
             pass  # let fallback to handle exception
         elif input_boundarie < 1:
             pass  # let fallback to handle exception
@@ -354,7 +374,7 @@ def ifft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
             return dpnp_fft(
-                x1_desc,
+                x_desc,
                 input_boundarie,
                 output_boundarie,
                 axis_param,
@@ -362,63 +382,73 @@ def ifft(x1, n=None, axis=-1, norm=None):
                 norm_.value,
             ).get_pyobj()
 
-    return call_origin(numpy.fft.ifft, x1, n, axis, norm)
+    return call_origin(numpy.fft.ifft, x, n, axis, norm)
 
 
-def ifft2(x1, s=None, axes=(-2, -1), norm=None):
+def ifft2(x, s=None, axes=(-2, -1), norm=None):
     """
-    Compute the 2-dimensional inverse discrete Fourier Transform
+    Compute the 2-dimensional inverse discrete Fourier Transform.
 
-    Multi-dimensional arrays computed as batch of 1-D arrays
-
-    Limitations
-    -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Multi-dimensional arrays computed as batch of 1-D arrays.
 
     For full documentation refer to :obj:`numpy.fft.ifft2`.
 
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `norm` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc:
         if norm is not None:
             pass
         else:
-            return ifftn(x1, s, axes, norm)
+            return ifftn(x, s, axes, norm)
 
-    return call_origin(numpy.fft.ifft2, x1, s, axes, norm)
+    return call_origin(numpy.fft.ifft2, x, s, axes, norm)
 
 
-def ifftshift(x1, axes=None):
+def ifftshift(x, axes=None):
     """
     Inverse shift the zero-frequency component to the center of the spectrum.
 
+    For full documentation refer to :obj:`numpy.fft.ifftshift`.
+
     Limitations
     -----------
-    Parameter ``axes`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
-
-    For full documentation refer to :obj:`numpy.fft.ifftshift`.
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `axes` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and 0:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc and 0:
         norm_ = Norm.backward
 
-        if axis is None:
+        if axes is None:
             axis_param = -1  # the most right dimension (default value)
         else:
             axis_param = axes
 
-        if x1_desc.size < 1:
+        input_boundarie = x_desc.shape[axis_param]
+
+        if x_desc.size < 1:
+            pass  # let fallback to handle exception
+        elif input_boundarie < 1:
             pass  # let fallback to handle exception
         else:
+            output_boundarie = input_boundarie
+
             return dpnp_fft(
-                x1_desc,
+                x_desc,
                 input_boundarie,
                 output_boundarie,
                 axis_param,
@@ -426,41 +456,43 @@ def ifftshift(x1, axes=None):
                 norm_.value,
             ).get_pyobj()
 
-    return call_origin(numpy.fft.ifftshift, x1, axes)
+    return call_origin(numpy.fft.ifftshift, x, axes)
 
 
-def ifftn(x1, s=None, axes=None, norm=None):
+def ifftn(x, s=None, axes=None, norm=None):
     """
     Compute the N-dimensional inverse discrete Fourier Transform.
 
-    Multi-dimensional arrays computed as batch of 1-D arrays
-
-    Limitations
-    -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Multi-dimensional arrays computed as batch of 1-D arrays.
 
     For full documentation refer to :obj:`numpy.fft.ifftn`.
 
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `norm` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and 0:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc and 0:
         if s is None:
-            boundaries = tuple([x1_desc.shape[i] for i in range(x1_desc.ndim)])
+            boundaries = tuple([x_desc.shape[i] for i in range(x_desc.ndim)])
         else:
             boundaries = s
 
         if axes is None:
-            axes_param = tuple([i for i in range(x1_desc.ndim)])
+            axes_param = tuple([i for i in range(x_desc.ndim)])
         else:
             axes_param = axes
 
         if norm is not None:
             pass
         else:
-            x1_iter = x1
+            x_iter = x
             iteration_list = list(range(len(axes_param)))
             iteration_list.reverse()  # inplace operation
             for it in iteration_list:
@@ -475,35 +507,37 @@ def ifftn(x1, s=None, axes=None, norm=None):
                         f"< {len(boundaries)}",
                     )
 
-                x1_iter_desc = dpnp.get_dpnp_descriptor(x1_iter)
-                x1_iter = ifft(
-                    x1_iter_desc.get_pyobj(),
+                x_iter_desc = dpnp.get_dpnp_descriptor(x_iter)
+                x_iter = ifft(
+                    x_iter_desc.get_pyobj(),
                     n=param_n,
                     axis=param_axis,
                     norm=norm,
                 )
 
-            return x1_iter
+            return x_iter
 
-    return call_origin(numpy.fft.ifftn, x1, s, axes, norm)
+    return call_origin(numpy.fft.ifftn, x, s, axes, norm)
 
 
-def ihfft(x1, n=None, axis=-1, norm=None):
+def ihfft(x, n=None, axis=-1, norm=None):
     """
     Compute inverse one-dimensional discrete Fourier Transform of a signal that has Hermitian symmetry.
 
+    For full documentation refer to :obj:`numpy.fft.ihfft`.
+
     Limitations
     -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
-
-    For full documentation refer to :obj:`numpy.fft.ihfft`.
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `norm` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and 0:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc and 0:
         norm_ = get_validated_norm(norm)
 
         if axis is None:
@@ -512,11 +546,11 @@ def ihfft(x1, n=None, axis=-1, norm=None):
             axis_param = axis
 
         if n is None:
-            input_boundarie = x1_desc.shape[axis_param]
+            input_boundarie = x_desc.shape[axis_param]
         else:
             input_boundarie = n
 
-        if x1_desc.size < 1:
+        if x_desc.size < 1:
             pass  # let fallback to handle exception
         elif input_boundarie < 1:
             pass  # let fallback to handle exception
@@ -528,7 +562,7 @@ def ihfft(x1, n=None, axis=-1, norm=None):
             output_boundarie = input_boundarie
 
             return dpnp_fft(
-                x1_desc,
+                x_desc,
                 input_boundarie,
                 output_boundarie,
                 axis_param,
@@ -536,25 +570,27 @@ def ihfft(x1, n=None, axis=-1, norm=None):
                 norm_.value,
             ).get_pyobj()
 
-    return call_origin(numpy.fft.ihfft, x1, n, axis, norm)
+    return call_origin(numpy.fft.ihfft, x, n, axis, norm)
 
 
-def irfft(x1, n=None, axis=-1, norm=None):
+def irfft(x, n=None, axis=-1, norm=None):
     """
-    Compute the one-dimensional inverse discrete Fourier Transform for real input..
-
-    Limitations
-    -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Compute the one-dimensional inverse discrete Fourier Transform for real input.
 
     For full documentation refer to :obj:`numpy.fft.irfft`.
 
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `norm` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and 0:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc and 0:
         norm_ = get_validated_norm(norm)
 
         if axis is None:
@@ -563,11 +599,11 @@ def irfft(x1, n=None, axis=-1, norm=None):
             axis_param = axis
 
         if n is None:
-            input_boundarie = x1_desc.shape[axis_param]
+            input_boundarie = x_desc.shape[axis_param]
         else:
             input_boundarie = n
 
-        if x1_desc.size < 1:
+        if x_desc.size < 1:
             pass  # let fallback to handle exception
         elif input_boundarie < 1:
             pass  # let fallback to handle exception
@@ -579,7 +615,7 @@ def irfft(x1, n=None, axis=-1, norm=None):
             output_boundarie = 2 * (input_boundarie - 1)
 
             result = dpnp_rfft(
-                x1_desc,
+                x_desc,
                 input_boundarie,
                 output_boundarie,
                 axis_param,
@@ -592,67 +628,71 @@ def irfft(x1, n=None, axis=-1, norm=None):
             #     tmp[it] = result[it].real
             return result
 
-    return call_origin(numpy.fft.irfft, x1, n, axis, norm)
+    return call_origin(numpy.fft.irfft, x, n, axis, norm)
 
 
-def irfft2(x1, s=None, axes=(-2, -1), norm=None):
+def irfft2(x, s=None, axes=(-2, -1), norm=None):
     """
     Compute the 2-dimensional inverse discrete Fourier Transform for real input.
 
-    Multi-dimensional arrays computed as batch of 1-D arrays
-
-    Limitations
-    -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Multi-dimensional arrays computed as batch of 1-D arrays.
 
     For full documentation refer to :obj:`numpy.fft.irfft2`.
 
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `norm` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc:
         if norm is not None:
             pass
         else:
-            return irfftn(x1_desc.get_pyobj(), s, axes, norm)
+            return irfftn(x_desc.get_pyobj(), s, axes, norm)
 
-    return call_origin(numpy.fft.irfft2, x1, s, axes, norm)
+    return call_origin(numpy.fft.irfft2, x, s, axes, norm)
 
 
-def irfftn(x1, s=None, axes=None, norm=None):
+def irfftn(x, s=None, axes=None, norm=None):
     """
     Compute the N-dimensional inverse discrete Fourier Transform for real input.
 
-    Multi-dimensional arrays computed as batch of 1-D arrays
-
-    Limitations
-    -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Multi-dimensional arrays computed as batch of 1-D arrays.
 
     For full documentation refer to :obj:`numpy.fft.irfftn`.
 
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `norm` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and 0:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc and 0:
         if s is None:
-            boundaries = tuple([x1_desc.shape[i] for i in range(x1_desc.ndim)])
+            boundaries = tuple([x_desc.shape[i] for i in range(x_desc.ndim)])
         else:
             boundaries = s
 
         if axes is None:
-            axes_param = tuple([i for i in range(x1_desc.ndim)])
+            axes_param = tuple([i for i in range(x_desc.ndim)])
         else:
             axes_param = axes
 
         if norm is not None:
             pass
         else:
-            x1_iter = x1
+            x_iter = x
             iteration_list = list(range(len(axes_param)))
             iteration_list.reverse()  # inplace operation
             for it in iteration_list:
@@ -667,35 +707,41 @@ def irfftn(x1, s=None, axes=None, norm=None):
                         f"< {len(boundaries)}",
                     )
 
-                x1_iter_desc = dpnp.get_dpnp_descriptor(x1_iter)
-                x1_iter = irfft(
-                    x1_iter_desc.get_pyobj(),
+                x_iter_desc = dpnp.get_dpnp_descriptor(x_iter)
+                x_iter = irfft(
+                    x_iter_desc.get_pyobj(),
                     n=param_n,
                     axis=param_axis,
                     norm=norm,
                 )
 
-            return x1_iter
+            return x_iter
 
-    return call_origin(numpy.fft.irfftn, x1, s, axes, norm)
+    return call_origin(numpy.fft.irfftn, x, s, axes, norm)
 
 
-def rfft(x1, n=None, axis=-1, norm=None):
+def rfft(x, n=None, axis=-1, norm=None):
     """
     Compute the one-dimensional discrete Fourier Transform for real input.
 
-    Limitations
-    -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
-
     For full documentation refer to :obj:`numpy.fft.rfft`.
 
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `norm` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.
+    Otherwise the function will be executed sequentially on CPU.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc:
+        dt = x_desc.dtype
+        if dpnp.issubdtype(dt, dpnp.bool):
+            raise TypeError(f"The `{dt}` data type is unsupported.")
+
         norm_ = get_validated_norm(norm)
 
         if axis is None:
@@ -704,11 +750,11 @@ def rfft(x1, n=None, axis=-1, norm=None):
             axis_param = axis
 
         if n is None:
-            input_boundarie = x1_desc.shape[axis_param]
+            input_boundarie = x_desc.shape[axis_param]
         else:
             input_boundarie = n
 
-        if x1_desc.size < 1:
+        if x_desc.size < 1:
             pass  # let fallback to handle exception
         elif input_boundarie < 1:
             pass  # let fallback to handle exception
@@ -718,14 +764,14 @@ def rfft(x1, n=None, axis=-1, norm=None):
             pass
         elif n is not None:
             pass
-        elif x1_desc.dtype in (numpy.complex128, numpy.complex64):
+        elif x_desc.dtype in (numpy.complex128, numpy.complex64):
             pass
         else:
             output_boundarie = (
                 input_boundarie // 2 + 1
             )  # rfft specific requirenment
             return dpnp_rfft(
-                x1_desc,
+                x_desc,
                 input_boundarie,
                 output_boundarie,
                 axis_param,
@@ -733,75 +779,79 @@ def rfft(x1, n=None, axis=-1, norm=None):
                 norm_.value,
             ).get_pyobj()
 
-    return call_origin(numpy.fft.rfft, x1, n, axis, norm)
+    return call_origin(numpy.fft.rfft, x, n, axis, norm)
 
 
-def rfft2(x1, s=None, axes=(-2, -1), norm=None):
+def rfft2(x, s=None, axes=(-2, -1), norm=None):
     """
     Compute the 2-dimensional discrete Fourier Transform for real input.
 
-    Multi-dimensional arrays computed as batch of 1-D arrays
-
-    Limitations
-    -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Multi-dimensional arrays computed as batch of 1-D arrays.
 
     For full documentation refer to :obj:`numpy.fft.rfft2`.
 
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `norm` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc:
         if norm is not None:
             pass
         else:
-            return rfftn(x1_desc.get_pyobj(), s, axes, norm)
+            return rfftn(x_desc.get_pyobj(), s, axes, norm)
 
-    return call_origin(numpy.fft.rfft2, x1, s, axes, norm)
+    return call_origin(numpy.fft.rfft2, x, s, axes, norm)
 
 
 def rfftfreq(n=None, d=1.0):
     """
     Compute the one-dimensional discrete Fourier Transform sample frequencies.
 
+    For full documentation refer to :obj:`numpy.fft.rfftfreq`.
+
     Limitations
     -----------
     Parameter ``d`` is unsupported.
-
-    For full documentation refer to :obj:`numpy.fft.rfftfreq`.
 
     """
 
     return call_origin(numpy.fft.rfftfreq, n, d)
 
 
-def rfftn(x1, s=None, axes=None, norm=None):
+def rfftn(x, s=None, axes=None, norm=None):
     """
     Compute the N-dimensional discrete Fourier Transform for real input.
 
-    Multi-dimensional arrays computed as batch of 1-D arrays
-
-    Limitations
-    -----------
-    Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Multi-dimensional arrays computed as batch of 1-D arrays.
 
     For full documentation refer to :obj:`numpy.fft.rfftn`.
 
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `norm` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and 0:
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    if x_desc and 0:
         if s is None:
-            boundaries = tuple([x1_desc.shape[i] for i in range(x1_desc.ndim)])
+            boundaries = tuple([x_desc.shape[i] for i in range(x_desc.ndim)])
         else:
             boundaries = s
 
         if axes is None:
-            axes_param = tuple([i for i in range(x1_desc.ndim)])
+            axes_param = tuple([i for i in range(x_desc.ndim)])
         else:
             axes_param = axes
 
@@ -810,7 +860,7 @@ def rfftn(x1, s=None, axes=None, norm=None):
         elif len(axes) < 1:
             pass  # let fallback to handle exception
         else:
-            x1_iter = x1
+            x_iter = x
             iteration_list = list(range(len(axes_param)))
             iteration_list.reverse()  # inplace operation
             for it in iteration_list:
@@ -825,16 +875,16 @@ def rfftn(x1, s=None, axes=None, norm=None):
                         f"< {len(boundaries)}",
                     )
 
-                x1_iter_desc = dpnp.get_dpnp_descriptor(
-                    x1_iter, copy_when_nondefault_queue=False
+                x_iter_desc = dpnp.get_dpnp_descriptor(
+                    x_iter, copy_when_nondefault_queue=False
                 )
-                x1_iter = rfft(
-                    x1_iter_desc.get_pyobj(),
+                x_iter = rfft(
+                    x_iter_desc.get_pyobj(),
                     n=param_n,
                     axis=param_axis,
                     norm=norm,
                 )
 
-            return x1_iter
+            return x_iter
 
-    return call_origin(numpy.fft.rfftn, x1, s, axes, norm)
+    return call_origin(numpy.fft.rfftn, x, s, axes, norm)

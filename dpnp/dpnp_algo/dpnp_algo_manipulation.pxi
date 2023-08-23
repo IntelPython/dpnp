@@ -38,7 +38,6 @@ and the rest of the library
 __all__ += [
     "dpnp_atleast_2d",
     "dpnp_atleast_3d",
-    "dpnp_copyto",
     "dpnp_expand_dims",
     "dpnp_repeat",
     "dpnp_reshape",
@@ -103,45 +102,6 @@ cpdef utils.dpnp_descriptor dpnp_atleast_3d(utils.dpnp_descriptor arr):
         return result
     else:
         return arr
-
-
-cpdef dpnp_copyto(utils.dpnp_descriptor dst, utils.dpnp_descriptor src, where=True):
-    # Convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType dst_type = dpnp_dtype_to_DPNPFuncType(dst.dtype)
-    cdef DPNPFuncType src_type = dpnp_dtype_to_DPNPFuncType(src.dtype)
-
-    cdef shape_type_c dst_shape = dst.shape
-    cdef shape_type_c dst_strides = utils.strides_to_vector(dst.strides, dst_shape)
-
-    cdef shape_type_c src_shape = src.shape
-    cdef shape_type_c src_strides = utils.strides_to_vector(src.strides, src_shape)
-
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO_EXT, src_type, dst_type)
-
-    _, _, result_sycl_queue = utils.get_common_usm_allocation(dst, src)
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    # Call FPTR function
-    cdef fptr_1in_1out_strides_t func = <fptr_1in_1out_strides_t > kernel_data.ptr
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    dst.get_data(),
-                                                    dst.size,
-                                                    dst.ndim,
-                                                    dst_shape.data(),
-                                                    dst_strides.data(),
-                                                    src.get_data(),
-                                                    src.size,
-                                                    src.ndim,
-                                                    src_shape.data(),
-                                                    src_strides.data(),
-                                                    NULL,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
 
 
 cpdef utils.dpnp_descriptor dpnp_expand_dims(utils.dpnp_descriptor in_array, axis):

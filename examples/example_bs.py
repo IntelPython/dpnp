@@ -32,20 +32,10 @@ to calculate black scholes algorithm
 
 """
 
-try:
-    import dpnp as np
-except ImportError:
-    import os
-    import sys
-
-    root_dir = os.path.join(os.path.dirname(__file__), os.pardir)
-    sys.path.append(root_dir)
-
-    import dpnp as np
-
+import dpnp as np
 
 SIZE = 2**8
-DTYPE = np.float64
+DTYPE = np.default_float_type()
 
 SEED = 7777777
 PL, PH = 10.0, 50.0

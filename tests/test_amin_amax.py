@@ -1,61 +1,46 @@
 import numpy
 import pytest
+from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
 
+from .helper import get_all_dtypes
 
-@pytest.mark.parametrize("type", [numpy.float64], ids=["float64"])
-def test_amax_float64(type):
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_amax(dtype):
     a = numpy.array(
         [
             [[-2.0, 3.0], [9.1, 0.2]],
             [[-2.0, 5.0], [-2, -1.2]],
             [[1.0, -2.0], [5.0, -1.1]],
-        ]
+        ],
+        dtype=dtype,
     )
     ia = dpnp.array(a)
 
     for axis in range(len(a)):
         result = dpnp.amax(ia, axis=axis)
         expected = numpy.amax(a, axis=axis)
-        numpy.testing.assert_array_equal(expected, result)
+        assert_allclose(expected, result)
 
 
-@pytest.mark.parametrize("type", [numpy.int64], ids=["int64"])
-def test_amax_int(type):
-    a = numpy.array([1, 0, 2, -3, -1, 2, 21, -9])
-    ia = dpnp.array(a)
-
-    result = dpnp.amax(ia)
-    expected = numpy.amax(a)
-    numpy.testing.assert_array_equal(expected, result)
-
-
-@pytest.mark.parametrize("type", [numpy.float64], ids=["float64"])
-def test_amin_float64(type):
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_amin(dtype):
     a = numpy.array(
         [
             [[-2.0, 3.0], [9.1, 0.2]],
             [[-2.0, 5.0], [-2, -1.2]],
             [[1.0, -2.0], [5.0, -1.1]],
-        ]
+        ],
+        dtype=dtype,
     )
     ia = dpnp.array(a)
 
     for axis in range(len(a)):
         result = dpnp.amin(ia, axis=axis)
         expected = numpy.amin(a, axis=axis)
-        numpy.testing.assert_array_equal(expected, result)
-
-
-@pytest.mark.parametrize("type", [numpy.int64], ids=["int64"])
-def test_amin_int(type):
-    a = numpy.array([1, 0, 2, -3, -1, 2, 21, -9])
-    ia = dpnp.array(a)
-
-    result = dpnp.amin(ia)
-    expected = numpy.amin(a)
-    numpy.testing.assert_array_equal(expected, result)
+        assert_allclose(expected, result)
 
 
 def _get_min_max_input(type, shape):
@@ -71,22 +56,18 @@ def _get_min_max_input(type, shape):
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize(
-    "type",
-    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-    ids=["float64", "float32", "int64", "int32"],
-)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize(
     "shape", [(4,), (2, 3), (4, 5, 6)], ids=["(4,)", "(2,3)", "(4,5,6)"]
 )
-def test_amax(type, shape):
-    a = _get_min_max_input(type, shape)
+def test_amax_diff_shape(dtype, shape):
+    a = _get_min_max_input(dtype, shape)
 
     ia = dpnp.array(a)
 
     np_res = numpy.amax(a)
     dpnp_res = dpnp.amax(ia)
-    numpy.testing.assert_array_equal(dpnp_res, np_res)
+    assert_array_equal(dpnp_res, np_res)
 
     np_res = a.max()
     dpnp_res = ia.max()
@@ -94,23 +75,19 @@ def test_amax(type, shape):
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize(
-    "type",
-    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-    ids=["float64", "float32", "int64", "int32"],
-)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize(
     "shape", [(4,), (2, 3), (4, 5, 6)], ids=["(4,)", "(2,3)", "(4,5,6)"]
 )
-def test_amin(type, shape):
-    a = _get_min_max_input(type, shape)
+def test_amin_diff_shape(dtype, shape):
+    a = _get_min_max_input(dtype, shape)
 
     ia = dpnp.array(a)
 
     np_res = numpy.amin(a)
     dpnp_res = dpnp.amin(ia)
-    numpy.testing.assert_array_equal(dpnp_res, np_res)
+    assert_array_equal(dpnp_res, np_res)
 
     np_res = a.min()
     dpnp_res = ia.min()
-    numpy.testing.assert_array_equal(dpnp_res, np_res)
+    assert_array_equal(dpnp_res, np_res)

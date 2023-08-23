@@ -23,17 +23,17 @@ except ImportError:
 with open("reference/comparison_table.rst.inc", "w") as fd:
     fd.write(comparison_generator.generate())
 
+import dpnp
 
 # -- Project information -----------------------------------------------------
 
-project = "dpnp"
+project = "Data Parallel Extension for NumPy"
 copyright = "2020-2023, Intel Corporation"
 author = "Intel"
 
-# The short X.Y version
-version = "0.12"
+version = dpnp.__version__.strip(".dirty")
 # The full version, including alpha/beta/rc tags
-release = "0.12.1"
+release = dpnp.__version__.strip(".dirty")
 
 
 # -- General configuration ---------------------------------------------------

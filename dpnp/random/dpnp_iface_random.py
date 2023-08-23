@@ -230,7 +230,7 @@ def chisquare(df, size=None):
     -----------
     Parameter ``df`` is supported as a scalar.
     Otherwise, :obj:`numpy.random.chisquare(df, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Output array data type is default float type.
 
     Examples
     --------
@@ -1533,7 +1533,7 @@ def standard_cauchy(size=None):
 
     Limitations
     -----------
-    Output array data type is :obj:`dpnp.float64`.
+    Output array data type is default float type.
 
     Examples
     --------
@@ -1562,7 +1562,7 @@ def standard_exponential(size=None):
 
     Limitations
     -----------
-    Output array data type is :obj:`dpnp.float64`.
+    Output array data type is default float type.
 
     Examples
     --------

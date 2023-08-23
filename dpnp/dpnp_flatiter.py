@@ -30,6 +30,8 @@ import dpnp
 
 
 class flatiter:
+    """Flat iterator object to iterate over arrays."""
+
     def __init__(self, X):
         if type(X) is not dpnp.ndarray:
             raise TypeError(

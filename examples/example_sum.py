@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+# cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,10 +25,20 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-DPNP version module
+"""Example sum.
+
+This example shows simple usage of the DPNP
+to calculate sum of an array
+
 """
 
-__version__: str = "0.12.1"
+import dpnp as np
 
-version: str = __version__
+x = np.asarray([1, 2, 3])
+print("Array x allocated on the device:", x.device)
+
+y = np.sum(x)
+
+print("Result y is located on the device:", y.device)  # The same device as x
+print("Shape of y is:", y.shape)  # 0-dimensional array
+print("y =", y)  # Expect 6
