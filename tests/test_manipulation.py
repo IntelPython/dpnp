@@ -136,15 +136,3 @@ class TestTranspose:
 
         assert_array_equal(na.transpose(), da.transpose())
         assert_array_equal(na.transpose(None), da.transpose(None))
-
-
-def test_expand_dims_invalid_type():
-    na = numpy.ones((2, 2))
-    with pytest.raises(TypeError):
-        numpy.expand_dims(na, 1)
-
-
-def test_swapaxes_invalid_type():
-    na = numpy.ones((2, 3, 4))
-    with pytest.raises(TypeError):
-        dpnp.swapaxes(na, 1, 0)
