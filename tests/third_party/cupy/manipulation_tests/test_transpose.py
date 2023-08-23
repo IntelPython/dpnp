@@ -121,11 +121,6 @@ class TestTranspose(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.swapaxes(a, 3, 0)
 
-    def test_swapaxes_invalid_type(self):
-        a = testing.shaped_arange((2, 3, 4), numpy)
-        with pytest.raises(TypeError):
-            cupy.swapaxes(a, 1, 0)
-
     @testing.numpy_cupy_array_equal()
     def test_transpose(self, xp):
         a = testing.shaped_arange((2, 3, 4), xp)

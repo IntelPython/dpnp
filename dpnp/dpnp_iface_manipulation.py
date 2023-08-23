@@ -425,7 +425,7 @@ def expand_dims(x, axis):
     --------
     :obj:`dpnp.squeeze` : The inverse operation, removing singleton dimensions
     :obj:`dpnp.reshape` : Insert, remove, and combine dimensions, and resize existing ones
-    :obj:`dpnp.indexing`, :obj:`dpnp.atleast_1d`, :obj:`dpnp.atleast_2d`, :obj:`dpnp.atleast_3d`
+    :obj:`dpnp.atleast_1d`, :obj:`dpnp.atleast_2d`, :obj:`dpnp.atleast_3d`
 
     Examples
     --------
@@ -469,11 +469,6 @@ def expand_dims(x, axis):
     True
 
     """
-
-    if not dpnp.is_supported_array_type(x):
-        raise TypeError(
-            f"An array must be any of supported type, but got {type(x)}"
-        )
 
     dpt_array = dpnp.get_usm_ndarray(x)
     return dpnp_array._create_from_usm_ndarray(
@@ -959,14 +954,7 @@ def swapaxes(x, axis1, axis2):
     -------
     dpnp.ndarray
         An array with with swapped axes.
-
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Parameter ``axis1`` is limited by ``axis1 < x1.ndim``.
-    Parameter ``axis2`` is limited by ``axis2 < x1.ndim``.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+        A view is returned whenever possible.
 
     Limitations
     -----------
@@ -984,18 +972,24 @@ def swapaxes(x, axis1, axis2):
     --------
     >>> import dpnp as np
     >>> x = np.array([[1, 2, 3]])
-    >>> out = np.swapaxes(x, 0, 1)
-    >>> out.shape
-    (3, 1)
-    >>> [i for i in out]
-    [1, 2, 3]
+    >>> np.swapaxes(x, 0, 1)
+    array([[1],
+           [2],
+           [3]])
+
+    >>> x = np.array([[[0,1],[2,3]],[[4,5],[6,7]]])
+    >>> x
+    array([[[0, 1],
+            [2, 3]],
+           [[4, 5],
+            [6, 7]]])
+    >>> np.swapaxes(x,0,2)
+    array([[[0, 4],
+            [2, 6]],
+           [[1, 5],
+            [3, 7]]])
 
     """
-
-    if not dpnp.is_supported_array_type(x):
-        raise TypeError(
-            f"An array must be any of supported type, but got {type(x)}"
-        )
 
     dpt_array = dpnp.get_usm_ndarray(x)
     return dpnp_array._create_from_usm_ndarray(

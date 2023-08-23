@@ -159,11 +159,6 @@ class TestDims(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.expand_dims(a, (1, 1))
 
-    def test_expand_dims_invalid_type(self):
-        a = testing.shaped_arange((2, 2), numpy)
-        with pytest.raises(TypeError):
-            cupy.expand_dims(a, 1)
-
     @testing.numpy_cupy_array_equal()
     def test_squeeze1(self, xp):
         a = testing.shaped_arange((1, 2, 1, 3, 1, 1, 4, 1), xp)
