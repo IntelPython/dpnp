@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndarray.cumsum &mdash; Data Parallel Extension for NumPy 0.12.2dev1+6.gaa7a4c240 documentation</title>
+  <title>dpnp.ndarray.swapaxes &mdash; Data Parallel Extension for NumPy 0.12.2dev1+6.gaa7a4c240 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,8 +28,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.ndarray.mean" href="dpnp.ndarray.mean.html" />
-    <link rel="prev" title="dpnp.ndarray.sum" href="dpnp.ndarray.sum.html" /> 
+    <link rel="next" title="dpnp.ndarray.flatten" href="dpnp.ndarray.flatten.html" />
+    <link rel="prev" title="dpnp.ndarray.transpose" href="dpnp.ndarray.transpose.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -69,26 +69,16 @@
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#other-attributes">Other attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-methods">Array methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-conversion">Array conversion</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#shape-manipulation">Shape manipulation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#item-selection-and-manipulation">Item selection and manipulation</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../ndarray.html#calculation">Calculation</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.max.html">dpnp.ndarray.max</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.argmax.html">dpnp.ndarray.argmax</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.min.html">dpnp.ndarray.min</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.argmin.html">dpnp.ndarray.argmin</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.conj.html">dpnp.ndarray.conj</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.conjugate.html">dpnp.ndarray.conjugate</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.round.html">dpnp.ndarray.round</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.sum.html">dpnp.ndarray.sum</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.ndarray.cumsum</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.mean.html">dpnp.ndarray.mean</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.var.html">dpnp.ndarray.var</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.std.html">dpnp.ndarray.std</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.prod.html">dpnp.ndarray.prod</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.all.html">dpnp.ndarray.all</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.any.html">dpnp.ndarray.any</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../ndarray.html#shape-manipulation">Shape manipulation</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.reshape.html">dpnp.ndarray.reshape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.transpose.html">dpnp.ndarray.transpose</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.ndarray.swapaxes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.flatten.html">dpnp.ndarray.flatten</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.squeeze.html">dpnp.ndarray.squeeze</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#item-selection-and-manipulation">Item selection and manipulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#calculation">Calculation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#arithmetic-matrix-multiplication-and-comparison-operations">Arithmetic, matrix multiplication, and comparison operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#special-methods">Special methods</a></li>
 </ul>
@@ -123,9 +113,9 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
-      <li class="breadcrumb-item active">dpnp.ndarray.cumsum</li>
+      <li class="breadcrumb-item active">dpnp.ndarray.swapaxes</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/reference/generated/dpnp.ndarray.cumsum.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.ndarray.swapaxes.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -133,16 +123,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dpnp-ndarray-cumsum">
-<h1>dpnp.ndarray.cumsum<a class="headerlink" href="#dpnp-ndarray-cumsum" title="Link to this heading"></a></h1>
+  <section id="dpnp-ndarray-swapaxes">
+<h1>dpnp.ndarray.swapaxes<a class="headerlink" href="#dpnp-ndarray-swapaxes" title="Link to this heading"></a></h1>
 <dl class="py method">
-<dt class="sig sig-object py" id="dpnp.ndarray.cumsum">
-<span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">cumsum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.cumsum" title="Link to this definition"></a></dt>
-<dd><p>Return the cumulative sum of the elements along the given axis.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.cumsum.html#dpnp.cumsum" title="dpnp.cumsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.cumsum</span></code></a></p>
-</div>
+<dt class="sig sig-object py" id="dpnp.ndarray.swapaxes">
+<span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">swapaxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.swapaxes" title="Link to this definition"></a></dt>
+<dd><p>Interchange two axes of an array.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.swapaxes.html#numpy.swapaxes" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.swapaxes</span></code></a>.</p>
 </dd></dl>
 
 </section>
@@ -151,8 +138,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.ndarray.sum.html" class="btn btn-neutral float-left" title="dpnp.ndarray.sum" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.ndarray.mean.html" class="btn btn-neutral float-right" title="dpnp.ndarray.mean" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.ndarray.transpose.html" class="btn btn-neutral float-left" title="dpnp.ndarray.transpose" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.ndarray.flatten.html" class="btn btn-neutral float-right" title="dpnp.ndarray.flatten" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
