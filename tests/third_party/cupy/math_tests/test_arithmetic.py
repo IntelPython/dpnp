@@ -231,7 +231,7 @@ class ArithmeticBinaryBase:
                     for d in all_types
                 ]
                 + [0, 0.0, 2, 2.0],
-                "name": ["power"],
+                "name": ["add", "multiply", "power", "subtract"],
             }
         )
         + testing.product(
