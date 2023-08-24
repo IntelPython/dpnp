@@ -176,9 +176,7 @@ class TestMathematical:
                 array([9.53674318e-08])
             On a gpu without support for `float64`, dpnp produces results similar to the second one.
             """
-            pytest.skip(
-                "Due to accuracy reason, the results are different for NumPy and dpnp"
-            )
+            pytest.skip("Due to accuracy reason, the results are different.")
         self._test_mathematical("fmod", dtype, lhs, rhs)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
@@ -230,9 +228,7 @@ class TestMathematical:
                 usm_ndarray([0.29999977, 0.2999999 ], dtype=float32)
             On a gpu without support for `float64`, dpnp produces results similar to the second one.
             """
-            pytest.skip(
-                "Due to accuracy reason, the results are different for NumPy and dpnp"
-            )
+            pytest.skip("Due to accuracy reason, the results are different.")
         self._test_mathematical("remainder", dtype, lhs, rhs)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
