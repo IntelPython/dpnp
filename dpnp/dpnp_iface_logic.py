@@ -152,42 +152,74 @@ def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
     )
 
 
-def allclose(x1, x2, rtol=1.0e-5, atol=1.0e-8, **kwargs):
+def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     """
     Returns True if two arrays are element-wise equal within a tolerance.
 
     For full documentation refer to :obj:`numpy.allclose`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        A boolean 0-dim array. If its value is ``True``,
+        two arrays are element-wise equal within a tolerance.
+
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar.
+    Parameters `a` and `b` are supported either as :class:`dpnp.ndarray`,
+    :class:`dpctl.tensor.usm_ndarray` or scalars, but both `a` and `b`
+    can not be scalars at the same time.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the functions will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters `rtol` and `atol` are supported as scalars. Otherwise
+    ``TypeError`` exeption will be raised.
+    Input array data types are limited by supported integer and
+    floating DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.isclose` : Test whether two arrays are element-wise equal.
+    :obj:`dpnp.all` : Test whether all elements evaluate to True.
+    :obj:`dpnp.any` : Test whether any element evaluates to True.
+    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> np.allclose([1e10,1e-7], [1.00001e10,1e-8])
-    >>> False
+    >>> np.allclose(np.array([1e10, 1e-7]), np.array([1.00001e10, 1e-8]))
+    array([False])
+    >>> np.allclose(np.array([1.0, np.nan]), np.array([1.0, np.nan]))
+    array([False])
+    >>> np.allclose(np.array([1.0, np.inf]), np.array([1.0, np.inf]))
+    array([ True])
 
     """
 
-    rtol_is_scalar = dpnp.isscalar(rtol)
-    atol_is_scalar = dpnp.isscalar(atol)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
+    if dpnp.isscalar(a) and dpnp.isscalar(b):
+        # at least one of inputs has to be an array
+        pass
+    elif kwargs:
+        pass
+    else:
+        if not dpnp.isscalar(rtol):
+            raise TypeError(
+                "An argument `rtol` must be a scalar, but got {}".format(
+                    type(rtol)
+                )
+            )
+        elif not dpnp.isscalar(atol):
+            raise TypeError(
+                "An argument `atol` must be a scalar, but got {}".format(
+                    type(atol)
+                )
+            )
 
-    if x1_desc and x2_desc and not kwargs:
-        if not rtol_is_scalar or not atol_is_scalar:
-            pass
-        else:
-            result_obj = dpnp_allclose(x1_desc, x2_desc, rtol, atol).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+        a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
+        b_desc = dpnp.get_dpnp_descriptor(b, copy_when_nondefault_queue=False)
+        if a_desc and b_desc:
+            return dpnp_allclose(a_desc, b_desc, rtol, atol).get_pyobj()
 
-            return result
-
-    return call_origin(numpy.allclose, x1, x2, rtol=rtol, atol=atol, **kwargs)
+    return call_origin(numpy.allclose, a, b, rtol=rtol, atol=atol, **kwargs)
 
 
 def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
