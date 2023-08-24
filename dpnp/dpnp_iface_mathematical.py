@@ -101,8 +101,8 @@ __all__ = [
     "negative",
     "power",
     "prod",
-    "rint",
     "remainder",
+    "rint",
     "round",
     "sign",
     "subtract",
@@ -291,6 +291,7 @@ def around(x, /, decimals=0, out=None):
     See Also
     --------
     :obj:`dpnp.round` : Equivalent function; see for details.
+    :obj:`dpnp.ndarray.round` : Equivalent function.
     :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
     :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
     :obj:`dpnp.floor` : Return the floor of the input, element-wise.
@@ -1868,6 +1869,7 @@ def round(x, decimals=0, out=None):
     See Also
     --------
     :obj:`dpnp.around` : Equivalent function; see for details.
+    :obj:`dpnp.ndarray.round` : Equivalent function.
     :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
     :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
     :obj:`dpnp.floor` : Return the floor of the input, element-wise.
