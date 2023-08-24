@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.round &mdash; Data Parallel Extension for NumPy 0.12.2dev1+4.g6119c467e documentation</title>
+  <title>dpnp.round &mdash; Data Parallel Extension for NumPy 0.12.2dev1+13.g0ab3ba883 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=fc22db2f"></script>
+        <script src="../../_static/documentation_options.js?v=d2ea3cbd"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+4.g6119c467e
+                0.12.2dev1+13.g0ab3ba883
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -140,6 +140,19 @@
 Parameters <cite>decimals</cite> is supported with its default value.
 Otherwise the function will be executed sequentially on CPU.
 Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.around.html#dpnp.around" title="dpnp.around"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.around</span></code></a></dt><dd><p>equivalent function; see for details.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.ceil.html#dpnp.ceil" title="dpnp.ceil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ceil</span></code></a></dt><dd><p>Compute the ceiling of the input, element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.floor.html#dpnp.floor" title="dpnp.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.floor</span></code></a></dt><dd><p>Return the floor of the input, element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.trunc.html#dpnp.trunc" title="dpnp.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.trunc</span></code></a></dt><dd><p>Return the truncated value of the input, element-wise.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.37</span><span class="p">,</span> <span class="mf">1.64</span><span class="p">]))</span>

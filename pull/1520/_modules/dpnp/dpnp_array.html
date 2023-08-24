@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.12.2dev1+4.g6119c467e documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.12.2dev1+13.g0ab3ba883 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=fc22db2f"></script>
+        <script src="../../_static/documentation_options.js?v=d2ea3cbd"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+4.g6119c467e
+                0.12.2dev1+13.g0ab3ba883
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -287,7 +287,10 @@
     <span class="k">def</span> <span class="fm">__float__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__float__</span><span class="p">()</span>
 
-    <span class="c1"># &#39;__floordiv__&#39;,</span>
+    <span class="k">def</span> <span class="fm">__floordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self//value.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
     <span class="c1"># &#39;__format__&#39;,</span>
 
 <div class="viewcode-block" id="dpnp_array.__ge__">
@@ -335,7 +338,10 @@
         <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="c1"># &#39;__ifloordiv__&#39;,</span>
+    <span class="k">def</span> <span class="fm">__ifloordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self//=value.&quot;&quot;&quot;</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__ilshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self&lt;&lt;=value.&quot;&quot;&quot;</span>
@@ -343,7 +349,11 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="c1"># &#39;__imatmul__&#39;,</span>
-    <span class="c1"># &#39;__imod__&#39;,</span>
+
+    <span class="k">def</span> <span class="fm">__imod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self%=value.&quot;&quot;&quot;</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__imul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self*=value.&quot;&quot;&quot;</span>
@@ -465,7 +475,8 @@
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray_repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;array&quot;</span><span class="p">)</span>
 
-    <span class="c1"># &#39;__rfloordiv__&#39;,</span>
+    <span class="k">def</span> <span class="fm">__rfloordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__rlshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">left_shift</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
