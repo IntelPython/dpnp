@@ -285,6 +285,9 @@ def around(x, /, decimals=0, out=None):
     See Also
     --------
     :obj:`dpnp.round` : equivalent function; see for details.
+    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
+    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
 
     Notes
     -----
@@ -1776,6 +1779,13 @@ def round(x, decimals=0, out=None):
     Parameters `decimals` is supported with its default value.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.around` : equivalent function; see for details.
+    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
+    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
 
     Examples
     --------
