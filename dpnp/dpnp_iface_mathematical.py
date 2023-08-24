@@ -59,6 +59,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_multiply,
     dpnp_negative,
     dpnp_remainder,
+    dpnp_round,
     dpnp_sign,
     dpnp_subtract,
     dpnp_trunc,
@@ -101,7 +102,7 @@ __all__ = [
     "power",
     "prod",
     "remainder",
-    "round_",
+    "round",
     "sign",
     "subtract",
     "sum",
@@ -268,45 +269,32 @@ def add(
     )
 
 
-def around(x1, decimals=0, out=None):
+def around(x, /, decimals=0, out=None):
     """
-    Evenly round to the given number of decimals.
+    Round an array to the given number of decimals.
 
     For full documentation refer to :obj:`numpy.around`.
 
     Limitations
     -----------
-    Parameters `x1` is supported as :class:`dpnp.ndarray`.
-    Parameters `decimals` and `out` are supported with their default values.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `decimals` is supported with its default value.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Examples
+    See Also
     --------
-    >>> import dpnp as np
-    >>> np.around([0.37, 1.64])
-    array([0.,  2.])
-    >>> np.around([0.37, 1.64], decimals=1)
-    array([0.4,  1.6])
-    >>> np.around([.5, 1.5, 2.5, 3.5, 4.5]) # rounds to nearest even value
-    array([0.,  2.,  2.,  4.,  4.])
-    >>> np.around([1,2,3,11], decimals=1) # ndarray of ints is returned
-    array([ 1,  2,  3, 11])
-    >>> np.around([1,2,3,11], decimals=-1)
-    array([ 0,  0,  0, 10])
+    :obj:`dpnp.round` : equivalent function; see for details.
+    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
+    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
 
+    Notes
+    -----
+    This function works the same as :obj:`dpnp.round`.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if out is not None:
-            pass
-        elif decimals != 0:
-            pass
-        else:
-            return dpnp_around(x1_desc, decimals).get_pyobj()
-
-    return call_origin(numpy.around, x1, decimals=decimals, out=out)
+    return round(x, decimals, out)
 
 
 def ceil(
@@ -1779,19 +1767,50 @@ def remainder(
     )
 
 
-def round_(a, decimals=0, out=None):
+def round(x, decimals=0, out=None):
     """
-    Round an array to the given number of decimals.
+    Evenly round to the given number of decimals.
 
-    For full documentation refer to :obj:`numpy.round_`.
+    For full documentation refer to :obj:`numpy.round`.
+
+    Limitations
+    -----------
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `decimals` is supported with its default value.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
     :obj:`dpnp.around` : equivalent function; see for details.
+    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
+    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.round(np.array([0.37, 1.64]))
+    array([0.,  2.])
+    >>> np.round(np.array([0.37, 1.64]), decimals=1)
+    array([0.4,  1.6])
+    >>> np.round(np.array([.5, 1.5, 2.5, 3.5, 4.5])) # rounds to nearest even value
+    array([0.,  2.,  2.,  4.,  4.])
+    >>> np.round(np.array([1,2,3,11]), decimals=1) # ndarray of ints is returned
+    array([ 1,  2,  3, 11])
+    >>> np.round(np.array([1,2,3,11]), decimals=-1)
+    array([ 0,  0,  0, 10])
 
     """
 
-    return around(a, decimals, out)
+    if decimals != 0:
+        pass
+    elif dpnp.isscalar(x):
+        # input has to be an array
+        pass
+    else:
+        return dpnp_round(x, out=out)
+    return call_origin(numpy.round, x, decimals=decimals, out=out)
 
 
 def sign(

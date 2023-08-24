@@ -497,13 +497,6 @@ tests/test_umath.py::TestArctan2::test_invalid_shape[(2,2)]
 
 tests/test_umath.py::TestSqrt::test_sqrt_complex[complex64]
 
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_2_{decimals=0}::test_round
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_0_{decimals=-2}::test_round_out
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_1_{decimals=-1}::test_round_out
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_2_{decimals=0}::test_round_out
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_3_{decimals=1}::test_round_out
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_4_{decimals=2}::test_round_out
-
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_no_dtype_float
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_array_start_stop
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_float_overflow
@@ -1189,19 +1182,6 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_para
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1817_{arg1=-2.0, arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='fmod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1824_{arg1=-2.0, arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='fmod', use_dtype=True}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1825_{arg1=-2.0, arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='fmod', use_dtype=False}::test_binary
-
-tests/third_party/cupy/math_tests/test_rounding.py::TestRound_param_0_{decimals=-2}::test_round_out
-tests/third_party/cupy/math_tests/test_rounding.py::TestRound_param_1_{decimals=-1}::test_round_out
-tests/third_party/cupy/math_tests/test_rounding.py::TestRound_param_2_{decimals=0}::test_round
-tests/third_party/cupy/math_tests/test_rounding.py::TestRound_param_2_{decimals=0}::test_round_out
-tests/third_party/cupy/math_tests/test_rounding.py::TestRound_param_3_{decimals=1}::test_round_out
-tests/third_party/cupy/math_tests/test_rounding.py::TestRound_param_4_{decimals=2}::test_round_out
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_6_{value=(1.4, 0)}::test_around_negative1
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_6_{value=(1.4, 0)}::test_around_positive1
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_7_{value=(1.5, 0)}::test_around_negative1
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_7_{value=(1.5, 0)}::test_around_positive1
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_8_{value=(1.6, 0)}::test_around_negative1
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_8_{value=(1.6, 0)}::test_around_positive1
 
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_exp
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_exp2

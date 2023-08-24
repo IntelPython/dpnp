@@ -156,10 +156,6 @@ tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes
 tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_2_{shape=(2, 3)}::test_item
 tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_3_{order='C', shape=(2, 3)}::test_item
 tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_4_{order='F', shape=(2, 3)}::test_item
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_0_{decimals=-3}::test_round_halfway_float
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_1_{decimals=-2}::test_round_halfway_float
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_2_{decimals=-1}::test_round_halfway_float
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_3_{decimals=0}::test_round_halfway_float
 
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_list
@@ -295,10 +291,6 @@ tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAn
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_view_non_contiguous_raise
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestNumPyArrayCopyView_param_0_{src_order='C'}::test_isinstance_numpy_view_copy_f
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestNumPyArrayCopyView_param_1_{src_order='F'}::test_isinstance_numpy_view_copy_f
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_0_{decimals=-3}::test_round_halfway_uint
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_1_{decimals=-2}::test_round_halfway_uint
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_2_{decimals=-1}::test_round_halfway_uint
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_3_{decimals=0}::test_round_halfway_uint
 
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_all
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_all_keepdims
@@ -817,43 +809,9 @@ tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_diff
 tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_diff_types[same]
 tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_diff_types[full]
 
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_0_{value=(14, -1)}::test_around_negative2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_0_{value=(14, -1)}::test_around_positive2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_1_{value=(15, -1)}::test_around_negative2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_1_{value=(15, -1)}::test_around_positive2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_2_{value=(16, -1)}::test_around_negative2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_2_{value=(16, -1)}::test_around_positive2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_3_{value=(14.0, -1)}::test_around_negative2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_3_{value=(14.0, -1)}::test_around_positive2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_4_{value=(15.0, -1)}::test_around_negative2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_4_{value=(15.0, -1)}::test_around_positive2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_5_{value=(16.0, -1)}::test_around_negative2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_5_{value=(16.0, -1)}::test_around_positive2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_6_{value=(1.4, 0)}::test_around_negative2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_6_{value=(1.4, 0)}::test_around_positive2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_7_{value=(1.5, 0)}::test_around_negative2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_7_{value=(1.5, 0)}::test_around_positive2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_8_{value=(1.6, 0)}::test_around_negative2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundBorder_param_8_{value=(1.6, 0)}::test_around_positive2
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_0_{decimals=-100}::test_round_large
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_0_{decimals=-100}::test_round_small
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_1_{decimals=-99}::test_round_large
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_1_{decimals=-99}::test_round_small
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_2_{decimals=-90}::test_round_large
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_2_{decimals=-90}::test_round_small
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_3_{decimals=0}::test_round_large
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_3_{decimals=0}::test_round_small
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_4_{decimals=90}::test_round_large
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_4_{decimals=90}::test_round_small
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_5_{decimals=99}::test_round_large
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_5_{decimals=99}::test_round_small
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_6_{decimals=100}::test_round_large
-tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_6_{decimals=100}::test_round_small
-tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_around
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint_negative
-tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_round_
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_ndarray_cumprod_2dim_with_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim_with_n

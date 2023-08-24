@@ -4,6 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -70,8 +71,8 @@ class TestRounding(unittest.TestCase):
         self.check_unary("around")
         self.check_unary_complex("around")
 
-    def test_round_(self):
-        self.check_unary("round_")
+    def test_round(self):
+        self.check_unary("round")
         self.check_unary_complex("around")
 
 
@@ -102,7 +103,8 @@ class TestRound(unittest.TestCase):
 
     @testing.numpy_cupy_array_equal()
     def test_round_out(self, xp):
-        a = testing.shaped_random(self.shape, xp, scale=100, dtype="d")
+        dtype = "d" if has_support_aspect64() else "f"
+        a = testing.shaped_random(self.shape, xp, scale=100, dtype=dtype)
         out = xp.empty_like(a)
         xp.around(a, self.decimals, out)
         return out
@@ -115,16 +117,23 @@ class TestRound(unittest.TestCase):
         }
     )
 )
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRoundExtreme(unittest.TestCase):
     shape = (20,)
 
-    @testing.for_dtypes([numpy.float64, numpy.complex128])
+    dtype_ = (
+        [numpy.float64, numpy.complex128]
+        if has_support_aspect64()
+        else [numpy.float32, numpy.complex64]
+    )
+
+    @testing.for_dtypes(dtype_)
     @testing.numpy_cupy_allclose()
     def test_round_large(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, scale=1e100, dtype=dtype)
         return xp.around(a, self.decimals)
 
-    @testing.for_dtypes([numpy.float64, numpy.complex128])
+    @testing.for_dtypes(dtype_)
     @testing.numpy_cupy_allclose()
     def test_round_small(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, scale=1e-100, dtype=dtype)
@@ -150,23 +159,23 @@ class TestRoundExtreme(unittest.TestCase):
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRoundBorder(unittest.TestCase):
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_positive1(self, xp):
         a, decimals = self.value
         return xp.around(a, decimals)
 
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_positive2(self, xp):
         a, decimals = self.value
         a = xp.asarray(a)
         return xp.around(a, decimals)
 
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_negative1(self, xp):
         a, decimals = self.value
         return xp.around(-a, decimals)
 
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_negative2(self, xp):
         a, decimals = self.value
         a = xp.asarray(a)
