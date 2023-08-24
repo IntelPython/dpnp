@@ -177,7 +177,7 @@ class TestMathematical:
             On a gpu without support for `float64`, dpnp produces results similar to the second one.
             """
             pytest.skip(
-                "Due to accuracy reason, the results are different for numpy and dpnp"
+                "Due to accuracy reason, the results are different for NumPy and dpnp"
             )
         self._test_mathematical("fmod", dtype, lhs, rhs)
 
@@ -231,7 +231,7 @@ class TestMathematical:
             On a gpu without support for `float64`, dpnp produces results similar to the second one.
             """
             pytest.skip(
-                "Due to accuracy reason, the results are different for numpy and dpnp"
+                "Due to accuracy reason, the results are different for NumPy and dpnp"
             )
         self._test_mathematical("remainder", dtype, lhs, rhs)
 
