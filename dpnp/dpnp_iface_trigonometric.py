@@ -429,7 +429,7 @@ def cos(
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         The cosine of each element of `x`.
 
     Limitations
@@ -738,7 +738,7 @@ def log(
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         The natural logarithm of `x`, element-wise.
 
     Limitations
@@ -982,7 +982,7 @@ def sin(
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         The sine of each element of `x`.
 
     Limitations
@@ -1069,7 +1069,7 @@ def sqrt(
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         An array of the same shape as `x`, containing the positive
         square-root of each element in `x`.  If any element in `x` is
         complex, a complex array is returned (and the square-roots of
@@ -1129,7 +1129,7 @@ def square(
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         Element-wise `x * x`, of the same shape and dtype as `x`.
 
     Limitations

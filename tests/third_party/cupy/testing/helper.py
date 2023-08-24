@@ -1005,6 +1005,12 @@ def for_dtypes(dtypes, name="dtype"):
         @_wraps_partial(impl, name)
         def test_func(*args, **kw):
             for dtype in dtypes:
+                if (
+                    dtype in ["d", "D"]
+                    and not select_default_device().has_aspect_fp64
+                ):
+                    continue
+
                 try:
                     kw[name] = numpy.dtype(dtype).type
                     impl(*args, **kw)
