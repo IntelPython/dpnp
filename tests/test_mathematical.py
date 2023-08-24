@@ -1177,3 +1177,31 @@ class TestMean:
         result = dp_array.mean()
         expected = np_array.mean()
         assert_allclose(expected, result)
+
+
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+)
+def test_inplace_remainder(dtype):
+    size = 21
+    np_a = numpy.arange(size, dtype=dtype)
+    dp_a = dpnp.arange(size, dtype=dtype)
+
+    np_a %= 4
+    dp_a %= 4
+
+    assert_allclose(dp_a, np_a)
+
+
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+)
+def test_inplace_floor_divide(dtype):
+    size = 21
+    np_a = numpy.arange(size, dtype=dtype)
+    dp_a = dpnp.arange(size, dtype=dtype)
+
+    np_a //= 4
+    dp_a //= 4
+
+    assert_allclose(dp_a, np_a)
