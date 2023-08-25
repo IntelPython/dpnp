@@ -186,11 +186,19 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     Examples
     --------
     >>> import dpnp as np
-    >>> np.allclose(np.array([1e10, 1e-7]), np.array([1.00001e10, 1e-8]))
+    >>> a = np.array([1e10, 1e-7])
+    >>> b = np.array([1.00001e10, 1e-8])
+    >>> np.allclose(a, b)
     array([False])
-    >>> np.allclose(np.array([1.0, np.nan]), np.array([1.0, np.nan]))
+
+    >>> a = np.array([1.0, np.nan])
+    >>> b = np.array([1.0, np.nan])
+    >>> np.allclose(a, b)
     array([False])
-    >>> np.allclose(np.array([1.0, np.inf]), np.array([1.0, np.inf]))
+
+    >>> a = np.array([1.0, np.inf])
+    >>> b = np.array([1.0, np.inf])
+    >>> np.allclose(a, b)
     array([ True])
 
     """
@@ -213,6 +221,13 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
                     type(atol)
                 )
             )
+
+        if dpnp.isscalar(a):
+            a = dpnp.full_like(b, fill_value=a)
+        elif dpnp.isscalar(b):
+            b = dpnp.full_like(a, fill_value=b)
+        elif a.shape != b.shape:
+            a, b = dpt.broadcast_arrays(a, b)
 
         a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
         b_desc = dpnp.get_dpnp_descriptor(b, copy_when_nondefault_queue=False)

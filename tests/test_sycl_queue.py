@@ -276,6 +276,11 @@ def test_1in_1out(func, data, device):
             [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
             [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
         ),
+        pytest.param(
+            "allclose",
+            [1.0, dpnp.inf, -dpnp.inf],
+            [1.0, dpnp.inf, -dpnp.inf],
+        ),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param(
