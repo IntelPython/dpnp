@@ -101,8 +101,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGSORT_EXT,  /**< Used in numpy.argsort() impl, requires extra
                              parameters */
     DPNP_FN_AROUND,       /**< Used in numpy.around() impl  */
-    DPNP_FN_AROUND_EXT,   /**< Used in numpy.around() impl, requires extra
-                             parameters */
     DPNP_FN_ASTYPE,       /**< Used in numpy.astype() impl  */
     DPNP_FN_ASTYPE_EXT,   /**< Used in numpy.astype() impl, requires extra
                              parameters */

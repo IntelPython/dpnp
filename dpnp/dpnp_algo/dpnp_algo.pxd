@@ -58,8 +58,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ARGMIN_EXT
         DPNP_FN_ARGSORT
         DPNP_FN_ARGSORT_EXT
-        DPNP_FN_AROUND
-        DPNP_FN_AROUND_EXT
         DPNP_FN_ASTYPE
         DPNP_FN_ASTYPE_EXT
         DPNP_FN_CBRT

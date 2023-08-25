@@ -40,6 +40,7 @@
 #include "ln.hpp"
 #include "mul.hpp"
 #include "pow.hpp"
+#include "round.hpp"
 #include "sin.hpp"
 #include "sqr.hpp"
 #include "sqrt.hpp"
@@ -62,6 +63,7 @@ static unary_impl_fn_ptr_t conj_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ln_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t mul_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t pow_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t round_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t sin_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t sqr_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t sqrt_dispatch_vector[dpctl_td_ns::num_types];
@@ -331,6 +333,34 @@ PYBIND11_MODULE(_vm_impl, m)
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
               py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Round(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::RoundContigFactory>(
+            round_dispatch_vector);
+
+        auto round_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                               const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       round_dispatch_vector);
+        };
+        m.def("_round", round_pyapi,
+              "Call `rint` function from OneMKL VM library to compute "
+              "the rounded value of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto round_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                            arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    round_dispatch_vector);
+        };
+        m.def("_mkl_round_to_call", round_need_to_call_pyapi,
+              "Check input arguments to answer if `rint` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }
 
     // UnaryUfunc: ==== Sin(x) ====

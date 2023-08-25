@@ -29,8 +29,6 @@
 
 from sys import platform
 
-import dpctl
-import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 from dpctl.tensor._elementwise_common import (
     BinaryElementwiseFunc,
@@ -74,6 +72,7 @@ __all__ = [
     "dpnp_power",
     "dpnp_remainder",
     "dpnp_right_shift",
+    "dpnp_round",
     "dpnp_sin",
     "dpnp_sqrt",
     "dpnp_square",
@@ -541,32 +540,11 @@ def _call_divide(src1, src2, dst, sycl_queue, depends=None):
     return ti._divide(src1, src2, dst, sycl_queue, depends)
 
 
-def _call_divide_inplace(lhs, rhs, sycl_queue, depends=None):
-    """In place workaround until dpctl.tensor provides the functionality."""
-
-    if depends is None:
-        depends = []
-
-    # allocate temporary memory for out array
-    out = dpt.empty_like(lhs, dtype=dpnp.result_type(lhs.dtype, rhs.dtype))
-
-    # call a general callback
-    div_ht_, div_ev_ = _call_divide(lhs, rhs, out, sycl_queue, depends)
-
-    # store the result into left input array and return events
-    cp_ht_, cp_ev_ = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=out, dst=lhs, sycl_queue=sycl_queue, depends=[div_ev_]
-    )
-    dpctl.SyclEvent.wait_for([div_ht_])
-    return (cp_ht_, cp_ev_)
-
-
 divide_func = BinaryElementwiseFunc(
     "divide",
     ti._divide_result_type,
     _call_divide,
     _divide_docstring_,
-    _call_divide_inplace,
 )
 
 
@@ -1568,6 +1546,57 @@ def dpnp_right_shift(x1, x2, out=None, order="K"):
     res_usm = right_shift_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_round_docstring = """
+round(x, out=None, order='K')
+Rounds each element `x_i` of the input array `x` to
+the nearest integer-valued number.
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise rounded value. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_round(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_round_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for round() function from OneMKL VM
+        return vmi._round(sycl_queue, src, dst, depends)
+    return ti._round(src, dst, sycl_queue, depends)
+
+
+round_func = UnaryElementwiseFunc(
+    "round", ti._round_result_type, _call_round, _round_docstring
+)
+
+
+def dpnp_round(x, out=None, order="K"):
+    """
+    Invokes round() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for round() function.
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = round_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 

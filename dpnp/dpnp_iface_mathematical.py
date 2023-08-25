@@ -60,6 +60,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_negative,
     dpnp_power,
     dpnp_remainder,
+    dpnp_round,
     dpnp_sign,
     dpnp_subtract,
     dpnp_trunc,
@@ -102,7 +103,8 @@ __all__ = [
     "power",
     "prod",
     "remainder",
-    "round_",
+    "rint",
+    "round",
     "sign",
     "subtract",
     "sum",
@@ -145,7 +147,7 @@ def absolute(x, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         An array containing the absolute value of each element in `x`.
 
     Limitations
@@ -219,7 +221,7 @@ def add(
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         The sum of `x1` and `x2`, element-wise.
 
     Limitations
@@ -269,45 +271,39 @@ def add(
     )
 
 
-def around(x1, decimals=0, out=None):
+def around(x, /, decimals=0, out=None):
     """
-    Evenly round to the given number of decimals.
+    Round an array to the given number of decimals.
 
     For full documentation refer to :obj:`numpy.around`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The rounded value of elements of the array.
+
     Limitations
     -----------
-    Parameters `x1` is supported as :class:`dpnp.ndarray`.
-    Parameters `decimals` and `out` are supported with their default values.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `decimals` is supported with its default value.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Examples
+    See Also
     --------
-    >>> import dpnp as np
-    >>> np.around([0.37, 1.64])
-    array([0.,  2.])
-    >>> np.around([0.37, 1.64], decimals=1)
-    array([0.4,  1.6])
-    >>> np.around([.5, 1.5, 2.5, 3.5, 4.5]) # rounds to nearest even value
-    array([0.,  2.,  2.,  4.,  4.])
-    >>> np.around([1,2,3,11], decimals=1) # ndarray of ints is returned
-    array([ 1,  2,  3, 11])
-    >>> np.around([1,2,3,11], decimals=-1)
-    array([ 0,  0,  0, 10])
+    :obj:`dpnp.round` : Equivalent function; see for details.
+    :obj:`dpnp.ndarray.round` : Equivalent function.
+    :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
+    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
 
+    Notes
+    -----
+    This function works the same as :obj:`dpnp.round`.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if out is not None:
-            pass
-        elif decimals != 0:
-            pass
-        else:
-            return dpnp_around(x1_desc, decimals).get_pyobj()
-
-    return call_origin(numpy.around, x1, decimals=decimals, out=out)
+    return round(x, decimals, out)
 
 
 def ceil(
@@ -672,7 +668,7 @@ def divide(
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         The quotient `x1/x2`, element-wise.
 
     Limitations
@@ -878,6 +874,11 @@ def floor_divide(
 
     For full documentation refer to :obj:`numpy.floor_divide`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The floordivide of each element of `x`.
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -902,6 +903,14 @@ def floor_divide(
 
     >>> np.floor_divide(np.array([1., 2., 3., 4.]), 2.5)
     array([ 0.,  0.,  1.,  1.])
+
+    The ``//`` operator can be used as a shorthand for ``floor_divide`` on
+    :class:`dpnp.ndarray`.
+
+    >>> x1 = np.array([1., 2., 3., 4.])
+    >>> x1 // 2.5
+    array([0., 0., 1., 1.])
+
     """
 
     return check_nd_call_func(
@@ -1220,6 +1229,11 @@ def mod(
 
     For full documentation refer to :obj:`numpy.mod`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The element-wise remainder of the quotient `floor_divide(x1, x2)`.
+
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
@@ -1303,7 +1317,7 @@ def multiply(
 
     Returns
     -------
-    y : {dpnp.ndarray, scalar}
+    out : {dpnp.ndarray, scalar}
         The product of `x1` and `x2`, element-wise.
 
     Limitations
@@ -1508,7 +1522,7 @@ def negative(
     Returns
     -------
     out : dpnp.ndarray
-    The numerical negative of each element of `x`.
+        The numerical negative of each element of `x`.
 
     Limitations
     -----------
@@ -1571,7 +1585,7 @@ def power(
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         The bases in `x1` raised to the exponents in `x2`.
 
     Limitations
@@ -1686,6 +1700,64 @@ def prod(
     )
 
 
+def rint(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Round elements of the array to the nearest integer.
+
+    For full documentation refer to :obj:`numpy.rint`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The rounded value of elements of the array to the nearest integer.
+
+    Limitations
+    -----------
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.round` : Evenly round to the given number of decimals.
+    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
+    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
+    >>> np.rint(a)
+    array([-2., -2., -0.,  0.,  2.,  2.,  2.])
+
+    """
+
+    return check_nd_call_func(
+        numpy.rint,
+        dpnp_round,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
+
+
 def remainder(
     x1,
     x2,
@@ -1702,6 +1774,11 @@ def remainder(
     Return element-wise remainder of division.
 
     For full documentation refer to :obj:`numpy.remainder`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The element-wise remainder of the quotient `floor_divide(x1, x2)`.
 
     Limitations
     -----------
@@ -1751,19 +1828,57 @@ def remainder(
     )
 
 
-def round_(a, decimals=0, out=None):
+def round(x, decimals=0, out=None):
     """
-    Round an array to the given number of decimals.
+    Evenly round to the given number of decimals.
 
-    For full documentation refer to :obj:`numpy.round_`.
+    For full documentation refer to :obj:`numpy.round`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The rounded value of elements of the array.
+
+    Limitations
+    -----------
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `decimals` is supported with its default value.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.around` : equivalent function; see for details.
+    :obj:`dpnp.around` : Equivalent function; see for details.
+    :obj:`dpnp.ndarray.round` : Equivalent function.
+    :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
+    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.round(np.array([0.37, 1.64]))
+    array([0.,  2.])
+    >>> np.round(np.array([0.37, 1.64]), decimals=1)
+    array([0.4,  1.6])
+    >>> np.round(np.array([.5, 1.5, 2.5, 3.5, 4.5])) # rounds to nearest even value
+    array([0.,  2.,  2.,  4.,  4.])
+    >>> np.round(np.array([1,2,3,11]), decimals=1) # ndarray of ints is returned
+    array([ 1,  2,  3, 11])
+    >>> np.round(np.array([1,2,3,11]), decimals=-1)
+    array([ 0,  0,  0, 10])
 
     """
 
-    return around(a, decimals, out)
+    if decimals != 0:
+        pass
+    elif dpnp.isscalar(x):
+        # input has to be an array
+        pass
+    else:
+        return dpnp_round(x, out=out)
+    return call_origin(numpy.round, x, decimals=decimals, out=out)
 
 
 def sign(
@@ -1785,7 +1900,7 @@ def sign(
     Returns
     -------
     out : dpnp.ndarray
-    The indication of the sign of each element of `x`.
+        The indication of the sign of each element of `x`.
 
     Limitations
     -----------
@@ -1852,7 +1967,7 @@ def subtract(
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         The difference of `x1` and `x2`, element-wise.
 
     Limitations
@@ -1918,7 +2033,7 @@ def sum(
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         an array containing the sums. If the sum was computed over the
         entire array, a zero-dimensional array is returned. The returned
         array has the data type as described in the `dtype` parameter
@@ -2086,7 +2201,6 @@ def true_divide(*args, **kwargs):
     Notes
     -----
     This function works the same as :obj:`dpnp.divide`.
-
 
     """
 
