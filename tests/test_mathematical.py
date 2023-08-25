@@ -449,7 +449,6 @@ def test_sign_boolean():
     ids=["[2, 0, -2]", "[1.1, -1.1]"],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_signbit(data, dtype):
     np_a = numpy.array(data, dtype=dtype)
     dpnp_a = dpnp.array(data, dtype=dtype)

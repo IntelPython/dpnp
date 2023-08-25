@@ -1588,7 +1588,7 @@ def proj(
     Returns
     -------
     out : dpnp.ndarray
-    The projection of each element of `x`.
+        The projection of each element of `x`.
 
     Limitations
     -----------
@@ -1600,6 +1600,7 @@ def proj(
     See Also
     --------
     :obj:`dpnp.abs` : Returns the magnitude of a complex number, element-wise.
+    :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
 
     Examples
     --------
@@ -2053,7 +2054,7 @@ def signbit(
     Returns
     -------
     out : dpnp.ndarray
-    A boolean array with indication of the sign of each element of `x`.
+        A boolean array with indication of the sign of each element of `x`.
 
     Limitations
     -----------
@@ -2072,6 +2073,7 @@ def signbit(
     >>> import dpnp as np
     >>> np.signbit(np.array([-1.2]))
     array([True])
+
     >>> np.signbit(np.array([1, -2.3, 2.1]))
     array([False,  True, False])
 
