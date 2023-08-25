@@ -174,8 +174,15 @@ static sycl::event dpnp_allclose(sycl::queue &q,
                     continue;
                 }
             }
-            partial &= (std::abs(array1[i] - array2[i]) <=
-                        (atol_val + rtol_val * std::abs(array2[i])));
+
+            // casting integeral to floating type to avoid bad behavior
+            // on abs(MIN_INT), which leads to undefined result
+            using _Arr2Type = std::conditional_t<std::is_integral_v<_DataType2>,
+                                                 _TolType, _DataType2>;
+            _Arr2Type arr2 = static_cast<_Arr2Type>(array2[i]);
+
+            partial &= (std::abs(array1[i] - arr2) <=
+                        (atol_val + rtol_val * std::abs(arr2)));
         }
         partial = sycl::all_of_group(gr, partial);
 
