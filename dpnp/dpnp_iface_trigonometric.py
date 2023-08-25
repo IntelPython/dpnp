@@ -48,11 +48,16 @@ from dpnp.dpnp_utils import *
 
 from .dpnp_algo.dpnp_elementwise_common import (
     check_nd_call_func,
+    dpnp_acos,
+    dpnp_asin,
+    dpnp_atan,
+    dpnp_atan2,
     dpnp_cos,
     dpnp_log,
     dpnp_sin,
     dpnp_sqrt,
     dpnp_square,
+    dpnp_tan,
 )
 
 __all__ = [
@@ -89,45 +94,67 @@ __all__ = [
 ]
 
 
-def arccos(x1):
+def arccos(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Trigonometric inverse cosine, element-wise.
 
     For full documentation refer to :obj:`numpy.arccos`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The inverse cosine of each element of `x`.
+
     Limitations
     -----------
-    Input array is supported as :class:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.cos` : Cosine element-wise.
+    :obj:`dpnp.cos` : Trigonometric cosine, element-wise.
     :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
-    :obj:`dpnp.arcsin` : Inverse sine, element-wise.
+    :obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.
+    :obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([1, -1])
-    >>> out = np.arccos(x)
-    >>> [i for i in out]
-    [0.0,  3.14159265]
+    >>> np.arccos(x)
+    array([0.0,  3.14159265])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.arccos,
+        dpnp_acos,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_arccos(x1_desc).get_pyobj()
-
-    return call_origin(numpy.arccos, x1, **kwargs)
 
 
 def arccosh(x1):
     """
-    Trigonometric inverse hyperbolic cosine, element-wise.
+    Inverse hyperbolic cosine, element-wise.
 
     For full documentation refer to :obj:`numpy.arccosh`.
 
@@ -163,50 +190,62 @@ def arccosh(x1):
     return call_origin(numpy.arccosh, x1, **kwargs)
 
 
-def arcsin(x1, out=None, **kwargs):
+def arcsin(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Inverse sine, element-wise.
 
     For full documentation refer to :obj:`numpy.arcsin`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The inverse sine of each element of `x`.
+
     Limitations
     -----------
-    Input array is supported as :class:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
     :obj:`dpnp.sin` : Trigonometric sine, element-wise.
-    :obj:`dpnp.cos` : Cosine element-wise.
-    :obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
-    :obj:`dpnp.tan` : Compute tangent element-wise.
     :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
-    :obj:`dpnp.arctan2` : Element-wise arc tangent of ``x1/x2``
-                          choosing the quadrant correctly.
+    :obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
+    :obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([0, 1, -1])
-    >>> out = np.arcsin(x)
-    >>> [i for i in out]
-    [0.0, 1.5707963267948966, -1.5707963267948966]
+    >>> np.arcsin(x)
+    array([0.0, 1.5707963267948966, -1.5707963267948966])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.arcsin,
+        dpnp_asin,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        out_desc = (
-            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-            if out is not None
-            else None
-        )
-        return dpnp_arcsin(x1_desc, out_desc).get_pyobj()
-
-    return call_origin(numpy.arcsin, x1, out=out, **kwargs)
 
 
 def arcsinh(x1):
@@ -239,51 +278,143 @@ def arcsinh(x1):
     return call_origin(numpy.arcsinh, x1, **kwargs)
 
 
-def arctan(x1, out=None, **kwargs):
+def arctan(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Trigonometric inverse tangent, element-wise.
 
     For full documentation refer to :obj:`numpy.arctan`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The inverse tangent of each element of `x`.
+
     Limitations
     -----------
-    Input array is supported as :class:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.arctan2` : Element-wise arc tangent of ``x1/x2``
-                          choosing the quadrant correctly.
+    :obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
     :obj:`dpnp.angle` : Argument of complex values.
+    :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
+    :obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.
+    :obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
+    :obj:`dpnp.arctanh` : Inverse hyperbolic tangent, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([0, 1])
-    >>> out = np.arctan(x)
-    >>> [i for i in out]
-    [0.0, 0.78539816]
+    >>> np.arctan(x)
+    array([0.0, 0.78539816])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.arctan,
+        dpnp_atan,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        out_desc = (
-            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-            if out is not None
-            else None
-        )
-        return dpnp_arctan(x1_desc, out_desc).get_pyobj()
 
-    return call_origin(numpy.arctan, x1, out=out, **kwargs)
+
+def arctan2(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
+
+    For full documentation refer to :obj:`numpy.arctan2`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The inverse tangent of `x1/x2`, element-wise.
+
+    Limitations
+    -----------
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+    :obj:`dpnp.tan` : Compute tangent element-wise.
+    :obj:`dpnp.angle` : Return the angle of the complex argument.
+    :obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.
+    :obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
+    :obj:`dpnp.arctanh` : Inverse hyperbolic tangent, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([1., -1.])
+    >>> x2 = np.array([0., 0.])
+    >>> np.arctan2(x1, x2)
+    array([1.57079633, -1.57079633])
+
+    >>> x1 = np.array([0., 0., np.inf])
+    >>> x2 = np.array([+0., -0., np.inf])
+    >>> np.arctan2(x1, x2)
+    array([0.0 , 3.14159265, 0.78539816])
+
+    >>> x1 = np.array([-1, +1, +1, -1])
+    >>> x2 = np.array([-1, -1, +1, +1])
+    >>> np.arctan2(x1, x2) * 180 / np.pi
+    array([-135.,  -45.,   45.,  135.])
+
+    """
+
+    return check_nd_call_func(
+        numpy.arctan2,
+        dpnp_atan2,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def arctanh(x1):
     """
-    Trigonometric hyperbolic inverse tangent, element-wise.
+    Hyperbolic inverse tangent, element-wise.
 
     For full documentation refer to :obj:`numpy.arctanh`.
 
@@ -341,76 +472,6 @@ def cbrt(x1):
     return call_origin(numpy.cbrt, x1, **kwargs)
 
 
-def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
-    """
-    Element-wise arc tangent of ``x1/x2`` choosing the quadrant correctly.
-
-    For full documentation refer to :obj:`numpy.arctan2`.
-
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters `dtype`, `out` and `where` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
-    :obj:`dpnp.tan` : Compute tangent element-wise.
-    :obj:`dpnp.angle` : Return the angle of the complex argument.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([1., -1.])
-    >>> x2 = np.array([0., 0.])
-    >>> out = np.arctan2(x1, x2)
-    >>> [i for i in out]
-    [1.57079633, -1.57079633]
-
-    """
-
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    x2_desc = dpnp.get_dpnp_descriptor(
-        x2, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif dtype is not None:
-            pass
-        elif not where:
-            pass
-        else:
-            out_desc = (
-                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-                if out is not None
-                else None
-            )
-            return dpnp_arctan2(
-                x1_desc, x2_desc, dtype, out_desc, where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.arctan2, x1, x2, dtype=dtype, out=out, where=where, **kwargs
-    )
-
-
 def cos(
     x,
     /,
@@ -440,6 +501,13 @@ def cos(
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
+    See Also
+    --------
+    :obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
+    :obj:`dpnp.sin` : Trigonometric sine, element-wise.
+    :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
+    :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.
+
     Examples
     --------
     >>> import dpnp as np
@@ -464,7 +532,7 @@ def cos(
 
 def cosh(x1):
     """
-    Trigonometric hyperbolic cosine, element-wise.
+    Hyperbolic cosine, element-wise.
 
     For full documentation refer to :obj:`numpy.cosh`.
 
@@ -546,7 +614,7 @@ def degrees(x1):
 
 def exp(x1, out=None, **kwargs):
     """
-    Trigonometric exponent, element-wise.
+    Calculate the exponential, element-wise.
 
     For full documentation refer to :obj:`numpy.exp`.
 
@@ -586,7 +654,7 @@ def exp(x1, out=None, **kwargs):
 
 def exp2(x1):
     """
-    Trigonometric exponent2, element-wise.
+    Calculate `2**p` for all `p` in the input array.
 
     For full documentation refer to :obj:`numpy.exp2`.
 
@@ -621,7 +689,7 @@ def exp2(x1):
 
 def expm1(x1):
     """
-    Trigonometric exponent minus 1, element-wise.
+    Return the exponential of the input array minus one, element-wise.
 
     For full documentation refer to :obj:`numpy.expm1`.
 
@@ -810,7 +878,7 @@ def log(
 
 def log10(x1):
     """
-    Trigonometric logarithm, element-wise.
+    Return the base 10 logarithm of the input array, element-wise.
 
     For full documentation refer to :obj:`numpy.log10`.
 
@@ -840,7 +908,7 @@ def log10(x1):
 
 def log1p(x1):
     """
-    Trigonometric logarithm, element-wise.
+    Return the natural logarithm of one plus the input array, element-wise.
 
     For full documentation refer to :obj:`numpy.log1p`.
 
@@ -874,7 +942,7 @@ def log1p(x1):
 
 def log2(x1):
     """
-    Trigonometric logarithm, element-wise.
+    Return the base 2 logarithm of the input array, element-wise.
 
     For full documentation refer to :obj:`numpy.log2`.
 
@@ -1025,9 +1093,10 @@ def sin(
 
     See Also
     --------
-    :obj:`dpnp.arcsin` : Inverse sine, element-wise.
+    :obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.
+    :obj:`dpnp.cos` : Trigonometric cosine, element-wise.
+    :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
     :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
-    :obj:`dpnp.cos` : Cosine element-wise.
 
     Examples
     --------
@@ -1053,7 +1122,7 @@ def sin(
 
 def sinh(x1):
     """
-    Trigonometric hyperbolic sine, element-wise.
+    Hyperbolic sine, element-wise.
 
     For full documentation refer to :obj:`numpy.sinh`.
 
@@ -1202,40 +1271,62 @@ def square(
     )
 
 
-def tan(x1, out=None, **kwargs):
+def tan(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
-    Compute tangent element-wise.
+    Trigonometric tangent, element-wise.
 
     For full documentation refer to :obj:`numpy.tan`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The tangent of each element of `x`.
+
     Limitations
     -----------
-    Input array is supported as :class:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+    :obj:`dpnp.sin` : Trigonometric sine, element-wise.
+    :obj:`dpnp.cos` : Trigonometric cosine, element-wise.
+    :obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([-np.pi, np.pi/2, np.pi])
-    >>> out = np.tan(x)
-    >>> [i for i in out]
-    [1.22460635e-16, 1.63317787e+16, -1.22460635e-16]
+    >>> np.tan(x)
+    array([1.22460635e-16, 1.63317787e+16, -1.22460635e-16])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.tan,
+        dpnp_tan,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        out_desc = (
-            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-            if out is not None
-            else None
-        )
-        return dpnp_tan(x1_desc, out_desc).get_pyobj()
-
-    return call_origin(numpy.tan, x1, out=out, **kwargs)
 
 
 def tanh(x1):

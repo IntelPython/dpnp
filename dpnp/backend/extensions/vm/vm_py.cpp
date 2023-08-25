@@ -30,7 +30,11 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "acos.hpp"
 #include "add.hpp"
+#include "asin.hpp"
+#include "atan.hpp"
+#include "atan2.hpp"
 #include "ceil.hpp"
 #include "common.hpp"
 #include "conj.hpp"
@@ -45,6 +49,7 @@
 #include "sqr.hpp"
 #include "sqrt.hpp"
 #include "sub.hpp"
+#include "tan.hpp"
 #include "trunc.hpp"
 #include "types_matrix.hpp"
 
@@ -54,7 +59,11 @@ namespace vm_ext = dpnp::backend::ext::vm;
 using vm_ext::binary_impl_fn_ptr_t;
 using vm_ext::unary_impl_fn_ptr_t;
 
+static unary_impl_fn_ptr_t acos_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t add_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t asin_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t atan_dispatch_vector[dpctl_td_ns::num_types];
+static binary_impl_fn_ptr_t atan2_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ceil_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t cos_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
@@ -68,12 +77,41 @@ static unary_impl_fn_ptr_t sin_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t sqr_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t sqrt_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t sub_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t tan_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t trunc_dispatch_vector[dpctl_td_ns::num_types];
 
 PYBIND11_MODULE(_vm_impl, m)
 {
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
+
+    // UnaryUfunc: ==== Acos(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::AcosContigFactory>(
+            acos_dispatch_vector);
+
+        auto acos_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                              const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       acos_dispatch_vector);
+        };
+        m.def("_acos", acos_pyapi,
+              "Call `acos` function from OneMKL VM library to compute "
+              "inverse cosine of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto acos_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                           arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    acos_dispatch_vector);
+        };
+        m.def("_mkl_acos_to_call", acos_need_to_call_pyapi,
+              "Check input arguments to answer if `acos` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
 
     // BinaryUfunc: ==== Add(x1, x2) ====
     {
@@ -100,6 +138,91 @@ PYBIND11_MODULE(_vm_impl, m)
         };
         m.def("_mkl_add_to_call", add_need_to_call_pyapi,
               "Check input arguments to answer if `add` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Asin(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::AsinContigFactory>(
+            asin_dispatch_vector);
+
+        auto asin_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                              const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       asin_dispatch_vector);
+        };
+        m.def("_asin", asin_pyapi,
+              "Call `asin` function from OneMKL VM library to compute "
+              "inverse sine of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto asin_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                           arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    asin_dispatch_vector);
+        };
+        m.def("_mkl_asin_to_call", asin_need_to_call_pyapi,
+              "Check input arguments to answer if `asin` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Atan(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::AtanContigFactory>(
+            atan_dispatch_vector);
+
+        auto atan_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                              const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       atan_dispatch_vector);
+        };
+        m.def("_atan", atan_pyapi,
+              "Call `atan` function from OneMKL VM library to compute "
+              "inverse tangent of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto atan_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                           arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    atan_dispatch_vector);
+        };
+        m.def("_mkl_atan_to_call", atan_need_to_call_pyapi,
+              "Check input arguments to answer if `atan` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // BinaryUfunc: ==== Atan2(x1, x2) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<binary_impl_fn_ptr_t,
+                                           vm_ext::Atan2ContigFactory>(
+            atan2_dispatch_vector);
+
+        auto atan2_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                               arrayT dst, const event_vecT &depends = {}) {
+            return vm_ext::binary_ufunc(exec_q, src1, src2, dst, depends,
+                                        atan2_dispatch_vector);
+        };
+        m.def("_atan2", atan2_pyapi,
+              "Call `atan2` function from OneMKL VM library to compute element "
+              "by element inverse tangent of `x1/x2`",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("depends") = py::list());
+
+        auto atan2_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
+                                            arrayT src2, arrayT dst) {
+            return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
+                                                     atan2_dispatch_vector);
+        };
+        m.def("_mkl_atan2_to_call", atan2_need_to_call_pyapi,
+              "Check input arguments to answer if `atan2` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
               py::arg("dst"));
@@ -478,6 +601,34 @@ PYBIND11_MODULE(_vm_impl, m)
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
               py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Tan(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::TanContigFactory>(
+            tan_dispatch_vector);
+
+        auto tan_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                             const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       tan_dispatch_vector);
+        };
+        m.def("_tan", tan_pyapi,
+              "Call `tan` function from OneMKL VM library to compute "
+              "tangent of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto tan_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                          arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    tan_dispatch_vector);
+        };
+        m.def("_mkl_tan_to_call", tan_need_to_call_pyapi,
+              "Check input arguments to answer if `tan` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }
 
     // UnaryUfunc: ==== Trunc(x) ====

@@ -78,8 +78,8 @@ tests/test_strides.py::test_strides_tan[(10,)-None]
 
 tests/test_sycl_queue.py::test_array_creation[opencl:gpu:0-arange-arg0-kwargs0]
 tests/test_sycl_queue.py::test_array_creation[level_zero:gpu:0-arange-arg0-kwargs0]
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-gradient-data10]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-gradient-data10]
+tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-gradient-data14]
+tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-gradient-data14]
 tests/test_sycl_queue.py::test_eig[opencl:gpu:0]
 tests/test_sycl_queue.py::test_eig[level_zero:gpu:0]
 tests/test_sycl_queue.py::test_eigh[opencl:gpu:0]
@@ -778,14 +778,9 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_3
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_31_{axis=1, func='nanprod', keepdims=False, shape=(20, 30, 40), transpose_axes=False}::test_nansum_axis_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_with_scalar_append
 
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arccos
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arcsin
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arctan
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arctan2
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_deg2rad
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_hypot
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_rad2deg
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_tan
 
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_6_{a_shape=(3, 2), b_shape=(3, 2), shape=(4, 3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_7_{a_shape=(3, 2), b_shape=(3, 2), shape=(3, 2)}::test_beta

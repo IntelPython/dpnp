@@ -408,8 +408,6 @@ cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 """
 Mathematical functions
 """
-cpdef dpnp_descriptor dpnp_arctan2(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                   dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_hypot(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                  dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_maximum(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
@@ -444,11 +442,8 @@ cpdef dpnp_descriptor dpnp_argmin(dpnp_descriptor array1)
 """
 Trigonometric functions
 """
-cpdef dpnp_descriptor dpnp_arccos(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_arccosh(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_arcsin(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_arcsinh(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_arctan(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_arctanh(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_cbrt(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_cosh(dpnp_descriptor array1)
@@ -462,5 +457,4 @@ cpdef dpnp_descriptor dpnp_log2(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_radians(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_recip(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_sinh(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_tan(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_tanh(dpnp_descriptor array1)

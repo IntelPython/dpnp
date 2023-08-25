@@ -37,7 +37,6 @@ and the rest of the library
 
 __all__ += [
     "dpnp_absolute",
-    "dpnp_arctan2",
     "dpnp_copysign",
     "dpnp_cross",
     "dpnp_cumprod",
@@ -105,14 +104,6 @@ cpdef utils.dpnp_descriptor dpnp_absolute(utils.dpnp_descriptor x1):
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_arctan2(utils.dpnp_descriptor x1_obj,
-                                         utils.dpnp_descriptor x2_obj,
-                                         object dtype=None,
-                                         utils.dpnp_descriptor out=None,
-                                         object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_ARCTAN2_EXT, x1_obj, x2_obj, dtype, out, where, func_name="arctan2")
 
 
 cpdef utils.dpnp_descriptor dpnp_copysign(utils.dpnp_descriptor x1_obj,
