@@ -270,6 +270,35 @@ def test_1in_1out(func, data, device):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_proj(device):
+    X = [
+        complex(1, 2),
+        complex(dpnp.inf, -1),
+        complex(0, -dpnp.inf),
+        complex(-dpnp.inf, dpnp.nan),
+    ]
+    Y = [
+        complex(1, 2),
+        complex(dpnp.inf, -0.0),
+        complex(dpnp.inf, -0.0),
+        complex(dpnp.inf, 0.0),
+    ]
+
+    x = dpnp.array(X, device=device)
+    result = dpnp.proj(x)
+    expected = dpnp.array(Y)
+    assert_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
     "func,data1,data2",
     [
         pytest.param(
