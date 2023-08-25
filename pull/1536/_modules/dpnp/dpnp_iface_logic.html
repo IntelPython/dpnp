@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.12.2dev1+11.gf051f5cda documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.12.2dev1+20.ge3b27b7f documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0bf817c8"></script>
+        <script src="../../_static/documentation_options.js?v=e649f70b"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+11.gf051f5cda
+                0.12.2dev1+20.ge3b27b7f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -184,9 +184,9 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dpnp.ndarray</span>
-<span class="sd">    An array with a data type of `bool`</span>
-<span class="sd">    containing the results of the logical AND reduction.</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        An array with a data type of `bool`</span>
+<span class="sd">        containing the results of the logical AND reduction.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -279,11 +279,19 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.allclose(np.array([1e10, 1e-7]), np.array([1.00001e10, 1e-8]))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1e10, 1e-7])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1.00001e10, 1e-8])</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
 <span class="sd">    array([False])</span>
-<span class="sd">    &gt;&gt;&gt; np.allclose(np.array([1.0, np.nan]), np.array([1.0, np.nan]))</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1.0, np.nan])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1.0, np.nan])</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
 <span class="sd">    array([False])</span>
-<span class="sd">    &gt;&gt;&gt; np.allclose(np.array([1.0, np.inf]), np.array([1.0, np.inf]))</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1.0, np.inf])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1.0, np.inf])</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
 <span class="sd">    array([ True])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -307,6 +315,13 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
         <span class="n">a_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">b_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">a_desc</span> <span class="ow">and</span> <span class="n">b_desc</span><span class="p">:</span>
@@ -326,7 +341,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        An array with a data type of `bool`</span>
 <span class="sd">        containing the results of the logical OR reduction.</span>
 
@@ -407,7 +422,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">    Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -486,7 +501,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">    Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -559,7 +574,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">    Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -830,7 +845,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">    Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -903,7 +918,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">    Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -976,8 +991,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">    Boolean result of the logical AND operation applied to the elements</span>
-<span class="sd">    of `x1` and `x2`; the shape is determined by broadcasting.</span>
+<span class="sd">        Boolean result of the logical AND operation applied to the elements</span>
+<span class="sd">        of `x1` and `x2`; the shape is determined by broadcasting.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -1052,8 +1067,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">    Boolean result with the same shape as `x` of the NOT operation</span>
-<span class="sd">    on elements of `x`.</span>
+<span class="sd">        Boolean result with the same shape as `x` of the NOT operation</span>
+<span class="sd">        on elements of `x`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -1117,8 +1132,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">    Boolean result of the logical OR operation applied to the elements</span>
-<span class="sd">    of `x1` and `x2`; the shape is determined by broadcasting.</span>
+<span class="sd">        Boolean result of the logical OR operation applied to the elements</span>
+<span class="sd">        of `x1` and `x2`; the shape is determined by broadcasting.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -1194,8 +1209,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">    Boolean result of the logical XOR operation applied to the elements</span>
-<span class="sd">    of `x1` and `x2`; the shape is determined by broadcasting.</span>
+<span class="sd">        Boolean result of the logical XOR operation applied to the elements</span>
+<span class="sd">        of `x1` and `x2`; the shape is determined by broadcasting.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>

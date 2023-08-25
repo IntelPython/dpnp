@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.12.2dev1+11.gf051f5cda documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.12.2dev1+20.ge3b27b7f documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0bf817c8"></script>
+        <script src="../../_static/documentation_options.js?v=e649f70b"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+11.gf051f5cda
+                0.12.2dev1+20.ge3b27b7f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -147,6 +147,7 @@
     <span class="n">dpnp_multiply</span><span class="p">,</span>
     <span class="n">dpnp_negative</span><span class="p">,</span>
     <span class="n">dpnp_remainder</span><span class="p">,</span>
+    <span class="n">dpnp_round</span><span class="p">,</span>
     <span class="n">dpnp_sign</span><span class="p">,</span>
     <span class="n">dpnp_subtract</span><span class="p">,</span>
     <span class="n">dpnp_trunc</span><span class="p">,</span>
@@ -189,7 +190,8 @@
     <span class="s2">&quot;power&quot;</span><span class="p">,</span>
     <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;remainder&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;round_&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rint&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;round&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sign&quot;</span><span class="p">,</span>
     <span class="s2">&quot;subtract&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
@@ -237,7 +239,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        An array containing the absolute value of each element in `x`.</span>
 
 <span class="sd">    Limitations</span>
@@ -314,7 +316,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        The sum of `x1` and `x2`, element-wise.</span>
 
 <span class="sd">    Limitations</span>
@@ -367,45 +369,39 @@
 
 <div class="viewcode-block" id="around">
 <a class="viewcode-back" href="../../reference/generated/dpnp.around.html#dpnp.around">[docs]</a>
-<span class="k">def</span> <span class="nf">around</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">around</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Evenly round to the given number of decimals.</span>
+<span class="sd">    Round an array to the given number of decimals.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.around`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The rounded value of elements of the array.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` is supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Parameters `decimals` and `out` are supported with their default values.</span>
+<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `decimals` is supported with its default value.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
-<span class="sd">    Examples</span>
+<span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.around([0.37, 1.64])</span>
-<span class="sd">    array([0.,  2.])</span>
-<span class="sd">    &gt;&gt;&gt; np.around([0.37, 1.64], decimals=1)</span>
-<span class="sd">    array([0.4,  1.6])</span>
-<span class="sd">    &gt;&gt;&gt; np.around([.5, 1.5, 2.5, 3.5, 4.5]) # rounds to nearest even value</span>
-<span class="sd">    array([0.,  2.,  2.,  4.,  4.])</span>
-<span class="sd">    &gt;&gt;&gt; np.around([1,2,3,11], decimals=1) # ndarray of ints is returned</span>
-<span class="sd">    array([ 1,  2,  3, 11])</span>
-<span class="sd">    &gt;&gt;&gt; np.around([1,2,3,11], decimals=-1)</span>
-<span class="sd">    array([ 0,  0,  0, 10])</span>
+<span class="sd">    :obj:`dpnp.round` : Equivalent function; see for details.</span>
+<span class="sd">    :obj:`dpnp.ndarray.round` : Equivalent function.</span>
+<span class="sd">    :obj:`dpnp.rint` : Round elements of the array to the nearest integer.</span>
+<span class="sd">    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.</span>
+<span class="sd">    :obj:`dpnp.floor` : Return the floor of the input, element-wise.</span>
+<span class="sd">    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function works the same as :obj:`dpnp.round`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">decimals</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_around</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">decimals</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">around</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="n">decimals</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">decimals</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
 
 
 
@@ -797,7 +793,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        The quotient `x1/x2`, element-wise.</span>
 
 <span class="sd">    Limitations</span>
@@ -1014,6 +1010,11 @@
 <span class="sd">    Compute the largest integer smaller or equal to the division of the inputs.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.floor_divide`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The floordivide of each element of `x`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -1386,6 +1387,11 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.mod`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The element-wise remainder of the quotient `floor_divide(x1, x2)`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
@@ -1475,7 +1481,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    y : {dpnp.ndarray, scalar}</span>
+<span class="sd">    out : {dpnp.ndarray, scalar}</span>
 <span class="sd">        The product of `x1` and `x2`, element-wise.</span>
 
 <span class="sd">    Limitations</span>
@@ -1695,7 +1701,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">    The numerical negative of each element of `x`.</span>
+<span class="sd">        The numerical negative of each element of `x`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -1750,7 +1756,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        The bases in `x1` raised to the exponents in `x2`.</span>
 
 <span class="sd">    Limitations</span>
@@ -1901,6 +1907,67 @@
 
 
 
+<div class="viewcode-block" id="rint">
+<a class="viewcode-back" href="../../reference/generated/dpnp.rint.html#dpnp.rint">[docs]</a>
+<span class="k">def</span> <span class="nf">rint</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Round elements of the array to the nearest integer.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.rint`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The rounded value of elements of the array to the nearest integer.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.round` : Evenly round to the given number of decimals.</span>
+<span class="sd">    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.</span>
+<span class="sd">    :obj:`dpnp.floor` : Return the floor of the input, element-wise.</span>
+<span class="sd">    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])</span>
+<span class="sd">    &gt;&gt;&gt; np.rint(a)</span>
+<span class="sd">    array([-2., -2., -0.,  0.,  2.,  2.,  2.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">rint</span><span class="p">,</span>
+        <span class="n">dpnp_round</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="remainder">
 <a class="viewcode-back" href="../../reference/generated/dpnp.remainder.html#dpnp.remainder">[docs]</a>
 <span class="k">def</span> <span class="nf">remainder</span><span class="p">(</span>
@@ -1919,6 +1986,11 @@
 <span class="sd">    Return element-wise remainder of division.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.remainder`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The element-wise remainder of the quotient `floor_divide(x1, x2)`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -1969,19 +2041,60 @@
 
 
 
-<span class="k">def</span> <span class="nf">round_</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="round">
+<a class="viewcode-back" href="../../reference/generated/dpnp.round.html#dpnp.round">[docs]</a>
+<span class="k">def</span> <span class="nf">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Round an array to the given number of decimals.</span>
+<span class="sd">    Evenly round to the given number of decimals.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.round_`.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.round`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The rounded value of elements of the array.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `decimals` is supported with its default value.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.around` : equivalent function; see for details.</span>
+<span class="sd">    :obj:`dpnp.around` : Equivalent function; see for details.</span>
+<span class="sd">    :obj:`dpnp.ndarray.round` : Equivalent function.</span>
+<span class="sd">    :obj:`dpnp.rint` : Round elements of the array to the nearest integer.</span>
+<span class="sd">    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.</span>
+<span class="sd">    :obj:`dpnp.floor` : Return the floor of the input, element-wise.</span>
+<span class="sd">    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.round(np.array([0.37, 1.64]))</span>
+<span class="sd">    array([0.,  2.])</span>
+<span class="sd">    &gt;&gt;&gt; np.round(np.array([0.37, 1.64]), decimals=1)</span>
+<span class="sd">    array([0.4,  1.6])</span>
+<span class="sd">    &gt;&gt;&gt; np.round(np.array([.5, 1.5, 2.5, 3.5, 4.5])) # rounds to nearest even value</span>
+<span class="sd">    array([0.,  2.,  2.,  4.,  4.])</span>
+<span class="sd">    &gt;&gt;&gt; np.round(np.array([1,2,3,11]), decimals=1) # ndarray of ints is returned</span>
+<span class="sd">    array([ 1,  2,  3, 11])</span>
+<span class="sd">    &gt;&gt;&gt; np.round(np.array([1,2,3,11]), decimals=-1)</span>
+<span class="sd">    array([ 0,  0,  0, 10])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">around</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">decimals</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">decimals</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="c1"># input has to be an array</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">round</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="n">decimals</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="sign">
@@ -2005,7 +2118,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">    The indication of the sign of each element of `x`.</span>
+<span class="sd">        The indication of the sign of each element of `x`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -2075,7 +2188,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        The difference of `x1` and `x2`, element-wise.</span>
 
 <span class="sd">    Limitations</span>
@@ -2144,7 +2257,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        an array containing the sums. If the sum was computed over the</span>
 <span class="sd">        entire array, a zero-dimensional array is returned. The returned</span>
 <span class="sd">        array has the data type as described in the `dtype` parameter</span>
@@ -2318,7 +2431,6 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This function works the same as :obj:`dpnp.divide`.</span>
-
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
