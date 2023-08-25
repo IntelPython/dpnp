@@ -69,6 +69,7 @@ __all__ = [
     "dpnp_not_equal",
     "dpnp_remainder",
     "dpnp_right_shift",
+    "dpnp_round",
     "dpnp_sin",
     "dpnp_sqrt",
     "dpnp_square",
@@ -1542,6 +1543,57 @@ def dpnp_right_shift(x1, x2, out=None, order="K"):
     res_usm = right_shift_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_round_docstring = """
+round(x, out=None, order='K')
+Rounds each element `x_i` of the input array `x` to
+the nearest integer-valued number.
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise rounded value. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_round(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_round_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for round() function from OneMKL VM
+        return vmi._round(sycl_queue, src, dst, depends)
+    return ti._round(src, dst, sycl_queue, depends)
+
+
+round_func = UnaryElementwiseFunc(
+    "round", ti._round_result_type, _call_round, _round_docstring
+)
+
+
+def dpnp_round(x, out=None, order="K"):
+    """
+    Invokes round() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for round() function.
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = round_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 

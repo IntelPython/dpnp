@@ -137,12 +137,6 @@ class TestMathematical:
         else:
             result = getattr(dpnp, name)(a_dpnp, b_dpnp)
             expected = getattr(numpy, name)(a_np, b_np)
-            if (
-                name == "remainder"
-                and result.dtype != expected.dtype
-                and not has_support_aspect64()
-            ):
-                pytest.skip("skipping since output is promoted differently")
             assert_allclose(result, expected, rtol=1e-6)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
@@ -174,14 +168,15 @@ class TestMathematical:
     def test_fmod(self, dtype, lhs, rhs):
         if dtype == None and rhs == 0.3 and not has_support_aspect64():
             """
-            Due to accuracy reason NumPy behaves differently, when:
+            Due to accuracy reason, the results are different for `float32` and `float64`
                 >>> numpy.fmod(numpy.array([3.9], dtype=numpy.float32), 0.3)
                 array([0.29999995], dtype=float32)
-            while numpy with float64 returns something around zero which is aligned with dpnp:
+
                 >>> numpy.fmod(numpy.array([3.9], dtype=numpy.float64), 0.3)
                 array([9.53674318e-08])
+            On a gpu without support for `float64`, dpnp produces results similar to the second one.
             """
-            pytest.skip("missaligned between numpy results")
+            pytest.skip("Due to accuracy reason, the results are different.")
         self._test_mathematical("fmod", dtype, lhs, rhs)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
@@ -219,6 +214,21 @@ class TestMathematical:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_remainder(self, dtype, lhs, rhs):
+        if (
+            dtype in [dpnp.int32, dpnp.int64, None]
+            and rhs == 0.3
+            and not has_support_aspect64()
+        ):
+            """
+            Due to accuracy reason, the results are different for `float32` and `float64`
+                >>> numpy.remainder(numpy.array([6, 3], dtype='i4'), 0.3, dtype='f8')
+                array([2.22044605e-16, 1.11022302e-16])
+
+                >>> numpy.remainder(numpy.array([6, 3], dtype='i4'), 0.3, dtype='f4')
+                usm_ndarray([0.29999977, 0.2999999 ], dtype=float32)
+            On a gpu without support for `float64`, dpnp produces results similar to the second one.
+            """
+            pytest.skip("Due to accuracy reason, the results are different.")
         self._test_mathematical("remainder", dtype, lhs, rhs)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())

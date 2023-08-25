@@ -94,9 +94,9 @@ def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
 
     Returns
     -------
-    dpnp.ndarray
-    An array with a data type of `bool`
-    containing the results of the logical AND reduction.
+    out : dpnp.ndarray
+        An array with a data type of `bool`
+        containing the results of the logical AND reduction.
 
     Limitations
     -----------
@@ -245,7 +245,7 @@ def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
 
     Returns
     -------
-    dpnp.ndarray
+    out : dpnp.ndarray
         An array with a data type of `bool`
         containing the results of the logical OR reduction.
 
@@ -323,7 +323,7 @@ def equal(
     Returns
     -------
     out : dpnp.ndarray
-    Output array of bool type, element-wise comparison of `x1` and `x2`.
+        Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -399,7 +399,7 @@ def greater(
     Returns
     -------
     out : dpnp.ndarray
-    Output array of bool type, element-wise comparison of `x1` and `x2`.
+        Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -469,7 +469,7 @@ def greater_equal(
     Returns
     -------
     out : dpnp.ndarray
-    Output array of bool type, element-wise comparison of `x1` and `x2`.
+        Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -725,7 +725,7 @@ def less(
     Returns
     -------
     out : dpnp.ndarray
-    Output array of bool type, element-wise comparison of `x1` and `x2`.
+        Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -795,7 +795,7 @@ def less_equal(
     Returns
     -------
     out : dpnp.ndarray
-    Output array of bool type, element-wise comparison of `x1` and `x2`.
+        Output array of bool type, element-wise comparison of `x1` and `x2`.
 
     Limitations
     -----------
@@ -865,8 +865,8 @@ def logical_and(
     Returns
     -------
     out : dpnp.ndarray
-    Boolean result of the logical AND operation applied to the elements
-    of `x1` and `x2`; the shape is determined by broadcasting.
+        Boolean result of the logical AND operation applied to the elements
+        of `x1` and `x2`; the shape is determined by broadcasting.
 
     Limitations
     -----------
@@ -938,8 +938,8 @@ def logical_not(
     Returns
     -------
     out : dpnp.ndarray
-    Boolean result with the same shape as `x` of the NOT operation
-    on elements of `x`.
+        Boolean result with the same shape as `x` of the NOT operation
+        on elements of `x`.
 
     Limitations
     -----------
@@ -1000,8 +1000,8 @@ def logical_or(
     Returns
     -------
     out : dpnp.ndarray
-    Boolean result of the logical OR operation applied to the elements
-    of `x1` and `x2`; the shape is determined by broadcasting.
+        Boolean result of the logical OR operation applied to the elements
+        of `x1` and `x2`; the shape is determined by broadcasting.
 
     Limitations
     -----------
@@ -1074,8 +1074,8 @@ def logical_xor(
     Returns
     -------
     out : dpnp.ndarray
-    Boolean result of the logical XOR operation applied to the elements
-    of `x1` and `x2`; the shape is determined by broadcasting.
+        Boolean result of the logical XOR operation applied to the elements
+        of `x1` and `x2`; the shape is determined by broadcasting.
 
     Limitations
     -----------
