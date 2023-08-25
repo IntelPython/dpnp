@@ -63,8 +63,6 @@ tests/test_umath.py::test_umaths[('positive', 'i')]
 tests/test_umath.py::test_umaths[('positive', 'l')]
 tests/test_umath.py::test_umaths[('positive', 'f')]
 tests/test_umath.py::test_umaths[('positive', 'd')]
-tests/test_umath.py::test_umaths[('rint', 'f')]
-tests/test_umath.py::test_umaths[('rint', 'd')]
 tests/test_umath.py::test_umaths[('signbit', 'f')]
 tests/test_umath.py::test_umaths[('signbit', 'd')]
 tests/test_umath.py::test_umaths[('spacing', 'f')]
@@ -810,8 +808,6 @@ tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_diff
 tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_diff_types[full]
 
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
-tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint
-tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint_negative
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_ndarray_cumprod_2dim_with_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim_with_n

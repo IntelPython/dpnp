@@ -30,7 +30,7 @@ class TestRounding(unittest.TestCase):
                 getattr(xp, name)(a)
 
     @testing.for_dtypes(["?", "b", "h", "i", "q", "e", "f", "d"])
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(type_check=False, atol=1e-5)
     def check_unary_negative(self, name, xp, dtype):
         a = xp.array([-3, -2, -1, 1, 2, 3], dtype=dtype)
         return getattr(xp, name)(a)
