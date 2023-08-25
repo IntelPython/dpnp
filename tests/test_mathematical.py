@@ -995,15 +995,21 @@ class TestPower:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_out_overlap(self, dtype):
-        size = 5
+        size = 10
+        # DPNP
         dp_a = dpnp.arange(2 * size, dtype=dtype)
-        with pytest.raises(TypeError):
-            dpnp.power(dp_a[size::], dp_a[::2], out=dp_a[:size:])
+        dpnp.power(dp_a[size::], dp_a[::2], out=dp_a[:size:]),
+
+        # original
+        np_a = numpy.arange(2 * size, dtype=dtype)
+        numpy.power(np_a[size::], np_a[::2], out=np_a[:size:])
+
+        rtol = 1e-05 if dtype is dpnp.complex64 else 1e-07
+        assert_allclose(np_a, dp_a, rtol=rtol)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
     )
-    @pytest.mark.skip("mute until in-place support in dpctl is done")
     def test_inplace_strided_out(self, dtype):
         size = 5
 
@@ -1023,7 +1029,7 @@ class TestPower:
         dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float32)
         dp_out = dpnp.empty(shape, dtype=dpnp.float32)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpnp.power(dp_array1, dp_array2, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -1056,7 +1062,7 @@ class TestPower:
     def test_integer_power_of_0_or_1(self, val, dtype):
         np_arr = numpy.arange(10, dtype=dtype)
         dp_arr = dpnp.array(np_arr)
-        func = lambda x: 1**x
+        func = lambda x: val**x
 
         assert_equal(func(np_arr), func(dp_arr))
 
