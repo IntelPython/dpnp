@@ -206,6 +206,11 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     if dpnp.isscalar(a) and dpnp.isscalar(b):
         # at least one of inputs has to be an array
         pass
+    elif not (
+        dpnp.is_supported_array_or_scalar(a)
+        and dpnp.is_supported_array_or_scalar(b)
+    ):
+        pass
     elif kwargs:
         pass
     else:
@@ -227,7 +232,7 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
         elif dpnp.isscalar(b):
             b = dpnp.full_like(a, fill_value=b)
         elif a.shape != b.shape:
-            a, b = dpt.broadcast_arrays(a, b)
+            a, b = dpt.broadcast_arrays(a.get_array(), b.get_array())
 
         a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
         b_desc = dpnp.get_dpnp_descriptor(b, copy_when_nondefault_queue=False)

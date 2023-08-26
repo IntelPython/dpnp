@@ -44,13 +44,13 @@ def test_all(type, shape):
         assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-def test_allclose(type):
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_allclose(dtype):
     a = numpy.random.rand(10)
     b = a + numpy.random.rand(10) * 1e-8
 
-    dpnp_a = dpnp.array(a, dtype=type)
-    dpnp_b = dpnp.array(b, dtype=type)
+    dpnp_a = dpnp.array(a, dtype=dtype)
+    dpnp_b = dpnp.array(b, dtype=dtype)
 
     np_res = numpy.allclose(a, b)
     dpnp_res = dpnp.allclose(dpnp_a, dpnp_b)
@@ -63,6 +63,63 @@ def test_allclose(type):
     np_res = numpy.allclose(a, b)
     dpnp_res = dpnp.allclose(dpnp_a, dpnp_b)
     assert_allclose(dpnp_res, np_res)
+
+
+class TestAllClose:
+    @pytest.mark.parametrize("val", [1.0, 3, numpy.inf, -numpy.inf, numpy.nan])
+    def test_input_0d(self, val):
+        dp_arr = dpnp.array(val)
+        np_arr = numpy.array(val)
+
+        # array & scalar
+        dp_res = dpnp.allclose(dp_arr, val)
+        np_res = numpy.allclose(np_arr, val)
+        assert_allclose(dp_res, np_res)
+
+        # scalar & array
+        dp_res = dpnp.allclose(val, dp_arr)
+        np_res = numpy.allclose(val, np_arr)
+        assert_allclose(dp_res, np_res)
+
+        # two arrays
+        dp_res = dpnp.allclose(dp_arr, dp_arr)
+        np_res = numpy.allclose(np_arr, np_arr)
+        assert_allclose(dp_res, np_res)
+
+    @pytest.mark.parametrize("sh_a", [(10,), (10, 10)])
+    @pytest.mark.parametrize("sh_b", [(1, 10), (1, 10, 1)])
+    def test_broadcast(self, sh_a, sh_b):
+        dp_a = dpnp.ones(sh_a)
+        dp_b = dpnp.ones(sh_b)
+
+        np_a = numpy.ones(sh_a)
+        np_b = numpy.ones(sh_b)
+
+        dp_res = dpnp.allclose(dp_a, dp_b)
+        np_res = numpy.allclose(np_a, np_b)
+        assert_allclose(dp_res, np_res)
+
+    def test_input_as_scalars(self):
+        with pytest.raises(NotImplementedError):
+            dpnp.allclose(1.0, 1.0)
+
+    @pytest.mark.parametrize("val", [[1.0], (-3, 7), numpy.arange(5)])
+    def test_wrong_input_arrays(self, val):
+        with pytest.raises(NotImplementedError):
+            dpnp.allclose(val, val)
+
+    @pytest.mark.parametrize(
+        "tol", [[0.001], (1.0e-6,), dpnp.array(1.0e-3), numpy.array([1.0e-5])]
+    )
+    def test_wrong_tols(self, tol):
+        a = dpnp.ones(10)
+        b = dpnp.ones(10)
+
+        for kw in [{"rtol": tol}, {"atol": tol}, {"rtol": tol, "atol": tol}]:
+            with pytest.raises(
+                TypeError, match=r"An argument .* must be a scalar, but got"
+            ):
+                dpnp.allclose(a, b, **kw)
 
 
 @pytest.mark.parametrize("type", get_all_dtypes())
