@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.12.2dev1+22.geb8f58fe6 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.12.2dev1+25.g0f2a0265a documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=848346e1"></script>
+        <script src="../../_static/documentation_options.js?v=c5a07b8a"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+22.geb8f58fe6
+                0.12.2dev1+25.g0f2a0265a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -146,9 +146,11 @@
     <span class="n">dpnp_floor_divide</span><span class="p">,</span>
     <span class="n">dpnp_multiply</span><span class="p">,</span>
     <span class="n">dpnp_negative</span><span class="p">,</span>
+    <span class="n">dpnp_proj</span><span class="p">,</span>
     <span class="n">dpnp_remainder</span><span class="p">,</span>
     <span class="n">dpnp_round</span><span class="p">,</span>
     <span class="n">dpnp_sign</span><span class="p">,</span>
+    <span class="n">dpnp_signbit</span><span class="p">,</span>
     <span class="n">dpnp_subtract</span><span class="p">,</span>
     <span class="n">dpnp_trunc</span><span class="p">,</span>
 <span class="p">)</span>
@@ -189,10 +191,12 @@
     <span class="s2">&quot;negative&quot;</span><span class="p">,</span>
     <span class="s2">&quot;power&quot;</span><span class="p">,</span>
     <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;proj&quot;</span><span class="p">,</span>
     <span class="s2">&quot;remainder&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rint&quot;</span><span class="p">,</span>
     <span class="s2">&quot;round&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sign&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;signbit&quot;</span><span class="p">,</span>
     <span class="s2">&quot;subtract&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;trapz&quot;</span><span class="p">,</span>
@@ -1743,6 +1747,68 @@
 
 
 
+<div class="viewcode-block" id="proj">
+<a class="viewcode-back" href="../../reference/generated/dpnp.proj.html#dpnp.proj">[docs]</a>
+<span class="k">def</span> <span class="nf">proj</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the projection of a number onto the Riemann sphere.</span>
+
+<span class="sd">    For all infinite complex numbers (including the cases where one component is infinite and the other is `NaN`),</span>
+<span class="sd">    the function returns `(inf, 0.0)` or `(inf, -0.0)`.</span>
+<span class="sd">    For finite complex numbers, the input is returned.</span>
+<span class="sd">    All real-valued numbers are treated as complex numbers with positive zero imaginary part.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The projection of each element of `x`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.abs` : Returns the magnitude of a complex number, element-wise.</span>
+<span class="sd">    :obj:`dpnp.conj` : Return the complex conjugate, element-wise.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.proj(np.array([1, -2.3, 2.1-1.7j]))</span>
+<span class="sd">    array([ 1. +0.j, -2.3+0.j,  2.1-1.7.j])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.proj(np.array([complex(1,np.inf), complex(1,-np.inf), complex(np.inf,-1),]))</span>
+<span class="sd">    array([inf+0.j, inf-0.j, inf-0.j])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dpnp_proj</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="power">
 <a class="viewcode-back" href="../../reference/generated/dpnp.power.html#dpnp.power">[docs]</a>
 <span class="k">def</span> <span class="nf">power</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2129,6 +2195,10 @@
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 <span class="sd">    However, if the input array data type is complex, the function will be executed sequentially on CPU.</span>
 
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.signbit` : Returns element-wise `True` where signbit is set (less than zero).</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
@@ -2164,6 +2234,66 @@
             <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="signbit">
+<a class="viewcode-back" href="../../reference/generated/dpnp.signbit.html#dpnp.signbit">[docs]</a>
+<span class="k">def</span> <span class="nf">signbit</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns element-wise `True` where signbit is set (less than zero).</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.signbit`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        A boolean array with indication of the sign of each element of `x`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input array data types are limited by supported real-valued data types.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.sign` : Returns an element-wise indication of the sign of a number.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.signbit(np.array([-1.2]))</span>
+<span class="sd">    array([True])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.signbit(np.array([1, -2.3, 2.1]))</span>
+<span class="sd">    array([False,  True, False])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">signbit</span><span class="p">,</span>
+        <span class="n">dpnp_signbit</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
