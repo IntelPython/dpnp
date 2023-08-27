@@ -1,6 +1,0 @@
-﻿dpnp.tril\_indices\_from
-========================
-
-.. currentmodule:: dpnp
-
-.. autofunction:: tril_indices_from
