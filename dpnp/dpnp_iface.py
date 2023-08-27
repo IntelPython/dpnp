@@ -463,12 +463,12 @@ def is_supported_array_or_scalar(a):
     Parameters
     ----------
     a : array
-        A input scalar or an array to check the type of.
+        An input scalar or an array to check the type of.
 
     Returns
     -------
     out : bool
-        ``True`` if input `a` is a scalar or an array of supportedtype,
+        ``True`` if input `a` is a scalar or an array of supported type,
         ``False`` otherwise.
 
     """
