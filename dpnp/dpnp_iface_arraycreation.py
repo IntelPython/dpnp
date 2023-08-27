@@ -322,7 +322,7 @@ def asarray(
     Returns
     -------
     out : dpnp.ndarray
-        Array interpretation of `a`.  No copy is performed if the input
+        Array interpretation of `a`. No copy is performed if the input
         is already an ndarray with matching dtype and order.
 
     Limitations
