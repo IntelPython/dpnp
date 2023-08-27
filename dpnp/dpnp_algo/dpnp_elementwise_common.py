@@ -66,10 +66,14 @@ __all__ = [
     "dpnp_logical_or",
     "dpnp_logical_xor",
     "dpnp_multiply",
+    "dpnp_negative",
     "dpnp_not_equal",
+    "dpnp_proj",
     "dpnp_remainder",
     "dpnp_right_shift",
     "dpnp_round",
+    "dpnp_sign",
+    "dpnp_signbit",
     "dpnp_sin",
     "dpnp_sqrt",
     "dpnp_square",
@@ -1456,6 +1460,43 @@ def dpnp_not_equal(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_proj_docstring = """
+proj(x, out=None, order="K")
+
+Computes projection of each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise projection.
+        The returned array has the same data type as `x`.
+"""
+
+
+proj_func = UnaryElementwiseFunc(
+    "proj", ti._proj_result_type, ti._proj, _proj_docstring
+)
+
+
+def dpnp_proj(x, out=None, order="K"):
+    """Invokes proj() from dpctl.tensor implementation for proj() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = proj_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _remainder_docstring_ = """
 remainder(x1, x2, out=None, order='K')
 Calculates the remainder of division for each element `x1_i` of the input array
@@ -1639,6 +1680,44 @@ def dpnp_sign(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = sign_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_signbit_docstring = """
+signbit(x, out=None, order="K")
+
+Computes an indication of whether the sign bit of each element `x_i` of
+input array `x` is set.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise results. The returned array
+        must have a data type of `bool`.
+"""
+
+
+signbit_func = UnaryElementwiseFunc(
+    "signbit", ti._signbit_result_type, ti._signbit, _signbit_docstring
+)
+
+
+def dpnp_signbit(x, out=None, order="K"):
+    """Invokes signbit() from dpctl.tensor implementation for signbit() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = signbit_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 

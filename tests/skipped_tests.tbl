@@ -111,8 +111,6 @@ tests/test_umath.py::test_umaths[('positive', 'i')]
 tests/test_umath.py::test_umaths[('positive', 'l')]
 tests/test_umath.py::test_umaths[('positive', 'f')]
 tests/test_umath.py::test_umaths[('positive', 'd')]
-tests/test_umath.py::test_umaths[('signbit', 'f')]
-tests/test_umath.py::test_umaths[('signbit', 'd')]
 tests/test_umath.py::test_umaths[('spacing', 'f')]
 tests/test_umath.py::test_umaths[('spacing', 'd')]
 
@@ -517,7 +515,6 @@ tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_frexp
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_ldexp
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_combination
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_float
-tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_signbit
 
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip_min_max_none
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip4
