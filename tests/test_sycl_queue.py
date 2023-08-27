@@ -239,9 +239,10 @@ def test_meshgrid(device_x, device_y):
         pytest.param("nancumsum", [1.0, dpnp.nan]),
         pytest.param("nanprod", [1.0, dpnp.nan]),
         pytest.param("nansum", [1.0, dpnp.nan]),
-        pytest.param("negative", [1.0, -1.0]),
+        pytest.param("negative", [1.0, 0.0, -1.0]),
         pytest.param("prod", [1.0, 2.0]),
-        pytest.param("sign", [-5.0, 4.5]),
+        pytest.param("sign", [-5.0, 0.0, 4.5]),
+        pytest.param("signbit", [-5.0, 0.0, 4.5]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
         pytest.param("sum", [1.0, 2.0]),
         pytest.param("trapz", [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
@@ -265,6 +266,35 @@ def test_1in_1out(func, data, device):
     expected_queue = x.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
 
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_proj(device):
+    X = [
+        complex(1, 2),
+        complex(dpnp.inf, -1),
+        complex(0, -dpnp.inf),
+        complex(-dpnp.inf, dpnp.nan),
+    ]
+    Y = [
+        complex(1, 2),
+        complex(dpnp.inf, -0.0),
+        complex(dpnp.inf, -0.0),
+        complex(dpnp.inf, 0.0),
+    ]
+
+    x = dpnp.array(X, device=device)
+    result = dpnp.proj(x)
+    expected = dpnp.array(Y)
+    assert_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
