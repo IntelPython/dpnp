@@ -43,6 +43,7 @@ from dpnp.dpnp_array import dpnp_array
 __all__ = [
     "arange",
     "asarray",
+    "copy",
     "empty",
     "eye",
     "full",
@@ -133,6 +134,17 @@ def asarray(
             return x1
 
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+
+
+def copy(x1, /, *, order="K"):
+    """Creates `dpnp_array` as a copy of given instance of input array."""
+    if order is None:
+        order = "K"
+    else:
+        order = order.upper()
+
+    array_obj = dpt.copy(dpnp.get_usm_ndarray(x1), order=order)
+    return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
 
 
 def empty(
@@ -264,9 +276,7 @@ def meshgrid(*xi, indexing="xy"):
     """Creates list of `dpnp_array` coordinate matrices from vectors."""
     if len(xi) == 0:
         return []
-    arrays = tuple(
-        x.get_array() if isinstance(x, dpnp_array) else x for x in xi
-    )
+    arrays = tuple(dpnp.get_usm_ndarray(x) for x in xi)
     arrays_obj = dpt.meshgrid(*arrays, indexing=indexing)
     return [
         dpnp_array._create_from_usm_ndarray(array_obj)
@@ -304,17 +314,13 @@ def ones(
 
 def tril(x1, /, *, k=0):
     """Creates `dpnp_array` as lower triangular part of an input array."""
-    array_obj = dpt.tril(
-        x1.get_array() if isinstance(x1, dpnp_array) else x1, k
-    )
+    array_obj = dpt.tril(dpnp.get_usm_ndarray(x1), k)
     return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
 
 
 def triu(x1, /, *, k=0):
     """Creates `dpnp_array` as upper triangular part of an input array."""
-    array_obj = dpt.triu(
-        x1.get_array() if isinstance(x1, dpnp_array) else x1, k
-    )
+    array_obj = dpt.triu(dpnp.get_usm_ndarray(x1), k)
     return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
 
 

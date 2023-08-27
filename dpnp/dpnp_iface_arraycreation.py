@@ -110,7 +110,7 @@ def arange(
 
     Returns
     -------
-    arange : :obj:`dpnp.ndarray`
+    out : dpnp.ndarray
         The 1-D array containing evenly spaced values.
 
     Limitations
@@ -151,7 +151,7 @@ def arange(
 
 
 def array(
-    x,
+    a,
     dtype=None,
     *,
     copy=True,
@@ -167,6 +167,11 @@ def array(
     Create an array.
 
     For full documentation refer to :obj:`numpy.array`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array object satisfying the specified requirements.
 
     Limitations
     -----------
@@ -228,7 +233,7 @@ def array(
         copy = None
 
     return dpnp_container.asarray(
-        x,
+        a,
         dtype=dtype,
         copy=copy,
         order=order,
@@ -239,7 +244,7 @@ def array(
 
 
 def asanyarray(
-    x,
+    a,
     dtype=None,
     order=None,
     *,
@@ -249,9 +254,14 @@ def asanyarray(
     sycl_queue=None,
 ):
     """
-    Convert the input to an ndarray, but pass ndarray subclasses through.
+    Convert the input to an :class:`dpnp.ndarray`.
 
     For full documentation refer to :obj:`numpy.asanyarray`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array interpretation of `a`.
 
     Limitations
     -----------
@@ -286,7 +296,7 @@ def asanyarray(
         )
 
     return asarray(
-        x,
+        a,
         dtype=dtype,
         order=order,
         device=device,
@@ -296,7 +306,7 @@ def asanyarray(
 
 
 def asarray(
-    x,
+    a,
     dtype=None,
     order=None,
     like=None,
@@ -308,6 +318,12 @@ def asarray(
     Converts an input object into array.
 
     For full documentation refer to :obj:`numpy.asarray`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array interpretation of `a`.  No copy is performed if the input
+        is already an ndarray with matching dtype and order.
 
     Limitations
     -----------
@@ -342,7 +358,7 @@ def asarray(
         )
 
     return dpnp_container.asarray(
-        x,
+        a,
         dtype=dtype,
         order=order,
         device=device,
@@ -352,12 +368,18 @@ def asarray(
 
 
 def ascontiguousarray(
-    x, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
+    a, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Return a contiguous array (ndim >= 1) in memory (C order).
 
     For full documentation refer to :obj:`numpy.ascontiguousarray`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Contiguous array of same shape and content as `a`, with type `dtype`
+        if specified.
 
     Limitations
     -----------
@@ -407,11 +429,11 @@ def ascontiguousarray(
         )
 
     # at least 1-d array has to be returned
-    if x.ndim == 0:
-        x = [x]
+    if a.ndim == 0:
+        a = [a]
 
     return asarray(
-        x,
+        a,
         dtype=dtype,
         order="C",
         device=device,
@@ -421,12 +443,17 @@ def ascontiguousarray(
 
 
 def asfortranarray(
-    x, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
+    a, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Return an array (ndim >= 1) laid out in Fortran order in memory.
 
     For full documentation refer to :obj:`numpy.asfortranarray`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The input `a` in Fortran, or column-major, order.
 
     Limitations
     -----------
@@ -479,11 +506,11 @@ def asfortranarray(
         )
 
     # at least 1-d array has to be returned
-    if x.ndim == 0:
-        x = [x]
+    if a.ndim == 0:
+        a = [a]
 
     return asarray(
-        x,
+        a,
         dtype=dtype,
         order="F",
         device=device,
@@ -492,7 +519,7 @@ def asfortranarray(
     )
 
 
-def copy(x1, order="K", subok=False):
+def copy(a, order="K", subok=False):
     """
     Return an array copy of the given object.
 
@@ -500,35 +527,53 @@ def copy(x1, order="K", subok=False):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
-    Parameter ``subok`` is supported only with default value ``False``.
+    Parameter `subok` is supported only with default value ``False``.
+    Otherwise, the function raises `ValueError` exception.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array interpretation of `a`.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.copy` : Preferred method for creating an array copy
+
+    Notes
+    -----
+    This is equivalent to:
+
+    >>> dpnp.array(a, copy=True)
 
     Examples
     --------
+    Create an array `x`, with a reference `y` and a copy `z`:
+
     >>> import dpnp as np
     >>> x = np.array([1, 2, 3])
     >>> y = x
     >>> z = np.copy(x)
+
+    Note that, when we modify `x`, `y` will change, but not `z`:
+
     >>> x[0] = 10
     >>> x[0] == y[0]
-    True
+    array(True)
     >>> x[0] == z[0]
-    False
+    array(False)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    if x1_desc:
-        if order != "K":
-            pass
-        elif subok:
-            pass
-        else:
-            return dpnp_copy(x1_desc).get_pyobj()
+    if subok is not False:
+        raise ValueError(
+            "Keyword argument `subok` is supported only with "
+            f"default value ``False``, but got {subok}"
+        )
 
-    return call_origin(numpy.copy, x1, order, subok)
+    if dpnp.is_supported_array_type(a):
+        return dpnp_container.copy(a, order=order)
+
+    return array(a, order=order, subok=subok, copy=True)
 
 
 def diag(x1, k=0):
