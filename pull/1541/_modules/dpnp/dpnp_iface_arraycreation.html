@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.12.2dev1+22.g46375bd5c documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.12.2dev1+25.g359e57567 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=aafe2499"></script>
+        <script src="../../_static/documentation_options.js?v=1a3c9922"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+22.g46375bd5c
+                0.12.2dev1+25.g359e57567
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -200,7 +200,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    arange : :obj:`dpnp.ndarray`</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        The 1-D array containing evenly spaced values.</span>
 
 <span class="sd">    Limitations</span>
@@ -244,7 +244,7 @@
 <div class="viewcode-block" id="array">
 <a class="viewcode-back" href="../../reference/generated/dpnp.array.html#dpnp.array">[docs]</a>
 <span class="k">def</span> <span class="nf">array</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">,</span>
+    <span class="n">a</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -260,6 +260,11 @@
 <span class="sd">    Create an array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.array`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        An array object satisfying the specified requirements.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -321,7 +326,7 @@
         <span class="n">copy</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-        <span class="n">x</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
@@ -335,7 +340,7 @@
 <div class="viewcode-block" id="asanyarray">
 <a class="viewcode-back" href="../../reference/generated/dpnp.asanyarray.html#dpnp.asanyarray">[docs]</a>
 <span class="k">def</span> <span class="nf">asanyarray</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">,</span>
+    <span class="n">a</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -345,9 +350,14 @@
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert the input to an ndarray, but pass ndarray subclasses through.</span>
+<span class="sd">    Convert the input to an :class:`dpnp.ndarray`.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.asanyarray`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Array interpretation of `a`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -382,7 +392,7 @@
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
-        <span class="n">x</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
@@ -395,7 +405,7 @@
 <div class="viewcode-block" id="asarray">
 <a class="viewcode-back" href="../../reference/generated/dpnp.asarray.html#dpnp.asarray">[docs]</a>
 <span class="k">def</span> <span class="nf">asarray</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">,</span>
+    <span class="n">a</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -407,6 +417,12 @@
 <span class="sd">    Converts an input object into array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.asarray`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Array interpretation of `a`. No copy is performed if the input</span>
+<span class="sd">        is already an ndarray with matching dtype and order.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -441,7 +457,7 @@
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-        <span class="n">x</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
@@ -454,12 +470,18 @@
 <div class="viewcode-block" id="ascontiguousarray">
 <a class="viewcode-back" href="../../reference/generated/dpnp.ascontiguousarray.html#dpnp.ascontiguousarray">[docs]</a>
 <span class="k">def</span> <span class="nf">ascontiguousarray</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a contiguous array (ndim &gt;= 1) in memory (C order).</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.ascontiguousarray`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Contiguous array of same shape and content as `a`, with type `dtype`</span>
+<span class="sd">        if specified.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -509,11 +531,11 @@
         <span class="p">)</span>
 
     <span class="c1"># at least 1-d array has to be returned</span>
-    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
-        <span class="n">x</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
@@ -526,12 +548,17 @@
 <div class="viewcode-block" id="asfortranarray">
 <a class="viewcode-back" href="../../reference/generated/dpnp.asfortranarray.html#dpnp.asfortranarray">[docs]</a>
 <span class="k">def</span> <span class="nf">asfortranarray</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array (ndim &gt;= 1) laid out in Fortran order in memory.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.asfortranarray`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The input `a` in Fortran, or column-major, order.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -584,11 +611,11 @@
         <span class="p">)</span>
 
     <span class="c1"># at least 1-d array has to be returned</span>
-    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
-        <span class="n">x</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
@@ -600,7 +627,7 @@
 
 <div class="viewcode-block" id="copy">
 <a class="viewcode-back" href="../../reference/generated/dpnp.copy.html#dpnp.copy">[docs]</a>
-<span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array copy of the given object.</span>
 
@@ -608,35 +635,53 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``order`` is supported only with default value ``&quot;C&quot;``.</span>
-<span class="sd">    Parameter ``subok`` is supported only with default value ``False``.</span>
+<span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
+<span class="sd">    Otherwise, the function raises `ValueError` exception.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Array interpretation of `a`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ndarray.copy` : Preferred method for creating an array copy</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is equivalent to:</span>
+
+<span class="sd">    &gt;&gt;&gt; dpnp.array(a, copy=True)</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+<span class="sd">    Create an array `x`, with a reference `y` and a copy `z`:</span>
+
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; y = x</span>
 <span class="sd">    &gt;&gt;&gt; z = np.copy(x)</span>
+
+<span class="sd">    Note that, when we modify `x`, `y` will change, but not `z`:</span>
+
 <span class="sd">    &gt;&gt;&gt; x[0] = 10</span>
 <span class="sd">    &gt;&gt;&gt; x[0] == y[0]</span>
-<span class="sd">    True</span>
+<span class="sd">    array(True)</span>
 <span class="sd">    &gt;&gt;&gt; x[0] == z[0]</span>
-<span class="sd">    False</span>
+<span class="sd">    array(False)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">order</span> <span class="o">!=</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">subok</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_copy</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Keyword argument `subok` is supported only with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``False``, but got </span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">copy</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 

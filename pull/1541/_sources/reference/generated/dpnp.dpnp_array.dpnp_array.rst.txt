@@ -64,6 +64,9 @@
    .. automethod:: conjugate
 
 
+   .. automethod:: copy
+
+
    .. automethod:: cumsum
 
 

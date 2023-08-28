@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.12.2dev1+22.g46375bd5c documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.12.2dev1+25.g359e57567 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=aafe2499"></script>
+        <script src="../../_static/documentation_options.js?v=1a3c9922"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+22.g46375bd5c
+                0.12.2dev1+25.g359e57567
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -250,7 +250,7 @@
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
 <span class="sd">    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -328,7 +328,7 @@
 <span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -436,7 +436,7 @@
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
 <span class="sd">    Parameters `where`, `dtype`, and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by real-value data types.</span>
 
@@ -557,7 +557,7 @@
     <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Change the sign of x1 to that of x2, element-wise.</span>
+<span class="sd">    Change the sign of `x1` to that of `x2`, element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.copysign`.</span>
 
@@ -571,7 +571,7 @@
 <span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -589,7 +589,7 @@
 <span class="sd">    &gt;&gt;&gt; np.copysign(x, -1.1)</span>
 <span class="sd">    array([-1., -0., -1.])</span>
 <span class="sd">    &gt;&gt;&gt; np.copysign(x, np.arange(3) - 1)</span>
-<span class="sd">    array([-1., -0., -1.])</span>
+<span class="sd">    array([-1., 0., 1.])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -662,7 +662,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters `x1` and `x2` are supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Sizes of input arrays are limited by `x1.size == 3 and x2.size == 3`.</span>
 <span class="sd">    Shapes of input arrays are limited by `x1.shape == (3,) and x2.shape == (3,)`.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -713,7 +713,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `x` is supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -750,7 +750,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `x` is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -943,7 +943,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `x1` is supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -997,7 +997,7 @@
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
 <span class="sd">    Parameters `where`, `dtype`, and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by real-value data types.</span>
 
@@ -1063,7 +1063,7 @@
 <span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1173,7 +1173,7 @@
 <span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1279,7 +1279,7 @@
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `y1` is supported as :class:`dpnp.ndarray`.</span>
 <span class="sd">    Argument `varargs[0]` is supported as `int`.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1332,7 +1332,7 @@
 <span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1448,7 +1448,7 @@
 <span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1573,7 +1573,7 @@
 <span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1613,7 +1613,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `x` is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1665,7 +1665,7 @@
 <span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1718,7 +1718,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `x` is supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1758,7 +1758,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `x` is supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1799,7 +1799,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `x1` is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1832,7 +1832,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `x1` is supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1883,7 +1883,7 @@
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
 <span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -1949,7 +1949,7 @@
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
 <span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
@@ -2002,7 +2002,7 @@
 <span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -2666,7 +2666,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters `y` and `x` are supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
@@ -2767,7 +2767,7 @@
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
 <span class="sd">    Parameters `where`, `dtype`, and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by real-value data types.</span>
 
