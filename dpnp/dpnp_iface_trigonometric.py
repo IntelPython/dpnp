@@ -651,65 +651,95 @@ def expm1(x1):
     return call_origin(numpy.expm1, x1)
 
 
-def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def hypot(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     """
     Given the "legs" of a right triangle, return its hypotenuse.
 
     For full documentation refer to :obj:`numpy.hypot`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The hypotenuse of the triangle(s).
+
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters `dtype`, `out` and `where` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x1 = 3 * np.ones(3)
-    >>> x2 = 4 * np.ones(3)
-    >>> out = np.hypot(x1, x2)
-    >>> [i for i in out]
-    [5.0, 5.0, 5.0]
+    >>> x1 = 3 * np.ones((3, 3))
+    >>> x2 = 4 * np.ones((3, 3))
+    >>> np.hypot(x1, x2)
+    array([[5., 5., 5.],
+           [5., 5., 5.],
+           [5., 5., 5.]])
+
+    Example showing broadcast of scalar argument:
+
+    >>> np.hypot(x1, 4)
+    array([[ 5.,  5.,  5.],
+           [ 5.,  5.,  5.],
+           [ 5.,  5.,  5.]])
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    x2_desc = dpnp.get_dpnp_descriptor(
-        x2, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
+    if kwargs:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        else:
-            out_desc = (
-                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-                if out is not None
-                else None
-            )
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        if x1_desc and x2_desc:
+            if out is not None:
+                if not dpnp.is_supported_array_type(out):
+                    raise TypeError(
+                        "return array must be of supported array type"
+                    )
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    or None
+                )
+            else:
+                out_desc = None
+
             return dpnp_hypot(
-                x1_desc, x2_desc, dtype, out_desc, where
+                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
             ).get_pyobj()
 
     return call_origin(
