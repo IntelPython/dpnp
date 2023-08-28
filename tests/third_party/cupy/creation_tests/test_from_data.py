@@ -501,7 +501,6 @@ class TestFromData(unittest.TestCase):
         # happens to work before the change in #5828
         return b + b
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_CF_orders()
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()

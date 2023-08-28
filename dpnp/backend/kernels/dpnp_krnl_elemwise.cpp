@@ -1326,8 +1326,6 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
             {                                                                  \
                 constexpr size_t lws = 64;                                     \
                 constexpr unsigned int vec_sz = 8;                             \
-                constexpr sycl::access::address_space global_space =           \
-                    sycl::access::address_space::global_space;                 \
                                                                                \
                 auto gws_range = sycl::range<1>(                               \
                     ((result_size + lws * vec_sz - 1) / (lws * vec_sz)) *      \
