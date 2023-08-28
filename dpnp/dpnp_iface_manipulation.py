@@ -89,18 +89,13 @@ def asfarray(a, dtype=None):
 
     """
 
-    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
-    if a_desc:
-        if dtype is None or not numpy.issubdtype(dtype, dpnp.inexact):
+    if dtype is None or not numpy.issubdtype(dtype, dpnp.inexact):
+        if dpnp.is_supported_array_type(a):
             dtype = dpnp.default_float_type(sycl_queue=a.sycl_queue)
+        else:
+            dtype = dpnp.default_float_type()
 
-        # if type is the same then same object should be returned
-        if a_desc.dtype == dtype:
-            return a
-
-        return array(a, dtype=dtype)
-
-    return call_origin(numpy.asfarray, a, dtype)
+    return array(a, dtype=dtype)
 
 
 def atleast_1d(*arys):
