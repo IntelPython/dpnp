@@ -274,14 +274,22 @@ def test_op_with_scalar(array, val, func, data_type, val_type):
     val_ = val_type(val)
 
     if func == "power":
-        if val_ == 0 and numpy.issubdtype(data_type, numpy.complexfloating):
+        if (
+            val_ == 0
+            and numpy.issubdtype(data_type, numpy.complexfloating)
+            and not dpnp.all(dpnp_a)
+        ):
             pytest.skip(
                 "(0j ** 0) is different: (NaN + NaNj) in dpnp and (1 + 0j) in numpy"
             )
-        elif is_cpu_device() and data_type == dpnp.complex128:
-            # TODO: discuss the bahavior with OneMKL team
+        # TODO: Remove when #1378 (dpctl) is solved
+        elif (
+            dpnp_a.dtype == dpnp.complex128
+            and dpnp_a.size >= 8
+            and not dpnp.all(dpnp_a)
+        ):
             pytest.skip(
-                "(0j ** 5) is different: (NaN + NaNj) in dpnp and (0j) in numpy"
+                "[..., 0j ** val] is different for x.size > 8: [..., NaN + NaNj] in dpnp and [..., 0 + 0j] in numpy"
             )
 
     if func == "subtract" and val_type == bool and data_type == dpnp.bool:
@@ -347,7 +355,6 @@ def test_divide_scalar(shape, dtype):
 
 @pytest.mark.parametrize("shape", [(), (3, 2)], ids=["()", "(3, 2)"])
 @pytest.mark.parametrize("dtype", get_all_dtypes())
-@pytest.mark.skip("mute until in-place support in dpctl is done")
 def test_power_scalar(shape, dtype):
     np_a = numpy.ones(shape, dtype=dtype)
     dpnp_a = dpnp.ones(shape, dtype=dtype)
@@ -970,11 +977,7 @@ class TestPower:
         np_array2 = numpy.array(array2_data, dtype=dtype)
         expected = numpy.power(np_array1, np_array2, out=out)
 
-        if dtype is dpnp.complex128:
-            # ((0 + 0j) ** 2) == (Nan + NaNj) in dpnp and == (0 + 0j) in numpy
-            assert_allclose(expected[1:], result[1:], rtol=1e-06)
-        else:
-            assert_allclose(expected, result, rtol=1e-06)
+        assert_allclose(expected, result, rtol=1e-06)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_out_dtypes(self, dtype):

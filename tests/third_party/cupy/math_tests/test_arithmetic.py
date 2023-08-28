@@ -9,7 +9,7 @@ import dpnp as cupy
 from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
-float_types = [*testing.helper._float_dtypes]
+float_types = list(testing.helper._float_dtypes)
 complex_types = []
 signed_int_types = [numpy.int32, numpy.int64]
 unsigned_int_types = []

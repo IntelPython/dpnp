@@ -1611,14 +1611,28 @@ def power(
     >>> dp.power(a, 3)
     array([  0,   1,   8,  27,  64, 125])
 
+    Raise the bases to different exponents.
+
     >>> b = dp.array([1.0, 2.0, 3.0, 3.0, 2.0, 1.0])
     >>> dp.power(a, b)
     array([ 0.,  1.,  8., 27., 16.,  5.])
+
+    The effect of broadcasting.
 
     >>> c = dp.array([[1, 2, 3, 3, 2, 1], [1, 2, 3, 3, 2, 1]])
     >>> dp.power(a, c)
     array([[ 0,  1,  8, 27, 16,  5],
            [ 0,  1,  8, 27, 16,  5]])
+
+    The ``**`` operator can be used as a shorthand for ``power`` on
+    :class:`dpnp.ndarray`.
+
+    >>> b = dp.array([1, 2, 3, 3, 2, 1])
+    >>> a = dp.arange(6)
+    >>> a ** b
+    array([ 0,  1,  8, 27, 16,  5])
+
+    Negative values raised to a non-integral value will result in ``nan``.
 
     >>> d = dp.array([-1.0, -4.0])
     >>> dp.power(d, 1.5)

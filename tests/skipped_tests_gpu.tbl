@@ -36,9 +36,6 @@ tests/test_sycl_queue.py::test_modf[level_zero:gpu:0]
 tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-trapz-data19]
 tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-trapz-data19]
 
-tests/test_sycl_queue.py::test_out_2in_1out[opencl:gpu:0-power-data19-data29]
-tests/test_sycl_queue.py::test_out_2in_1out[level_zero:gpu:0-power-data19-data29]
-
 tests/test_umath.py::test_umaths[('divmod', 'ii')]
 tests/test_umath.py::test_umaths[('divmod', 'll')]
 tests/test_umath.py::test_umaths[('divmod', 'ff')]

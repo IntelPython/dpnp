@@ -1007,7 +1007,7 @@ def for_dtypes(dtypes, name="dtype"):
             for dtype in dtypes:
                 if (
                     numpy.dtype(dtype).type in (numpy.float64, numpy.complex128)
-                    and not select_default_device().has_aspect_fp64
+                    and not has_support_aspect64()
                 ):
                     continue
 
