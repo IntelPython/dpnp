@@ -157,7 +157,7 @@ def absolute(x, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     -----------
     Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -232,7 +232,7 @@ def add(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -334,7 +334,7 @@ def ceil(
     -----------
     Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype`, and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by real-value data types.
 
@@ -446,7 +446,7 @@ def copysign(
     x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs
 ):
     """
-    Change the sign of x1 to that of x2, element-wise.
+    Change the sign of `x1` to that of `x2`, element-wise.
 
     For full documentation refer to :obj:`numpy.copysign`.
 
@@ -460,7 +460,7 @@ def copysign(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -478,7 +478,7 @@ def copysign(
     >>> np.copysign(x, -1.1)
     array([-1., -0., -1.])
     >>> np.copysign(x, np.arange(3) - 1)
-    array([-1., -0., -1.])
+    array([-1., 0., 1.])
 
     """
 
@@ -548,7 +548,7 @@ def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Sizes of input arrays are limited by `x1.size == 3 and x2.size == 3`.
     Shapes of input arrays are limited by `x1.shape == (3,) and x2.shape == (3,)`.
     Otherwise the function will be executed sequentially on CPU.
@@ -596,7 +596,7 @@ def cumprod(x1, **kwargs):
     Limitations
     -----------
     Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -630,7 +630,7 @@ def cumsum(x1, **kwargs):
     Limitations
     -----------
     Parameter `x` is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -811,7 +811,7 @@ def fabs(x1, **kwargs):
     Limitations
     -----------
     Parameter `x1` is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -862,7 +862,7 @@ def floor(
     -----------
     Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype`, and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by real-value data types.
 
@@ -925,7 +925,7 @@ def floor_divide(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1026,7 +1026,7 @@ def fmod(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1129,7 +1129,7 @@ def gradient(x1, *varargs, **kwargs):
     -----------
     Parameter `y1` is supported as :class:`dpnp.ndarray`.
     Argument `varargs[0]` is supported as `int`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1179,7 +1179,7 @@ def maximum(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1292,7 +1292,7 @@ def minimum(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1414,7 +1414,7 @@ def mod(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1451,7 +1451,7 @@ def modf(x1, **kwargs):
     Limitations
     -----------
     Parameter `x` is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1500,7 +1500,7 @@ def multiply(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1550,7 +1550,7 @@ def nancumprod(x1, **kwargs):
     Limitations
     -----------
     Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1587,7 +1587,7 @@ def nancumsum(x1, **kwargs):
     Limitations
     -----------
     Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1625,7 +1625,7 @@ def nanprod(x1, **kwargs):
     Limitations
     -----------
     Parameter `x1` is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1655,7 +1655,7 @@ def nansum(x1, **kwargs):
     Limitations
     -----------
     Parameter `x1` is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1703,7 +1703,7 @@ def negative(
     -----------
     Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1766,7 +1766,7 @@ def proj(
     -----------
     Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -1816,7 +1816,7 @@ def power(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -2453,7 +2453,7 @@ def trapz(y1, x1=None, dx=1.0, axis=-1):
     Limitations
     -----------
     Parameters `y` and `x` are supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -2548,7 +2548,7 @@ def trunc(
     -----------
     Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype`, and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by real-value data types.
 

@@ -667,7 +667,7 @@ def hypot(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
