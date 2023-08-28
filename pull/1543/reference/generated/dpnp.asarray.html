@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.asarray &mdash; Data Parallel Extension for NumPy 0.12.2dev1+20.g140d0520 documentation</title>
+  <title>dpnp.asarray &mdash; Data Parallel Extension for NumPy 0.12.2dev1+23.g69fd246a1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=86577f60"></script>
+        <script src="../../_static/documentation_options.js?v=44f38edf"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+20.g140d0520
+                0.12.2dev1+23.g69fd246a1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -130,9 +130,18 @@
 <h1>dpnp.asarray<a class="headerlink" href="#dpnp-asarray" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.asarray">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">asarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">like</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#asarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.asarray" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">asarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">like</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#asarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.asarray" title="Link to this definition"></a></dt>
 <dd><p>Converts an input object into array.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.asarray.html#numpy.asarray" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.asarray</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>out</strong> – Array interpretation of <cite>a</cite>. No copy is performed if the input
+is already an ndarray with matching dtype and order.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dpnp.ndarray</p>
+</dd>
+</dl>
 <p class="rubric">Limitations</p>
 <p>Parameter <cite>like</cite> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 Otherwise, the function raises <cite>ValueError</cite> exception.</p>
