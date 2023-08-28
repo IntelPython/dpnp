@@ -112,13 +112,51 @@ def atleast_1d(*arys):
 
     For full documentation refer to :obj:`numpy.atleast_1d`.
 
-    Limitations
-    -----------
-    Input arrays is supported as :obj:`dpnp.ndarray`.
+    Parameters
+    ----------
+    arys1, arys2, ... : array_like
+        One or more input arrays.
+
+    Returns
+    -------
+    out : ndarray
+        An array, or list of arrays, each with ``a.ndim >= 1``.
+        Copies are made only if necessary.
+
+    See Also
+    --------
+    atleast_2d, atleast_3d
+
+    Examples
+    --------
+    >>> np.atleast_1d(1.0)
+    array([1.])
+
+    >>> x = np.arange(9.0).reshape(3,3)
+    >>> np.atleast_1d(x)
+    array([[0., 1., 2.],
+           [3., 4., 5.],
+           [6., 7., 8.]])
+    >>> np.atleast_1d(x) is x
+    True
+
+    >>> np.atleast_1d(1, [3, 4])
+    [array([1]), array([3, 4])]
 
     """
 
-    return call_origin(numpy.atleast_1d, *arys)
+    res = []
+    for ary in arys:
+        ary = dpnp.array(ary, copy=False)
+        if ary.ndim == 0:
+            result = ary.reshape(1)
+        else:
+            result = ary
+        res.append(result)
+    if len(res) == 1:
+        return res[0]
+    else:
+        return res
 
 
 def atleast_2d(*arys):
@@ -476,13 +514,61 @@ def expand_dims(a, axis):
     )
 
 
-def hstack(tup):
+def hstack(tup, *, dtype=None, casting="same_kind"):
     """
     Stack arrays in sequence horizontally (column wise).
 
     For full documentation refer to :obj:`numpy.hstack`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The stacked array which has one more dimension than the input arrays.
+
+    Limitations
+    -----------
+    Each array in `tup` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
+    will be raised.
+    Parameters `dtype` and `casting` are supported with default value.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
+    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array((1,2,3))
+    >>> b = np.array((4,5,6))
+    >>> np.hstack((a,b))
+    array([1, 2, 3, 4, 5, 6])
+    >>> a = np.array([[1],[2],[3]])
+    >>> b = np.array([[4],[5],[6]])
+    >>> np.hstack((a,b))
+    array([[1, 4],
+           [2, 5],
+           [3, 6]])
+
     """
+
+    if casting != "same_kind":
+        pass
+    elif dtype is not None:
+        pass
+    else:
+        arrs = dpnp.atleast_1d(*tup)
+        if not isinstance(arrs, list):
+            arrs = [arrs]
+        # As a special case, dimension 0 of 1-dimensional arrays is "horizontal"
+        if arrs and arrs[0].ndim == 1:
+            return dpnp.concatenate(arrs, axis=0)
+        else:
+            return dpnp.concatenate(arrs, axis=1)
 
     # TODO:
     # `call_origin` cannot convert sequence of array to sequence of
@@ -884,7 +970,7 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     Each array in `arrays` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
     will be raised.
-    Parameters `out` and `dtype are supported with default value.
+    Parameters `out` and `dtype` are supported with default value.
     Keyword argument ``kwargs`` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
 
