@@ -31,14 +31,18 @@
 #include <pybind11/stl.h>
 
 #include "acos.hpp"
+#include "acosh.hpp"
 #include "add.hpp"
 #include "asin.hpp"
+#include "asinh.hpp"
 #include "atan.hpp"
 #include "atan2.hpp"
+#include "atanh.hpp"
 #include "ceil.hpp"
 #include "common.hpp"
 #include "conj.hpp"
 #include "cos.hpp"
+#include "cosh.hpp"
 #include "div.hpp"
 #include "floor.hpp"
 #include "ln.hpp"
@@ -46,10 +50,12 @@
 #include "pow.hpp"
 #include "round.hpp"
 #include "sin.hpp"
+#include "sinh.hpp"
 #include "sqr.hpp"
 #include "sqrt.hpp"
 #include "sub.hpp"
 #include "tan.hpp"
+#include "tanh.hpp"
 #include "trunc.hpp"
 #include "types_matrix.hpp"
 
@@ -60,12 +66,16 @@ using vm_ext::binary_impl_fn_ptr_t;
 using vm_ext::unary_impl_fn_ptr_t;
 
 static unary_impl_fn_ptr_t acos_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t acosh_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t add_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t asin_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t asinh_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t atan_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t atan2_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t atanh_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ceil_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t cos_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t cosh_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t floor_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t conj_dispatch_vector[dpctl_td_ns::num_types];
@@ -74,10 +84,12 @@ static binary_impl_fn_ptr_t mul_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t pow_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t round_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t sin_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t sinh_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t sqr_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t sqrt_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t sub_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t tan_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t tanh_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t trunc_dispatch_vector[dpctl_td_ns::num_types];
 
 PYBIND11_MODULE(_vm_impl, m)
@@ -109,6 +121,34 @@ PYBIND11_MODULE(_vm_impl, m)
         };
         m.def("_mkl_acos_to_call", acos_need_to_call_pyapi,
               "Check input arguments to answer if `acos` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Acosh(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::AcoshContigFactory>(
+            acosh_dispatch_vector);
+
+        auto acosh_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                               const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       acosh_dispatch_vector);
+        };
+        m.def("_acosh", acosh_pyapi,
+              "Call `acosh` function from OneMKL VM library to compute "
+              "inverse cosine of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto acosh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                            arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    acosh_dispatch_vector);
+        };
+        m.def("_mkl_acosh_to_call", acosh_need_to_call_pyapi,
+              "Check input arguments to answer if `acosh` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }
@@ -171,6 +211,34 @@ PYBIND11_MODULE(_vm_impl, m)
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }
 
+    // UnaryUfunc: ==== Asinh(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::AsinhContigFactory>(
+            asinh_dispatch_vector);
+
+        auto asinh_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                               const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       asinh_dispatch_vector);
+        };
+        m.def("_asinh", asinh_pyapi,
+              "Call `asinh` function from OneMKL VM library to compute "
+              "inverse cosine of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto asinh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                            arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    asinh_dispatch_vector);
+        };
+        m.def("_mkl_asinh_to_call", asinh_need_to_call_pyapi,
+              "Check input arguments to answer if `asinh` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
     // UnaryUfunc: ==== Atan(x) ====
     {
         vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
@@ -226,6 +294,34 @@ PYBIND11_MODULE(_vm_impl, m)
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
               py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Atanh(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::AtanhContigFactory>(
+            atanh_dispatch_vector);
+
+        auto atanh_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                               const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       atanh_dispatch_vector);
+        };
+        m.def("_atanh", atanh_pyapi,
+              "Call `atanh` function from OneMKL VM library to compute "
+              "inverse cosine of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto atanh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                            arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    atanh_dispatch_vector);
+        };
+        m.def("_mkl_atanh_to_call", atanh_need_to_call_pyapi,
+              "Check input arguments to answer if `atanh` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }
 
     // UnaryUfunc: ==== Ceil(x) ====
@@ -308,6 +404,34 @@ PYBIND11_MODULE(_vm_impl, m)
         };
         m.def("_mkl_cos_to_call", cos_need_to_call_pyapi,
               "Check input arguments to answer if `cos` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Cosh(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::CoshContigFactory>(
+            cosh_dispatch_vector);
+
+        auto cosh_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                              const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       cosh_dispatch_vector);
+        };
+        m.def("_cosh", cosh_pyapi,
+              "Call `cosh` function from OneMKL VM library to compute "
+              "inverse cosine of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto cosh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                           arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    cosh_dispatch_vector);
+        };
+        m.def("_mkl_cosh_to_call", cosh_need_to_call_pyapi,
+              "Check input arguments to answer if `cosh` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }
@@ -514,6 +638,34 @@ PYBIND11_MODULE(_vm_impl, m)
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }
 
+    // UnaryUfunc: ==== Sinh(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::SinhContigFactory>(
+            sinh_dispatch_vector);
+
+        auto sinh_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                              const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       sinh_dispatch_vector);
+        };
+        m.def("_sinh", sinh_pyapi,
+              "Call `sinh` function from OneMKL VM library to compute "
+              "inverse cosine of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto sinh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                           arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    sinh_dispatch_vector);
+        };
+        m.def("_mkl_sinh_to_call", sinh_need_to_call_pyapi,
+              "Check input arguments to answer if `sinh` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
     // UnaryUfunc: ==== Sqr(x) ====
     {
         vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
@@ -627,6 +779,34 @@ PYBIND11_MODULE(_vm_impl, m)
         };
         m.def("_mkl_tan_to_call", tan_need_to_call_pyapi,
               "Check input arguments to answer if `tan` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== Tanh(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::TanhContigFactory>(
+            tanh_dispatch_vector);
+
+        auto tanh_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                              const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       tanh_dispatch_vector);
+        };
+        m.def("_tanh", tanh_pyapi,
+              "Call `tanh` function from OneMKL VM library to compute "
+              "inverse cosine of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto tanh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                           arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    tanh_dispatch_vector);
+        };
+        m.def("_mkl_tanh_to_call", tanh_need_to_call_pyapi,
+              "Check input arguments to answer if `tanh` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }

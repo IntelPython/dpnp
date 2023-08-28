@@ -276,13 +276,17 @@ def test_meshgrid(usm_type_x, usm_type_y):
     "func,data",
     [
         pytest.param("arccos", [-0.5, 0.0, 0.5]),
+        pytest.param("arccosh", [1.5, 3.5, 5.0]),
         pytest.param("arcsin", [-0.5, 0.0, 0.5]),
+        pytest.param("arcsinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("arctan", [-1.0, 0.0, 1.0]),
+        pytest.param("arctanh", [-0.5, 0.0, 0.5]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
         pytest.param(
             "cos", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
+        pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("negative", [1.0, 0.0, -1.0]),
         pytest.param("proj", [complex(1.0, 2.0), complex(dp.inf, -1.0)]),
@@ -291,10 +295,12 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param(
             "sin", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
+        pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
         pytest.param(
             "tan", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
+        pytest.param("tanh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
     ],
 )

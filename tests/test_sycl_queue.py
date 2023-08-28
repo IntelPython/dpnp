@@ -226,13 +226,17 @@ def test_meshgrid(device_x, device_y):
     [
         pytest.param("abs", [-1.2, 1.2]),
         pytest.param("arccos", [-0.5, 0.0, 0.5]),
+        pytest.param("arccosh", [1.5, 3.5, 5.0]),
         pytest.param("arcsin", [-0.5, 0.0, 0.5]),
+        pytest.param("arcsinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("arctan", [-1.0, 0.0, 1.0]),
+        pytest.param("arctanh", [-0.5, 0.0, 0.5]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
         pytest.param(
             "cos", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
         ),
+        pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("copy", [1.0, 2.0, 3.0]),
         pytest.param("cumprod", [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
         pytest.param("cumsum", [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
@@ -252,11 +256,13 @@ def test_meshgrid(device_x, device_y):
         pytest.param(
             "sin", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
         ),
+        pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
         pytest.param("sum", [1.0, 2.0]),
         pytest.param(
             "tan", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
         ),
+        pytest.param("tanh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("trapz", [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
     ],
