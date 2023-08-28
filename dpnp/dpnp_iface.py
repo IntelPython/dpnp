@@ -462,7 +462,7 @@ def is_supported_array_or_scalar(a):
 
     Parameters
     ----------
-    a : array
+    a : {scalar, dpnp_array, usm_ndarray}
         An input scalar or an array to check the type of.
 
     Returns
@@ -483,7 +483,7 @@ def is_supported_array_type(a):
 
     Parameters
     ----------
-    a : array
+    a : {dpnp_array, usm_ndarray}
         An input array to check the type.
 
     Returns
