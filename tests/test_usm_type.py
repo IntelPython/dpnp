@@ -278,8 +278,10 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
-        pytest.param("negative", [1.0, -1.0]),
-        pytest.param("sign", [-5.0, 4.5]),
+        pytest.param("negative", [1.0, 0.0, -1.0]),
+        pytest.param("proj", [complex(1.0, 2.0), complex(dp.inf, -1.0)]),
+        pytest.param("sign", [-5.0, 0.0, 4.5]),
+        pytest.param("signbit", [-5.0, 0.0, 4.5]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
     ],
@@ -295,6 +297,11 @@ def test_1in_1out(func, data, usm_type):
 @pytest.mark.parametrize(
     "func,data1,data2",
     [
+        pytest.param(
+            "allclose",
+            [[1.2, -0.0], [-7, 2.34567]],
+            [[1.2, 0.0], [-7, 2.34567]],
+        ),
         pytest.param(
             "dot",
             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],

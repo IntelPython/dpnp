@@ -351,7 +351,7 @@ cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
 
 
 cpdef utils.dpnp_descriptor dpnp_nancumprod(utils.dpnp_descriptor x1):
-    cur_x1 = dpnp_copy(x1).get_pyobj()
+    cur_x1 = x1.get_pyobj().copy()
 
     cur_x1_flatiter = cur_x1.flat
 
@@ -364,7 +364,7 @@ cpdef utils.dpnp_descriptor dpnp_nancumprod(utils.dpnp_descriptor x1):
 
 
 cpdef utils.dpnp_descriptor dpnp_nancumsum(utils.dpnp_descriptor x1):
-    cur_x1 = dpnp_copy(x1).get_pyobj()
+    cur_x1 = x1.get_pyobj().copy()
 
     cur_x1_flatiter = cur_x1.flat
 

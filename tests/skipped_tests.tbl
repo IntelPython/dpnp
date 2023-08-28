@@ -111,8 +111,6 @@ tests/test_umath.py::test_umaths[('positive', 'i')]
 tests/test_umath.py::test_umaths[('positive', 'l')]
 tests/test_umath.py::test_umaths[('positive', 'f')]
 tests/test_umath.py::test_umaths[('positive', 'd')]
-tests/test_umath.py::test_umaths[('signbit', 'f')]
-tests/test_umath.py::test_umaths[('signbit', 'd')]
 tests/test_umath.py::test_umaths[('spacing', 'f')]
 tests/test_umath.py::test_umaths[('spacing', 'd')]
 
@@ -210,8 +208,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_like_s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_strides
-
-tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_copy_order
 
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_list
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_tuple
@@ -442,11 +438,7 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transpose
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot_with_int_axes
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot_with_list_axes
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_vdot
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_array_scalar
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_finite
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_infinite
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_infinite_equal_nan
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_min_int
+
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_broadcast_not_allowed
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_dtypes_is_equal
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_dtypes_not_equal
@@ -517,7 +509,6 @@ tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_frexp
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_ldexp
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_combination
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_float
-tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_signbit
 
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip_min_max_none
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip4

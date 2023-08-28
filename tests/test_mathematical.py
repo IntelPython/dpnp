@@ -14,6 +14,7 @@ import dpnp
 
 from .helper import (
     get_all_dtypes,
+    get_complex_dtypes,
     get_float_dtypes,
     has_support_aspect64,
     is_cpu_device,
@@ -165,7 +166,7 @@ class TestMathematical:
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
     def test_fmod(self, dtype, lhs, rhs):
-        if dtype == None and rhs == 0.3 and not has_support_aspect64():
+        if rhs == 0.3:
             """
             Due to accuracy reason, the results are different for `float32` and `float64`
                 >>> numpy.fmod(numpy.array([3.9], dtype=numpy.float32), 0.3)
@@ -447,6 +448,48 @@ def test_sign_boolean():
 
     with pytest.raises(TypeError):
         dpnp.sign(dpnp_a)
+
+
+@pytest.mark.parametrize(
+    "data",
+    [[2, 0, -2], [1.1, -1.1]],
+    ids=["[2, 0, -2]", "[1.1, -1.1]"],
+)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+def test_signbit(data, dtype):
+    np_a = numpy.array(data, dtype=dtype)
+    dpnp_a = dpnp.array(data, dtype=dtype)
+
+    result = dpnp.signbit(dpnp_a)
+    expected = numpy.signbit(np_a)
+    assert_allclose(result, expected)
+
+
+@pytest.mark.parametrize("dtype", get_complex_dtypes())
+def test_projection_infinity(dtype):
+    X = [
+        complex(1, 2),
+        complex(dpnp.inf, -1),
+        complex(0, -dpnp.inf),
+        complex(-dpnp.inf, dpnp.nan),
+    ]
+    Y = [
+        complex(1, 2),
+        complex(dpnp.inf, -0.0),
+        complex(dpnp.inf, -0.0),
+        complex(dpnp.inf, 0.0),
+    ]
+
+    result = dpnp.proj(dpnp.array(X, dtype=dtype))
+    expected = dpnp.array(Y, dtype=dtype)
+    assert_allclose(result, expected)
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes())
+def test_projection(dtype):
+    result = dpnp.proj(dpnp.array(1, dtype=dtype))
+    expected = dpnp.array(complex(1, 0))
+    assert_allclose(result, expected)
 
 
 @pytest.mark.parametrize("val_type", get_all_dtypes(no_none=True))

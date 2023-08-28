@@ -168,7 +168,15 @@ class dpnp_array:
         return self._array_obj.__complex__()
 
     # '__contains__',
-    # '__copy__',
+
+    def __copy__(self):
+        """
+        Used if :func:`copy.copy` is called on an array. Returns a copy of the array.
+
+        Equivalent to ``a.copy(order="K")``.
+        """
+        return self.copy(order="K")
+
     # '__deepcopy__',
     # '__delattr__',
     # '__delitem__',
@@ -651,7 +659,47 @@ class dpnp_array:
         else:
             return dpnp.conjugate(self)
 
-    # 'copy',
+    def copy(self, order="C"):
+        """
+        Return a copy of the array.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            A copy of the array.
+
+        See also
+        --------
+        :obj:`dpnp.copy` : Similar function with different default behavior
+        :obj:`dpnp.copyto` : Copies values from one array to another.
+
+        Notes
+        -----
+        This function is the preferred method for creating an array copy. The
+        function :func:`dpnp.copy` is similar, but it defaults to using order 'K'.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[1, 2, 3], [4, 5, 6]], order='F')
+        >>> y = x.copy()
+        >>> x.fill(0)
+
+        >>> x
+        array([[0, 0, 0],
+               [0, 0, 0]])
+
+        >>> y
+        array([[1, 2, 3],
+               [4, 5, 6]])
+
+        >>> y.flags['C_CONTIGUOUS']
+        True
+
+        """
+
+        return dpnp.copy(self, order=order)
+
     # 'ctypes',
     # 'cumprod',
 
