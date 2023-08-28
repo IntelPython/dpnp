@@ -65,7 +65,7 @@ class TestFlip:
 
         np_a = numpy.arange(4, dtype=dtype)
         np_a = numpy.add.outer(np_a, np_a)
-        assert_equal(dpnp.flip(dp_a, 1), numpy.flip(dp_a, 1))
+        assert_equal(dpnp.flip(dp_a, 1), numpy.flip(np_a, 1))
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
@@ -77,7 +77,7 @@ class TestFlip:
 
         np_a = numpy.arange(4, dtype=dtype)
         np_a = numpy.add.outer(np_a, np_a)
-        assert_equal(dpnp.flip(dp_a, 0), numpy.flip(dp_a, 0))
+        assert_equal(dpnp.flip(dp_a, 0), numpy.flip(np_a, 0))
 
     @pytest.mark.parametrize(
         "x, axis",

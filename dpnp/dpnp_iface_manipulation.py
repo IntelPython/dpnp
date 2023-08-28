@@ -508,6 +508,7 @@ def flip(m, axis=None):
     --------
     >>> import dpnp as np
     >>> A = np.arange(8).reshape((2, 2, 2))
+    >>> A
     array([[[0, 1],
             [2, 3]],
            [[4, 5],
@@ -572,7 +573,7 @@ def fliplr(m):
     Examples
     --------
     >>> import dpnp as np
-    >>> A = np.diag([1., 2., 3.])
+    >>> A = np.diag(np.array([1., 2., 3.]))
     >>> A
     array([[1.,  0.,  0.],
            [0.,  2.,  0.],
@@ -627,7 +628,7 @@ def flipud(m):
     Examples
     --------
     >>> import dpnp as np
-    >>> A = np.diag([1.0, 2, 3])
+    >>> A = np.diag(np.array([1., 2., 3.]))
     >>> A
     array([[1.,  0.,  0.],
            [0.,  2.,  0.],
@@ -639,7 +640,7 @@ def flipud(m):
 
     >>> A = np.random.randn(2, 3, 5)
     >>> np.all(np.flipud(A) == A[::-1, ...])
-    True
+    array(True)
 
     >>> np.flipud(np.array([1, 2]))
     array([2, 1])
