@@ -128,8 +128,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_HYPOT_EXT
         DPNP_FN_IDENTITY
         DPNP_FN_IDENTITY_EXT
-        DPNP_FN_INITVAL
-        DPNP_FN_INITVAL_EXT
         DPNP_FN_INV
         DPNP_FN_INV_EXT
         DPNP_FN_KRON
@@ -405,7 +403,6 @@ cpdef dpnp_descriptor dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_
 """
 Array creation routines
 """
-cpdef dpnp_descriptor dpnp_init_val(shape, dtype, value)
 cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 
 """
