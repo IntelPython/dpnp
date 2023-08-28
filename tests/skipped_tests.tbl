@@ -209,8 +209,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like_s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_strides
 
-tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_copy_order
-
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_list
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_tuple
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_list
@@ -440,11 +438,7 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transpose
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot_with_int_axes
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot_with_list_axes
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_vdot
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_array_scalar
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_finite
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_infinite
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_infinite_equal_nan
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_min_int
+
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_broadcast_not_allowed
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_dtypes_is_equal
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_dtypes_not_equal
