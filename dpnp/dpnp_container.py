@@ -140,8 +140,6 @@ def copy(x1, /, *, order="K"):
     """Creates `dpnp_array` as a copy of given instance of input array."""
     if order is None:
         order = "K"
-    else:
-        order = order.upper()
 
     array_obj = dpt.copy(dpnp.get_usm_ndarray(x1), order=order)
     return dpnp_array(array_obj.shape, buffer=array_obj, order="K")

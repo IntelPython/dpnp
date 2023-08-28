@@ -521,8 +521,6 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
         else {                                                                 \
             constexpr size_t lws = 64;                                         \
             constexpr unsigned int vec_sz = 8;                                 \
-            constexpr sycl::access::address_space global_space =               \
-                sycl::access::address_space::global_space;                     \
                                                                                \
             auto gws_range = sycl::range<1>(                                   \
                 ((result_size + lws * vec_sz - 1) / (lws * vec_sz)) * lws);    \
