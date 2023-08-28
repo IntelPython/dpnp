@@ -15,11 +15,7 @@ tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array0]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array1]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array2]
 
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arccosh]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arcsinh]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arctanh]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-cbrt]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-cosh]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-exp2]
@@ -29,13 +25,7 @@ tests/test_strides.py::test_strides_1arg[(10,)-int32-log10]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-sinh]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-tanh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arccosh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arcsinh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arctanh]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-cbrt]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-cosh]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-exp2]
@@ -45,13 +35,7 @@ tests/test_strides.py::test_strides_1arg[(10,)-int64-log10]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-sinh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-tanh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arccosh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arcsinh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arctanh]
 tests/test_strides.py::test_strides_1arg[(10,)-None-cbrt]
-tests/test_strides.py::test_strides_1arg[(10,)-None-cosh]
 tests/test_strides.py::test_strides_1arg[(10,)-None-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-None-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-None-exp2]
@@ -61,13 +45,11 @@ tests/test_strides.py::test_strides_1arg[(10,)-None-log10]
 tests/test_strides.py::test_strides_1arg[(10,)-None-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-None-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-None-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-None-sinh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-tanh]
 
 tests/test_sycl_queue.py::test_array_creation[opencl:gpu:0-arange-arg0-kwargs0]
 tests/test_sycl_queue.py::test_array_creation[level_zero:gpu:0-arange-arg0-kwargs0]
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-gradient-data14]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-gradient-data14]
+tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-gradient-data18]
+tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-gradient-data18]
 tests/test_sycl_queue.py::test_eig[opencl:gpu:0]
 tests/test_sycl_queue.py::test_eig[level_zero:gpu:0]
 tests/test_sycl_queue.py::test_eigh[opencl:gpu:0]
@@ -675,13 +657,6 @@ tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_log1p
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_log2
 
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_copysign_combination
-
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_arccosh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_arcsinh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_arctanh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_cosh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_sinh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_tanh
 
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_0_{axis=0, func='nansum', keepdims=True, shape=(2, 3, 4), transpose_axes=True}::test_nansum_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_0_{axis=0, func='nansum', keepdims=True, shape=(2, 3, 4), transpose_axes=True}::test_nansum_axis_transposed

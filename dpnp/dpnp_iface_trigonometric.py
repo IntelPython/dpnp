@@ -49,15 +49,21 @@ from dpnp.dpnp_utils import *
 from .dpnp_algo.dpnp_elementwise_common import (
     check_nd_call_func,
     dpnp_acos,
+    dpnp_acosh,
     dpnp_asin,
+    dpnp_asinh,
     dpnp_atan,
     dpnp_atan2,
+    dpnp_atanh,
     dpnp_cos,
+    dpnp_cosh,
     dpnp_log,
     dpnp_sin,
+    dpnp_sinh,
     dpnp_sqrt,
     dpnp_square,
     dpnp_tan,
+    dpnp_tanh,
 )
 
 __all__ = [
@@ -152,42 +158,62 @@ def arccos(
     )
 
 
-def arccosh(x1):
+def arccosh(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Inverse hyperbolic cosine, element-wise.
 
     For full documentation refer to :obj:`numpy.arccosh`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The hyperbolic inverse cosine of each element of `x`.
+
     Limitations
     -----------
-    Input array is supported as :class:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
     :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.
-    :obj:`dpnp.arcsinh` : Inverse hyperbolic sine element-wise.
-    :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
-    :obj:`dpnp.arctanh` : Inverse hyperbolic tangent element-wise.
-    :obj:`dpnp.tanh` : Compute hyperbolic tangent element-wise.
+    :obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.
+    :obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.
+    :obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([np.e, 10.0])
-    >>> out = np.arccosh(x)
-    >>> [i for i in out]
-    [1.65745445, 2.99322285]
+    >>> x = np.array([1.0, np.e, 10.0])
+    >>> np.arccosh(x)
+    array([0.0, 1.65745445, 2.99322285])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.arccosh,
+        dpnp_acosh,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_arccosh(x1_desc).get_pyobj()
-
-    return call_origin(numpy.arccosh, x1, **kwargs)
 
 
 def arcsin(
@@ -248,34 +274,62 @@ def arcsin(
     )
 
 
-def arcsinh(x1):
+def arcsinh(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Inverse hyperbolic sine, element-wise.
 
     For full documentation refer to :obj:`numpy.arcsinh`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The hyperbolic inverse sine of each element of `x`.
+
     Limitations
     -----------
-    Input array is supported as :class:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
+    :obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.
+    :obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.
+    :obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([np.e, 10.0])
-    >>> out = np.arcsinh(x)
-    >>> [i for i in out]
-    [1.72538256, 2.99822295]
+    >>> np.arcsinh(x)
+    array([1.72538256, 2.99822295])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.arcsinh,
+        dpnp_asinh,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_arcsinh(x1_desc).get_pyobj()
-
-    return call_origin(numpy.arcsinh, x1, **kwargs)
 
 
 def arctan(
@@ -412,34 +466,62 @@ def arctan2(
     )
 
 
-def arctanh(x1):
+def arctanh(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Hyperbolic inverse tangent, element-wise.
 
     For full documentation refer to :obj:`numpy.arctanh`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The hyperbolic inverse tangent of each element of `x`.
+
     Limitations
     -----------
-    Input array is supported as :class:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.
+    :obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.
+    :obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.
+    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([0, -0.5])
-    >>> out = np.arctanh(x)
-    >>> [i for i in out]
-    [0.0, -0.54930614]
+    >>> np.arctanh(x)
+    array([0.0, -0.54930614])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.arctanh,
+        dpnp_atanh,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_arctanh(x1_desc).get_pyobj()
-
-    return call_origin(numpy.arctanh, x1, **kwargs)
 
 
 def cbrt(x1):
@@ -530,34 +612,63 @@ def cos(
     )
 
 
-def cosh(x1):
+def cosh(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Hyperbolic cosine, element-wise.
 
     For full documentation refer to :obj:`numpy.cosh`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The hyperbolic cosine of each element of `x`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.
+    :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
+    :obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.
+    :obj:`dpnp.cos` : Trigonometric cosine, element-wise.
+
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([0])
-    >>> out = np.cosh(x)
-    >>> [i for i in out]
-    [1.0]
+    >>> x = np.array([0, np.pi/2, np.pi])
+    >>> np.cosh(x)
+    array([1.0, 2.5091786, 11.591953])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.cosh,
+        dpnp_cosh,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_cosh(x1_desc).get_pyobj()
-
-    return call_origin(numpy.cosh, x1, **kwargs)
 
 
 def deg2rad(x1):
@@ -1120,34 +1231,62 @@ def sin(
     )
 
 
-def sinh(x1):
+def sinh(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Hyperbolic sine, element-wise.
 
     For full documentation refer to :obj:`numpy.sinh`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The hyperbolic sine of each element of `x`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.
+    :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.
+    :obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.
+    :obj:`dpnp.sin` : Trigonometric sine, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([0, np.pi/2, np.pi])
-    >>> out = np.sinh(x)
-    >>> [i for i in out]
-    [0.0, 2.3012989, 11.548739]
+    >>> np.sinh(x)
+    array([0.0, 2.3012989, 11.548739])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.sinh,
+        dpnp_sinh,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_sinh(x1_desc).get_pyobj()
-
-    return call_origin(numpy.sinh, x1, **kwargs)
 
 
 def sqrt(
@@ -1329,34 +1468,62 @@ def tan(
     )
 
 
-def tanh(x1):
+def tanh(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Compute hyperbolic tangent element-wise.
 
     For full documentation refer to :obj:`numpy.tanh`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The hyperbolic tangent of each element of `x`.
+
     Limitations
     -----------
-    Input array is supported as :class:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.
+    :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
+    :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.
+    :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([-np.pi, np.pi/2, np.pi])
-    >>> out = np.tanh(x)
-    >>> [i for i in out]
-    [-0.996272, 0.917152, 0.996272]
+    >>> x = np.array([0, -np.pi, np.pi/2, np.pi])
+    >>> np.tanh(x)
+    array([0.0, -0.996272, 0.917152, 0.996272])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.tanh,
+        dpnp_tanh,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_tanh(x1_desc).get_pyobj()
-
-    return call_origin(numpy.tanh, x1, **kwargs)
 
 
 def unwrap(x1):
