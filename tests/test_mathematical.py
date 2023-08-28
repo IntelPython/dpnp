@@ -167,7 +167,11 @@ class TestMathematical:
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
     def test_fmod(self, dtype, lhs, rhs):
-        if dtype == None and rhs == 0.3 and not has_support_aspect64():
+        if (
+            (dtype == None or dpnp.issubdtype(dtype, dpnp.integer))
+            and rhs == 0.3
+            and not has_support_aspect64()
+        ):
             """
             Due to accuracy reason, the results are different for `float32` and `float64`
                 >>> numpy.fmod(numpy.array([3.9], dtype=numpy.float32), 0.3)
