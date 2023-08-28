@@ -592,12 +592,20 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
                                                                                \
                 if (start + static_cast<size_t>(vec_sz) * max_sg_size <        \
                     result_size) {                                             \
-                    sycl::vec<_DataType_input1, vec_sz> x1 = sg.load<vec_sz>(  \
-                        sycl::multi_ptr<_DataType_input1, global_space>(       \
-                            &input1_data[start]));                             \
-                    sycl::vec<_DataType_input2, vec_sz> x2 = sg.load<vec_sz>(  \
-                        sycl::multi_ptr<_DataType_input2, global_space>(       \
-                            &input2_data[start]));                             \
+                    auto input1_multi_ptr = sycl::address_space_cast<          \
+                        sycl::access::address_space::global_space,             \
+                        sycl::access::decorated::yes>(&input1_data[start]);    \
+                    auto input2_multi_ptr = sycl::address_space_cast<          \
+                        sycl::access::address_space::global_space,             \
+                        sycl::access::decorated::yes>(&input2_data[start]);    \
+                    auto result_multi_ptr = sycl::address_space_cast<          \
+                        sycl::access::address_space::global_space,             \
+                        sycl::access::decorated::yes>(&result[start]);         \
+                                                                               \
+                    sycl::vec<_DataType_input1, vec_sz> x1 =                   \
+                        sg.load<vec_sz>(input1_multi_ptr);                     \
+                    sycl::vec<_DataType_input2, vec_sz> x2 =                   \
+                        sg.load<vec_sz>(input2_multi_ptr);                     \
                     sycl::vec<bool, vec_sz> res_vec;                           \
                                                                                \
                     for (size_t k = 0; k < vec_sz; ++k) {                      \
@@ -605,9 +613,7 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
                         const _DataType_input2 input2_elem = x2[k];            \
                         res_vec[k] = __operation__;                            \
                     }                                                          \
-                    sg.store<vec_sz>(                                          \
-                        sycl::multi_ptr<bool, global_space>(&result[start]),   \
-                        res_vec);                                              \
+                    sg.store<vec_sz>(result_multi_ptr, res_vec);               \
                 }                                                              \
                 else {                                                         \
                     for (size_t k = start; k < result_size; ++k) {             \

@@ -68,12 +68,14 @@ DPCTLSyclEventRef dpnp_invert_c(DPCTLSyclQueueRef q_ref,
                       sg.get_group_id()[0] * max_sg_size);
 
         if (start + static_cast<size_t>(vec_sz) * max_sg_size < size) {
-            using multi_ptrT =
-                sycl::multi_ptr<_DataType,
-                                sycl::access::address_space::global_space>;
+            auto input_multi_ptr = sycl::address_space_cast<
+                sycl::access::address_space::global_space,
+                sycl::access::decorated::yes>(&input_data[start]);
+            auto result_multi_ptr = sycl::address_space_cast<
+                sycl::access::address_space::global_space,
+                sycl::access::decorated::yes>(&result[start]);
 
-            sycl::vec<_DataType, vec_sz> x =
-                sg.load<vec_sz>(multi_ptrT(&input_data[start]));
+            sycl::vec<_DataType, vec_sz> x = sg.load<vec_sz>(input_multi_ptr);
             sycl::vec<_DataType, vec_sz> res_vec;
 
             if constexpr (std::is_same_v<_DataType, bool>) {
@@ -86,7 +88,7 @@ DPCTLSyclEventRef dpnp_invert_c(DPCTLSyclQueueRef q_ref,
                 res_vec = ~x;
             }
 
-            sg.store<vec_sz>(multi_ptrT(&result[start]), res_vec);
+            sg.store<vec_sz>(result_multi_ptr, res_vec);
         }
         else {
             for (size_t k = start + sg.get_local_id()[0]; k < size;
