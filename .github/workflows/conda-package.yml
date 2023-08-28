@@ -24,9 +24,11 @@ env:
       test_random_state.py
       test_sort.py
       test_special.py
+      test_sycl_queue.py
       test_umath.py
       test_usm_type.py
       third_party/cupy/linalg_tests/test_product.py
+      third_party/cupy/logic_tests/test_comparison.py
       third_party/cupy/logic_tests/test_truth.py
       third_party/cupy/manipulation_tests/test_basic.py
       third_party/cupy/manipulation_tests/test_join.py

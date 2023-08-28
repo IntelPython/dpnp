@@ -298,6 +298,11 @@ def test_1in_1out(func, data, usm_type):
     "func,data1,data2",
     [
         pytest.param(
+            "allclose",
+            [[1.2, -0.0], [-7, 2.34567]],
+            [[1.2, 0.0], [-7, 2.34567]],
+        ),
+        pytest.param(
             "dot",
             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
             [[4.0, 4.0], [4.0, 4.0], [4.0, 4.0]],
