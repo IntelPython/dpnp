@@ -58,6 +58,9 @@ __all__ = [
     "concatenate",
     "copyto",
     "expand_dims",
+    "flip",
+    "fliplr",
+    "flipud",
     "hstack",
     "moveaxis",
     "ravel",
@@ -399,7 +402,7 @@ def expand_dims(a, axis):
 
     Returns
     -------
-    dpnp.ndarray
+    out : dpnp.ndarray
         An array with the number of dimensions increased.
         A view is returned whenever possible.
 
@@ -474,6 +477,183 @@ def expand_dims(a, axis):
     return dpnp_array._create_from_usm_ndarray(
         dpt.expand_dims(dpt_array, axis=axis)
     )
+
+
+def flip(m, axis=None):
+    """
+    Reverse the order of elements in an array along the given axis.
+
+    The shape of the array is preserved, but the elements are reordered.
+
+    For full documentation refer to :obj:`numpy.flip`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A view of `m` with the entries of axis reversed.
+
+    Limitations
+    -----------
+    Parameters `m` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.flipud` : Flip an array vertically (axis=0).
+    :obj:`dpnp.fliplr` : Flip an array horizontally (axis=1).
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> A = np.arange(8).reshape((2, 2, 2))
+    array([[[0, 1],
+            [2, 3]],
+           [[4, 5],
+            [6, 7]]])
+    >>> np.flip(A, 0)
+    array([[[4, 5],
+            [6, 7]],
+           [[0, 1],
+            [2, 3]]])
+    >>> np.flip(A, 1)
+    array([[[2, 3],
+            [0, 1]],
+           [[6, 7],
+            [4, 5]]])
+    >>> np.flip(A)
+    array([[[7, 6],
+            [5, 4]],
+           [[3, 2],
+            [1, 0]]])
+    >>> np.flip(A, (0, 2))
+    array([[[5, 4],
+            [7, 6]],
+           [[1, 0],
+            [3, 2]]])
+    >>> A = np.random.randn(3, 4, 5)
+    >>> np.all(np.flip(A, 2) == A[:, :, ::-1, ...])
+    array(True)
+
+    """
+
+    m_usm = dpnp.get_usm_ndarray(m)
+    return dpnp_array._create_from_usm_ndarray(dpt.flip(m_usm, axis=axis))
+
+
+def fliplr(m):
+    """
+    Reverse the order of elements along axis 1 (left/right).
+
+    For a 2-D array, this flips the entries in each row in the left/right
+    direction. Columns are preserved, but appear in a different order than
+    before.
+
+    For full documentation refer to :obj:`numpy.fliplr`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A view of `m` with the columns reversed.
+
+    Limitations
+    -----------
+    Parameters `m` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.flipud` : Flip an array vertically (axis=0).
+    :obj:`dpnp.flip` : Flip array in one or more dimensions.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> A = np.diag([1., 2., 3.])
+    >>> A
+    array([[1.,  0.,  0.],
+           [0.,  2.,  0.],
+           [0.,  0.,  3.]])
+    >>> np.fliplr(A)
+    array([[0.,  0.,  1.],
+           [0.,  2.,  0.],
+           [3.,  0.,  0.]])
+
+    >>> A = np.random.randn(2, 3, 5)
+    >>> np.all(np.fliplr(A) == A[:, ::-1, ...])
+    array(True)
+
+    """
+
+    if not dpnp.is_supported_array_type(m):
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(m))
+        )
+
+    if m.ndim < 2:
+        raise ValueError(f"Input must be >= 2-d, but got {m.ndim}")
+    return m[:, ::-1]
+
+
+def flipud(m):
+    """
+    Reverse the order of elements along axis 0 (up/down).
+
+    For a 2-D array, this flips the entries in each column in the up/down
+    direction. Rows are preserved, but appear in a different order than before.
+
+    For full documentation refer to :obj:`numpy.flipud`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A view of `m` with the rows reversed.
+
+    Limitations
+    -----------
+    Parameters `m` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.fliplr` : Flip array in the left/right direction.
+    :obj:`dpnp.flip` : Flip array in one or more dimensions.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> A = np.diag([1.0, 2, 3])
+    >>> A
+    array([[1.,  0.,  0.],
+           [0.,  2.,  0.],
+           [0.,  0.,  3.]])
+    >>> np.flipud(A)
+    array([[0.,  0.,  3.],
+           [0.,  2.,  0.],
+           [1.,  0.,  0.]])
+
+    >>> A = np.random.randn(2, 3, 5)
+    >>> np.all(np.flipud(A) == A[::-1, ...])
+    True
+
+    >>> np.flipud(np.array([1, 2]))
+    array([2, 1])
+
+    """
+
+    if not dpnp.is_supported_array_type(m):
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(m))
+        )
+
+    if m.ndim < 1:
+        raise ValueError(f"Input must be >= 1-d, but got {m.ndim}")
+    return m[::-1, ...]
 
 
 def hstack(tup):
@@ -949,7 +1129,7 @@ def swapaxes(a, axis1, axis2):
 
     Returns
     -------
-    dpnp.ndarray
+    out : dpnp.ndarray
         An array with with swapped axes.
         A view is returned whenever possible.
 
