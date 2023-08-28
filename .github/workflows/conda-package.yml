@@ -15,6 +15,7 @@ env:
       test_arraycreation.py
       test_dot.py
       test_dparray.py
+      test_copy.py
       test_fft.py
       test_linalg.py
       test_logic.py
