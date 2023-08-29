@@ -12,18 +12,18 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.12.2dev0+32.g3c924daf documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.12.2dev1+32.g38f33eefe documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=d470fdc5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+32.g3c924daf
+                0.12.2dev1+32.g38f33eefe
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -148,13 +148,13 @@
     <span class="s2">&quot;convert_single_elem_array_to_scalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;default_float_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dpnp_queue_initialize&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dpnp_queue_is_cpu&quot;</span><span class="p">,</span>
     <span class="s2">&quot;from_dlpack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_dpnp_descriptor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_include&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_normalized_queue_device&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_usm_ndarray&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_usm_ndarray_or_scalar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_supported_array_or_scalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_supported_array_type&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
@@ -201,7 +201,9 @@
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__trigonometric</span>
 
 
-<div class="viewcode-block" id="array_equal"><a class="viewcode-back" href="../../reference/generated/dpnp.array_equal.html#dpnp.array_equal">[docs]</a><span class="k">def</span> <span class="nf">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="array_equal">
+<a class="viewcode-back" href="../../reference/generated/dpnp.array_equal.html#dpnp.array_equal">[docs]</a>
+<span class="k">def</span> <span class="nf">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    True if two arrays have the same shape and elements, False otherwise.</span>
 
@@ -219,7 +221,10 @@
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="asnumpy"><a class="viewcode-back" href="../../reference/generated/dpnp.asnumpy.html#dpnp.asnumpy">[docs]</a><span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="asnumpy">
+<a class="viewcode-back" href="../../reference/generated/dpnp.asnumpy.html#dpnp.asnumpy">[docs]</a>
+<span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the NumPy array with input data.</span>
 
@@ -235,6 +240,7 @@
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -314,6 +320,8 @@
     <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">float64</span><span class="p">,</span> <span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="from_dlpack">
+<a class="viewcode-back" href="../../reference/generated/dpnp.from_dlpack.html#dpnp.from_dlpack">[docs]</a>
 <span class="k">def</span> <span class="nf">from_dlpack</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a dpnp array from a Python object implementing the ``__dlpack__``</span>
@@ -336,7 +344,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">usm_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">get_dpnp_descriptor</span><span class="p">(</span>
@@ -399,7 +408,7 @@
 
         <span class="k">if</span> <span class="n">ext_obj</span><span class="o">.</span><span class="n">strides</span> <span class="o">!=</span> <span class="n">shape_offsets</span> <span class="ow">or</span> <span class="n">ext_obj_offset</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">orig_desc</span> <span class="o">=</span> <span class="n">dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
-            <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
+            <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
 
     <span class="c1"># while dpnp functions are based on DPNP_QUEUE</span>
     <span class="c1"># we need to create a copy on device associated with DPNP_QUEUE</span>
@@ -421,7 +430,9 @@
     <span class="k">return</span> <span class="kc">False</span>
 
 
-<div class="viewcode-block" id="get_include"><a class="viewcode-back" href="../../reference/generated/dpnp.get_include.html#dpnp.get_include">[docs]</a><span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
+<div class="viewcode-block" id="get_include">
+<a class="viewcode-back" href="../../reference/generated/dpnp.get_include.html#dpnp.get_include">[docs]</a>
+<span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the directory that contains \*.h header files of dpnp C++ backend.</span>
 
@@ -431,6 +442,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;backend&quot;</span><span class="p">,</span> <span class="s2">&quot;include&quot;</span><span class="p">)</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">get_normalized_queue_device</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -542,6 +554,28 @@
     <span class="k">return</span> <span class="n">a</span> <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">else</span> <span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return ``True`` if `a` is a scalar or an array of either</span>
+<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` type,</span>
+<span class="sd">    ``False`` otherwise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {scalar, dpnp_array, usm_ndarray}</span>
+<span class="sd">        An input scalar or an array to check the type of.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : bool</span>
+<span class="sd">        ``True`` if input `a` is a scalar or an array of supported type,</span>
+<span class="sd">        ``False`` otherwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+
 <span class="k">def</span> <span class="nf">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return ``True`` if an array of either type :class:`dpnp.ndarray`</span>
@@ -549,7 +583,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : array</span>
+<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
 <span class="sd">        An input array to check the type.</span>
 
 <span class="sd">    Returns</span>

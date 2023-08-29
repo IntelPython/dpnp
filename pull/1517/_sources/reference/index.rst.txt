@@ -30,6 +30,6 @@ API reference of the Data Parallel Extension for NumPy*
    testing
    prof
    environment
-   difference
+   dtypes_table
    comparison
    misc

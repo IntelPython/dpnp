@@ -1,3 +1,5 @@
+.. _ufunc:
+
 Universal Functions (ufunc)
 ===========================
 
@@ -40,6 +42,7 @@ Math operations
    dpnp.log10
    dpnp.expm1
    dpnp.log1p
+   dpnp.proj
    dpnp.sqrt
    dpnp.square
    dpnp.reciprocal
@@ -120,9 +123,12 @@ Floating functions
    dpnp.isfinite
    dpnp.isinf
    dpnp.isnan
+   dpnp.isnat
+   dpnp.fabs
    dpnp.signbit
    dpnp.copysign
    dpnp.nextafter
+   dpnp.spacing
    dpnp.modf
    dpnp.ldexp
    dpnp.frexp

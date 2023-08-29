@@ -13,23 +13,23 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Array Manipulation Routines &mdash; Data Parallel Extension for NumPy 0.12.2dev0+32.g3c924daf documentation</title>
+  <title>Array Manipulation Routines &mdash; Data Parallel Extension for NumPy 0.12.2dev1+32.g38f33eefe documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d470fdc5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="dpnp.copyto" href="generated/dpnp.copyto.html" />
-    <link rel="prev" title="dpnp.triu" href="generated/dpnp.triu.html" /> 
+    <link rel="prev" title="dpnp.vander" href="generated/dpnp.vander.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+32.g3c924daf
+                0.12.2dev1+32.g38f33eefe
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -75,21 +75,21 @@
 <li class="toctree-l4"><a class="reference internal" href="#rearranging-elements">Rearranging elements</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="indexing.html">Array Indexing Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fft.html">FFT Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="logic.html">Logic Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pad.html">Padding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="polynomials.html">Polynomials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, Searching, and Counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="difference.html">Difference with NumPy*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
@@ -126,19 +126,22 @@
            <div itemprop="articleBody">
              
   <section id="array-manipulation-routines">
-<h1>Array Manipulation Routines<a class="headerlink" href="#array-manipulation-routines" title="Permalink to this heading"></a></h1>
+<h1>Array Manipulation Routines<a class="headerlink" href="#array-manipulation-routines" title="Link to this heading"></a></h1>
 <section id="basic-operations">
-<h2>Basic operations<a class="headerlink" href="#basic-operations" title="Permalink to this heading"></a></h2>
+<h2>Basic operations<a class="headerlink" href="#basic-operations" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.copyto.html#dpnp.copyto" title="dpnp.copyto"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.copyto</span></code></a></p></td>
 <td><p>Copies values from one array to another, broadcasting as necessary.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.shape.html#dpnp.shape" title="dpnp.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.shape</span></code></a></p></td>
+<td><p>Return the shape of an array.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
 <section id="changing-array-shape">
-<h2>Changing array shape<a class="headerlink" href="#changing-array-shape" title="Permalink to this heading"></a></h2>
+<h2>Changing array shape<a class="headerlink" href="#changing-array-shape" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a></p></td>
@@ -147,11 +150,17 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ravel.html#dpnp.ravel" title="dpnp.ravel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ravel</span></code></a></p></td>
 <td><p>Return a contiguous flattened array.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.flat.html#dpnp.ndarray.flat" title="dpnp.ndarray.flat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.flat</span></code></a></p></td>
+<td><p>Return a flat iterator, or set a flattened version of self to value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.flatten.html#dpnp.ndarray.flatten" title="dpnp.ndarray.flatten"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.flatten</span></code></a></p></td>
+<td><p>Return a copy of the array collapsed into one dimension.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
 <section id="transpose-like-operations">
-<h2>Transpose-like operations<a class="headerlink" href="#transpose-like-operations" title="Permalink to this heading"></a></h2>
+<h2>Transpose-like operations<a class="headerlink" href="#transpose-like-operations" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.moveaxis.html#dpnp.moveaxis" title="dpnp.moveaxis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.moveaxis</span></code></a></p></td>
@@ -166,18 +175,17 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.swapaxes.html#dpnp.swapaxes" title="dpnp.swapaxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.swapaxes</span></code></a></p></td>
 <td><p>Interchange two axes of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.transpose.html#dpnp.transpose" title="dpnp.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.transpose</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.T.html#dpnp.ndarray.T" title="dpnp.ndarray.T"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.T</span></code></a></p></td>
+<td><p>View of the transposed array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.transpose.html#dpnp.transpose" title="dpnp.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.transpose</span></code></a></p></td>
 <td><p>Returns an array with axes transposed.</p></td>
 </tr>
 </tbody>
 </table>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpnp.dparray.T</span></code></p>
-</div>
 </section>
 <section id="changing-number-of-dimensions">
-<h2>Changing number of dimensions<a class="headerlink" href="#changing-number-of-dimensions" title="Permalink to this heading"></a></h2>
+<h2>Changing number of dimensions<a class="headerlink" href="#changing-number-of-dimensions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.atleast_1d.html#dpnp.atleast_1d" title="dpnp.atleast_1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_1d</span></code></a></p></td>
@@ -196,13 +204,13 @@
 <td><p>Expand the shape of an array.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.squeeze.html#dpnp.squeeze" title="dpnp.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.squeeze</span></code></a></p></td>
-<td><p>Removes singleton dimensions (axes) from array <cite>x</cite>.</p></td>
+<td><p>Removes singleton dimensions (axes) from array <cite>a</cite>.</p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="changing-kind-of-array">
-<h2>Changing kind of array<a class="headerlink" href="#changing-kind-of-array" title="Permalink to this heading"></a></h2>
+<h2>Changing kind of array<a class="headerlink" href="#changing-kind-of-array" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.asarray.html#dpnp.asarray" title="dpnp.asarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asarray</span></code></a></p></td>
@@ -212,19 +220,22 @@
 <td><p>Returns the NumPy array with input data.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.asanyarray.html#dpnp.asanyarray" title="dpnp.asanyarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asanyarray</span></code></a></p></td>
-<td><p>Convert the input to an ndarray, but pass ndarray subclasses through.</p></td>
+<td><p>Convert the input to an <a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.asfarray.html#dpnp.asfarray" title="dpnp.asfarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asfarray</span></code></a></p></td>
 <td><p>Return an array converted to a float type.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ascontiguousarray.html#dpnp.ascontiguousarray" title="dpnp.ascontiguousarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ascontiguousarray</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.asfortranarray.html#dpnp.asfortranarray" title="dpnp.asfortranarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asfortranarray</span></code></a></p></td>
+<td><p>Return an array (ndim &gt;= 1) laid out in Fortran order in memory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ascontiguousarray.html#dpnp.ascontiguousarray" title="dpnp.ascontiguousarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ascontiguousarray</span></code></a></p></td>
 <td><p>Return a contiguous array (ndim &gt;= 1) in memory (C order).</p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="joining-arrays">
-<h2>Joining arrays<a class="headerlink" href="#joining-arrays" title="Permalink to this heading"></a></h2>
+<h2>Joining arrays<a class="headerlink" href="#joining-arrays" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.concatenate.html#dpnp.concatenate" title="dpnp.concatenate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.concatenate</span></code></a></p></td>
@@ -233,24 +244,24 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.stack.html#dpnp.stack" title="dpnp.stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.stack</span></code></a></p></td>
 <td><p>Join a sequence of arrays along a new axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.hstack.html#dpnp.hstack" title="dpnp.hstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.hstack</span></code></a></p></td>
-<td><p>Stack arrays in sequence horizontally (column wise).</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.vstack.html#dpnp.vstack" title="dpnp.vstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vstack</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.vstack.html#dpnp.vstack" title="dpnp.vstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vstack</span></code></a></p></td>
 <td><p>Stack arrays in sequence vertically (row wise).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.hstack.html#dpnp.hstack" title="dpnp.hstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.hstack</span></code></a></p></td>
+<td><p>Stack arrays in sequence horizontally (column wise).</p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="splitting-arrays">
-<h2>Splitting arrays<a class="headerlink" href="#splitting-arrays" title="Permalink to this heading"></a></h2>
+<h2>Splitting arrays<a class="headerlink" href="#splitting-arrays" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 </tbody>
 </table>
 </section>
 <section id="tiling-arrays">
-<h2>Tiling arrays<a class="headerlink" href="#tiling-arrays" title="Permalink to this heading"></a></h2>
+<h2>Tiling arrays<a class="headerlink" href="#tiling-arrays" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.repeat.html#dpnp.repeat" title="dpnp.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.repeat</span></code></a></p></td>
@@ -260,7 +271,7 @@
 </table>
 </section>
 <section id="adding-and-removing-elements">
-<h2>Adding and removing elements<a class="headerlink" href="#adding-and-removing-elements" title="Permalink to this heading"></a></h2>
+<h2>Adding and removing elements<a class="headerlink" href="#adding-and-removing-elements" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.unique.html#dpnp.unique" title="dpnp.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.unique</span></code></a></p></td>
@@ -270,13 +281,22 @@
 </table>
 </section>
 <section id="rearranging-elements">
-<h2>Rearranging elements<a class="headerlink" href="#rearranging-elements" title="Permalink to this heading"></a></h2>
+<h2>Rearranging elements<a class="headerlink" href="#rearranging-elements" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.flip.html#dpnp.flip" title="dpnp.flip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.flip</span></code></a></p></td>
+<td><p>Reverse the order of elements in an array along the given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fliplr.html#dpnp.fliplr" title="dpnp.fliplr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fliplr</span></code></a></p></td>
+<td><p>Reverse the order of elements along axis 1 (left/right).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.flipud.html#dpnp.flipud" title="dpnp.flipud"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.flipud</span></code></a></p></td>
+<td><p>Reverse the order of elements along axis 0 (up/down).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a></p></td>
 <td><p>Gives a new shape to an array without changing its data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.roll.html#dpnp.roll" title="dpnp.roll"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.roll</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.roll.html#dpnp.roll" title="dpnp.roll"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.roll</span></code></a></p></td>
 <td><p>Roll the elements of an array by a number of positions along a given axis.</p></td>
 </tr>
 </tbody>
@@ -288,7 +308,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="generated/dpnp.triu.html" class="btn btn-neutral float-left" title="dpnp.triu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generated/dpnp.vander.html" class="btn btn-neutral float-left" title="dpnp.vander" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="generated/dpnp.copyto.html" class="btn btn-neutral float-right" title="dpnp.copyto" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

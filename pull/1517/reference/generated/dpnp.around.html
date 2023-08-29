@@ -13,22 +13,22 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.around &mdash; Data Parallel Extension for NumPy 0.12.2dev0+32.g3c924daf documentation</title>
+  <title>dpnp.around &mdash; Data Parallel Extension for NumPy 0.12.2dev1+32.g38f33eefe documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=d470fdc5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.round_" href="dpnp.round_.html" />
+    <link rel="next" title="dpnp.round" href="dpnp.round.html" />
     <link rel="prev" title="dpnp.unwrap" href="dpnp.unwrap.html" /> 
 </head>
 
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+32.g3c924daf
+                0.12.2dev1+32.g38f33eefe
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -63,7 +63,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
@@ -75,21 +77,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../math.html#exponents-and-logarithms">Exponents and logarithms</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#other-special-functions">Other special functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#floating-point-routines">Floating point routines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#rational-routines">Rational routines</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#arithmetic-operations">Arithmetic operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#handling-complex-numbers">Handling complex numbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#extrema-finding">Extrema Finding</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../difference.html">Difference with NumPy*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
@@ -127,31 +129,44 @@
            <div itemprop="articleBody">
              
   <section id="dpnp-around">
-<h1>dpnp.around<a class="headerlink" href="#dpnp-around" title="Permalink to this heading"></a></h1>
+<h1>dpnp.around<a class="headerlink" href="#dpnp-around" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.around">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">around</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#around"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.around" title="Permalink to this definition"></a></dt>
-<dd><p>Evenly round to the given number of decimals.</p>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">around</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#around"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.around" title="Link to this definition"></a></dt>
+<dd><p>Round an array to the given number of decimals.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.around.html#numpy.around" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.around</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>out</strong> – The rounded value of elements of the array.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dpnp.ndarray</p>
+</dd>
+</dl>
 <p class="rubric">Limitations</p>
-<p>Parameters <code class="docutils literal notranslate"><span class="pre">x1</span></code> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Parameters <code class="docutils literal notranslate"><span class="pre">decimals</span></code> and <code class="docutils literal notranslate"><span class="pre">out</span></code> are supported with their default values.
-Otherwise the functions will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">([</span><span class="mf">0.37</span><span class="p">,</span> <span class="mf">1.64</span><span class="p">])</span>
-<span class="go">array([0.,  2.])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">([</span><span class="mf">0.37</span><span class="p">,</span> <span class="mf">1.64</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">array([0.4,  1.6])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">([</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">])</span> <span class="c1"># rounds to nearest even value</span>
-<span class="go">array([0.,  2.,  2.,  4.,  4.])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">11</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># ndarray of ints is returned</span>
-<span class="go">array([ 1,  2,  3, 11])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">11</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">array([ 0,  0,  0, 10])</span>
-</pre></div>
+<p>Parameter <cite>x</cite> is only supported as either <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
+Parameters <cite>decimals</cite> is supported with its default value.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.round.html#dpnp.round" title="dpnp.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.round</span></code></a></dt><dd><p>Equivalent function; see for details.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.ndarray.round.html#dpnp.ndarray.round" title="dpnp.ndarray.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.round</span></code></a></dt><dd><p>Equivalent function.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.rint.html#dpnp.rint" title="dpnp.rint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.rint</span></code></a></dt><dd><p>Round elements of the array to the nearest integer.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.ceil.html#dpnp.ceil" title="dpnp.ceil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ceil</span></code></a></dt><dd><p>Compute the ceiling of the input, element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.floor.html#dpnp.floor" title="dpnp.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.floor</span></code></a></dt><dd><p>Return the floor of the input, element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.trunc.html#dpnp.trunc" title="dpnp.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.trunc</span></code></a></dt><dd><p>Return the truncated value of the input, element-wise.</p>
+</dd>
+</dl>
 </div>
+<p class="rubric">Notes</p>
+<p>This function works the same as <a class="reference internal" href="dpnp.round.html#dpnp.round" title="dpnp.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.round</span></code></a>.</p>
 </dd></dl>
 
 </section>
@@ -161,7 +176,7 @@ Input array data types are limited by supported DPNP <a class="reference interna
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="dpnp.unwrap.html" class="btn btn-neutral float-left" title="dpnp.unwrap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.round_.html" class="btn btn-neutral float-right" title="dpnp.round_" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.round.html" class="btn btn-neutral float-right" title="dpnp.round" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

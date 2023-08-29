@@ -13,18 +13,18 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Logic Functions &mdash; Data Parallel Extension for NumPy 0.12.2dev0+32.g3c924daf documentation</title>
+  <title>Logic Functions &mdash; Data Parallel Extension for NumPy 0.12.2dev1+32.g38f33eefe documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d470fdc5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+32.g3c924daf
+                0.12.2dev1+32.g38f33eefe
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -63,7 +63,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="creation.html">Array Creation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array Manipulation Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="indexing.html">Array Indexing Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fft.html">FFT Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Logic Functions</a><ul>
@@ -75,16 +77,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pad.html">Padding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="polynomials.html">Polynomials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, Searching, and Counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="difference.html">Difference with NumPy*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
@@ -121,9 +121,9 @@
            <div itemprop="articleBody">
              
   <section id="logic-functions">
-<h1>Logic Functions<a class="headerlink" href="#logic-functions" title="Permalink to this heading"></a></h1>
+<h1>Logic Functions<a class="headerlink" href="#logic-functions" title="Link to this heading"></a></h1>
 <section id="truth-value-testing">
-<h2>Truth value testing<a class="headerlink" href="#truth-value-testing" title="Permalink to this heading"></a></h2>
+<h2>Truth value testing<a class="headerlink" href="#truth-value-testing" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.all.html#dpnp.all" title="dpnp.all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.all</span></code></a></p></td>
@@ -136,7 +136,7 @@
 </table>
 </section>
 <section id="infinities-and-nans">
-<h2>Infinities and NaNs<a class="headerlink" href="#infinities-and-nans" title="Permalink to this heading"></a></h2>
+<h2>Infinities and NaNs<a class="headerlink" href="#infinities-and-nans" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.isfinite.html#dpnp.isfinite" title="dpnp.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isfinite</span></code></a></p></td>
@@ -152,7 +152,7 @@
 </table>
 </section>
 <section id="array-type-testing">
-<h2>Array type testing<a class="headerlink" href="#array-type-testing" title="Permalink to this heading"></a></h2>
+<h2>Array type testing<a class="headerlink" href="#array-type-testing" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.isscalar.html#dpnp.isscalar" title="dpnp.isscalar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isscalar</span></code></a></p></td>
@@ -162,7 +162,7 @@
 </table>
 </section>
 <section id="logic-operations">
-<h2>Logic operations<a class="headerlink" href="#logic-operations" title="Permalink to this heading"></a></h2>
+<h2>Logic operations<a class="headerlink" href="#logic-operations" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.logical_and.html#dpnp.logical_and" title="dpnp.logical_and"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_and</span></code></a></p></td>
@@ -181,7 +181,7 @@
 </table>
 </section>
 <section id="comparison">
-<h2>Comparison<a class="headerlink" href="#comparison" title="Permalink to this heading"></a></h2>
+<h2>Comparison<a class="headerlink" href="#comparison" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.allclose.html#dpnp.allclose" title="dpnp.allclose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.allclose</span></code></a></p></td>

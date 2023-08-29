@@ -13,23 +13,23 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FFT Functions &mdash; Data Parallel Extension for NumPy 0.12.2dev0+32.g3c924daf documentation</title>
+  <title>FFT Functions &mdash; Data Parallel Extension for NumPy 0.12.2dev1+32.g38f33eefe documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d470fdc5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="dpnp.fft.fft" href="generated/dpnp.fft.fft.html" />
-    <link rel="prev" title="dpnp.bitwise_not" href="generated/dpnp.bitwise_not.html" /> 
+    <link rel="prev" title="dpnp.issubsctype" href="generated/dpnp.issubsctype.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+32.g3c924daf
+                0.12.2dev1+32.g38f33eefe
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -63,7 +63,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="creation.html">Array Creation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array Manipulation Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="indexing.html">Array Indexing Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtype.html">Data type routines</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">FFT Functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#standard-ffts">Standard FFTs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#real-ffts">Real FFTs</a></li>
@@ -74,16 +76,14 @@
 <li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="logic.html">Logic Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pad.html">Padding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="polynomials.html">Polynomials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, Searching, and Counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="difference.html">Difference with NumPy*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
@@ -119,10 +119,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-dpnp.fft"></span><section id="fft-functions">
-<h1>FFT Functions<a class="headerlink" href="#fft-functions" title="Permalink to this heading"></a></h1>
+  <section id="fft-functions">
+<span id="module-dpnp.fft"></span><h1>FFT Functions<a class="headerlink" href="#fft-functions" title="Link to this heading"></a></h1>
 <section id="standard-ffts">
-<h2>Standard FFTs<a class="headerlink" href="#standard-ffts" title="Permalink to this heading"></a></h2>
+<h2>Standard FFTs<a class="headerlink" href="#standard-ffts" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fft.fft.html#dpnp.fft.fft" title="dpnp.fft.fft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.fft</span></code></a></p></td>
@@ -132,10 +132,10 @@
 <td><p>Compute the one-dimensional inverse discrete Fourier Transform.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fft.fft2.html#dpnp.fft.fft2" title="dpnp.fft.fft2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.fft2</span></code></a></p></td>
-<td><p>Compute the 2-dimensional discrete Fourier Transform</p></td>
+<td><p>Compute the 2-dimensional discrete Fourier Transform.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fft.ifft2.html#dpnp.fft.ifft2" title="dpnp.fft.ifft2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.ifft2</span></code></a></p></td>
-<td><p>Compute the 2-dimensional inverse discrete Fourier Transform</p></td>
+<td><p>Compute the 2-dimensional inverse discrete Fourier Transform.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fft.fftn.html#dpnp.fft.fftn" title="dpnp.fft.fftn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.fftn</span></code></a></p></td>
 <td><p>Compute the N-dimensional FFT.</p></td>
@@ -147,14 +147,14 @@
 </table>
 </section>
 <section id="real-ffts">
-<h2>Real FFTs<a class="headerlink" href="#real-ffts" title="Permalink to this heading"></a></h2>
+<h2>Real FFTs<a class="headerlink" href="#real-ffts" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fft.rfft.html#dpnp.fft.rfft" title="dpnp.fft.rfft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.rfft</span></code></a></p></td>
 <td><p>Compute the one-dimensional discrete Fourier Transform for real input.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fft.irfft.html#dpnp.fft.irfft" title="dpnp.fft.irfft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.irfft</span></code></a></p></td>
-<td><p>Compute the one-dimensional inverse discrete Fourier Transform for real input..</p></td>
+<td><p>Compute the one-dimensional inverse discrete Fourier Transform for real input.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fft.rfft2.html#dpnp.fft.rfft2" title="dpnp.fft.rfft2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.rfft2</span></code></a></p></td>
 <td><p>Compute the 2-dimensional discrete Fourier Transform for real input.</p></td>
@@ -172,7 +172,7 @@
 </table>
 </section>
 <section id="hermitian-ffts">
-<h2>Hermitian FFTs<a class="headerlink" href="#hermitian-ffts" title="Permalink to this heading"></a></h2>
+<h2>Hermitian FFTs<a class="headerlink" href="#hermitian-ffts" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fft.hfft.html#dpnp.fft.hfft" title="dpnp.fft.hfft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.hfft</span></code></a></p></td>
@@ -185,7 +185,7 @@
 </table>
 </section>
 <section id="helper-routines">
-<h2>Helper routines<a class="headerlink" href="#helper-routines" title="Permalink to this heading"></a></h2>
+<h2>Helper routines<a class="headerlink" href="#helper-routines" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fft.fftfreq.html#dpnp.fft.fftfreq" title="dpnp.fft.fftfreq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.fftfreq</span></code></a></p></td>
@@ -209,7 +209,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="generated/dpnp.bitwise_not.html" class="btn btn-neutral float-left" title="dpnp.bitwise_not" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generated/dpnp.issubsctype.html" class="btn btn-neutral float-left" title="dpnp.issubsctype" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="generated/dpnp.fft.fft.html" class="btn btn-neutral float-right" title="dpnp.fft.fft" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
