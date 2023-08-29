@@ -128,8 +128,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_HYPOT_EXT
         DPNP_FN_IDENTITY
         DPNP_FN_IDENTITY_EXT
-        DPNP_FN_INITVAL
-        DPNP_FN_INITVAL_EXT
         DPNP_FN_INV
         DPNP_FN_INV_EXT
         DPNP_FN_KRON
@@ -164,8 +162,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_PARTITION
         DPNP_FN_PARTITION_EXT
         DPNP_FN_PLACE
-        DPNP_FN_POWER
-        DPNP_FN_POWER_EXT
         DPNP_FN_PROD
         DPNP_FN_PROD_EXT
         DPNP_FN_PTP
@@ -407,7 +403,6 @@ cpdef dpnp_descriptor dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_
 """
 Array creation routines
 """
-cpdef dpnp_descriptor dpnp_init_val(shape, dtype, value)
 cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 
 """
@@ -421,8 +416,6 @@ cpdef dpnp_descriptor dpnp_maximum(dpnp_descriptor x1_obj, dpnp_descriptor x2_ob
                                    dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_minimum(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
-cpdef dpnp_descriptor dpnp_power(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                 dpnp_descriptor out=*, object where=*)
 
 """
 Array manipulation routines

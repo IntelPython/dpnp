@@ -56,7 +56,6 @@ import numpy
 __all__ = [
     "dpnp_astype",
     "dpnp_flatten",
-    "dpnp_init_val",
     "dpnp_queue_initialize",
 ]
 
@@ -84,9 +83,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_flatten_t)(c_dpctl.DPCTLSyclQueueR
                                                          void *, const size_t, const size_t,
                                                          const shape_elem_type * , const shape_elem_type * ,
                                                          const long * ,
-                                                         const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_initval_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                         void *, void * , size_t,
                                                          const c_dpctl.DPCTLEventVectorRef)
 
 
@@ -161,39 +157,6 @@ cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1):
                                                     x1_strides.data(),
                                                     NULL,
                                                     NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_init_val(shape, dtype, value):
-    """
-    same as dpnp_full(). TODO remove code duplication
-    """
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_INITVAL_EXT, param1_type, param1_type)
-
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(shape, dtype, None)
-
-    result_obj = result.get_array()
-
-    # TODO: find better way to pass single value with type conversion
-    cdef utils.dpnp_descriptor val_arr = utils_py.create_output_descriptor_py((1, ),
-                                                                              dtype,
-                                                                              None,
-                                                                              device=result_obj.sycl_device,
-                                                                              usm_type=result_obj.usm_type,
-                                                                              sycl_queue=result_obj.sycl_queue)
-    val_arr.get_pyobj()[0] = value
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_obj.sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_dpnp_initval_t func = <fptr_dpnp_initval_t > kernel_data.ptr
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), val_arr.get_data(), result.size, NULL)
 
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
