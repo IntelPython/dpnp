@@ -58,12 +58,10 @@ __all__ = [
     "dpnp_flatten",
     "dpnp_init_val",
     "dpnp_queue_initialize",
-    "dpnp_queue_is_cpu"
 ]
 
 
 include "dpnp_algo_arraycreation.pxi"
-include "dpnp_algo_bitwise.pxi"
 include "dpnp_algo_counting.pxi"
 include "dpnp_algo_indexing.pxi"
 include "dpnp_algo_linearalgebra.pxi"
@@ -172,7 +170,7 @@ cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1):
 
 cpdef utils.dpnp_descriptor dpnp_init_val(shape, dtype, value):
     """
-    same as dpnp_full(). TODO remove code dumplication
+    same as dpnp_full(). TODO remove code duplication
     """
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
@@ -221,14 +219,7 @@ cpdef dpnp_queue_initialize():
     # TODO:
     # choose seed number as is in numpy
     seed_from_time = time(NULL)
-    dpnp_rng_srand_c(seed_from_time)
-
-
-cpdef dpnp_queue_is_cpu():
-    """Return 1 if current queue is CPU. Return 0 otherwise.
-
-    """
-    return dpnp_queue_is_cpu_c()
+    dpnp_rng_srand_c(< size_t > seed_from_time)
 
 
 """

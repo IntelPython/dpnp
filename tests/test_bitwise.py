@@ -33,6 +33,8 @@ class TestBitwise:
         return xp.array(data, dtype=dtype)
 
     def _test_unary_int(self, name, data, dtype):
+        if numpy.isscalar(data):
+            pytest.skip("Input can't be scalar")
         dp_a = self.array_or_scalar(inp, data, dtype=dtype)
         result = getattr(inp, name)(dp_a)
 

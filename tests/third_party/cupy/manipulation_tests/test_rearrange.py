@@ -75,3 +75,189 @@ class TestRollValueError(unittest.TestCase):
             shift = self.shift
             with pytest.raises(ValueError):
                 xp.roll(x, shift, axis=self.axis)
+
+
+class TestFliplr(unittest.TestCase):
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_fliplr_2(self, xp, dtype):
+        x = testing.shaped_arange((3, 4), xp, dtype)
+        return xp.fliplr(x)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_fliplr_3(self, xp, dtype):
+        x = testing.shaped_arange((3, 4, 2), xp, dtype)
+        return xp.fliplr(x)
+
+    @testing.for_all_dtypes()
+    def test_fliplr_insufficient_ndim(self, dtype):
+        for xp in (numpy, cupy):
+            x = testing.shaped_arange((3,), xp, dtype)
+            with pytest.raises(ValueError):
+                xp.fliplr(x)
+
+
+class TestFlipud(unittest.TestCase):
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_flipud_1(self, xp, dtype):
+        x = testing.shaped_arange((3,), xp, dtype)
+        return xp.flipud(x)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_flipud_2(self, xp, dtype):
+        x = testing.shaped_arange((3, 4), xp, dtype)
+        return xp.flipud(x)
+
+    @testing.for_all_dtypes()
+    def test_flipud_insufficient_ndim(self, dtype):
+        for xp in (numpy, cupy):
+            x = testing.shaped_arange((), xp, dtype)
+            with pytest.raises(ValueError):
+                xp.flipud(x)
+
+
+class TestFlip(unittest.TestCase):
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_flip_1(self, xp, dtype):
+        x = testing.shaped_arange((3,), xp, dtype)
+        return xp.flip(x, 0)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_flip_2(self, xp, dtype):
+        x = testing.shaped_arange((3, 4), xp, dtype)
+        return xp.flip(x, 1)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_flip_all(self, xp, dtype):
+        x = testing.shaped_arange((3, 4), xp, dtype)
+        return xp.flip(x)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_flip_with_negative_axis(self, xp, dtype):
+        x = testing.shaped_arange((3, 4, 2), xp, dtype)
+        return xp.flip(x, -1)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_flip_with_axis_tuple(self, xp, dtype):
+        x = testing.shaped_arange((3, 4, 2), xp, dtype)
+        return xp.flip(x, (0, 2))
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_flip_dim_0(self, xp, dtype):
+        x = testing.shaped_arange((), xp, dtype)
+        return xp.flip(x)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_flip_empty_dim_1(self, xp, dtype):
+        x = xp.array([], dtype).reshape((0,))
+        return xp.flip(x, 0)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_flip_empty_dim_2(self, xp, dtype):
+        x = xp.array([], dtype).reshape((0, 0))
+        return xp.flip(x, 1)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_flip_empty_dim_3(self, xp, dtype):
+        x = xp.array([], dtype).reshape((1, 0, 1))
+        return xp.flip(x, 1)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_flip_empty_dim_all(self, xp, dtype):
+        x = xp.array([], dtype).reshape((1, 0, 1))
+        return xp.flip(x)
+
+    @testing.for_all_dtypes()
+    def test_flip_insufficient_ndim(self, dtype):
+        for xp in (numpy, cupy):
+            x = testing.shaped_arange((), xp, dtype)
+            with pytest.raises(ValueError):
+                xp.flip(x, 0)
+
+    @testing.for_all_dtypes()
+    def test_flip_invalid_axis(self, dtype):
+        for xp in (numpy, cupy):
+            x = testing.shaped_arange((3, 4), xp, dtype)
+            with pytest.raises(ValueError):
+                xp.flip(x, 2)
+
+    @testing.for_all_dtypes()
+    def test_flip_invalid_negative_axis(self, dtype):
+        for xp in (numpy, cupy):
+            x = testing.shaped_arange((3, 4), xp, dtype)
+            with pytest.raises(ValueError):
+                xp.flip(x, -3)
+
+
+@pytest.mark.skip("`rot90` isn't supported yet")
+class TestRot90(unittest.TestCase):
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_rot90_none(self, xp, dtype):
+        x = testing.shaped_arange((3, 4), xp, dtype)
+        return xp.rot90(x, 0)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_rot90_twice(self, xp, dtype):
+        x = testing.shaped_arange((3, 4, 2), xp, dtype)
+        return xp.rot90(x, 2)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_rot90_negative(self, xp, dtype):
+        x = testing.shaped_arange((3, 4, 2), xp, dtype)
+        return xp.rot90(x, -1)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_rot90_with_axes(self, xp, dtype):
+        x = testing.shaped_arange((3, 4, 2), xp, dtype)
+        return xp.rot90(x, 1, axes=(1, 2))
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_rot90_with_negative_axes(self, xp, dtype):
+        x = testing.shaped_arange((3, 4, 2), xp, dtype)
+        return xp.rot90(x, 1, axes=(1, -1))
+
+    @testing.for_all_dtypes()
+    def test_rot90_insufficient_ndim(self, dtype):
+        for xp in (numpy, cupy):
+            x = testing.shaped_arange((3,), xp, dtype)
+            with pytest.raises(ValueError):
+                xp.rot90(x)
+
+    @testing.for_all_dtypes()
+    def test_rot90_too_much_axes(self, dtype):
+        for xp in (numpy, cupy):
+            x = testing.shaped_arange((3, 4, 2), xp, dtype)
+            with pytest.raises(ValueError):
+                xp.rot90(x, 1, axes=(0, 1, 2))
+
+    @testing.for_all_dtypes()
+    def test_rot90_invalid_axes(self, dtype):
+        for xp in (numpy, cupy):
+            x = testing.shaped_arange((3, 4, 2), xp, dtype)
+            with pytest.raises(ValueError):
+                xp.rot90(x, 1, axes=(1, 3))
+
+    @testing.for_all_dtypes()
+    def test_rot90_invalid_negative_axes(self, dtype):
+        for xp in (numpy, cupy):
+            x = testing.shaped_arange((3, 4, 2), xp, dtype)
+            with pytest.raises(ValueError):
+                xp.rot90(x, 1, axes=(1, -2))

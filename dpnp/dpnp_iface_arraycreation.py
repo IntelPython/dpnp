@@ -56,6 +56,7 @@ __all__ = [
     "asanyarray",
     "asarray",
     "ascontiguousarray",
+    "asfortranarray",
     "copy",
     "diag",
     "diagflat",
@@ -109,7 +110,7 @@ def arange(
 
     Returns
     -------
-    arange : :obj:`dpnp.ndarray`
+    out : dpnp.ndarray
         The 1-D array containing evenly spaced values.
 
     Limitations
@@ -150,10 +151,11 @@ def arange(
 
 
 def array(
-    x1,
+    a,
     dtype=None,
+    *,
     copy=True,
-    order="C",
+    order="K",
     subok=False,
     ndmin=0,
     like=None,
@@ -162,15 +164,21 @@ def array(
     sycl_queue=None,
 ):
     """
-    Creates an array.
+    Create an array.
 
     For full documentation refer to :obj:`numpy.array`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array object satisfying the specified requirements.
+
     Limitations
     -----------
-    Parameter ``subok`` is supported only with default value ``False``.
-    Parameter ``ndmin`` is supported only with default value ``0``.
-    Parameter ``like`` is supported only with default value ``None``.
+    Parameter `subok` is supported only with default value ``False``.
+    Parameter `ndmin` is supported only with default value ``0``.
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `ValueError` exception.
 
     See Also
     --------
@@ -204,43 +212,61 @@ def array(
     """
 
     if subok is not False:
-        pass
+        raise ValueError(
+            "Keyword argument `subok` is supported only with "
+            f"default value ``False``, but got {subok}"
+        )
     elif ndmin != 0:
-        pass
+        raise ValueError(
+            "Keyword argument `ndmin` is supported only with "
+            f"default value ``0``, but got {ndmin}"
+        )
     elif like is not None:
-        pass
-    else:
-        return dpnp_container.asarray(
-            x1,
-            dtype=dtype,
-            copy=copy,
-            order=order,
-            device=device,
-            usm_type=usm_type,
-            sycl_queue=sycl_queue,
+        raise ValueError(
+            "Keyword argument `like` is supported only with "
+            f"default value ``None``, but got {like}"
         )
 
-    return call_origin(
-        numpy.array,
-        x1,
+    # `False`` in numpy means exactly the same like `None` in python array API:
+    # that is to reuse existing memory buffer if possible or to copy otherwise.
+    if copy is False:
+        copy = None
+
+    return dpnp_container.asarray(
+        a,
         dtype=dtype,
         copy=copy,
         order=order,
-        subok=subok,
-        ndmin=ndmin,
-        like=like,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
     )
 
 
-def asanyarray(a, dtype=None, order="C"):
+def asanyarray(
+    a,
+    dtype=None,
+    order=None,
+    *,
+    like=None,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
     """
-    Convert the input to an ndarray, but pass ndarray subclasses through.
+    Convert the input to an :class:`dpnp.ndarray`.
 
     For full documentation refer to :obj:`numpy.asanyarray`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array interpretation of `a`.
+
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `ValueError` exception.
 
     See Also
     --------
@@ -258,29 +284,31 @@ def asanyarray(a, dtype=None, order="C"):
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.asanyarray([1, 2, 3])
-    >>> [i for i in x]
-    [1, 2, 3]
+    >>> np.asanyarray([1, 2, 3])
+    array([1, 2, 3])
 
     """
 
-    if not use_origin_backend(a):
-        # if it is already dpnp.ndarray then same object should be returned
-        if isinstance(a, dpnp.ndarray):
-            return a
+    if like is not None:
+        raise ValueError(
+            "Keyword argument `like` is supported only with "
+            f"default value ``None``, but got {like}"
+        )
 
-        if order != "C":
-            pass
-        else:
-            return array(a, dtype=dtype, order=order)
-
-    return call_origin(numpy.asanyarray, a, dtype, order)
+    return asarray(
+        a,
+        dtype=dtype,
+        order=order,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
 def asarray(
-    x1,
+    a,
     dtype=None,
-    order="C",
+    order=None,
     like=None,
     device=None,
     usm_type=None,
@@ -291,9 +319,16 @@ def asarray(
 
     For full documentation refer to :obj:`numpy.asarray`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array interpretation of `a`. No copy is performed if the input
+        is already an ndarray with matching dtype and order.
+
     Limitations
     -----------
-    Parameter ``like`` is supported only with default value ``None``.
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `ValueError` exception.
 
     See Also
     --------
@@ -311,65 +346,180 @@ def asarray(
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.asarray([1, 2, 3])
-    >>> print(x)
-    [1 2 3]
+    >>> np.asarray([1, 2, 3])
+    array([1, 2, 3])
 
     """
 
     if like is not None:
-        pass
-    else:
-        return dpnp_container.asarray(
-            x1,
-            dtype=dtype,
-            copy=True,  # Converting Python sequence to usm_ndarray requires a copy
-            order=order,
-            device=device,
-            usm_type=usm_type,
-            sycl_queue=sycl_queue,
+        raise ValueError(
+            "Keyword argument `like` is supported only with "
+            f"default value ``None``, but got {like}"
         )
 
-    return call_origin(numpy.asarray, x1, dtype=dtype, order=order, like=like)
+    return dpnp_container.asarray(
+        a,
+        dtype=dtype,
+        order=order,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
-def ascontiguousarray(a, dtype=None):
+def ascontiguousarray(
+    a, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
+):
     """
     Return a contiguous array (ndim >= 1) in memory (C order).
 
     For full documentation refer to :obj:`numpy.ascontiguousarray`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Contiguous array of same shape and content as `a`, with type `dtype`
+        if specified.
+
+    Limitations
+    -----------
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `ValueError` exception.
 
     See Also
     --------
     :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-major
                      memory order.
     :obj:`dpnp.require` : Return an ndarray that satisfies requirements.
+    :obj:`dpnp.ndarray.flags` : Information about the memory layout of the array.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.arange(6).reshape((2, 3))
-    >>> out = np.ascontiguousarray(x)
-    >>> out.shape
-    (2, 3)
-    >>> [i for i in out]
-    [0, 1, 2, 3, 4, 5]
+    >>> x = np.ones((2, 3), order='F')
+    >>> x.flags['F_CONTIGUOUS']
+    True
+
+    Calling ``ascontiguousarray`` makes a C-contiguous copy:
+
+    >>> y = np.ascontiguousarray(x)
+    >>> y.flags['F_CONTIGUOUS']
+    True
+    >>> x is y
+    False
+
+    Now, starting with a C-contiguous array:
+
+    >>> x = np.ones((2, 3), order='C')
+    >>> x.flags['C_CONTIGUOUS']
+    True
+
+    Then, calling ``ascontiguousarray`` returns the same object:
+
+    >>> y = np.ascontiguousarray(x)
+    >>> x is y
+    True
 
     """
 
-    if not use_origin_backend(a):
-        # we support only c-contiguous arrays for now
-        # if type is the same then same object should be returned
-        if isinstance(a, dpnp.ndarray) and a.dtype == dtype:
-            return a
+    if like is not None:
+        raise ValueError(
+            "Keyword argument `like` is supported only with "
+            f"default value ``None``, but got {like}"
+        )
 
-        return array(a, dtype=dtype)
+    # at least 1-d array has to be returned
+    if a.ndim == 0:
+        a = [a]
 
-    return call_origin(numpy.ascontiguousarray, a, dtype)
+    return asarray(
+        a,
+        dtype=dtype,
+        order="C",
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
-# numpy.copy(a, order='K', subok=False)
-def copy(x1, order="K", subok=False):
+def asfortranarray(
+    a, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
+):
+    """
+    Return an array (ndim >= 1) laid out in Fortran order in memory.
+
+    For full documentation refer to :obj:`numpy.asfortranarray`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The input `a` in Fortran, or column-major, order.
+
+    Limitations
+    -----------
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `ValueError` exception.
+
+    See Also
+    --------
+    :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous (C order) array.
+    :obj:`dpnp.asanyarray` : Convert input to an ndarray with either row or column-major memory order.
+    :obj:`dpnp.require` : Return an ndarray that satisfies requirements.
+    :obj:`dpnp.ndarray.flags` : Information about the memory layout of the array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+
+    Starting with a C-contiguous array:
+
+    >>> x = np.ones((2, 3), order='C')
+    >>> x.flags['C_CONTIGUOUS']
+    True
+
+    Calling ``asfortranarray`` makes a Fortran-contiguous copy:
+
+    >>> y = np.asfortranarray(x)
+    >>> y.flags['F_CONTIGUOUS']
+    True
+    >>> x is y
+    False
+
+    Now, starting with a Fortran-contiguous array:
+
+    >>> x = np.ones((2, 3), order='F')
+    >>> x.flags['F_CONTIGUOUS']
+    True
+
+    Then, calling ``asfortranarray`` returns the same object:
+
+    >>> y = np.asfortranarray(x)
+    >>> x is y
+    True
+
+    """
+
+    if like is not None:
+        raise ValueError(
+            "Keyword argument `like` is supported only with "
+            f"default value ``None``, but got {like}"
+        )
+
+    # at least 1-d array has to be returned
+    if a.ndim == 0:
+        a = [a]
+
+    return asarray(
+        a,
+        dtype=dtype,
+        order="F",
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+
+
+def copy(a, order="K", subok=False):
     """
     Return an array copy of the given object.
 
@@ -377,35 +527,53 @@ def copy(x1, order="K", subok=False):
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
-    Parameter ``subok`` is supported only with default value ``False``.
+    Parameter `subok` is supported only with default value ``False``.
+    Otherwise, the function raises `ValueError` exception.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array interpretation of `a`.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.copy` : Preferred method for creating an array copy
+
+    Notes
+    -----
+    This is equivalent to:
+
+    >>> dpnp.array(a, copy=True)
 
     Examples
     --------
+    Create an array `x`, with a reference `y` and a copy `z`:
+
     >>> import dpnp as np
     >>> x = np.array([1, 2, 3])
     >>> y = x
     >>> z = np.copy(x)
+
+    Note that, when we modify `x`, `y` will change, but not `z`:
+
     >>> x[0] = 10
     >>> x[0] == y[0]
-    True
+    array(True)
     >>> x[0] == z[0]
-    False
+    array(False)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    if x1_desc:
-        if order != "K":
-            pass
-        elif subok:
-            pass
-        else:
-            return dpnp_copy(x1_desc).get_pyobj()
+    if subok is not False:
+        raise ValueError(
+            "Keyword argument `subok` is supported only with "
+            f"default value ``False``, but got {subok}"
+        )
 
-    return call_origin(numpy.copy, x1, order, subok)
+    if dpnp.is_supported_array_type(a):
+        return dpnp_container.copy(a, order=order)
+
+    return array(a, order=order, subok=subok, copy=True)
 
 
 def diag(x1, k=0):

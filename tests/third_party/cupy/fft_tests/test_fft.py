@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -14,7 +15,7 @@ from tests.third_party.cupy import testing
         {
             "n": [None, 0, 5, 10, 15],
             "shape": [(0,), (10, 0), (10,), (10, 10)],
-            "norm": [None, "ortho", ""],
+            "norm": [None, "backward", "ortho", "forward", ""],
         }
     )
 )
@@ -26,8 +27,8 @@ class TestFft(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
+        type_check=has_support_aspect64(),
         contiguous_check=False,
-        type_check=False,
     )
     def test_fft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -40,8 +41,8 @@ class TestFft(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
+        type_check=has_support_aspect64(),
         contiguous_check=False,
-        type_check=False,
     )
     def test_ifft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -80,7 +81,10 @@ class TestFft(unittest.TestCase):
 class TestFft2(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
-        rtol=1e-4, atol=1e-7, accept_error=ValueError, contiguous_check=False
+        rtol=1e-4,
+        atol=1e-7,
+        accept_error=ValueError,
+        type_check=has_support_aspect64(),
     )
     def test_fft2(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -90,7 +94,10 @@ class TestFft2(unittest.TestCase):
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
-        rtol=1e-4, atol=1e-7, accept_error=ValueError, contiguous_check=False
+        rtol=1e-4,
+        atol=1e-7,
+        accept_error=ValueError,
+        type_check=has_support_aspect64(),
     )
     def test_ifft2(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -130,7 +137,10 @@ class TestFft2(unittest.TestCase):
 class TestFftn(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
-        rtol=1e-4, atol=1e-7, accept_error=ValueError, contiguous_check=False
+        rtol=1e-4,
+        atol=1e-7,
+        accept_error=ValueError,
+        type_check=has_support_aspect64(),
     )
     def test_fftn(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -140,7 +150,10 @@ class TestFftn(unittest.TestCase):
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
-        rtol=1e-4, atol=1e-7, accept_error=ValueError, contiguous_check=False
+        rtol=1e-4,
+        atol=1e-7,
+        accept_error=ValueError,
+        type_check=has_support_aspect64(),
     )
     def test_ifftn(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -163,7 +176,9 @@ class TestFftn(unittest.TestCase):
 class TestRfft(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(
-        rtol=1e-4, atol=1e-7, contiguous_check=False, type_check=False
+        rtol=1e-4,
+        atol=1e-7,
+        type_check=has_support_aspect64(),
     )
     def test_rfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -172,7 +187,11 @@ class TestRfft(unittest.TestCase):
         return out
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-4, atol=1e-7, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-7,
+        type_check=has_support_aspect64(),
+    )
     def test_irfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.irfft(a, n=self.n, norm=self.norm)
@@ -237,7 +256,11 @@ class TestRfftnEmptyAxes(unittest.TestCase):
 @testing.gpu
 class TestHfft(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-4, atol=1e-7, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-7,
+        type_check=has_support_aspect64(),
+    )
     def test_hfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.hfft(a, n=self.n, norm=self.norm)
@@ -245,7 +268,11 @@ class TestHfft(unittest.TestCase):
         return out
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(rtol=1e-4, atol=1e-7, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-7,
+        type_check=has_support_aspect64(),
+    )
     def test_ihfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.ihfft(a, n=self.n, norm=self.norm)
@@ -262,14 +289,22 @@ class TestHfft(unittest.TestCase):
 @testing.gpu
 class TestFftfreq(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-4, atol=1e-7, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-7,
+        type_check=has_support_aspect64(),
+    )
     def test_fftfreq(self, xp, dtype):
         out = xp.fft.fftfreq(self.n, self.d)
 
         return out
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-4, atol=1e-7, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-7,
+        type_check=has_support_aspect64(),
+    )
     def test_rfftfreq(self, xp, dtype):
         out = xp.fft.rfftfreq(self.n, self.d)
 
@@ -289,7 +324,11 @@ class TestFftfreq(unittest.TestCase):
 @testing.gpu
 class TestFftshift(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-4, atol=1e-7, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-7,
+        type_check=has_support_aspect64(),
+    )
     def test_fftshift(self, xp, dtype):
         x = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.fftshift(x, self.axes)
@@ -297,7 +336,11 @@ class TestFftshift(unittest.TestCase):
         return out
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-4, atol=1e-7, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-7,
+        type_check=has_support_aspect64(),
+    )
     def test_ifftshift(self, xp, dtype):
         x = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.ifftshift(x, self.axes)

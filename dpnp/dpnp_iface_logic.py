@@ -40,10 +40,12 @@ it contains:
 """
 
 
+import dpctl.tensor as dpt
 import numpy
 
 import dpnp
 from dpnp.dpnp_algo import *
+from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
 
 from .dpnp_algo.dpnp_elementwise_common import (
@@ -84,24 +86,29 @@ __all__ = [
 ]
 
 
-def all(x1, /, axis=None, out=None, keepdims=False, *, where=True):
+def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
     """
     Test whether all array elements along a given axis evaluate to True.
 
     For full documentation refer to :obj:`numpy.all`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array with a data type of `bool`
+        containing the results of the logical AND reduction.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `x` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `out` and `where` are supported with default value.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter `axis` is supported only with default value `None`.
-    Parameter `out` is supported only with default value `None`.
-    Parameter `keepdims` is supported only with default value `False`.
-    Parameter `where` is supported only with default value `True`.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
+    :obj:`dpnp.ndarray.all` : equivalent method
     :obj:`dpnp.any` : Test whether any element along a given axis evaluates to True.
 
     Notes
@@ -111,94 +118,153 @@ def all(x1, /, axis=None, out=None, keepdims=False, *, where=True):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> x = dp.array([[True, False], [True, True]])
-    >>> dp.all(x)
-    False
-    >>> x2 = dp.array([-1, 4, 5])
-    >>> dp.all(x2)
-    True
-    >>> x3 = dp.array([1.0, dp.nan])
-    >>> dp.all(x3)
-    True
+    >>> import dpnp as np
+    >>> x = np.array([[True, False], [True, True]])
+    >>> np.all(x)
+    array(False)
+
+    >>> np.all(x, axis=0)
+    array([ True, False])
+
+    >>> x2 = np.array([-1, 4, 5])
+    >>> np.all(x2)
+    array(True)
+
+    >>> x3 = np.array([1.0, np.nan])
+    >>> np.all(x3)
+    array(True)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axis is not None:
-            pass
-        elif out is not None:
-            pass
-        elif keepdims is not False:
+    if dpnp.is_supported_array_type(x):
+        if out is not None:
             pass
         elif where is not True:
             pass
         else:
-            result_obj = dpnp_all(x1_desc).get_pyobj()
-            return dpnp.convert_single_elem_array_to_scalar(result_obj)
+            dpt_array = dpnp.get_usm_ndarray(x)
+            return dpnp_array._create_from_usm_ndarray(
+                dpt.all(dpt_array, axis=axis, keepdims=keepdims)
+            )
 
     return call_origin(
-        numpy.all, x1, axis=axis, out=out, keepdims=keepdims, where=where
+        numpy.all, x, axis=axis, out=out, keepdims=keepdims, where=where
     )
 
 
-def allclose(x1, x2, rtol=1.0e-5, atol=1.0e-8, **kwargs):
+def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     """
     Returns True if two arrays are element-wise equal within a tolerance.
 
     For full documentation refer to :obj:`numpy.allclose`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        A boolean 0-dim array. If its value is ``True``,
+        two arrays are element-wise equal within a tolerance.
+
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Keyword arguments ``kwargs`` are currently unsupported.
+    Parameters `a` and `b` are supported either as :class:`dpnp.ndarray`,
+    :class:`dpctl.tensor.usm_ndarray` or scalars, but both `a` and `b`
+    can not be scalars at the same time.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the functions will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters `rtol` and `atol` are supported as scalars. Otherwise
+    ``TypeError`` exeption will be raised.
+    Input array data types are limited by supported integer and
+    floating DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.isclose` : Test whether two arrays are element-wise equal.
+    :obj:`dpnp.all` : Test whether all elements evaluate to True.
+    :obj:`dpnp.any` : Test whether any element evaluates to True.
+    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> np.allclose([1e10,1e-7], [1.00001e10,1e-8])
-    >>> False
+    >>> a = np.array([1e10, 1e-7])
+    >>> b = np.array([1.00001e10, 1e-8])
+    >>> np.allclose(a, b)
+    array([False])
+
+    >>> a = np.array([1.0, np.nan])
+    >>> b = np.array([1.0, np.nan])
+    >>> np.allclose(a, b)
+    array([False])
+
+    >>> a = np.array([1.0, np.inf])
+    >>> b = np.array([1.0, np.inf])
+    >>> np.allclose(a, b)
+    array([ True])
 
     """
 
-    rtol_is_scalar = dpnp.isscalar(rtol)
-    atol_is_scalar = dpnp.isscalar(atol)
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
+    if dpnp.isscalar(a) and dpnp.isscalar(b):
+        # at least one of inputs has to be an array
+        pass
+    elif not (
+        dpnp.is_supported_array_or_scalar(a)
+        and dpnp.is_supported_array_or_scalar(b)
+    ):
+        pass
+    elif kwargs:
+        pass
+    else:
+        if not dpnp.isscalar(rtol):
+            raise TypeError(
+                "An argument `rtol` must be a scalar, but got {}".format(
+                    type(rtol)
+                )
+            )
+        elif not dpnp.isscalar(atol):
+            raise TypeError(
+                "An argument `atol` must be a scalar, but got {}".format(
+                    type(atol)
+                )
+            )
 
-    if x1_desc and x2_desc and not kwargs:
-        if not rtol_is_scalar or not atol_is_scalar:
-            pass
-        else:
-            result_obj = dpnp_allclose(x1_desc, x2_desc, rtol, atol).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+        if dpnp.isscalar(a):
+            a = dpnp.full_like(b, fill_value=a)
+        elif dpnp.isscalar(b):
+            b = dpnp.full_like(a, fill_value=b)
+        elif a.shape != b.shape:
+            a, b = dpt.broadcast_arrays(a.get_array(), b.get_array())
 
-            return result
+        a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
+        b_desc = dpnp.get_dpnp_descriptor(b, copy_when_nondefault_queue=False)
+        if a_desc and b_desc:
+            return dpnp_allclose(a_desc, b_desc, rtol, atol).get_pyobj()
 
-    return call_origin(numpy.allclose, x1, x2, rtol=rtol, atol=atol, **kwargs)
+    return call_origin(numpy.allclose, a, b, rtol=rtol, atol=atol, **kwargs)
 
 
-def any(x1, /, axis=None, out=None, keepdims=False, *, where=True):
+def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
     """
     Test whether any array element along a given axis evaluates to True.
 
     For full documentation refer to :obj:`numpy.any`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array with a data type of `bool`
+        containing the results of the logical OR reduction.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `x` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `out` and `where` are supported with default value.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter `axis` is supported only with default value `None`.
-    Parameter `out` is supported only with default value `None`.
-    Parameter `keepdims` is supported only with default value `False`.
-    Parameter `where` is supported only with default value `True`.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
+    :obj:`dpnp.ndarray.any` : equivalent method
     :obj:`dpnp.all` : Test whether all elements along a given axis evaluate to True.
 
     Notes
@@ -208,35 +274,37 @@ def any(x1, /, axis=None, out=None, keepdims=False, *, where=True):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> x = dp.array([[True, False], [True, True]])
-    >>> dp.any(x)
-    True
-    >>> x2 = dp.array([0, 0, 0])
-    >>> dp.any(x2)
-    False
-    >>> x3 = dp.array([1.0, dp.nan])
-    >>> dp.any(x3)
-    True
+    >>> import dpnp as np
+    >>> x = np.array([[True, False], [True, True]])
+    >>> np.any(x)
+    array(True)
+
+    >>> np.any(x, axis=0)
+    array([ True,  True])
+
+    >>> x2 = np.array([0, 0, 0])
+    >>> np.any(x2)
+    array(False)
+
+    >>> x3 = np.array([1.0, np.nan])
+    >>> np.any(x3)
+    array(True)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axis is not None:
-            pass
-        elif out is not None:
-            pass
-        elif keepdims is not False:
+    if dpnp.is_supported_array_type(x):
+        if out is not None:
             pass
         elif where is not True:
             pass
         else:
-            result_obj = dpnp_any(x1_desc).get_pyobj()
-            return dpnp.convert_single_elem_array_to_scalar(result_obj)
+            dpt_array = dpnp.get_usm_ndarray(x)
+            return dpnp_array._create_from_usm_ndarray(
+                dpt.any(dpt_array, axis=axis, keepdims=keepdims)
+            )
 
     return call_origin(
-        numpy.any, x1, axis=axis, out=out, keepdims=keepdims, where=where
+        numpy.any, x, axis=axis, out=out, keepdims=keepdims, where=where
     )
 
 
@@ -464,8 +532,8 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
 
     Limitations
     -----------
-    ``x2`` is supported to be integer if ``x1`` is :obj:`dpnp.ndarray` or
-    at least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
+    `x2` is supported to be integer if `x1` is :class:`dpnp.ndarray` or
+    at least either `x1` or `x2` should be as :class:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 

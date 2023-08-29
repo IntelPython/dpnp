@@ -1,5 +1,5 @@
-import operator
 import tempfile
+from math import prod
 
 import dpctl
 import dpctl.tensor as dpt
@@ -9,7 +9,6 @@ from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
     assert_array_equal,
-    assert_raises,
 )
 
 import dpnp
@@ -18,6 +17,31 @@ from .helper import (
     get_all_dtypes,
     has_support_aspect64,
 )
+
+
+@pytest.mark.parametrize(
+    "func, kwargs",
+    [
+        pytest.param("array", {"subok": True}),
+        pytest.param("array", {"ndmin": 1}),
+        pytest.param("array", {"like": dpnp.ones(10)}),
+        pytest.param("asanyarray", {"like": dpnp.array(7)}),
+        pytest.param("asarray", {"like": dpnp.array([1, 5])}),
+        pytest.param("ascontiguousarray", {"like": dpnp.zeros(4)}),
+        pytest.param("asfortranarray", {"like": dpnp.empty((2, 4))}),
+        pytest.param("copy", {"subok": True}),
+    ],
+)
+def test_array_copy_exception(func, kwargs):
+    sh = (3, 5)
+    x = dpnp.arange(1, prod(sh) + 1, 1).reshape(sh)
+
+    with pytest.raises(
+        ValueError,
+        match=f"Keyword argument `{list(kwargs.keys())[0]}` is supported "
+        "only with default value",
+    ):
+        getattr(dpnp, func)(x, **kwargs)
 
 
 @pytest.mark.parametrize(

@@ -74,7 +74,7 @@ DPCTLSyclEventRef dpnp_all_c(DPCTLSyclQueueRef q_ref,
     sycl::nd_range<1> gws(gws_range, lws_range);
 
     auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {
-        auto gr = nd_it.get_group();
+        auto gr = nd_it.get_sub_group();
         const auto max_gr_size = gr.get_max_local_range()[0];
         const size_t start =
             vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +
@@ -127,8 +127,79 @@ DPCTLSyclEventRef (*dpnp_all_ext_c)(DPCTLSyclQueueRef,
                                     const DPCTLEventVectorRef) =
     dpnp_all_c<_DataType, _ResultType>;
 
-template <typename _DataType1, typename _DataType2, typename _ResultType>
-class dpnp_allclose_c_kernel;
+template <typename _DataType1, typename _DataType2, typename _TolType>
+class dpnp_allclose_kernel;
+
+template <typename _DataType1, typename _DataType2, typename _TolType>
+static sycl::event dpnp_allclose(sycl::queue &q,
+                                 const _DataType1 *array1,
+                                 const _DataType2 *array2,
+                                 bool *result,
+                                 const size_t size,
+                                 const _TolType rtol_val,
+                                 const _TolType atol_val)
+{
+    sycl::event fill_event = q.fill(result, true, 1);
+    if (!size) {
+        return fill_event;
+    }
+
+    constexpr size_t lws = 64;
+    constexpr size_t vec_sz = 8;
+
+    auto gws_range =
+        sycl::range<1>(((size + lws * vec_sz - 1) / (lws * vec_sz)) * lws);
+    auto lws_range = sycl::range<1>(lws);
+    sycl::nd_range<1> gws(gws_range, lws_range);
+
+    auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {
+        auto gr = nd_it.get_sub_group();
+        const auto max_gr_size = gr.get_max_local_range()[0];
+        const auto gr_size = gr.get_local_linear_range();
+        const size_t start =
+            vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +
+                      gr.get_group_linear_id() * max_gr_size);
+        const size_t end = sycl::min(start + vec_sz * gr_size, size);
+
+        // each work-item iterates over "vec_sz" elements in the input arrays
+        bool partial = true;
+
+        for (size_t i = start + gr.get_local_linear_id(); i < end; i += gr_size)
+        {
+            if constexpr (std::is_floating_point_v<_DataType1> &&
+                          std::is_floating_point_v<_DataType2>)
+            {
+                if (std::isinf(array1[i]) || std::isinf(array2[i])) {
+                    partial &= (array1[i] == array2[i]);
+                    continue;
+                }
+            }
+
+            // casting integeral to floating type to avoid bad behavior
+            // on abs(MIN_INT), which leads to undefined result
+            using _Arr2Type = std::conditional_t<std::is_integral_v<_DataType2>,
+                                                 _TolType, _DataType2>;
+            _Arr2Type arr2 = static_cast<_Arr2Type>(array2[i]);
+
+            partial &= (std::abs(array1[i] - arr2) <=
+                        (atol_val + rtol_val * std::abs(arr2)));
+        }
+        partial = sycl::all_of_group(gr, partial);
+
+        if (gr.leader() && (partial == false)) {
+            result[0] = false;
+        }
+    };
+
+    auto kernel_func = [&](sycl::handler &cgh) {
+        cgh.depends_on(fill_event);
+        cgh.parallel_for<
+            class dpnp_allclose_kernel<_DataType1, _DataType2, _TolType>>(
+            gws, kernel_parallel_for_func);
+    };
+
+    return q.submit(kernel_func);
+}
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
 DPCTLSyclEventRef dpnp_allclose_c(DPCTLSyclQueueRef q_ref,
@@ -140,6 +211,9 @@ DPCTLSyclEventRef dpnp_allclose_c(DPCTLSyclQueueRef q_ref,
                                   double atol_val,
                                   const DPCTLEventVectorRef dep_event_vec_ref)
 {
+    static_assert(std::is_same_v<_ResultType, bool>,
+                  "Boolean result type is required");
+
     // avoid warning unused variable
     (void)dep_event_vec_ref;
 
@@ -152,40 +226,21 @@ DPCTLSyclEventRef dpnp_allclose_c(DPCTLSyclQueueRef q_ref,
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
     sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType1> input1_ptr(q_ref, array1_in, size);
-    DPNPC_ptr_adapter<_DataType2> input2_ptr(q_ref, array2_in, size);
-    DPNPC_ptr_adapter<_ResultType> result1_ptr(q_ref, result1, 1, true, true);
-    const _DataType1 *array1 = input1_ptr.get_ptr();
-    const _DataType2 *array2 = input2_ptr.get_ptr();
-    _ResultType *result = result1_ptr.get_ptr();
+    const _DataType1 *array1 = static_cast<const _DataType1 *>(array1_in);
+    const _DataType2 *array2 = static_cast<const _DataType2 *>(array2_in);
+    bool *result = static_cast<bool *>(result1);
 
-    result[0] = true;
-
-    if (!size) {
-        return event_ref;
+    if (q.get_device().has(sycl::aspect::fp64)) {
+        event =
+            dpnp_allclose(q, array1, array2, result, size, rtol_val, atol_val);
+    }
+    else {
+        float rtol = static_cast<float>(rtol_val);
+        float atol = static_cast<float>(atol_val);
+        event = dpnp_allclose(q, array1, array2, result, size, rtol, atol);
     }
 
-    sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
-        size_t i = global_id[0];
-
-        if (std::abs(array1[i] - array2[i]) >
-            (atol_val + rtol_val * std::abs(array2[i])))
-        {
-            result[0] = false;
-        }
-    };
-
-    auto kernel_func = [&](sycl::handler &cgh) {
-        cgh.parallel_for<
-            class dpnp_allclose_c_kernel<_DataType1, _DataType2, _ResultType>>(
-            gws, kernel_parallel_for_func);
-    };
-
-    event = q.submit(kernel_func);
-
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
-
     return DPCTLEvent_Copy(event_ref);
 }
 
@@ -269,7 +324,7 @@ DPCTLSyclEventRef dpnp_any_c(DPCTLSyclQueueRef q_ref,
     sycl::nd_range<1> gws(gws_range, lws_range);
 
     auto kernel_parallel_for_func = [=](sycl::nd_item<1> nd_it) {
-        auto gr = nd_it.get_group();
+        auto gr = nd_it.get_sub_group();
         const auto max_gr_size = gr.get_max_local_range()[0];
         const size_t start =
             vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +
@@ -521,8 +576,6 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
         else {                                                                 \
             constexpr size_t lws = 64;                                         \
             constexpr unsigned int vec_sz = 8;                                 \
-            constexpr sycl::access::address_space global_space =               \
-                sycl::access::address_space::global_space;                     \
                                                                                \
             auto gws_range = sycl::range<1>(                                   \
                 ((result_size + lws * vec_sz - 1) / (lws * vec_sz)) * lws);    \
@@ -537,12 +590,20 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
                                                                                \
                 if (start + static_cast<size_t>(vec_sz) * max_sg_size <        \
                     result_size) {                                             \
-                    sycl::vec<_DataType_input1, vec_sz> x1 = sg.load<vec_sz>(  \
-                        sycl::multi_ptr<_DataType_input1, global_space>(       \
-                            &input1_data[start]));                             \
-                    sycl::vec<_DataType_input2, vec_sz> x2 = sg.load<vec_sz>(  \
-                        sycl::multi_ptr<_DataType_input2, global_space>(       \
-                            &input2_data[start]));                             \
+                    auto input1_multi_ptr = sycl::address_space_cast<          \
+                        sycl::access::address_space::global_space,             \
+                        sycl::access::decorated::yes>(&input1_data[start]);    \
+                    auto input2_multi_ptr = sycl::address_space_cast<          \
+                        sycl::access::address_space::global_space,             \
+                        sycl::access::decorated::yes>(&input2_data[start]);    \
+                    auto result_multi_ptr = sycl::address_space_cast<          \
+                        sycl::access::address_space::global_space,             \
+                        sycl::access::decorated::yes>(&result[start]);         \
+                                                                               \
+                    sycl::vec<_DataType_input1, vec_sz> x1 =                   \
+                        sg.load<vec_sz>(input1_multi_ptr);                     \
+                    sycl::vec<_DataType_input2, vec_sz> x2 =                   \
+                        sg.load<vec_sz>(input2_multi_ptr);                     \
                     sycl::vec<bool, vec_sz> res_vec;                           \
                                                                                \
                     for (size_t k = 0; k < vec_sz; ++k) {                      \
@@ -550,9 +611,7 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
                         const _DataType_input2 input2_elem = x2[k];            \
                         res_vec[k] = __operation__;                            \
                     }                                                          \
-                    sg.store<vec_sz>(                                          \
-                        sycl::multi_ptr<bool, global_space>(&result[start]),   \
-                        res_vec);                                              \
+                    sg.store<vec_sz>(result_multi_ptr, res_vec);               \
                 }                                                              \
                 else {                                                         \
                     for (size_t k = start; k < result_size; ++k) {             \
@@ -640,21 +699,6 @@ void func_map_init_logic(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_ALL][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_all_default_c<double, bool>};
 
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_BLN][eft_BLN] = {
-        eft_BLN, (void *)dpnp_all_ext_c<bool, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_all_ext_c<int32_t, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_all_ext_c<int64_t, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_all_ext_c<float, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_all_ext_c<double, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_C64][eft_C64] = {
-        eft_C64, (void *)dpnp_all_ext_c<std::complex<float>, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void *)dpnp_all_ext_c<std::complex<double>, bool>};
-
     fmap[DPNPFuncName::DPNP_FN_ALLCLOSE][eft_INT][eft_INT] = {
         eft_BLN, (void *)dpnp_allclose_default_c<int32_t, int32_t, bool>};
     fmap[DPNPFuncName::DPNP_FN_ALLCLOSE][eft_LNG][eft_INT] = {
@@ -731,21 +775,6 @@ void func_map_init_logic(func_map_t &fmap)
         eft_FLT, (void *)dpnp_any_default_c<float, bool>};
     fmap[DPNPFuncName::DPNP_FN_ANY][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_any_default_c<double, bool>};
-
-    fmap[DPNPFuncName::DPNP_FN_ANY_EXT][eft_BLN][eft_BLN] = {
-        eft_BLN, (void *)dpnp_any_ext_c<bool, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ANY_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_any_ext_c<int32_t, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ANY_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_any_ext_c<int64_t, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ANY_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_any_ext_c<float, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ANY_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_any_ext_c<double, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ANY_EXT][eft_C64][eft_C64] = {
-        eft_C64, (void *)dpnp_any_ext_c<std::complex<float>, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ANY_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void *)dpnp_any_ext_c<std::complex<double>, bool>};
 
     func_map_logic_2arg_2type_helper<eft_BLN, eft_INT, eft_LNG, eft_FLT,
                                      eft_DBL>(fmap);

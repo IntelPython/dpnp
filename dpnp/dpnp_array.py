@@ -138,12 +138,15 @@ class dpnp_array:
         return self._array_obj.usm_type
 
     def __abs__(self):
+        r"""Return \|self\|."""
         return dpnp.abs(self)
 
     def __add__(self, other):
+        """Return self+value."""
         return dpnp.add(self, other)
 
     def __and__(self, other):
+        """Return self&value."""
         return dpnp.bitwise_and(self, other)
 
     # '__array__',
@@ -165,7 +168,15 @@ class dpnp_array:
         return self._array_obj.__complex__()
 
     # '__contains__',
-    # '__copy__',
+
+    def __copy__(self):
+        """
+        Used if :func:`copy.copy` is called on an array. Returns a copy of the array.
+
+        Equivalent to ``a.copy(order="K")``.
+        """
+        return self.copy(order="K")
+
     # '__deepcopy__',
     # '__delattr__',
     # '__delitem__',
@@ -185,7 +196,10 @@ class dpnp_array:
     def __float__(self):
         return self._array_obj.__float__()
 
-    # '__floordiv__',
+    def __floordiv__(self, other):
+        """Return self//value."""
+        return dpnp.floor_divide(self, other)
+
     # '__format__',
 
     def __ge__(self, other):
@@ -194,6 +208,7 @@ class dpnp_array:
     # '__getattribute__',
 
     def __getitem__(self, key):
+        """Return self[key]."""
         key = _get_unwrapped_index_key(key)
 
         item = self._array_obj.__getitem__(key)
@@ -214,23 +229,34 @@ class dpnp_array:
     # '__hash__',
 
     def __iadd__(self, other):
+        """Return self+=value."""
         dpnp.add(self, other, out=self)
         return self
 
     def __iand__(self, other):
+        """Return self&=value."""
         dpnp.bitwise_and(self, other, out=self)
         return self
 
-    # '__ifloordiv__',
+    def __ifloordiv__(self, other):
+        """Return self//=value."""
+        dpnp.floor_divide(self, other, out=self)
+        return self
 
     def __ilshift__(self, other):
+        """Return self<<=value."""
         dpnp.left_shift(self, other, out=self)
         return self
 
     # '__imatmul__',
-    # '__imod__',
+
+    def __imod__(self, other):
+        """Return self%=value."""
+        dpnp.remainder(self, other, out=self)
+        return self
 
     def __imul__(self, other):
+        """Return self*=value."""
         dpnp.multiply(self, other, out=self)
         return self
 
@@ -244,31 +270,38 @@ class dpnp_array:
         return self._array_obj.__int__()
 
     def __invert__(self):
+        """Return ~self."""
         return dpnp.invert(self)
 
     def __ior__(self, other):
+        """Return self|=value."""
         dpnp.bitwise_or(self, other, out=self)
         return self
 
     def __ipow__(self, other):
+        """Return self**=value."""
         dpnp.power(self, other, out=self)
         return self
 
     def __irshift__(self, other):
+        """Return self>>=value."""
         dpnp.right_shift(self, other, out=self)
         return self
 
     def __isub__(self, other):
+        """Return self-=value."""
         dpnp.subtract(self, other, out=self)
         return self
 
     # '__iter__',
 
     def __itruediv__(self, other):
+        """Return self/=value."""
         dpnp.true_divide(self, other, out=self)
         return self
 
     def __ixor__(self, other):
+        """Return self^=value."""
         dpnp.bitwise_xor(self, other, out=self)
         return self
 
@@ -276,11 +309,12 @@ class dpnp_array:
         return dpnp.less_equal(self, other)
 
     def __len__(self):
-        """Performs the operation __len__."""
+        """Return len(self)."""
 
         return self._array_obj.__len__()
 
     def __lshift__(self, other):
+        """Return self<<value."""
         return dpnp.left_shift(self, other)
 
     def __lt__(self, other):
@@ -290,25 +324,30 @@ class dpnp_array:
         return dpnp.matmul(self, other)
 
     def __mod__(self, other):
+        """Return self%value."""
         return dpnp.remainder(self, other)
 
     def __mul__(self, other):
+        """Return self*value."""
         return dpnp.multiply(self, other)
 
     def __ne__(self, other):
         return dpnp.not_equal(self, other)
 
     def __neg__(self):
+        """Return -self."""
         return dpnp.negative(self)
 
     # '__new__',
 
     def __or__(self, other):
+        """Return self|value."""
         return dpnp.bitwise_or(self, other)
 
     # '__pos__',
 
     def __pow__(self, other):
+        """Return self**value."""
         return dpnp.power(self, other)
 
     def __radd__(self, other):
@@ -324,7 +363,8 @@ class dpnp_array:
     def __repr__(self):
         return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
 
-    # '__rfloordiv__',
+    def __rfloordiv__(self, other):
+        return dpnp.floor_divide(self, other)
 
     def __rlshift__(self, other):
         return dpnp.left_shift(other, self)
@@ -348,6 +388,7 @@ class dpnp_array:
         return dpnp.right_shift(other, self)
 
     def __rshift__(self, other):
+        """Return self>>value."""
         return dpnp.right_shift(self, other)
 
     def __rsub__(self, other):
@@ -362,6 +403,7 @@ class dpnp_array:
     # '__setattr__',
 
     def __setitem__(self, key, val):
+        """Set self[key] to value."""
         key = _get_unwrapped_index_key(key)
 
         if isinstance(val, dpnp_array):
@@ -388,14 +430,17 @@ class dpnp_array:
         return self._array_obj.__str__()
 
     def __sub__(self, other):
+        """Return self-value."""
         return dpnp.subtract(self, other)
 
     # '__subclasshook__',
 
     def __truediv__(self, other):
+        """Return self/value."""
         return dpnp.true_divide(self, other)
 
     def __xor__(self, other):
+        """Return self^value."""
         return dpnp.bitwise_xor(self, other)
 
     @staticmethod
@@ -596,7 +641,7 @@ class dpnp_array:
 
         """
 
-        if not dpnp.issubsctype(self.dtype, dpnp.complex_):
+        if not dpnp.issubsctype(self.dtype, dpnp.complexfloating):
             return self
         else:
             return dpnp.conjugate(self)
@@ -609,12 +654,52 @@ class dpnp_array:
 
         """
 
-        if not dpnp.issubsctype(self.dtype, dpnp.complex_):
+        if not dpnp.issubsctype(self.dtype, dpnp.complexfloating):
             return self
         else:
             return dpnp.conjugate(self)
 
-    # 'copy',
+    def copy(self, order="C"):
+        """
+        Return a copy of the array.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            A copy of the array.
+
+        See also
+        --------
+        :obj:`dpnp.copy` : Similar function with different default behavior
+        :obj:`dpnp.copyto` : Copies values from one array to another.
+
+        Notes
+        -----
+        This function is the preferred method for creating an array copy. The
+        function :func:`dpnp.copy` is similar, but it defaults to using order 'K'.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[1, 2, 3], [4, 5, 6]], order='F')
+        >>> y = x.copy()
+        >>> x.fill(0)
+
+        >>> x
+        array([[0, 0, 0],
+               [0, 0, 0]])
+
+        >>> y
+        array([[1, 2, 3],
+               [4, 5, 6]])
+
+        >>> y.flags['C_CONTIGUOUS']
+        True
+
+        """
+
+        return dpnp.copy(self, order=order)
+
     # 'ctypes',
     # 'cumprod',
 
@@ -823,6 +908,8 @@ class dpnp_array:
     # 'newbyteorder',
 
     def nonzero(self):
+        """Return the indices of the elements that are non-zero."""
+
         return dpnp.nonzero(self)
 
     def partition(self, kth, axis=-1, kind="introselect", order=None):
@@ -1031,7 +1118,14 @@ class dpnp_array:
             where=where,
         )
 
-    # 'swapaxes',
+    def swapaxes(self, axis1, axis2):
+        """
+        Interchange two axes of an array.
+
+        For full documentation refer to :obj:`numpy.swapaxes`.
+        """
+
+        return dpnp.swapaxes(self, axis1=axis1, axis2=axis2)
 
     def take(self, indices, /, *, axis=None, out=None, mode="wrap"):
         """

@@ -59,6 +59,9 @@ __all__ = [
     "concatenate",
     "copyto",
     "expand_dims",
+    "flip",
+    "fliplr",
+    "flipud",
     "hstack",
     "moveaxis",
     "ravel",
@@ -77,7 +80,7 @@ __all__ = [
 ]
 
 
-def asfarray(x1, dtype=None):
+def asfarray(a, dtype=None):
     """
     Return an array converted to a float type.
 
@@ -91,18 +94,18 @@ def asfarray(x1, dtype=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
+    if a_desc:
         if dtype is None or not numpy.issubdtype(dtype, dpnp.inexact):
-            dtype = dpnp.default_float_type(sycl_queue=x1.sycl_queue)
+            dtype = dpnp.default_float_type(sycl_queue=a.sycl_queue)
 
         # if type is the same then same object should be returned
-        if x1_desc.dtype == dtype:
-            return x1
+        if a_desc.dtype == dtype:
+            return a
 
-        return array(x1, dtype=dtype)
+        return array(a, dtype=dtype)
 
-    return call_origin(numpy.asfarray, x1, dtype)
+    return call_origin(numpy.asfarray, a, dtype)
 
 
 def atleast_1d(*arys):
@@ -199,7 +202,7 @@ def atleast_3d(*arys):
     return call_origin(numpy.atleast_3d, *arys)
 
 
-def broadcast_to(x, /, shape, subok=False):
+def broadcast_to(array, /, shape, subok=False):
     """
     Broadcast an array to a new shape.
 
@@ -208,15 +211,15 @@ def broadcast_to(x, /, shape, subok=False):
     Returns
     -------
     y : dpnp.ndarray
-        An array having a specified shape. Must have the same data type as `x`.
+        An array having a specified shape. Must have the same data type as `array`.
 
     Limitations
     -----------
-    Parameter `x` is supported as either :class:`dpnp.ndarray`
+    Parameter `array` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `subok` is supported with default value.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types of `x` is limited by supported DPNP :ref:`Data types`.
+    Input array data types of `array` is limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -231,12 +234,12 @@ def broadcast_to(x, /, shape, subok=False):
 
     if subok is not False:
         pass
-    elif isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
-        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
+    elif dpnp.is_supported_array_type(array):
+        dpt_array = dpnp.get_usm_ndarray(array)
         new_array = dpt.broadcast_to(dpt_array, shape)
         return dpnp_array._create_from_usm_ndarray(new_array)
 
-    return call_origin(numpy.broadcast_to, x, shape=shape, subok=subok)
+    return call_origin(numpy.broadcast_to, array, shape=shape, subok=subok)
 
 
 def concatenate(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
@@ -253,7 +256,7 @@ def concatenate(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     Limitations
     -----------
     Each array in `arrays` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exeption
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
     will be raised.
     Parameters `out` and `dtype are supported with default value.
     Keyword argument ``kwargs`` is currently unsupported.
@@ -315,67 +318,82 @@ def copyto(dst, src, casting="same_kind", where=True):
     """
     Copies values from one array to another, broadcasting as necessary.
 
+    Raises a ``TypeError`` if the `casting` rule is violated, and if
+    `where` is provided, it selects which elements to copy.
+
     For full documentation refer to :obj:`numpy.copyto`.
 
     Limitations
     -----------
-    Input arrays are supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Parameter ``casting`` is supported only with default value ``"same_kind"``.
-    Parameter ``where`` is supported only with default value ``True``.
-    Shapes of input arrays are supported to be equal.
+    The `dst` parameter is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    The `where` parameter is supported as either :class:`dpnp.ndarray`,
+    :class:`dpctl.tensor.usm_ndarray` or scalar.
+    Otherwise ``TypeError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> A = np.array([4, 5, 6])
+    >>> B = [1, 2, 3]
+    >>> np.copyto(A, B)
+    >>> A
+    array([1, 2, 3])
+
+    >>> A = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> B = [[4, 5, 6], [7, 8, 9]]
+    >>> np.copyto(A, B)
+    >>> A
+    array([[4, 5, 6],
+           [7, 8, 9]])
 
     """
 
-    dst_desc = dpnp.get_dpnp_descriptor(
-        dst, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    src_desc = dpnp.get_dpnp_descriptor(src, copy_when_nondefault_queue=False)
-    if dst_desc and src_desc:
-        if casting != "same_kind":
-            pass
-        elif (
-            dst_desc.dtype == dpnp.bool
-            and src_desc.dtype  # due to 'same_kind' casting
-            in [
-                dpnp.int32,
-                dpnp.int64,
-                dpnp.float32,
-                dpnp.float64,
-                dpnp.complex128,
-            ]
-        ):
-            pass
-        elif dst_desc.dtype in [
-            dpnp.int32,
-            dpnp.int64,
-        ] and src_desc.dtype in [  # due to 'same_kind' casting
-            dpnp.float32,
-            dpnp.float64,
-            dpnp.complex128,
-        ]:
-            pass
-        elif (
-            dst_desc.dtype in [dpnp.float32, dpnp.float64]
-            and src_desc.dtype == dpnp.complex128
-        ):  # due to 'same_kind' casting
-            pass
-        elif where is not True:
-            pass
-        elif dst_desc.shape != src_desc.shape:
-            pass
-        elif dst_desc.strides != src_desc.strides:
-            pass
-        else:
-            return dpnp_copyto(dst_desc, src_desc, where=where)
+    if not dpnp.is_supported_array_type(dst):
+        raise TypeError(
+            "Destination array must be any of supported type, "
+            f"but got {type(dst)}"
+        )
+    elif not dpnp.is_supported_array_type(src):
+        src = dpnp.array(src, sycl_queue=dst.sycl_queue)
 
-    return call_origin(
-        numpy.copyto, dst, src, casting, where, dpnp_inplace=True
-    )
+    if not dpt.can_cast(src.dtype, dst.dtype, casting=casting):
+        raise TypeError(
+            f"Cannot cast from {src.dtype} to {dst.dtype} "
+            f"according to the rule {casting}."
+        )
+
+    if where is True:
+        dst[...] = src
+    elif where is False:
+        # nothing to copy
+        pass
+    else:
+        if dpnp.isscalar(where):
+            where = dpnp.array(
+                where, dtype=dpnp.bool, sycl_queue=dst.sycl_queue
+            )
+        elif not dpnp.is_supported_array_type(where):
+            raise TypeError(
+                "`where` array must be any of supported type, "
+                f"but got {type(where)}"
+            )
+        elif where.dtype != dpnp.bool:
+            raise TypeError(
+                "`where` keyword argument must be of boolean type, "
+                f"but got {where.dtype}"
+            )
+
+        dst_usm, src_usm, mask_usm = dpt.broadcast_arrays(
+            dpnp.get_usm_ndarray(dst),
+            dpnp.get_usm_ndarray(src),
+            dpnp.get_usm_ndarray(where),
+        )
+        dst_usm[mask_usm] = src_usm[mask_usm]
 
 
-def expand_dims(x1, axis):
+def expand_dims(a, axis):
     """
     Expand the shape of an array.
 
@@ -384,11 +402,35 @@ def expand_dims(x1, axis):
 
     For full documentation refer to :obj:`numpy.expand_dims`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array with the number of dimensions increased.
+        A view is returned whenever possible.
+
+    Limitations
+    -----------
+    Parameters `a` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
+
+    Notes
+    -----
+    If `a` has rank (i.e, number of dimensions) `N`, a valid `axis` must reside
+    in the closed-interval `[-N-1, N]`.
+    If provided a negative `axis`, the `axis` position at which to insert a
+    singleton dimension is computed as `N + axis + 1`.
+    Hence, if provided `-1`, the resolved axis position is `N` (i.e.,
+    a singleton dimension must be appended to the input array `a`).
+    If provided `-N-1`, the resolved axis position is `0` (i.e., a
+    singleton dimension is prepended to the input array `a`).
+
     See Also
     --------
     :obj:`dpnp.squeeze` : The inverse operation, removing singleton dimensions
     :obj:`dpnp.reshape` : Insert, remove, and combine dimensions, and resize existing ones
-    :obj:`dpnp.indexing`, :obj:`dpnp.atleast_1d`, :obj:`dpnp.atleast_2d`, :obj:`dpnp.atleast_3d`
+    :obj:`dpnp.atleast_1d`, :obj:`dpnp.atleast_2d`, :obj:`dpnp.atleast_3d`
 
     Examples
     --------
@@ -433,11 +475,188 @@ def expand_dims(x1, axis):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        return dpnp_expand_dims(x1_desc, axis).get_pyobj()
+    dpt_array = dpnp.get_usm_ndarray(a)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.expand_dims(dpt_array, axis=axis)
+    )
 
-    return call_origin(numpy.expand_dims, x1, axis)
+
+def flip(m, axis=None):
+    """
+    Reverse the order of elements in an array along the given axis.
+
+    The shape of the array is preserved, but the elements are reordered.
+
+    For full documentation refer to :obj:`numpy.flip`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A view of `m` with the entries of axis reversed.
+
+    Limitations
+    -----------
+    Parameters `m` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.flipud` : Flip an array vertically (axis=0).
+    :obj:`dpnp.fliplr` : Flip an array horizontally (axis=1).
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> A = np.arange(8).reshape((2, 2, 2))
+    >>> A
+    array([[[0, 1],
+            [2, 3]],
+           [[4, 5],
+            [6, 7]]])
+    >>> np.flip(A, 0)
+    array([[[4, 5],
+            [6, 7]],
+           [[0, 1],
+            [2, 3]]])
+    >>> np.flip(A, 1)
+    array([[[2, 3],
+            [0, 1]],
+           [[6, 7],
+            [4, 5]]])
+    >>> np.flip(A)
+    array([[[7, 6],
+            [5, 4]],
+           [[3, 2],
+            [1, 0]]])
+    >>> np.flip(A, (0, 2))
+    array([[[5, 4],
+            [7, 6]],
+           [[1, 0],
+            [3, 2]]])
+    >>> A = np.random.randn(3, 4, 5)
+    >>> np.all(np.flip(A, 2) == A[:, :, ::-1, ...])
+    array(True)
+
+    """
+
+    m_usm = dpnp.get_usm_ndarray(m)
+    return dpnp_array._create_from_usm_ndarray(dpt.flip(m_usm, axis=axis))
+
+
+def fliplr(m):
+    """
+    Reverse the order of elements along axis 1 (left/right).
+
+    For a 2-D array, this flips the entries in each row in the left/right
+    direction. Columns are preserved, but appear in a different order than
+    before.
+
+    For full documentation refer to :obj:`numpy.fliplr`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A view of `m` with the columns reversed.
+
+    Limitations
+    -----------
+    Parameters `m` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.flipud` : Flip an array vertically (axis=0).
+    :obj:`dpnp.flip` : Flip array in one or more dimensions.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> A = np.diag(np.array([1., 2., 3.]))
+    >>> A
+    array([[1.,  0.,  0.],
+           [0.,  2.,  0.],
+           [0.,  0.,  3.]])
+    >>> np.fliplr(A)
+    array([[0.,  0.,  1.],
+           [0.,  2.,  0.],
+           [3.,  0.,  0.]])
+
+    >>> A = np.random.randn(2, 3, 5)
+    >>> np.all(np.fliplr(A) == A[:, ::-1, ...])
+    array(True)
+
+    """
+
+    if not dpnp.is_supported_array_type(m):
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(m))
+        )
+
+    if m.ndim < 2:
+        raise ValueError(f"Input must be >= 2-d, but got {m.ndim}")
+    return m[:, ::-1]
+
+
+def flipud(m):
+    """
+    Reverse the order of elements along axis 0 (up/down).
+
+    For a 2-D array, this flips the entries in each column in the up/down
+    direction. Rows are preserved, but appear in a different order than before.
+
+    For full documentation refer to :obj:`numpy.flipud`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A view of `m` with the rows reversed.
+
+    Limitations
+    -----------
+    Parameters `m` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.fliplr` : Flip array in the left/right direction.
+    :obj:`dpnp.flip` : Flip array in one or more dimensions.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> A = np.diag(np.array([1., 2., 3.]))
+    >>> A
+    array([[1.,  0.,  0.],
+           [0.,  2.,  0.],
+           [0.,  0.,  3.]])
+    >>> np.flipud(A)
+    array([[0.,  0.,  3.],
+           [0.,  2.,  0.],
+           [1.,  0.,  0.]])
+
+    >>> A = np.random.randn(2, 3, 5)
+    >>> np.all(np.flipud(A) == A[::-1, ...])
+    array(True)
+
+    >>> np.flipud(np.array([1, 2]))
+    array([2, 1])
+
+    """
+
+    if not dpnp.is_supported_array_type(m):
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(m))
+        )
+
+    if m.ndim < 1:
+        raise ValueError(f"Input must be >= 1-d, but got {m.ndim}")
+    return m[::-1, ...]
 
 
 def hstack(tup):
@@ -459,7 +678,7 @@ def hstack(tup):
     return call_origin(numpy.hstack, tup_new)
 
 
-def moveaxis(x, source, destination):
+def moveaxis(a, source, destination):
     """
     Move axes of an array to new positions. Other axes remain in their original order.
 
@@ -470,14 +689,15 @@ def moveaxis(x, source, destination):
     out : dpnp.ndarray
         Array with moved axes.
         The returned array will have the same data and
-        the same USM allocation type as `x`.
+        the same USM allocation type as `a`.
 
     Limitations
     -----------
-    Parameters `x` is supported as either :class:`dpnp.ndarray`
+    Parameters `a` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
     will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
 
     See Also
     --------
@@ -495,13 +715,13 @@ def moveaxis(x, source, destination):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(x)
+    dpt_array = dpnp.get_usm_ndarray(a)
     return dpnp_array._create_from_usm_ndarray(
         dpt.moveaxis(dpt_array, source, destination)
     )
 
 
-def ravel(x1, order="C"):
+def ravel(a, order="C"):
     """
     Return a contiguous flattened array.
 
@@ -523,14 +743,14 @@ def ravel(x1, order="C"):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        return dpnp_flatten(x1_desc).get_pyobj()
+    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
+    if a_desc:
+        return dpnp_flatten(a_desc).get_pyobj()
 
-    return call_origin(numpy.ravel, x1, order=order)
+    return call_origin(numpy.ravel, a, order=order)
 
 
-def repeat(x1, repeats, axis=None):
+def repeat(a, repeats, axis=None):
     """
     Repeat elements of an array.
 
@@ -556,22 +776,22 @@ def repeat(x1, repeats, axis=None):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
+    if a_desc:
         if axis is not None and axis != 0:
             pass
-        elif x1_desc.ndim >= 2:
+        elif a_desc.ndim >= 2:
             pass
         elif not dpnp.isscalar(repeats) and len(repeats) > 1:
             pass
         else:
             repeat_val = repeats if dpnp.isscalar(repeats) else repeats[0]
-            return dpnp_repeat(x1_desc, repeat_val, axis).get_pyobj()
+            return dpnp_repeat(a_desc, repeat_val, axis).get_pyobj()
 
-    return call_origin(numpy.repeat, x1, repeats, axis)
+    return call_origin(numpy.repeat, a, repeats, axis)
 
 
-def reshape(x, /, newshape, order="C", copy=None):
+def reshape(a, /, newshape, order="C", copy=None):
     """
     Gives a new shape to an array without changing its data.
 
@@ -579,7 +799,7 @@ def reshape(x, /, newshape, order="C", copy=None):
 
     Parameters
     ----------
-    x : {dpnp_array, usm_ndarray}
+    a : {dpnp_array, usm_ndarray}
         Array to be reshaped.
     newshape : int or tuple of ints
         The new shape should be compatible with the original shape. If
@@ -587,7 +807,7 @@ def reshape(x, /, newshape, order="C", copy=None):
         One shape dimension can be -1. In this case, the value is
         inferred from the length of the array and remaining dimensions.
     order : {'C', 'F'}, optional
-        Read the elements of `x` using this index order, and place the
+        Read the elements of `a` using this index order, and place the
         elements into the reshaped array using this index order.  'C'
         means to read / write the elements using C-like index order,
         with the last axis index changing fastest, back to the first
@@ -598,10 +818,10 @@ def reshape(x, /, newshape, order="C", copy=None):
         the underlying array, and only refer to the order of indexing.
     copy : bool, optional
         Boolean indicating whether or not to copy the input array.
-        If ``True``, the result array will always be a copy of input `x`.
+        If ``True``, the result array will always be a copy of input `a`.
         If ``False``, the result array can never be a copy
         and a ValueError exception will be raised in case the copy is necessary.
-        If ``None``, the result array will reuse existing memory buffer of `x`
+        If ``None``, the result array will reuse existing memory buffer of `a`
         if possible and copy otherwise. Default: None.
 
     Returns
@@ -636,14 +856,14 @@ def reshape(x, /, newshape, order="C", copy=None):
     """
 
     if newshape is None:
-        newshape = x.shape
+        newshape = a.shape
 
     if order is None:
         order = "C"
     elif order not in "cfCF":
         raise ValueError(f"order must be one of 'C' or 'F' (got {order})")
 
-    usm_arr = dpnp.get_usm_ndarray(x)
+    usm_arr = dpnp.get_usm_ndarray(a)
     usm_arr = dpt.reshape(usm_arr, shape=newshape, order=order, copy=copy)
     return dpnp_array._create_from_usm_ndarray(usm_arr)
 
@@ -847,9 +1067,9 @@ def shape(a):
         return numpy.shape(a)
 
 
-def squeeze(x, /, axis=None):
+def squeeze(a, /, axis=None):
     """
-    Removes singleton dimensions (axes) from array `x`.
+    Removes singleton dimensions (axes) from array `a`.
 
     For full documentation refer to :obj:`numpy.squeeze`.
 
@@ -861,13 +1081,14 @@ def squeeze(x, /, axis=None):
         dimensions of length 1 removed. Output has the same data
         type as the input, is allocated on the same device as the
         input and has the same USM allocation type as the input
-        array `x`.
+        array `a`.
 
     Limitations
     -----------
-    Parameters `x` is supported as either :class:`dpnp.ndarray`
+    Parameters `a` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
 
     Examples
     --------
@@ -888,11 +1109,10 @@ def squeeze(x, /, axis=None):
 
     """
 
-    if isinstance(x, dpnp_array) or isinstance(x, dpt.usm_ndarray):
-        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
-        return dpnp_array._create_from_usm_ndarray(dpt.squeeze(dpt_array, axis))
-
-    return call_origin(numpy.squeeze, x, axis)
+    dpt_array = dpnp.get_usm_ndarray(a)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.squeeze(dpt_array, axis=axis)
+    )
 
 
 def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
@@ -909,7 +1129,7 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     Limitations
     -----------
     Each array in `arrays` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exeption
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
     will be raised.
     Parameters `out` and `dtype are supported with default value.
     Keyword argument ``kwargs`` is currently unsupported.
@@ -968,50 +1188,57 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     )
 
 
-def swapaxes(x1, axis1, axis2):
+def swapaxes(a, axis1, axis2):
     """
     Interchange two axes of an array.
 
     For full documentation refer to :obj:`numpy.swapaxes`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array with with swapped axes.
+        A view is returned whenever possible.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Parameter ``axis1`` is limited by ``axis1 < x1.ndim``.
-    Parameter ``axis2`` is limited by ``axis2 < x1.ndim``.
+    Parameters `a` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+    Otherwise ``TypeError`` exception will be raised.
+
+    Notes
+    -----
+    If `a` has rank (i.e., number of dimensions) `N`,
+    a valid `axis` must be in the half-open interval `[-N, N)`.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([[1, 2, 3]])
-    >>> out = np.swapaxes(x, 0, 1)
-    >>> out.shape
-    (3, 1)
-    >>> [i for i in out]
-    [1, 2, 3]
+    >>> np.swapaxes(x, 0, 1)
+    array([[1],
+           [2],
+           [3]])
+
+    >>> x = np.array([[[0,1],[2,3]],[[4,5],[6,7]]])
+    >>> x
+    array([[[0, 1],
+            [2, 3]],
+           [[4, 5],
+            [6, 7]]])
+    >>> np.swapaxes(x,0,2)
+    array([[[0, 4],
+            [2, 6]],
+           [[1, 5],
+            [3, 7]]])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axis1 >= x1_desc.ndim:
-            pass
-        elif axis2 >= x1_desc.ndim:
-            pass
-        else:
-            # 'do nothing' pattern for transpose()
-            input_permute = [i for i in range(x1.ndim)]
-            # swap axes
-            input_permute[axis1], input_permute[axis2] = (
-                input_permute[axis2],
-                input_permute[axis1],
-            )
-
-            return transpose(x1_desc.get_pyobj(), axes=input_permute)
-
-    return call_origin(numpy.swapaxes, x1, axis1, axis2)
+    dpt_array = dpnp.get_usm_ndarray(a)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.swapaxes(dpt_array, axis1=axis1, axis2=axis2)
+    )
 
 
 def transpose(a, axes=None):
@@ -1077,7 +1304,7 @@ def transpose(a, axes=None):
     return array.transpose(*axes)
 
 
-def unique(x1, **kwargs):
+def unique(ar, **kwargs):
     """
     Find the unique elements of an array.
 
@@ -1093,7 +1320,7 @@ def unique(x1, **kwargs):
 
     """
 
-    return call_origin(numpy.unique, x1, **kwargs)
+    return call_origin(numpy.unique, ar, **kwargs)
 
 
 def vstack(tup):

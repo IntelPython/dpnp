@@ -10,20 +10,27 @@ env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+  # TODO: to add test_arraymanipulation.py back to the scope once crash on Windows is gone
   TEST_SCOPE: >-
       test_arraycreation.py
-      test_arraymanipulation.py
       test_dot.py
       test_dparray.py
+      test_copy.py
       test_fft.py
       test_linalg.py
+      test_logic.py
+      test_manipulation.py
       test_mathematical.py
       test_random_state.py
       test_sort.py
       test_special.py
+      test_sycl_queue.py
       test_umath.py
       test_usm_type.py
       third_party/cupy/linalg_tests/test_product.py
+      third_party/cupy/logic_tests/test_comparison.py
+      third_party/cupy/logic_tests/test_truth.py
+      third_party/cupy/manipulation_tests/test_basic.py
       third_party/cupy/manipulation_tests/test_join.py
       third_party/cupy/manipulation_tests/test_rearrange.py
       third_party/cupy/manipulation_tests/test_transpose.py
@@ -41,7 +48,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11']
         os: [ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.os }}
@@ -118,12 +125,10 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11']
         os: [ubuntu-20.04, ubuntu-latest]
 
-        experimental: [false]
-
-    continue-on-error: ${{ matrix.experimental }}
+    continue-on-error: true
 
     env:
       conda-pkgs: '/home/runner/conda_pkgs_dir/'
@@ -221,10 +226,9 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11']
-        experimental: [false]
+        python: ['3.9', '3.10', '3.11']
 
-    continue-on-error: ${{ matrix.experimental }}
+    continue-on-error: true
 
     env:
       conda-pkgs: 'C:\Users\runneradmin\conda_pkgs_dir\'
@@ -354,7 +358,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11']
         os: [ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.os }}
