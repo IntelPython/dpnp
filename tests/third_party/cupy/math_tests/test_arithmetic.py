@@ -9,7 +9,7 @@ import dpnp as cupy
 from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
-float_types = [numpy.float32, numpy.float64]
+float_types = list(testing.helper._float_dtypes)
 complex_types = []
 signed_int_types = [numpy.int32, numpy.int64]
 unsigned_int_types = []
@@ -135,20 +135,6 @@ class ArithmeticBinaryBase:
         dtype1 = np1.dtype
         dtype2 = np2.dtype
 
-        if self.name == "power":
-            # TODO(niboshi): Fix this: power(0, 1j)
-            #     numpy => 1+0j
-            #     cupy => 0j
-            if dtype2 in complex_types and (np1 == 0).any():
-                return xp.array(True)
-
-            # TODO(niboshi): Fix this: xp.power(0j, 0)
-            #     numpy => 1+0j
-            #     cupy => 0j
-            c_arg1 = dtype1 in complex_types
-            if c_arg1 and (np1 == 0j).any() and (np2 == 0).any():
-                return xp.array(True)
-
         # TODO(niboshi): Fix this: xp.add(0j, xp.array([2.], 'f')).dtype
         #     numpy => complex64
         #     cupy => complex128
@@ -186,36 +172,13 @@ class ArithmeticBinaryBase:
                 y = y.astype(numpy.complex64)
 
         # NumPy returns an output array of another type than DPNP when input ones have diffrent types.
-        if xp is cupy and dtype1 != dtype2 and not self.use_dtype:
+        if xp is numpy and dtype1 != dtype2:
             is_array_arg1 = not xp.isscalar(arg1)
             is_array_arg2 = not xp.isscalar(arg2)
 
             is_int_float = lambda _x, _y: numpy.issubdtype(
                 _x, numpy.integer
             ) and numpy.issubdtype(_y, numpy.floating)
-            is_same_type = lambda _x, _y, _type: numpy.issubdtype(
-                _x, _type
-            ) and numpy.issubdtype(_y, _type)
-
-            if self.name == "power":
-                if is_array_arg1 and is_array_arg2:
-                    # If both inputs are arrays where one is of floating type and another - integer,
-                    # NumPy will return an output array of always "float64" type,
-                    # while DPNP will return the array of a wider type from the input arrays.
-                    if is_int_float(dtype1, dtype2) or is_int_float(
-                        dtype2, dtype1
-                    ):
-                        y = y.astype(numpy.float64)
-                elif is_same_type(
-                    dtype1, dtype2, numpy.floating
-                ) or is_same_type(dtype1, dtype2, numpy.integer):
-                    # If one input is an array and another - scalar,
-                    # NumPy will return an output array of the same type as the inpupt array has,
-                    # while DPNP will return the array of a wider type from the inputs (considering both array and scalar).
-                    if is_array_arg1 and not is_array_arg2:
-                        y = y.astype(dtype1)
-                    elif is_array_arg2 and not is_array_arg1:
-                        y = y.astype(dtype2)
 
         return y
 
