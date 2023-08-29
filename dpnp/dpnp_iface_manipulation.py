@@ -46,7 +46,6 @@ import numpy
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_iface_arraycreation import array
 from dpnp.dpnp_utils import *
 
 __all__ = [
@@ -75,7 +74,7 @@ __all__ = [
 ]
 
 
-def asfarray(a, dtype=None):
+def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
     """
     Return an array converted to a float type.
 
@@ -83,19 +82,37 @@ def asfarray(a, dtype=None):
 
     Notes
     -----
-    This function works exactly the same as :obj:`dpnp.array`.
-    If dtype is `None`, `bool` or one of the `int` dtypes, it is replaced with
-    the default floating type in DPNP depending on device capabilities.
+    If `dtype` is ``None``, :obj:`dpnp.bool` or one of the `int` dtypes,
+    it is replaced with the default floating type (:obj:`dpnp.float64`
+    if a device supports it, or :obj:`dpnp.float32` type otherwise).
+
+    Returns
+    -------
+    y : dpnp.ndarray
+        The input a as a float ndarray.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.asfarray([2, 3])
+    array([2.,  3.])
+    >>> np.asfarray([2, 3], dtype='float')
+    array([2.,  3.])
+    >>> np.asfarray([2, 3], dtype='int8')
+    array([2.,  3.])
 
     """
 
-    if dtype is None or not numpy.issubdtype(dtype, dpnp.inexact):
-        if dpnp.is_supported_array_type(a):
-            dtype = dpnp.default_float_type(sycl_queue=a.sycl_queue)
-        else:
-            dtype = dpnp.default_float_type()
+    _sycl_queue = dpnp.get_normalized_queue_device(
+        a, sycl_queue=sycl_queue, device=device
+    )
 
-    return array(a, dtype=dtype)
+    if dtype is None or not numpy.issubdtype(dtype, dpnp.inexact):
+        dtype = dpnp.default_float_type(sycl_queue=_sycl_queue)
+
+    return dpnp.array(
+        a, dtype=dtype, copy=False, usm_type=usm_type, sycl_queue=_sycl_queue
+    )
 
 
 def atleast_1d(*arys):

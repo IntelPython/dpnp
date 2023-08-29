@@ -647,6 +647,15 @@ tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_3_{reps
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_4_{reps=(2, 3)}::test_array_tile
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_5_{reps=(2, 3, 4, 5)}::test_array_tile
 
+tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_asarray_chkfinite
+tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_asarray_chkfinite_non_finite_vals
+tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_require_C_and_F_flags
+tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_require_empty_requirements
+tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_require_flag_check
+tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_require_incorrect_dtype
+tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_require_incorrect_requirments
+tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_require_owndata
+
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_3_{name='angle', nargs=1}::test_raises_with_numpy_input
 
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp
