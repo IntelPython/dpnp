@@ -23,8 +23,7 @@ from tests.third_party.cupy import testing
     {"shape": (5, 2), "shift": (2, 1), "axis": (0, -1)},
     {"shape": (5, 2), "shift": (2, 1), "axis": (1, -1)},
     {"shape": (5, 2), "shift": (2, 1, 3), "axis": 0},
-    # TODO: remove when dpctl is fixed
-    # {'shape': (5, 2), 'shift': (2, 1, 3), 'axis': None},
+    {"shape": (5, 2), "shift": (2, 1, 3), "axis": None},
 )
 class TestRoll(unittest.TestCase):
     @testing.for_all_dtypes()

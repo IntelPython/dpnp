@@ -743,7 +743,8 @@ def roll(x, shift, axis=None):
            [3, 4, 0, 1, 2]])
 
     """
-
+    if axis is None:
+        return roll(x.reshape(-1), shift, 0).reshape(x.shape)
     dpt_array = dpnp.get_usm_ndarray(x)
     return dpnp_array._create_from_usm_ndarray(
         dpt.roll(dpt_array, shift=shift, axis=axis)
