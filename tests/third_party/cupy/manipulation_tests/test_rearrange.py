@@ -25,7 +25,6 @@ from tests.third_party.cupy import testing
     {"shape": (5, 2), "shift": (2, 1, 3), "axis": 0},
     {"shape": (5, 2), "shift": (2, 1, 3), "axis": None},
 )
-@pytest.mark.skip("`roll` isn't supported yet")
 class TestRoll(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -38,12 +37,9 @@ class TestRoll(unittest.TestCase):
     def test_roll_cupy_shift(self, xp, dtype):
         x = testing.shaped_arange(self.shape, xp, dtype)
         shift = self.shift
-        if xp is cupy:
-            shift = cupy.array(shift)
         return xp.roll(x, shift, axis=self.axis)
 
 
-@pytest.mark.skip("`roll` isn't supported yet")
 class TestRollTypeError(unittest.TestCase):
     def test_roll_invalid_shift(self):
         for xp in (numpy, cupy):
@@ -66,7 +62,6 @@ class TestRollTypeError(unittest.TestCase):
     {"shape": (5, 2), "shift": 1, "axis": -3},
     {"shape": (5, 2), "shift": 1, "axis": (1, -3)},
 )
-@pytest.mark.skip("`roll` isn't supported yet")
 class TestRollValueError(unittest.TestCase):
     def test_roll_invalid(self):
         for xp in (numpy, cupy):
@@ -78,8 +73,6 @@ class TestRollValueError(unittest.TestCase):
         for xp in (numpy, cupy):
             x = testing.shaped_arange(self.shape, xp)
             shift = self.shift
-            if xp is cupy:
-                shift = cupy.array(shift)
             with pytest.raises(ValueError):
                 xp.roll(x, shift, axis=self.axis)
 
