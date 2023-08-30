@@ -18,7 +18,7 @@ class TestTrigonometric(unittest.TestCase):
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
         return getattr(xp, name)(a, b)
 
-    @testing.for_dtypes(["f", "d"])
+    @testing.for_dtypes(["e", "f", "d"])
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_unary_unit(self, name, xp, dtype):
         a = xp.array([0.2, 0.4, 0.6, 0.8], dtype=dtype)

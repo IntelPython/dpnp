@@ -137,16 +137,22 @@ class TestMathematical:
         else:
             result = getattr(dpnp, name)(a_dpnp, b_dpnp)
             expected = getattr(numpy, name)(a_np, b_np)
-            assert_allclose(result, expected, rtol=1e-6)
+            if numpy.issubdtype(expected.dtype, numpy.floating):
+                tol = numpy.max(
+                    [
+                        numpy.finfo(result.dtype).resolution,
+                        numpy.finfo(expected.dtype).resolution,
+                    ]
+                )
+            else:
+                tol = 1e-06
+            assert_allclose(result, expected, rtol=tol)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_add(self, dtype, lhs, rhs):
         self._test_mathematical("add", dtype, lhs, rhs)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_arctan2(self, dtype, lhs, rhs):
         self._test_mathematical("arctan2", dtype, lhs, rhs)
 

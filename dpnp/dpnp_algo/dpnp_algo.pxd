@@ -38,18 +38,10 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ALLCLOSE
         DPNP_FN_ALLCLOSE_EXT
         DPNP_FN_ARANGE
-        DPNP_FN_ARCCOS
-        DPNP_FN_ARCCOS_EXT
         DPNP_FN_ARCCOSH
         DPNP_FN_ARCCOSH_EXT
-        DPNP_FN_ARCSIN
-        DPNP_FN_ARCSIN_EXT
         DPNP_FN_ARCSINH
         DPNP_FN_ARCSINH_EXT
-        DPNP_FN_ARCTAN
-        DPNP_FN_ARCTAN_EXT
-        DPNP_FN_ARCTAN2
-        DPNP_FN_ARCTAN2_EXT
         DPNP_FN_ARCTANH
         DPNP_FN_ARCTANH_EXT
         DPNP_FN_ARGMAX
@@ -259,8 +251,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SUM_EXT
         DPNP_FN_SVD
         DPNP_FN_SVD_EXT
-        DPNP_FN_TAN
-        DPNP_FN_TAN_EXT
         DPNP_FN_TANH
         DPNP_FN_TANH_EXT
         DPNP_FN_TRACE

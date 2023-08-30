@@ -381,6 +381,47 @@ class TestExp:
             dpnp.exp(dp_array, out=dp_out)
 
 
+class TestArccos:
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    def test_arccos(self, dtype):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=dtype)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
+        result = dpnp.arccos(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=dtype)
+        expected = numpy.arccos(np_array, out=out)
+
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
+    )
+    def test_invalid_dtype(self, dtype):
+        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(TypeError):
+            dpnp.arccos(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize(
+        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
+    )
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.arccos(dp_array, out=dp_out)
+
+
 class TestArcsin:
     @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
@@ -437,7 +478,8 @@ class TestArctan:
         np_array = numpy.array(array_data, dtype=dtype)
         expected = numpy.arctan(np_array, out=out)
 
-        assert_allclose(expected, result)
+        tol = numpy.finfo(dtype).resolution
+        assert_allclose(expected, result, tol)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
