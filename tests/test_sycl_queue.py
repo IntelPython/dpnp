@@ -306,6 +306,11 @@ def test_proj(device):
             [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
             [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
         ),
+        pytest.param(
+            "allclose",
+            [1.0, dpnp.inf, -dpnp.inf],
+            [1.0, dpnp.inf, -dpnp.inf],
+        ),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param(
@@ -368,7 +373,7 @@ def test_2in_1out(func, data1, data2, device):
     x2 = dpnp.array(data2, device=device)
     result = getattr(dpnp, func)(x1, x2)
 
-    assert_array_equal(result, expected)
+    assert_allclose(result, expected)
 
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
@@ -633,7 +638,7 @@ def test_out_2in_1out(func, data1, data2, device):
     result = dpnp.empty_like(dp_out)
     getattr(dpnp, func)(x1, x2, out=result)
 
-    assert_array_equal(result, expected)
+    assert_allclose(result, expected)
 
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)

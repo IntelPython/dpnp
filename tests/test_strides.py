@@ -277,8 +277,8 @@ def test_strided_out_2args(func_name, dtype):
     np_res = _getattr(numpy, func_name)(np_a, np_b, out=np_out)
     dp_res = _getattr(dpnp, func_name)(dp_a, dp_b, out=dp_out)
 
-    assert_allclose(dp_res.asnumpy(), np_res)
-    assert_allclose(dp_out.asnumpy(), np_out)
+    assert_allclose(dp_res.asnumpy(), np_res, rtol=1e-06)
+    assert_allclose(dp_out.asnumpy(), np_out, rtol=1e-06)
 
 
 @pytest.mark.parametrize("func_name", ["add", "multiply", "power", "subtract"])

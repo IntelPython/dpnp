@@ -58,6 +58,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_floor_divide,
     dpnp_multiply,
     dpnp_negative,
+    dpnp_power,
     dpnp_proj,
     dpnp_remainder,
     dpnp_round,
@@ -157,7 +158,7 @@ def absolute(x, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     -----------
     Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -232,7 +233,7 @@ def add(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -334,7 +335,7 @@ def ceil(
     -----------
     Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype`, and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by real-value data types.
 
@@ -442,58 +443,96 @@ def convolve(a, v, mode="full"):
     return call_origin(numpy.convolve, a=a, v=v, mode=mode)
 
 
-def copysign(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def copysign(
+    x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs
+):
     """
-    Change the sign of x1 to that of x2, element-wise.
+    Change the sign of `x1` to that of `x2`, element-wise.
 
     For full documentation refer to :obj:`numpy.copysign`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The values of `x1` with the sign of `x2`.
+
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar.
-    Parameters `dtype`, `out` and `where` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> result = np.copysign(np.array([1, -2, 6, -9]), np.array([-1, -1, 1, 1]))
-    >>> [x for x in result]
-    [-1.0, -2.0, 6.0, 9.0]
+    >>> np.copysign(np.array(1.3), np.array(-1))
+    array(-1.3)
+    >>> 1 / np.copysign(np.array(0), 1)
+    array(inf)
+    >>> 1 / np.copysign(np.array(0), -1)
+    array(-inf)
+
+    >>> x = np.array([-1, 0, 1])
+    >>> np.copysign(x, -1.1)
+    array([-1., -0., -1.])
+    >>> np.copysign(x, np.arange(3) - 1)
+    array([-1., 0., 1.])
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    x2_desc = dpnp.get_dpnp_descriptor(
-        x2, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
+    if kwargs:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        else:
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        if x1_desc and x2_desc:
+            if out is not None:
+                if not dpnp.is_supported_array_type(out):
+                    raise TypeError(
+                        "return array must be of supported array type"
+                    )
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    or None
+                )
+            else:
+                out_desc = None
+
             return dpnp_copysign(
-                x1_desc, x2_desc, dtype=dtype, out=out, where=where
+                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
             ).get_pyobj()
 
     return call_origin(
@@ -510,7 +549,7 @@ def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
     Limitations
     -----------
     Parameters `x1` and `x2` are supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Sizes of input arrays are limited by `x1.size == 3 and x2.size == 3`.
     Shapes of input arrays are limited by `x1.shape == (3,) and x2.shape == (3,)`.
     Otherwise the function will be executed sequentially on CPU.
@@ -558,7 +597,7 @@ def cumprod(x1, **kwargs):
     Limitations
     -----------
     Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -592,7 +631,7 @@ def cumsum(x1, **kwargs):
     Limitations
     -----------
     Parameter `x` is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -773,7 +812,7 @@ def fabs(x1, **kwargs):
     Limitations
     -----------
     Parameter `x1` is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -824,7 +863,7 @@ def floor(
     -----------
     Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype`, and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by real-value data types.
 
@@ -887,7 +926,7 @@ def floor_divide(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -972,17 +1011,23 @@ def fmin(*args, **kwargs):
     return dpnp.minimum(*args, **kwargs)
 
 
-def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def fmod(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     """
-    Calculate the element-wise remainder of division.
+    Returns the element-wise remainder of division.
 
     For full documentation refer to :obj:`numpy.fmod`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The remainder of the division of `x1` by `x2`.
+
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar.
-    Parameters `dtype`, `out` and `where` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -994,48 +1039,80 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([2, -3, 4, 5, -4.5])
-    >>> b = np.array([2, 2, 2, 2, 2])
-    >>> result = np.fmod(a, b)
-    >>> [x for x in result]
-    [0.0, -1.0, 0.0, 1.0, -0.5]
+    >>> a = np.array([-3, -2, -1, 1, 2, 3])
+    >>> np.fmod(a, 2)
+    array([-1,  0, -1,  1,  0,  1])
+    >>> np.remainder(a, 2)
+    array([1, 0, 1, 1, 0, 1])
+
+    >>> a = np.array([5, 3])
+    >>> b = np.array([2, 2.])
+    >>> np.fmod(a, b)
+    array([1., 1.])
+
+    >>> a = np.arange(-3, 3).reshape(3, 2)
+    >>> a
+    array([[-3, -2],
+           [-1,  0],
+           [ 1,  2]])
+    >>> b = np.array([2, 2])
+    >>> np.fmod(a, b)
+    array([[-1,  0],
+           [-1,  0],
+           [ 1,  0]])
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    x2_desc = dpnp.get_dpnp_descriptor(
-        x2, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
+    if kwargs:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        else:
-            out_desc = (
-                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-                if out is not None
-                else None
-            )
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        if x1_desc and x2_desc:
+            if out is not None:
+                if not dpnp.is_supported_array_type(out):
+                    raise TypeError(
+                        "return array must be of supported array type"
+                    )
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    or None
+                )
+            else:
+                out_desc = None
+
             return dpnp_fmod(
-                x1_desc, x2_desc, dtype, out_desc, where
+                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
             ).get_pyobj()
 
     return call_origin(
@@ -1053,7 +1130,7 @@ def gradient(x1, *varargs, **kwargs):
     -----------
     Parameter `y1` is supported as :class:`dpnp.ndarray`.
     Argument `varargs[0]` is supported as `int`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1085,64 +1162,112 @@ def gradient(x1, *varargs, **kwargs):
     return call_origin(numpy.gradient, x1, *varargs, **kwargs)
 
 
-def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def maximum(
+    x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs
+):
     """
     Element-wise maximum of array elements.
 
     For full documentation refer to :obj:`numpy.maximum`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The maximum of `x1` and `x2`, element-wise.
+
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar.
-    Parameters `dtype`, `out` and `where` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.fmax` : Element-wise maximum of array elements.
-    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
-    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+    :obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagates NaNs.
+    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
+    :obj:`dpnp.amax` : The maximum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
+    :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
+    :obj:`dpnp.amix` : The minimum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.nanmix` : The minimum value of an array along a given axis, ignores NaNs.
 
     Example
     -------
     >>> import dpnp as np
-    >>> result = np.fmax(np.array([-2, 3, 4]), np.array([1, 5, 2]))
-    >>> [x for x in result]
-    [1, 5, 4]
+    >>> x1 = np.array([2, 3, 4])
+    >>> x2 = np.array([1, 5, 2])
+    >>> np.maximum(x1, x2)
+    array([2, 5, 4])
+
+    >>> x1 = np.eye(2)
+    >>> x2 = np.array([0.5, 2])
+    >>> np.maximum(x1, x2) # broadcasting
+    array([[1. , 2. ],
+           [0.5, 2. ]])
+
+    >>> x1 = np.array([np.nan, 0, np.nan])
+    >>> x2 = np.array([0, np.nan, np.nan])
+    >>> np.maximum(x1, x2)
+    array([ 0.,  0., nan])
+
+    >>> np.maximum(np.array(np.Inf), 1)
+    array(inf)
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    x2_desc = dpnp.get_dpnp_descriptor(
-        x2, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
+    if kwargs:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        else:
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        if x1_desc and x2_desc:
+            if out is not None:
+                if not dpnp.is_supported_array_type(out):
+                    raise TypeError(
+                        "return array must be of supported array type"
+                    )
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    or None
+                )
+            else:
+                out_desc = None
+
             return dpnp_maximum(
-                x1_desc, x2_desc, dtype=dtype, out=out, where=where
+                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
             ).get_pyobj()
 
     return call_origin(
@@ -1150,64 +1275,112 @@ def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
     )
 
 
-def minimum(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def minimum(
+    x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs
+):
     """
     Element-wise minimum of array elements.
 
     For full documentation refer to :obj:`numpy.minimum`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The minimum of `x1` and `x2`, element-wise.
+
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar.
-    Parameters `dtype`, `out` and `where` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.fmax` : Element-wise maximum of array elements.
-    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
-    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+    :obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagates NaNs.
+    :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
+    :obj:`dpnp.amin` : The minimum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
+    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
+    :obj:`dpnp.amax` : The maximum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
 
     Example
     -------
     >>> import dpnp as np
-    >>> result = np.fmin(np.array([-2, 3, 4]), np.array([1, 5, 2]))
-    >>> [x for x in result]
-    [-2, 3, 2]
+    >>> x1 = np.array([2, 3, 4])
+    >>> x2 = np.array([1, 5, 2])
+    >>> np.minimum(x1, x2)
+    array([1, 3, 2])
+
+    >>> x1 = np.eye(2)
+    >>> x2 = np.array([0.5, 2])
+    >>> np.minimum(x1, x2) # broadcasting
+    array([[0.5, 0. ],
+           [0. , 1. ]]
+
+    >>> x1 = np.array([np.nan, 0, np.nan])
+    >>> x2 = np.array([0, np.nan, np.nan])
+    >>> np.minimum(x1, x2)
+    array([ 0.,  0., nan])
+
+    >>> np.minimum(np.array(-np.Inf), 1)
+    array(-inf)
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    x2_desc = dpnp.get_dpnp_descriptor(
-        x2, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
+    if kwargs:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
 
-    if x1_desc and x2_desc and not kwargs:
-        if not x1_desc and not x1_is_scalar:
-            pass
-        elif not x2_desc and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_desc and x1_desc.ndim == 0:
-            pass
-        elif x2_desc and x2_desc.ndim == 0:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        else:
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        if x1_desc and x2_desc:
+            if out is not None:
+                if not dpnp.is_supported_array_type(out):
+                    raise TypeError(
+                        "return array must be of supported array type"
+                    )
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    or None
+                )
+            else:
+                out_desc = None
+
             return dpnp_minimum(
-                x1_desc, x2_desc, dtype=dtype, out=out, where=where
+                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
             ).get_pyobj()
 
     return call_origin(
@@ -1242,7 +1415,7 @@ def mod(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1279,7 +1452,7 @@ def modf(x1, **kwargs):
     Limitations
     -----------
     Parameter `x` is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1328,7 +1501,7 @@ def multiply(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1378,7 +1551,7 @@ def nancumprod(x1, **kwargs):
     Limitations
     -----------
     Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1415,7 +1588,7 @@ def nancumsum(x1, **kwargs):
     Limitations
     -----------
     Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1453,7 +1626,7 @@ def nanprod(x1, **kwargs):
     Limitations
     -----------
     Parameter `x1` is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1483,7 +1656,7 @@ def nansum(x1, **kwargs):
     Limitations
     -----------
     Parameter `x1` is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1531,7 +1704,7 @@ def negative(
     -----------
     Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1566,8 +1739,9 @@ def negative(
     )
 
 
-def proj(
-    x,
+def power(
+    x1,
+    x2,
     /,
     out=None,
     *,
@@ -1577,55 +1751,6 @@ def proj(
     subok=True,
     **kwargs,
 ):
-    """
-    Returns the projection of a number onto the Riemann sphere.
-
-    For all infinite complex numbers (including the cases where one component is infinite and the other is `NaN`),
-    the function returns `(inf, 0.0)` or `(inf, -0.0)`.
-    For finite complex numbers, the input is returned.
-    All real-valued numbers are treated as complex numbers with positive zero imaginary part.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The projection of each element of `x`.
-
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.abs` : Returns the magnitude of a complex number, element-wise.
-    :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.proj(np.array([1, -2.3, 2.1-1.7j]))
-    array([ 1. +0.j, -2.3+0.j,  2.1-1.7.j])
-
-    >>> np.proj(np.array([complex(1,np.inf), complex(1,-np.inf), complex(np.inf,-1),]))
-    array([inf+0.j, inf-0.j, inf-0.j])
-    """
-
-    return check_nd_call_func(
-        None,
-        dpnp_proj,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def power(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     """
     First array elements raised to powers from second array, element-wise.
 
@@ -1644,7 +1769,7 @@ def power(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -1658,68 +1783,50 @@ def power(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     Example
     -------
     >>> import dpnp as dp
-    >>> a = dp.array([1, 2, 3, 4, 5])
-    >>> b = dp.array([2, 2, 2, 2, 2])
-    >>> result = dp.power(a, b)
-    >>> [x for x in result]
-    [1, 4, 9, 16, 25]
+    >>> a = dp.arange(6)
+    >>> dp.power(a, 3)
+    array([  0,   1,   8,  27,  64, 125])
+
+    Raise the bases to different exponents.
+
+    >>> b = dp.array([1.0, 2.0, 3.0, 3.0, 2.0, 1.0])
+    >>> dp.power(a, b)
+    array([ 0.,  1.,  8., 27., 16.,  5.])
+
+    The effect of broadcasting.
+
+    >>> c = dp.array([[1, 2, 3, 3, 2, 1], [1, 2, 3, 3, 2, 1]])
+    >>> dp.power(a, c)
+    array([[ 0,  1,  8, 27, 16,  5],
+           [ 0,  1,  8, 27, 16,  5]])
+
+    The ``**`` operator can be used as a shorthand for ``power`` on
+    :class:`dpnp.ndarray`.
+
+    >>> b = dp.array([1, 2, 3, 3, 2, 1])
+    >>> a = dp.arange(6)
+    >>> a ** b
+    array([ 0,  1,  8, 27, 16,  5])
+
+    Negative values raised to a non-integral value will result in ``nan``.
+
+    >>> d = dp.array([-1.0, -4.0])
+    >>> dp.power(d, 1.5)
+    array([nan, nan])
 
     """
 
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
-
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            if out is not None:
-                if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError(
-                        "return array must be of supported array type"
-                    )
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
-                    )
-                    or None
-                )
-            else:
-                out_desc = None
-
-            return dpnp_power(
-                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.power, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    return check_nd_call_func(
+        numpy.power,
+        dpnp_power,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 
@@ -1780,6 +1887,65 @@ def prod(
         keepdims=keepdims,
         initial=initial,
         where=where,
+    )
+
+
+def proj(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Returns the projection of a number onto the Riemann sphere.
+
+    For all infinite complex numbers (including the cases where one component is infinite and the other is `NaN`),
+    the function returns `(inf, 0.0)` or `(inf, -0.0)`.
+    For finite complex numbers, the input is returned.
+    All real-valued numbers are treated as complex numbers with positive zero imaginary part.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The projection of each element of `x`.
+
+    Limitations
+    -----------
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.abs` : Returns the magnitude of a complex number, element-wise.
+    :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.proj(np.array([1, -2.3, 2.1-1.7j]))
+    array([ 1. +0.j, -2.3+0.j,  2.1-1.7.j])
+
+    >>> np.proj(np.array([complex(1,np.inf), complex(1,-np.inf), complex(np.inf,-1),]))
+    array([inf+0.j, inf-0.j, inf-0.j])
+    """
+
+    return check_nd_call_func(
+        None,
+        dpnp_proj,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 
@@ -2281,7 +2447,7 @@ def trapz(y1, x1=None, dx=1.0, axis=-1):
     Limitations
     -----------
     Parameters `y` and `x` are supported as :class:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -2376,7 +2542,7 @@ def trunc(
     -----------
     Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype`, and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by real-value data types.
 

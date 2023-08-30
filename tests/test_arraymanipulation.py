@@ -639,3 +639,68 @@ class TestAtleast1d:
         assert dpnp.atleast_1d(3j).shape == (1,)
         assert dpnp.atleast_1d(3.0).shape == (1,)
         assert dpnp.atleast_1d([[2, 3], [4, 5]]).shape == (2, 2)
+
+
+class TestRollaxis:
+    data = [
+        (0, 0),
+        (0, 1),
+        (0, 2),
+        (0, 3),
+        (0, 4),
+        (1, 0),
+        (1, 1),
+        (1, 2),
+        (1, 3),
+        (1, 4),
+        (2, 0),
+        (2, 1),
+        (2, 2),
+        (2, 3),
+        (2, 4),
+        (3, 0),
+        (3, 1),
+        (3, 2),
+        (3, 3),
+        (3, 4),
+    ]
+
+    @pytest.mark.parametrize(
+        ("axis", "start"),
+        [
+            (-5, 0),
+            (0, -5),
+            (4, 0),
+            (0, 5),
+        ],
+    )
+    def test_exceptions(self, axis, start):
+        a = dpnp.arange(1 * 2 * 3 * 4).reshape(1, 2, 3, 4)
+        assert_raises(ValueError, dpnp.rollaxis, a, axis, start)
+
+    def test_results(self):
+        np_a = numpy.arange(1 * 2 * 3 * 4).reshape(1, 2, 3, 4)
+        dp_a = dpnp.array(np_a)
+        for i, j in self.data:
+            # positive axis, positive start
+            res = dpnp.rollaxis(dp_a, axis=i, start=j)
+            exp = numpy.rollaxis(np_a, axis=i, start=j)
+            assert res.shape == exp.shape
+
+            # negative axis, positive start
+            ip = i + 1
+            res = dpnp.rollaxis(dp_a, axis=-ip, start=j)
+            exp = numpy.rollaxis(np_a, axis=-ip, start=j)
+            assert res.shape == exp.shape
+
+            # positive axis, negative start
+            jp = j + 1 if j < 4 else j
+            res = dpnp.rollaxis(dp_a, axis=i, start=-jp)
+            exp = numpy.rollaxis(np_a, axis=i, start=-jp)
+            assert res.shape == exp.shape
+
+            # negative axis, negative start
+            ip = i + 1
+            jp = j + 1 if j < 4 else j
+            res = dpnp.rollaxis(dp_a, axis=-ip, start=-jp)
+            exp = numpy.rollaxis(np_a, axis=-ip, start=-jp)
