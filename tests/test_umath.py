@@ -11,6 +11,7 @@ import dpnp
 from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
+    get_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
 )
@@ -381,137 +382,143 @@ class TestExp:
 
 
 class TestArcsin:
-    def test_arcsin(self):
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    def test_arcsin(self, dtype):
         array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=numpy.float64)
+        out = numpy.empty(10, dtype=dtype)
 
         # DPNP
-        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
-        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
         result = dpnp.arcsin(dp_array, out=dp_out)
 
         # original
-        np_array = numpy.array(array_data, dtype=numpy.float64)
+        np_array = numpy.array(array_data, dtype=dtype)
         expected = numpy.arcsin(np_array, out=out)
 
         assert_array_equal(expected, result)
 
     @pytest.mark.parametrize(
-        "dtype",
-        [numpy.float32, numpy.int64, numpy.int32],
-        ids=["numpy.float32", "numpy.int64", "numpy.int32"],
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
     )
     def test_invalid_dtype(self, dtype):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.arcsin(dp_array, out=dp_out)
 
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
-    def test_invalid_shape(self, shape):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
 
         with pytest.raises(ValueError):
             dpnp.arcsin(dp_array, out=dp_out)
 
 
 class TestArctan:
-    def test_arctan(self):
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_arctan(self, dtype):
         array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=numpy.float64)
+        out = numpy.empty(10, dtype=dtype)
 
         # DPNP
-        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
-        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
         result = dpnp.arctan(dp_array, out=dp_out)
 
         # original
-        np_array = numpy.array(array_data, dtype=numpy.float64)
+        np_array = numpy.array(array_data, dtype=dtype)
         expected = numpy.arctan(np_array, out=out)
 
-        assert_array_equal(expected, result)
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize(
-        "dtype",
-        [numpy.float32, numpy.int64, numpy.int32],
-        ids=["numpy.float32", "numpy.int64", "numpy.int32"],
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
     )
     def test_invalid_dtype(self, dtype):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.arctan(dp_array, out=dp_out)
 
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
-    def test_invalid_shape(self, shape):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
 
         with pytest.raises(ValueError):
             dpnp.arctan(dp_array, out=dp_out)
 
 
 class TestTan:
-    def test_tan(self):
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_tan(self, dtype):
         array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=numpy.float64)
+        out = numpy.empty(10, dtype=dtype)
 
         # DPNP
-        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
-        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
         result = dpnp.tan(dp_array, out=dp_out)
 
         # original
-        np_array = numpy.array(array_data, dtype=numpy.float64)
+        np_array = numpy.array(array_data, dtype=dtype)
         expected = numpy.tan(np_array, out=out)
 
-        assert_allclose(expected, result)
+        tol = numpy.finfo(dtype).resolution
+        assert_allclose(expected, result, rtol=tol)
 
     @pytest.mark.parametrize(
-        "dtype",
-        [numpy.float32, numpy.int64, numpy.int32],
-        ids=["numpy.float32", "numpy.int64", "numpy.int32"],
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
     )
     def test_invalid_dtype(self, dtype):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.tan(dp_array, out=dp_out)
 
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
-    def test_invalid_shape(self, shape):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
 
         with pytest.raises(ValueError):
             dpnp.tan(dp_array, out=dp_out)
 
 
 class TestArctan2:
-    def test_arctan2(self):
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_arctan2(self, dtype):
         array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=numpy.float64)
+        out = numpy.empty(10, dtype=dtype)
 
         # DPNP
-        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
-        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
         result = dpnp.arctan2(dp_array, dp_array, out=dp_out)
 
         # original
-        np_array = numpy.array(array_data, dtype=numpy.float64)
+        np_array = numpy.array(array_data, dtype=dtype)
         expected = numpy.arctan2(np_array, np_array, out=out)
 
-        assert_array_equal(expected, result)
+        assert_allclose(expected, result)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
@@ -520,21 +527,22 @@ class TestArctan2:
         size = 2 if dtype == dpnp.bool else 10
 
         np_array = numpy.arange(size, dtype=dtype)
-        np_out = numpy.empty(size, dtype=numpy.complex64)
+        np_out = numpy.empty(size, dtype=numpy.float32)
         expected = numpy.arctan2(np_array, np_array, out=np_out)
 
         dp_array = dpnp.arange(size, dtype=dtype)
-        dp_out = dpnp.empty(size, dtype=dpnp.complex64)
+        dp_out = dpnp.empty(size, dtype=dpnp.float32)
         result = dpnp.arctan2(dp_array, dp_array, out=dp_out)
 
         assert_allclose(expected, result)
 
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
-    def test_invalid_shape(self, shape):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
 
         with pytest.raises(ValueError):
             dpnp.arctan2(dp_array, dp_array, out=dp_out)
