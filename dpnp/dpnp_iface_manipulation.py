@@ -99,9 +99,9 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
     >>> import dpnp as np
     >>> np.asfarray([2, 3])
     array([2.,  3.])
-    >>> np.asfarray([2, 3], dtype='float')
-    array([2.,  3.])
-    >>> np.asfarray([2, 3], dtype='int8')
+    >>> np.asfarray([2, 3], dtype='float16')
+    array([2., 3.], dtype=float16)
+    >>> np.asfarray([2, 3], dtype='int32')
     array([2.,  3.])
 
     """
@@ -113,8 +113,8 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
     if dtype is None or not numpy.issubdtype(dtype, dpnp.inexact):
         dtype = dpnp.default_float_type(sycl_queue=_sycl_queue)
 
-    return dpnp.array(
-        a, dtype=dtype, copy=False, usm_type=usm_type, sycl_queue=_sycl_queue
+    return dpnp.asarray(
+        a, dtype=dtype, usm_type=usm_type, sycl_queue=_sycl_queue
     )
 
 

@@ -483,15 +483,6 @@ tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_ravel
 tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_zerosize
 tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_zerosize2
 
-tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_asarray_chkfinite
-tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_asarray_chkfinite_non_finite_vals
-tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_require_C_and_F_flags
-tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_require_empty_requirements
-tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_require_flag_check
-tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_require_incorrect_dtype
-tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_require_incorrect_requirments
-tests/third_party/cupy/manipulation_tests/test_kind.py::TestKind::test_require_owndata
-
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeatRepeatsNdarray::test_func
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeatRepeatsNdarray::test_method
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTileFailure_param_0_{reps=-1}::test_tile_failure
