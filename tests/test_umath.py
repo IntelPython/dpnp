@@ -524,14 +524,18 @@ class TestArctan2:
         "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
     )
     def test_out_dtypes(self, dtype):
+        if has_support_aspect64() and dtype != numpy.float32:
+            dtype_out = numpy.float64
+        else:
+            dtype_out = numpy.float32
         size = 2 if dtype == dpnp.bool else 10
 
         np_array = numpy.arange(size, dtype=dtype)
-        np_out = numpy.empty(size, dtype=numpy.float32)
+        np_out = numpy.empty(size, dtype=dtype_out)
         expected = numpy.arctan2(np_array, np_array, out=np_out)
 
         dp_array = dpnp.arange(size, dtype=dtype)
-        dp_out = dpnp.empty(size, dtype=dpnp.float32)
+        dp_out = dpnp.empty(size, dtype=dtype_out)
         result = dpnp.arctan2(dp_array, dp_array, out=dp_out)
 
         assert_allclose(expected, result)
