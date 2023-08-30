@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.rollaxis &mdash; Data Parallel Extension for NumPy 0.12.2dev1+26.gd6ac5b2cb documentation</title>
+  <title>dpnp.rollaxis &mdash; Data Parallel Extension for NumPy 0.12.2dev1+29.g11fc11fc8 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,14 +22,14 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=90d81ccb"></script>
+        <script src="../../_static/documentation_options.js?v=5f2c382c"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpnp.swapaxes" href="dpnp.swapaxes.html" />
-    <link rel="prev" title="dpnp.moveaxis" href="dpnp.moveaxis.html" /> 
+    <link rel="prev" title="dpnp.roll" href="dpnp.roll.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+26.gd6ac5b2cb
+                0.12.2dev1+29.g11fc11fc8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -130,21 +130,29 @@
 <h1>dpnp.rollaxis<a class="headerlink" href="#dpnp-rollaxis" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.rollaxis">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">rollaxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#rollaxis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.rollaxis" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">rollaxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#rollaxis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.rollaxis" title="Link to this definition"></a></dt>
 <dd><p>Roll the specified axis backwards, until it lies in a given position.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.rollaxis.html#numpy.rollaxis" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.rollaxis</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An array with the same data type as <cite>x</cite> where the specified axis
+has been repositioned to the desired position.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dpnp.ndarray</p>
+</dd>
+</dl>
 <p class="rubric">Limitations</p>
-<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported as integer only.
-Parameter <code class="docutils literal notranslate"><span class="pre">start</span></code> is limited by <code class="docutils literal notranslate"><span class="pre">-a.ndim</span> <span class="pre">&lt;=</span> <span class="pre">start</span> <span class="pre">&lt;=</span> <span class="pre">a.ndim</span></code>.
-Otherwise the function will be executed sequentially on CPU.
+<p>Parameter <cite>x</cite> is supported either as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
+or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>. Otherwise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> exception
+will be raised.
 Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
 <dt><a class="reference internal" href="dpnp.moveaxis.html#dpnp.moveaxis" title="dpnp.moveaxis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.moveaxis</span></code></a></dt><dd><p>Move array axes to new positions.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.roll</span></code></dt><dd><p>Roll the elements of an array by a number of positions along a given axis.</p>
+<dt><a class="reference internal" href="dpnp.roll.html#dpnp.roll" title="dpnp.roll"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.roll</span></code></a></dt><dd><p>Roll the elements of an array by a number of positions along a given axis.</p>
 </dd>
 </dl>
 </div>
@@ -167,7 +175,7 @@ Input array data types are limited by supported DPNP <span class="xref std std-r
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.moveaxis.html" class="btn btn-neutral float-left" title="dpnp.moveaxis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.roll.html" class="btn btn-neutral float-left" title="dpnp.roll" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="dpnp.swapaxes.html" class="btn btn-neutral float-right" title="dpnp.swapaxes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
