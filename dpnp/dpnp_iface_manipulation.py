@@ -114,12 +114,12 @@ def atleast_1d(*arys):
 
     Parameters
     ----------
-    arys1, arys2, ... : array_like
+    arys : {dpnp_array, usm_ndarray}
         One or more input arrays.
 
     Returns
     -------
-    out : ndarray
+    out : dpnp.ndarray
         An array, or list of arrays, each with ``a.ndim >= 1``.
         Copies are made only if necessary.
 
@@ -129,6 +129,7 @@ def atleast_1d(*arys):
 
     Examples
     --------
+    >>> import dpnp as np
     >>> np.atleast_1d(1.0)
     array([1.])
 
@@ -147,7 +148,7 @@ def atleast_1d(*arys):
 
     res = []
     for ary in arys:
-        ary = dpnp.array(ary, copy=False)
+        ary = dpnp.asanyarray(ary)
         if ary.ndim == 0:
             result = ary.reshape(1)
         else:
@@ -275,7 +276,9 @@ def broadcast_to(array, /, shape, subok=False):
     return call_origin(numpy.broadcast_to, array, shape=shape, subok=subok)
 
 
-def concatenate(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
+def concatenate(
+    arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind", **kwargs
+):
     """
     Join a sequence of arrays along an existing axis.
 
@@ -331,6 +334,8 @@ def concatenate(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     elif out is not None:
         pass
     elif dtype is not None:
+        pass
+    elif casting != "same_kind":
         pass
     else:
         usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
@@ -537,6 +542,7 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     --------
     :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
     :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
+    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
     :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
     :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
 
@@ -547,6 +553,7 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     >>> b = np.array((4,5,6))
     >>> np.hstack((a,b))
     array([1, 2, 3, 4, 5, 6])
+
     >>> a = np.array([[1],[2],[3]])
     >>> b = np.array([[4],[5],[6]])
     >>> np.hstack((a,b))
@@ -556,29 +563,14 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
 
     """
 
-    if casting != "same_kind":
-        pass
-    elif dtype is not None:
-        pass
+    arrs = dpnp.atleast_1d(*tup)
+    if not isinstance(arrs, list):
+        arrs = [arrs]
+    # As a special case, dimension 0 of 1-dimensional arrays is "horizontal"
+    if arrs and arrs[0].ndim == 1:
+        return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
     else:
-        arrs = dpnp.atleast_1d(*tup)
-        if not isinstance(arrs, list):
-            arrs = [arrs]
-        # As a special case, dimension 0 of 1-dimensional arrays is "horizontal"
-        if arrs and arrs[0].ndim == 1:
-            return dpnp.concatenate(arrs, axis=0)
-        else:
-            return dpnp.concatenate(arrs, axis=1)
-
-    # TODO:
-    # `call_origin` cannot convert sequence of array to sequence of
-    # nparrays
-    tup_new = []
-    for tp in tup:
-        tpx = dpnp.asnumpy(tp) if not isinstance(tp, numpy.ndarray) else tp
-        tup_new.append(tpx)
-
-    return call_origin(numpy.hstack, tup_new)
+        return dpnp.concatenate(arrs, axis=1, dtype=dtype, casting=casting)
 
 
 def moveaxis(a, source, destination):

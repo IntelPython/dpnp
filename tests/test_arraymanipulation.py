@@ -603,8 +603,39 @@ class TestVstack:
             dpnp.vstack((numpy.arange(3) for _ in range(2)))
 
 
-@pytest.mark.parametrize("arys", [1.0, dpnp.arange(9.0).reshape(3, 3), [3, 4]])
-def test_atleast_1d(arys):
-    expected = numpy.atleast_1d(arys)
-    result = dpnp.atleast_1d(arys)
-    assert_array_equal(result, expected)
+class TestAtleast1d:
+    def test_0D_array(self):
+        a = dpnp.array(1)
+        b = dpnp.array(2)
+        res = [dpnp.atleast_1d(a), dpnp.atleast_1d(b)]
+        desired = [dpnp.array([1]), dpnp.array([2])]
+        assert_array_equal(res, desired)
+
+    def test_1D_array(self):
+        a = dpnp.array([1, 2])
+        b = dpnp.array([2, 3])
+        res = [dpnp.atleast_1d(a), dpnp.atleast_1d(b)]
+        desired = [dpnp.array([1, 2]), dpnp.array([2, 3])]
+        assert_array_equal(res, desired)
+
+    def test_2D_array(self):
+        a = dpnp.array([[1, 2], [1, 2]])
+        b = dpnp.array([[2, 3], [2, 3]])
+        res = [dpnp.atleast_1d(a), dpnp.atleast_1d(b)]
+        desired = [a, b]
+        assert_array_equal(res, desired)
+
+    def test_3D_array(self):
+        a = dpnp.array([[1, 2], [1, 2]])
+        b = dpnp.array([[2, 3], [2, 3]])
+        a = dpnp.array([a, a])
+        b = dpnp.array([b, b])
+        res = [dpnp.atleast_1d(a), dpnp.atleast_1d(b)]
+        desired = [a, b]
+        assert_array_equal(res, desired)
+
+    def test_r1array(self):
+        assert dpnp.atleast_1d(3).shape == (1,)
+        assert dpnp.atleast_1d(3j).shape == (1,)
+        assert dpnp.atleast_1d(3.0).shape == (1,)
+        assert dpnp.atleast_1d([[2, 3], [4, 5]]).shape == (2, 2)
