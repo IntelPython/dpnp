@@ -90,7 +90,7 @@ def bitwise_and(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Data type of input arrays `x1` and `x2` has to be an integer or boolean data type.
 
@@ -160,7 +160,7 @@ def bitwise_or(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Data type of input arrays `x1` and `x2` has to be an integer or boolean data type.
 
@@ -225,7 +225,7 @@ def bitwise_xor(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Data type of input arrays `x1` and `x2` has to be an integer or boolean data type.
 
@@ -286,7 +286,7 @@ def invert(
     Parameter `x` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Data type of input array `x` has to be an integer data type.
 
@@ -358,7 +358,7 @@ def left_shift(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input data is supported as integer only.
 
@@ -374,7 +374,7 @@ def left_shift(
     >>> np.left_shift(x1, x2)
     array([10, 20, 40])
 
-    The ``<<`` operator can be used as a shorthand for ``right_shift`` on
+    The ``<<`` operator can be used as a shorthand for ``left_shift`` on
     :class:`dpnp.ndarray`.
 
     >>> x1 << x2
@@ -421,7 +421,7 @@ def right_shift(
     Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword arguments `kwargs` are currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input data is supported as integer only.
 
@@ -437,7 +437,7 @@ def right_shift(
     >>> np.right_shift(x1, x2)
     array([5, 2, 1])
 
-    The ``>>`` operator can be used as a shorthand for ``left_shift`` on
+    The ``>>`` operator can be used as a shorthand for ``right_shift`` on
     :class:`dpnp.ndarray`.
 
     >>> x1 >> x2

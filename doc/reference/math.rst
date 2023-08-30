@@ -169,6 +169,7 @@ Handling complex numbers
    dpnp.imag
    dpnp.conj
    dpnp.conjugate
+   dpnp.proj
 
 
 Extrema Finding

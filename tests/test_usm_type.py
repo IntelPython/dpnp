@@ -83,7 +83,34 @@ def test_coerced_usm_types_remainder(usm_type_x, usm_type_y):
     y = dp.arange(100, usm_type=usm_type_y).reshape(10, 10)
     y = y.T + 1
 
+    z = 100 % y
+    z = y % 7
     z = x % y
+
+    # inplace remainder
+    z %= y
+    z %= 5
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_floor_divide(usm_type_x, usm_type_y):
+    x = dp.arange(100, usm_type=usm_type_x).reshape(10, 10)
+    y = dp.arange(100, usm_type=usm_type_y).reshape(10, 10)
+    x = x + 1.5
+    y = y.T + 0.5
+
+    z = 3.4 // y
+    z = y // 2.7
+    z = x // y
+
+    # inplace floor_divide
+    z //= y
+    z //= 2.5
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
@@ -249,8 +276,12 @@ def test_meshgrid(usm_type_x, usm_type_y):
     "func,data",
     [
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
-        pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
+        pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("negative", [1.0, 0.0, -1.0]),
+        pytest.param("proj", [complex(1.0, 2.0), complex(dp.inf, -1.0)]),
+        pytest.param("sign", [-5.0, 0.0, 4.5]),
+        pytest.param("signbit", [-5.0, 0.0, 4.5]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
     ],
@@ -266,6 +297,11 @@ def test_1in_1out(func, data, usm_type):
 @pytest.mark.parametrize(
     "func,data1,data2",
     [
+        pytest.param(
+            "allclose",
+            [[1.2, -0.0], [-7, 2.34567]],
+            [[1.2, 0.0], [-7, 2.34567]],
+        ),
         pytest.param(
             "dot",
             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],

@@ -58,8 +58,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ARGMIN_EXT
         DPNP_FN_ARGSORT
         DPNP_FN_ARGSORT_EXT
-        DPNP_FN_AROUND
-        DPNP_FN_AROUND_EXT
         DPNP_FN_ASTYPE
         DPNP_FN_ASTYPE_EXT
         DPNP_FN_CBRT
@@ -72,8 +70,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_COPY_EXT
         DPNP_FN_COPYSIGN
         DPNP_FN_COPYSIGN_EXT
-        DPNP_FN_COPYTO
-        DPNP_FN_COPYTO_EXT
         DPNP_FN_CORRELATE
         DPNP_FN_CORRELATE_EXT
         DPNP_FN_COSH
@@ -132,8 +128,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_HYPOT_EXT
         DPNP_FN_IDENTITY
         DPNP_FN_IDENTITY_EXT
-        DPNP_FN_INITVAL
-        DPNP_FN_INITVAL_EXT
         DPNP_FN_INV
         DPNP_FN_INV_EXT
         DPNP_FN_KRON
@@ -162,16 +156,12 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MODF_EXT
         DPNP_FN_NANVAR
         DPNP_FN_NANVAR_EXT
-        DPNP_FN_NEGATIVE
-        DPNP_FN_NEGATIVE_EXT
         DPNP_FN_NONZERO
         DPNP_FN_ONES
         DPNP_FN_ONES_LIKE
         DPNP_FN_PARTITION
         DPNP_FN_PARTITION_EXT
         DPNP_FN_PLACE
-        DPNP_FN_POWER
-        DPNP_FN_POWER_EXT
         DPNP_FN_PROD
         DPNP_FN_PROD_EXT
         DPNP_FN_PTP
@@ -257,8 +247,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_ZIPF_EXT
         DPNP_FN_SEARCHSORTED
         DPNP_FN_SEARCHSORTED_EXT
-        DPNP_FN_SIGN
-        DPNP_FN_SIGN_EXT
         DPNP_FN_SINH
         DPNP_FN_SINH_EXT
         DPNP_FN_SORT
@@ -413,7 +401,6 @@ cpdef dpnp_descriptor dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_
 """
 Array creation routines
 """
-cpdef dpnp_descriptor dpnp_init_val(shape, dtype, value)
 cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 
 """
@@ -427,9 +414,6 @@ cpdef dpnp_descriptor dpnp_maximum(dpnp_descriptor x1_obj, dpnp_descriptor x2_ob
                                    dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_minimum(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
-cpdef dpnp_descriptor dpnp_negative(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_power(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                 dpnp_descriptor out=*, object where=*)
 
 """
 Array manipulation routines

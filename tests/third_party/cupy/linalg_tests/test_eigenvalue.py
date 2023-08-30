@@ -8,18 +8,14 @@ from tests.third_party.cupy import testing
 
 
 def _get_hermitian(xp, a, UPLO):
-    # TODO: remove wrapping, but now there is no dpnp_array.swapaxes()
-    a = _wrap_as_numpy_array(xp, a)
-    _xp = numpy
-
     if UPLO == "U":
-        _a = _xp.triu(a) + _xp.triu(a, k=1).swapaxes(-2, -1).conj()
+        return xp.triu(a) + xp.triu(a, k=1).swapaxes(-2, -1).conj()
     else:
-        _a = _xp.tril(a) + _xp.tril(a, k=-1).swapaxes(-2, -1).conj()
-    return xp.array(_a)
+        return xp.tril(a) + xp.tril(a, k=-1).swapaxes(-2, -1).conj()
 
 
-# TODO: remove once all required functionality is supported
+# TODO:
+# remove once dpnp.dot and dpnp.matmul support complex types
 def _wrap_as_numpy_array(xp, a):
     return a.asnumpy() if xp is cupy else a
 

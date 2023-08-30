@@ -101,8 +101,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGSORT_EXT,  /**< Used in numpy.argsort() impl, requires extra
                              parameters */
     DPNP_FN_AROUND,       /**< Used in numpy.around() impl  */
-    DPNP_FN_AROUND_EXT,   /**< Used in numpy.around() impl, requires extra
-                             parameters */
     DPNP_FN_ASTYPE,       /**< Used in numpy.astype() impl  */
     DPNP_FN_ASTYPE_EXT,   /**< Used in numpy.astype() impl, requires extra
                              parameters */
@@ -282,8 +280,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NANVAR_EXT,    /**< Used in numpy.nanvar() impl, requires extra
                               parameters */
     DPNP_FN_NEGATIVE,      /**< Used in numpy.negative() impl  */
-    DPNP_FN_NEGATIVE_EXT,  /**< Used in numpy.negative() impl, requires extra
-                              parameters */
     DPNP_FN_NONZERO,       /**< Used in numpy.nonzero() impl  */
     DPNP_FN_NOT_EQUAL_EXT, /**< Used in numpy.not_equal() impl, requires extra
                               parameters */
@@ -294,8 +290,6 @@ enum class DPNPFuncName : size_t
                               parameters */
     DPNP_FN_PLACE,         /**< Used in numpy.place() impl  */
     DPNP_FN_POWER,         /**< Used in numpy.power() impl  */
-    DPNP_FN_POWER_EXT,     /**< Used in numpy.power() impl, requires extra
-                              parameters */
     DPNP_FN_PROD,          /**< Used in numpy.prod() impl  */
     DPNP_FN_PROD_EXT, /**< Used in numpy.prod() impl, requires extra parameters
                        */
@@ -440,10 +434,8 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SEARCHSORTED_EXT, /**< Used in numpy.searchsorted() impl, requires
                                  extra parameters */
     DPNP_FN_SIGN,             /**< Used in numpy.sign() impl  */
-    DPNP_FN_SIGN_EXT, /**< Used in numpy.sign() impl, requires extra parameters
-                       */
-    DPNP_FN_SIN,      /**< Used in numpy.sin() impl  */
-    DPNP_FN_SINH,     /**< Used in numpy.sinh() impl  */
+    DPNP_FN_SIN,              /**< Used in numpy.sin() impl  */
+    DPNP_FN_SINH,             /**< Used in numpy.sinh() impl  */
     DPNP_FN_SINH_EXT, /**< Used in numpy.sinh() impl, requires extra parameters
                        */
     DPNP_FN_SORT,     /**< Used in numpy.sort() impl  */

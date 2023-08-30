@@ -38,7 +38,6 @@ and the rest of the library
 __all__ += [
     "dpnp_absolute",
     "dpnp_arctan2",
-    "dpnp_around",
     "dpnp_copysign",
     "dpnp_cross",
     "dpnp_cumprod",
@@ -56,10 +55,7 @@ __all__ += [
     "dpnp_nancumsum",
     "dpnp_nanprod",
     "dpnp_nansum",
-    "dpnp_negative",
-    "dpnp_power",
     "dpnp_prod",
-    "dpnp_sign",
     "dpnp_sum",
     "dpnp_trapz",
 ]
@@ -74,9 +70,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_2out_t)(c_dpctl.DPCTLSyclQueueRef,
 ctypedef c_dpctl.DPCTLSyclEventRef(*ftpr_custom_trapz_2in_1out_with_2size_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                              void *, void * , void * , double, size_t, size_t,
                                                                              const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*ftpr_custom_around_1in_1out_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                   const void * , void * , const size_t, const int,
-                                                                   const c_dpctl.DPCTLEventVectorRef)
 
 
 cpdef utils.dpnp_descriptor dpnp_absolute(utils.dpnp_descriptor x1):
@@ -120,38 +113,6 @@ cpdef utils.dpnp_descriptor dpnp_arctan2(utils.dpnp_descriptor x1_obj,
                                          utils.dpnp_descriptor out=None,
                                          object where=True):
     return call_fptr_2in_1out_strides(DPNP_FN_ARCTAN2_EXT, x1_obj, x2_obj, dtype, out, where, func_name="arctan2")
-
-
-cpdef utils.dpnp_descriptor dpnp_around(utils.dpnp_descriptor x1, int decimals):
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_AROUND_EXT, param1_type, param1_type)
-
-    x1_obj = x1.get_array()
-
-    # ceate result array with type given by FPTR data
-    cdef shape_type_c result_shape = x1.shape
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=x1_obj.sycl_device,
-                                                                       usm_type=x1_obj.usm_type,
-                                                                       sycl_queue=x1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef ftpr_custom_around_1in_1out_t func = <ftpr_custom_around_1in_1out_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, x1.get_data(), result.get_data(), x1.size, decimals, NULL)
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_copysign(utils.dpnp_descriptor x1_obj,
@@ -390,7 +351,7 @@ cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
 
 
 cpdef utils.dpnp_descriptor dpnp_nancumprod(utils.dpnp_descriptor x1):
-    cur_x1 = dpnp_copy(x1).get_pyobj()
+    cur_x1 = x1.get_pyobj().copy()
 
     cur_x1_flatiter = cur_x1.flat
 
@@ -403,7 +364,7 @@ cpdef utils.dpnp_descriptor dpnp_nancumprod(utils.dpnp_descriptor x1):
 
 
 cpdef utils.dpnp_descriptor dpnp_nancumsum(utils.dpnp_descriptor x1):
-    cur_x1 = dpnp_copy(x1).get_pyobj()
+    cur_x1 = x1.get_pyobj().copy()
 
     cur_x1_flatiter = cur_x1.flat
 
@@ -453,18 +414,6 @@ cpdef utils.dpnp_descriptor dpnp_nansum(utils.dpnp_descriptor x1):
             result.get_pyobj().flat[i] = input_elem
 
     return dpnp_sum(result)
-
-
-cpdef utils.dpnp_descriptor dpnp_negative(dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_NEGATIVE_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_power(utils.dpnp_descriptor x1_obj,
-                                       utils.dpnp_descriptor x2_obj,
-                                       object dtype=None,
-                                       utils.dpnp_descriptor out=None,
-                                       object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_POWER_EXT, x1_obj, x2_obj, dtype, out, where, func_name="power")
 
 
 cpdef utils.dpnp_descriptor dpnp_prod(utils.dpnp_descriptor x1,
@@ -527,10 +476,6 @@ cpdef utils.dpnp_descriptor dpnp_prod(utils.dpnp_descriptor x1,
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_sign(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_SIGN_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor x1,

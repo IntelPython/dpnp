@@ -358,14 +358,15 @@ def outer(x1, x2, out=None):
            [1, 2, 3]])
 
     """
+
     x1_is_scalar = dpnp.isscalar(x1)
     x2_is_scalar = dpnp.isscalar(x2)
 
     if x1_is_scalar and x2_is_scalar:
         pass
-    elif not (x1_is_scalar or dpnp.is_supported_array_type(x1)):
+    elif not dpnp.is_supported_array_or_scalar(x1):
         pass
-    elif not (x2_is_scalar or dpnp.is_supported_array_type(x2)):
+    elif not dpnp.is_supported_array_or_scalar(x2):
         pass
     else:
         x1_in = (
