@@ -13,6 +13,7 @@ from numpy.testing import (
 import dpnp
 
 from .helper import (
+    assert_dtype_allclose,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
@@ -137,16 +138,7 @@ class TestMathematical:
         else:
             result = getattr(dpnp, name)(a_dpnp, b_dpnp)
             expected = getattr(numpy, name)(a_np, b_np)
-            if numpy.issubdtype(expected.dtype, numpy.floating):
-                tol = numpy.max(
-                    [
-                        numpy.finfo(result.dtype).resolution,
-                        numpy.finfo(expected.dtype).resolution,
-                    ]
-                )
-            else:
-                tol = 1e-06
-            assert_allclose(result, expected, rtol=tol)
+            assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_add(self, dtype, lhs, rhs):
