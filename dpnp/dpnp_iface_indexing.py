@@ -417,7 +417,7 @@ def place(x, mask, vals, /):
     return call_origin(numpy.place, x, mask, vals, dpnp_inplace=True)
 
 
-def put(x, indices, vals, /, *, axis=None, mode="wrap"):
+def put(a, indices, vals, /, *, axis=None, mode="wrap"):
     """
     Puts values of an array into another array along a given axis.
 
@@ -425,11 +425,11 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
 
     Limitations
     -----------
-    Parameters `x` and `indices` are supported either as :class:`dpnp.ndarray`
+    Parameters `a` and `indices` are supported either as :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `indices` is supported as 1-D array of integer data type.
     Paramenet `vals` must be broadcastable to the shape of `indices`
-    and be of the same data type as `x` if it is as :class:`dpnp.ndarray`
+    and has the same data type as `a` if it is as :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `mode` is supported with ``wrap``(default) and ``clip`` mode.
     Parameter `axis` is supported as integer only.
@@ -455,9 +455,16 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
     >>> np.put(x, indices, [-44, -55])
     >>> x
     array([-44, -55, 2, 3, 4])
+
+    >>> x = np.arange(5)
+    >>> indices = np.array([22])
+    >>> np.put(x, indices, -5, mode='clip')
+    >>> x
+    array([0, 1, 2, 3,-5])
+
     """
 
-    if dpnp.is_supported_array_type(x) and dpnp.is_supported_array_type(
+    if dpnp.is_supported_array_type(a) and dpnp.is_supported_array_type(
         indices
     ):
         if indices.ndim != 1 or not dpnp.issubdtype(
@@ -468,12 +475,12 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
             pass
         elif axis is not None and not isinstance(axis, int):
             raise TypeError(f"`axis` must be of integer type, got {type(axis)}")
-        elif dpnp.is_supported_array_type(vals) and x.dtype is not vals.dtype:
+        elif dpnp.is_supported_array_type(vals) and a.dtype != vals.dtype:
             pass
         else:
-            if axis is None and x.ndim > 1:
-                x = dpnp.reshape(x, -1)
-            dpt_array = dpnp.get_usm_ndarray(x)
+            if axis is None and a.ndim > 1:
+                a = dpnp.reshape(a, -1)
+            dpt_array = dpnp.get_usm_ndarray(a)
             dpt_indices = dpnp.get_usm_ndarray(indices)
             dpt_vals = (
                 dpnp.get_usm_ndarray(vals)
@@ -484,7 +491,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
                 dpt_array, dpt_indices, dpt_vals, axis=axis, mode=mode
             )
 
-    return call_origin(numpy.put, x, indices, vals, mode, dpnp_inplace=True)
+    return call_origin(numpy.put, a, indices, vals, mode, dpnp_inplace=True)
 
 
 def put_along_axis(x1, indices, values, axis):

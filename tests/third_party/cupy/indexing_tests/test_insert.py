@@ -99,9 +99,9 @@ class TestPut(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestPutScalars(unittest.TestCase):
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_put_index_scalar(self, xp):
         dtype = cupy.float32
