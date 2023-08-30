@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.12.2dev1+22.gb44490264 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.12.2dev1+29.g086a8a942 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=bf2c0ff7"></script>
+        <script src="../../_static/documentation_options.js?v=371b8576"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+22.gb44490264
+                0.12.2dev1+29.g086a8a942
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -786,16 +786,22 @@
 
 <div class="viewcode-block" id="hypot">
 <a class="viewcode-back" href="../../reference/generated/dpnp.hypot.html#dpnp.hypot">[docs]</a>
-<span class="k">def</span> <span class="nf">hypot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">hypot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given the &quot;legs&quot; of a right triangle, return its hypotenuse.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.hypot`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The hypotenuse of the triangle(s).</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either :obj:`dpnp.ndarray` or scalar.</span>
-<span class="sd">    Parameters `dtype`, `out` and `where` are supported with their default values.</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
@@ -803,48 +809,72 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = 3 * np.ones(3)</span>
-<span class="sd">    &gt;&gt;&gt; x2 = 4 * np.ones(3)</span>
-<span class="sd">    &gt;&gt;&gt; out = np.hypot(x1, x2)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [5.0, 5.0, 5.0]</span>
+<span class="sd">    &gt;&gt;&gt; x1 = 3 * np.ones((3, 3))</span>
+<span class="sd">    &gt;&gt;&gt; x2 = 4 * np.ones((3, 3))</span>
+<span class="sd">    &gt;&gt;&gt; np.hypot(x1, x2)</span>
+<span class="sd">    array([[5., 5., 5.],</span>
+<span class="sd">           [5., 5., 5.],</span>
+<span class="sd">           [5., 5., 5.]])</span>
+
+<span class="sd">    Example showing broadcast of scalar argument:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.hypot(x1, 4)</span>
+<span class="sd">    array([[ 5.,  5.,  5.],</span>
+<span class="sd">           [ 5.,  5.,  5.],</span>
+<span class="sd">           [ 5.,  5.,  5.]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_is_scalar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
-    <span class="n">x2_is_scalar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x2</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">):</span>
+        <span class="c1"># at least either x1 or x2 has to be an array</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># get USM type and queue to copy scalar from the host memory into a USM allocation</span>
+        <span class="n">usm_type</span><span class="p">,</span> <span class="n">queue</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+            <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">x1_is_scalar</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">x2_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">x2_is_scalar</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x1_is_scalar</span> <span class="ow">and</span> <span class="n">x2_is_scalar</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x2_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">where</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">out_desc</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="k">else</span> <span class="kc">None</span>
-            <span class="p">)</span>
+        <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
+            <span class="n">x1</span><span class="p">,</span>
+            <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">alloc_usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">alloc_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
+            <span class="n">x2</span><span class="p">,</span>
+            <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">alloc_usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">alloc_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">out</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="s2">&quot;return array must be of supported array type&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">out_desc</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
+                        <span class="n">out</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
+                    <span class="ow">or</span> <span class="kc">None</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out_desc</span> <span class="o">=</span> <span class="kc">None</span>
+
             <span class="k">return</span> <span class="n">dpnp_hypot</span><span class="p">(</span>
-                <span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">out_desc</span><span class="p">,</span> <span class="n">where</span>
+                <span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out_desc</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
             <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>

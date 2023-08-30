@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.12.2dev1+22.gb44490264 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.12.2dev1+29.g086a8a942 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=bf2c0ff7"></script>
+        <script src="../../_static/documentation_options.js?v=371b8576"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+22.gb44490264
+                0.12.2dev1+29.g086a8a942
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -245,42 +245,94 @@
 
 <div class="viewcode-block" id="allclose">
 <a class="viewcode-back" href="../../reference/generated/dpnp.allclose.html#dpnp.allclose">[docs]</a>
-<span class="k">def</span> <span class="nf">allclose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-5</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-5</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns True if two arrays are element-wise equal within a tolerance.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.allclose`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        A boolean 0-dim array. If its value is ``True``,</span>
+<span class="sd">        two arrays are element-wise equal within a tolerance.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either :class:`dpnp.ndarray` or scalar.</span>
+<span class="sd">    Parameters `a` and `b` are supported either as :class:`dpnp.ndarray`,</span>
+<span class="sd">    :class:`dpctl.tensor.usm_ndarray` or scalars, but both `a` and `b`</span>
+<span class="sd">    can not be scalars at the same time.</span>
 <span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the functions will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Parameters `rtol` and `atol` are supported as scalars. Otherwise</span>
+<span class="sd">    ``TypeError`` exeption will be raised.</span>
+<span class="sd">    Input array data types are limited by supported integer and</span>
+<span class="sd">    floating DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.isclose` : Test whether two arrays are element-wise equal.</span>
+<span class="sd">    :obj:`dpnp.all` : Test whether all elements evaluate to True.</span>
+<span class="sd">    :obj:`dpnp.any` : Test whether any element evaluates to True.</span>
+<span class="sd">    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.allclose([1e10,1e-7], [1.00001e10,1e-8])</span>
-<span class="sd">    &gt;&gt;&gt; False</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1e10, 1e-7])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1.00001e10, 1e-8])</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
+<span class="sd">    array([False])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1.0, np.nan])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1.0, np.nan])</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
+<span class="sd">    array([False])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1.0, np.inf])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1.0, np.inf])</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
+<span class="sd">    array([ True])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">rtol_is_scalar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">rtol</span><span class="p">)</span>
-    <span class="n">atol_is_scalar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">atol</span><span class="p">)</span>
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="c1"># at least one of inputs has to be an array</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">rtol</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;An argument `rtol` must be a scalar, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="p">(</span><span class="n">rtol</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">atol</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;An argument `atol` must be a scalar, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="p">(</span><span class="n">atol</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">rtol_is_scalar</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">atol_is_scalar</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_allclose</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span> <span class="n">b</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
 
-            <span class="k">return</span> <span class="n">result</span>
+        <span class="n">a_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">b_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">a_desc</span> <span class="ow">and</span> <span class="n">b_desc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_allclose</span><span class="p">(</span><span class="n">a_desc</span><span class="p">,</span> <span class="n">b_desc</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">allclose</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">allclose</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 

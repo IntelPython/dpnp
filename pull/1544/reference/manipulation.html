@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Array Manipulation Routines &mdash; Data Parallel Extension for NumPy 0.12.2dev1+22.gb44490264 documentation</title>
+  <title>Array Manipulation Routines &mdash; Data Parallel Extension for NumPy 0.12.2dev1+29.g086a8a942 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=bf2c0ff7"></script>
+        <script src="../_static/documentation_options.js?v=371b8576"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+22.gb44490264
+                0.12.2dev1+29.g086a8a942
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -166,16 +166,19 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.moveaxis.html#dpnp.moveaxis" title="dpnp.moveaxis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.moveaxis</span></code></a></p></td>
 <td><p>Move axes of an array to new positions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.rollaxis.html#dpnp.rollaxis" title="dpnp.rollaxis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.rollaxis</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.roll.html#dpnp.roll" title="dpnp.roll"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.roll</span></code></a></p></td>
+<td><p>Roll the elements of an array by a number of positions along a given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.rollaxis.html#dpnp.rollaxis" title="dpnp.rollaxis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.rollaxis</span></code></a></p></td>
 <td><p>Roll the specified axis backwards, until it lies in a given position.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.swapaxes.html#dpnp.swapaxes" title="dpnp.swapaxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.swapaxes</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.swapaxes.html#dpnp.swapaxes" title="dpnp.swapaxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.swapaxes</span></code></a></p></td>
 <td><p>Interchange two axes of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.T.html#dpnp.ndarray.T" title="dpnp.ndarray.T"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.T</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.T.html#dpnp.ndarray.T" title="dpnp.ndarray.T"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.T</span></code></a></p></td>
 <td><p>View of the transposed array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.transpose.html#dpnp.transpose" title="dpnp.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.transpose</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.transpose.html#dpnp.transpose" title="dpnp.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.transpose</span></code></a></p></td>
 <td><p>Returns an array with axes transposed.</p></td>
 </tr>
 </tbody>
@@ -281,8 +284,20 @@
 <h2>Rearranging elements<a class="headerlink" href="#rearranging-elements" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.flip.html#dpnp.flip" title="dpnp.flip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.flip</span></code></a></p></td>
+<td><p>Reverse the order of elements in an array along the given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fliplr.html#dpnp.fliplr" title="dpnp.fliplr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fliplr</span></code></a></p></td>
+<td><p>Reverse the order of elements along axis 1 (left/right).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.flipud.html#dpnp.flipud" title="dpnp.flipud"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.flipud</span></code></a></p></td>
+<td><p>Reverse the order of elements along axis 0 (up/down).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a></p></td>
 <td><p>Gives a new shape to an array without changing its data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.roll.html#dpnp.roll" title="dpnp.roll"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.roll</span></code></a></p></td>
+<td><p>Roll the elements of an array by a number of positions along a given axis.</p></td>
 </tr>
 </tbody>
 </table>

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.atleast_1d &mdash; Data Parallel Extension for NumPy 0.12.2dev1+22.gb44490264 documentation</title>
+  <title>dpnp.atleast_1d &mdash; Data Parallel Extension for NumPy 0.12.2dev1+29.g086a8a942 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=bf2c0ff7"></script>
+        <script src="../../_static/documentation_options.js?v=371b8576"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+22.gb44490264
+                0.12.2dev1+29.g086a8a942
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -137,18 +137,14 @@ higher-dimensional inputs are preserved.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.atleast_1d.html#numpy.atleast_1d" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.atleast_1d</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>arys1</strong> (<em>array_like</em>) – One or more input arrays.</p></li>
-<li><p><strong>arys2</strong> (<em>array_like</em>) – One or more input arrays.</p></li>
-<li><p><strong>...</strong> (<em>array_like</em>) – One or more input arrays.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>arys</strong> (<em>{dpnp_array</em><em>, </em><em>usm_ndarray}</em>) – One or more input arrays.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>out</strong> – An array, or list of arrays, each with <code class="docutils literal notranslate"><span class="pre">a.ndim</span> <span class="pre">&gt;=</span> <span class="pre">1</span></code>.
 Copies are made only if necessary.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray</p>
+<dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -156,7 +152,8 @@ Copies are made only if necessary.</p>
 <p><a class="reference internal" href="dpnp.atleast_2d.html#dpnp.atleast_2d" title="dpnp.atleast_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atleast_2d</span></code></a>, <a class="reference internal" href="dpnp.atleast_3d.html#dpnp.atleast_3d" title="dpnp.atleast_3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atleast_3d</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
 <span class="go">array([1.])</span>
 </pre></div>
 </div>
