@@ -1106,3 +1106,25 @@ def test_asarray(device_x, device_y):
     x = dpnp.array([1, 2, 3], device=device_x)
     y = dpnp.asarray([x, x, x], device=device_y)
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_take(device):
+    numpy_data = numpy.arange(5)
+    dpnp_data = dpnp.array(numpy_data, device=device)
+
+    ind = [0, 2, 4]
+    dpnp_ind = dpnp.array(ind, device=device)
+
+    result = dpnp.take(dpnp_data, dpnp_ind)
+    expected = numpy.take(numpy_data, ind)
+    assert_allclose(expected, result)
+
+    expected_queue = dpnp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+
+    assert_sycl_queue_equal(result_queue, expected_queue)

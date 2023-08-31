@@ -326,3 +326,17 @@ def test_broadcast_to(usm_type):
     x = dp.ones(7, usm_type=usm_type)
     y = dp.broadcast_to(x, (2, 7))
     assert x.usm_type == y.usm_type
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "usm_type_ind", list_of_usm_types, ids=list_of_usm_types
+)
+def test_take(usm_type_x, usm_type_ind):
+    x = dp.arange(5, usm_type=usm_type_x)
+    ind = dp.array([0, 2, 4], usm_type=usm_type_ind)
+    z = dp.take(x, ind)
+
+    assert x.usm_type == usm_type_x
+    assert ind.usm_type == usm_type_ind
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])

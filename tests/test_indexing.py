@@ -356,16 +356,23 @@ def test_place3(arr, mask, vals):
 @pytest.mark.parametrize("mode", ["clip", "wrap"], ids=["clip", "wrap"])
 def test_put_1d(indices, vals, array_dtype, indices_dtype, mode):
     a = numpy.array([-2, -1, 0, 1, 2], dtype=array_dtype)
+    b = numpy.copy(a)
     ia = dpnp.array(a)
+    ib = dpnp.array(b)
     ind = numpy.array(indices, dtype=indices_dtype)
     iind = dpnp.array(ind)
 
+    # TODO: remove when #1382(dpctl) is solved
     if dpnp.is_supported_array_type(vals):
         vals = dpnp.astype(vals, ia.dtype)
 
     numpy.put(a, ind, vals, mode=mode)
     dpnp.put(ia, iind, vals, mode=mode)
     assert_array_equal(a, ia)
+
+    b.put(ind, vals, mode=mode)
+    ib.put(iind, vals, mode=mode)
+    assert_array_equal(b, ib)
 
 
 @pytest.mark.parametrize("array_dtype", get_all_dtypes())
@@ -394,6 +401,17 @@ def test_put_2d(array_dtype, indices_dtype, indices, vals, mode):
     iind = dpnp.array(ind)
     numpy.put(a, ind, vals, mode=mode)
     dpnp.put(ia, iind, vals, mode=mode)
+    assert_array_equal(a, ia)
+
+
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+def test_put_2d_ind():
+    a = numpy.arange(5)
+    ia = dpnp.array(a)
+    ind = numpy.array([[3, 0, 2, 1]])
+    iind = dpnp.array(ind)
+    numpy.put(a, ind, 10)
+    dpnp.put(ia, iind, 10)
     assert_array_equal(a, ia)
 
 
