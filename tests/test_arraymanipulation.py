@@ -330,6 +330,23 @@ class TestConcatenate:
         assert_array_equal(dp_out.asnumpy(), np_out)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    @pytest.mark.parametrize(
+        "casting", ["no", "equiv", "safe", "same_kind", "unsafe"]
+    )
+    def test_concatenate_casting(self, dtype, casting):
+        np_a = numpy.arange(2 * 3 * 7, dtype=dtype).reshape((2, 3, 7))
+
+        dp_a = dpnp.arange(2 * 3 * 7, dtype=dtype).reshape((2, 3, 7))
+
+        np_res = numpy.concatenate((np_a, np_a), axis=2, casting=casting)
+        dp_res = dpnp.concatenate((dp_a, dp_a), axis=2, casting=casting)
+
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
 
 class TestHstack:
     def test_non_iterable(self):
@@ -364,6 +381,11 @@ class TestHstack:
             dpnp.hstack((dpnp.arange(3) for _ in range(2)))
         with pytest.raises(TypeError):
             dpnp.hstack(map(lambda x: x, dpnp.ones((3, 2))))
+
+    def test_one_element(self):
+        a = dpnp.array([1])
+        res = dpnp.hstack(a)
+        assert_array_equal(res, a)
 
 
 class TestStack:

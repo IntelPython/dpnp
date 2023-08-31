@@ -282,7 +282,7 @@ def broadcast_to(array, /, shape, subok=False):
 
 
 def concatenate(
-    arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind", **kwargs
+    arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"
 ):
     """
     Join a sequence of arrays along an existing axis.
@@ -334,9 +334,7 @@ def concatenate(
 
     """
 
-    if kwargs:
-        pass
-    elif out is not None:
+    if out is not None:
         pass
     elif dtype is not None:
         pass
@@ -354,7 +352,6 @@ def concatenate(
         out=out,
         dtype=dtype,
         casting=casting,
-        **kwargs,
     )
 
 
