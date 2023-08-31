@@ -42,6 +42,7 @@ Math operations
    dpnp.log10
    dpnp.expm1
    dpnp.log1p
+   dpnp.proj
    dpnp.sqrt
    dpnp.square
    dpnp.reciprocal

@@ -12,18 +12,18 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.12.2dev0+59.g36e93f0aa documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.12.2dev1+30.g60ceeade1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=ea9c2145"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev0+59.g36e93f0aa
+                0.12.2dev1+30.g60ceeade1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -148,7 +148,9 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="dot"><a class="viewcode-back" href="../../reference/generated/dpnp.dot.html#dpnp.dot">[docs]</a><span class="k">def</span> <span class="nf">dot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="dot">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dot.html#dpnp.dot">[docs]</a>
+<span class="k">def</span> <span class="nf">dot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dot product of `x1` and `x2`.</span>
 
@@ -231,7 +233,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="einsum"><a class="viewcode-back" href="../../reference/generated/dpnp.einsum.html#dpnp.einsum">[docs]</a><span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="einsum">
+<a class="viewcode-back" href="../../reference/generated/dpnp.einsum.html#dpnp.einsum">[docs]</a>
+<span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluates the Einstein summation convention on the operands.</span>
 
@@ -253,7 +258,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="einsum_path"><a class="viewcode-back" href="../../reference/generated/dpnp.einsum_path.html#dpnp.einsum_path">[docs]</a><span class="k">def</span> <span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="einsum_path">
+<a class="viewcode-back" href="../../reference/generated/dpnp.einsum_path.html#dpnp.einsum_path">[docs]</a>
+<span class="k">def</span> <span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    einsum_path(subscripts, *operands, optimize=&#39;greedy&#39;)</span>
 
@@ -278,7 +286,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">einsum_path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="inner"><a class="viewcode-back" href="../../reference/generated/dpnp.inner.html#dpnp.inner">[docs]</a><span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="inner">
+<a class="viewcode-back" href="../../reference/generated/dpnp.inner.html#dpnp.inner">[docs]</a>
+<span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the inner product of two arrays.</span>
 
@@ -316,7 +327,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">inner</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="kron"><a class="viewcode-back" href="../../reference/generated/dpnp.kron.html#dpnp.kron">[docs]</a><span class="k">def</span> <span class="nf">kron</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+
+<div class="viewcode-block" id="kron">
+<a class="viewcode-back" href="../../reference/generated/dpnp.kron.html#dpnp.kron">[docs]</a>
+<span class="k">def</span> <span class="nf">kron</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the kronecker product of two arrays.</span>
 
@@ -334,7 +348,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">kron</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="matmul"><a class="viewcode-back" href="../../reference/generated/dpnp.matmul.html#dpnp.matmul">[docs]</a><span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="matmul">
+<a class="viewcode-back" href="../../reference/generated/dpnp.matmul.html#dpnp.matmul">[docs]</a>
+<span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matrix product of two arrays.</span>
 
@@ -416,7 +433,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">matmul</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="outer"><a class="viewcode-back" href="../../reference/generated/dpnp.outer.html#dpnp.outer">[docs]</a><span class="k">def</span> <span class="nf">outer</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="outer">
+<a class="viewcode-back" href="../../reference/generated/dpnp.outer.html#dpnp.outer">[docs]</a>
+<span class="k">def</span> <span class="nf">outer</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the outer product of two arrays.</span>
 
@@ -446,14 +466,15 @@
 <span class="sd">           [1, 2, 3]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">x1_is_scalar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
     <span class="n">x2_is_scalar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">x1_is_scalar</span> <span class="ow">and</span> <span class="n">x2_is_scalar</span><span class="p">:</span>
         <span class="k">pass</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x1_is_scalar</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
         <span class="k">pass</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x2_is_scalar</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x2</span><span class="p">)):</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">x2</span><span class="p">):</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">x1_in</span> <span class="o">=</span> <span class="p">(</span>
@@ -471,7 +492,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">outer</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="tensordot"><a class="viewcode-back" href="../../reference/generated/dpnp.tensordot.html#dpnp.tensordot">[docs]</a><span class="k">def</span> <span class="nf">tensordot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+
+<div class="viewcode-block" id="tensordot">
+<a class="viewcode-back" href="../../reference/generated/dpnp.tensordot.html#dpnp.tensordot">[docs]</a>
+<span class="k">def</span> <span class="nf">tensordot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute tensor dot product along specified axes.</span>
 
@@ -509,7 +533,10 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">tensordot</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="vdot"><a class="viewcode-back" href="../../reference/generated/dpnp.vdot.html#dpnp.vdot">[docs]</a><span class="k">def</span> <span class="nf">vdot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="vdot">
+<a class="viewcode-back" href="../../reference/generated/dpnp.vdot.html#dpnp.vdot">[docs]</a>
+<span class="k">def</span> <span class="nf">vdot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the dot product of two vectors.</span>
 
@@ -525,6 +552,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>
