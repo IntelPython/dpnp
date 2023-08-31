@@ -13,6 +13,7 @@ env:
   # TODO: to add test_arraymanipulation.py back to the scope once crash on Windows is gone
   TEST_SCOPE: >-
       test_arraycreation.py
+      test_arraymanipulation.py
       test_dot.py
       test_dparray.py
       test_copy.py
