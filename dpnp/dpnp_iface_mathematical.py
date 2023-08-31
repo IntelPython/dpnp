@@ -58,6 +58,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_floor_divide,
     dpnp_multiply,
     dpnp_negative,
+    dpnp_power,
     dpnp_proj,
     dpnp_remainder,
     dpnp_round,
@@ -1738,8 +1739,9 @@ def negative(
     )
 
 
-def proj(
-    x,
+def power(
+    x1,
+    x2,
     /,
     out=None,
     *,
@@ -1749,55 +1751,6 @@ def proj(
     subok=True,
     **kwargs,
 ):
-    """
-    Returns the projection of a number onto the Riemann sphere.
-
-    For all infinite complex numbers (including the cases where one component is infinite and the other is `NaN`),
-    the function returns `(inf, 0.0)` or `(inf, -0.0)`.
-    For finite complex numbers, the input is returned.
-    All real-valued numbers are treated as complex numbers with positive zero imaginary part.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The projection of each element of `x`.
-
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.abs` : Returns the magnitude of a complex number, element-wise.
-    :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.proj(np.array([1, -2.3, 2.1-1.7j]))
-    array([ 1. +0.j, -2.3+0.j,  2.1-1.7.j])
-
-    >>> np.proj(np.array([complex(1,np.inf), complex(1,-np.inf), complex(np.inf,-1),]))
-    array([inf+0.j, inf-0.j, inf-0.j])
-    """
-
-    return check_nd_call_func(
-        None,
-        dpnp_proj,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def power(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     """
     First array elements raised to powers from second array, element-wise.
 
@@ -1830,68 +1783,50 @@ def power(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     Example
     -------
     >>> import dpnp as dp
-    >>> a = dp.array([1, 2, 3, 4, 5])
-    >>> b = dp.array([2, 2, 2, 2, 2])
-    >>> result = dp.power(a, b)
-    >>> [x for x in result]
-    [1, 4, 9, 16, 25]
+    >>> a = dp.arange(6)
+    >>> dp.power(a, 3)
+    array([  0,   1,   8,  27,  64, 125])
+
+    Raise the bases to different exponents.
+
+    >>> b = dp.array([1.0, 2.0, 3.0, 3.0, 2.0, 1.0])
+    >>> dp.power(a, b)
+    array([ 0.,  1.,  8., 27., 16.,  5.])
+
+    The effect of broadcasting.
+
+    >>> c = dp.array([[1, 2, 3, 3, 2, 1], [1, 2, 3, 3, 2, 1]])
+    >>> dp.power(a, c)
+    array([[ 0,  1,  8, 27, 16,  5],
+           [ 0,  1,  8, 27, 16,  5]])
+
+    The ``**`` operator can be used as a shorthand for ``power`` on
+    :class:`dpnp.ndarray`.
+
+    >>> b = dp.array([1, 2, 3, 3, 2, 1])
+    >>> a = dp.arange(6)
+    >>> a ** b
+    array([ 0,  1,  8, 27, 16,  5])
+
+    Negative values raised to a non-integral value will result in ``nan``.
+
+    >>> d = dp.array([-1.0, -4.0])
+    >>> dp.power(d, 1.5)
+    array([nan, nan])
 
     """
 
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
-
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            if out is not None:
-                if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError(
-                        "return array must be of supported array type"
-                    )
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
-                    )
-                    or None
-                )
-            else:
-                out_desc = None
-
-            return dpnp_power(
-                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.power, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    return check_nd_call_func(
+        numpy.power,
+        dpnp_power,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 
@@ -1952,6 +1887,65 @@ def prod(
         keepdims=keepdims,
         initial=initial,
         where=where,
+    )
+
+
+def proj(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Returns the projection of a number onto the Riemann sphere.
+
+    For all infinite complex numbers (including the cases where one component is infinite and the other is `NaN`),
+    the function returns `(inf, 0.0)` or `(inf, -0.0)`.
+    For finite complex numbers, the input is returned.
+    All real-valued numbers are treated as complex numbers with positive zero imaginary part.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The projection of each element of `x`.
+
+    Limitations
+    -----------
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.abs` : Returns the magnitude of a complex number, element-wise.
+    :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.proj(np.array([1, -2.3, 2.1-1.7j]))
+    array([ 1. +0.j, -2.3+0.j,  2.1-1.7.j])
+
+    >>> np.proj(np.array([complex(1,np.inf), complex(1,-np.inf), complex(np.inf,-1),]))
+    array([inf+0.j, inf-0.j, inf-0.j])
+    """
+
+    return check_nd_call_func(
+        None,
+        dpnp_proj,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 

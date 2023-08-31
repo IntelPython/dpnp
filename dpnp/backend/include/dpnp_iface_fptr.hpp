@@ -290,8 +290,6 @@ enum class DPNPFuncName : size_t
                               parameters */
     DPNP_FN_PLACE,         /**< Used in numpy.place() impl  */
     DPNP_FN_POWER,         /**< Used in numpy.power() impl  */
-    DPNP_FN_POWER_EXT,     /**< Used in numpy.power() impl, requires extra
-                              parameters */
     DPNP_FN_PROD,          /**< Used in numpy.prod() impl  */
     DPNP_FN_PROD_EXT, /**< Used in numpy.prod() impl, requires extra parameters
                        */
