@@ -361,7 +361,7 @@ class TestHstack:
 
     def test_generator(self):
         with pytest.raises(TypeError):
-            dpnp.hstack((numpy.arange(3) for _ in range(2)))
+            dpnp.hstack((dpnp.arange(3) for _ in range(2)))
         with pytest.raises(TypeError):
             dpnp.hstack(map(lambda x: x, numpy.ones((3, 2))))
 
