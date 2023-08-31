@@ -120,7 +120,7 @@ class TestMathematical:
 
         return xp.array(data, dtype=dtype)
 
-    def _test_mathematical(self, name, dtype, lhs, rhs):
+    def _test_mathematical(self, name, dtype, lhs, rhs, check_type=True):
         a_dpnp = self.array_or_scalar(dpnp, lhs, dtype=dtype)
         b_dpnp = self.array_or_scalar(dpnp, rhs, dtype=dtype)
 
@@ -138,7 +138,7 @@ class TestMathematical:
         else:
             result = getattr(dpnp, name)(a_dpnp, b_dpnp)
             expected = getattr(numpy, name)(a_np, b_np)
-            assert_dtype_allclose(result, expected, check_type=False)
+            assert_dtype_allclose(result, expected, check_type)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_add(self, dtype, lhs, rhs):
@@ -175,7 +175,7 @@ class TestMathematical:
             On a gpu without support for `float64`, dpnp produces results similar to the second one.
             """
             pytest.skip("Due to accuracy reason, the results are different.")
-        self._test_mathematical("fmod", dtype, lhs, rhs)
+        self._test_mathematical("fmod", dtype, lhs, rhs, check_type=False)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_floor_divide(self, dtype, lhs, rhs):
@@ -197,14 +197,14 @@ class TestMathematical:
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
     def test_maximum(self, dtype, lhs, rhs):
-        self._test_mathematical("maximum", dtype, lhs, rhs)
+        self._test_mathematical("maximum", dtype, lhs, rhs, check_type=False)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
     def test_minimum(self, dtype, lhs, rhs):
-        self._test_mathematical("minimum", dtype, lhs, rhs)
+        self._test_mathematical("minimum", dtype, lhs, rhs, check_type=False)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_multiply(self, dtype, lhs, rhs):

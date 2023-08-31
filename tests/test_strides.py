@@ -315,7 +315,6 @@ def test_strided_in_out_2args_diff_out_dtype(func_name, dtype):
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
 )
-@pytest.mark.skip("dpctl doesn't support overlap of arrays")
 def test_strided_in_2args_overlap(func_name, dtype):
     size = 5
 
@@ -337,7 +336,6 @@ def test_strided_in_2args_overlap(func_name, dtype):
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
 )
-@pytest.mark.skip("dpctl doesn't support overlap of arrays")
 def test_strided_in_out_2args_overlap(func_name, dtype):
     sh = (4, 3, 2)
     prod = numpy.prod(sh)
