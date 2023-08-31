@@ -99,9 +99,9 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
     >>> import dpnp as np
     >>> np.asfarray([2, 3])
     array([2.,  3.])
-    >>> np.asfarray([2, 3], dtype='float16')
-    array([2., 3.], dtype=float16)
-    >>> np.asfarray([2, 3], dtype='int32')
+    >>> np.asfarray([2, 3], dtype=dpnp.float32)
+    array([2., 3.], dtype=float32)
+    >>> np.asfarray([2, 3], dtype=dpnp.int32)
     array([2.,  3.])
 
     """
