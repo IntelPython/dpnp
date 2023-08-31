@@ -301,16 +301,7 @@ class TestJoin(unittest.TestCase):
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.24.0")
-    @pytest.mark.parametrize(
-        "casting",
-        [
-            "no",
-            "equiv",
-            "safe",
-            "same_kind",
-            "unsafe",
-        ],
-    )
+    @testing.for_castings()
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(
         accept_error=(TypeError, numpy.ComplexWarning)

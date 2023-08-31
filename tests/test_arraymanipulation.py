@@ -360,9 +360,9 @@ class TestHstack:
         assert_array_equal(res, desired)
 
     def test_generator(self):
-        with assert_warns(FutureWarning):
+        with pytest.raises(TypeError):
             dpnp.hstack((numpy.arange(3) for _ in range(2)))
-        with assert_warns(FutureWarning):
+        with pytest.raises(TypeError):
             dpnp.hstack(map(lambda x: x, numpy.ones((3, 2))))
 
 

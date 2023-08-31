@@ -353,6 +353,7 @@ def concatenate(
         axis=axis,
         out=out,
         dtype=dtype,
+        casting=casting,
         **kwargs,
     )
 
@@ -746,6 +747,10 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
 
     """
 
+    if not hasattr(tup, "__getitem__"):
+        raise TypeError(
+            "Arrays to stack must be passed as a sequence type such as list or tuple."
+        )
     arrs = dpnp.atleast_1d(*tup)
     if not isinstance(arrs, list):
         arrs = [arrs]
