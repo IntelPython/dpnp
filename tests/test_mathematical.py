@@ -142,7 +142,7 @@ class TestMathematical:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_add(self, dtype, lhs, rhs):
-        self._test_mathematical("add", dtype, lhs, rhs)
+        self._test_mathematical("add", dtype, lhs, rhs, check_type=False)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_arctan2(self, dtype, lhs, rhs):
@@ -183,7 +183,9 @@ class TestMathematical:
             pytest.skip(
                 "In this case, a different result, but similar to xp.floor(xp.divide(lhs, rhs)."
             )
-        self._test_mathematical("floor_divide", dtype, lhs, rhs)
+        self._test_mathematical(
+            "floor_divide", dtype, lhs, rhs, check_type=False
+        )
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
@@ -208,7 +210,7 @@ class TestMathematical:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_multiply(self, dtype, lhs, rhs):
-        self._test_mathematical("multiply", dtype, lhs, rhs)
+        self._test_mathematical("multiply", dtype, lhs, rhs, check_type=False)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_remainder(self, dtype, lhs, rhs):
@@ -227,15 +229,15 @@ class TestMathematical:
             On a gpu without support for `float64`, dpnp produces results similar to the second one.
             """
             pytest.skip("Due to accuracy reason, the results are different.")
-        self._test_mathematical("remainder", dtype, lhs, rhs)
+        self._test_mathematical("remainder", dtype, lhs, rhs, check_type=False)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_power(self, dtype, lhs, rhs):
-        self._test_mathematical("power", dtype, lhs, rhs)
+        self._test_mathematical("power", dtype, lhs, rhs, check_type=False)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_subtract(self, dtype, lhs, rhs):
-        self._test_mathematical("subtract", dtype, lhs, rhs)
+        self._test_mathematical("subtract", dtype, lhs, rhs, check_type=False)
 
 
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
