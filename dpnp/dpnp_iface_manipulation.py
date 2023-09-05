@@ -42,6 +42,7 @@ it contains:
 
 import dpctl.tensor as dpt
 import numpy
+from numpy.core.numeric import normalize_axis_index
 
 import dpnp
 from dpnp.dpnp_algo import *
@@ -67,6 +68,7 @@ __all__ = [
     "repeat",
     "reshape",
     "result_type",
+    "roll",
     "rollaxis",
     "shape",
     "squeeze",
@@ -692,7 +694,8 @@ def moveaxis(a, source, destination):
     Limitations
     -----------
     Parameters `a` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
+    will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
     Otherwise ``TypeError`` exception will be raised.
 
@@ -910,18 +913,81 @@ def result_type(*arrays_and_dtypes):
     return dpt.result_type(*usm_arrays_and_dtypes)
 
 
-def rollaxis(x1, axis, start=0):
+def roll(x, shift, axis=None):
+    """
+    Roll the elements of an array by a number of positions along a given axis.
+
+    Array elements that roll beyond the last position are re-introduced
+    at the first position. Array elements that roll beyond the first position
+    are re-introduced at the last position.
+
+    For full documentation refer to :obj:`numpy.roll`.
+
+    Returns
+    -------
+    dpnp.ndarray
+        An array with the same data type as `x`
+        and whose elements, relative to `x`, are shifted.
+
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
+    will be raised.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+
+    See Also
+    --------
+    :obj:`dpnp.moveaxis` : Move array axes to new positions.
+    :obj:`dpnp.rollaxis` : Roll the specified axis backwards
+                       until it lies in a given position.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.arange(10)
+    >>> np.roll(x1, 2)
+    array([8, 9, 0, 1, 2, 3, 4, 5, 6, 7])
+
+    >>> np.roll(x1, -2)
+    array([2, 3, 4, 5, 6, 7, 8, 9, 0, 1])
+
+    >>> x2 = np.reshape(x1, (2, 5))
+    >>> np.roll(x2, 1, axis=0)
+    array([[5, 6, 7, 8, 9],
+           [0, 1, 2, 3, 4]])
+
+    >>> np.roll(x2, (2, 1), axis=(1, 0))
+    array([[8, 9, 5, 6, 7],
+           [3, 4, 0, 1, 2]])
+
+    """
+    if axis is None:
+        return roll(x.reshape(-1), shift, 0).reshape(x.shape)
+    dpt_array = dpnp.get_usm_ndarray(x)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.roll(dpt_array, shift=shift, axis=axis)
+    )
+
+
+def rollaxis(x, axis, start=0):
     """
     Roll the specified axis backwards, until it lies in a given position.
 
     For full documentation refer to :obj:`numpy.rollaxis`.
 
+    Returns
+    -------
+    dpnp.ndarray
+        An array with the same data type as `x` where the specified axis
+        has been repositioned to the desired position.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter ``axis`` is supported as integer only.
-    Parameter ``start`` is limited by ``-a.ndim <= start <= a.ndim``.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameter `x` is supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
+    will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -943,19 +1009,19 @@ def rollaxis(x1, axis, start=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not isinstance(axis, int):
-            pass
-        elif start < -x1_desc.ndim or start > x1_desc.ndim:
-            pass
-        else:
-            start_norm = start + x1_desc.ndim if start < 0 else start
-            destination = start_norm - 1 if start_norm > axis else start_norm
-
-            return dpnp.moveaxis(x1_desc.get_pyobj(), axis, destination)
-
-    return call_origin(numpy.rollaxis, x1, axis, start)
+    n = x.ndim
+    axis = normalize_axis_index(axis, n)
+    if start < 0:
+        start += n
+    msg = "'%s' arg requires %d <= %s < %d, but %d was passed in"
+    if not (0 <= start < n + 1):
+        raise ValueError(msg % ("start", -n, "start", n + 1, start))
+    if axis < start:
+        start -= 1
+    if axis == start:
+        return x
+    dpt_array = dpnp.get_usm_ndarray(x)
+    return dpnp.moveaxis(dpt_array, source=axis, destination=start)
 
 
 def shape(a):
