@@ -94,13 +94,16 @@ def vvsort(val, vec, size, xp):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_array_creation(func, arg, kwargs, device):
-    numpy_array = getattr(numpy, func)(*arg, **kwargs)
+    dtype = dpnp.default_float_type(device)
+    numpy_array = getattr(numpy, func)(*arg, dtype=dtype, **kwargs)
 
     dpnp_kwargs = dict(kwargs)
     dpnp_kwargs["device"] = device
-    dpnp_array = getattr(dpnp, func)(*arg, **dpnp_kwargs)
+    dpnp_array = getattr(dpnp, func)(*arg, dtype=dtype, **dpnp_kwargs)
 
-    assert_allclose(numpy_array, dpnp_array)
+    rtol = 1e-03 if dtype == numpy.float32 else 1e-07
+
+    assert_allclose(numpy_array, dpnp_array, rtol=rtol)
     assert dpnp_array.sycl_device == device
 
 
@@ -766,11 +769,12 @@ def test_eig(device):
         )
 
     size = 4
-    a = numpy.arange(size * size, dtype="float64").reshape((size, size))
+    dtype = dpnp.default_float_type(device)
+    a = numpy.arange(size * size, dtype=dtype).reshape((size, size))
     symm_orig = (
         numpy.tril(a)
         + numpy.tril(a, -1).T
-        + numpy.diag(numpy.full((size,), size * size, dtype="float64"))
+        + numpy.diag(numpy.full((size,), size * size, dtype=dtype))
     )
     numpy_data = symm_orig
     dpnp_symm_orig = dpnp.array(numpy_data, device=device)
@@ -815,11 +819,12 @@ def test_eig(device):
 )
 def test_eigh(device):
     size = 4
-    a = numpy.arange(size * size, dtype=numpy.float64).reshape((size, size))
+    dtype = dpnp.default_float_type(device)
+    a = numpy.arange(size * size, dtype=dtype).reshape((size, size))
     symm_orig = (
         numpy.tril(a)
         + numpy.tril(a, -1).T
-        + numpy.diag(numpy.full((size,), size * size, dtype=numpy.float64))
+        + numpy.diag(numpy.full((size,), size * size, dtype=dtype))
     )
     numpy_data = symm_orig
     dpnp_symm_orig = dpnp.array(numpy_data, device=device)
@@ -911,9 +916,10 @@ def test_matrix_rank(device):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_qr(device):
-    tol = 1e-11
+    dtype = dpnp.default_float_type(device)
+    tol = 1e-06 if dtype == numpy.float32 else 1e-11
     data = [[1, 2, 3], [1, 2, 3]]
-    numpy_data = numpy.array(data)
+    numpy_data = numpy.array(data, dtype=dtype)
     dpnp_data = dpnp.array(data, device=device)
 
     np_q, np_r = numpy.linalg.qr(numpy_data, "reduced")
@@ -942,10 +948,13 @@ def test_qr(device):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_svd(device):
-    tol = 1e-12
+    dtype = dpnp.default_float_type(device)
+    tol = 1e-06 if dtype == numpy.float32 else 1e-12
     shape = (2, 2)
-    numpy_data = numpy.arange(shape[0] * shape[1]).reshape(shape)
-    dpnp_data = dpnp.arange(shape[0] * shape[1], device=device).reshape(shape)
+    numpy_data = numpy.arange(shape[0] * shape[1], dtype=dtype).reshape(shape)
+    dpnp_data = dpnp.arange(
+        shape[0] * shape[1], dtype=dtype, device=device
+    ).reshape(shape)
     np_u, np_s, np_vt = numpy.linalg.svd(numpy_data)
     dpnp_u, dpnp_s, dpnp_vt = dpnp.linalg.svd(dpnp_data)
 
@@ -1007,7 +1016,7 @@ def test_svd(device):
 def test_to_device(device_from, device_to):
     data = [1.0, 1.0, 1.0, 1.0, 1.0]
 
-    x = dpnp.array(data, device=device_from)
+    x = dpnp.array(data, dtype=dpnp.float32, device=device_from)
     y = x.to_device(device_to)
 
     assert y.get_array().sycl_device == device_to

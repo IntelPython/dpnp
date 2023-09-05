@@ -694,8 +694,8 @@ class TestSearchSortedWithSorter(unittest.TestCase):
 
     def test_nonint_sorter(self):
         for xp in (numpy, cupy):
-            x = testing.shaped_arange((12,), xp, xp.float64)
+            x = testing.shaped_arange((12,), xp, xp.float32)
             bins = xp.array([10, 4, 2, 1, 8])
-            sorter = xp.array([], dtype=xp.float64)
+            sorter = xp.array([], dtype=xp.float32)
             with pytest.raises(TypeError):
                 xp.searchsorted(bins, x, sorter=sorter)

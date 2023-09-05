@@ -85,6 +85,7 @@ class TestFft2(unittest.TestCase):
         atol=1e-7,
         accept_error=ValueError,
         type_check=has_support_aspect64(),
+        contiguous_check=False,
     )
     def test_fft2(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -98,6 +99,7 @@ class TestFft2(unittest.TestCase):
         atol=1e-7,
         accept_error=ValueError,
         type_check=has_support_aspect64(),
+        contiguous_check=False,
     )
     def test_ifft2(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -141,6 +143,7 @@ class TestFftn(unittest.TestCase):
         atol=1e-7,
         accept_error=ValueError,
         type_check=has_support_aspect64(),
+        contiguous_check=False,
     )
     def test_fftn(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -154,6 +157,7 @@ class TestFftn(unittest.TestCase):
         atol=1e-7,
         accept_error=ValueError,
         type_check=has_support_aspect64(),
+        contiguous_check=False,
     )
     def test_ifftn(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
