@@ -4,6 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -87,9 +88,8 @@ class TestJoin(unittest.TestCase):
         b = testing.shaped_reverse_arange((2, 3, 4), xp, dtype)
         return xp.concatenate((a, b) * 10, axis=-1)
 
-    @pytest.mark.skip("TODO: remove once dpctl #1325 is resolved")
     @testing.for_all_dtypes(name="dtype")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_concatenate_large_5(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3, 4), xp, "i")
@@ -113,8 +113,7 @@ class TestJoin(unittest.TestCase):
         e = testing.shaped_arange((2, 3, 2), xp, dtype)
         return xp.concatenate((a, b, c, d, e) * 2, axis=-1)
 
-    @pytest.mark.skip("TODO: remove once dpctl #1325 is resolved")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_concatenate_many_multi_dtype(self, xp):
         a = testing.shaped_arange((2, 1), xp, "i")
         b = testing.shaped_arange((2, 1), xp, "f")
@@ -196,9 +195,8 @@ class TestJoin(unittest.TestCase):
             with pytest.raises(TypeError):
                 xp.concatenate((a, b, c), axis=1, out=out)
 
-    @pytest.mark.skip("TODO: remove once dpctl #1325 is resolved")
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_concatenate_different_dtype(self, xp, dtype1, dtype2):
         a = testing.shaped_arange((3, 4), xp, dtype1)
         b = testing.shaped_arange((3, 4), xp, dtype2)
