@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.\_\_float\_\_
+==========================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.__float__
