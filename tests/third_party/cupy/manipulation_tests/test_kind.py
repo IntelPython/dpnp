@@ -34,7 +34,15 @@ class TestKind(unittest.TestCase):
         a = cupy.asarray([1, 2, 3])
         a_gpu = cupy.asfarray(a, dtype)
         a_cpu = numpy.asfarray(a, dtype)
-        assert a_cpu.dtype == a_gpu.dtype
+        if (
+            has_support_aspect64()
+            or cupy.issubdtype(dtype, cupy.complexfloating)
+            or cupy.issubdtype(dtype, cupy.floating)
+        ):
+            assert a_cpu.dtype == a_gpu.dtype
+        else:
+            assert a_cpu.dtype == cupy.float64
+            assert a_gpu.dtype == cupy.float32
 
     @testing.for_all_dtypes()
     def test_asfortranarray1(self, dtype):
