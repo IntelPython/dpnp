@@ -159,7 +159,14 @@ def test_array_creation(func, args, usm_type_x, usm_type_y):
 
 @pytest.mark.parametrize(
     "func",
-    ["array", "asarray", "asanyarray", "ascontiguousarray", "asfortranarray"],
+    [
+        "array",
+        "asarray",
+        "asanyarray",
+        "ascontiguousarray",
+        "asfarray",
+        "asfortranarray",
+    ],
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
