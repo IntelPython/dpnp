@@ -57,6 +57,8 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_floor,
     dpnp_floor_divide,
     dpnp_imag,
+    dpnp_maximum,
+    dpnp_minimum,
     dpnp_multiply,
     dpnp_negative,
     dpnp_positive,
@@ -975,46 +977,212 @@ def floor_divide(
     )
 
 
-def fmax(*args, **kwargs):
+def fmax(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     """
     Element-wise maximum of array elements.
 
     For full documentation refer to :obj:`numpy.fmax`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The maximum of `x1` and `x2`, element-wise, ignoring NaNs.
+
+    Limitations
+    -----------
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
     See Also
     --------
-    :obj:`dpnp.maximum` : Element-wise maximum of array elements.
-    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
+    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs..
+    :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignore NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
-    Notes
-    -----
-    This function works the same as :obj:`dpnp.maximum`
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([2, 3, 4])
+    >>> x2 = np.array([1, 5, 2])
+    >>> np.fmax(x1, x2)
+    array([2, 5, 4])
+
+    >>> x1 = np.eye(2)
+    >>> x2 = np.array([0.5, 2])
+    >>> np.fmax(x1, x2) # broadcasting
+    array([[1. , 2. ],
+           [0.5, 2. ]])
+
+    >>> x1 = np.array([np.nan, 0, np.nan])
+    >>> x2 = np.array([0, np.nan, np.nan])
+    >>> np.fmax(x1, x2)
+    array([ 0.,  0., nan])
 
     """
 
-    return dpnp.maximum(*args, **kwargs)
+    if kwargs:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
+
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        if x1_desc and x2_desc:
+            if out is not None:
+                if not dpnp.is_supported_array_type(out):
+                    raise TypeError(
+                        "return array must be of supported array type"
+                    )
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    or None
+                )
+            else:
+                out_desc = None
+
+            return dpnp_fmax(
+                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
+            ).get_pyobj()
+
+    return call_origin(
+        numpy.fmax, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    )
 
 
-def fmin(*args, **kwargs):
+def fmin(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     """
     Element-wise minimum of array elements.
 
     For full documentation refer to :obj:`numpy.fmin`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The minimum of `x1` and `x2`, element-wise, ignoring NaNs.
+
+    Limitations
+    -----------
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
     See Also
     --------
-    :obj:`dpnp.maximum` : Element-wise maximum of array elements.
-    :obj:`dpnp.fmax` : Element-wise maximum of array elements.
+    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
+    :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignore NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
-    Notes
-    -----
-    This function works the same as :obj:`dpnp.minimum`
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([2, 3, 4])
+    >>> x2 = np.array([1, 5, 2])
+    >>> np.fmin(x1, x2)
+    array([1, 3, 2])
+
+    >>> x1 = np.eye(2)
+    >>> x2 = np.array([0.5, 2])
+    >>> np.fmin(x1, x2) # broadcasting
+    array([[0.5, 0. ],
+           [0. , 1. ]]
+
+    >>> x1 = np.array([np.nan, 0, np.nan])
+    >>> x2 = np.array([0, np.nan, np.nan])
+    >>> np.fmin(x1, x2)
+    array([ 0.,  0., nan])
 
     """
 
-    return dpnp.minimum(*args, **kwargs)
+    if kwargs:
+        pass
+    elif where is not True:
+        pass
+    elif dtype is not None:
+        pass
+    elif subok is not True:
+        pass
+    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+        # at least either x1 or x2 has to be an array
+        pass
+    else:
+        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        usm_type, queue = (
+            get_usm_allocations([x1, x2])
+            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+            else (None, None)
+        )
+
+        x1_desc = dpnp.get_dpnp_descriptor(
+            x1,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        x2_desc = dpnp.get_dpnp_descriptor(
+            x2,
+            copy_when_strides=False,
+            copy_when_nondefault_queue=False,
+            alloc_usm_type=usm_type,
+            alloc_queue=queue,
+        )
+        if x1_desc and x2_desc:
+            if out is not None:
+                if not dpnp.is_supported_array_type(out):
+                    raise TypeError(
+                        "return array must be of supported array type"
+                    )
+                out_desc = (
+                    dpnp.get_dpnp_descriptor(
+                        out, copy_when_nondefault_queue=False
+                    )
+                    or None
+                )
+            else:
+                out_desc = None
+
+            return dpnp_fmin(
+                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
+            ).get_pyobj()
+
+    return call_origin(
+        numpy.fmin, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    )
 
 
 def fmod(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
@@ -1140,8 +1308,8 @@ def gradient(x1, *varargs, **kwargs):
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import dpnp as np
     >>> y = np.array([1, 2, 4, 7, 11, 16], dtype=float)
     >>> result = np.gradient(y)
@@ -1215,7 +1383,16 @@ def imag(x):
 
 
 def maximum(
-    x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
 ):
     """
     Element-wise maximum of array elements.
@@ -1225,7 +1402,7 @@ def maximum(
     Returns
     -------
     out : dpnp.ndarray
-        The maximum of `x1` and `x2`, element-wise.
+        The maximum of `x1` and `x2`, element-wise, propagating NaNs.
 
     Limitations
     -----------
@@ -1246,8 +1423,8 @@ def maximum(
     :obj:`dpnp.amix` : The minimum value of an array along a given axis, propagates NaNs.
     :obj:`dpnp.nanmix` : The minimum value of an array along a given axis, ignores NaNs.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import dpnp as np
     >>> x1 = np.array([2, 3, 4])
     >>> x2 = np.array([1, 5, 2])
@@ -1263,72 +1440,38 @@ def maximum(
     >>> x1 = np.array([np.nan, 0, np.nan])
     >>> x2 = np.array([0, np.nan, np.nan])
     >>> np.maximum(x1, x2)
-    array([ 0.,  0., nan])
+    array([ nan,  nan, nan])
 
     >>> np.maximum(np.array(np.Inf), 1)
     array(inf)
 
     """
 
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
-
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            if out is not None:
-                if not dpnp.is_supported_array_type(out):
-                    raise TypeError(
-                        "return array must be of supported array type"
-                    )
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
-                    )
-                    or None
-                )
-            else:
-                out_desc = None
-
-            return dpnp_maximum(
-                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.maximum, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    return check_nd_call_func(
+        numpy.maximum,
+        dpnp_maximum,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 
 def minimum(
-    x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
 ):
     """
     Element-wise minimum of array elements.
@@ -1338,7 +1481,7 @@ def minimum(
     Returns
     -------
     out : dpnp.ndarray
-        The minimum of `x1` and `x2`, element-wise.
+        The minimum of `x1` and `x2`, element-wise, propagating NaNs.
 
     Limitations
     -----------
@@ -1359,8 +1502,8 @@ def minimum(
     :obj:`dpnp.amax` : The maximum value of an array along a given axis, propagates NaNs.
     :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import dpnp as np
     >>> x1 = np.array([2, 3, 4])
     >>> x2 = np.array([1, 5, 2])
@@ -1376,67 +1519,24 @@ def minimum(
     >>> x1 = np.array([np.nan, 0, np.nan])
     >>> x2 = np.array([0, np.nan, np.nan])
     >>> np.minimum(x1, x2)
-    array([ 0.,  0., nan])
+    array([ nan,  nan, nan])
 
     >>> np.minimum(np.array(-np.Inf), 1)
     array(-inf)
 
     """
 
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
-
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            if out is not None:
-                if not dpnp.is_supported_array_type(out):
-                    raise TypeError(
-                        "return array must be of supported array type"
-                    )
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
-                    )
-                    or None
-                )
-            else:
-                out_desc = None
-
-            return dpnp_minimum(
-                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.minimum, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    return check_nd_call_func(
+        numpy.minimum,
+        dpnp_minimum,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 
@@ -1898,8 +1998,8 @@ def power(
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
 
-    Example
-    -------
+    Examples
+    --------
     >>> import dpnp as dp
     >>> a = dp.arange(6)
     >>> dp.power(a, 3)
@@ -2159,8 +2259,8 @@ def remainder(
     :obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the division of the inputs.
     :obj:`dpnp.mod` : Calculate the element-wise remainder of division.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import dpnp as np
     >>> np.remainder(np.array([4, 7]), np.array([2, 3]))
     array([0, 1])
@@ -2460,8 +2560,8 @@ def subtract(
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import dpnp as np
     >>> np.subtract(dp.array([4, 3]), np.array([2, 7]))
     array([ 2, -4])

@@ -194,17 +194,11 @@ class TestMathematical:
     def test_hypot(self, dtype, lhs, rhs):
         self._test_mathematical("hypot", dtype, lhs, rhs)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_maximum(self, dtype, lhs, rhs):
         self._test_mathematical("maximum", dtype, lhs, rhs, check_type=False)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_minimum(self, dtype, lhs, rhs):
         self._test_mathematical("minimum", dtype, lhs, rhs, check_type=False)
 
