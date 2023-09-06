@@ -475,6 +475,7 @@ def put(a, indices, vals, /, *, axis=None, mode="wrap"):
             pass
         elif axis is not None and not isinstance(axis, int):
             raise TypeError(f"`axis` must be of integer type, got {type(axis)}")
+        # TODO: remove when #1382(dpctl) is solved
         elif dpnp.is_supported_array_type(vals) and a.dtype != vals.dtype:
             pass
         else:
