@@ -47,8 +47,8 @@ __all__ += [
     "dpnp_fmod",
     "dpnp_gradient",
     'dpnp_hypot',
-    "dpnp_maximum",
-    "dpnp_minimum",
+    "dpnp_fmax",
+    "dpnp_fmin",
     "dpnp_modf",
     "dpnp_nancumprod",
     "dpnp_nancumsum",
@@ -281,7 +281,7 @@ cpdef utils.dpnp_descriptor dpnp_hypot(utils.dpnp_descriptor x1_obj,
     return call_fptr_2in_1out_strides(DPNP_FN_HYPOT_EXT, x1_obj, x2_obj, dtype, out, where)
 
 
-cpdef utils.dpnp_descriptor dpnp_maximum(utils.dpnp_descriptor x1_obj,
+cpdef utils.dpnp_descriptor dpnp_fmax(utils.dpnp_descriptor x1_obj,
                                          utils.dpnp_descriptor x2_obj,
                                          object dtype=None,
                                          utils.dpnp_descriptor out=None,
@@ -289,7 +289,7 @@ cpdef utils.dpnp_descriptor dpnp_maximum(utils.dpnp_descriptor x1_obj,
     return call_fptr_2in_1out_strides(DPNP_FN_MAXIMUM_EXT, x1_obj, x2_obj, dtype, out, where)
 
 
-cpdef utils.dpnp_descriptor dpnp_minimum(utils.dpnp_descriptor x1_obj,
+cpdef utils.dpnp_descriptor dpnp_fmin(utils.dpnp_descriptor x1_obj,
                                          utils.dpnp_descriptor x2_obj,
                                          object dtype=None,
                                          utils.dpnp_descriptor out=None,
