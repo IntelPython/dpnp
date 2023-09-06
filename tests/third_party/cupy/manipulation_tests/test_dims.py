@@ -18,12 +18,10 @@ class TestDims(unittest.TestCase):
         f = numpy.float32(1)
         return func(a, b, c, d, e, f)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_atleast_1d1(self, xp):
         return self.check_atleast(xp.atleast_1d, xp)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_atleast_1d2(self, xp):
         a = testing.shaped_arange((1, 3, 2), xp)

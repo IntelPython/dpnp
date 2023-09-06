@@ -1038,7 +1038,14 @@ def test_to_device(device_from, device_to):
 )
 @pytest.mark.parametrize(
     "func",
-    ["array", "asarray", "asanyarray", "ascontiguousarray", "asfortranarray"],
+    [
+        "array",
+        "asarray",
+        "asanyarray",
+        "ascontiguousarray",
+        "asfarray",
+        "asfortranarray",
+    ],
 )
 @pytest.mark.parametrize(
     "device_param", ["", "None", "sycl_device"], ids=["Empty", "None", "device"]
