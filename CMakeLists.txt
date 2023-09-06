@@ -32,9 +32,12 @@ find_package(TBB REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules N
 
 set(MKL_ARCH "intel64")
 set(MKL_LINK "dynamic")
-set(MKL_INTERFACE_FULL "intel_ilp64")
 set(MKL_THREADING "tbb_thread")
-find_package(MKL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
+set(MKL_INTERFACE "ilp64")
+set(ENABLE_BLACS "ON")
+set(ENABLE_CDFT "ON")
+set(ENABLE_SCALAPACK "ON")
+find_package(MKL REQUIRED)
 
 set(ONEDPL_PAR_BACKEND tbb)
 find_package(oneDPL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)

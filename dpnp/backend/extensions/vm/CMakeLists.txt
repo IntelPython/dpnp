@@ -67,7 +67,7 @@ if (DPNP_GENERATE_COVERAGE)
     target_link_options(${python_module_name} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endif()
 
-target_link_libraries(${python_module_name} PUBLIC MKL::MKL_DPCPP)
+target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::VM)
 
 install(TARGETS ${python_module_name}
   DESTINATION "dpnp/backend/extensions/vm"
