@@ -819,7 +819,29 @@ class dpnp_array:
         return new_arr
 
     # 'getfield',
-    # 'imag',
+
+    @property
+    def imag(self):
+        """
+        The imaginary part of the array.
+
+        For full documentation refer to :obj:`numpy.ndarray.imag`.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.sqrt(np.array([1+0j, 0+1j]))
+        >>> x.imag
+        array([ 0. ,  0.70710678])
+        """
+        return dpnp.imag(self)
+
+    @imag.setter
+    def imag(self, value):
+        if dpnp.issubsctype(self.dtype, dpnp.complexfloating):
+            dpnp.copyto(self._array_obj.imag, value)
+        else:
+            raise TypeError("dpnp.ndarray does not have imaginary part to set")
 
     def item(self, id=None):
         """
@@ -975,7 +997,30 @@ class dpnp_array:
         return dpnp.put(self, indices, vals, axis=axis, mode=mode)
 
     # 'ravel',
-    # 'real',
+
+    @property
+    def real(self):
+        """
+        The real part of the array.
+
+        For full documentation refer to :obj:`numpy.ndarray.real`.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.sqrt(np.array([1+0j, 0+1j]))
+        >>> x.real
+        array([ 1. ,  0.70710678])
+        """
+        if dpnp.issubsctype(self.dtype, dpnp.complexfloating):
+            return dpnp.real(self)
+        else:
+            return self
+
+    @real.setter
+    def real(self, value):
+        dpnp.copyto(self._array_obj.real, value)
+
     # 'repeat',
 
     def reshape(self, *sh, **kwargs):
@@ -1050,7 +1095,7 @@ class dpnp_array:
 
         """
 
-        dpnp.reshape(self, newshape=newshape)
+        self._array_obj.shape = newshape
 
     @property
     def size(self):

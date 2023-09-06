@@ -30,7 +30,7 @@
 """Module DPArray
 
 This module contains Array class represents multi-dimensional array
-using USB interface for an Intel GPU device.
+using USM interface for an Intel GPU device.
 
 """
 
@@ -51,7 +51,7 @@ from dpnp.dpnp_iface import get_dpnp_descriptor as iface_get_dpnp_descriptor
 from dpnp.dpnp_iface import prod as iface_prod
 from dpnp.dpnp_iface import sum as iface_sum
 
-# It's prohibeted to use 'import *' from 'dpnp.dpnp_iface_arraycreation' module here,
+# It's prohibited to use 'import *' from 'dpnp.dpnp_iface_arraycreation' module here,
 # because module has 'array' function, but cython has already imported 'array' by default.
 # It would cause import collision. Thus instead import each function explicitly.
 from dpnp.dpnp_iface_arraycreation import (
@@ -196,7 +196,7 @@ cdef class dparray:
     """Multi-dimensional array using USM interface for an Intel GPU device.
 
     This class implements a subset of methods of :class:`numpy.ndarray`.
-    The difference is that this class allocates the array content useing
+    The difference is that this class allocates the array content using
     USM interface on the current GPU device.
 
     Args:

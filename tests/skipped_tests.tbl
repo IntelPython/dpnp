@@ -127,21 +127,8 @@ tests/test_umath.py::test_umaths[('spacing', 'f')]
 tests/test_umath.py::test_umaths[('spacing', 'd')]
 
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestAngle::test_angle
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_inplace
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_non_contiguous
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_setter
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_setter_non_contiguous
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_setter_raise
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_setter_zero_dim
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_zero_dim
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_inplace
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_non_contiguous
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_setter
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_setter_non_contiguous
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_setter_zero_dim
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_zero_dim
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestScalarConversion::test_scalar_conversion
 tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_0_{shape=()}::test_item
 tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_1_{shape=(1,)}::test_item
