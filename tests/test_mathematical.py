@@ -1203,6 +1203,9 @@ def test_sum_empty_out(dtype):
 @pytest.mark.parametrize("transpose", [True, False])
 @pytest.mark.parametrize("keepdims", [True, False])
 def test_sum(shape, dtype_in, dtype_out, transpose, keepdims):
+    if transpose and shape in [(1, 2, 3), (3, 3, 3)]:
+        pytest.skip("muted due to issue dpctl-1391")
+
     size = numpy.prod(shape)
     a_np = numpy.arange(size).astype(dtype_in).reshape(shape)
     a = dpnp.asarray(a_np)
