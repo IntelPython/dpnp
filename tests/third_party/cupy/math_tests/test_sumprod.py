@@ -117,7 +117,6 @@ class TestSumprod(unittest.TestCase):
         else:
             return a.sum(axis=1)
 
-    @pytest.mark.skip("muted due to issue dpctl-1391")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_sum_axis_transposed(self, xp, dtype):
@@ -128,7 +127,6 @@ class TestSumprod(unittest.TestCase):
         else:
             return a.sum(axis=1)
 
-    @pytest.mark.skip("muted due to issue dpctl-1391")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_sum_axis_transposed2(self, xp, dtype):
