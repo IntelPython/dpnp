@@ -4,7 +4,6 @@ from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
-@testing.gpu
 class TestHyperbolic(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
