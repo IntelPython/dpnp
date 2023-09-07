@@ -428,10 +428,10 @@ def put(a, indices, vals, /, *, axis=None, mode="wrap"):
     Parameters `a` and `indices` are supported either as :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `indices` is supported as 1-D array of integer data type.
-    Paramenet `vals` must be broadcastable to the shape of `indices`
+    Parameter `vals` must be broadcastable to the shape of `indices`
     and has the same data type as `a` if it is as :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `mode` is supported with ``wrap``(default) and ``clip`` mode.
+    Parameter `mode` is supported with ``wrap``, the default, and ``clip`` values.
     Parameter `axis` is supported as integer only.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -443,9 +443,8 @@ def put(a, indices, vals, /, *, axis=None, mode="wrap"):
 
     Notes
     -----
-    How out-of-bounds indices will be handled.
-    "wrap" - clamps indices to (-n <= i < n), then wraps negative indices.
-    "clip" - clips indices to (0 <= i < n).
+    In contrast to :obj:`numpy.put` `wrap` mode which wraps indices around the array for cyclic operations,
+    :obj:`dpnp.put` `wrap` mode clamps indices to a fixed range within the array boundaries (-n <= i < n).
 
     Examples
     --------
@@ -460,7 +459,7 @@ def put(a, indices, vals, /, *, axis=None, mode="wrap"):
     >>> indices = np.array([22])
     >>> np.put(x, indices, -5, mode='clip')
     >>> x
-    array([0, 1, 2, 3,-5])
+    array([ 0,  1,  2,  3, -5])
 
     """
 
@@ -605,7 +604,7 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `indices` is supported as 1-D array of integer data type.
     Parameter `out` is supported only with default value.
-    Parameter `mode` is supported with ``wrap``(default) and ``clip`` mode.
+    Parameter `mode` is supported with ``wrap``, the default, and ``clip`` values.
     Providing parameter `axis` is optional when `x` is a 1-D array.
     Otherwise the function will be executed sequentially on CPU.
 

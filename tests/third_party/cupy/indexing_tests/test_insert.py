@@ -71,6 +71,7 @@ class TestPlaceRaises(unittest.TestCase):
         {
             "shape": [(7,), (2, 3), (4, 3, 2)],
             "mode": ["raise", "wrap", "clip"],
+            # The vals shape of array must be broadcastable to the shape of indices
             "n_vals": [1, 4],
         }
     )
@@ -83,10 +84,15 @@ class TestPut(unittest.TestCase):
     def test_put(self, xp, dtype):
         a = testing.shaped_arange(self.shape, xp, dtype)
         # Take care so that actual indices don't overlap.
-        if self.mode in ("raise", "wrap"):
+        if self.mode in ("raise"):
+            inds = xp.array([2, -1, 3, 0])
+        # `wrap` mode in dpctl.tensor.put is different from numpy.put (#1365):
+        # numpy`s `wrap` mode wraps indices around for cyclic operations
+        # while dpctl`s `wrap` mode restricts indices to stay within the array bounds (-n <= i < n).
+        elif self.mode in ("wrap"):
             inds = xp.array([2, -1, 3, -6])
         else:
-            inds = xp.array([2, -8, 3, 6])
+            inds = xp.array([2, -8, 3, 7])
         vals = testing.shaped_random((self.n_vals,), xp, dtype)
         xp.put(a, inds, vals, mode=self.mode)
         return a
