@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.put &mdash; Data Parallel Extension for NumPy 0.12.2dev1+36.g8242b7616 documentation</title>
+  <title>dpnp.put &mdash; Data Parallel Extension for NumPy 0.12.2dev1+40.gc43ec55e3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=dd454c39"></script>
+        <script src="../../_static/documentation_options.js?v=b22cdb8d"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+36.g8242b7616
+                0.12.2dev1+40.gc43ec55e3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -131,10 +131,10 @@
 <p>Parameters <cite>a</cite> and <cite>indices</cite> are supported either as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
 or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
 Parameter <cite>indices</cite> is supported as 1-D array of integer data type.
-Paramenet <cite>vals</cite> must be broadcastable to the shape of <cite>indices</cite>
+Parameter <cite>vals</cite> must be broadcastable to the shape of <cite>indices</cite>
 and has the same data type as <cite>a</cite> if it is as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
 or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
-Parameter <cite>mode</cite> is supported with <code class="docutils literal notranslate"><span class="pre">wrap``(default)</span> <span class="pre">and</span> <span class="pre">``clip</span></code> mode.
+Parameter <cite>mode</cite> is supported with <code class="docutils literal notranslate"><span class="pre">wrap</span></code>, the default, and <code class="docutils literal notranslate"><span class="pre">clip</span></code> values.
 Parameter <cite>axis</cite> is supported as integer only.
 Otherwise the function will be executed sequentially on CPU.</p>
 <div class="admonition seealso">
@@ -149,23 +149,22 @@ Otherwise the function will be executed sequentially on CPU.</p>
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>How out-of-bounds indices will be handled.
-“wrap” - clamps indices to (-n &lt;= i &lt; n), then wraps negative indices.
-“clip” - clips indices to (0 &lt;= i &lt; n).</p>
+<p>In contrast to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.put.html#numpy.put" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.put</span></code></a> <cite>wrap</cite> mode which wraps indices around the array for cyclic operations,
+<a class="reference internal" href="#dpnp.put" title="dpnp.put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.put</span></code></a> <cite>wrap</cite> mode clamps indices to a fixed range within the array boundaries (-n &lt;= i &lt; n).</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">44</span><span class="p">,</span> <span class="o">-</span><span class="mi">55</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
-<span class="go">array([-44, -55, 2, 3, 4])</span>
+<span class="go">array([-44, -55,   2,   3,   4])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">22</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;clip&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
-<span class="go">array([0, 1, 2, 3,-5])</span>
+<span class="go">array([ 0,  1,  2,  3, -5])</span>
 </pre></div>
 </div>
 </dd></dl>
