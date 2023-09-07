@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.12.2dev1+39.gd3bec5bc1 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.12.2dev1+41.g359bbae21 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=bae76e20"></script>
+        <script src="../../_static/documentation_options.js?v=f6073fb2"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+39.gd3bec5bc1
+                0.12.2dev1+41.g359bbae21
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -137,15 +137,21 @@
 <span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">check_nd_call_func</span><span class="p">,</span>
     <span class="n">dpnp_acos</span><span class="p">,</span>
+    <span class="n">dpnp_acosh</span><span class="p">,</span>
     <span class="n">dpnp_asin</span><span class="p">,</span>
+    <span class="n">dpnp_asinh</span><span class="p">,</span>
     <span class="n">dpnp_atan</span><span class="p">,</span>
     <span class="n">dpnp_atan2</span><span class="p">,</span>
+    <span class="n">dpnp_atanh</span><span class="p">,</span>
     <span class="n">dpnp_cos</span><span class="p">,</span>
+    <span class="n">dpnp_cosh</span><span class="p">,</span>
     <span class="n">dpnp_log</span><span class="p">,</span>
     <span class="n">dpnp_sin</span><span class="p">,</span>
+    <span class="n">dpnp_sinh</span><span class="p">,</span>
     <span class="n">dpnp_sqrt</span><span class="p">,</span>
     <span class="n">dpnp_square</span><span class="p">,</span>
     <span class="n">dpnp_tan</span><span class="p">,</span>
+    <span class="n">dpnp_tanh</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -245,42 +251,62 @@
 
 <div class="viewcode-block" id="arccosh">
 <a class="viewcode-back" href="../../reference/generated/dpnp.arccosh.html#dpnp.arccosh">[docs]</a>
-<span class="k">def</span> <span class="nf">arccosh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">arccosh</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inverse hyperbolic cosine, element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.arccosh`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The hyperbolic inverse cosine of each element of `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :class:`dpnp.ndarray`.</span>
+<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.</span>
-<span class="sd">    :obj:`dpnp.arcsinh` : Inverse hyperbolic sine element-wise.</span>
-<span class="sd">    :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
-<span class="sd">    :obj:`dpnp.arctanh` : Inverse hyperbolic tangent element-wise.</span>
-<span class="sd">    :obj:`dpnp.tanh` : Compute hyperbolic tangent element-wise.</span>
+<span class="sd">    :obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.</span>
+<span class="sd">    :obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.</span>
+<span class="sd">    :obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([np.e, 10.0])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.arccosh(x)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [1.65745445, 2.99322285]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([1.0, np.e, 10.0])</span>
+<span class="sd">    &gt;&gt;&gt; np.arccosh(x)</span>
+<span class="sd">    array([0.0, 1.65745445, 2.99322285])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_arccosh</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arccosh</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">arccosh</span><span class="p">,</span>
+        <span class="n">dpnp_acosh</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
@@ -347,34 +373,62 @@
 
 <div class="viewcode-block" id="arcsinh">
 <a class="viewcode-back" href="../../reference/generated/dpnp.arcsinh.html#dpnp.arcsinh">[docs]</a>
-<span class="k">def</span> <span class="nf">arcsinh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">arcsinh</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inverse hyperbolic sine, element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.arcsinh`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The hyperbolic inverse sine of each element of `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :class:`dpnp.ndarray`.</span>
+<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
+<span class="sd">    :obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.</span>
+<span class="sd">    :obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.</span>
+<span class="sd">    :obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([np.e, 10.0])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.arcsinh(x)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [1.72538256, 2.99822295]</span>
+<span class="sd">    &gt;&gt;&gt; np.arcsinh(x)</span>
+<span class="sd">    array([1.72538256, 2.99822295])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_arcsinh</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arcsinh</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">arcsinh</span><span class="p">,</span>
+        <span class="n">dpnp_asinh</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
@@ -520,34 +574,62 @@
 
 <div class="viewcode-block" id="arctanh">
 <a class="viewcode-back" href="../../reference/generated/dpnp.arctanh.html#dpnp.arctanh">[docs]</a>
-<span class="k">def</span> <span class="nf">arctanh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">arctanh</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hyperbolic inverse tangent, element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.arctanh`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The hyperbolic inverse tangent of each element of `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :class:`dpnp.ndarray`.</span>
+<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
+<span class="sd">    :obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.</span>
+<span class="sd">    :obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.</span>
+<span class="sd">    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([0, -0.5])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.arctanh(x)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [0.0, -0.54930614]</span>
+<span class="sd">    &gt;&gt;&gt; np.arctanh(x)</span>
+<span class="sd">    array([0.0, -0.54930614])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_arctanh</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arctanh</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">arctanh</span><span class="p">,</span>
+        <span class="n">dpnp_atanh</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
@@ -647,34 +729,63 @@
 
 <div class="viewcode-block" id="cosh">
 <a class="viewcode-back" href="../../reference/generated/dpnp.cosh.html#dpnp.cosh">[docs]</a>
-<span class="k">def</span> <span class="nf">cosh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cosh</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hyperbolic cosine, element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.cosh`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The hyperbolic cosine of each element of `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.</span>
+<span class="sd">    :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
+<span class="sd">    :obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
+<span class="sd">    :obj:`dpnp.cos` : Trigonometric cosine, element-wise.</span>
+
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([0])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.cosh(x)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [1.0]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([0, np.pi/2, np.pi])</span>
+<span class="sd">    &gt;&gt;&gt; np.cosh(x)</span>
+<span class="sd">    array([1.0, 2.5091786, 11.591953])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_cosh</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cosh</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">cosh</span><span class="p">,</span>
+        <span class="n">dpnp_cosh</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
@@ -1282,34 +1393,62 @@
 
 <div class="viewcode-block" id="sinh">
 <a class="viewcode-back" href="../../reference/generated/dpnp.sinh.html#dpnp.sinh">[docs]</a>
-<span class="k">def</span> <span class="nf">sinh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">sinh</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hyperbolic sine, element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.sinh`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The hyperbolic sine of each element of `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.</span>
+<span class="sd">    :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.</span>
+<span class="sd">    :obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
+<span class="sd">    :obj:`dpnp.sin` : Trigonometric sine, element-wise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([0, np.pi/2, np.pi])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.sinh(x)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [0.0, 2.3012989, 11.548739]</span>
+<span class="sd">    &gt;&gt;&gt; np.sinh(x)</span>
+<span class="sd">    array([0.0, 2.3012989, 11.548739])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_sinh</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sinh</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">sinh</span><span class="p">,</span>
+        <span class="n">dpnp_sinh</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
@@ -1503,34 +1642,62 @@
 
 <div class="viewcode-block" id="tanh">
 <a class="viewcode-back" href="../../reference/generated/dpnp.tanh.html#dpnp.tanh">[docs]</a>
-<span class="k">def</span> <span class="nf">tanh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">tanh</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute hyperbolic tangent element-wise.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.tanh`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The hyperbolic tangent of each element of `x`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :class:`dpnp.ndarray`.</span>
+<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.</span>
+<span class="sd">    :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
+<span class="sd">    :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.</span>
+<span class="sd">    :obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([-np.pi, np.pi/2, np.pi])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.tanh(x)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [-0.996272, 0.917152, 0.996272]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([0, -np.pi, np.pi/2, np.pi])</span>
+<span class="sd">    &gt;&gt;&gt; np.tanh(x)</span>
+<span class="sd">    array([0.0, -0.996272, 0.917152, 0.996272])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_tanh</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span>
+        <span class="n">dpnp_tanh</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
