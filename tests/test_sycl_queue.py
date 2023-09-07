@@ -94,16 +94,13 @@ def vvsort(val, vec, size, xp):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_array_creation(func, arg, kwargs, device):
-    dtype = dpnp.default_float_type(device)
-    numpy_array = getattr(numpy, func)(*arg, dtype=dtype, **kwargs)
-
     dpnp_kwargs = dict(kwargs)
     dpnp_kwargs["device"] = device
-    dpnp_array = getattr(dpnp, func)(*arg, dtype=dtype, **dpnp_kwargs)
+    dpnp_array = getattr(dpnp, func)(*arg, **dpnp_kwargs)
 
-    rtol = 1e-03 if dtype == numpy.float32 else 1e-07
+    numpy_array = getattr(numpy, func)(*arg, dtype=dpnp_array.dtype, **kwargs)
 
-    assert_allclose(numpy_array, dpnp_array, rtol=rtol)
+    assert_dtype_allclose(dpnp_array, numpy_array)
     assert dpnp_array.sycl_device == device
 
 
@@ -916,11 +913,9 @@ def test_matrix_rank(device):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_qr(device):
-    dtype = dpnp.default_float_type(device)
-    tol = 1e-06 if dtype == numpy.float32 else 1e-11
-    data = [[1, 2, 3], [1, 2, 3]]
-    numpy_data = numpy.array(data, dtype=dtype)
+    data = [[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]
     dpnp_data = dpnp.array(data, device=device)
+    numpy_data = numpy.array(data, dtype=dpnp_data.dtype)
 
     np_q, np_r = numpy.linalg.qr(numpy_data, "reduced")
     dpnp_q, dpnp_r = dpnp.linalg.qr(dpnp_data, "reduced")
@@ -930,8 +925,8 @@ def test_qr(device):
     assert dpnp_q.shape == np_q.shape
     assert dpnp_r.shape == np_r.shape
 
-    assert_allclose(dpnp_q, np_q, rtol=tol, atol=tol)
-    assert_allclose(dpnp_r, np_r, rtol=tol, atol=tol)
+    assert_dtype_allclose(dpnp_q, np_q)
+    assert_dtype_allclose(dpnp_r, np_r)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     dpnp_q_queue = dpnp_q.get_array().sycl_queue
@@ -948,13 +943,13 @@ def test_qr(device):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_svd(device):
-    dtype = dpnp.default_float_type(device)
-    tol = 1e-06 if dtype == numpy.float32 else 1e-12
     shape = (2, 2)
+    dtype = dpnp.default_float_type(device)
     numpy_data = numpy.arange(shape[0] * shape[1], dtype=dtype).reshape(shape)
     dpnp_data = dpnp.arange(
         shape[0] * shape[1], dtype=dtype, device=device
     ).reshape(shape)
+
     np_u, np_s, np_vt = numpy.linalg.svd(numpy_data)
     dpnp_u, dpnp_s, dpnp_vt = dpnp.linalg.svd(dpnp_data)
 
@@ -971,11 +966,8 @@ def test_svd(device):
         dpnp_diag_s[i, i] = dpnp_s[i]
 
     # check decomposition
-    assert_allclose(
-        dpnp_data,
-        dpnp.dot(dpnp_u, dpnp.dot(dpnp_diag_s, dpnp_vt)),
-        rtol=tol,
-        atol=tol,
+    assert_dtype_allclose(
+        dpnp_data, dpnp.dot(dpnp_u, dpnp.dot(dpnp_diag_s, dpnp_vt))
     )
 
     for i in range(min(shape[0], shape[1])):
@@ -984,13 +976,9 @@ def test_svd(device):
             np_vt[i, :] = -np_vt[i, :]
 
     # compare vectors for non-zero values
-    for i in range(numpy.count_nonzero(np_s > tol)):
-        assert_allclose(
-            dpnp.asnumpy(dpnp_u)[:, i], np_u[:, i], rtol=tol, atol=tol
-        )
-        assert_allclose(
-            dpnp.asnumpy(dpnp_vt)[i, :], np_vt[i, :], rtol=tol, atol=tol
-        )
+    for i in range(numpy.count_nonzero(np_s)):
+        assert_dtype_allclose(dpnp_u[:, i], np_u[:, i])
+        assert_dtype_allclose(dpnp_vt[i, :], np_vt[i, :])
 
     expected_queue = dpnp_data.get_array().sycl_queue
     dpnp_u_queue = dpnp_u.get_array().sycl_queue
