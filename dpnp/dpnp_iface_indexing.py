@@ -453,7 +453,7 @@ def put(a, indices, vals, /, *, axis=None, mode="wrap"):
     >>> indices = np.array([0, 1])
     >>> np.put(x, indices, [-44, -55])
     >>> x
-    array([-44, -55, 2, 3, 4])
+    array([-44, -55,   2,   3,   4])
 
     >>> x = np.arange(5)
     >>> indices = np.array([22])
