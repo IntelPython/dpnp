@@ -7,7 +7,7 @@ from numpy.testing import assert_allclose, assert_array_equal
 import dpnp
 
 
-def assert_dtype_allclose(dpnp_arr, numpy_arr):
+def assert_dtype_allclose(dpnp_arr, numpy_arr, check_type=True):
     """
     Assert DPNP and NumPy array based on maximum dtype resolution of input arrays
     for floating and complex types.
@@ -24,7 +24,8 @@ def assert_dtype_allclose(dpnp_arr, numpy_arr):
         assert_allclose(dpnp_arr.asnumpy(), numpy_arr, atol=tol, rtol=tol)
     else:
         assert_array_equal(dpnp_arr.asnumpy(), numpy_arr)
-        assert dpnp_arr.dtype == numpy_arr.dtype
+        if check_type:
+            assert dpnp_arr.dtype == numpy_arr.dtype
 
 
 def get_complex_dtypes(device=None):

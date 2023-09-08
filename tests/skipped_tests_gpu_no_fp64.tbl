@@ -15,14 +15,7 @@ tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array0]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array1]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array2]
 
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arccos]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arccosh]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arcsin]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arcsinh]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arctan]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arctanh]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-cbrt]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-cosh]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-exp2]
@@ -32,16 +25,7 @@ tests/test_strides.py::test_strides_1arg[(10,)-int32-log10]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-sinh]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-tanh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arccos]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arccosh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arcsin]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arcsinh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arctan]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arctanh]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-cbrt]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-cosh]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-exp2]
@@ -51,16 +35,7 @@ tests/test_strides.py::test_strides_1arg[(10,)-int64-log10]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-sinh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-tanh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arccos]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arccosh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arcsin]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arcsinh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arctan]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arctanh]
 tests/test_strides.py::test_strides_1arg[(10,)-None-cbrt]
-tests/test_strides.py::test_strides_1arg[(10,)-None-cosh]
 tests/test_strides.py::test_strides_1arg[(10,)-None-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-None-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-None-exp2]
@@ -70,11 +45,6 @@ tests/test_strides.py::test_strides_1arg[(10,)-None-log10]
 tests/test_strides.py::test_strides_1arg[(10,)-None-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-None-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-None-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-None-sinh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-tanh]
-tests/test_strides.py::test_strides_tan[(10,)-int32]
-tests/test_strides.py::test_strides_tan[(10,)-int64]
-tests/test_strides.py::test_strides_tan[(10,)-None]
 
 tests/test_umath.py::test_umaths[('floor_divide', 'ff')]
 
@@ -85,31 +55,6 @@ tests/test_umath.py::TestExp::test_invalid_dtype[numpy.int32]
 tests/test_umath.py::TestExp::test_invalid_shape[(0,)]
 tests/test_umath.py::TestExp::test_invalid_shape[(15, )]
 tests/test_umath.py::TestExp::test_invalid_shape[(2,2)]
-tests/test_umath.py::TestArcsin::test_arcsin
-tests/test_umath.py::TestArcsin::test_invalid_dtype[numpy.float32]
-tests/test_umath.py::TestArcsin::test_invalid_dtype[numpy.int64]
-tests/test_umath.py::TestArcsin::test_invalid_dtype[numpy.int32]
-tests/test_umath.py::TestArcsin::test_invalid_shape[(0,)]
-tests/test_umath.py::TestArcsin::test_invalid_shape[(15, )]
-tests/test_umath.py::TestArcsin::test_invalid_shape[(2,2)]
-tests/test_umath.py::TestArctan::test_arctan
-tests/test_umath.py::TestArctan::test_invalid_dtype[numpy.float32]
-tests/test_umath.py::TestArctan::test_invalid_dtype[numpy.int64]
-tests/test_umath.py::TestArctan::test_invalid_dtype[numpy.int32]
-tests/test_umath.py::TestArctan::test_invalid_shape[(0,)]
-tests/test_umath.py::TestArctan::test_invalid_shape[(15, )]
-tests/test_umath.py::TestArctan::test_invalid_shape[(2,2)]
-tests/test_umath.py::TestTan::test_tan
-tests/test_umath.py::TestTan::test_invalid_dtype[numpy.float32]
-tests/test_umath.py::TestTan::test_invalid_dtype[numpy.int64]
-tests/test_umath.py::TestTan::test_invalid_dtype[numpy.int32]
-tests/test_umath.py::TestTan::test_invalid_shape[(0,)]
-tests/test_umath.py::TestTan::test_invalid_shape[(15, )]
-tests/test_umath.py::TestTan::test_invalid_shape[(2,2)]
-tests/test_umath.py::TestArctan2::test_arctan2
-tests/test_umath.py::TestArctan2::test_invalid_shape[(0,)]
-tests/test_umath.py::TestArctan2::test_invalid_shape[(15, )]
-tests/test_umath.py::TestArctan2::test_invalid_shape[(2,2)]
 
 tests/test_umath.py::TestSqrt::test_sqrt_complex[complex64]
 
@@ -405,13 +350,6 @@ tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_log2
 
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_copysign_combination
 
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_arccosh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_arcsinh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_arctanh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_cosh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_sinh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_tanh
-
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_0_{axis=0, func='nansum', keepdims=True, shape=(2, 3, 4), transpose_axes=True}::test_nansum_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_0_{axis=0, func='nansum', keepdims=True, shape=(2, 3, 4), transpose_axes=True}::test_nansum_axis_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_1_{axis=0, func='nansum', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_all
@@ -470,14 +408,9 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_3
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_31_{axis=1, func='nanprod', keepdims=False, shape=(20, 30, 40), transpose_axes=False}::test_nansum_axis_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_with_scalar_append
 
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arccos
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arcsin
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arctan
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arctan2
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_deg2rad
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_hypot
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_rad2deg
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_tan
 
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_6_{a_shape=(3, 2), b_shape=(3, 2), shape=(4, 3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_7_{a_shape=(3, 2), b_shape=(3, 2), shape=(3, 2)}::test_beta

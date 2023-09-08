@@ -74,6 +74,7 @@ def test_strides(func_name, dtype):
         "sinh",
         "sqrt",
         "square",
+        "tan",
         "tanh",
         "trunc",
     ],
@@ -93,7 +94,7 @@ def test_strides_1arg(func_name, dtype, shape):
     numpy_func = _getattr(numpy, func_name)
     expected = numpy_func(b)
 
-    assert_allclose(result, expected)
+    assert_allclose(result, expected, rtol=1e-06)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
@@ -130,21 +131,6 @@ def test_strides_reciprocal(dtype, shape):
     assert_allclose(result, expected, rtol=1e-06)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("shape", [(10,)], ids=["(10,)"])
-def test_strides_tan(dtype, shape):
-    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
-    b = a[::2]
-
-    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
-    dpb = dpa[::2]
-
-    result = dpnp.tan(dpb)
-    expected = numpy.tan(b)
-
-    assert_allclose(result, expected, rtol=1e-06)
-
-
 @pytest.mark.parametrize(
     "func_name",
     [
@@ -161,6 +147,7 @@ def test_strides_tan(dtype, shape):
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape", [(3, 3)], ids=["(3, 3)"])
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 def test_strides_2args(func_name, dtype, shape):
     a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
     b = a.T
@@ -328,7 +315,6 @@ def test_strided_in_out_2args_diff_out_dtype(func_name, dtype):
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
 )
-@pytest.mark.skip("dpctl doesn't support overlap of arrays")
 def test_strided_in_2args_overlap(func_name, dtype):
     size = 5
 
@@ -350,7 +336,6 @@ def test_strided_in_2args_overlap(func_name, dtype):
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
 )
-@pytest.mark.skip("dpctl doesn't support overlap of arrays")
 def test_strided_in_out_2args_overlap(func_name, dtype):
     sh = (4, 3, 2)
     prod = numpy.prod(sh)
