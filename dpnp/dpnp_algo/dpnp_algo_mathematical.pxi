@@ -252,7 +252,7 @@ cpdef utils.dpnp_descriptor dpnp_gradient(utils.dpnp_descriptor y1, int dx=1):
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape,
-                                                                             dpnp.float64,
+                                                                             dpnp.default_float_type(y1_obj.sycl_queue),
                                                                              None,
                                                                              device=y1_obj.sycl_device,
                                                                              usm_type=y1_obj.usm_type,
