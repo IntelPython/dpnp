@@ -4,6 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -29,7 +30,12 @@ def _wrap_as_numpy_array(xp, a):
 )
 class TestEigenvalue(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3,
+        atol=1e-4,
+        type_check=has_support_aspect64(),
+        contiguous_check=False,
+    )
     def test_eigh(self, xp, dtype):
         if xp == numpy and dtype == numpy.float16:
             # NumPy's eigh does not support float16
@@ -186,7 +192,7 @@ class TestEigenvalue(unittest.TestCase):
 )
 class TestEigenvalueEmpty(unittest.TestCase):
     @testing.for_dtypes("ifdFD")
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_eigh(self, xp, dtype):
         a = xp.empty(self.shape, dtype=dtype)
         assert a.size == 0
