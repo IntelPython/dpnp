@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.12.2dev1+32.g68f9e3e23 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.12.2dev1+34.g154164511 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=eec5b602"></script>
+        <script src="../../_static/documentation_options.js?v=8798eafa"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.12.2dev1+32.g68f9e3e23
+                0.12.2dev1+34.g154164511
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -534,34 +534,81 @@
 
 <div class="viewcode-block" id="put">
 <a class="viewcode-back" href="../../reference/generated/dpnp.put.html#dpnp.put">[docs]</a>
-<span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Replaces specified elements of an array with given values.</span>
+<span class="sd">    Puts values of an array into another array along a given axis.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.put`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Not supported parameter mode.</span>
+<span class="sd">    Parameters `a` and `indices` are supported either as :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameter `indices` is supported as 1-D array of integer data type.</span>
+<span class="sd">    Parameter `vals` must be broadcastable to the shape of `indices`</span>
+<span class="sd">    and has the same data type as `a` if it is as :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameter `mode` is supported with ``wrap``, the default, and ``clip`` values.</span>
+<span class="sd">    Parameter `axis` is supported as integer only.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.putmask` : Changes elements of an array based on conditional and input values.</span>
+<span class="sd">    :obj:`dpnp.place` : Change elements of an array based on conditional and input values.</span>
+<span class="sd">    :obj:`dpnp.put_along_axis` : Put values into the destination array by matching 1d index and data slices.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    In contrast to :obj:`numpy.put` `wrap` mode which wraps indices around the array for cyclic operations,</span>
+<span class="sd">    :obj:`dpnp.put` `wrap` mode clamps indices to a fixed range within the array boundaries (-n &lt;= i &lt; n).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.arange(5)</span>
+<span class="sd">    &gt;&gt;&gt; indices = np.array([0, 1])</span>
+<span class="sd">    &gt;&gt;&gt; np.put(x, indices, [-44, -55])</span>
+<span class="sd">    &gt;&gt;&gt; x</span>
+<span class="sd">    array([-44, -55,   2,   3,   4])</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.arange(5)</span>
+<span class="sd">    &gt;&gt;&gt; indices = np.array([22])</span>
+<span class="sd">    &gt;&gt;&gt; np.put(x, indices, -5, mode=&#39;clip&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; x</span>
+<span class="sd">    array([ 0,  1,  2,  3, -5])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="p">(</span>
-            <span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="ow">or</span> <span class="n">numpy</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="o">+</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span>
+        <span class="n">indices</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span>
+            <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span>
         <span class="p">):</span>
             <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;clip&quot;</span><span class="p">,</span> <span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`axis` must be of integer type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># TODO: remove when #1382(dpctl) is solved</span>
+        <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">vals</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+            <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_put</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">dpt_indices</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+            <span class="n">dpt_vals</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">vals</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                <span class="n">dpt_array</span><span class="p">,</span> <span class="n">dpt_indices</span><span class="p">,</span> <span class="n">dpt_vals</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+            <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">put</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">put</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 
@@ -686,7 +733,7 @@
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
 <span class="sd">    Parameter `indices` is supported as 1-D array of integer data type.</span>
 <span class="sd">    Parameter `out` is supported only with default value.</span>
-<span class="sd">    Parameter `mode` is supported with ``wrap``(default) and ``clip`` mode.</span>
+<span class="sd">    Parameter `mode` is supported with ``wrap``, the default, and ``clip`` values.</span>
 <span class="sd">    Providing parameter `axis` is optional when `x` is a 1-D array.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 

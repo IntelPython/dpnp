@@ -169,7 +169,6 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNPFuncName::DPNP_FN_PTP", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a0b46d89f390dd68c0ad64e35a571a47e", null ],
       [ "DPNPFuncName::DPNP_FN_PTP_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a696c165a661256dbf0b8a305bc6804fd", null ],
       [ "DPNPFuncName::DPNP_FN_PUT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a00a9730b572e03c773ad168140461a5f", null ],
-      [ "DPNPFuncName::DPNP_FN_PUT_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a665a18bba815277f98cbd771d571a8bd", null ],
       [ "DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a04575e26eefbd692b51fe91359821539", null ],
       [ "DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a5816d3a1e5c7e908896c1cb2fb58fc6d", null ],
       [ "DPNPFuncName::DPNP_FN_QR", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ad19727d9d6267fbeeaf6e9ef92517134", null ],

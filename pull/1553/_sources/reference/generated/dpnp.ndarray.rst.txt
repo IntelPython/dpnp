@@ -106,6 +106,9 @@
    .. automethod:: prod
 
 
+   .. automethod:: put
+
+
    .. automethod:: reshape
 
 

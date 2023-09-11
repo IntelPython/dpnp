@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndarray.astype &mdash; Data Parallel Extension for NumPy 0.12.2dev1+34.g154164511 documentation</title>
+  <title>dpnp.ndarray.put &mdash; Data Parallel Extension for NumPy 0.12.2dev1+34.g154164511 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,8 +28,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.ndarray.copy" href="dpnp.ndarray.copy.html" />
-    <link rel="prev" title="dpnp.ndarray.item" href="dpnp.ndarray.item.html" /> 
+    <link rel="next" title="dpnp.ndarray.choose" href="dpnp.ndarray.choose.html" />
+    <link rel="prev" title="dpnp.ndarray.take" href="dpnp.ndarray.take.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -68,15 +68,18 @@
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#data-type">Data type</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#other-attributes">Other attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-methods">Array methods</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../ndarray.html#array-conversion">Array conversion</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.item.html">dpnp.ndarray.item</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.ndarray.astype</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.copy.html">dpnp.ndarray.copy</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.fill.html">dpnp.ndarray.fill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-conversion">Array conversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#shape-manipulation">Shape manipulation</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../ndarray.html#item-selection-and-manipulation">Item selection and manipulation</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.take.html">dpnp.ndarray.take</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.ndarray.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.choose.html">dpnp.ndarray.choose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.diagonal.html">dpnp.ndarray.diagonal</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#shape-manipulation">Shape manipulation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#item-selection-and-manipulation">Item selection and manipulation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#calculation">Calculation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#arithmetic-matrix-multiplication-and-comparison-operations">Arithmetic, matrix multiplication, and comparison operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#special-methods">Special methods</a></li>
@@ -112,9 +115,9 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
-      <li class="breadcrumb-item active">dpnp.ndarray.astype</li>
+      <li class="breadcrumb-item active">dpnp.ndarray.put</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/reference/generated/dpnp.ndarray.astype.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.ndarray.put.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -122,36 +125,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dpnp-ndarray-astype">
-<h1>dpnp.ndarray.astype<a class="headerlink" href="#dpnp-ndarray-astype" title="Link to this heading"></a></h1>
+  <section id="dpnp-ndarray-put">
+<h1>dpnp.ndarray.put<a class="headerlink" href="#dpnp-ndarray-put" title="Link to this heading"></a></h1>
 <dl class="py method">
-<dt class="sig sig-object py" id="dpnp.ndarray.astype">
-<span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unsafe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.astype" title="Link to this definition"></a></dt>
-<dd><p>Copy the array with data type casting.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dtype</strong> – Target type.</p></li>
-<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'</em><em>, </em><em>'A'</em><em>, </em><em>'K'}</em>) – Row-major (C-style) or column-major (Fortran-style) order.
-When <code class="docutils literal notranslate"><span class="pre">order</span></code> is ‘A’, it uses ‘F’ if <code class="docutils literal notranslate"><span class="pre">a</span></code> is column-major and uses ‘C’ otherwise.
-And when <code class="docutils literal notranslate"><span class="pre">order</span></code> is ‘K’, it keeps strides as closely as possible.</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a>) – If it is False and no cast happens, then this method returns the array itself.
-Otherwise, a copy is returned.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>If <code class="docutils literal notranslate"><span class="pre">copy</span></code> is False and no cast is required, then the array itself is returned.
-Otherwise, it returns a (possibly casted) copy of the array.</p>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This method currently does not support <cite>order`</cite>, <cite>casting`</cite>, <code class="docutils literal notranslate"><span class="pre">copy</span></code>, and <code class="docutils literal notranslate"><span class="pre">subok</span></code> arguments.</p>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.astype.html#numpy.ndarray.astype" title="(in NumPy v1.25)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.astype()</span></code></a></p>
-</div>
+<dt class="sig sig-object py" id="dpnp.ndarray.put">
+<span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wrap'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.put" title="Link to this definition"></a></dt>
+<dd><p>Puts values of an array into another array along a given axis.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.put.html#numpy.put" title="(in NumPy v1.25)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.put</span></code></a>.</p>
 </dd></dl>
 
 </section>
@@ -160,8 +140,8 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.ndarray.item.html" class="btn btn-neutral float-left" title="dpnp.ndarray.item" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.ndarray.copy.html" class="btn btn-neutral float-right" title="dpnp.ndarray.copy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.ndarray.take.html" class="btn btn-neutral float-left" title="dpnp.ndarray.take" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.ndarray.choose.html" class="btn btn-neutral float-right" title="dpnp.ndarray.choose" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
