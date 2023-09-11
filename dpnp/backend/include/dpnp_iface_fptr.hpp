@@ -280,7 +280,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_PTP,      /**< Used in numpy.ptp() impl  */
     DPNP_FN_PTP_EXT, /**< Used in numpy.ptp() impl, requires extra parameters */
     DPNP_FN_PUT,     /**< Used in numpy.put() impl  */
-    DPNP_FN_PUT_EXT, /**< Used in numpy.put() impl, requires extra parameters */
     DPNP_FN_PUT_ALONG_AXIS,     /**< Used in numpy.put_along_axis() impl  */
     DPNP_FN_PUT_ALONG_AXIS_EXT, /**< Used in numpy.put_along_axis() impl,
                                    requires extra parameters */
