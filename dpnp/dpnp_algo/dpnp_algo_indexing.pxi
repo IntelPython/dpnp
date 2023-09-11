@@ -41,7 +41,6 @@ __all__ += [
     "dpnp_diagonal",
     "dpnp_fill_diagonal",
     "dpnp_indices",
-    "dpnp_put",
     "dpnp_put_along_axis",
     "dpnp_putmask",
     "dpnp_select",
@@ -80,14 +79,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_3in_with_axis_func_ptr_t)(c_
                                                                               const size_t,
                                                                               const size_t,
                                                                               const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_6in_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                    void *,
-                                                                    void * ,
-                                                                    void * ,
-                                                                    const size_t,
-                                                                    const size_t,
-                                                                    const size_t,
-                                                                    const c_dpctl.DPCTLEventVectorRef)
 
 
 cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor x1, list choices1):
@@ -290,65 +281,6 @@ cpdef object dpnp_indices(dimensions):
 
     dpnp_result = dpnp.array(result)
     return dpnp_result
-
-
-cpdef dpnp_put(dpnp_descriptor x1, object ind, v):
-    ind_is_list = isinstance(ind, list)
-
-    x1_obj = x1.get_array()
-
-    if dpnp.isscalar(ind):
-        ind_size = 1
-    else:
-        ind_size = len(ind)
-    cdef utils.dpnp_descriptor ind_array = utils_py.create_output_descriptor_py((ind_size,),
-                                                                                 dpnp.int64,
-                                                                                 None,
-                                                                                 device=x1_obj.sycl_device,
-                                                                                 usm_type=x1_obj.usm_type,
-                                                                                 sycl_queue=x1_obj.sycl_queue)
-    if dpnp.isscalar(ind):
-        ind_array.get_pyobj()[0] = ind
-    else:
-        for i in range(ind_size):
-            ind_array.get_pyobj()[i] = ind[i]
-
-    if dpnp.isscalar(v):
-        v_size = 1
-    else:
-        v_size = len(v)
-    cdef utils.dpnp_descriptor v_array = utils_py.create_output_descriptor_py((v_size,),
-                                                                               x1.dtype,
-                                                                               None,
-                                                                               device=x1_obj.sycl_device,
-                                                                               usm_type=x1_obj.usm_type,
-                                                                               sycl_queue=x1_obj.sycl_queue)
-    if dpnp.isscalar(v):
-        v_array.get_pyobj()[0] = v
-    else:
-        for i in range(v_size):
-            v_array.get_pyobj()[i] = v[i]
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PUT_EXT, param1_type, param1_type)
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> x1_obj.sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_indexing_6in_func_ptr_t func = <custom_indexing_6in_func_ptr_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    x1.get_data(),
-                                                    ind_array.get_data(),
-                                                    v_array.get_data(),
-                                                    x1.size,
-                                                    ind_array.size,
-                                                    v_array.size,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
 
 
 cpdef dpnp_put_along_axis(dpnp_descriptor arr, dpnp_descriptor indices, dpnp_descriptor values, int axis):
