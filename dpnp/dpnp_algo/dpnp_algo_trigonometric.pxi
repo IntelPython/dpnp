@@ -36,14 +36,7 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    'dpnp_arccos',
-    'dpnp_arccosh',
-    'dpnp_arcsin',
-    'dpnp_arcsinh',
-    'dpnp_arctan',
-    'dpnp_arctanh',
     'dpnp_cbrt',
-    'dpnp_cosh',
     'dpnp_degrees',
     'dpnp_exp',
     'dpnp_exp2',
@@ -53,43 +46,12 @@ __all__ += [
     'dpnp_log2',
     'dpnp_radians',
     'dpnp_recip',
-    'dpnp_sinh',
-    'dpnp_tan',
-    'dpnp_tanh',
     'dpnp_unwrap'
 ]
 
 
-cpdef utils.dpnp_descriptor dpnp_arccos(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_ARCCOS_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_arccosh(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_ARCCOSH_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_arcsin(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_ARCSIN_EXT, x1, dtype=None, out=out, where=True, func_name='arcsin')
-
-
-cpdef utils.dpnp_descriptor dpnp_arcsinh(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_ARCSINH_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_arctan(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_ARCTAN_EXT, x1, dtype=None, out=out, where=True, func_name='arctan')
-
-
-cpdef utils.dpnp_descriptor dpnp_arctanh(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_ARCTANH_EXT, x1)
-
-
 cpdef utils.dpnp_descriptor dpnp_cbrt(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_CBRT_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_cosh(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_COSH_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_degrees(utils.dpnp_descriptor x1):
@@ -126,18 +88,6 @@ cpdef utils.dpnp_descriptor dpnp_recip(utils.dpnp_descriptor x1):
 
 cpdef utils.dpnp_descriptor dpnp_radians(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_RADIANS_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_sinh(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_SINH_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_tan(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_TAN_EXT, x1, dtype=None, out=out, where=True, func_name='tan')
-
-
-cpdef utils.dpnp_descriptor dpnp_tanh(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_TANH_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_unwrap(utils.dpnp_descriptor array1):

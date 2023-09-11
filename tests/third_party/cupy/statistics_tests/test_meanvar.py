@@ -4,6 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 ignore_runtime_warnings = pytest.mark.filterwarnings(
@@ -14,21 +15,21 @@ ignore_runtime_warnings = pytest.mark.filterwarnings(
 @testing.gpu
 class TestMedian(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_median_noaxis(self, xp, dtype):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_median_axis1(self, xp, dtype):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a, axis=1)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_median_axis2(self, xp, dtype):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a, axis=2)
@@ -42,14 +43,14 @@ class TestMedian(unittest.TestCase):
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_median_keepdims_axis1(self, xp, dtype):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a, axis=1, keepdims=True)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_median_keepdims_noaxis(self, xp, dtype):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a, keepdims=True)
@@ -91,7 +92,7 @@ class TestMedian(unittest.TestCase):
 @testing.gpu
 class TestMedianAxis(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_median_axis_sequence(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         return xp.median(a, self.axis, keepdims=self.keepdims)
@@ -109,7 +110,7 @@ class TestAverage(unittest.TestCase):
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_average_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.average(a, axis=1)
@@ -124,7 +125,7 @@ class TestAverage(unittest.TestCase):
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_average_axis_weights(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         w = testing.shaped_arange((2, 3, 4), xp, dtype)
@@ -154,25 +155,25 @@ class TestAverage(unittest.TestCase):
 @testing.gpu
 class TestMeanVar(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_mean_all(self, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return a.mean()
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_external_mean_all(self, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return xp.mean(a)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_mean_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.mean(axis=1)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_external_mean_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.mean(a, axis=1)
@@ -221,28 +222,28 @@ class TestMeanVar(unittest.TestCase):
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_var_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.var(axis=1)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_external_var_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.var(a, axis=1)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_var_axis_ddof(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.var(axis=1, ddof=1)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_external_var_axis_ddof(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.var(a, axis=1, ddof=1)
@@ -273,28 +274,28 @@ class TestMeanVar(unittest.TestCase):
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_std_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.std(axis=1)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_external_std_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.std(a, axis=1)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_std_axis_ddof(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.std(axis=1, ddof=1)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_external_std_axis_ddof(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.std(a, axis=1, ddof=1)
@@ -490,7 +491,7 @@ class TestNanVarStdAdditional(unittest.TestCase):
 @testing.gpu
 class TestProductZeroLength(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_external_mean_zero_len(self, xp, dtype):
         shape, axis = self.params
         a = testing.shaped_arange(shape, xp, dtype)

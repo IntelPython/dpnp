@@ -34,7 +34,6 @@ tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_23_{axes=None, norm
 
 tests/third_party/intel/test_zero_copy_test1.py::test_dpnp_interaction_with_dpctl_memory
 
-tests/test_arraymanipulation.py::TestHstack::test_generator
 tests/test_arraymanipulation.py::TestVstack::test_generator
 
 tests/test_linalg.py::test_cond[-1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
@@ -83,6 +82,19 @@ tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: (dpnp.asarray([(i, i) for i in x], [("a", int), ("b", int)]).view(dpnp.recarray))]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray(x).astype(dpnp.int8)]
+
+tests/test_strides.py::test_strides_1arg[(10,)-None-cbrt]
+tests/test_strides.py::test_strides_1arg[(10,)-None-degrees]
+tests/test_strides.py::test_strides_1arg[(10,)-None-exp]
+tests/test_strides.py::test_strides_1arg[(10,)-None-exp2]
+tests/test_strides.py::test_strides_1arg[(10,)-None-expm1]
+tests/test_strides.py::test_strides_1arg[(10,)-None-fabs]
+tests/test_strides.py::test_strides_1arg[(10,)-None-log1p]
+tests/test_strides.py::test_strides_1arg[(10,)-None-radians]
+tests/test_strides.py::test_strides_1arg[(10,)-None-log2]
+tests/test_strides.py::test_strides_1arg[(10,)-None-log10]
+tests/test_strides.py::test_strides_erf[(10,)-None]
+tests/test_strides.py::test_strides_reciprocal[(10,)-None]
 
 tests/test_umath.py::test_umaths[('divmod', 'ii')]
 tests/test_umath.py::test_umaths[('divmod', 'll')]

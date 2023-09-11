@@ -15,14 +15,7 @@ tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array0]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array1]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array2]
 
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arccos]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arccosh]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arcsin]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arcsinh]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arctan]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-arctanh]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-cbrt]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-cosh]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-exp2]
@@ -32,16 +25,7 @@ tests/test_strides.py::test_strides_1arg[(10,)-int32-log10]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-sinh]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-tanh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arccos]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arccosh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arcsin]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arcsinh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arctan]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-arctanh]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-cbrt]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-cosh]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-exp2]
@@ -51,16 +35,7 @@ tests/test_strides.py::test_strides_1arg[(10,)-int64-log10]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-sinh]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-tanh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arccos]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arccosh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arcsin]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arcsinh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arctan]
-tests/test_strides.py::test_strides_1arg[(10,)-None-arctanh]
 tests/test_strides.py::test_strides_1arg[(10,)-None-cbrt]
-tests/test_strides.py::test_strides_1arg[(10,)-None-cosh]
 tests/test_strides.py::test_strides_1arg[(10,)-None-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-None-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-None-exp2]
@@ -70,26 +45,6 @@ tests/test_strides.py::test_strides_1arg[(10,)-None-log10]
 tests/test_strides.py::test_strides_1arg[(10,)-None-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-None-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-None-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-None-sinh]
-tests/test_strides.py::test_strides_1arg[(10,)-None-tanh]
-tests/test_strides.py::test_strides_tan[(10,)-int32]
-tests/test_strides.py::test_strides_tan[(10,)-int64]
-tests/test_strides.py::test_strides_tan[(10,)-None]
-
-tests/test_sycl_queue.py::test_array_creation[opencl:gpu:0-arange-arg0-kwargs0]
-tests/test_sycl_queue.py::test_array_creation[level_zero:gpu:0-arange-arg0-kwargs0]
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-gradient-data10]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-gradient-data10]
-tests/test_sycl_queue.py::test_eig[opencl:gpu:0]
-tests/test_sycl_queue.py::test_eig[level_zero:gpu:0]
-tests/test_sycl_queue.py::test_eigh[opencl:gpu:0]
-tests/test_sycl_queue.py::test_eigh[level_zero:gpu:0]
-tests/test_sycl_queue.py::test_qr[opencl:gpu:0]
-tests/test_sycl_queue.py::test_qr[level_zero:gpu:0]
-tests/test_sycl_queue.py::test_svd[opencl:gpu:0]
-tests/test_sycl_queue.py::test_svd[level_zero:gpu:0]
-tests/test_sycl_queue.py::test_to_device[opencl:gpu:0-opencl:cpu:0]
-tests/test_sycl_queue.py::test_to_device[level_zero:gpu:0-opencl:cpu:0]
 
 tests/test_umath.py::test_umaths[('floor_divide', 'ff')]
 
@@ -100,316 +55,12 @@ tests/test_umath.py::TestExp::test_invalid_dtype[numpy.int32]
 tests/test_umath.py::TestExp::test_invalid_shape[(0,)]
 tests/test_umath.py::TestExp::test_invalid_shape[(15, )]
 tests/test_umath.py::TestExp::test_invalid_shape[(2,2)]
-tests/test_umath.py::TestArcsin::test_arcsin
-tests/test_umath.py::TestArcsin::test_invalid_dtype[numpy.float32]
-tests/test_umath.py::TestArcsin::test_invalid_dtype[numpy.int64]
-tests/test_umath.py::TestArcsin::test_invalid_dtype[numpy.int32]
-tests/test_umath.py::TestArcsin::test_invalid_shape[(0,)]
-tests/test_umath.py::TestArcsin::test_invalid_shape[(15, )]
-tests/test_umath.py::TestArcsin::test_invalid_shape[(2,2)]
-tests/test_umath.py::TestArctan::test_arctan
-tests/test_umath.py::TestArctan::test_invalid_dtype[numpy.float32]
-tests/test_umath.py::TestArctan::test_invalid_dtype[numpy.int64]
-tests/test_umath.py::TestArctan::test_invalid_dtype[numpy.int32]
-tests/test_umath.py::TestArctan::test_invalid_shape[(0,)]
-tests/test_umath.py::TestArctan::test_invalid_shape[(15, )]
-tests/test_umath.py::TestArctan::test_invalid_shape[(2,2)]
-tests/test_umath.py::TestTan::test_tan
-tests/test_umath.py::TestTan::test_invalid_dtype[numpy.float32]
-tests/test_umath.py::TestTan::test_invalid_dtype[numpy.int64]
-tests/test_umath.py::TestTan::test_invalid_dtype[numpy.int32]
-tests/test_umath.py::TestTan::test_invalid_shape[(0,)]
-tests/test_umath.py::TestTan::test_invalid_shape[(15, )]
-tests/test_umath.py::TestTan::test_invalid_shape[(2,2)]
-tests/test_umath.py::TestArctan2::test_arctan2
-tests/test_umath.py::TestArctan2::test_invalid_shape[(0,)]
-tests/test_umath.py::TestArctan2::test_invalid_shape[(15, )]
-tests/test_umath.py::TestArctan2::test_invalid_shape[(2,2)]
 
 tests/test_umath.py::TestSqrt::test_sqrt_complex[complex64]
 
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_no_dtype_float
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_array_start_stop
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_float_overflow
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_float_underflow
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_mixed_start_stop
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_mixed_start_stop2
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_no_dtype_float
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_no_dtype_int
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_start_stop_list
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_logspace_base
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_logspace_no_dtype_float
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_logspace_no_dtype_int
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid2
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid4
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid2
-
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_2_{n=None, norm=None, shape=(10,)}::test_fft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_2_{n=None, norm=None, shape=(10,)}::test_ifft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_3_{n=None, norm=None, shape=(10, 10)}::test_fft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_3_{n=None, norm=None, shape=(10, 10)}::test_ifft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_6_{n=None, norm='ortho', shape=(10,)}::test_fft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_6_{n=None, norm='ortho', shape=(10,)}::test_ifft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_7_{n=None, norm='ortho', shape=(10, 10)}::test_fft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_7_{n=None, norm='ortho', shape=(10, 10)}::test_ifft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_0_{axes=None, norm=None, s=None, shape=(3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_0_{axes=None, norm=None, s=None, shape=(3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_2_{axes=None, norm=None, s=(1, 5), shape=(3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_2_{axes=None, norm=None, s=(1, 5), shape=(3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_3_{axes=(-2, -1), norm=None, s=None, shape=(3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_3_{axes=(-2, -1), norm=None, s=None, shape=(3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_4_{axes=(-1, -2), norm=None, s=None, shape=(3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_4_{axes=(-1, -2), norm=None, s=None, shape=(3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_5_{axes=(0,), norm=None, s=None, shape=(3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_5_{axes=(0,), norm=None, s=None, shape=(3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_6_{axes=None, norm='ortho', s=None, shape=(3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_6_{axes=None, norm='ortho', s=None, shape=(3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_8_{axes=None, norm=None, s=None, shape=(2, 3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_8_{axes=None, norm=None, s=None, shape=(2, 3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_10_{axes=None, norm=None, s=(1, 4, 10), shape=(2, 3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_10_{axes=None, norm=None, s=(1, 4, 10), shape=(2, 3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_11_{axes=(-3, -2, -1), norm=None, s=None, shape=(2, 3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_11_{axes=(-3, -2, -1), norm=None, s=None, shape=(2, 3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_12_{axes=(-1, -2, -3), norm=None, s=None, shape=(2, 3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_12_{axes=(-1, -2, -3), norm=None, s=None, shape=(2, 3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_13_{axes=(0, 1), norm=None, s=None, shape=(2, 3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_13_{axes=(0, 1), norm=None, s=None, shape=(2, 3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_14_{axes=None, norm='ortho', s=None, shape=(2, 3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_14_{axes=None, norm='ortho', s=None, shape=(2, 3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_17_{axes=None, norm=None, s=None, shape=(2, 3, 4, 5)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_17_{axes=None, norm=None, s=None, shape=(2, 3, 4, 5)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_0_{axes=None, norm=None, s=None, shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_0_{axes=None, norm=None, s=None, shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_2_{axes=None, norm=None, s=(1, 5), shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_2_{axes=None, norm=None, s=(1, 5), shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_3_{axes=(-2, -1), norm=None, s=None, shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_3_{axes=(-2, -1), norm=None, s=None, shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_4_{axes=(-1, -2), norm=None, s=None, shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_4_{axes=(-1, -2), norm=None, s=None, shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_5_{axes=[-1, -2], norm=None, s=None, shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_5_{axes=[-1, -2], norm=None, s=None, shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_6_{axes=(0,), norm=None, s=None, shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_6_{axes=(0,), norm=None, s=None, shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_8_{axes=None, norm='ortho', s=None, shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_8_{axes=None, norm='ortho', s=None, shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_9_{axes=None, norm=None, s=None, shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_9_{axes=None, norm=None, s=None, shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_11_{axes=None, norm=None, s=(1, 4, 10), shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_11_{axes=None, norm=None, s=(1, 4, 10), shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_12_{axes=(-3, -2, -1), norm=None, s=None, shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_12_{axes=(-3, -2, -1), norm=None, s=None, shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_13_{axes=(-1, -2, -3), norm=None, s=None, shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_13_{axes=(-1, -2, -3), norm=None, s=None, shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_14_{axes=(-1, -3), norm=None, s=None, shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_14_{axes=(-1, -3), norm=None, s=None, shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_15_{axes=(0, 1), norm=None, s=None, shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_15_{axes=(0, 1), norm=None, s=None, shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_16_{axes=None, norm='ortho', s=None, shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_16_{axes=None, norm='ortho', s=None, shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_19_{axes=(2, 0, 1), norm='ortho', s=(4, 3, 2), shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_19_{axes=(2, 0, 1), norm='ortho', s=(4, 3, 2), shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_20_{axes=None, norm=None, s=None, shape=(2, 3, 4, 5)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_20_{axes=None, norm=None, s=None, shape=(2, 3, 4, 5)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_0_{n=None, norm=None, shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_0_{n=None, norm=None, shape=(10,)}::test_rfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_1_{n=None, norm=None, shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_1_{n=None, norm=None, shape=(10, 10)}::test_rfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_2_{n=None, norm='ortho', shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_3_{n=None, norm='ortho', shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_4_{n=5, norm=None, shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_5_{n=5, norm=None, shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_6_{n=5, norm='ortho', shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_7_{n=5, norm='ortho', shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_8_{n=10, norm=None, shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_9_{n=10, norm=None, shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_10_{n=10, norm='ortho', shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_11_{n=10, norm='ortho', shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_12_{n=15, norm=None, shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_13_{n=15, norm=None, shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_14_{n=15, norm='ortho', shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_15_{n=15, norm='ortho', shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_0_{n=None, norm=None, shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_0_{n=None, norm=None, shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_1_{n=None, norm=None, shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_1_{n=None, norm=None, shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_2_{n=None, norm='ortho', shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_2_{n=None, norm='ortho', shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_3_{n=None, norm='ortho', shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_3_{n=None, norm='ortho', shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_4_{n=5, norm=None, shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_4_{n=5, norm=None, shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_5_{n=5, norm=None, shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_5_{n=5, norm=None, shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_6_{n=5, norm='ortho', shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_6_{n=5, norm='ortho', shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_7_{n=5, norm='ortho', shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_7_{n=5, norm='ortho', shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_8_{n=10, norm=None, shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_8_{n=10, norm=None, shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_9_{n=10, norm=None, shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_9_{n=10, norm=None, shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_10_{n=10, norm='ortho', shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_10_{n=10, norm='ortho', shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_11_{n=10, norm='ortho', shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_11_{n=10, norm='ortho', shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_12_{n=15, norm=None, shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_12_{n=15, norm=None, shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_13_{n=15, norm=None, shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_13_{n=15, norm=None, shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_14_{n=15, norm='ortho', shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_14_{n=15, norm='ortho', shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_15_{n=15, norm='ortho', shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_15_{n=15, norm='ortho', shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_0_{d=1, n=1}::test_fftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_0_{d=1, n=1}::test_rfftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_1_{d=0.5, n=10}::test_fftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_1_{d=0.5, n=10}::test_rfftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_2_{d=2, n=100}::test_fftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_2_{d=2, n=100}::test_rfftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_2_{n=None, norm=None, shape=(10,)}::test_fft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_2_{n=None, norm=None, shape=(10,)}::test_ifft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_3_{n=None, norm=None, shape=(10, 10)}::test_fft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_3_{n=None, norm=None, shape=(10, 10)}::test_ifft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_6_{n=None, norm='ortho', shape=(10,)}::test_fft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_6_{n=None, norm='ortho', shape=(10,)}::test_ifft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_7_{n=None, norm='ortho', shape=(10, 10)}::test_fft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_7_{n=None, norm='ortho', shape=(10, 10)}::test_ifft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_0_{axes=None, norm=None, s=None, shape=(3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_0_{axes=None, norm=None, s=None, shape=(3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_2_{axes=None, norm=None, s=(1, 5), shape=(3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_2_{axes=None, norm=None, s=(1, 5), shape=(3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_3_{axes=(-2, -1), norm=None, s=None, shape=(3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_3_{axes=(-2, -1), norm=None, s=None, shape=(3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_4_{axes=(-1, -2), norm=None, s=None, shape=(3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_4_{axes=(-1, -2), norm=None, s=None, shape=(3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_5_{axes=(0,), norm=None, s=None, shape=(3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_5_{axes=(0,), norm=None, s=None, shape=(3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_6_{axes=None, norm='ortho', s=None, shape=(3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_6_{axes=None, norm='ortho', s=None, shape=(3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_8_{axes=None, norm=None, s=None, shape=(2, 3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_8_{axes=None, norm=None, s=None, shape=(2, 3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_10_{axes=None, norm=None, s=(1, 4, 10), shape=(2, 3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_10_{axes=None, norm=None, s=(1, 4, 10), shape=(2, 3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_11_{axes=(-3, -2, -1), norm=None, s=None, shape=(2, 3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_11_{axes=(-3, -2, -1), norm=None, s=None, shape=(2, 3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_12_{axes=(-1, -2, -3), norm=None, s=None, shape=(2, 3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_12_{axes=(-1, -2, -3), norm=None, s=None, shape=(2, 3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_13_{axes=(0, 1), norm=None, s=None, shape=(2, 3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_13_{axes=(0, 1), norm=None, s=None, shape=(2, 3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_14_{axes=None, norm='ortho', s=None, shape=(2, 3, 4)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_14_{axes=None, norm='ortho', s=None, shape=(2, 3, 4)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_17_{axes=None, norm=None, s=None, shape=(2, 3, 4, 5)}::test_fft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_17_{axes=None, norm=None, s=None, shape=(2, 3, 4, 5)}::test_ifft2
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_0_{axes=None, norm=None, s=None, shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_0_{axes=None, norm=None, s=None, shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_2_{axes=None, norm=None, s=(1, 5), shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_2_{axes=None, norm=None, s=(1, 5), shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_3_{axes=(-2, -1), norm=None, s=None, shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_3_{axes=(-2, -1), norm=None, s=None, shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_4_{axes=(-1, -2), norm=None, s=None, shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_4_{axes=(-1, -2), norm=None, s=None, shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_5_{axes=[-1, -2], norm=None, s=None, shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_5_{axes=[-1, -2], norm=None, s=None, shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_6_{axes=(0,), norm=None, s=None, shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_6_{axes=(0,), norm=None, s=None, shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_8_{axes=None, norm='ortho', s=None, shape=(3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_8_{axes=None, norm='ortho', s=None, shape=(3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_9_{axes=None, norm=None, s=None, shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_9_{axes=None, norm=None, s=None, shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_11_{axes=None, norm=None, s=(1, 4, 10), shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_11_{axes=None, norm=None, s=(1, 4, 10), shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_12_{axes=(-3, -2, -1), norm=None, s=None, shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_12_{axes=(-3, -2, -1), norm=None, s=None, shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_13_{axes=(-1, -2, -3), norm=None, s=None, shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_13_{axes=(-1, -2, -3), norm=None, s=None, shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_14_{axes=(-1, -3), norm=None, s=None, shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_14_{axes=(-1, -3), norm=None, s=None, shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_15_{axes=(0, 1), norm=None, s=None, shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_15_{axes=(0, 1), norm=None, s=None, shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_16_{axes=None, norm='ortho', s=None, shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_16_{axes=None, norm='ortho', s=None, shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_19_{axes=(2, 0, 1), norm='ortho', s=(4, 3, 2), shape=(2, 3, 4)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_19_{axes=(2, 0, 1), norm='ortho', s=(4, 3, 2), shape=(2, 3, 4)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_20_{axes=None, norm=None, s=None, shape=(2, 3, 4, 5)}::test_fftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_20_{axes=None, norm=None, s=None, shape=(2, 3, 4, 5)}::test_ifftn
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_0_{n=None, norm=None, shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_0_{n=None, norm=None, shape=(10,)}::test_rfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_1_{n=None, norm=None, shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_1_{n=None, norm=None, shape=(10, 10)}::test_rfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_2_{n=None, norm='ortho', shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_3_{n=None, norm='ortho', shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_4_{n=5, norm=None, shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_5_{n=5, norm=None, shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_6_{n=5, norm='ortho', shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_7_{n=5, norm='ortho', shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_8_{n=10, norm=None, shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_9_{n=10, norm=None, shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_10_{n=10, norm='ortho', shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_11_{n=10, norm='ortho', shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_12_{n=15, norm=None, shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_13_{n=15, norm=None, shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_14_{n=15, norm='ortho', shape=(10,)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_15_{n=15, norm='ortho', shape=(10, 10)}::test_irfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_0_{n=None, norm=None, shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_0_{n=None, norm=None, shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_1_{n=None, norm=None, shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_1_{n=None, norm=None, shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_2_{n=None, norm='ortho', shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_2_{n=None, norm='ortho', shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_3_{n=None, norm='ortho', shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_3_{n=None, norm='ortho', shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_4_{n=5, norm=None, shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_4_{n=5, norm=None, shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_5_{n=5, norm=None, shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_5_{n=5, norm=None, shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_6_{n=5, norm='ortho', shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_6_{n=5, norm='ortho', shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_7_{n=5, norm='ortho', shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_7_{n=5, norm='ortho', shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_8_{n=10, norm=None, shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_8_{n=10, norm=None, shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_9_{n=10, norm=None, shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_9_{n=10, norm=None, shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_10_{n=10, norm='ortho', shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_10_{n=10, norm='ortho', shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_11_{n=10, norm='ortho', shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_11_{n=10, norm='ortho', shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_12_{n=15, norm=None, shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_12_{n=15, norm=None, shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_13_{n=15, norm=None, shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_13_{n=15, norm=None, shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_14_{n=15, norm='ortho', shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_14_{n=15, norm='ortho', shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_15_{n=15, norm='ortho', shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_15_{n=15, norm='ortho', shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_0_{d=1, n=1}::test_fftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_0_{d=1, n=1}::test_rfftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_1_{d=0.5, n=10}::test_fftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_1_{d=0.5, n=10}::test_rfftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_2_{d=2, n=100}::test_fftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_2_{d=2, n=100}::test_rfftfreq
-
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalue_param_0_{UPLO='U'}::test_eigh
 tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalue_param_0_{UPLO='U'}::test_eigh_batched
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalue_param_1_{UPLO='L'}::test_eigh
 tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalue_param_1_{UPLO='L'}::test_eigh_batched
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalueEmpty_param_0_{UPLO='U', shape=(0, 0)}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalueEmpty_param_1_{UPLO='U', shape=(2, 0, 0)}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalueEmpty_param_2_{UPLO='U', shape=(0, 3, 3)}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalueEmpty_param_3_{UPLO='L', shape=(0, 0)}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalueEmpty_param_4_{UPLO='L', shape=(2, 0, 0)}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalueEmpty_param_5_{UPLO='L', shape=(0, 3, 3)}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalue_param_0_{UPLO='U'}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalue_param_0_{UPLO='U'}::test_eigh_batched
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalue_param_1_{UPLO='L'}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalue_param_1_{UPLO='L'}::test_eigh_batched
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalueEmpty_param_0_{UPLO='U', shape=(0, 0)}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalueEmpty_param_1_{UPLO='U', shape=(2, 0, 0)}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalueEmpty_param_2_{UPLO='U', shape=(0, 3, 3)}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalueEmpty_param_3_{UPLO='L', shape=(0, 0)}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalueEmpty_param_4_{UPLO='L', shape=(2, 0, 0)}::test_eigh
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalueEmpty_param_5_{UPLO='L', shape=(0, 3, 3)}::test_eigh
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumLarge_param_0_{opt=('greedy', 0), subscript='a,b,c->abc'}::test_einsum
+
 tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_0_{shape=((2, 3, 4), (3, 4, 2)), trans_a=True, trans_b=True}::test_dot
 tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_1_{shape=((2, 3, 4), (3, 4, 2)), trans_a=True, trans_b=False}::test_dot
 tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_2_{shape=((2, 3, 4), (3, 4, 2)), trans_a=False, trans_b=True}::test_dot
@@ -494,20 +145,6 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestDotFor0Dim_param_8_{sha
 tests/third_party/cupy/linalg_tests/test_product.py::TestDotFor0Dim_param_9_{shape=((4, 2), ()), trans_a=True, trans_b=False}::test_dot
 tests/third_party/cupy/linalg_tests/test_product.py::TestDotFor0Dim_param_10_{shape=((4, 2), ()), trans_a=False, trans_b=True}::test_dot
 tests/third_party/cupy/linalg_tests/test_product.py::TestDotFor0Dim_param_11_{shape=((4, 2), ()), trans_a=False, trans_b=False}::test_dot
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_0_{params=((3,), (3,), -1, -1, -1)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_1_{params=((1, 2), (1, 2), -1, -1, 1)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_2_{params=((1, 3), (1, 3), 1, -1, -1)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_3_{params=((1, 2), (1, 3), -1, -1, 1)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_4_{params=((2, 2), (1, 3), -1, -1, 0)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_5_{params=((3, 3), (1, 2), 0, -1, -1)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_6_{params=((0, 3), (0, 3), -1, -1, -1)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_7_{params=((2, 0, 3), (2, 0, 3), 0, 0, 0)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_8_{params=((2, 4, 5, 3), (2, 4, 5, 3), -1, -1, 0)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_9_{params=((2, 4, 5, 2), (2, 4, 5, 2), 0, 0, -1)}::test_cross
-
-tests/third_party/cupy/logic_tests/test_content.py::TestContent::test_isfinite
-tests/third_party/cupy/logic_tests/test_content.py::TestContent::test_isinf
-tests/third_party/cupy/logic_tests/test_content.py::TestContent::test_isnan
 
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticUnary_param_29_{arg1=2.0, name='reciprocal'}::test_unary
 
@@ -713,13 +350,6 @@ tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_log2
 
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_copysign_combination
 
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_arccosh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_arcsinh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_arctanh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_cosh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_sinh
-tests/third_party/cupy/math_tests/test_hyperbolic.py::TestHyperbolic::test_tanh
-
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_0_{axis=0, func='nansum', keepdims=True, shape=(2, 3, 4), transpose_axes=True}::test_nansum_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_0_{axis=0, func='nansum', keepdims=True, shape=(2, 3, 4), transpose_axes=True}::test_nansum_axis_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_1_{axis=0, func='nansum', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_all
@@ -778,14 +408,9 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_3
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_31_{axis=1, func='nanprod', keepdims=False, shape=(20, 30, 40), transpose_axes=False}::test_nansum_axis_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_with_scalar_append
 
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arccos
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arcsin
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arctan
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arctan2
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_deg2rad
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_hypot
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_rad2deg
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_tan
 
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_6_{a_shape=(3, 2), b_shape=(3, 2), shape=(4, 3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_7_{a_shape=(3, 2), b_shape=(3, 2), shape=(3, 2)}::test_beta
@@ -958,123 +583,14 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeib
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_3_{a_shape=(3, 2), shape=(3, 2)}::test_weibull
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_3_{a_shape=(3, 2), shape=(3, 2)}::test_weibull_for_inf_a
 
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedWithSorter::test_nonint_sorter
 
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_invalid_negative_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_non_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_none_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_two_or_more_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_argsort_original_array_not_modified_multi_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_argsort_original_array_not_modified_one_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_non_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_sequence_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_zero_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_non_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_sequence_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_zero_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_negative_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_non_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_none_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_sequence_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_zero_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_negative_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_non_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_none_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_sequence_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_zero_dim
-
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_0_{mode='valid'}::test_correlate_diff_types
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_1_{mode='full'}::test_correlate_diff_types
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_2_{mode='same'}::test_correlate_diff_types
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_0_{mode='valid'}::test_correlate_diff_types
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_1_{mode='full'}::test_correlate_diff_types
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_2_{mode='same'}::test_correlate_diff_types
-
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_axis1
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_axis2
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_invalid_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_keepdims_axis1
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_keepdims_noaxis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_noaxis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_0_{axis=(0, 1), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_1_{axis=(0, 1), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_2_{axis=(0, -1), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_3_{axis=(0, -1), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_4_{axis=(1, 2), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_5_{axis=(1, 2), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_6_{axis=(1,), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_7_{axis=(1,), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_axis_weights
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_mean_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_mean_axis
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_all
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_axis_ddof
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_all
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_axis_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_axis
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_all
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_axis_ddof
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_all
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_0_{func='mean', params=((), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_1_{func='mean', params=((0,), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_2_{func='mean', params=((0, 0), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_3_{func='mean', params=((0, 0), 1)}::test_external_mean_zero_len
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_4_{func='mean', params=((0, 0, 0), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_5_{func='mean', params=((0, 0, 0), (0, 2))}::test_external_mean_zero_len
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_6_{func='std', params=((), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_9_{func='std', params=((0, 0), 1)}::test_external_mean_zero_len
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_11_{func='std', params=((0, 0, 0), (0, 2))}::test_external_mean_zero_len
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_12_{func='var', params=((), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_15_{func='var', params=((0, 0), 1)}::test_external_mean_zero_len
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_17_{func='var', params=((0, 0, 0), (0, 2))}::test_external_mean_zero_len

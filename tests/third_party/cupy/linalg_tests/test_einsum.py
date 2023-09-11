@@ -5,6 +5,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -310,7 +311,9 @@ class TestEinSumLarge(unittest.TestCase):
         self.operands = operands
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @testing.numpy_cupy_allclose(contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        type_check=has_support_aspect64(), contiguous_check=False
+    )
     def test_einsum(self, xp):
         # TODO(kataoka): support memory efficient cupy.einsum
         with warnings.catch_warnings(record=True) as ws:

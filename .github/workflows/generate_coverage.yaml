@@ -49,8 +49,7 @@ jobs:
           conda list
       - name: Build dpnp with coverage
         run: |
-          python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py \
-                                                        --ignore tests/test_strides.py"
+          python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py"
       - name: Install coverall dependencies
         run: |
           sudo gem install coveralls-lcov
