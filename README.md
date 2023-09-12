@@ -15,11 +15,19 @@
 ## Build from source:
 Ensure you have the following prerequisite packages installed:
 
-- `mkl-devel-dpcpp`
+- `cython`
+- `cmake >=3.21`
 - `dpcpp_linux-64` or `dpcpp_win-64` (depending on your OS)
-- `onedpl-devel`
-- `tbb-devel`
 - `dpctl`
+- `mkl-devel-dpcpp`
+- `onedpl-devel`
+- `ninja`
+- `numpy >=1.19,<1.25a0`
+- `python`
+- `scikit-build`
+- `setuptools`
+- `sysroot_linux-64 >=2.28` (only on Linux OS)
+- `tbb-devel`
 
 After these steps, `dpnp` can be built in debug mode as follows:
 
