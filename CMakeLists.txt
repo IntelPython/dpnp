@@ -37,7 +37,7 @@ set(MKL_INTERFACE "ilp64")
 find_package(MKL REQUIRED)
 
 set(ONEDPL_PAR_BACKEND tbb)
-find_package(oneDPL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
+find_package(oneDPL REQUIRED)
 
 include(GNUInstallDirs)
 

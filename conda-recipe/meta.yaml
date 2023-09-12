@@ -15,7 +15,7 @@ requirements:
       - git
       - dpctl >=0.14.5
       - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2024.0*') }}
-      - onedpl-devel
+      - onedpl-devel >=2022.3*
       - tbb-devel
       - wheel
       - scikit-build
