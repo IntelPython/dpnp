@@ -14,14 +14,14 @@ requirements:
       - ninja
       - git
       - dpctl >=0.14.5
-      - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2024.0.0') }}
+      - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2024.0*') }}
       - onedpl-devel
       - tbb-devel
       - wheel
       - scikit-build
     build:
       - {{ compiler('cxx') }}
-      - {{ compiler('dpcpp') }}  >=2024.0.0  # [not osx]
+      - {{ compiler('dpcpp') }}  >=2024.0*  # [not osx]
       - sysroot_linux-64 >=2.28 # [linux]
     run:
       - python
