@@ -4,13 +4,64 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.12.2] - TBA
+## [0.13.0] - TBA
 
 ### Added
 
+* Added implementation of flipping functions: `dpnp.flip`, `dpnp.fliplr` and `dpnp.flipud` [#1543](https://github.com/IntelPython/dpnp/pull/1543)
+* Added implementation of `dpnp.rint` function through `dpnp.round` call [#1537](https://github.com/IntelPython/dpnp/pull/1537)
+* Added in-place support for arithmetic operators [#1530](https://github.com/IntelPython/dpnp/pull/1530)
+* Dropped build and uploading the package with `python=3.8` to `dppy/label/dev` channel of Anaconda [#1534](https://github.com/IntelPython/dpnp/pull/1534)
+* Implemented build and uploading the package with `python=3.11` to `dppy/label/dev` channel of Anaconda [#1501](https://github.com/IntelPython/dpnp/pull/1501)
+* Added the versioneer to compute a product version number [#1497](https://github.com/IntelPython/dpnp/pull/1497)
+* Added `cython` support of `3.0.0` or above version [#1495](https://github.com/IntelPython/dpnp/pull/1495)
+
 ### Changed
 
+* Reworked `dpnp.hstack` and `dpnp.atleast_1d` through existing functions to get rid of falling back on NumPy [#1544](https://github.com/IntelPython/dpnp/pull/1544)
+* Reworked `dpnp.asfarray` through existing functions to get rid of falling back on NumPy [#1542](https://github.com/IntelPython/dpnp/pull/1542)
+* Converted from `raw` to `multi_ptr` with `address_space_cast` to adopt towards changes introduced in `SYCL 2020` [#1538](https://github.com/IntelPython/dpnp/pull/1538)
+* Updated install instruction via `pip` [#1531](https://github.com/IntelPython/dpnp/pull/1531)
+* Reworked `dpnp.copyto` through existing functions instead of a separate kernel [#1516](https://github.com/IntelPython/dpnp/pull/1516)
+* Aligned default order value with NumPy in asarray-like functions [#1526](https://github.com/IntelPython/dpnp/pull/1526)
+* Created unary and binary elementwise functions at module import [#1522](https://github.com/IntelPython/dpnp/pull/1522)
+* Redesigned trigonometric functions through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1545](https://github.com/IntelPython/dpnp/pull/1545)
+* Added `dpnp.signbit` and `dpnp.proj` functions implemented through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1535](https://github.com/IntelPython/dpnp/pull/1535)
+* Redesigned `dpnp.round` and `dpnp.around` functions through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1520](https://github.com/IntelPython/dpnp/pull/1520)
+* Redesigned `dpnp.sign` and `dpnp.negative` functions through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1523](https://github.com/IntelPython/dpnp/pull/1523)
+* Redesigned `dpnp.conjugate` and `dpnp.conj` functions through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1519](https://github.com/IntelPython/dpnp/pull/1519)
+* Redesigned `dpnp.ceil`, `dpnp.floor` and `dpnp.trunc` functions through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1518](https://github.com/IntelPython/dpnp/pull/1518)
+* Redesigned `dpnp.remainder` and `dpnp.mod` functions through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1515](https://github.com/IntelPython/dpnp/pull/1515)
+* Redesigned `dpnp.power` function through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1476](https://github.com/IntelPython/dpnp/pull/1476)
+* Leveraged `dpctl.tensor` implementation for `dpnp.put` function [#1529](https://github.com/IntelPython/dpnp/pull/1529)
+* Leveraged `dpctl.tensor` implementation for `dpnp.roll` and `dpnp.rollaxis` functions [#1517](https://github.com/IntelPython/dpnp/pull/1517)
+* Leveraged `dpctl.tensor` implementation for `dpnp.copy` function [#1540](https://github.com/IntelPython/dpnp/pull/1540)
+* Leveraged `dpctl.tensor` implementation for `dpnp.expand_dims` and `dpnp.swapaxes` functions [#1532](https://github.com/IntelPython/dpnp/pull/1532)
+* Leveraged `dpctl.tensor` implementation for bitwise operations [#1508](https://github.com/IntelPython/dpnp/pull/1508)
+* Leveraged `dpctl.tensor` implementation for `dpnp.all` and `dpnp.any` functions [#1512](https://github.com/IntelPython/dpnp/pull/1512)
+* Leveraged `dpctl.tensor` implementation for `dpnp.stack` function [#1509](https://github.com/IntelPython/dpnp/pull/1509)
+* Leveraged `dpctl.tensor` implementation for `dpnp.concatenate` function [#1507](https://github.com/IntelPython/dpnp/pull/1507)
+* Leveraged `dpctl.tensor` implementation for `dpnp.isnan`, `dpnp.isinf` and `dpnp.isfinite` functions [#1504](https://github.com/IntelPython/dpnp/pull/1504)
+* Leveraged `dpctl.tensor` implementation for `dpnp.take` function [#1492](https://github.com/IntelPython/dpnp/pull/1492)
+* Refreshed API References block in the documentation [#1490](https://github.com/IntelPython/dpnp/pull/1490)
+* Refreshed documentation to reflect an actual product behavior [#1485](https://github.com/IntelPython/dpnp/pull/1485)
+* Upgraded the build flow to use newer `pybind11=2.11.1` version [#1510](https://github.com/IntelPython/dpnp/pull/1510)
+* Updated pre-commit hooks to run with `flake8=6.1.0` and `black=23.7.0` [#1505](https://github.com/IntelPython/dpnp/pull/1505)
+* Pinned DPC++ and OneMKL versions to `2023.2`` release [#1496](https://github.com/IntelPython/dpnp/pull/1496)
+* Added a specialized kernel for F-contiguous arrays to `dpnp.sum` with `axis=1` [#1489](https://github.com/IntelPython/dpnp/pull/1489)
+* Removed a workaround to Klockwork since it is not used anymore due to transition to Coverity tool [#1493](https://github.com/IntelPython/dpnp/pull/1493)
+
 ### Fixed
+
+* Resolved `Logically dead code` issue addressed by Coverity scan [#1541](https://github.com/IntelPython/dpnp/pull/1541)
+* Resolved `Arguments in wrong order` issue addressed by Coverity scan [#1513](https://github.com/IntelPython/dpnp/pull/1513)
+* Resolved `Pointer to local outside scope` issue addressed by Coverity scan [#1514](https://github.com/IntelPython/dpnp/pull/1514)
+* Fixed assigning a value to potentially none-valued dictionary coverage generation script [#1511](https://github.com/IntelPython/dpnp/pull/1511)
+* Resolved issues with running `dpnp.allclose` function on a device without fp64 support [#1536](https://github.com/IntelPython/dpnp/pull/1536)
+* Resolved issues with running FFT functions on a device without fp64 support [#1524](https://github.com/IntelPython/dpnp/pull/1524)
+* Resolved issues with running mathematical functions on a device without fp64 support [#1502](https://github.com/IntelPython/dpnp/pull/1502)
+* Resolved issues with running random functions on a device without fp64 support [#1498](https://github.com/IntelPython/dpnp/pull/1498)
+* Resolved issues with running statistics functions on a device without fp64 support [#1494](https://github.com/IntelPython/dpnp/pull/1494)
 
 ## [0.12.1] - 07/18/2023
 
@@ -29,8 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Pinned to `dpctl>=0.14.5` as host and run dependencies [#1481](https://github.com/IntelPython/dpnp/pull/1481)
 * Pinned dependent `cython` package to a version less than `3.0.0` [#1480](https://github.com/IntelPython/dpnp/pull/1480)
 * Added a specialized kernel for `dpnp.sum` with `axis=0` as a pybind11 extension [#1479](https://github.com/IntelPython/dpnp/pull/1479)
-* Redesigned `dpnp.square` function through pybind11 extension of OneMKL call where possible or Leveraging on `dpctl.tensor` implementation [#1473](https://github.com/IntelPython/dpnp/pull/1473)
-* Redesigned `dpnp.cos` and `dpnp.sin` functions through pybind11 extension of OneMKL calls where possible or Leveraging on `dpctl.tensor` implementation [#1471](https://github.com/IntelPython/dpnp/pull/1471)
+* Redesigned `dpnp.square` function through pybind11 extension of OneMKL call where possible or leveraging on `dpctl.tensor` implementation [#1473](https://github.com/IntelPython/dpnp/pull/1473)
+* Redesigned `dpnp.cos` and `dpnp.sin` functions through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1471](https://github.com/IntelPython/dpnp/pull/1471)
 * Redesigned `dpnp.sqrt` function through pybind11 extension of OneMKL call where possible or leveraging on `dpctl.tensor` implementation [#1470](https://github.com/IntelPython/dpnp/pull/1470)
 * Redesigned `dpnp.log` function through pybind11 extension of OneMKL call where possible or leveraging on `dpctl.tensor` implementation [#1469](https://github.com/IntelPython/dpnp/pull/1469)
 * Leveraged `dpctl.tensor` implementation for logical operations [#1464](https://github.com/IntelPython/dpnp/pull/1464)
