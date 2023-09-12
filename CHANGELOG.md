@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Reworked `dpnp.copyto` through existing functions instead of a separate kernel [#1516](https://github.com/IntelPython/dpnp/pull/1516)
 * Aligned default order value with NumPy in asarray-like functions [#1526](https://github.com/IntelPython/dpnp/pull/1526)
 * Created unary and binary elementwise functions at module import [#1522](https://github.com/IntelPython/dpnp/pull/1522)
-* Redesigned trigonometric functions through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1545](https://github.com/IntelPython/dpnp/pull/1545)
+* Redesigned trigonometric and hyperbolic functions through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1545](https://github.com/IntelPython/dpnp/pull/1545)
 * Added `dpnp.signbit` and `dpnp.proj` functions implemented through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1535](https://github.com/IntelPython/dpnp/pull/1535)
 * Redesigned `dpnp.round` and `dpnp.around` functions through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1520](https://github.com/IntelPython/dpnp/pull/1520)
 * Redesigned `dpnp.sign` and `dpnp.negative` functions through pybind11 extension of OneMKL calls where possible or leveraging on `dpctl.tensor` implementation [#1523](https://github.com/IntelPython/dpnp/pull/1523)
