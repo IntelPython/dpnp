@@ -13,7 +13,7 @@ requirements:
       - cmake >=3.21
       - ninja
       - git
-      - dpctl >=0.14.5
+      - dpctl >=0.15.0
       - mkl-devel-dpcpp {{ environ.get('MKL_VER', '>=2023.2.0') }}
       - onedpl-devel
       - tbb-devel
