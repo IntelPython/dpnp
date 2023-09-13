@@ -832,7 +832,8 @@ class dpnp_array:
         >>> import dpnp as np
         >>> x = np.sqrt(np.array([1+0j, 0+1j]))
         >>> x.imag
-        array([ 0. ,  0.70710678])
+        array([0.        , 0.70710677])
+
         """
         return dpnp.imag(self)
 
@@ -841,7 +842,7 @@ class dpnp_array:
         if dpnp.issubsctype(self.dtype, dpnp.complexfloating):
             dpnp.copyto(self._array_obj.imag, value)
         else:
-            raise TypeError("dpnp.ndarray does not have imaginary part to set")
+            raise TypeError("array does not have imaginary part to set")
 
     def item(self, id=None):
         """
@@ -1010,7 +1011,8 @@ class dpnp_array:
         >>> import dpnp as np
         >>> x = np.sqrt(np.array([1+0j, 0+1j]))
         >>> x.real
-        array([ 1. ,  0.70710678])
+        array([1.        , 0.70710677])
+
         """
         if dpnp.issubsctype(self.dtype, dpnp.complexfloating):
             return dpnp.real(self)

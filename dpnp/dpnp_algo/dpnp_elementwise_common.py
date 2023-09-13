@@ -1279,7 +1279,7 @@ Returns:
     dpnp.ndarray:
         An array containing the element-wise imaginary component of input.
         If the input is a real-valued data type, the returned array has
-        the same datat type. If the input is a complex floating-point
+        the same data type. If the input is a complex floating-point
         data type, the returned array has a floating-point data type
         with the same floating-point precision as complex input.
 """
@@ -2081,7 +2081,7 @@ Returns:
     dpnp.ndarray:
         An array containing the element-wise real component of input.
         If the input is a real-valued data type, the returned array has
-        the same datat type. If the input is a complex floating-point
+        the same data type. If the input is a complex floating-point
         data type, the returned array has a floating-point data type
         with the same floating-point precision as complex input.
 """
