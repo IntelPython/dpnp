@@ -430,6 +430,28 @@ def test_negative_boolean():
 
 @pytest.mark.parametrize(
     "data",
+    [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
+    ids=["[[1., -1.], [0.1, -0.1]]", "[-2, -1, 0, 1, 2]"],
+)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+def test_positive(data, dtype):
+    np_a = numpy.array(data, dtype=dtype)
+    dpnp_a = dpnp.array(data, dtype=dtype)
+
+    result = dpnp.positive(dpnp_a)
+    expected = numpy.positive(np_a)
+    assert_allclose(result, expected)
+
+
+def test_positive_boolean():
+    dpnp_a = dpnp.array([True, False])
+
+    with pytest.raises(TypeError):
+        dpnp.positive(dpnp_a)
+
+
+@pytest.mark.parametrize(
+    "data",
     [[2, 0, -2], [1.1, -1.1]],
     ids=["[2, 0, -2]", "[1.1, -1.1]"],
 )

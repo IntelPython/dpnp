@@ -344,7 +344,9 @@ class dpnp_array:
         """Return self|value."""
         return dpnp.bitwise_or(self, other)
 
-    # '__pos__',
+    def __pos__(self):
+        """Return +self."""
+        return dpnp.positive(self)
 
     def __pow__(self, other):
         """Return self**value."""

@@ -78,6 +78,7 @@ __all__ = [
     "dpnp_logical_xor",
     "dpnp_multiply",
     "dpnp_negative",
+    "dpnp_positive",
     "dpnp_not_equal",
     "dpnp_power",
     "dpnp_proj",
@@ -1960,6 +1961,48 @@ def dpnp_not_equal(x1, x2, out=None, order="K"):
     res_usm = not_equal_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_positive_docstring = """
+positive(x, out=None, order="K")
+
+Computes the numerical positive for each element `x_i` of input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the positive of `x`.
+"""
+
+
+positive_func = UnaryElementwiseFunc(
+    "positive", ti._positive_result_type, ti._positive, _positive_docstring
+)
+
+
+def dpnp_positive(x, out=None, order="K"):
+    """Invokes positive() from dpctl.tensor implementation for positive() function."""
+
+    # TODO: discuss with dpctl if the check is needed to be moved there
+    if not dpnp.isscalar(x) and x.dtype == dpnp.bool:
+        raise TypeError(
+            "DPNP boolean positive, the `+` operator, is not supported."
+        )
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = positive_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
