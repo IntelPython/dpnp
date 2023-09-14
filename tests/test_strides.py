@@ -68,6 +68,7 @@ def test_strides(func_name, dtype):
         "log1p",
         "log2",
         "negative",
+        "positive",
         "radians",
         "sign",
         "sin",
