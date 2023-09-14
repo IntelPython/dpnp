@@ -108,8 +108,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
         DPNP_FN_FULL_LIKE
-        DPNP_FN_HYPOT
-        DPNP_FN_HYPOT_EXT
         DPNP_FN_IDENTITY
         DPNP_FN_IDENTITY_EXT
         DPNP_FN_INV
@@ -384,8 +382,6 @@ cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 """
 Mathematical functions
 """
-cpdef dpnp_descriptor dpnp_hypot(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                 dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_fmax(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_fmin(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,

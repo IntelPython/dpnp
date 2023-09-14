@@ -57,6 +57,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_atanh,
     dpnp_cos,
     dpnp_cosh,
+    dpnp_hypot,
     dpnp_log,
     dpnp_sin,
     dpnp_sinh,
@@ -830,7 +831,18 @@ def expm1(x1):
     return call_origin(numpy.expm1, x1)
 
 
-def hypot(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
+def hypot(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Given the "legs" of a right triangle, return its hypotenuse.
 
@@ -869,60 +881,17 @@ def hypot(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
 
     """
 
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
-
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            if out is not None:
-                if not dpnp.is_supported_array_type(out):
-                    raise TypeError(
-                        "return array must be of supported array type"
-                    )
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
-                    )
-                    or None
-                )
-            else:
-                out_desc = None
-
-            return dpnp_hypot(
-                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.hypot, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    return check_nd_call_func(
+        numpy.hypot,
+        dpnp_hypot,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 

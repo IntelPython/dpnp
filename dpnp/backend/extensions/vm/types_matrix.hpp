@@ -293,6 +293,21 @@ struct FloorOutputType
 
 /**
  * @brief A factory to define pairs of supported types for which
+ * MKL VM library provides support in oneapi::mkl::vm::hypot<T> function.
+ *
+ * @tparam T Type of input vectors `a` and `b` and of result vector `y`.
+ */
+template <typename T>
+struct HypotOutputType
+{
+    using value_type = typename std::disjunction<
+        dpctl_td_ns::BinaryTypeMapResultEntry<T, double, T, double, double>,
+        dpctl_td_ns::BinaryTypeMapResultEntry<T, float, T, float, float>,
+        dpctl_td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
  * MKL VM library provides support in oneapi::mkl::vm::ln<T> function.
  *
  * @tparam T Type of input vector `a` and of result vector `y`.

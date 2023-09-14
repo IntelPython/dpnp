@@ -63,6 +63,7 @@ __all__ = [
     "dpnp_floor_divide",
     "dpnp_greater",
     "dpnp_greater_equal",
+    "dpnp_hypot",
     "dpnp_imag",
     "dpnp_invert",
     "dpnp_isfinite",
@@ -1259,6 +1260,67 @@ def dpnp_greater_equal(x1, x2, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = greater_equal_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_hypot_docstring_ = """
+hypot(x1, x2, out=None, order="K")
+Calculates the hypotenuse for a right triangle with "legs" `x1_i` and `x2_i` of
+input arrays `x1` and `x2`.
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have a real-valued floating-point
+        data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have a real-valued
+        floating-point data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise hypotenuse. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_hypot(src1, src2, dst, sycl_queue, depends=None):
+    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_hypot_to_call(sycl_queue, src1, src2, dst):
+        # call pybind11 extension for hypot() function from OneMKL VM
+        return vmi._hypot(sycl_queue, src1, src2, dst, depends)
+    return ti._hypot(src1, src2, dst, sycl_queue, depends)
+
+
+hypot_func = BinaryElementwiseFunc(
+    "hypot",
+    ti._hypot_result_type,
+    _call_hypot,
+    _hypot_docstring_,
+)
+
+
+def dpnp_hypot(x1, x2, out=None, order="K"):
+    """
+    Invokes hypot() function from pybind11 extension of OneMKL VM if possible.
+    Otherwise fully relies on dpctl.tensor implementation for hypot() function.
+    """
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = hypot_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
     return dpnp_array._create_from_usm_ndarray(res_usm)
