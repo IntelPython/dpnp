@@ -372,6 +372,11 @@ def test_1in_1out(func, data, usm_type):
             [[-1.0, -2.0, -4.0, -5.0]],
         ),
         pytest.param(
+            "logaddexp",
+            [[-1, 2, 5, 9]],
+            [[4, -3, 2, -8]], 
+        ),       
+        pytest.param(
             "maximum",
             [[0.0, 1.0, 2.0]],
             [[3.0, 4.0, 5.0]],

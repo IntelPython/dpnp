@@ -3,6 +3,7 @@ import unittest
 import numpy
 import pytest
 
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -17,7 +18,7 @@ class TestExplog(unittest.TestCase):
         return getattr(xp, name)(a)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def check_binary(self, name, xp, dtype, no_complex=False):
         if no_complex:
             if numpy.dtype(dtype).kind == "c":
@@ -62,3 +63,11 @@ class TestExplog(unittest.TestCase):
     def test_logaddexp2_infinities(self, xp, dtype, val):
         a = xp.full((2, 3), val, dtype=dtype)
         return xp.logaddexp2(a, a)
+
+
+@pytest.mark.parametrize("val", [numpy.inf, -numpy.inf])
+@testing.for_float_dtypes()
+@testing.numpy_cupy_allclose()
+def test_logaddexp_infinities(xp, dtype, val):
+    a = xp.full((2, 3), val, dtype=dtype)
+    return xp.logaddexp(a, a)

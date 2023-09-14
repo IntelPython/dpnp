@@ -53,8 +53,6 @@ tests/test_umath.py::test_umaths[('ldexp', 'fi')]
 tests/test_umath.py::test_umaths[('ldexp', 'fl')]
 tests/test_umath.py::test_umaths[('ldexp', 'di')]
 tests/test_umath.py::test_umaths[('ldexp', 'dl')]
-tests/test_umath.py::test_umaths[('logaddexp', 'ff')]
-tests/test_umath.py::test_umaths[('logaddexp', 'dd')]
 tests/test_umath.py::test_umaths[('logaddexp2', 'ff')]
 tests/test_umath.py::test_umaths[('logaddexp2', 'dd')]
 tests/test_umath.py::test_umaths[('nextafter', 'ff')]
@@ -625,7 +623,6 @@ tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_5_{reps
 
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_3_{name='angle', nargs=1}::test_raises_with_numpy_input
 
-tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2_infinities
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_copysign_float
