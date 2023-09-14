@@ -42,6 +42,7 @@ from dpnp.dpnp_utils import call_origin
 
 __all__ = [
     "check_nd_call_func",
+    "dpnp_abs",
     "dpnp_acos",
     "dpnp_acosh",
     "dpnp_add",
@@ -167,6 +168,63 @@ def check_nd_call_func(
         subok=subok,
         **kwargs,
     )
+
+
+_abs_docstring = """
+abs(x, out=None, order='K')
+
+Calculates the absolute value for each element `x_i` of input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise absolute values.
+        For complex input, the absolute value is its magnitude.
+        If `x` has a real-valued data type, the returned array has the
+        same data type as `x`. If `x` has a complex floating-point data type,
+        the returned array has a real-valued floating-point data type whose
+        precision matches the precision of `x`.
+"""
+
+
+def _call_abs(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_abs_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for abs() function from OneMKL VM
+        return vmi._abs(sycl_queue, src, dst, depends)
+    return ti._abs(src, dst, sycl_queue, depends)
+
+
+abs_func = UnaryElementwiseFunc(
+    "abs", ti._abs_result_type, _call_abs, _abs_docstring
+)
+
+
+def dpnp_abs(x, out=None, order="K"):
+    """
+    Invokes abs() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for abs() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = abs_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
 _acos_docstring = """

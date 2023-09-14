@@ -58,11 +58,9 @@
  */
 enum class DPNPFuncName : size_t
 {
-    DPNP_FN_NONE,         /**< Very first element of the enumeration */
-    DPNP_FN_ABSOLUTE,     /**< Used in numpy.absolute() impl  */
-    DPNP_FN_ABSOLUTE_EXT, /**< Used in numpy.absolute() impl, requires extra
-                             parameters */
-    DPNP_FN_ADD,          /**< Used in numpy.add() impl  */
+    DPNP_FN_NONE,     /**< Very first element of the enumeration */
+    DPNP_FN_ABSOLUTE, /**< Used in numpy.absolute() impl  */
+    DPNP_FN_ADD,      /**< Used in numpy.add() impl  */
     DPNP_FN_ADD_EXT, /**< Used in numpy.add() impl, requires extra parameters */
     DPNP_FN_ALL,     /**< Used in numpy.all() impl  */
     DPNP_FN_ALLCLOSE,     /**< Used in numpy.allclose() impl  */

@@ -33,8 +33,6 @@ from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
-        DPNP_FN_ABSOLUTE
-        DPNP_FN_ABSOLUTE_EXT
         DPNP_FN_ALLCLOSE
         DPNP_FN_ALLCLOSE_EXT
         DPNP_FN_ARANGE
