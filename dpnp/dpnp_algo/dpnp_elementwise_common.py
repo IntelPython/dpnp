@@ -1833,7 +1833,7 @@ Args:
         Default: "K".
 Returns:
     dpnp.ndarray:
-        An array containing the element-wise minima. The data type of
+        An array containing the element-wise maxima. The data type of
         the returned array is determined by the Type Promotion Rules.
 """
 
@@ -1879,7 +1879,7 @@ Args:
         Default: "K".
 Returns:
     dpnp.ndarray:
-        An array containing the element-wise maxima. The data type of
+        An array containing the element-wise minima. The data type of
         the returned array is determined by the Type Promotion Rules.
 """
 

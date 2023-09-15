@@ -993,12 +993,13 @@ def fmax(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Input array data types are limited by real-valued data types.
 
     See Also
     --------
-    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs..
+    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.
     :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignore NaNs.
+    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
     Examples
@@ -1097,12 +1098,13 @@ def fmin(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Input array data types are limited by real-valued data types.
 
     See Also
     --------
     :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
     :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignore NaNs.
+    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
     Examples
@@ -1438,7 +1440,7 @@ def maximum(
     >>> x1 = np.array([np.nan, 0, np.nan])
     >>> x2 = np.array([0, np.nan, np.nan])
     >>> np.maximum(x1, x2)
-    array([ nan,  nan, nan])
+    array([nan, nan, nan])
 
     >>> np.maximum(np.array(np.Inf), 1)
     array(inf)
@@ -1517,7 +1519,7 @@ def minimum(
     >>> x1 = np.array([np.nan, 0, np.nan])
     >>> x2 = np.array([0, np.nan, np.nan])
     >>> np.minimum(x1, x2)
-    array([ nan,  nan, nan])
+    array([nan, nan, nan])
 
     >>> np.minimum(np.array(-np.Inf), 1)
     array(-inf)
