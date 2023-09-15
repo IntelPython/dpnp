@@ -164,6 +164,8 @@ def test_strides_reciprocal(dtype, shape):
         "add",
         "arctan2",
         "divide",
+        "fmax",
+        "fmin",
         "hypot",
         "maximum",
         "minimum",

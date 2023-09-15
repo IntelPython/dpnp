@@ -357,6 +357,8 @@ def test_proj(device):
         pytest.param(
             "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
         ),
+        pytest.param("fmax", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
+        pytest.param("fmin", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
         pytest.param(
             "fmod",
             [-3.0, -2.0, -1.0, 1.0, 2.0, 3.0],

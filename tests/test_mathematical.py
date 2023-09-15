@@ -159,6 +159,18 @@ class TestMathematical:
     def test_divide(self, dtype, lhs, rhs):
         self._test_mathematical("divide", dtype, lhs, rhs)
 
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    def test_fmax(self, dtype, lhs, rhs):
+        self._test_mathematical("fmax", dtype, lhs, rhs, check_type=False)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    def test_fmin(self, dtype, lhs, rhs):
+        self._test_mathematical("fmin", dtype, lhs, rhs, check_type=False)
+
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
