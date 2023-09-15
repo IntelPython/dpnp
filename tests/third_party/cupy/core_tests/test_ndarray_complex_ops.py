@@ -47,7 +47,6 @@ class TestAngle(unittest.TestCase):
         return xp.angle(x)
 
 
-@testing.gpu
 class TestRealImag(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_almost_equal(accept_error=False)
