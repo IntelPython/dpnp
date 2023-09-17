@@ -839,6 +839,20 @@ class dpnp_array:
 
     @imag.setter
     def imag(self, value):
+        """
+        Set the imaginary part of the array.
+
+        For full documentation refer to :obj:`numpy.ndarray.imag`.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([1+2j, 3+4j, 5+6j])
+        >>> a.imag = 9
+        >>> a
+        array([1.+9.j, 3.+9.j, 5.+9.j])
+
+        """
         if dpnp.issubsctype(self.dtype, dpnp.complexfloating):
             dpnp.copyto(self._array_obj.imag, value)
         else:
@@ -1014,13 +1028,24 @@ class dpnp_array:
         array([1.        , 0.70710677])
 
         """
-        if dpnp.issubsctype(self.dtype, dpnp.complexfloating):
-            return dpnp.real(self)
-        else:
-            return self
+        return dpnp.real(self)
 
     @real.setter
     def real(self, value):
+        """
+        Set the real part of the array.
+
+        For full documentation refer to :obj:`numpy.ndarray.real`.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([1+2j, 3+4j, 5+6j])
+        >>> a.real = 9
+        >>> a
+        array([9.+2.j, 9.+4.j, 9.+6.j])
+
+        """
         dpnp.copyto(self._array_obj.real, value)
 
     # 'repeat',

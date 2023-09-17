@@ -1166,17 +1166,7 @@ def gradient(x1, *varargs, **kwargs):
     return call_origin(numpy.gradient, x1, *varargs, **kwargs)
 
 
-def imag(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
+def imag(x):
     """
     Return the imaginary part of the complex argument.
 
@@ -1190,9 +1180,6 @@ def imag(
     Limitations
     -----------
     Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -1217,17 +1204,12 @@ def imag(
 
     """
 
-    return check_nd_call_func(
-        numpy.imag,
-        dpnp_imag,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+    if dpnp.isscalar(x):
+        # input has to be an array
+        pass
+    else:
+        return dpnp_imag(x)
+    return call_origin(numpy.imag, x)
 
 
 def maximum(
@@ -2018,17 +2000,7 @@ def proj(
     )
 
 
-def real(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
+def real(x):
     """
     Return the real part of the complex argument.
 
@@ -2042,9 +2014,6 @@ def real(
     Limitations
     -----------
     Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -2072,18 +2041,15 @@ def real(
     array(1.)
 
     """
-
-    return check_nd_call_func(
-        numpy.real,
-        dpnp_real,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+    if dpnp.isscalar(x):
+        # input has to be an array
+        pass
+    else:
+        if dpnp.issubsctype(x.dtype, dpnp.complexfloating):
+            return dpnp_real(x)
+        else:
+            return x
+    return call_origin(numpy.real, x)
 
 
 def remainder(
