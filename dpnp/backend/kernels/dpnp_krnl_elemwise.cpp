@@ -444,15 +444,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_EXP][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_exp_c_default<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_EXP_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_exp_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_EXP_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_exp_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_EXP_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_exp_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_EXP_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_exp_c_ext<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_EXPM1][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_expm1_c_default<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_EXPM1][eft_LNG][eft_LNG] = {
@@ -461,15 +452,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
         eft_FLT, (void *)dpnp_expm1_c_default<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EXPM1][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_expm1_c_default<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_EXPM1_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_expm1_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_EXPM1_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_expm1_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_EXPM1_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_expm1_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_EXPM1_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_expm1_c_ext<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_FABS][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_fabs_c_default<int32_t, double>};
@@ -507,15 +489,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_LOG10][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_log10_c_default<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_LOG10_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_log10_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_LOG10_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_log10_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_LOG10_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_log10_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_LOG10_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_log10_c_ext<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_LOG1P][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_log1p_c_default<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_LOG1P][eft_LNG][eft_LNG] = {
@@ -525,15 +498,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_LOG1P][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_log1p_c_default<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_LOG1P_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_log1p_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_LOG1P_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_log1p_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_LOG1P_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_log1p_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_LOG1P_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_log1p_c_ext<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_LOG2][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_log2_c_default<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_LOG2][eft_LNG][eft_LNG] = {
@@ -542,15 +506,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
         eft_FLT, (void *)dpnp_log2_c_default<float, float>};
     fmap[DPNPFuncName::DPNP_FN_LOG2][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_log2_c_default<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_LOG2_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_log2_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_LOG2_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_log2_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_LOG2_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_log2_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_LOG2_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_log2_c_ext<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_LOG][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_log_c_default<int32_t, double>};

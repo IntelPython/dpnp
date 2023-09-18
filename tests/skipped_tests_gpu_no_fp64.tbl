@@ -17,44 +17,21 @@ tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array2]
 
 tests/test_strides.py::test_strides_1arg[(10,)-int32-cbrt]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-degrees]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-exp2]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-expm1]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-log10]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-log1p]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-radians]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-cbrt]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-degrees]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-exp2]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-expm1]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-log10]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-log1p]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-radians]
 tests/test_strides.py::test_strides_1arg[(10,)-None-cbrt]
 tests/test_strides.py::test_strides_1arg[(10,)-None-degrees]
-tests/test_strides.py::test_strides_1arg[(10,)-None-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-None-exp2]
-tests/test_strides.py::test_strides_1arg[(10,)-None-expm1]
 tests/test_strides.py::test_strides_1arg[(10,)-None-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-None-log10]
-tests/test_strides.py::test_strides_1arg[(10,)-None-log1p]
-tests/test_strides.py::test_strides_1arg[(10,)-None-log2]
 tests/test_strides.py::test_strides_1arg[(10,)-None-radians]
 
 tests/test_umath.py::test_umaths[('floor_divide', 'ff')]
-
-tests/test_umath.py::TestExp::test_exp
-tests/test_umath.py::TestExp::test_invalid_dtype[numpy.float32]
-tests/test_umath.py::TestExp::test_invalid_dtype[numpy.int64]
-tests/test_umath.py::TestExp::test_invalid_dtype[numpy.int32]
-tests/test_umath.py::TestExp::test_invalid_shape[(0,)]
-tests/test_umath.py::TestExp::test_invalid_shape[(15, )]
-tests/test_umath.py::TestExp::test_invalid_shape[(2,2)]
 
 tests/test_umath.py::TestSqrt::test_sqrt_complex[complex64]
 
@@ -340,13 +317,7 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_para
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1824_{arg1=-2.0, arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='fmod', use_dtype=True}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1825_{arg1=-2.0, arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='fmod', use_dtype=False}::test_binary
 
-tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_exp
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_exp2
-tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_expm1
-tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_log
-tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_log10
-tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_log1p
-tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_log2
 
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_copysign_combination
 

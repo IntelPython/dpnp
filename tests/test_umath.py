@@ -509,39 +509,46 @@ class TestsLog:
 
 
 class TestExp:
-    def test_exp(self):
-        array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=numpy.float64)
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    def test_exp(self, dtype):
+        np_array = numpy.arange(10, dtype=dtype)
+        np_out = numpy.empty(10, dtype=numpy.float64)
 
         # DPNP
-        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
-        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        dp_out_dtype = dpnp.float32
+        if has_support_aspect64() and dtype != dpnp.float32:
+            dp_out_dtype = dpnp.float64
+
+        dp_array = dpnp.array(np_array, dtype=dp_out_dtype)
+        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
         result = dpnp.exp(dp_array, out=dp_out)
 
         # original
-        np_array = numpy.array(array_data, dtype=numpy.float64)
-        expected = numpy.exp(np_array, out=out)
+        expected = numpy.exp(np_array, out=np_out)
 
-        assert_array_equal(expected, result)
+        tol = numpy.finfo(dtype=result.dtype).resolution
+        assert_allclose(expected, result.asnumpy(), rtol=tol)
 
     @pytest.mark.parametrize(
-        "dtype",
-        [numpy.float32, numpy.int64, numpy.int32],
-        ids=["numpy.float32", "numpy.int64", "numpy.int32"],
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
     )
     def test_invalid_dtype(self, dtype):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.exp(dp_array, out=dp_out)
 
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
-    def test_invalid_shape(self, shape):
-        dp_array = dpnp.arange(10, dtype=dpnp.float64)
-        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
 
         with pytest.raises(ValueError):
             dpnp.exp(dp_array, out=dp_out)
