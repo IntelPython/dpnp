@@ -2389,12 +2389,14 @@ def sum(
                 (
                     axis == (0,)
                     and x.flags.c_contiguous
-                    and 32 <= x.shape[1] <= 512
+                    and 32 <= x.shape[1] <= 1024
+                    and x.shape[0] > x.shape[1]
                 )
                 or (
                     axis == (1,)
                     and x.flags.f_contiguous
-                    and 32 <= x.shape[0] <= 512
+                    and 32 <= x.shape[0] <= 1024
+                    and x.shape[1] > x.shape[0]
                 )
             )
         ):
