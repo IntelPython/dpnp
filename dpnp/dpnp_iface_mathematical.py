@@ -2382,9 +2382,21 @@ def sum(
     elif where is not True:
         pass
     else:
-        if len(x.shape) == 2 and (
-            (axis == (0,) and x.flags.c_contiguous)
-            or (axis == (1,) and x.flags.f_contiguous)
+        if (
+            len(x.shape) == 2
+            and x.itemsize == 4
+            and (
+                (
+                    axis == (0,)
+                    and x.flags.c_contiguous
+                    and 32 <= x.shape[1] <= 512
+                )
+                or (
+                    axis == (1,)
+                    and x.flags.f_contiguous
+                    and 32 <= x.shape[0] <= 512
+                )
+            )
         ):
             from dpctl.tensor._reduction import _default_reduction_dtype
 
