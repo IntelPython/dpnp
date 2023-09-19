@@ -4,22 +4,19 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
 def _get_hermitian(xp, a, UPLO):
-    # TODO: remove wrapping, but now there is no dpnp_array.swapaxes()
-    a = _wrap_as_numpy_array(xp, a)
-    _xp = numpy
-
     if UPLO == "U":
-        _a = _xp.triu(a) + _xp.triu(a, k=1).swapaxes(-2, -1).conj()
+        return xp.triu(a) + xp.triu(a, k=1).swapaxes(-2, -1).conj()
     else:
-        _a = _xp.tril(a) + _xp.tril(a, k=-1).swapaxes(-2, -1).conj()
-    return xp.array(_a)
+        return xp.tril(a) + xp.tril(a, k=-1).swapaxes(-2, -1).conj()
 
 
-# TODO: remove once all required functionality is supported
+# TODO:
+# remove once dpnp.dot and dpnp.matmul support complex types
 def _wrap_as_numpy_array(xp, a):
     return a.asnumpy() if xp is cupy else a
 
@@ -33,7 +30,12 @@ def _wrap_as_numpy_array(xp, a):
 )
 class TestEigenvalue(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3,
+        atol=1e-4,
+        type_check=has_support_aspect64(),
+        contiguous_check=False,
+    )
     def test_eigh(self, xp, dtype):
         if xp == numpy and dtype == numpy.float16:
             # NumPy's eigh does not support float16
@@ -190,7 +192,7 @@ class TestEigenvalue(unittest.TestCase):
 )
 class TestEigenvalueEmpty(unittest.TestCase):
     @testing.for_dtypes("ifdFD")
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_eigh(self, xp, dtype):
         a = xp.empty(self.shape, dtype=dtype)
         assert a.size == 0

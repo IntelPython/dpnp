@@ -1,4 +1,3 @@
-import operator
 import tempfile
 from math import prod
 
@@ -10,7 +9,6 @@ from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
     assert_array_equal,
-    assert_raises,
 )
 
 import dpnp
@@ -31,6 +29,7 @@ from .helper import (
         pytest.param("asarray", {"like": dpnp.array([1, 5])}),
         pytest.param("ascontiguousarray", {"like": dpnp.zeros(4)}),
         pytest.param("asfortranarray", {"like": dpnp.empty((2, 4))}),
+        pytest.param("copy", {"subok": True}),
     ],
 )
 def test_array_copy_exception(func, kwargs):

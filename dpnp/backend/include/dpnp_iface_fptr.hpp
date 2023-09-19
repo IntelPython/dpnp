@@ -71,26 +71,12 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ANY,          /**< Used in numpy.any() impl  */
     DPNP_FN_ARANGE,       /**< Used in numpy.arange() impl  */
     DPNP_FN_ARCCOS,       /**< Used in numpy.arccos() impl  */
-    DPNP_FN_ARCCOS_EXT,   /**< Used in numpy.arccos() impl, requires extra
-                             parameters */
     DPNP_FN_ARCCOSH,      /**< Used in numpy.arccosh() impl  */
-    DPNP_FN_ARCCOSH_EXT,  /**< Used in numpy.arccosh() impl, requires extra
-                             parameters */
     DPNP_FN_ARCSIN,       /**< Used in numpy.arcsin() impl  */
-    DPNP_FN_ARCSIN_EXT,   /**< Used in numpy.arcsin() impl, requires extra
-                             parameters */
     DPNP_FN_ARCSINH,      /**< Used in numpy.arcsinh() impl  */
-    DPNP_FN_ARCSINH_EXT,  /**< Used in numpy.arcsinh() impl, requires extra
-                             parameters */
     DPNP_FN_ARCTAN,       /**< Used in numpy.arctan() impl  */
-    DPNP_FN_ARCTAN_EXT,   /**< Used in numpy.arctan() impl, requires extra
-                             parameters */
     DPNP_FN_ARCTAN2,      /**< Used in numpy.arctan2() impl  */
-    DPNP_FN_ARCTAN2_EXT,  /**< Used in numpy.arctan2() impl, requires extra
-                             parameters */
     DPNP_FN_ARCTANH,      /**< Used in numpy.arctanh() impl  */
-    DPNP_FN_ARCTANH_EXT,  /**< Used in numpy.arctanh() impl, requires extra
-                             parameters */
     DPNP_FN_ARGMAX,       /**< Used in numpy.argmax() impl  */
     DPNP_FN_ARGMAX_EXT,   /**< Used in numpy.argmax() impl, requires extra
                              parameters */
@@ -101,8 +87,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGSORT_EXT,  /**< Used in numpy.argsort() impl, requires extra
                              parameters */
     DPNP_FN_AROUND,       /**< Used in numpy.around() impl  */
-    DPNP_FN_AROUND_EXT,   /**< Used in numpy.around() impl, requires extra
-                             parameters */
     DPNP_FN_ASTYPE,       /**< Used in numpy.astype() impl  */
     DPNP_FN_ASTYPE_EXT,   /**< Used in numpy.astype() impl, requires extra
                              parameters */
@@ -134,9 +118,7 @@ enum class DPNPFuncName : size_t
                               parameters */
     DPNP_FN_COS,           /**< Used in numpy.cos() impl  */
     DPNP_FN_COSH,          /**< Used in numpy.cosh() impl  */
-    DPNP_FN_COSH_EXT, /**< Used in numpy.cosh() impl, requires extra parameters
-                       */
-    DPNP_FN_COUNT_NONZERO,     /**< Used in numpy.count_nonzero() impl  */
+    DPNP_FN_COUNT_NONZERO, /**< Used in numpy.count_nonzero() impl  */
     DPNP_FN_COUNT_NONZERO_EXT, /**< Used in numpy.count_nonzero() impl, requires
                                   extra parameters */
     DPNP_FN_COV,               /**< Used in numpy.cov() impl  */
@@ -292,15 +274,12 @@ enum class DPNPFuncName : size_t
                               parameters */
     DPNP_FN_PLACE,         /**< Used in numpy.place() impl  */
     DPNP_FN_POWER,         /**< Used in numpy.power() impl  */
-    DPNP_FN_POWER_EXT,     /**< Used in numpy.power() impl, requires extra
-                              parameters */
     DPNP_FN_PROD,          /**< Used in numpy.prod() impl  */
     DPNP_FN_PROD_EXT, /**< Used in numpy.prod() impl, requires extra parameters
                        */
     DPNP_FN_PTP,      /**< Used in numpy.ptp() impl  */
     DPNP_FN_PTP_EXT, /**< Used in numpy.ptp() impl, requires extra parameters */
     DPNP_FN_PUT,     /**< Used in numpy.put() impl  */
-    DPNP_FN_PUT_EXT, /**< Used in numpy.put() impl, requires extra parameters */
     DPNP_FN_PUT_ALONG_AXIS,     /**< Used in numpy.put_along_axis() impl  */
     DPNP_FN_PUT_ALONG_AXIS_EXT, /**< Used in numpy.put_along_axis() impl,
                                    requires extra parameters */
@@ -441,9 +420,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SIGN,             /**< Used in numpy.sign() impl  */
     DPNP_FN_SIN,              /**< Used in numpy.sin() impl  */
     DPNP_FN_SINH,             /**< Used in numpy.sinh() impl  */
-    DPNP_FN_SINH_EXT, /**< Used in numpy.sinh() impl, requires extra parameters
-                       */
-    DPNP_FN_SORT,     /**< Used in numpy.sort() impl  */
+    DPNP_FN_SORT,             /**< Used in numpy.sort() impl  */
     DPNP_FN_SORT_EXT, /**< Used in numpy.sort() impl, requires extra parameters
                        */
     DPNP_FN_SQRT,     /**< Used in numpy.sqrt() impl  */
@@ -462,10 +439,7 @@ enum class DPNPFuncName : size_t
                         parameters */
     DPNP_FN_TAKE,    /**< Used in numpy.take() impl  */
     DPNP_FN_TAN,     /**< Used in numpy.tan() impl  */
-    DPNP_FN_TAN_EXT, /**< Used in numpy.tan() impl, requires extra parameters */
     DPNP_FN_TANH,    /**< Used in numpy.tanh() impl  */
-    DPNP_FN_TANH_EXT,  /**< Used in numpy.tanh() impl, requires extra parameters
-                        */
     DPNP_FN_TRANSPOSE, /**< Used in numpy.transpose() impl  */
     DPNP_FN_TRACE,     /**< Used in numpy.trace() impl  */
     DPNP_FN_TRACE_EXT, /**< Used in numpy.trace() impl, requires extra

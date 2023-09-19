@@ -233,15 +233,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_ARCCOS][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_acos_c_default<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_ARCCOS_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_acos_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_ARCCOS_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_acos_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_ARCCOS_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_acos_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_ARCCOS_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_acos_c_ext<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_ARCCOSH][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_acosh_c_default<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_ARCCOSH][eft_LNG][eft_LNG] = {
@@ -250,15 +241,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
         eft_FLT, (void *)dpnp_acosh_c_default<float, float>};
     fmap[DPNPFuncName::DPNP_FN_ARCCOSH][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_acosh_c_default<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_ARCCOSH_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_acosh_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_ARCCOSH_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_acosh_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_ARCCOSH_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_acosh_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_ARCCOSH_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_acosh_c_ext<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_ARCSIN][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_asin_c_default<int32_t, double>};
@@ -269,15 +251,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_ARCSIN][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_asin_c_default<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_ARCSIN_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_asin_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_ARCSIN_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_asin_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_ARCSIN_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_asin_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_ARCSIN_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_asin_c_ext<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_ARCSINH][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_asinh_c_default<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_ARCSINH][eft_LNG][eft_LNG] = {
@@ -286,15 +259,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
         eft_FLT, (void *)dpnp_asinh_c_default<float, float>};
     fmap[DPNPFuncName::DPNP_FN_ARCSINH][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_asinh_c_default<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_ARCSINH_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_asinh_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_ARCSINH_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_asinh_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_ARCSINH_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_asinh_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_ARCSINH_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_asinh_c_ext<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_ARCTAN][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_atan_c_default<int32_t, double>};
@@ -305,15 +269,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_ARCTAN][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_atan_c_default<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_ARCTAN_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_atan_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_ARCTAN_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_atan_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_ARCTAN_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_atan_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_ARCTAN_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_atan_c_ext<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_ARCTANH][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_atanh_c_default<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_ARCTANH][eft_LNG][eft_LNG] = {
@@ -322,15 +277,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
         eft_FLT, (void *)dpnp_atanh_c_default<float, float>};
     fmap[DPNPFuncName::DPNP_FN_ARCTANH][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_atanh_c_default<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_ARCTANH_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_atanh_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_ARCTANH_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_atanh_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_ARCTANH_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_atanh_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_ARCTANH_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_atanh_c_ext<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_CBRT][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_cbrt_c_default<int32_t, double>};
@@ -452,15 +398,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
         eft_FLT, (void *)dpnp_cosh_c_default<float, float>};
     fmap[DPNPFuncName::DPNP_FN_COSH][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_cosh_c_default<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_COSH_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_cosh_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_COSH_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_cosh_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_COSH_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_cosh_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_COSH_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_cosh_c_ext<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_DEGREES][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_degrees_c_default<int32_t, double>};
@@ -660,15 +597,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_SINH][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_sinh_c_default<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_SINH_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_sinh_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_SINH_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_sinh_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_SINH_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_sinh_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_SINH_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_sinh_c_ext<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_SQRT][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_sqrt_c_default<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_SQRT][eft_LNG][eft_LNG] = {
@@ -693,15 +621,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_TAN][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_tan_c_default<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_TAN_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_tan_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_TAN_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_tan_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_TAN_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_tan_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_TAN_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_tan_c_ext<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_TANH][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_tanh_c_default<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_TANH][eft_LNG][eft_LNG] = {
@@ -710,15 +629,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
         eft_FLT, (void *)dpnp_tanh_c_default<float, float>};
     fmap[DPNPFuncName::DPNP_FN_TANH][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_tanh_c_default<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_TANH_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_tanh_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_TANH_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_tanh_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_TANH_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_tanh_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_TANH_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_tanh_c_ext<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_TRUNC][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_trunc_c_default<int32_t, double>};
@@ -1326,8 +1236,6 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
             {                                                                  \
                 constexpr size_t lws = 64;                                     \
                 constexpr unsigned int vec_sz = 8;                             \
-                constexpr sycl::access::address_space global_space =           \
-                    sycl::access::address_space::global_space;                 \
                                                                                \
                 auto gws_range = sycl::range<1>(                               \
                     ((result_size + lws * vec_sz - 1) / (lws * vec_sz)) *      \
@@ -1344,12 +1252,17 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                                                                                \
                     if (start + static_cast<size_t>(vec_sz) * max_sg_size <    \
                         result_size) {                                         \
-                        using input1_ptrT =                                    \
-                            sycl::multi_ptr<_DataType_input1, global_space>;   \
-                        using input2_ptrT =                                    \
-                            sycl::multi_ptr<_DataType_input2, global_space>;   \
-                        using result_ptrT =                                    \
-                            sycl::multi_ptr<_DataType_output, global_space>;   \
+                        auto input1_multi_ptr = sycl::address_space_cast<      \
+                            sycl::access::address_space::global_space,         \
+                            sycl::access::decorated::yes>(                     \
+                            &input1_data[start]);                              \
+                        auto input2_multi_ptr = sycl::address_space_cast<      \
+                            sycl::access::address_space::global_space,         \
+                            sycl::access::decorated::yes>(                     \
+                            &input2_data[start]);                              \
+                        auto result_multi_ptr = sycl::address_space_cast<      \
+                            sycl::access::address_space::global_space,         \
+                            sycl::access::decorated::yes>(&result[start]);     \
                                                                                \
                         sycl::vec<_DataType_output, vec_sz> res_vec;           \
                                                                                \
@@ -1363,11 +1276,9 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                                               _DataType_output>)               \
                             {                                                  \
                                 sycl::vec<_DataType_input1, vec_sz> x1 =       \
-                                    sg.load<vec_sz>(                           \
-                                        input1_ptrT(&input1_data[start]));     \
+                                    sg.load<vec_sz>(input1_multi_ptr);         \
                                 sycl::vec<_DataType_input2, vec_sz> x2 =       \
-                                    sg.load<vec_sz>(                           \
-                                        input2_ptrT(&input2_data[start]));     \
+                                    sg.load<vec_sz>(input2_multi_ptr);         \
                                                                                \
                                 res_vec = __vec_operation__;                   \
                             }                                                  \
@@ -1377,24 +1288,20 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                                 sycl::vec<_DataType_output, vec_sz> x1 =       \
                                     dpnp_vec_cast<_DataType_output,            \
                                                   _DataType_input1, vec_sz>(   \
-                                        sg.load<vec_sz>(input1_ptrT(           \
-                                            &input1_data[start])));            \
+                                        sg.load<vec_sz>(input1_multi_ptr));    \
                                 sycl::vec<_DataType_output, vec_sz> x2 =       \
                                     dpnp_vec_cast<_DataType_output,            \
                                                   _DataType_input2, vec_sz>(   \
-                                        sg.load<vec_sz>(input2_ptrT(           \
-                                            &input2_data[start])));            \
+                                        sg.load<vec_sz>(input2_multi_ptr));    \
                                                                                \
                                 res_vec = __vec_operation__;                   \
                             }                                                  \
                         }                                                      \
                         else {                                                 \
                             sycl::vec<_DataType_input1, vec_sz> x1 =           \
-                                sg.load<vec_sz>(                               \
-                                    input1_ptrT(&input1_data[start]));         \
+                                sg.load<vec_sz>(input1_multi_ptr);             \
                             sycl::vec<_DataType_input2, vec_sz> x2 =           \
-                                sg.load<vec_sz>(                               \
-                                    input2_ptrT(&input2_data[start]));         \
+                                sg.load<vec_sz>(input2_multi_ptr);             \
                                                                                \
                             for (size_t k = 0; k < vec_sz; ++k) {              \
                                 const _DataType_output input1_elem = x1[k];    \
@@ -1402,8 +1309,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                                 res_vec[k] = __operation__;                    \
                             }                                                  \
                         }                                                      \
-                        sg.store<vec_sz>(result_ptrT(&result[start]),          \
-                                         res_vec);                             \
+                        sg.store<vec_sz>(result_multi_ptr, res_vec);           \
                     }                                                          \
                     else {                                                     \
                         for (size_t k = start + sg.get_local_id()[0];          \
@@ -1569,13 +1475,6 @@ static void func_map_elemwise_2arg_3type_core(func_map_t &fmap)
                func_type_map_t::find_type<FT1>,
                func_type_map_t::find_type<FTs>>}),
      ...);
-    ((fmap[DPNPFuncName::DPNP_FN_POWER_EXT][FT1][FTs] =
-          {populate_func_types<FT1, FTs>(),
-           (void *)dpnp_power_c_ext<
-               func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>}),
-     ...);
     ((fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][FT1][FTs] =
           {populate_func_types<FT1, FTs>(),
            (void *)dpnp_subtract_c_ext<
@@ -1588,19 +1487,6 @@ static void func_map_elemwise_2arg_3type_core(func_map_t &fmap)
 template <DPNPFuncType FT1, DPNPFuncType... FTs>
 static void func_map_elemwise_2arg_3type_short_core(func_map_t &fmap)
 {
-    ((fmap[DPNPFuncName::DPNP_FN_ARCTAN2_EXT][FT1][FTs] =
-          {get_floating_res_type<FT1, FTs>(),
-           (void *)dpnp_arctan2_c_ext<
-               func_type_map_t::find_type<get_floating_res_type<FT1, FTs>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>,
-           get_floating_res_type<FT1, FTs, std::false_type>(),
-           (void *)dpnp_arctan2_c_ext<
-               func_type_map_t::find_type<
-                   get_floating_res_type<FT1, FTs, std::false_type>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>}),
-     ...);
     ((fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][FT1][FTs] =
           {get_floating_res_type<FT1, FTs>(),
            (void *)dpnp_copysign_c_ext<

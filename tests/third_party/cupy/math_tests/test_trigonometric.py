@@ -1,23 +1,24 @@
 import unittest
 
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
 class TestTrigonometric(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-5, type_check=False)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def check_unary(self, name, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return getattr(xp, name)(a)
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def check_binary(self, name, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
         return getattr(xp, name)(a, b)
 
-    @testing.for_dtypes(["f", "d"])
+    @testing.for_dtypes(["e", "f", "d"])
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_unary_unit(self, name, xp, dtype):
         a = xp.array([0.2, 0.4, 0.6, 0.8], dtype=dtype)

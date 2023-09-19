@@ -13,7 +13,6 @@ import dpnp
 from .helper import get_all_dtypes, get_float_complex_dtypes
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 @pytest.mark.parametrize(
     "data", [[1, 2, 3], [1.0, 2.0, 3.0]], ids=["[1, 2, 3]", "[1., 2., 3.]"]
@@ -330,16 +329,31 @@ class TestConcatenate:
         assert_array_equal(dp_out.asnumpy(), np_out)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    @pytest.mark.parametrize(
+        "casting", ["no", "equiv", "safe", "same_kind", "unsafe"]
+    )
+    def test_concatenate_casting(self, dtype, casting):
+        np_a = numpy.arange(2 * 3 * 7, dtype=dtype).reshape((2, 3, 7))
+
+        dp_a = dpnp.arange(2 * 3 * 7, dtype=dtype).reshape((2, 3, 7))
+
+        np_res = numpy.concatenate((np_a, np_a), axis=2, casting=casting)
+        dp_res = dpnp.concatenate((dp_a, dp_a), axis=2, casting=casting)
+
+        assert_array_equal(dp_res.asnumpy(), np_res)
+
 
 class TestHstack:
     def test_non_iterable(self):
         assert_raises(TypeError, dpnp.hstack, 1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_empty_input(self):
-        assert_raises(ValueError, dpnp.hstack, ())
+        assert_raises(TypeError, dpnp.hstack, ())
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_0D_array(self):
         b = dpnp.array(2)
         a = dpnp.array(1)
@@ -347,7 +361,6 @@ class TestHstack:
         desired = dpnp.array([1, 2])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_1D_array(self):
         a = dpnp.array([1])
         b = dpnp.array([2])
@@ -355,7 +368,6 @@ class TestHstack:
         desired = dpnp.array([1, 2])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_2D_array(self):
         a = dpnp.array([[1], [2]])
         b = dpnp.array([[1], [2]])
@@ -364,10 +376,15 @@ class TestHstack:
         assert_array_equal(res, desired)
 
     def test_generator(self):
-        with assert_warns(FutureWarning):
-            dpnp.hstack((numpy.arange(3) for _ in range(2)))
-        with assert_warns(FutureWarning):
-            dpnp.hstack(map(lambda x: x, numpy.ones((3, 2))))
+        with pytest.raises(TypeError):
+            dpnp.hstack((dpnp.arange(3) for _ in range(2)))
+        with pytest.raises(TypeError):
+            dpnp.hstack(map(lambda x: x, dpnp.ones((3, 2))))
+
+    def test_one_element(self):
+        a = dpnp.array([1])
+        res = dpnp.hstack(a)
+        assert_array_equal(res, a)
 
 
 class TestStack:
@@ -605,3 +622,106 @@ class TestVstack:
     def test_generator(self):
         with assert_warns(FutureWarning):
             dpnp.vstack((numpy.arange(3) for _ in range(2)))
+
+
+class TestAtleast1d:
+    def test_0D_array(self):
+        a = dpnp.array(1)
+        b = dpnp.array(2)
+        res = [dpnp.atleast_1d(a), dpnp.atleast_1d(b)]
+        desired = [dpnp.array([1]), dpnp.array([2])]
+        assert_array_equal(res, desired)
+
+    def test_1D_array(self):
+        a = dpnp.array([1, 2])
+        b = dpnp.array([2, 3])
+        res = [dpnp.atleast_1d(a), dpnp.atleast_1d(b)]
+        desired = [dpnp.array([1, 2]), dpnp.array([2, 3])]
+        assert_array_equal(res, desired)
+
+    def test_2D_array(self):
+        a = dpnp.array([[1, 2], [1, 2]])
+        b = dpnp.array([[2, 3], [2, 3]])
+        res = [dpnp.atleast_1d(a), dpnp.atleast_1d(b)]
+        desired = [a, b]
+        assert_array_equal(res, desired)
+
+    def test_3D_array(self):
+        a = dpnp.array([[1, 2], [1, 2]])
+        b = dpnp.array([[2, 3], [2, 3]])
+        a = dpnp.array([a, a])
+        b = dpnp.array([b, b])
+        res = [dpnp.atleast_1d(a), dpnp.atleast_1d(b)]
+        desired = [a, b]
+        assert_array_equal(res, desired)
+
+    def test_r1array(self):
+        assert dpnp.atleast_1d(3).shape == (1,)
+        assert dpnp.atleast_1d(3j).shape == (1,)
+        assert dpnp.atleast_1d(3.0).shape == (1,)
+        assert dpnp.atleast_1d([[2, 3], [4, 5]]).shape == (2, 2)
+
+
+class TestRollaxis:
+    data = [
+        (0, 0),
+        (0, 1),
+        (0, 2),
+        (0, 3),
+        (0, 4),
+        (1, 0),
+        (1, 1),
+        (1, 2),
+        (1, 3),
+        (1, 4),
+        (2, 0),
+        (2, 1),
+        (2, 2),
+        (2, 3),
+        (2, 4),
+        (3, 0),
+        (3, 1),
+        (3, 2),
+        (3, 3),
+        (3, 4),
+    ]
+
+    @pytest.mark.parametrize(
+        ("axis", "start"),
+        [
+            (-5, 0),
+            (0, -5),
+            (4, 0),
+            (0, 5),
+        ],
+    )
+    def test_exceptions(self, axis, start):
+        a = dpnp.arange(1 * 2 * 3 * 4).reshape(1, 2, 3, 4)
+        assert_raises(ValueError, dpnp.rollaxis, a, axis, start)
+
+    def test_results(self):
+        np_a = numpy.arange(1 * 2 * 3 * 4).reshape(1, 2, 3, 4)
+        dp_a = dpnp.array(np_a)
+        for i, j in self.data:
+            # positive axis, positive start
+            res = dpnp.rollaxis(dp_a, axis=i, start=j)
+            exp = numpy.rollaxis(np_a, axis=i, start=j)
+            assert res.shape == exp.shape
+
+            # negative axis, positive start
+            ip = i + 1
+            res = dpnp.rollaxis(dp_a, axis=-ip, start=j)
+            exp = numpy.rollaxis(np_a, axis=-ip, start=j)
+            assert res.shape == exp.shape
+
+            # positive axis, negative start
+            jp = j + 1 if j < 4 else j
+            res = dpnp.rollaxis(dp_a, axis=i, start=-jp)
+            exp = numpy.rollaxis(np_a, axis=i, start=-jp)
+            assert res.shape == exp.shape
+
+            # negative axis, negative start
+            ip = i + 1
+            jp = j + 1 if j < 4 else j
+            res = dpnp.rollaxis(dp_a, axis=-ip, start=-jp)
+            exp = numpy.rollaxis(np_a, axis=-ip, start=-jp)

@@ -35,6 +35,7 @@ Transpose-like operations
    :nosignatures:
 
    dpnp.moveaxis
+   dpnp.roll
    dpnp.rollaxis
    dpnp.swapaxes
    dpnp.ndarray.T
