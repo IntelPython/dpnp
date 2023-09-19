@@ -55,6 +55,7 @@ __all__ = [
     "atleast_2d",
     "atleast_3d",
     "broadcast_to",
+    "can_cast",
     "concatenate",
     "copyto",
     "expand_dims",
@@ -291,6 +292,30 @@ def broadcast_to(array, /, shape, subok=False):
         return dpnp_array._create_from_usm_ndarray(new_array)
 
     return call_origin(numpy.broadcast_to, array, shape=shape, subok=subok)
+
+
+def can_cast(from_, to, casting="safe"):
+    """can_cast(from, to, casting="safe")
+
+    Returns True if cast between data types can occur according to the casting rule. If from is a scalar or array scalar, also returns True if the scalar value can be cast without overflow or truncation to an integer.
+
+    Parameters:
+       from (dpnp_array, dtype): source data type
+       to (dtype): target data type
+       casting ({'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional):
+           controls what kind of data casting may occur.
+
+    Returns:
+        bool:
+            Gives `True` if cast can occur according to the casting rule.
+    """
+    if isinstance(to, dpnp_array):
+        raise TypeError("Expected dtype type.")
+
+    dtype_from = (
+        from_.dtype if isinstance(from_, dpnp_array) else dpnp.dtype(from_)
+    )
+    return dpt.can_cast(dtype_from, to, casting)
 
 
 def concatenate(

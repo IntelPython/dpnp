@@ -151,29 +151,16 @@ def asnumpy(input, order="C"):
 
 def astype(x1, dtype, order="K", casting="unsafe", subok=True, copy=True):
     """Copy the array with data type casting."""
-    if isinstance(x1, dpnp_array):
-        return x1.astype(dtype, order=order, casting=casting, copy=copy)
-
-    if isinstance(x1, dpt.usm_ndarray):
-        return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
-
-    x1_desc = get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if not x1_desc:
-        pass
-    elif order != "K":
-        pass
-    elif casting != "unsafe":
-        pass
-    elif not subok:
-        pass
-    elif not copy:
-        pass
-    elif x1_desc.dtype == numpy.complex128 or dtype == numpy.complex128:
-        pass
-    elif x1_desc.dtype == numpy.complex64 or dtype == numpy.complex64:
+    if subok is not True:
         pass
     else:
-        return dpnp_astype(x1_desc, dtype).get_pyobj()
+        if isinstance(x1, dpnp_array):
+            return x1.astype(dtype, order=order, casting=casting, copy=copy)
+
+        if isinstance(x1, dpt.usm_ndarray):
+            return dpt.astype(
+                x1, dtype, order=order, casting=casting, copy=copy
+            )
 
     return call_origin(
         numpy.ndarray.astype,
