@@ -45,6 +45,9 @@ test:
       - tests
       - setup.cfg
     commands:
+      - export ONEAPI_DEVICE_SELECTOR=opencl:cpu  # [linux]
+      - set ONEAPI_DEVICE_SELECTOR=opencl:cpu  # [win]
+      - python -m dpctl -f
       - python -c "import dpnp"
       - pytest -s
 
