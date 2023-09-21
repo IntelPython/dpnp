@@ -32,12 +32,26 @@ find_package(TBB REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules N
 
 set(MKL_ARCH "intel64")
 set(MKL_LINK "dynamic")
-set(MKL_INTERFACE_FULL "intel_ilp64")
 set(MKL_THREADING "tbb_thread")
-find_package(MKL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
+find_package(MKL QUIET)
+if(MKL_FOUND)
+    set(MKL_VERSION_2024 TRUE)
+    set(MKL_INTERFACE "ilp64")
+    find_package(MKL REQUIRED)
+else()
+    set(MKL_VERSION_2024 FALSE)
+    set(MKL_INTERFACE_FULL "intel_ilp64")
+    find_package(MKL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
+endif()
 
 set(ONEDPL_PAR_BACKEND tbb)
-find_package(oneDPL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
+find_package(oneDPL QUIET)
+if(oneDPL_FOUND)
+    find_package(oneDPL REQUIRED)
+else()
+    find_package(oneDPL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
+endif()
+
 
 include(GNUInstallDirs)
 
