@@ -860,7 +860,7 @@ def hypot(
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Input array data types are limited by supported real-valued data types.
 
     Examples
     --------
