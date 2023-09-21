@@ -54,6 +54,7 @@ __all__ = [
     "atleast_1d",
     "atleast_2d",
     "atleast_3d",
+    "broadcast_arrays",
     "broadcast_to",
     "can_cast",
     "concatenate",
@@ -184,36 +185,52 @@ def atleast_2d(*arys):
 
     For full documentation refer to :obj:`numpy.atleast_2d`.
 
-    Limitations
-    -----------
-    Input arrays is supported as :obj:`dpnp.ndarray`.
+    Parameters
+    ----------
+    arys : {dpnp_array, usm_ndarray}
+        One or more array-like sequences.  Non-array inputs are converted
+        to arrays.  Arrays that already have two or more dimensions are
+        preserved.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array, or list of arrays, each with ``a.ndim >= 2``.
+        Copies are avoided where possible, and views with two or more
+        dimensions are returned.
+
+    See Also
+    --------
+    atleast_1d, atleast_3d
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.atleast_2d(3.0)
+    array([[3.]])
+
+    >>> x = np.arange(3.0)
+    >>> np.atleast_2d(x)
+    array([[0., 1., 2.]])
+
+    >>> np.atleast_2d(1, [1, 2], [[1, 2]])
+    [array([[1]]), array([[1, 2]]), array([[1, 2]])]
     """
 
-    all_is_array = True
-    arys_desc = []
+    res = []
     for ary in arys:
-        if not dpnp.isscalar(ary):
-            ary_desc = dpnp.get_dpnp_descriptor(
-                ary, copy_when_nondefault_queue=False
-            )
-            if ary_desc:
-                arys_desc.append(ary_desc)
-                continue
-        all_is_array = False
-        break
-
-    if not use_origin_backend(arys[0]) and all_is_array:
-        result = []
-        for ary_desc in arys_desc:
-            res = dpnp_atleast_2d(ary_desc).get_pyobj()
-            result.append(res)
-
-        if len(result) == 1:
-            return result[0]
+        ary = dpnp.asanyarray(ary)
+        if ary.ndim == 0:
+            result = ary.reshape(1, 1)
+        elif ary.ndim == 1:
+            result = ary[dpnp.newaxis, :]
         else:
-            return result
-
-    return call_origin(numpy.atleast_2d, *arys)
+            result = ary
+        res.append(result)
+    if len(res) == 1:
+        return res[0]
+    else:
+        return res
 
 
 def atleast_3d(*arys):
@@ -222,36 +239,74 @@ def atleast_3d(*arys):
 
     For full documentation refer to :obj:`numpy.atleast_3d`.
 
-    Limitations
-    -----------
-    Input arrays is supported as :obj:`dpnp.ndarray`.
+    Parameters
+    ----------
+    arys : {dpnp_array, usm_ndarray}
+        One or more array-like sequences.  Non-array inputs are converted to
+        arrays.  Arrays that already have three or more dimensions are
+        preserved.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array, or list of arrays, each with ``a.ndim >= 3``.  Copies are
+        avoided where possible, and views with three or more dimensions are
+        returned.  For example, a 1-D array of shape ``(N,)`` becomes a view
+        of shape ``(1, N, 1)``, and a 2-D array of shape ``(M, N)`` becomes a
+        view of shape ``(M, N, 1)``.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.atleast_3d(3.0)
+    array([[[3.]]])
+
+    >>> x = np.arange(3.0)
+    >>> np.atleast_3d(x).shape
+    (1, 3, 1)
+
+    >>> x = np.arange(12.0).reshape(4,3)
+    >>> np.atleast_3d(x).shape
+    (4, 3, 1)
     """
 
-    all_is_array = True
-    arys_desc = []
+    res = []
     for ary in arys:
-        if not dpnp.isscalar(ary):
-            ary_desc = dpnp.get_dpnp_descriptor(
-                ary, copy_when_nondefault_queue=False
-            )
-            if ary_desc:
-                arys_desc.append(ary_desc)
-                continue
-        all_is_array = False
-        break
-
-    if not use_origin_backend(arys[0]) and all_is_array:
-        result = []
-        for ary_desc in arys_desc:
-            res = dpnp_atleast_3d(ary_desc).get_pyobj()
-            result.append(res)
-
-        if len(result) == 1:
-            return result[0]
+        ary = dpnp.asanyarray(ary)
+        if ary.ndim == 0:
+            result = ary.reshape(1, 1, 1)
+        elif ary.ndim == 1:
+            result = ary[dpnp.newaxis, :, dpnp.newaxis]
+        elif ary.ndim == 2:
+            result = ary[:, :, dpnp.newaxis]
         else:
-            return result
+            result = ary
+        res.append(result)
+    if len(res) == 1:
+        return res[0]
+    else:
+        return res
 
-    return call_origin(numpy.atleast_3d, *arys)
+
+def broadcast_arrays(*args, subok=False):
+    """
+    Broadcast any number of arrays against each other.
+
+    For full documentation refer to :obj:`numpy.broadcast_arrays`.
+    """
+
+    if subok is not False:
+        pass
+    elif all(dpnp.is_supported_array_type(array) for array in args):
+        dpt_arrays = dpt.broadcast_arrays(
+            *[dpnp.get_usm_ndarray(array) for array in args]
+        )
+        new_arrays = []
+        for array in dpt_arrays:
+            new_arrays.append(dpnp_array._create_from_usm_ndarray(array))
+        return new_arrays
+
+    return call_origin(numpy.broadcast_arrays, args, subok=subok)
 
 
 def broadcast_to(array, /, shape, subok=False):
@@ -295,19 +350,23 @@ def broadcast_to(array, /, shape, subok=False):
 
 
 def can_cast(from_, to, casting="safe"):
-    """can_cast(from, to, casting="safe")
-
-    Returns True if cast between data types can occur according to the casting rule. If from is a scalar or array scalar, also returns True if the scalar value can be cast without overflow or truncation to an integer.
+    """
+    Returns True if cast between data types can occur according to the casting rule.
 
     Parameters:
-       from (dpnp_array, dtype): source data type
-       to (dtype): target data type
-       casting ({'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional):
-           controls what kind of data casting may occur.
+        from (dpnp_array, dtype): source data type
+        to (dtype): target data type
+        casting ({'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional):
+            controls what kind of data casting may occur.
 
     Returns:
-        bool:
-            Gives `True` if cast can occur according to the casting rule.
+        bool: True if cast can occur according to the casting rule.
+
+    Notes
+    -----------
+    If from is a scalar or array scalar, also returns True if the scalar value can
+    be cast without overflow or truncation to an integer.
+
     """
     if isinstance(to, dpnp_array):
         raise TypeError("Expected dtype type.")
@@ -872,39 +931,47 @@ def repeat(a, repeats, axis=None):
 
     For full documentation refer to :obj:`numpy.repeat`.
 
+    Parameters:
+    x (usm_ndarray): input array
+
+    repeat (Union[int, Tuple[int, ...]]):
+        The number of repetitions for each element.
+        `repeats` is broadcasted to fit the shape of the given axis.
+
+    axis (Optional[int]):
+        The axis along which to repeat values. The `axis` is required
+        if input array has more than one dimension.
+
+    Returns:
+    dpnp_array:
+        Array with repeated elements.
+        The returned array must have the same data type as `x`,
+        is created on the same device as `x` and has the same USM
+        allocation type as `x`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter ``axis`` is supported with value either ``None`` or ``0``.
-    Dimension of input array are supported to be less than ``2``.
+    Parameter `a` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Otherwise ``TypeError`` exception will be raised.
     Otherwise the function will be executed sequentially on CPU.
-    If ``repeats`` is ``tuple`` or ``list``, should be ``len(repeats) > 1``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    .. seealso:: :obj:`numpy.tile` tile an array.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.repeat(3, 4)
-    >>> [i for i in x]
-    [3, 3, 3, 3]
+    >>> x = np.array([3])
+    >>> np.repeat(x, 4)
+    array([3, 3, 3, 3])
 
     """
 
-    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
-    if a_desc:
-        if axis is not None and axis != 0:
-            pass
-        elif a_desc.ndim >= 2:
-            pass
-        elif not dpnp.isscalar(repeats) and len(repeats) > 1:
-            pass
-        else:
-            repeat_val = repeats if dpnp.isscalar(repeats) else repeats[0]
-            return dpnp_repeat(a_desc, repeat_val, axis).get_pyobj()
-
-    return call_origin(numpy.repeat, a, repeats, axis)
+    usm_arr = dpnp.get_usm_ndarray(a)
+    rep = repeats
+    if isinstance(repeats, dpnp_array):
+        rep = dpnp.get_usm_ndarray(repeats)
+    usm_arr = dpt.repeat(usm_arr, rep, axis=axis)
+    return dpnp_array._create_from_usm_ndarray(usm_arr)
 
 
 def reshape(a, /, newshape, order="C", copy=None):
@@ -1439,20 +1506,37 @@ def unique(ar, **kwargs):
     return call_origin(numpy.unique, ar, **kwargs)
 
 
-def vstack(tup):
+def vstack(tup, *, dtype=None, casting="same_kind"):
     """
     Stack arrays in sequence vertically (row wise).
 
     For full documentation refer to :obj:`numpy.vstack`.
 
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([4, 5, 6])
+    >>> np.vstack((a, b))
+    array([[1, 2, 3],
+           [4, 5, 6]])
+
+    >>> a = np.array([[1], [2], [3]])
+    >>> b = np.array([[4], [5], [6]])
+    >>> np.vstack((a, b))
+    array([[1],
+           [2],
+           [3],
+           [4],
+           [5],
+           [6]])
+
     """
-
-    # TODO:
-    # `call_origin` cannot convert sequence of array to sequence of
-    # nparray
-    tup_new = []
-    for tp in tup:
-        tpx = dpnp.asnumpy(tp) if not isinstance(tp, numpy.ndarray) else tp
-        tup_new.append(tpx)
-
-    return call_origin(numpy.vstack, tup_new)
+    if not hasattr(tup, "__getitem__"):
+        raise TypeError(
+            "Arrays to stack must be passed as a sequence type such as list or tuple."
+        )
+    arrs = atleast_2d(*tup)
+    if not isinstance(arrs, list):
+        arrs = [arrs]
+    return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)

@@ -583,11 +583,9 @@ class TestVstack:
     def test_non_iterable(self):
         assert_raises(TypeError, dpnp.vstack, 1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_empty_input(self):
-        assert_raises(ValueError, dpnp.vstack, ())
+        assert_raises(TypeError, dpnp.vstack, ())
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_0D_array(self):
         a = dpnp.array(1)
         b = dpnp.array(2)
@@ -595,7 +593,6 @@ class TestVstack:
         desired = dpnp.array([[1], [2]])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_1D_array(self):
         a = dpnp.array([1])
         b = dpnp.array([2])
@@ -603,7 +600,6 @@ class TestVstack:
         desired = dpnp.array([[1], [2]])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_2D_array(self):
         a = dpnp.array([[1], [2]])
         b = dpnp.array([[1], [2]])
@@ -611,7 +607,6 @@ class TestVstack:
         desired = dpnp.array([[1], [2], [1], [2]])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_2D_array2(self):
         a = dpnp.array([1, 2])
         b = dpnp.array([1, 2])
@@ -725,3 +720,336 @@ class TestRollaxis:
             jp = j + 1 if j < 4 else j
             res = dpnp.rollaxis(dp_a, axis=-ip, start=-jp)
             exp = numpy.rollaxis(np_a, axis=-ip, start=-jp)
+
+
+class TestAtleast2d:
+    def test_0D_array(self):
+        a = dpnp.array(1)
+        b = dpnp.array(2)
+        res = [dpnp.atleast_2d(a), dpnp.atleast_2d(b)]
+        desired = [dpnp.array([[1]]), dpnp.array([[2]])]
+        assert_array_equal(res, desired)
+
+    def test_1D_array(self):
+        a = dpnp.array([1, 2])
+        b = dpnp.array([2, 3])
+        res = [dpnp.atleast_2d(a), dpnp.atleast_2d(b)]
+        desired = [dpnp.array([[1, 2]]), dpnp.array([[2, 3]])]
+        assert_array_equal(res, desired)
+
+    def test_2D_array(self):
+        a = dpnp.array([[1, 2], [1, 2]])
+        b = dpnp.array([[2, 3], [2, 3]])
+        res = [dpnp.atleast_2d(a), dpnp.atleast_2d(b)]
+        desired = [a, b]
+        assert_array_equal(res, desired)
+
+    def test_3D_array(self):
+        a = dpnp.array([[1, 2], [1, 2]])
+        b = dpnp.array([[2, 3], [2, 3]])
+        a = dpnp.array([a, a])
+        b = dpnp.array([b, b])
+        res = [dpnp.atleast_2d(a), dpnp.atleast_2d(b)]
+        desired = [a, b]
+        assert_array_equal(res, desired)
+
+    def test_r2array(self):
+        """Test to make sure equivalent Travis O's r2array function"""
+        assert dpnp.atleast_2d(3).shape == (1, 1)
+        assert dpnp.atleast_2d([3j, 1]).shape == (1, 2)
+        array = dpnp.atleast_2d([[[3, 1], [4, 5]], [[3, 5], [1, 2]]])
+        assert array.shape == (2, 2, 2)
+
+
+class TestAtleast3d:
+    def test_0D_array(self):
+        a = dpnp.array(1)
+        b = dpnp.array(2)
+        res = [dpnp.atleast_3d(a), dpnp.atleast_3d(b)]
+        desired = [dpnp.array([[[1]]]), dpnp.array([[[2]]])]
+        assert_array_equal(res, desired)
+
+    def test_1D_array(self):
+        a = dpnp.array([1, 2])
+        b = dpnp.array([2, 3])
+        res = [dpnp.atleast_3d(a), dpnp.atleast_3d(b)]
+        desired = [dpnp.array([[[1], [2]]]), dpnp.array([[[2], [3]]])]
+        assert_array_equal(res, desired)
+
+    def test_2D_array(self):
+        a = dpnp.array([[1, 2], [1, 2]])
+        b = dpnp.array([[2, 3], [2, 3]])
+        res = [dpnp.atleast_3d(a), dpnp.atleast_3d(b)]
+        desired = [a[:, :, dpnp.newaxis], b[:, :, dpnp.newaxis]]
+        assert_array_equal(res, desired)
+
+    def test_3D_array(self):
+        a = dpnp.array([[1, 2], [1, 2]])
+        b = dpnp.array([[2, 3], [2, 3]])
+        a = dpnp.array([a, a])
+        b = dpnp.array([b, b])
+        res = [dpnp.atleast_3d(a), dpnp.atleast_3d(b)]
+        desired = [a, b]
+        assert_array_equal(res, desired)
+
+
+def test_repeat_scalar_sequence_agreement():
+    x = dpnp.arange(5, dtype="i4")
+    expected_res = dpnp.empty(10, dtype="i4")
+    expected_res[1::2], expected_res[::2] = x, x
+
+    # scalar case
+    reps = 2
+    res = dpnp.repeat(x, reps)
+    assert dpnp.all(res == expected_res)
+
+    # tuple
+    reps = (2, 2, 2, 2, 2)
+    res = dpnp.repeat(x, reps)
+    assert dpnp.all(res == expected_res)
+
+
+def test_repeat_as_broadcasting():
+    reps = 5
+    x = dpnp.arange(reps, dtype="i4")
+    x1 = x[:, dpnp.newaxis]
+    expected_res = dpnp.broadcast_to(x1, (reps, reps))
+
+    res = dpnp.repeat(x1, reps, axis=1)
+    assert dpnp.all(res == expected_res)
+
+    x2 = x[dpnp.newaxis, :]
+    expected_res = dpnp.broadcast_to(x2, (reps, reps))
+
+    res = dpnp.repeat(x2, reps, axis=0)
+    assert dpnp.all(res == expected_res)
+
+
+def test_repeat_axes():
+    reps = 2
+    x = dpnp.reshape(dpnp.arange(5 * 10, dtype="i4"), (5, 10))
+    expected_res = dpnp.empty((x.shape[0] * 2, x.shape[1]), dtype=x.dtype)
+    expected_res[::2, :], expected_res[1::2] = x, x
+    res = dpnp.repeat(x, reps, axis=0)
+    assert dpnp.all(res == expected_res)
+
+    expected_res = dpnp.empty((x.shape[0], x.shape[1] * 2), dtype=x.dtype)
+    expected_res[:, ::2], expected_res[:, 1::2] = x, x
+    res = dpnp.repeat(x, reps, axis=1)
+    assert dpnp.all(res == expected_res)
+
+
+def test_repeat_size_0_outputs():
+    x = dpnp.ones((3, 0, 5), dtype="i4")
+    reps = 10
+    res = dpnp.repeat(x, reps, axis=0)
+    assert res.size == 0
+    assert res.shape == (30, 0, 5)
+
+    res = dpnp.repeat(x, reps, axis=1)
+    assert res.size == 0
+    assert res.shape == (3, 0, 5)
+
+    res = dpnp.repeat(x, (2, 2, 2), axis=0)
+    assert res.size == 0
+    assert res.shape == (6, 0, 5)
+
+    x = dpnp.ones((3, 2, 5))
+    res = dpnp.repeat(x, 0, axis=1)
+    assert res.size == 0
+    assert res.shape == (3, 0, 5)
+
+    x = dpnp.ones((3, 2, 5))
+    res = dpnp.repeat(x, (0, 0), axis=1)
+    assert res.size == 0
+    assert res.shape == (3, 0, 5)
+
+
+def test_repeat_strides():
+    reps = 2
+    x = dpnp.reshape(dpnp.arange(10 * 10, dtype="i4"), (10, 10))
+    x1 = x[:, ::-2]
+    expected_res = dpnp.empty((10, 10), dtype="i4")
+    expected_res[:, ::2], expected_res[:, 1::2] = x1, x1
+    res = dpnp.repeat(x1, reps, axis=1)
+    assert dpnp.all(res == expected_res)
+    res = dpnp.repeat(x1, (reps,) * x1.shape[1], axis=1)
+    assert dpnp.all(res == expected_res)
+
+    x1 = x[::-2, :]
+    expected_res = dpnp.empty((10, 10), dtype="i4")
+    expected_res[::2, :], expected_res[1::2, :] = x1, x1
+    res = dpnp.repeat(x1, reps, axis=0)
+    assert dpnp.all(res == expected_res)
+    res = dpnp.repeat(x1, (reps,) * x1.shape[0], axis=0)
+    assert dpnp.all(res == expected_res)
+
+
+def test_repeat_casting():
+    x = dpnp.arange(5, dtype="i4")
+    # i4 is cast to i8
+    reps = dpnp.ones(5, dtype="i4")
+    res = dpnp.repeat(x, reps)
+    assert res.shape == x.shape
+    assert dpnp.all(res == x)
+
+
+def test_repeat_strided_repeats():
+    x = dpnp.arange(5, dtype="i4")
+    reps = dpnp.ones(10, dtype="i8")
+    reps[::2] = 0
+    reps = reps[::-2]
+    res = dpnp.repeat(x, reps)
+    assert res.shape == x.shape
+    assert dpnp.all(res == x)
+
+
+def test_can_cast():
+    # incorrect input
+    X = dpnp.ones((2, 2), dtype=dpnp.int64)
+    pytest.raises(TypeError, dpnp.can_cast, X, 1)
+    pytest.raises(TypeError, dpnp.can_cast, X, X)
+    X_np = numpy.ones((2, 2), dtype=numpy.int64)
+
+    assert dpnp.can_cast(X, "float32") == numpy.can_cast(X_np, "float32")
+    assert dpnp.can_cast(X, dpnp.int32) == numpy.can_cast(X_np, numpy.int32)
+    assert dpnp.can_cast(X, dpnp.int64) == numpy.can_cast(X_np, numpy.int64)
+
+
+def assert_broadcast_correct(input_shapes):
+    np_arrays = [numpy.zeros(s, dtype="i1") for s in input_shapes]
+    out_np_arrays = numpy.broadcast_arrays(*np_arrays)
+    usm_arrays = [dpnp.asarray(Xnp) for Xnp in np_arrays]
+    out_usm_arrays = dpnp.broadcast_arrays(*usm_arrays)
+    for Xnp, X in zip(out_np_arrays, out_usm_arrays):
+        assert_array_equal(
+            Xnp, dpnp.asnumpy(X), err_msg=f"Failed for {input_shapes})"
+        )
+
+
+def assert_broadcast_arrays_raise(input_shapes):
+    usm_arrays = [dpnp.asarray(numpy.zeros(s)) for s in input_shapes]
+    pytest.raises(ValueError, dpnp.broadcast_arrays, *usm_arrays)
+
+
+def test_broadcast_arrays_same():
+    Xnp = numpy.arange(10)
+    Ynp = numpy.arange(10)
+    res_Xnp, res_Ynp = numpy.broadcast_arrays(Xnp, Ynp)
+    X = dpnp.asarray(Xnp)
+    Y = dpnp.asarray(Ynp)
+    res_X, res_Y = dpnp.broadcast_arrays(X, Y)
+    assert_array_equal(res_Xnp, dpnp.asnumpy(res_X))
+    assert_array_equal(res_Ynp, dpnp.asnumpy(res_Y))
+
+
+def test_broadcast_arrays_one_off():
+    Xnp = numpy.array([[1, 2, 3]])
+    Ynp = numpy.array([[1], [2], [3]])
+    res_Xnp, res_Ynp = numpy.broadcast_arrays(Xnp, Ynp)
+    X = dpnp.asarray(Xnp)
+    Y = dpnp.asarray(Ynp)
+    res_X, res_Y = dpnp.broadcast_arrays(X, Y)
+    assert_array_equal(res_Xnp, dpnp.asnumpy(res_X))
+    assert_array_equal(res_Ynp, dpnp.asnumpy(res_Y))
+
+
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        (),
+        (1,),
+        (3,),
+        (0, 1),
+        (0, 3),
+        (1, 0),
+        (3, 0),
+        (1, 3),
+        (3, 1),
+        (3, 3),
+    ],
+)
+def test_broadcast_arrays_same_shapes(shapes):
+    for shape in shapes:
+        single_input_shapes = [shape]
+        assert_broadcast_correct(single_input_shapes)
+        double_input_shapes = [shape, shape]
+        assert_broadcast_correct(double_input_shapes)
+        triple_input_shapes = [shape, shape, shape]
+        assert_broadcast_correct(triple_input_shapes)
+
+
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        [[(1,), (3,)]],
+        [[(1, 3), (3, 3)]],
+        [[(3, 1), (3, 3)]],
+        [[(1, 3), (3, 1)]],
+        [[(1, 1), (3, 3)]],
+        [[(1, 1), (1, 3)]],
+        [[(1, 1), (3, 1)]],
+        [[(1, 0), (0, 0)]],
+        [[(0, 1), (0, 0)]],
+        [[(1, 0), (0, 1)]],
+        [[(1, 1), (0, 0)]],
+        [[(1, 1), (1, 0)]],
+        [[(1, 1), (0, 1)]],
+    ],
+)
+def test_broadcast_arrays_same_len_shapes(shapes):
+    # Check that two different input shapes of the same length, but some have
+    # ones, broadcast to the correct shape.
+
+    for input_shapes in shapes:
+        assert_broadcast_correct(input_shapes)
+        assert_broadcast_correct(input_shapes[::-1])
+
+
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        [[(), (3,)]],
+        [[(3,), (3, 3)]],
+        [[(3,), (3, 1)]],
+        [[(1,), (3, 3)]],
+        [[(), (3, 3)]],
+        [[(1, 1), (3,)]],
+        [[(1,), (3, 1)]],
+        [[(1,), (1, 3)]],
+        [[(), (1, 3)]],
+        [[(), (3, 1)]],
+        [[(), (0,)]],
+        [[(0,), (0, 0)]],
+        [[(0,), (0, 1)]],
+        [[(1,), (0, 0)]],
+        [[(), (0, 0)]],
+        [[(1, 1), (0,)]],
+        [[(1,), (0, 1)]],
+        [[(1,), (1, 0)]],
+        [[(), (1, 0)]],
+        [[(), (0, 1)]],
+    ],
+)
+def test_broadcast_arrays_different_len_shapes(shapes):
+    # Check that two different input shapes (of different lengths) broadcast
+    # to the correct shape.
+
+    for input_shapes in shapes:
+        assert_broadcast_correct(input_shapes)
+        assert_broadcast_correct(input_shapes[::-1])
+
+
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        [[(3,), (4,)]],
+        [[(2, 3), (2,)]],
+        [[(3,), (3,), (4,)]],
+        [[(1, 3, 4), (2, 3, 3)]],
+    ],
+)
+def test_incompatible_shapes_raise_valueerror(shapes):
+    for input_shapes in shapes:
+        assert_broadcast_arrays_raise(input_shapes)
+        assert_broadcast_arrays_raise(input_shapes[::-1])
