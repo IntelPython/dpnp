@@ -442,6 +442,10 @@ def test_positive(data, dtype):
     expected = numpy.positive(np_a)
     assert_allclose(result, expected)
 
+    result = +dpnp_a
+    expected = +np_a
+    assert_allclose(result, expected)
+
 
 def test_positive_boolean():
     dpnp_a = dpnp.array([True, False])

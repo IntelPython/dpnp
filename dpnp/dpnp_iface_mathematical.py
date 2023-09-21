@@ -1743,7 +1743,7 @@ def negative(
     **kwargs,
 ):
     """
-    Numerical negative element-wise.
+    Numerical negative, element-wise.
 
     For full documentation refer to :obj:`numpy.negative`.
 
@@ -1776,7 +1776,7 @@ def negative(
 
     >>> x = np.array([1., -1.])
     >>> -x
-    array([-1., 1.])
+    array([-1.,  1.])
     """
 
     return check_nd_call_func(
@@ -1804,7 +1804,7 @@ def positive(
     **kwargs,
 ):
     """
-    Numerical positive element-wise.
+    Numerical positive, element-wise.
 
     For full documentation refer to :obj:`numpy.positive`.
 
@@ -1834,14 +1834,14 @@ def positive(
     --------
     >>> import dpnp as np
     >>> np.positive(np.array([1., -1.]))
-    array([1., -1.])
+    array([ 1., -1.])
 
     The ``+`` operator can be used as a shorthand for ``positive`` on
     :class:`dpnp.ndarray`.
 
     >>> x = np.array([1., -1.])
     >>> +x
-    array([1., -1.])
+    array([ 1., -1.])
     """
 
     return check_nd_call_func(
