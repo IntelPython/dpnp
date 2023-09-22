@@ -28,7 +28,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DPCTL_MODULE_PATH})
 
 
 find_package(IntelDPCPP REQUIRED)
-find_package(TBB REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
+find_package(TBB QUIET)
+if(TBB_FOUND)
+    find_package(TBB REQUIRED)
+else()
+    find_package(TBB REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
+endif()
 
 set(MKL_ARCH "intel64")
 set(MKL_LINK "dynamic")
