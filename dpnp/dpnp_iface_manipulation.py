@@ -353,19 +353,22 @@ def can_cast(from_, to, casting="safe"):
     """
     Returns True if cast between data types can occur according to the casting rule.
 
-    Parameters:
-        from (dpnp_array, dtype): source data type
-        to (dtype): target data type
-        casting ({'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional):
-            controls what kind of data casting may occur.
-
-    Returns:
-        bool: True if cast can occur according to the casting rule.
-
-    Notes
-    -----------
-    If from is a scalar or array scalar, also returns True if the scalar value can
+    If `from` is a scalar or array scalar, also returns `True` if the scalar value can
     be cast without overflow or truncation to an integer.
+
+    Parameters
+    ----------
+    from : dpnp.array, dtype
+        Source data type.
+    to : dtype
+        Target data type.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur.
+
+    Returns
+    -------
+    out: bool
+        True if cast can occur according to the casting rule.
 
     """
     if isinstance(to, dpnp_array):
@@ -395,7 +398,7 @@ def concatenate(
     Each array in `arrays` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
     will be raised.
-    Parameters `out` and `dtype are supported with default value.
+    Parameters `out` and `dtype` are supported with default value.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -931,31 +934,26 @@ def repeat(a, repeats, axis=None):
 
     For full documentation refer to :obj:`numpy.repeat`.
 
-    Parameters:
-    x (usm_ndarray): input array
+    Parameters
+    ----------
+    x : {dpnp_array, usm_ndarray}
+        Input array.
 
-    repeat (Union[int, Tuple[int, ...]]):
+    repeat : Union[int, Tuple[int, ...]]
         The number of repetitions for each element.
         `repeats` is broadcasted to fit the shape of the given axis.
 
-    axis (Optional[int]):
+    axis : Optional[int]
         The axis along which to repeat values. The `axis` is required
         if input array has more than one dimension.
 
-    Returns:
-    dpnp_array:
+    Returns
+    -------
+    out : dpnp_array
         Array with repeated elements.
         The returned array must have the same data type as `x`,
         is created on the same device as `x` and has the same USM
         allocation type as `x`.
-
-    Limitations
-    -----------
-    Parameter `a` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise ``TypeError`` exception will be raised.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -1511,6 +1509,27 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     Stack arrays in sequence vertically (row wise).
 
     For full documentation refer to :obj:`numpy.vstack`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The stacked array which has one more dimension than the input arrays.
+
+    Limitations
+    -----------
+    Each array in `tup` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
+    will be raised.
+    Parameters `dtype` and `casting` are supported with default value.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
+    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
+    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
 
     Examples
     --------

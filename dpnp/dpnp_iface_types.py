@@ -147,36 +147,36 @@ PZERO = numpy.PZERO
 
 
 def finfo(dtype):
-    """finfo(type)
-
+    """
     Returns machine limits for floating-point data types.
 
     For full documentation refer to :obj:`numpy.finfo`.
 
-    Parameters:
-        dtype (dtype, dpnp_array): floating-point dtype or
-            an array with floating point data type.
-            If complex, the information is about its component
-            data type.
+    Parameters
+    ----------
+    dtype : dtype, dpnp_array)
+        Floating-point dtype or an array with floating point data type.
+        If complex, the information is about its component data type.
 
-    Returns:
-        finfo_object:
-            an object have the following attributes
-                * bits: int
-                    number of bits occupied by dtype.
-                * eps: float
-                    difference between 1.0 and the next smallest representable
-                    real-valued floating-point number larger than 1.0 according
-                    to the IEEE-754 standard.
-                * max: float
-                    largest representable real-valued number.
-                * min: float
-                    smallest representable real-valued number.
-                * smallest_normal: float
-                    smallest positive real-valued floating-point number with
-                    full precision.
-                * dtype: dtype
-                    real-valued floating-point data type.
+    Returns
+    -------
+    out : finfo_object
+        An object have the following attributes
+        * bits: int
+            number of bits occupied by dtype.
+        * eps: float
+            difference between 1.0 and the next smallest representable
+            real-valued floating-point number larger than 1.0 according
+            to the IEEE-754 standard.
+        * max: float
+            largest representable real-valued number.
+        * min: float
+            smallest representable real-valued number.
+        * smallest_normal: float
+            smallest positive real-valued floating-point number with
+            full precision.
+        * dtype: dtype
+            real-valued floating-point data type.
 
     """
     if isinstance(dtype, dpnp_array):
@@ -185,38 +185,33 @@ def finfo(dtype):
 
 
 def isdtype(dtype_, kind):
-    """isdtype(dtype, kind)
-
-    Returns a boolean indicating whether a provided `dtype` is
-    of a specified data type `kind`.
-    """
-
+    """Returns a boolean indicating whether a provided `dtype` is of a specified data type `kind`."""
     return dpt.isdtype(dtype_, kind)
 
 
 def iinfo(dtype):
-    """iinfo(dtype)
-
+    """
     Returns machine limits for integer data types.
 
     For full documentation refer to :obj:`numpy.iinfo`.
 
-    Parameters:
-        dtype (dtype, dpnp_array):
-            integer dtype or
-            an array with integer dtype.
+    Parameters
+    ----------
+    dtype : dtype, dpnp_array
+        Integer dtype or an array with integer dtype.
 
-    Returns:
-        iinfo_object:
-            An object with the following attributes
-            * bits: int
-                number of bits occupied by the data type
-            * max: int
-                largest representable number.
-            * min: int
-                smallest representable number.
-            * dtype: dtype
-                integer data type.
+    Returns
+    -------
+    out : iinfo_object
+        An object with the following attributes
+        * bits: int
+            number of bits occupied by the data type
+        * max: int
+            largest representable number.
+        * min: int
+            smallest representable number.
+        * dtype: dtype
+            integer data type.
     """
     if isinstance(dtype, dpnp_array):
         dtype = dtype.dtype

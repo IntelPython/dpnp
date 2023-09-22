@@ -615,8 +615,8 @@ class TestVstack:
         assert_array_equal(res, desired)
 
     def test_generator(self):
-        with assert_warns(FutureWarning):
-            dpnp.vstack((numpy.arange(3) for _ in range(2)))
+        with pytest.raises(TypeError):
+            dpnp.vstack((dpnp.arange(3) for _ in range(2)))
 
 
 class TestAtleast1d:
@@ -919,17 +919,17 @@ def test_can_cast():
 def assert_broadcast_correct(input_shapes):
     np_arrays = [numpy.zeros(s, dtype="i1") for s in input_shapes]
     out_np_arrays = numpy.broadcast_arrays(*np_arrays)
-    usm_arrays = [dpnp.asarray(Xnp) for Xnp in np_arrays]
-    out_usm_arrays = dpnp.broadcast_arrays(*usm_arrays)
-    for Xnp, X in zip(out_np_arrays, out_usm_arrays):
+    dpnp_arrays = [dpnp.asarray(Xnp) for Xnp in np_arrays]
+    out_dpnp_arrays = dpnp.broadcast_arrays(*dpnp_arrays)
+    for Xnp, X in zip(out_np_arrays, out_dpnp_arrays):
         assert_array_equal(
             Xnp, dpnp.asnumpy(X), err_msg=f"Failed for {input_shapes})"
         )
 
 
 def assert_broadcast_arrays_raise(input_shapes):
-    usm_arrays = [dpnp.asarray(numpy.zeros(s)) for s in input_shapes]
-    pytest.raises(ValueError, dpnp.broadcast_arrays, *usm_arrays)
+    dpnp_arrays = [dpnp.asarray(numpy.zeros(s)) for s in input_shapes]
+    pytest.raises(ValueError, dpnp.broadcast_arrays, *dpnp_arrays)
 
 
 def test_broadcast_arrays_same():
