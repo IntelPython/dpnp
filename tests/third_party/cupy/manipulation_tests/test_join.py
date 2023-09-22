@@ -270,14 +270,12 @@ class TestJoin(unittest.TestCase):
         a = testing.shaped_arange((1,), xp)
         return xp.dstack((a,))
 
-    @pytest.mark.skip("dpnp.hstack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_hstack_vectors(self, xp):
         a = xp.arange(3)
         b = xp.arange(2, -1, -1)
         return xp.hstack((a, b))
 
-    @pytest.mark.skip("dpnp.hstack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_hstack_scalars(self, xp):
         a = testing.shaped_arange((), xp)
@@ -285,7 +283,6 @@ class TestJoin(unittest.TestCase):
         c = testing.shaped_arange((), xp)
         return xp.hstack((a, b, c))
 
-    @pytest.mark.skip("dpnp.hstack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_hstack(self, xp):
         a = testing.shaped_arange((2, 1), xp)
@@ -293,7 +290,7 @@ class TestJoin(unittest.TestCase):
         c = testing.shaped_arange((2, 3), xp)
         return xp.hstack((a, b, c))
 
-    @pytest.mark.skip("dpnp.hstack() is not implemented yet")
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.24.0")
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(accept_error=TypeError)
@@ -302,18 +299,9 @@ class TestJoin(unittest.TestCase):
         b = testing.shaped_arange((3, 4), xp, dtype1)
         return xp.hstack((a, b), dtype=dtype2)
 
-    @pytest.mark.skip("dpnp.hstack() is not implemented yet")
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.24.0")
-    @pytest.mark.parametrize(
-        "casting",
-        [
-            "no",
-            "equiv",
-            "safe",
-            "same_kind",
-            "unsafe",
-        ],
-    )
+    @testing.for_castings()
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(
         accept_error=(TypeError, numpy.ComplexWarning)

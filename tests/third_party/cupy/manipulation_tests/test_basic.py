@@ -120,10 +120,7 @@ class TestBasic:
     @testing.for_all_dtypes()
     def test_copyto_noncontinguous(self, dtype):
         src = testing.shaped_arange((2, 3, 4), cupy, dtype)
-        # TODO: replace with
-        # src = src.swapaxes(0, 1)
-        # once dpnp.ndarray.swapaxes() is fully implemented
-        src = cupy.swapaxes(src, 0, 1)
+        src = src.swapaxes(0, 1)
 
         dst = cupy.empty_like(src)
         cupy.copyto(dst, src)

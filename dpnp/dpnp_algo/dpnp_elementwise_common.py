@@ -27,8 +27,8 @@
 # *****************************************************************************
 
 
-import dpctl
-import dpctl.tensor as dpt
+from sys import platform
+
 import dpctl.tensor._tensor_impl as ti
 from dpctl.tensor._elementwise_common import (
     BinaryElementwiseFunc,
@@ -42,13 +42,21 @@ from dpnp.dpnp_utils import call_origin
 
 __all__ = [
     "check_nd_call_func",
+    "dpnp_acos",
+    "dpnp_acosh",
     "dpnp_add",
+    "dpnp_asin",
+    "dpnp_asinh",
+    "dpnp_atan",
+    "dpnp_atan2",
+    "dpnp_atanh",
     "dpnp_bitwise_and",
     "dpnp_bitwise_or",
     "dpnp_bitwise_xor",
     "dpnp_ceil",
     "dpnp_conj",
     "dpnp_cos",
+    "dpnp_cosh",
     "dpnp_divide",
     "dpnp_equal",
     "dpnp_floor",
@@ -68,13 +76,22 @@ __all__ = [
     "dpnp_logical_or",
     "dpnp_logical_xor",
     "dpnp_multiply",
+    "dpnp_negative",
     "dpnp_not_equal",
+    "dpnp_power",
+    "dpnp_proj",
     "dpnp_remainder",
     "dpnp_right_shift",
+    "dpnp_round",
+    "dpnp_sign",
+    "dpnp_signbit",
     "dpnp_sin",
+    "dpnp_sinh",
     "dpnp_sqrt",
     "dpnp_square",
     "dpnp_subtract",
+    "dpnp_tan",
+    "dpnp_tanh",
     "dpnp_trunc",
 ]
 
@@ -145,6 +162,114 @@ def check_nd_call_func(
     )
 
 
+_acos_docstring = """
+acos(x, out=None, order='K')
+
+Computes inverse cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise inverse cosine, in radians
+        and in the closed interval `[-pi/2, pi/2]`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_acos(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_acos_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for acos() function from OneMKL VM
+        return vmi._acos(sycl_queue, src, dst, depends)
+    return ti._acos(src, dst, sycl_queue, depends)
+
+
+acos_func = UnaryElementwiseFunc(
+    "acos", ti._acos_result_type, _call_acos, _acos_docstring
+)
+
+
+def dpnp_acos(x, out=None, order="K"):
+    """
+    Invokes acos() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for acos() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = acos_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_acosh_docstring = """
+acosh(x, out=None, order='K')
+
+Computes hyperbolic inverse cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise inverse hyperbolic cosine.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+
+def _call_acosh(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_acosh_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for acosh() function from OneMKL VM
+        return vmi._acosh(sycl_queue, src, dst, depends)
+    return ti._acosh(src, dst, sycl_queue, depends)
+
+
+acosh_func = UnaryElementwiseFunc(
+    "acosh", ti._acosh_result_type, _call_acosh, _acosh_docstring
+)
+
+
+def dpnp_acosh(x, out=None, order="K"):
+    """
+    Invokes acosh() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for acosh() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = acosh_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _add_docstring_ = """
 add(x1, x2, out=None, order="K")
 
@@ -201,6 +326,288 @@ def dpnp_add(x1, x2, out=None, order="K"):
     res_usm = add_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_asin_docstring = """
+asin(x, out=None, order='K')
+
+Computes inverse sine for each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise inverse sine, in radians
+        and in the closed interval `[-pi/2, pi/2]`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_asin(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_asin_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for asin() function from OneMKL VM
+        return vmi._asin(sycl_queue, src, dst, depends)
+    return ti._asin(src, dst, sycl_queue, depends)
+
+
+asin_func = UnaryElementwiseFunc(
+    "asin", ti._asin_result_type, _call_asin, _asin_docstring
+)
+
+
+def dpnp_asin(x, out=None, order="K"):
+    """
+    Invokes asin() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for asin() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = asin_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_asinh_docstring = """
+asinh(x, out=None, order='K')
+
+Computes inverse hyperbolic sine for each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise inverse hyperbolic sine.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+
+def _call_asinh(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_asinh_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for asinh() function from OneMKL VM
+        return vmi._asinh(sycl_queue, src, dst, depends)
+    return ti._asinh(src, dst, sycl_queue, depends)
+
+
+asinh_func = UnaryElementwiseFunc(
+    "asinh", ti._asinh_result_type, _call_asinh, _asinh_docstring
+)
+
+
+def dpnp_asinh(x, out=None, order="K"):
+    """
+    Invokes asinh() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for asinh() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = asinh_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_atan_docstring = """
+atan(x, out=None, order='K')
+
+Computes inverse tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise inverse tangent, in radians
+        and in the closed interval `[-pi/2, pi/2]`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_atan(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_atan_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for atan() function from OneMKL VM
+        return vmi._atan(sycl_queue, src, dst, depends)
+    return ti._atan(src, dst, sycl_queue, depends)
+
+
+atan_func = UnaryElementwiseFunc(
+    "atan", ti._atan_result_type, _call_atan, _atan_docstring
+)
+
+
+def dpnp_atan(x, out=None, order="K"):
+    """
+    Invokes atan() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for atan() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = atan_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_atan2_docstring_ = """
+atan2(x1, x2, out=None, order="K")
+
+Calculates the inverse tangent of the quotient `x1_i/x2_i` for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the
+input array `x2`. Each element-wise result is expressed in radians.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have a real-valued floating-point
+        data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have a real-valued
+        floating-point data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the inverse tangent of the quotient `x1`/`x2`.
+        The returned array must have a real-valued floating-point data type
+        determined by Type Promotion Rules.
+"""
+
+
+def _call_atan2(src1, src2, dst, sycl_queue, depends=None):
+    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_atan2_to_call(sycl_queue, src1, src2, dst):
+        # call pybind11 extension for atan2() function from OneMKL VM
+        return vmi._atan2(sycl_queue, src1, src2, dst, depends)
+    return ti._atan2(src1, src2, dst, sycl_queue, depends)
+
+
+atan2_func = BinaryElementwiseFunc(
+    "atan2",
+    ti._atan2_result_type,
+    _call_atan2,
+    _atan2_docstring_,
+)
+
+
+def dpnp_atan2(x1, x2, out=None, order="K"):
+    """
+    Invokes atan2() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for atan2() function.
+    """
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = atan2_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_atanh_docstring = """
+atanh(x, out=None, order='K')
+
+Computes hyperbolic inverse tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise hyperbolic inverse tangent.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+
+def _call_atanh(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_atanh_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for atanh() function from OneMKL VM
+        return vmi._atanh(sycl_queue, src, dst, depends)
+    return ti._atanh(src, dst, sycl_queue, depends)
+
+
+atanh_func = UnaryElementwiseFunc(
+    "atanh", ti._atanh_result_type, _call_atanh, _atanh_docstring
+)
+
+
+def dpnp_atanh(x, out=None, order="K"):
+    """
+    Invokes atanh() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for atanh() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = atanh_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -403,7 +810,9 @@ def dpnp_ceil(x, out=None, order="K"):
 
 _cos_docstring = """
 cos(x, out=None, order='K')
+
 Computes cosine for each element `x_i` for input array `x`.
+
 Args:
     x (dpnp.ndarray):
         Input array, expected to have numeric data type.
@@ -418,6 +827,91 @@ Return:
         An array containing the element-wise cosine. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
+
+
+def _call_cos(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_cos_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for cos() function from OneMKL VM
+        return vmi._cos(sycl_queue, src, dst, depends)
+    return ti._cos(src, dst, sycl_queue, depends)
+
+
+cos_func = UnaryElementwiseFunc(
+    "cos", ti._cos_result_type, _call_cos, _cos_docstring
+)
+
+
+def dpnp_cos(x, out=None, order="K"):
+    """
+    Invokes cos() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for cos() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = cos_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_cosh_docstring = """
+cosh(x, out=None, order='K')
+
+Computes hyperbolic cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise hyperbolic cosine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_cosh(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_cosh_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for cosh() function from OneMKL VM
+        return vmi._cosh(sycl_queue, src, dst, depends)
+    return ti._cosh(src, dst, sycl_queue, depends)
+
+
+cosh_func = UnaryElementwiseFunc(
+    "cosh", ti._cosh_result_type, _call_cosh, _cosh_docstring
+)
+
+
+def dpnp_cosh(x, out=None, order="K"):
+    """
+    Invokes cosh() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for cosh() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = cosh_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
 _conj_docstring = """
@@ -456,36 +950,6 @@ def _call_conj(src, dst, sycl_queue, depends=None):
 conj_func = UnaryElementwiseFunc(
     "conj", ti._conj_result_type, _call_conj, _conj_docstring
 )
-
-
-def dpnp_cos(x, out=None, order="K"):
-    """
-    Invokes cos() function from pybind11 extension of OneMKL VM if possible.
-
-    Otherwise fully relies on dpctl.tensor implementation for cos() function.
-
-    """
-
-    def _call_cos(src, dst, sycl_queue, depends=None):
-        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-        if depends is None:
-            depends = []
-
-        if vmi._mkl_cos_to_call(sycl_queue, src, dst):
-            # call pybind11 extension for cos() function from OneMKL VM
-            return vmi._cos(sycl_queue, src, dst, depends)
-        return ti._cos(src, dst, sycl_queue, depends)
-
-    # dpctl.tensor only works with usm_ndarray
-    x1_usm = dpnp.get_usm_ndarray(x)
-    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
-
-    func = UnaryElementwiseFunc(
-        "cos", ti._cos_result_type, _call_cos, _cos_docstring
-    )
-    res_usm = func(x1_usm, out=out_usm, order=order)
-    return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
 def dpnp_conj(x, out=None, order="K"):
@@ -538,32 +1002,11 @@ def _call_divide(src1, src2, dst, sycl_queue, depends=None):
     return ti._divide(src1, src2, dst, sycl_queue, depends)
 
 
-def _call_divide_inplace(lhs, rhs, sycl_queue, depends=None):
-    """In place workaround until dpctl.tensor provides the functionality."""
-
-    if depends is None:
-        depends = []
-
-    # allocate temporary memory for out array
-    out = dpt.empty_like(lhs, dtype=dpnp.result_type(lhs.dtype, rhs.dtype))
-
-    # call a general callback
-    div_ht_, div_ev_ = _call_divide(lhs, rhs, out, sycl_queue, depends)
-
-    # store the result into left input array and return events
-    cp_ht_, cp_ev_ = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=out, dst=lhs, sycl_queue=sycl_queue, depends=[div_ev_]
-    )
-    dpctl.SyclEvent.wait_for([div_ht_])
-    return (cp_ht_, cp_ev_)
-
-
 divide_func = BinaryElementwiseFunc(
     "divide",
     ti._divide_result_type,
     _call_divide,
     _divide_docstring_,
-    _call_divide_inplace,
 )
 
 
@@ -995,8 +1438,8 @@ Returns:
 """
 
 
-leftt_shift_func = BinaryElementwiseFunc(
-    "bitwise_leftt_shift",
+left_shift_func = BinaryElementwiseFunc(
+    "bitwise_left_shift",
     ti._bitwise_left_shift_result_type,
     ti._bitwise_left_shift,
     _left_shift_docstring_,
@@ -1011,7 +1454,7 @@ def dpnp_left_shift(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    res_usm = leftt_shift_func(
+    res_usm = left_shift_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
     return dpnp_array._create_from_usm_ndarray(res_usm)
@@ -1478,6 +1921,106 @@ def dpnp_not_equal(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_power_docstring_ = """
+power(x1, x2, out=None, order="K")
+
+Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the result of element-wise of raising each element
+        to a specified power.
+        The data type of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_pow(src1, src2, dst, sycl_queue, depends=None):
+    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    # TODO: remove this check when OneMKL is fixed on Windows
+    is_win = platform.startswith("win")
+
+    if not is_win and vmi._mkl_pow_to_call(sycl_queue, src1, src2, dst):
+        # call pybind11 extension for pow() function from OneMKL VM
+        return vmi._pow(sycl_queue, src1, src2, dst, depends)
+    return ti._pow(src1, src2, dst, sycl_queue, depends)
+
+
+pow_func = BinaryElementwiseFunc(
+    "pow", ti._pow_result_type, _call_pow, _power_docstring_
+)
+
+
+def dpnp_power(x1, x2, out=None, order="K"):
+    """
+    Invokes pow() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for pow() function.
+    """
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = pow_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_proj_docstring = """
+proj(x, out=None, order="K")
+
+Computes projection of each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise projection.
+        The returned array has the same data type as `x`.
+"""
+
+
+proj_func = UnaryElementwiseFunc(
+    "proj", ti._proj_result_type, ti._proj, _proj_docstring
+)
+
+
+def dpnp_proj(x, out=None, order="K"):
+    """Invokes proj() from dpctl.tensor implementation for proj() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = proj_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _remainder_docstring_ = """
 remainder(x1, x2, out=None, order='K')
 Calculates the remainder of division for each element `x1_i` of the input array
@@ -1568,6 +2111,57 @@ def dpnp_right_shift(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_round_docstring = """
+round(x, out=None, order='K')
+Rounds each element `x_i` of the input array `x` to
+the nearest integer-valued number.
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise rounded value. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_round(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_round_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for round() function from OneMKL VM
+        return vmi._round(sycl_queue, src, dst, depends)
+    return ti._round(src, dst, sycl_queue, depends)
+
+
+round_func = UnaryElementwiseFunc(
+    "round", ti._round_result_type, _call_round, _round_docstring
+)
+
+
+def dpnp_round(x, out=None, order="K"):
+    """
+    Invokes round() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for round() function.
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = round_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _sign_docstring = """
 sign(x, out=None, order="K")
 
@@ -1613,9 +2207,49 @@ def dpnp_sign(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_signbit_docstring = """
+signbit(x, out=None, order="K")
+
+Computes an indication of whether the sign bit of each element `x_i` of
+input array `x` is set.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise results. The returned array
+        must have a data type of `bool`.
+"""
+
+
+signbit_func = UnaryElementwiseFunc(
+    "signbit", ti._signbit_result_type, ti._signbit, _signbit_docstring
+)
+
+
+def dpnp_signbit(x, out=None, order="K"):
+    """Invokes signbit() from dpctl.tensor implementation for signbit() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = signbit_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _sin_docstring = """
 sin(x, out=None, order='K')
+
 Computes sine for each element `x_i` of input array `x`.
+
 Args:
     x (dpnp.ndarray):
         Input array, expected to have numeric data type.
@@ -1661,6 +2295,59 @@ def dpnp_sin(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = sin_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_sinh_docstring = """
+sinh(x, out=None, order='K')
+
+Computes hyperbolic sine for each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise hyperbolic sine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_sinh(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_sinh_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for sinh() function from OneMKL VM
+        return vmi._sinh(sycl_queue, src, dst, depends)
+    return ti._sinh(src, dst, sycl_queue, depends)
+
+
+sinh_func = UnaryElementwiseFunc(
+    "sinh", ti._sinh_result_type, _call_sinh, _sinh_docstring
+)
+
+
+def dpnp_sinh(x, out=None, order="K"):
+    """
+    Invokes sinh() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for sinh() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = sinh_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -1841,6 +2528,112 @@ def dpnp_subtract(x1, x2, out=None, order="K"):
     res_usm = subtract_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_tan_docstring = """
+tan(x, out=None, order='K')
+
+Computes tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise tangent. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_tan(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_tan_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for tan() function from OneMKL VM
+        return vmi._tan(sycl_queue, src, dst, depends)
+    return ti._tan(src, dst, sycl_queue, depends)
+
+
+tan_func = UnaryElementwiseFunc(
+    "tan", ti._tan_result_type, _call_tan, _tan_docstring
+)
+
+
+def dpnp_tan(x, out=None, order="K"):
+    """
+    Invokes tan() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for tan() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = tan_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_tanh_docstring = """
+tanh(x, out=None, order='K')
+
+Computes hyperbolic tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise hyperbolic tangent. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_tanh(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_tanh_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for tanh() function from OneMKL VM
+        return vmi._tanh(sycl_queue, src, dst, depends)
+    return ti._tanh(src, dst, sycl_queue, depends)
+
+
+tanh_func = UnaryElementwiseFunc(
+    "tanh", ti._tanh_result_type, _call_tanh, _tanh_docstring
+)
+
+
+def dpnp_tanh(x, out=None, order="K"):
+    """
+    Invokes tanh() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for tanh() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = tanh_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 

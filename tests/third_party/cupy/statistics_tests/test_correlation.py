@@ -6,6 +6,7 @@ import pytest
 from dpctl import select_default_device
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -181,7 +182,7 @@ class TestCorrelate(unittest.TestCase):
         return xp.correlate(a[200::], b[10::700], mode=self.mode)
 
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
-    @testing.numpy_cupy_allclose(rtol=1e-2)
+    @testing.numpy_cupy_allclose(rtol=1e-2, type_check=has_support_aspect64())
     def test_correlate_diff_types(self, xp, dtype1, dtype2):
         a = testing.shaped_random((200,), xp, dtype1)
         b = testing.shaped_random((100,), xp, dtype2)

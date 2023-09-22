@@ -417,34 +417,81 @@ def place(x, mask, vals, /):
     return call_origin(numpy.place, x, mask, vals, dpnp_inplace=True)
 
 
-def put(x1, ind, v, mode="raise"):
+def put(a, indices, vals, /, *, axis=None, mode="wrap"):
     """
-    Replaces specified elements of an array with given values.
+    Puts values of an array into another array along a given axis.
 
     For full documentation refer to :obj:`numpy.put`.
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Not supported parameter mode.
+    Parameters `a` and `indices` are supported either as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `indices` is supported as 1-D array of integer data type.
+    Parameter `vals` must be broadcastable to the shape of `indices`
+    and has the same data type as `a` if it is as :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `mode` is supported with ``wrap``, the default, and ``clip`` values.
+    Parameter `axis` is supported as integer only.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.putmask` : Changes elements of an array based on conditional and input values.
+    :obj:`dpnp.place` : Change elements of an array based on conditional and input values.
+    :obj:`dpnp.put_along_axis` : Put values into the destination array by matching 1d index and data slices.
+
+    Notes
+    -----
+    In contrast to :obj:`numpy.put` `wrap` mode which wraps indices around the array for cyclic operations,
+    :obj:`dpnp.put` `wrap` mode clamps indices to a fixed range within the array boundaries (-n <= i < n).
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(5)
+    >>> indices = np.array([0, 1])
+    >>> np.put(x, indices, [-44, -55])
+    >>> x
+    array([-44, -55,   2,   3,   4])
+
+    >>> x = np.arange(5)
+    >>> indices = np.array([22])
+    >>> np.put(x, indices, -5, mode='clip')
+    >>> x
+    array([ 0,  1,  2,  3, -5])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    if x1_desc:
-        if mode != "raise":
-            pass
-        elif type(ind) is not type(v):
-            pass
-        elif (
-            numpy.max(ind) >= x1_desc.size or numpy.min(ind) + x1_desc.size < 0
+    if dpnp.is_supported_array_type(a) and dpnp.is_supported_array_type(
+        indices
+    ):
+        if indices.ndim != 1 or not dpnp.issubdtype(
+            indices.dtype, dpnp.integer
         ):
             pass
+        elif mode not in ("clip", "wrap"):
+            pass
+        elif axis is not None and not isinstance(axis, int):
+            raise TypeError(f"`axis` must be of integer type, got {type(axis)}")
+        # TODO: remove when #1382(dpctl) is solved
+        elif dpnp.is_supported_array_type(vals) and a.dtype != vals.dtype:
+            pass
         else:
-            return dpnp_put(x1_desc, ind, v)
+            if axis is None and a.ndim > 1:
+                a = dpnp.reshape(a, -1)
+            dpt_array = dpnp.get_usm_ndarray(a)
+            dpt_indices = dpnp.get_usm_ndarray(indices)
+            dpt_vals = (
+                dpnp.get_usm_ndarray(vals)
+                if isinstance(vals, dpnp_array)
+                else vals
+            )
+            return dpt.put(
+                dpt_array, dpt_indices, dpt_vals, axis=axis, mode=mode
+            )
 
-    return call_origin(numpy.put, x1, ind, v, mode, dpnp_inplace=True)
+    return call_origin(numpy.put, a, indices, vals, mode, dpnp_inplace=True)
 
 
 def put_along_axis(x1, indices, values, axis):
@@ -557,7 +604,7 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `indices` is supported as 1-D array of integer data type.
     Parameter `out` is supported only with default value.
-    Parameter `mode` is supported with ``wrap``(default) and ``clip`` mode.
+    Parameter `mode` is supported with ``wrap``, the default, and ``clip`` values.
     Providing parameter `axis` is optional when `x` is a 1-D array.
     Otherwise the function will be executed sequentially on CPU.
 

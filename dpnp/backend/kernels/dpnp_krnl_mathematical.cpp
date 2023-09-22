@@ -109,15 +109,6 @@ template <typename _DataType>
 void (*dpnp_around_default_c)(const void *, void *, const size_t, const int) =
     dpnp_around_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_around_ext_c)(DPCTLSyclQueueRef,
-                                       const void *,
-                                       void *,
-                                       const size_t,
-                                       const int,
-                                       const DPCTLEventVectorRef) =
-    dpnp_around_c<_DataType>;
-
 template <typename _KernelNameSpecialization1,
           typename _KernelNameSpecialization2>
 class dpnp_elemwise_absolute_c_kernel;
@@ -160,8 +151,6 @@ DPCTLSyclEventRef
 
         constexpr size_t lws = 64;
         constexpr unsigned int vec_sz = 8;
-        constexpr sycl::access::address_space global_space =
-            sycl::access::address_space::global_space;
 
         auto gws_range =
             sycl::range<1>(((size + lws * vec_sz - 1) / (lws * vec_sz)) * lws);
@@ -175,18 +164,20 @@ DPCTLSyclEventRef
                           sg.get_group_id()[0] * max_sg_size);
 
             if (start + static_cast<size_t>(vec_sz) * max_sg_size < size) {
-                using input_ptrT =
-                    sycl::multi_ptr<_DataType_input, global_space>;
-                using result_ptrT =
-                    sycl::multi_ptr<_DataType_output, global_space>;
+                auto array_multi_ptr = sycl::address_space_cast<
+                    sycl::access::address_space::global_space,
+                    sycl::access::decorated::yes>(&array1[start]);
+                auto result_multi_ptr = sycl::address_space_cast<
+                    sycl::access::address_space::global_space,
+                    sycl::access::decorated::yes>(&result[start]);
 
                 sycl::vec<_DataType_input, vec_sz> data_vec =
-                    sg.load<vec_sz>(input_ptrT(&array1[start]));
+                    sg.load<vec_sz>(array_multi_ptr);
 
                 sycl::vec<_DataType_output, vec_sz> res_vec =
                     sycl::abs(data_vec);
 
-                sg.store<vec_sz>(result_ptrT(&result[start]), res_vec);
+                sg.store<vec_sz>(result_multi_ptr, res_vec);
             }
             else {
                 for (size_t k = start + sg.get_local_id()[0]; k < size;
@@ -1183,15 +1174,6 @@ void func_map_init_mathematical(func_map_t &fmap)
         eft_FLT, (void *)dpnp_around_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_AROUND][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_around_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_AROUND_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_around_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_AROUND_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_around_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_AROUND_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_around_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_AROUND_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_around_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_CROSS][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_cross_default_c<int32_t, int32_t, int32_t>};
