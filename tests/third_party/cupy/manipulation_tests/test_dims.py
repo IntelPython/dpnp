@@ -27,7 +27,6 @@ class TestDims(unittest.TestCase):
         a = testing.shaped_arange((1, 3, 2), xp)
         return xp.atleast_1d(a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_atleast_2d1(self, xp):
         return self.check_atleast(xp.atleast_2d, xp)
@@ -37,7 +36,6 @@ class TestDims(unittest.TestCase):
         a = testing.shaped_arange((1, 3, 2), xp)
         return xp.atleast_2d(a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_atleast_3d1(self, xp):
         return self.check_atleast(xp.atleast_3d, xp)

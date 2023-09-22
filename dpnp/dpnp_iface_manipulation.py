@@ -964,10 +964,13 @@ def repeat(a, repeats, axis=None):
 
     """
 
-    usm_arr = dpnp.get_usm_ndarray(a)
     rep = repeats
     if isinstance(repeats, dpnp_array):
         rep = dpnp.get_usm_ndarray(repeats)
+    if axis is None and a.ndim > 1:
+        usm_arr = dpnp.get_usm_ndarray(a.flatten())
+    else:
+        usm_arr = dpnp.get_usm_ndarray(a)
     usm_arr = dpt.repeat(usm_arr, rep, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_arr)
 
