@@ -69,12 +69,6 @@ tests/test_linalg.py::test_norm1[None-3-[7]]
 tests/test_linalg.py::test_norm1[None-3-[1, 2]]
 tests/test_linalg.py::test_norm1[None-3-[1, 0]]
 
-tests/test_logic.py::test_allclose[int32]
-tests/test_logic.py::test_allclose[int64]
-tests/test_logic.py::test_allclose[float32]
-tests/test_logic.py::test_allclose[float64]
-tests/test_logic.py::test_allclose[None]
-
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([[i, i] for i in x])]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: (dpnp.asarray([(i, i) for i in x], [("a", int), ("b", int)]).view(dpnp.recarray))]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
