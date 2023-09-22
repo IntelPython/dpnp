@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.12.1</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.13.0rc1</span>
    </div>
    <div id="projectbrief">Data Parallel Extension for NumPy*</div>
   </td>
@@ -1220,7 +1220,7 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
 
 <p>Per element operation function dpnp_arctan2_c <br  />
  </p>
-<p >Function "dpnp_arctan2_c" executes operator "sycl::atan2((double)input1_elem, (double)input2_elem)" over * corresponding elements of input arrays <br  />
+<p >Function "dpnp_arctan2_c" executes operator "sycl::atan2(input1_elem, input2_elem)" over * corresponding elements of input arrays <br  />
  </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
@@ -1634,7 +1634,7 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
 
 <p>Per element operation function dpnp_copysign_c <br  />
  </p>
-<p >Function "dpnp_copysign_c" executes operator "sycl::copysign((double)input1_elem, (double)input2_elem)" over * corresponding elements of input arrays <br  />
+<p >Function "dpnp_copysign_c" executes operator "sycl::copysign(input1_elem, input2_elem)" over * corresponding elements of input arrays <br  />
  </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
@@ -4821,7 +4821,7 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
 
 <p>Per element operation function dpnp_fmod_c <br  />
  </p>
-<p >Function "dpnp_fmod_c" executes operator "sycl::fmod((double)input1_elem, (double)input2_elem)" over * corresponding elements of input arrays <br  />
+<p >Function "dpnp_fmod_c" executes operator "dispatch_fmod_op(input1_elem, input2_elem)" over * corresponding elements of input arrays <br  />
  </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
@@ -6499,7 +6499,7 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
 
 <p>Per element operation function dpnp_hypot_c <br  />
  </p>
-<p >Function "dpnp_hypot_c" executes operator "sycl::hypot((double)input1_elem, (double)input2_elem)" over * corresponding elements of input arrays <br  />
+<p >Function "dpnp_hypot_c" executes operator "sycl::hypot(input1_elem, input2_elem)" over * corresponding elements of input arrays <br  />
  </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>

@@ -64,6 +64,9 @@
    .. automethod:: conjugate
 
 
+   .. automethod:: copy
+
+
    .. automethod:: cumsum
 
 
@@ -103,6 +106,9 @@
    .. automethod:: prod
 
 
+   .. automethod:: put
+
+
    .. automethod:: reshape
 
 
@@ -116,6 +122,9 @@
 
 
    .. automethod:: sum
+
+
+   .. automethod:: swapaxes
 
 
    .. automethod:: take
