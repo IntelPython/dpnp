@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.mean
+=================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.mean
