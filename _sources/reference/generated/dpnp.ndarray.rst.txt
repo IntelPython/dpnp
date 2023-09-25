@@ -176,9 +176,11 @@
    .. autoattribute:: dtype
    .. autoattribute:: flags
    .. autoattribute:: flat
+   .. autoattribute:: imag
    .. autoattribute:: itemsize
    .. autoattribute:: nbytes
    .. autoattribute:: ndim
+   .. autoattribute:: real
    .. autoattribute:: shape
    .. autoattribute:: size
    .. autoattribute:: strides

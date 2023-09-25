@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.13.0rc2 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.13.0rc2+1.g329f36e3f documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3c063328"></script>
+        <script src="../../_static/documentation_options.js?v=9cfb41d6"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.0rc2
+                0.13.0rc2+1.g329f36e3f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -990,7 +990,44 @@
 
 
     <span class="c1"># &#39;getfield&#39;,</span>
-    <span class="c1"># &#39;imag&#39;,</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">imag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The imaginary part of the array.</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.imag`.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; x = np.sqrt(np.array([1+0j, 0+1j]))</span>
+<span class="sd">        &gt;&gt;&gt; x.imag</span>
+<span class="sd">        array([0.        , 0.70710677])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@imag</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">imag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the imaginary part of the array.</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.imag`.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; a = np.array([1+2j, 3+4j, 5+6j])</span>
+<span class="sd">        &gt;&gt;&gt; a.imag = 9</span>
+<span class="sd">        &gt;&gt;&gt; a</span>
+<span class="sd">        array([1.+9.j, 3.+9.j, 5.+9.j])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubsctype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;array does not have imaginary part to set&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="dpnp_array.item">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.item">[docs]</a>
@@ -1170,7 +1207,42 @@
 
 
     <span class="c1"># &#39;ravel&#39;,</span>
-    <span class="c1"># &#39;real&#39;,</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">real</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The real part of the array.</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.real`.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; x = np.sqrt(np.array([1+0j, 0+1j]))</span>
+<span class="sd">        &gt;&gt;&gt; x.real</span>
+<span class="sd">        array([1.        , 0.70710677])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@real</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">real</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the real part of the array.</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.real`.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; a = np.array([1+2j, 3+4j, 5+6j])</span>
+<span class="sd">        &gt;&gt;&gt; a.real = 9</span>
+<span class="sd">        &gt;&gt;&gt; a</span>
+<span class="sd">        array([9.+2.j, 9.+4.j, 9.+6.j])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
     <span class="c1"># &#39;repeat&#39;,</span>
 
 <div class="viewcode-block" id="dpnp_array.reshape">
@@ -1251,7 +1323,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="n">newshape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">newshape</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

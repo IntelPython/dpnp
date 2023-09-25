@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.13.0rc2 documentation</title>
+  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.13.0rc2+1.g329f36e3f documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=3c063328"></script>
+        <script src="../_static/documentation_options.js?v=9cfb41d6"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.0rc2
+                0.13.0rc2+1.g329f36e3f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -83,6 +83,8 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#other-attributes">Other attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.T.html">dpnp.ndarray.T</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.real.html">dpnp.ndarray.real</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.imag.html">dpnp.ndarray.imag</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.flat.html">dpnp.ndarray.flat</a></li>
 </ul>
 </li>
@@ -318,6 +320,12 @@ of the array:</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.T.html#dpnp.ndarray.T" title="dpnp.ndarray.T"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.T</span></code></a></p></td>
 <td><p>View of the transposed array.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.real.html#dpnp.ndarray.real" title="dpnp.ndarray.real"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.real</span></code></a></p></td>
+<td><p>The real part of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.imag.html#dpnp.ndarray.imag" title="dpnp.ndarray.imag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.imag</span></code></a></p></td>
+<td><p>The imaginary part of the array.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.flat.html#dpnp.ndarray.flat" title="dpnp.ndarray.flat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.flat</span></code></a></p></td>
 <td><p>Return a flat iterator, or set a flattened version of self to value.</p></td>
 </tr>
@@ -337,11 +345,11 @@ more complete description.)</p>
 <a class="reference internal" href="generated/dpnp.choose.html#dpnp.choose" title="dpnp.choose"><code class="xref py py-func docutils literal notranslate"><span class="pre">choose</span></code></a>, <code class="xref py py-func docutils literal notranslate"><span class="pre">clip</span></code>,
 <code class="xref py py-func docutils literal notranslate"><span class="pre">compress</span></code>, <a class="reference internal" href="generated/dpnp.copy.html#dpnp.copy" title="dpnp.copy"><code class="xref py py-func docutils literal notranslate"><span class="pre">copy</span></code></a>,
 <a class="reference internal" href="generated/dpnp.cumprod.html#dpnp.cumprod" title="dpnp.cumprod"><code class="xref py py-func docutils literal notranslate"><span class="pre">cumprod</span></code></a>, <a class="reference internal" href="generated/dpnp.cumsum.html#dpnp.cumsum" title="dpnp.cumsum"><code class="xref py py-func docutils literal notranslate"><span class="pre">cumsum</span></code></a>,
-<a class="reference internal" href="generated/dpnp.diagonal.html#dpnp.diagonal" title="dpnp.diagonal"><code class="xref py py-func docutils literal notranslate"><span class="pre">diagonal</span></code></a>, <code class="xref py py-func docutils literal notranslate"><span class="pre">imag</span></code>,
+<a class="reference internal" href="generated/dpnp.diagonal.html#dpnp.diagonal" title="dpnp.diagonal"><code class="xref py py-func docutils literal notranslate"><span class="pre">diagonal</span></code></a>, <a class="reference internal" href="generated/dpnp.imag.html#dpnp.imag" title="dpnp.imag"><code class="xref py py-func docutils literal notranslate"><span class="pre">imag</span></code></a>,
 <a class="reference internal" href="generated/dpnp.max.html#dpnp.max" title="dpnp.max"><code class="xref py py-func docutils literal notranslate"><span class="pre">max</span></code></a>, <a class="reference internal" href="generated/dpnp.mean.html#dpnp.mean" title="dpnp.mean"><code class="xref py py-func docutils literal notranslate"><span class="pre">mean</span></code></a>, <a class="reference internal" href="generated/dpnp.min.html#dpnp.min" title="dpnp.min"><code class="xref py py-func docutils literal notranslate"><span class="pre">min</span></code></a>,
 <a class="reference internal" href="generated/dpnp.nonzero.html#dpnp.nonzero" title="dpnp.nonzero"><code class="xref py py-func docutils literal notranslate"><span class="pre">nonzero</span></code></a>, <a class="reference internal" href="generated/dpnp.partition.html#dpnp.partition" title="dpnp.partition"><code class="xref py py-func docutils literal notranslate"><span class="pre">partition</span></code></a>,
 <a class="reference internal" href="generated/dpnp.prod.html#dpnp.prod" title="dpnp.prod"><code class="xref py py-func docutils literal notranslate"><span class="pre">prod</span></code></a>, <a class="reference internal" href="generated/dpnp.ptp.html#dpnp.ptp" title="dpnp.ptp"><code class="xref py py-func docutils literal notranslate"><span class="pre">ptp</span></code></a>, <a class="reference internal" href="generated/dpnp.put.html#dpnp.put" title="dpnp.put"><code class="xref py py-func docutils literal notranslate"><span class="pre">put</span></code></a>,
-<a class="reference internal" href="generated/dpnp.ravel.html#dpnp.ravel" title="dpnp.ravel"><code class="xref py py-func docutils literal notranslate"><span class="pre">ravel</span></code></a>, <code class="xref py py-func docutils literal notranslate"><span class="pre">real</span></code>, <a class="reference internal" href="generated/dpnp.repeat.html#dpnp.repeat" title="dpnp.repeat"><code class="xref py py-func docutils literal notranslate"><span class="pre">repeat</span></code></a>,
+<a class="reference internal" href="generated/dpnp.ravel.html#dpnp.ravel" title="dpnp.ravel"><code class="xref py py-func docutils literal notranslate"><span class="pre">ravel</span></code></a>, <a class="reference internal" href="generated/dpnp.real.html#dpnp.real" title="dpnp.real"><code class="xref py py-func docutils literal notranslate"><span class="pre">real</span></code></a>, <a class="reference internal" href="generated/dpnp.repeat.html#dpnp.repeat" title="dpnp.repeat"><code class="xref py py-func docutils literal notranslate"><span class="pre">repeat</span></code></a>,
 <a class="reference internal" href="generated/dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-func docutils literal notranslate"><span class="pre">reshape</span></code></a>, <a class="reference internal" href="generated/dpnp.around.html#dpnp.around" title="dpnp.around"><code class="xref py py-func docutils literal notranslate"><span class="pre">round</span></code></a>,
 <a class="reference internal" href="generated/dpnp.searchsorted.html#dpnp.searchsorted" title="dpnp.searchsorted"><code class="xref py py-func docutils literal notranslate"><span class="pre">searchsorted</span></code></a>, <a class="reference internal" href="generated/dpnp.sort.html#dpnp.sort" title="dpnp.sort"><code class="xref py py-func docutils literal notranslate"><span class="pre">sort</span></code></a>,
 <a class="reference internal" href="generated/dpnp.squeeze.html#dpnp.squeeze" title="dpnp.squeeze"><code class="xref py py-func docutils literal notranslate"><span class="pre">squeeze</span></code></a>, <a class="reference internal" href="generated/dpnp.std.html#dpnp.std" title="dpnp.std"><code class="xref py py-func docutils literal notranslate"><span class="pre">std</span></code></a>, <a class="reference internal" href="generated/dpnp.sum.html#dpnp.sum" title="dpnp.sum"><code class="xref py py-func docutils literal notranslate"><span class="pre">sum</span></code></a>,
