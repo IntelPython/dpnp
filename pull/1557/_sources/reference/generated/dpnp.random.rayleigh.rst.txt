@@ -1,0 +1,6 @@
+﻿dpnp.random.rayleigh
+====================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: rayleigh
