@@ -1220,15 +1220,18 @@ def test_sum_empty_out(dtype):
         (0, 6),
         (10, 1),
         (1, 10),
+        (35, 40),
+        (40, 35),
     ],
 )
 @pytest.mark.parametrize("dtype_in", get_all_dtypes())
 @pytest.mark.parametrize("dtype_out", get_all_dtypes())
 @pytest.mark.parametrize("transpose", [True, False])
 @pytest.mark.parametrize("keepdims", [True, False])
-def test_sum(shape, dtype_in, dtype_out, transpose, keepdims):
+@pytest.mark.parametrize("order", ["C", "F"])
+def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
     size = numpy.prod(shape)
-    a_np = numpy.arange(size).astype(dtype_in).reshape(shape)
+    a_np = numpy.arange(size).astype(dtype_in).reshape(shape, order=order)
     a = dpnp.asarray(a_np)
 
     if transpose:
