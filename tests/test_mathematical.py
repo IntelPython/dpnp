@@ -466,6 +466,30 @@ def test_signbit(data, dtype):
     assert_allclose(result, expected)
 
 
+@pytest.mark.parametrize(
+    "data",
+    [complex(-1, -4), complex(-1, 2), complex(3, -7), complex(4, 12)],
+    ids=[
+        "complex(-1, -4)",
+        "complex(-1, 2)",
+        "complex(3, -7)",
+        "complex(4, 12)",
+    ],
+)
+@pytest.mark.parametrize("dtype", get_complex_dtypes())
+def test_real_imag(data, dtype):
+    np_a = numpy.array(data, dtype=dtype)
+    dpnp_a = dpnp.array(data, dtype=dtype)
+
+    result = dpnp.real(dpnp_a)
+    expected = numpy.real(np_a)
+    assert_allclose(result, expected)
+
+    result = dpnp.imag(dpnp_a)
+    expected = numpy.imag(np_a)
+    assert_allclose(result, expected)
+
+
 @pytest.mark.parametrize("dtype", get_complex_dtypes())
 def test_projection_infinity(dtype):
     X = [
