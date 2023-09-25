@@ -448,36 +448,21 @@ tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_arra
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_is_equal
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_not_equal
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_10_{shapes=[(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]}::test_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_10_{shapes=[(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_1_{shapes=[(0,), (0,)]}::test_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_1_{shapes=[(0,), (0,)]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_2_{shapes=[(1,), (1,)]}::test_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_2_{shapes=[(1,), (1,)]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_3_{shapes=[(2,), (2,)]}::test_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_3_{shapes=[(2,), (2,)]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_4_{shapes=[(0,), (1,)]}::test_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_4_{shapes=[(0,), (1,)]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_5_{shapes=[(2, 3), (1, 3)]}::test_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_5_{shapes=[(2, 3), (1, 3)]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_6_{shapes=[(2, 1, 3, 4), (3, 1, 4)]}::test_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_6_{shapes=[(2, 1, 3, 4), (3, 1, 4)]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_7_{shapes=[(4, 3, 2, 3), (2, 3)]}::test_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_7_{shapes=[(4, 3, 2, 3), (2, 3)]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_8_{shapes=[(2, 0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_8_{shapes=[(2, 0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_9_{shapes=[(0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_9_{shapes=[(0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast_arrays
 
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_0_{shapes=[(3,), (2,)]}::test_invalid_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_0_{shapes=[(3,), (2,)]}::test_invalid_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_1_{shapes=[(3, 2), (2, 3)]}::test_invalid_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_1_{shapes=[(3, 2), (2, 3)]}::test_invalid_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_2_{shapes=[(3, 2), (3, 4)]}::test_invalid_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_2_{shapes=[(3, 2), (3, 4)]}::test_invalid_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_3_{shapes=[(0,), (2,)]}::test_invalid_broadcast
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_3_{shapes=[(0,), (2,)]}::test_invalid_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_ravel2
 tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_ravel3
 tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_external_ravel
