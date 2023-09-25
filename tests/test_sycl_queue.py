@@ -245,12 +245,18 @@ def test_meshgrid(device_x, device_y):
         pytest.param("fabs", [-1.2, 1.2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),
+        pytest.param(
+            "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
+        ),
         pytest.param("nancumprod", [1.0, dpnp.nan]),
         pytest.param("nancumsum", [1.0, dpnp.nan]),
         pytest.param("nanprod", [1.0, dpnp.nan]),
         pytest.param("nansum", [1.0, dpnp.nan]),
         pytest.param("negative", [1.0, 0.0, -1.0]),
         pytest.param("prod", [1.0, 2.0]),
+        pytest.param(
+            "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
+        ),
         pytest.param("sign", [-5.0, 0.0, 4.5]),
         pytest.param("signbit", [-5.0, 0.0, 4.5]),
         pytest.param(
