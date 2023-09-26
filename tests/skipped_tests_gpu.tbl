@@ -285,6 +285,12 @@ tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction:
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan_imag
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan_real
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_nan
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_nan_imag
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_nan_real
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_min_nan
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_min_nan_imag
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_min_nan_real
 
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_max
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_min
@@ -302,6 +308,7 @@ tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_pa
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_6_{order='F', shape=(10, 20, 30)}::test_cub_min
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_max
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_min
+
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_K_strides_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_K_strides_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_K_strides_reshape
