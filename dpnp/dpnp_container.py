@@ -130,7 +130,7 @@ def asarray(
         )
 
         # return x1 if dpctl returns a zero copy of x1_obj
-        if array_obj is x1_obj:
+        if array_obj is x1_obj and isinstance(x1, dpnp_array):
             return x1
 
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)

@@ -56,10 +56,12 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_divide,
     dpnp_floor,
     dpnp_floor_divide,
+    dpnp_imag,
     dpnp_multiply,
     dpnp_negative,
     dpnp_power,
     dpnp_proj,
+    dpnp_real,
     dpnp_remainder,
     dpnp_round,
     dpnp_sign,
@@ -92,6 +94,7 @@ __all__ = [
     "fmin",
     "fmod",
     "gradient",
+    "imag",
     "maximum",
     "minimum",
     "mod",
@@ -105,6 +108,7 @@ __all__ = [
     "power",
     "prod",
     "proj",
+    "real",
     "remainder",
     "rint",
     "round",
@@ -1162,6 +1166,52 @@ def gradient(x1, *varargs, **kwargs):
     return call_origin(numpy.gradient, x1, *varargs, **kwargs)
 
 
+def imag(x):
+    """
+    Return the imaginary part of the complex argument.
+
+    For full documentation refer to :obj:`numpy.imag`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The imaginary component of the complex argument.
+
+    Limitations
+    -----------
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.real` : Return the real part of the complex argument.
+    :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
+    :obj:`dpnp.conjugate` : Return the complex conjugate, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1+2j, 3+4j, 5+6j])
+    >>> a.imag
+    array([2., 4., 6.])
+
+    >>> a.imag = np.array([8, 10, 12])
+    >>> a
+    array([1. +8.j, 3.+10.j, 5.+12.j])
+
+    >>> np.imag(np.array(1 + 1j))
+    array(1.)
+
+    """
+
+    if dpnp.isscalar(x):
+        # input has to be an array
+        pass
+    else:
+        return dpnp_imag(x)
+    return call_origin(numpy.imag, x)
+
+
 def maximum(
     x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs
 ):
@@ -1934,6 +1984,7 @@ def proj(
 
     >>> np.proj(np.array([complex(1,np.inf), complex(1,-np.inf), complex(np.inf,-1),]))
     array([inf+0.j, inf-0.j, inf-0.j])
+
     """
 
     return check_nd_call_func(
@@ -1949,62 +2000,56 @@ def proj(
     )
 
 
-def rint(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
+def real(x):
     """
-    Round elements of the array to the nearest integer.
+    Return the real part of the complex argument.
 
-    For full documentation refer to :obj:`numpy.rint`.
+    For full documentation refer to :obj:`numpy.real`.
 
     Returns
     -------
     out : dpnp.ndarray
-        The rounded value of elements of the array to the nearest integer.
+        The real component of the complex argument.
 
     Limitations
     -----------
     Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.round` : Evenly round to the given number of decimals.
-    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
-    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
-    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+    :obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+    :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
+    :obj:`dpnp.conjugate` : Return the complex conjugate, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
-    >>> np.rint(a)
-    array([-2., -2., -0.,  0.,  2.,  2.,  2.])
+    >>> a = np.array([1+2j, 3+4j, 5+6j])
+    >>> a.real
+    array([1., 3., 5.])
+
+    >>> a.real = 9
+    >>> a
+    array([9.+2.j, 9.+4.j, 9.+6.j])
+
+    >>> a.real = np.array([9, 8, 7])
+    >>> a
+    array([9.+2.j, 8.+4.j, 7.+6.j])
+
+    >>> np.real(np.array(1 + 1j))
+    array(1.)
 
     """
-
-    return check_nd_call_func(
-        numpy.rint,
-        dpnp_round,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+    if dpnp.isscalar(x):
+        # input has to be an array
+        pass
+    else:
+        if dpnp.issubsctype(x.dtype, dpnp.complexfloating):
+            return dpnp_real(x)
+        else:
+            return x
+    return call_origin(numpy.real, x)
 
 
 def remainder(
@@ -2068,6 +2113,64 @@ def remainder(
         dpnp_remainder,
         x1,
         x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
+
+
+def rint(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Round elements of the array to the nearest integer.
+
+    For full documentation refer to :obj:`numpy.rint`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The rounded value of elements of the array to the nearest integer.
+
+    Limitations
+    -----------
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.round` : Evenly round to the given number of decimals.
+    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
+    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
+    >>> np.rint(a)
+    array([-2., -2., -0.,  0.,  2.,  2.,  2.])
+
+    """
+
+    return check_nd_call_func(
+        numpy.rint,
+        dpnp_round,
+        x,
         out=out,
         where=where,
         order=order,
@@ -2382,9 +2485,23 @@ def sum(
     elif where is not True:
         pass
     else:
-        if len(x.shape) == 2 and (
-            (axis == (0,) and x.flags.c_contiguous)
-            or (axis == (1,) and x.flags.f_contiguous)
+        if (
+            len(x.shape) == 2
+            and x.itemsize == 4
+            and (
+                (
+                    axis == (0,)
+                    and x.flags.c_contiguous
+                    and 32 <= x.shape[1] <= 1024
+                    and x.shape[0] > x.shape[1]
+                )
+                or (
+                    axis == (1,)
+                    and x.flags.f_contiguous
+                    and 32 <= x.shape[0] <= 1024
+                    and x.shape[1] > x.shape[0]
+                )
+            )
         ):
             from dpctl.tensor._reduction import _default_reduction_dtype
 

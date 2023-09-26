@@ -27,6 +27,7 @@ env:
       test_sycl_queue.py
       test_umath.py
       test_usm_type.py
+      third_party/cupy/core_tests/test_ndarray_complex_ops.py
       third_party/cupy/linalg_tests/test_product.py
       third_party/cupy/logic_tests/test_comparison.py
       third_party/cupy/logic_tests/test_truth.py
