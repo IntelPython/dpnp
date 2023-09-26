@@ -974,7 +974,7 @@ cdef class dparray:
 
         return iface_sum(*args, **kwargs)
 
-    def max(self, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoValue, where=numpy._NoValue):
+    def max(self, axis=None, out=None, keepdims=False, initial=None, where=True):
         """
         Return the maximum along an axis.
         """
@@ -988,7 +988,7 @@ cdef class dparray:
 
         return mean(self, axis)
 
-    def min(self, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoValue, where=numpy._NoValue):
+    def min(self, axis=None, out=None, keepdims=False, initial=None, where=True):
         """
         Return the minimum along a given axis.
         """

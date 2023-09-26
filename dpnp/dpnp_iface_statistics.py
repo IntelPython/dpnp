@@ -619,7 +619,7 @@ def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     Prameters ``axis`` is supported only with default value ``None``.
     Prameters ``dtype`` is supported only with default value ``None``.
     Prameters ``out`` is supported only with default value ``None``.
-    Prameters ``keepdims`` is supported only with default value ``numpy._NoValue``.
+    Prameters ``keepdims`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
     """
 
@@ -665,7 +665,7 @@ def std(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     Prameters ``axis`` is supported only with default value ``None``.
     Prameters ``dtype`` is supported only with default value ``None``.
     Prameters ``out`` is supported only with default value ``None``.
-    Prameters ``keepdims`` is supported only with default value ``numpy._NoValue``.
+    Prameters ``keepdims`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -723,7 +723,7 @@ def var(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     Prameters ``axis`` is supported only with default value ``None``.
     Prameters ``dtype`` is supported only with default value ``None``.
     Prameters ``out`` is supported only with default value ``None``.
-    Prameters ``keepdims`` is supported only with default value ``numpy._NoValue``.
+    Prameters ``keepdims`` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
