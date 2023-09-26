@@ -1,5 +1,6 @@
 from math import prod
 
+import dpctl.tensor as dpt
 import dpctl.utils as du
 import pytest
 
@@ -178,6 +179,17 @@ def test_array_copy(func, usm_type_x, usm_type_y):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
+
+
+@pytest.mark.parametrize(
+    "copy", [True, False, None], ids=["True", "False", "None"]
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+def test_array_creation_from_dpctl(copy, usm_type_x):
+    x = dpt.ones((3, 3), usm_type=usm_type_x)
+    y = dp.array(x, copy=copy)
+
+    assert y.usm_type == usm_type_x
 
 
 @pytest.mark.parametrize(
