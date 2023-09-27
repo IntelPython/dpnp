@@ -1,10 +1,12 @@
 import dpctl
+import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
 
 from .helper import assert_dtype_allclose, get_all_dtypes, is_win_platform
 
@@ -245,12 +247,18 @@ def test_meshgrid(device_x, device_y):
         pytest.param("fabs", [-1.2, 1.2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),
+        pytest.param(
+            "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
+        ),
         pytest.param("nancumprod", [1.0, dpnp.nan]),
         pytest.param("nancumsum", [1.0, dpnp.nan]),
         pytest.param("nanprod", [1.0, dpnp.nan]),
         pytest.param("nansum", [1.0, dpnp.nan]),
         pytest.param("negative", [1.0, 0.0, -1.0]),
         pytest.param("prod", [1.0, 2.0]),
+        pytest.param(
+            "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
+        ),
         pytest.param("sign", [-5.0, 0.0, 4.5]),
         pytest.param("signbit", [-5.0, 0.0, 4.5]),
         pytest.param(
@@ -1068,6 +1076,23 @@ def test_array_copy(device, func, device_param, queue_param):
     result = dpnp.array(dpnp_data, **kwargs)
 
     assert_sycl_queue_equal(result.sycl_queue, dpnp_data.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "copy", [True, False, None], ids=["True", "False", "None"]
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_array_creation_from_dpctl(copy, device):
+    dpt_data = dpt.ones((3, 3), device=device)
+
+    result = dpnp.array(dpt_data, copy=copy)
+
+    assert_sycl_queue_equal(result.sycl_queue, dpt_data.sycl_queue)
+    assert isinstance(result, dpnp_array)
 
 
 @pytest.mark.parametrize(

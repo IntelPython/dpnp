@@ -173,6 +173,28 @@ static sycl::event dpnp_allclose(sycl::queue &q,
                     partial &= (array1[i] == array2[i]);
                     continue;
                 }
+
+                // workaround for std::inf which does not work on CPU
+                // [CMPLRLLVM-51856]
+                if (array1[i] == std::numeric_limits<_DataType1>::infinity()) {
+                    partial &= (array1[i] == array2[i]);
+                    continue;
+                }
+                else if (array1[i] ==
+                         -std::numeric_limits<_DataType1>::infinity()) {
+                    partial &= (array1[i] == array2[i]);
+                    continue;
+                }
+                else if (array2[i] ==
+                         std::numeric_limits<_DataType2>::infinity()) {
+                    partial &= (array1[i] == array2[i]);
+                    continue;
+                }
+                else if (array2[i] ==
+                         -std::numeric_limits<_DataType2>::infinity()) {
+                    partial &= (array1[i] == array2[i]);
+                    continue;
+                }
             }
 
             // casting integeral to floating type to avoid bad behavior

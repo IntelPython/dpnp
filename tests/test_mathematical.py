@@ -466,6 +466,30 @@ def test_signbit(data, dtype):
     assert_allclose(result, expected)
 
 
+@pytest.mark.parametrize(
+    "data",
+    [complex(-1, -4), complex(-1, 2), complex(3, -7), complex(4, 12)],
+    ids=[
+        "complex(-1, -4)",
+        "complex(-1, 2)",
+        "complex(3, -7)",
+        "complex(4, 12)",
+    ],
+)
+@pytest.mark.parametrize("dtype", get_complex_dtypes())
+def test_real_imag(data, dtype):
+    np_a = numpy.array(data, dtype=dtype)
+    dpnp_a = dpnp.array(data, dtype=dtype)
+
+    result = dpnp.real(dpnp_a)
+    expected = numpy.real(np_a)
+    assert_allclose(result, expected)
+
+    result = dpnp.imag(dpnp_a)
+    expected = numpy.imag(np_a)
+    assert_allclose(result, expected)
+
+
 @pytest.mark.parametrize("dtype", get_complex_dtypes())
 def test_projection_infinity(dtype):
     X = [
@@ -1196,15 +1220,18 @@ def test_sum_empty_out(dtype):
         (0, 6),
         (10, 1),
         (1, 10),
+        (35, 40),
+        (40, 35),
     ],
 )
 @pytest.mark.parametrize("dtype_in", get_all_dtypes())
 @pytest.mark.parametrize("dtype_out", get_all_dtypes())
 @pytest.mark.parametrize("transpose", [True, False])
 @pytest.mark.parametrize("keepdims", [True, False])
-def test_sum(shape, dtype_in, dtype_out, transpose, keepdims):
+@pytest.mark.parametrize("order", ["C", "F"])
+def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
     size = numpy.prod(shape)
-    a_np = numpy.arange(size).astype(dtype_in).reshape(shape)
+    a_np = numpy.arange(size).astype(dtype_in).reshape(shape, order=order)
     a = dpnp.asarray(a_np)
 
     if transpose:
