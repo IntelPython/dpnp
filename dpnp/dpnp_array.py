@@ -595,32 +595,37 @@ class dpnp_array:
         return dpt.asnumpy(self._array_obj)
 
     def astype(self, dtype, order="K", casting="unsafe", subok=True, copy=True):
-        """Copy the array with data type casting.
+        """
+        Copy the array with data type casting.
 
-        Args:
-            dtype: Target type.
-            order ({'C', 'F', 'A', 'K'}): Row-major (C-style) or column-major (Fortran-style) order.
-                When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
-                And when ``order`` is 'K', it keeps strides as closely as possible.
-            copy (bool): If it is False and no cast happens, then this method returns the array itself.
-                Otherwise, a copy is returned.
+        Parameters
+        ----------
+        dtype : dtype
+            Target data type.
+        order : {'C', 'F', 'A', 'K'}
+            Row-major (C-style) or column-major (Fortran-style) order.
+            When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
+            And when ``order`` is 'K', it keeps strides as closely as possible.
+        copy : bool
+            If it is False and no cast happens, then this method returns the array itself.
+            Otherwise, a copy is returned.
 
-        Returns:
+        Returns
+        -------
+        out : dpnp.array
             If ``copy`` is False and no cast is required, then the array itself is returned.
             Otherwise, it returns a (possibly casted) copy of the array.
 
-        .. note::
-           This method currently does not support `order``, `casting``, ``copy``, and ``subok`` arguments.
-
-        .. seealso:: :meth:`numpy.ndarray.astype`
+        Limitations
+        -----------
+        Parameter `subok` is supported with default value.
+        Otherwise the function will be executed sequentially on CPU.
 
         """
 
-        new_array = self.__new__(dpnp_array)
-        new_array._array_obj = dpt.astype(
-            self._array_obj, dtype, order=order, casting=casting, copy=copy
+        return dpnp.astype(
+            self, dtype, order=order, casting=casting, subok=subok, copy=copy
         )
-        return new_array
 
     # 'base',
     # 'byteswap',
@@ -784,11 +789,10 @@ class dpnp_array:
 
         Parameters
         ----------
-        order: {'C', 'F', 'A', 'K'}, optional
+        order: {'C', 'F'}, optional
             'C' means to flatten in row-major (C-style) order.
             'F' means to flatten in column-major (Fortran- style) order.
-            'A' means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
-            'K' means to flatten a in the order the elements occur in memory. The default is 'C'.
+            The default is 'C'.
 
         Returns
         -------
@@ -800,23 +804,8 @@ class dpnp_array:
         :obj:`dpnp.ravel`, :obj:`dpnp.flat`
 
         """
-        new_arr = self.__new__(dpnp_array)
-        new_arr._array_obj = dpt.empty(
-            self.shape,
-            dtype=self.dtype,
-            order=order,
-            device=self._array_obj.sycl_device,
-            usm_type=self._array_obj.usm_type,
-            sycl_queue=self._array_obj.sycl_queue,
-        )
 
-        if self.size > 0:
-            dpt._copy_utils._copy_from_usm_ndarray_to_usm_ndarray(
-                new_arr._array_obj, self._array_obj
-            )
-            new_arr._array_obj = dpt.reshape(new_arr._array_obj, (self.size,))
-
-        return new_arr
+        return self.reshape(-1, order=order)
 
     # 'getfield',
 

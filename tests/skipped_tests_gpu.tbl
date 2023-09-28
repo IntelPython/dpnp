@@ -158,6 +158,10 @@ tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_cons
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_list
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_tuple
 
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diagflat_from_scalar
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diagflat_from_scalar_with_k0
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diagflat_from_scalar_with_k1
+
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_1darray
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_fill_diagonal
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_5_{shape=(3, 3), val=(2,), wrap=False}::test_1darray

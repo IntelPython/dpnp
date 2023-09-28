@@ -203,6 +203,10 @@ tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_cons
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_list
 tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_tuple
 
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diagflat_from_scalar
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diagflat_from_scalar_with_k0
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diagflat_from_scalar_with_k1
+
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid0
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid2

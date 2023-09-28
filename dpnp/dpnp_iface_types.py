@@ -37,7 +37,7 @@ This module provides public type interface file for the library
 import dpctl.tensor as dpt
 import numpy
 
-import dpnp.dpnp_array as dpnp_array
+from dpnp.dpnp_array import dpnp_array
 
 __all__ = [
     "bool",

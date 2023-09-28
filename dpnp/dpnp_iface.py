@@ -46,6 +46,7 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 
+import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
@@ -150,17 +151,41 @@ def asnumpy(input, order="C"):
 
 
 def astype(x1, dtype, order="K", casting="unsafe", subok=True, copy=True):
-    """Copy the array with data type casting."""
+    """
+    Copy the array with data type casting.
+
+    Parameters
+    ----------
+    dtype : dtype
+        Target data type.
+    order : {'C', 'F', 'A', 'K'}
+        Row-major (C-style) or column-major (Fortran-style) order.
+        When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
+        And when ``order`` is 'K', it keeps strides as closely as possible.
+    copy : bool
+        If it is False and no cast happens, then this method returns the array itself.
+        Otherwise, a copy is returned.
+
+    Returns
+    -------
+    out : dpnp.array
+        If ``copy`` is False and no cast is required, then the array itself is returned.
+        Otherwise, it returns a (possibly casted) copy of the array.
+
+    Limitations
+    -----------
+    Parameter `subok` is supported with default value.
+    Otherwise the function will be executed sequentially on CPU.
+
+    """
     if subok is not True:
         pass
     else:
-        if isinstance(x1, dpnp_array):
-            return x1.astype(dtype, order=order, casting=casting, copy=copy)
-
-        if isinstance(x1, dpt.usm_ndarray):
-            return dpt.astype(
-                x1, dtype, order=order, casting=casting, copy=copy
-            )
+        usm_arr = dpnp.get_usm_ndarray(x1)
+        usm_arr = dpt.astype(
+            usm_arr, dtype, order=order, casting=casting, copy=copy
+        )
+        return dpnp_array._create_from_usm_ndarray(usm_arr)
 
     return call_origin(
         numpy.ndarray.astype,

@@ -293,6 +293,14 @@ def broadcast_arrays(*args, subok=False):
     Broadcast any number of arrays against each other.
 
     For full documentation refer to :obj:`numpy.broadcast_arrays`.
+
+    Limitations
+    -----------
+    Parameter `args` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `subok` is supported with default value.
+    Otherwise the function will be executed sequentially on CPU.
+
     """
 
     if subok is not False:
@@ -907,25 +915,21 @@ def ravel(a, order="C"):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `a` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
+    will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([[1, 2, 3], [4, 5, 6]])
-    >>> out = np.ravel(x)
-    >>> [i for i in out]
-    [1, 2, 3, 4, 5, 6]
+    >>> np.ravel(x)
+    array([1, 2, 3, 4, 5, 6])
 
     """
 
-    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
-    if a_desc:
-        return dpnp_flatten(a_desc).get_pyobj()
-
-    return call_origin(numpy.ravel, a, order=order)
+    return dpnp.reshape(a, -1, order=order)
 
 
 def repeat(a, repeats, axis=None):

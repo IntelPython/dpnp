@@ -674,7 +674,7 @@ def multinomial(n, pvals, size=None):
         d = len(pvals)
         if n < 0:
             pass
-        elif n > numpy.iinfo(dpnp.int32).max:
+        elif n > dpnp.iinfo(dpnp.int32).max:
             pass
         elif pvals_sum > 1.0:
             pass

@@ -40,13 +40,8 @@ from libcpp cimport bool as cpp_bool
 
 import numpy
 
-from dpnp.dpnp_algo import (
-    dpnp_astype,
-    dpnp_flatten,
-)
-
 # to avoid interference with Python internal functions
-from dpnp.dpnp_iface import asnumpy
+from dpnp.dpnp_iface import asnumpy, astype
 from dpnp.dpnp_iface import get_dpnp_descriptor as iface_get_dpnp_descriptor
 from dpnp.dpnp_iface import prod as iface_prod
 from dpnp.dpnp_iface import sum as iface_sum
@@ -110,7 +105,9 @@ from dpnp.dpnp_iface_logic import (  # TODO do the same as for iface_sum
 )
 from dpnp.dpnp_iface_manipulation import (
     copyto,
+    ravel,
     repeat,
+    reshape,
     squeeze,
     transpose,
 )
@@ -584,11 +581,10 @@ cdef class dparray:
 
         Parameters
         ----------
-        order: {'C', 'F', 'A', 'K'}, optional
+        order: {'C', 'F'}, optional
             'C' means to flatten in row-major (C-style) order.
             'F' means to flatten in column-major (Fortran- style) order.
-            'A' means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
-            'K' means to flatten a in the order the elements occur in memory. The default is 'C'.
+            The default is 'C'.
 
         Returns
         -------
@@ -601,30 +597,7 @@ cdef class dparray:
 
         """
 
-        if not utils.use_origin_backend(self):
-            c_order, fortran_order = self.flags.c_contiguous, self.flags.f_contiguous
-
-            if order not in {'C', 'F', 'A', 'K'}:
-                pass
-            elif order == 'K' and not c_order and not fortran_order:
-                # skip dpnp backend if both C-style and Fortran-style order not found in flags
-                pass
-            else:
-                if order == 'K':
-                    # either C-style or Fortran-style found in flags
-                    order = 'C' if c_order else 'F'
-                elif order == 'A':
-                    order = 'F' if fortran_order else 'C'
-
-                if order == 'F':
-                    return self.transpose().reshape(self.size)
-
-                self_desc = iface_get_dpnp_descriptor(self)
-                return dpnp_flatten(self_desc).get_pyobj()
-
-        result = dp2nd_array(self).flatten(order=order)
-
-        return nd2dp_array(result)
+        return ravel(self, order=order)
 
     def ravel(self, order='C'):
         """
@@ -632,11 +605,10 @@ cdef class dparray:
 
         Parameters
         ----------
-        order: {'C', 'F', 'A', 'K'}, optional
+        order: {'C', 'F'}, optional
             'C' means to flatten in row-major (C-style) order.
             'F' means to flatten in column-major (Fortran- style) order.
-            'A' means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
-            'K' means to flatten a in the order the elements occur in memory. The default is 'C'.
+            The default is 'C'.
 
         Returns
         -------
@@ -654,8 +626,8 @@ cdef class dparray:
         :obj:`dpnp.ravel`, :obj:`dpnp.flat`
 
         """
-        # TODO: don't copy the input array
-        return self.flatten(order=order)
+
+        return ravel(self, order=order)
 
     def reshape(self, d0, *dn, order=b'C'):
         """Change the shape of the array.
@@ -665,39 +637,7 @@ cdef class dparray:
 
         """
 
-        if order is not b'C':
-            utils.checker_throw_value_error("dparray::reshape", "order", order, b'C')
-
-        if dn:
-            if not isinstance(d0, int):
-                msg_tmpl = "'{}' object cannot be interpreted as an integer"
-                raise TypeError(msg_tmpl.format(type(d0).__name__))
-            shape = [d0, *dn]
-        else:
-            shape = d0
-
-        cdef long shape_it = 0
-        cdef tuple shape_tup = utils._object_to_tuple(shape)
-        cdef size_previous = self.size
-
-        cdef long size_new = 1
-        cdef shape_type_c shape_new
-        shape_new.reserve(len(shape_tup))
-
-        for shape_it in shape_tup:
-            if shape_it < 0:
-                utils.checker_throw_value_error("dparray::reshape", "shape", shape_it, ">=0")
-
-            shape_new.push_back(shape_it)
-            size_new *= shape_it
-
-        if size_new != size_previous:
-            utils.checker_throw_value_error("dparray::reshape", "shape", size_new, size_previous)
-
-        self._dparray_shape = shape_new
-        self._dparray_size = size_new
-
-        return self
+        return reshape(self, d0, *dn, order=b'C')
 
     def repeat(self, *args, **kwds):
         """ Repeat elements of an array.
@@ -870,47 +810,36 @@ cdef class dparray:
     def __truediv__(self, other):
         return divide(self, other)
 
-    cpdef dparray astype(self, dtype, order='K', casting='unsafe', subok=True, copy=True):
-        """Copy the array with data type casting.
+    def astype(self, dtype, order='K', casting='unsafe', subok=True, copy=True):
+        """
+        Copy the array with data type casting.
 
-        Args:
-            dtype: Target type.
-            order ({'C', 'F', 'A', 'K'}): Row-major (C-style) or column-major (Fortran-style) order.
-                When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
-                And when ``order`` is 'K', it keeps strides as closely as possible.
-            copy (bool): If it is False and no cast happens, then this method returns the array itself.
-                Otherwise, a copy is returned.
+        Parameters
+        ----------
+        dtype : dtype
+            Target data type.
+        order : {'C', 'F', 'A', 'K'}
+            Row-major (C-style) or column-major (Fortran-style) order.
+            When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
+            And when ``order`` is 'K', it keeps strides as closely as possible.
+        copy : bool
+            If it is False and no cast happens, then this method returns the array itself.
+            Otherwise, a copy is returned.
 
-        Returns:
+        Returns
+        -------
+        out : dpnp.array
             If ``copy`` is False and no cast is required, then the array itself is returned.
             Otherwise, it returns a (possibly casted) copy of the array.
 
-        .. note::
-           This method currently does not support `order``, `casting``, ``copy``, and ``subok`` arguments.
-
-        .. seealso:: :meth:`numpy.ndarray.astype`
+        Limitations
+        -----------
+        Parameter `subok` is supported with default value.
+        Otherwise the function will be executed sequentially on CPU.
 
         """
 
-        if casting is not 'unsafe':
-            pass
-        elif subok is not True:
-            pass
-        elif copy is not True:
-            pass
-        elif order is not 'K':
-            pass
-        elif self.dtype == numpy.complex128 or dtype == numpy.complex128:
-            pass
-        elif self.dtype == numpy.complex64 or dtype == numpy.complex64:
-            pass
-        else:
-            self_desc = iface_get_dpnp_descriptor(self)
-            return dpnp_astype(self_desc, dtype).get_pyobj()
-
-        result = dp2nd_array(self).astype(dtype=dtype, order=order, casting=casting, subok=subok, copy=copy)
-
-        return nd2dp_array(result)
+        return astype(self, dtype, order=order, casting=casting, subok=subok, copy=copy)
 
     def conj(self):
         """
