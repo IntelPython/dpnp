@@ -704,3 +704,13 @@ def test_meshgrid(arrays, dtype, indexing):
     a = tuple(numpy.array(array, dtype=dtype) for array in arrays)
     ia = tuple(dpnp.array(array, dtype=dtype) for array in arrays)
     assert_array_equal(func(numpy, a), func(dpnp, ia))
+
+
+@pytest.mark.parametrize("shape", [(24,), (4, 6), (2, 3, 4), (2, 3, 2, 2)])
+def test_set_shape(shape):
+    na = numpy.arange(24)
+    na.shape = shape
+    da = dpnp.arange(24)
+    da.shape = shape
+
+    assert_array_equal(na, da)

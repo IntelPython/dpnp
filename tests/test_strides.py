@@ -98,6 +98,32 @@ def test_strides_1arg(func_name, dtype, shape):
     assert_allclose(result, expected, rtol=1e-06)
 
 
+@pytest.mark.parametrize(
+    "func_name",
+    [
+        "conjugate",
+        "imag",
+        "real",
+    ],
+)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize("shape", [(10,)], ids=["(10,)"])
+def test_strides_1arg_complex(func_name, dtype, shape):
+    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+    b = a[::2]
+
+    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
+    dpb = dpa[::2]
+
+    dpnp_func = _getattr(dpnp, func_name)
+    result = dpnp_func(dpb)
+
+    numpy_func = _getattr(numpy, func_name)
+    expected = numpy_func(b)
+
+    assert_allclose(result, expected, rtol=1e-06)
+
+
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("shape", [(10,)], ids=["(10,)"])
 def test_strides_erf(dtype, shape):

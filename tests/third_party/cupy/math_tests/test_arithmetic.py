@@ -81,7 +81,7 @@ class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
                     ]
                     + [0, 0.0j, 0j, 2, 2.0, 2j, True, False]
                 ),
-                "name": ["conj", "conjugate"],
+                "name": ["conj", "conjugate", "real", "imag"],
             }
         )
         + testing.product(
@@ -107,22 +107,61 @@ class TestArithmeticUnary(unittest.TestCase):
             arg1 = xp.asarray(arg1)
         y = getattr(xp, self.name)(arg1)
 
-        if self.name in ("real", "imag"):
-            # Some NumPy functions return Python scalars for Python scalar
-            # inputs.
-            # We need to convert them to arrays to compare with CuPy outputs.
-            if xp is numpy and isinstance(arg1, (bool, int, float, complex)):
-                y = xp.asarray(y)
+        # if self.name in ("real", "imag"):
+        # Some NumPy functions return Python scalars for Python scalar
+        # inputs.
+        # We need to convert them to arrays to compare with CuPy outputs.
+        # if xp is numpy and isinstance(arg1, (bool, int, float, complex)):
+        #    y = xp.asarray(y)
 
-            # TODO(niboshi): Fix this
-            # numpy.real and numpy.imag return Python int if the input is
-            # Python bool. CuPy should return an array of dtype.int32 or
-            # dtype.int64 (depending on the platform) in such cases, instead
-            # of an array of dtype.bool.
-            if xp is cupy and isinstance(arg1, bool):
-                y = y.astype(int)
+        # TODO(niboshi): Fix this
+        # numpy.real and numpy.imag return Python int if the input is
+        # Python bool. CuPy should return an array of dtype.int32 or
+        # dtype.int64 (depending on the platform) in such cases, instead
+        # of an array of dtype.bool.
+        # if xp is cupy and isinstance(arg1, bool):
+        #    y = y.astype(int)
 
         return y
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            "shape": [(3, 2), (), (3, 0, 2)],
+        }
+    )
+)
+class TestComplex:
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_array_equal()
+    def test_real_ndarray_nocomplex(self, xp, dtype):
+        x = testing.shaped_arange(self.shape, xp, dtype=dtype)
+        real = x.real
+        assert real is x  # real returns self
+        return real
+
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_array_equal()
+    def test_real_nocomplex(self, xp, dtype):
+        x = testing.shaped_arange(self.shape, xp, dtype=dtype)
+        real = xp.real(x)
+        assert real is x  # real returns self
+        return real
+
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_array_equal()
+    def test_imag_ndarray_nocomplex(self, xp, dtype):
+        x = testing.shaped_arange(self.shape, xp, dtype=dtype)
+        imag = x.imag
+        return imag
+
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_array_equal()
+    def test_imag_nocomplex(self, xp, dtype):
+        x = testing.shaped_arange(self.shape, xp, dtype=dtype)
+        imag = xp.imag(x)
+        return imag
 
 
 class ArithmeticBinaryBase:

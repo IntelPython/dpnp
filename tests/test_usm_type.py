@@ -1,5 +1,6 @@
 from math import prod
 
+import dpctl.tensor as dpt
 import dpctl.utils as du
 import pytest
 
@@ -181,6 +182,17 @@ def test_array_copy(func, usm_type_x, usm_type_y):
 
 
 @pytest.mark.parametrize(
+    "copy", [True, False, None], ids=["True", "False", "None"]
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+def test_array_creation_from_dpctl(copy, usm_type_x):
+    x = dpt.ones((3, 3), usm_type=usm_type_x)
+    y = dp.array(x, copy=copy)
+
+    assert y.usm_type == usm_type_x
+
+
+@pytest.mark.parametrize(
     "usm_type_start", list_of_usm_types, ids=list_of_usm_types
 )
 @pytest.mark.parametrize(
@@ -295,9 +307,15 @@ def test_meshgrid(usm_type_x, usm_type_y):
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param(
+            "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
+        ),
         pytest.param("negative", [1.0, 0.0, -1.0]),
         pytest.param("positive", [1.0, 0.0, -1.0]),
         pytest.param("proj", [complex(1.0, 2.0), complex(dp.inf, -1.0)]),
+        pytest.param(
+            "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
+        ),
         pytest.param("sign", [-5.0, 0.0, 4.5]),
         pytest.param("signbit", [-5.0, 0.0, 4.5]),
         pytest.param(

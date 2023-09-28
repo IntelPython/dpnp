@@ -63,6 +63,7 @@ __all__ = [
     "dpnp_floor_divide",
     "dpnp_greater",
     "dpnp_greater_equal",
+    "dpnp_imag",
     "dpnp_invert",
     "dpnp_isfinite",
     "dpnp_isinf",
@@ -81,6 +82,7 @@ __all__ = [
     "dpnp_not_equal",
     "dpnp_power",
     "dpnp_proj",
+    "dpnp_real",
     "dpnp_remainder",
     "dpnp_right_shift",
     "dpnp_round",
@@ -1260,6 +1262,46 @@ def dpnp_greater_equal(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_imag_docstring = """
+imag(x, out=None, order="K")
+
+Computes imaginary part of each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise imaginary component of input.
+        If the input is a real-valued data type, the returned array has
+        the same data type. If the input is a complex floating-point
+        data type, the returned array has a floating-point data type
+        with the same floating-point precision as complex input.
+"""
+
+
+imag_func = UnaryElementwiseFunc(
+    "imag", ti._imag_result_type, ti._imag, _imag_docstring
+)
+
+
+def dpnp_imag(x, out=None, order="K"):
+    """Invokes imag() from dpctl.tensor implementation for imag() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = imag_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _invert_docstring = """
 invert(x, out=None, order='K')
 
@@ -2061,6 +2103,46 @@ def dpnp_proj(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = proj_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_real_docstring = """
+real(x, out=None, order="K")
+
+Computes real part of each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise real component of input.
+        If the input is a real-valued data type, the returned array has
+        the same data type. If the input is a complex floating-point
+        data type, the returned array has a floating-point data type
+        with the same floating-point precision as complex input.
+"""
+
+
+real_func = UnaryElementwiseFunc(
+    "real", ti._real_result_type, ti._real, _real_docstring
+)
+
+
+def dpnp_real(x, out=None, order="K"):
+    """Invokes real() from dpctl.tensor implementation for real() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = real_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
