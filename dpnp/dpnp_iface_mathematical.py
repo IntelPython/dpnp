@@ -61,6 +61,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_minimum,
     dpnp_multiply,
     dpnp_negative,
+    dpnp_positive,
     dpnp_power,
     dpnp_proj,
     dpnp_real,
@@ -107,6 +108,7 @@ __all__ = [
     "nanprod",
     "nansum",
     "negative",
+    "positive",
     "power",
     "prod",
     "proj",
@@ -1843,7 +1845,7 @@ def negative(
     **kwargs,
 ):
     """
-    Negative element-wise.
+    Numerical negative, element-wise.
 
     For full documentation refer to :obj:`numpy.negative`.
 
@@ -1862,6 +1864,7 @@ def negative(
 
     See Also
     --------
+    :obj:`dpnp.positive` : Return the numerical positive of each element of `x`.
     :obj:`dpnp.copysign` : Change the sign of `x1` to that of `x2`, element-wise.
 
     Examples
@@ -1881,6 +1884,71 @@ def negative(
     return check_nd_call_func(
         numpy.negative,
         dpnp_negative,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
+
+
+def positive(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Numerical positive, element-wise.
+
+    For full documentation refer to :obj:`numpy.positive`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The numerical positive of each element of `x`.
+
+    Limitations
+    -----------
+    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.negative` : Return the numerical negative of each element of `x`.
+    :obj:`dpnp.copysign` : Change the sign of `x1` to that of `x2`, element-wise.
+
+    Note
+    ----
+    Equivalent to `x.copy()`, but only defined for types that support arithmetic.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.positive(np.array([1., -1.]))
+    array([ 1., -1.])
+
+    The ``+`` operator can be used as a shorthand for ``positive`` on
+    :class:`dpnp.ndarray`.
+
+    >>> x = np.array([1., -1.])
+    >>> +x
+    array([ 1., -1.])
+    """
+
+    return check_nd_call_func(
+        numpy.positive,
+        dpnp_positive,
         x,
         out=out,
         where=where,
