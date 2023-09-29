@@ -1039,7 +1039,30 @@ class dpnp_array:
 
         return dpnp.prod(self, axis, dtype, out, keepdims, initial, where)
 
-    # 'ptp'
+    def ptp(
+        self,
+        axis=None,
+        out=None,
+        keepdims=numpy._NoValue,
+        device=None,
+        usm_type=None,
+        sycl_queue=None,
+    ):
+        """
+        Range of values (maximum - minimum) along an axis.
+
+        For full documentation refer to :obj:`numpy.ptp`.
+        """
+
+        return dpnp.ptp(
+            self,
+            axis=axis,
+            out=out,
+            keepdims=keepdims,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
     def put(self, indices, vals, /, *, axis=None, mode="wrap"):
         """

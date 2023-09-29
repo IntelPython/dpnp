@@ -118,18 +118,6 @@ tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatte
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order_copied
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order_transposed
 
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_all
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_all_keepdims
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_axis0
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_axis1
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_axis2
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_axis_large
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_multiple_axes
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_multiple_axes_keepdims
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan_imag
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan_real
-
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_max
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_min
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_1_{order='C', shape=(10, 20)}::test_cub_max
