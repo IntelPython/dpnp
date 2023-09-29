@@ -311,6 +311,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
         pytest.param("negative", [1.0, 0.0, -1.0]),
+        pytest.param("positive", [1.0, 0.0, -1.0]),
         pytest.param("proj", [complex(1.0, 2.0), complex(dp.inf, -1.0)]),
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
@@ -354,6 +355,26 @@ def test_1in_1out(func, data, usm_type):
             "dot",
             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
             [[4.0, 4.0], [4.0, 4.0], [4.0, 4.0]],
+        ),
+        pytest.param(
+            "fmax",
+            [[0.0, 1.0, 2.0]],
+            [[3.0, 4.0, 5.0]],
+        ),
+        pytest.param(
+            "fmin",
+            [[0.0, 1.0, 2.0]],
+            [[3.0, 4.0, 5.0]],
+        ),
+        pytest.param(
+            "maximum",
+            [[0.0, 1.0, 2.0]],
+            [[3.0, 4.0, 5.0]],
+        ),
+        pytest.param(
+            "minimum",
+            [[0.0, 1.0, 2.0]],
+            [[3.0, 4.0, 5.0]],
         ),
     ],
 )

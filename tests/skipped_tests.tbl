@@ -113,10 +113,6 @@ tests/test_umath.py::test_umaths[('logaddexp2', 'ff')]
 tests/test_umath.py::test_umaths[('logaddexp2', 'dd')]
 tests/test_umath.py::test_umaths[('nextafter', 'ff')]
 tests/test_umath.py::test_umaths[('nextafter', 'dd')]
-tests/test_umath.py::test_umaths[('positive', 'i')]
-tests/test_umath.py::test_umaths[('positive', 'l')]
-tests/test_umath.py::test_umaths[('positive', 'f')]
-tests/test_umath.py::test_umaths[('positive', 'd')]
 tests/test_umath.py::test_umaths[('spacing', 'f')]
 tests/test_umath.py::test_umaths[('spacing', 'd')]
 
@@ -513,8 +509,6 @@ tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip_min_max_none
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip4
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_absolute_negative
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_maximum_nan
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_minimum_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fmax_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fmin_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num

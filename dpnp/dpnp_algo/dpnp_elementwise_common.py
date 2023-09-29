@@ -76,8 +76,11 @@ __all__ = [
     "dpnp_logical_not",
     "dpnp_logical_or",
     "dpnp_logical_xor",
+    "dpnp_maximum",
+    "dpnp_minimum",
     "dpnp_multiply",
     "dpnp_negative",
+    "dpnp_positive",
     "dpnp_not_equal",
     "dpnp_power",
     "dpnp_proj",
@@ -1812,6 +1815,98 @@ def dpnp_logical_xor(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_maximum_docstring_ = """
+maximum(x1, x2, out=None, order='K')
+
+Compares two input arrays `x1` and `x2` and returns
+a new array containing the element-wise maxima.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise maxima. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+
+
+maximum_func = BinaryElementwiseFunc(
+    "maximum",
+    ti._maximum_result_type,
+    ti._maximum,
+    _maximum_docstring_,
+)
+
+
+def dpnp_maximum(x1, x2, out=None, order="K"):
+    """Invokes maximum() from dpctl.tensor implementation for maximum() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = maximum_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_minimum_docstring_ = """
+minimum(x1, x2, out=None, order='K')
+
+Compares two input arrays `x1` and `x2` and returns
+a new array containing the element-wise minima.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise minima. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+
+
+minimum_func = BinaryElementwiseFunc(
+    "minimum",
+    ti._minimum_result_type,
+    ti._minimum,
+    _minimum_docstring_,
+)
+
+
+def dpnp_minimum(x1, x2, out=None, order="K"):
+    """Invokes minimum() from dpctl.tensor implementation for minimum() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = minimum_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _multiply_docstring_ = """
 multiply(x1, x2, out=None, order="K")
 
@@ -1960,6 +2055,48 @@ def dpnp_not_equal(x1, x2, out=None, order="K"):
     res_usm = not_equal_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_positive_docstring = """
+positive(x, out=None, order="K")
+
+Computes the numerical positive for each element `x_i` of input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the positive of `x`.
+"""
+
+
+positive_func = UnaryElementwiseFunc(
+    "positive", ti._positive_result_type, ti._positive, _positive_docstring
+)
+
+
+def dpnp_positive(x, out=None, order="K"):
+    """Invokes positive() from dpctl.tensor implementation for positive() function."""
+
+    # TODO: discuss with dpctl if the check is needed to be moved there
+    if not dpnp.isscalar(x) and x.dtype == dpnp.bool:
+        raise TypeError(
+            "DPNP boolean positive, the `+` operator, is not supported."
+        )
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = positive_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
