@@ -203,8 +203,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_GREATER_EQUAL_EXT, /**< Used in numpy.greater_equal() impl, requires
                                   extra parameters */
     DPNP_FN_HYPOT,             /**< Used in numpy.hypot() impl  */
-    DPNP_FN_HYPOT_EXT,         /**< Used in numpy.hypot() impl, requires extra
-                                  parameters  */
     DPNP_FN_IDENTITY,          /**< Used in numpy.identity() impl  */
     DPNP_FN_IDENTITY_EXT, /**< Used in numpy.identity() impl, requires extra
                              parameters  */

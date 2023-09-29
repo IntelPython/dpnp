@@ -45,6 +45,7 @@
 #include "cosh.hpp"
 #include "div.hpp"
 #include "floor.hpp"
+#include "hypot.hpp"
 #include "ln.hpp"
 #include "mul.hpp"
 #include "pow.hpp"
@@ -74,11 +75,12 @@ static unary_impl_fn_ptr_t atan_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t atan2_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t atanh_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ceil_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t conj_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t cos_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t cosh_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t floor_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t conj_dispatch_vector[dpctl_td_ns::num_types];
+static binary_impl_fn_ptr_t hypot_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ln_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t mul_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t pow_dispatch_vector[dpctl_td_ns::num_types];
@@ -492,6 +494,35 @@ PYBIND11_MODULE(_vm_impl, m)
               "Check input arguments to answer if `floor` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // BinaryUfunc: ==== Hypot(x1, x2) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<binary_impl_fn_ptr_t,
+                                           vm_ext::HypotContigFactory>(
+            hypot_dispatch_vector);
+
+        auto hypot_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                               arrayT dst, const event_vecT &depends = {}) {
+            return vm_ext::binary_ufunc(exec_q, src1, src2, dst, depends,
+                                        hypot_dispatch_vector);
+        };
+        m.def("_hypot", hypot_pyapi,
+              "Call `hypot` function from OneMKL VM library to compute element "
+              "by element hypotenuse of `x`",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("depends") = py::list());
+
+        auto hypot_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
+                                            arrayT src2, arrayT dst) {
+            return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
+                                                     hypot_dispatch_vector);
+        };
+        m.def("_mkl_hypot_to_call", hypot_need_to_call_pyapi,
+              "Check input arguments to answer if `hypot` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+              py::arg("dst"));
     }
 
     // UnaryUfunc: ==== Ln(x) ====
