@@ -46,7 +46,6 @@ __all__ += [
     "dpnp_fabs",
     "dpnp_fmod",
     "dpnp_gradient",
-    'dpnp_hypot',
     "dpnp_fmax",
     "dpnp_fmin",
     "dpnp_modf",
@@ -271,14 +270,6 @@ cpdef utils.dpnp_descriptor dpnp_gradient(utils.dpnp_descriptor y1, int dx=1):
         result.get_pyobj().flat[i] = cur
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_hypot(utils.dpnp_descriptor x1_obj,
-                                       utils.dpnp_descriptor x2_obj,
-                                       object dtype=None,
-                                       utils.dpnp_descriptor out=None,
-                                       object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_HYPOT_EXT, x1_obj, x2_obj, dtype, out, where)
 
 
 cpdef utils.dpnp_descriptor dpnp_fmax(utils.dpnp_descriptor x1_obj,

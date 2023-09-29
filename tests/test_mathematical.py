@@ -199,7 +199,6 @@ class TestMathematical:
             "floor_divide", dtype, lhs, rhs, check_type=False
         )
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
@@ -964,6 +963,90 @@ class TestAdd:
 
         assert_raises(TypeError, dpnp.add, a, 2, out)
         assert_raises(TypeError, numpy.add, a.asnumpy(), 2, out)
+
+
+class TestHypot:
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_hypot(self, dtype):
+        array1_data = numpy.arange(10)
+        array2_data = numpy.arange(5, 15)
+        out = numpy.empty(10, dtype=dtype)
+
+        # DPNP
+        dp_array1 = dpnp.array(array1_data, dtype=dtype)
+        dp_array2 = dpnp.array(array2_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
+        result = dpnp.hypot(dp_array1, dp_array2, out=dp_out)
+
+        # original
+        np_array1 = numpy.array(array1_data, dtype=dtype)
+        np_array2 = numpy.array(array2_data, dtype=dtype)
+        expected = numpy.hypot(np_array1, np_array2, out=out)
+
+        assert_allclose(expected, result)
+        assert_allclose(out, dp_out)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_out_dtypes(self, dtype):
+        size = 10
+
+        np_array1 = numpy.arange(size, 2 * size, dtype=dtype)
+        np_array2 = numpy.arange(size, dtype=dtype)
+        np_out = numpy.empty(size, dtype=numpy.float32)
+        expected = numpy.hypot(np_array1, np_array2, out=np_out)
+
+        dp_array1 = dpnp.arange(size, 2 * size, dtype=dtype)
+        dp_array2 = dpnp.arange(size, dtype=dtype)
+
+        dp_out = dpnp.empty(size, dtype=dpnp.float32)
+        if dtype != dpnp.float32:
+            # dtype of out mismatches types of input arrays
+            with pytest.raises(TypeError):
+                dpnp.hypot(dp_array1, dp_array2, out=dp_out)
+
+            # allocate new out with expected type
+            dp_out = dpnp.empty(size, dtype=dtype)
+
+        result = dpnp.hypot(dp_array1, dp_array2, out=dp_out)
+
+        tol = numpy.finfo(numpy.float32).resolution
+        assert_allclose(expected, result, rtol=tol, atol=tol)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_out_overlap(self, dtype):
+        size = 15
+        # DPNP
+        dp_a = dpnp.arange(2 * size, dtype=dtype)
+        dpnp.hypot(dp_a[size::], dp_a[::2], out=dp_a[:size:])
+
+        # original
+        np_a = numpy.arange(2 * size, dtype=dtype)
+        numpy.hypot(np_a[size::], np_a[::2], out=np_a[:size:])
+
+        tol = numpy.finfo(numpy.float32).resolution
+        assert_allclose(np_a, dp_a, rtol=tol, atol=tol)
+
+    @pytest.mark.parametrize(
+        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
+    )
+    def test_invalid_shape(self, shape):
+        dp_array1 = dpnp.arange(10)
+        dp_array2 = dpnp.arange(5, 15)
+        dp_out = dpnp.empty(shape)
+
+        with pytest.raises(ValueError):
+            dpnp.hypot(dp_array1, dp_array2, out=dp_out)
+
+    @pytest.mark.parametrize(
+        "out",
+        [4, (), [], (3, 7), [2, 4]],
+        ids=["4", "()", "[]", "(3, 7)", "[2, 4]"],
+    )
+    def test_invalid_out(self, out):
+        a = dpnp.arange(10)
+
+        assert_raises(TypeError, dpnp.hypot, a, 2, out)
+        assert_raises(TypeError, numpy.hypot, a.asnumpy(), 2, out)
 
 
 class TestFmax:
