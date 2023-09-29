@@ -1271,11 +1271,9 @@ Calculates the hypotenuse for a right triangle with "legs" `x1_i` and `x2_i` of
 input arrays `x1` and `x2`.
 Args:
     x1 (dpnp.ndarray):
-        First input array, expected to have a real-valued floating-point
-        data type.
+        First input array, expected to have a real-valued data type.
     x2 (dpnp.ndarray):
-        Second input array, also expected to have a real-valued
-        floating-point data type.
+        Second input array, also expected to have a real-valued data type.
     out ({None, dpnp.ndarray}, optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
@@ -1312,6 +1310,7 @@ hypot_func = BinaryElementwiseFunc(
 def dpnp_hypot(x1, x2, out=None, order="K"):
     """
     Invokes hypot() function from pybind11 extension of OneMKL VM if possible.
+
     Otherwise fully relies on dpctl.tensor implementation for hypot() function.
     """
 
