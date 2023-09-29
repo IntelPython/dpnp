@@ -1,0 +1,6 @@
+﻿dpnp.issubsctype
+================
+
+.. currentmodule:: dpnp
+
+.. autofunction:: issubsctype
