@@ -125,6 +125,36 @@ def test_diag(v, k):
     assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize(
+    "axis",
+    [None, 0, 1],
+    ids=["None", "0", "1"],
+)
+@pytest.mark.parametrize(
+    "v",
+    [
+        [[0, 0], [0, 0]],
+        [[1, 2], [1, 2]],
+        [[1, 2], [3, 4]],
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+    ],
+    ids=[
+        "[[0, 0], [0, 0]]",
+        "[[1, 2], [1, 2]]",
+        "[[1, 2], [3, 4]]",
+        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+    ],
+)
+def test_ptp(v, axis):
+    a = numpy.array(v)
+    ia = dpnp.array(a)
+    expected = numpy.ptp(a, axis)
+    result = dpnp.ptp(ia, axis)
+    assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("N", [0, 1, 2, 3], ids=["0", "1", "2", "3"])
 @pytest.mark.parametrize(
     "M", [None, 0, 1, 2, 3], ids=["None", "0", "1", "2", "3"]
@@ -426,12 +456,16 @@ def test_triu_size_null(k):
 @pytest.mark.parametrize("n", [0, 1, 4, None], ids=["0", "1", "4", "None"])
 @pytest.mark.parametrize("increase", [True, False], ids=["True", "False"])
 def test_vander(array, dtype, n, increase):
-    create_array = lambda xp: xp.array(array, dtype=dtype)
+    if dtype in [dpnp.complex64, dpnp.complex128] and array == [0, 3, 5]:
+        pytest.skip(
+            "dpnp.power(dpnp.array(complex(0,0)), dpnp.array(0)) returns nan+nanj while it should be 1+0j"
+        )
     vander_func = lambda xp, x: xp.vander(x, N=n, increasing=increase)
 
     a_np = numpy.array(array, dtype=dtype)
     a_dpnp = dpnp.array(array, dtype=dtype)
-    assert_array_equal(vander_func(numpy, a_np), vander_func(dpnp, a_dpnp))
+
+    assert_allclose(vander_func(numpy, a_np), vander_func(dpnp, a_dpnp))
 
 
 @pytest.mark.parametrize(

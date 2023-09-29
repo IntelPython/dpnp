@@ -582,11 +582,30 @@ def copy(a, order="K", subok=False):
     return array(a, order=order, subok=subok, copy=True)
 
 
-def diag(x1, k=0):
+def diag(x1, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     """
     Extract a diagonal or construct a diagonal array.
 
     For full documentation refer to :obj:`numpy.diag`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The extracted diagonal or constructed diagonal array.
+
+    Limitations
+    -----------
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `k` is only supported as integer data type.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`diagonal` : Return specified diagonals.
+    :obj:`diagflat` : Create a 2-D array with the flattened input as a diagonal.
+    :obj:`trace` : Return sum along diagonals.
+    :obj:`triu` : Return upper triangle of an array.
+    :obj:`tril` : Return lower triangle of an array.
 
     Examples
     --------
@@ -611,48 +630,107 @@ def diag(x1, k=0):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not isinstance(k, int):
-            pass
-        elif x1_desc.ndim != 1 and x1_desc.ndim != 2:
-            pass
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
+        pass
+    elif not isinstance(k, int):
+        pass
+    else:
+        _usm_type = x1.usm_type if usm_type is None else usm_type
+        _sycl_queue = dpnp.get_normalized_queue_device(
+            x1, sycl_queue=sycl_queue, device=device
+        )
+        x1 = (
+            x1.to_device(_sycl_queue.sycl_device)
+            if x1.sycl_queue != _sycl_queue
+            else x1
+        )
+
+        init0 = max(0, -k)
+        init1 = max(0, k)
+        if x1.ndim == 1:
+            size = x1.shape[0] + abs(k)
+            m = dpnp.zeros(
+                (size, size),
+                dtype=x1.dtype,
+                usm_type=_usm_type,
+                sycl_queue=_sycl_queue,
+            )
+            for i in range(x1.shape[0]):
+                m[(init0 + i), init1 + i] = x1[i]
+            return m
+        elif x1.ndim == 2:
+            size = min(
+                x1.shape[0], x1.shape[0] + k, x1.shape[1], x1.shape[1] - k
+            )
+            if size < 0:
+                size = 0
+            m = dpnp.zeros(
+                (size,),
+                dtype=x1.dtype,
+                usm_type=_usm_type,
+                sycl_queue=_sycl_queue,
+            )
+            for i in range(size):
+                m[i] = x1[(init0 + i), init1 + i]
+            return m
         else:
-            return dpnp_diag(x1_desc, k).get_pyobj()
+            raise ValueError("Input must be a 1-D or 2-D array.")
 
     return call_origin(numpy.diag, x1, k)
 
 
-def diagflat(x1, k=0):
+def diagflat(x1, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     """
     Create a two-dimensional array with the flattened input as a diagonal.
 
     For full documentation refer to :obj:`numpy.diagflat`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The 2-D output array.
+
+    See Also
+    --------
+    :obj:`diag` : Return the extracted diagonal or constructed diagonal array.
+    :obj:`diagonal` : Return specified diagonals.
+    :obj:`trace` : Return sum along diagonals.
+
+    Limitations
+    -----------
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `k` is only supported as integer data type.
+    Otherwise the function will be executed sequentially on CPU.
+
     Examples
     --------
     >>> import dpnp as np
-    >>> np.diagflat([[1,2], [3,4]])
+    >>> x = np.array([[1,2], [3,4]])
+    >>> np.diagflat(x)
     array([[1, 0, 0, 0],
            [0, 2, 0, 0],
            [0, 0, 3, 0],
            [0, 0, 0, 4]])
 
-    >>> np.diagflat([1,2], 1)
-    array([[0, 1, 0],
-           [0, 0, 2],
-           [0, 0, 0]])
+    >>> np.diagflat(x, 1)
+    array([[0, 1, 0, 0, 0],
+        [0, 0, 2, 0, 0],
+        [0, 0, 0, 3, 0],
+        [0, 0, 0, 0, 4],
+        [0, 0, 0, 0, 0]])
 
     """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        input_ravel = dpnp.ravel(x1)
-        input_ravel_desc = dpnp.get_dpnp_descriptor(
-            input_ravel, copy_when_nondefault_queue=False
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
+        pass
+    elif not isinstance(k, int):
+        pass
+    else:
+        _usm_type = x1.usm_type if usm_type is None else usm_type
+        _sycl_queue = dpnp.get_normalized_queue_device(
+            x1, sycl_queue=sycl_queue, device=device
         )
-
-        return dpnp_diag(input_ravel_desc, k).get_pyobj()
+        v = dpnp.ravel(x1)
+        return dpnp.diag(v, k, usm_type=_usm_type, sycl_queue=_sycl_queue)
 
     return call_origin(numpy.diagflat, x1, k)
 
@@ -778,12 +856,12 @@ def empty_like(
 
 def eye(
     N,
-    M=None,
     /,
-    *,
+    M=None,
     k=0,
     dtype=None,
     order="C",
+    *,
     like=None,
     device=None,
     usm_type="device",
@@ -799,6 +877,18 @@ def eye(
     Parameter `order` is supported only with values ``"C"`` and ``"F"``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.eye(2, dtype=int)
+    array([[1, 0],
+           [0, 1]])
+
+    >>> np.eye(3, k=1)
+    array([[0.,  1.,  0.],
+           [0.,  0.,  1.],
+           [0.,  0.,  0.]])
 
     """
     if order not in ("C", "c", "F", "f", None):
@@ -1095,7 +1185,14 @@ def geomspace(
 
 
 def identity(
-    n, dtype=None, *, device=None, usm_type="device", sycl_queue=None, like=None
+    n,
+    /,
+    dtype=None,
+    *,
+    like=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
 ):
     """
     Return the identity array.
@@ -1552,20 +1649,47 @@ def ones_like(
     return call_origin(numpy.ones_like, x1, dtype, order, subok, shape)
 
 
-def ptp(arr, axis=None, out=None, keepdims=numpy._NoValue):
+def ptp(
+    arr,
+    /,
+    axis=None,
+    out=None,
+    keepdims=numpy._NoValue,
+    *,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
     """
     Range of values (maximum - minimum) along an axis.
 
     For full documentation refer to :obj:`numpy.ptp`.
 
+    Returns
+    -------
+    ptp : dpnp.ndarray
+        The range of a given array.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `out` and `keepdims` are supported only with default values.
+    Otherwise the function will be executed sequentially on CPU.
 
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([[4, 9, 2, 10],[6, 9, 7, 12]])
+    >>> np.ptp(x, axis=1)
+    array([8, 6])
+
+    >>> np.ptp(x, axis=0)
+    array([2, 0, 5, 2])
+
+    >>> np.ptp(x)
+    array(10)
     """
-    arr_desc = dpnp.get_dpnp_descriptor(arr, copy_when_nondefault_queue=False)
-    if not arr_desc:
+    if not isinstance(arr, (dpnp.ndarray, dpt.usm_ndarray)):
         pass
     elif axis is not None and not isinstance(axis, int):
         pass
@@ -1574,10 +1698,16 @@ def ptp(arr, axis=None, out=None, keepdims=numpy._NoValue):
     elif keepdims is not numpy._NoValue:
         pass
     else:
-        result_obj = dpnp_ptp(arr_desc, axis=axis).get_pyobj()
-        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+        max_array = dpnp.max(arr, axis=axis)
+        min_array = dpnp.min(arr, axis=axis)
 
-        return result
+        _usm_type = arr.usm_type if usm_type is None else usm_type
+        _sycl_queue = dpnp.get_normalized_queue_device(
+            arr, sycl_queue=sycl_queue, device=device
+        )
+        return dpnp.array(
+            max_array - min_array, usm_type=_usm_type, sycl_queue=_sycl_queue
+        )
 
     return call_origin(numpy.ptp, arr, axis, out, keepdims)
 
@@ -1616,9 +1746,11 @@ def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
 
 def tri(
     N,
+    /,
     M=None,
     k=0,
     dtype=dpnp.float,
+    *,
     device=None,
     usm_type="device",
     sycl_queue=None,
@@ -1636,7 +1768,7 @@ def tri(
 
     Limitations
     -----------
-    Parameter `M`, `N`, and `k` are only supported as integer data type.
+    Parameter `M`, `N`, and `k` are only supported as integer data type and when they are positive.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -1781,11 +1913,30 @@ def triu(x1, /, *, k=0):
     return call_origin(numpy.triu, x1, k)
 
 
-def vander(x1, N=None, increasing=False):
+def vander(
+    x1,
+    /,
+    N=None,
+    increasing=False,
+    *,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
     """
     Generate a Vandermonde matrix.
 
     For full documentation refer to :obj:`numpy.vander`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Vandermonde matrix.
+
+    Limitations
+    -----------
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -1797,12 +1948,14 @@ def vander(x1, N=None, increasing=False):
            [ 4,  2,  1],
            [ 9,  3,  1],
            [25,  5,  1]])
+
     >>> x = np.array([1, 2, 3, 5])
     >>> np.vander(x)
     array([[  1,   1,   1,   1],
            [  8,   4,   2,   1],
            [ 27,   9,   3,   1],
            [125,  25,   5,   1]])
+
     >>> np.vander(x, increasing=True)
     array([[  1,   1,   1,   1],
            [  1,   2,   4,   8],
@@ -1810,15 +1963,41 @@ def vander(x1, N=None, increasing=False):
            [  1,   5,  25, 125]])
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1.ndim != 1:
-            pass
-        else:
-            if N is None:
-                N = x1.size
+    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
+        pass
+    elif N is not None and not isinstance(N, int):
+        pass
+    elif x1.ndim != 1:
+        raise ValueError("x1 must be a one-dimensional array or sequence.")
+    else:
+        if N is None:
+            N = x1.size
 
-            return dpnp_vander(x1_desc, N, increasing).get_pyobj()
+        _dtype = int if x1.dtype == bool else x1.dtype
+        _usm_type = x1.usm_type if usm_type is None else usm_type
+        _sycl_queue = dpnp.get_normalized_queue_device(
+            x1, sycl_queue=sycl_queue, device=device
+        )
+        x1 = (
+            x1.to_device(_sycl_queue.sycl_device)
+            if x1.sycl_queue != _sycl_queue
+            else x1
+        )
+
+        m = empty(
+            (x1.size, N),
+            dtype=_dtype,
+            usm_type=_usm_type,
+            sycl_queue=_sycl_queue,
+        )
+        tmp = m[:, ::-1] if not increasing else m
+        dpnp.power(
+            x1.reshape(-1, 1),
+            dpnp.arange(N, dtype=_dtype, sycl_queue=_sycl_queue),
+            out=tmp,
+        )
+
+        return m
 
     return call_origin(numpy.vander, x1, N=N, increasing=increasing)
 

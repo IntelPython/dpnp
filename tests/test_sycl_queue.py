@@ -141,6 +141,7 @@ def test_empty_like(device_x, device_y):
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
+        pytest.param("diag", ["x0"], {}),
         pytest.param("full_like", ["x0"], {"fill_value": 5}),
         pytest.param("geomspace", ["x0[0:3]", "8", "4"], {}),
         pytest.param("geomspace", ["1", "x0[2:4]", "4"], {}),
@@ -151,7 +152,13 @@ def test_empty_like(device_x, device_y):
         pytest.param("ones_like", ["x0"], {}),
         pytest.param("tril", ["x0.reshape((2,2))"], {}),
         pytest.param("triu", ["x0.reshape((2,2))"], {}),
+<<<<<<< HEAD
         pytest.param("zeros_like", ["x0"], {}),
+=======
+        pytest.param("linspace", ["x0", "4", "4"], {}),
+        pytest.param("linspace", ["1", "x0", "4"], {}),
+        pytest.param("vander", ["x0"], {}),
+>>>>>>> rework implementation of diag, diagflat, vander, and ptp
     ],
 )
 @pytest.mark.parametrize(
@@ -196,11 +203,40 @@ def test_array_creation_follow_device_logspace_base(device):
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
+        pytest.param("diag", ["x0"], {}),
+        pytest.param("diagflat", ["x0"], {}),
+        pytest.param("ptp", ["x0"], {"axis": 0}),
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_array_creation_follow_device_2d_array(func, args, kwargs, device):
+    x_orig = numpy.arange(9).reshape(3, 3)
+    numpy_args = [eval(val, {"x0": x_orig}) for val in args]
+    y_orig = getattr(numpy, func)(*numpy_args, **kwargs)
+
+    x = dpnp.arange(9, device=device).reshape(3, 3)
+    dpnp_args = [eval(val, {"x0": x}) for val in args]
+
+    y = getattr(dpnp, func)(*dpnp_args, **kwargs)
+    assert_allclose(y_orig, y)
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "func, args, kwargs",
+    [
+        pytest.param("diag", ["x0"], {}),
+        pytest.param("full", ["10", "x0[3]"], {}),
         pytest.param("full_like", ["x0"], {"fill_value": 5}),
         pytest.param("ones_like", ["x0"], {}),
         pytest.param("zeros_like", ["x0"], {}),
         pytest.param("linspace", ["x0", "4", "4"], {}),
         pytest.param("linspace", ["1", "x0", "4"], {}),
+        pytest.param("vander", ["x0"], {}),
     ],
 )
 @pytest.mark.parametrize(
@@ -214,7 +250,7 @@ def test_array_creation_follow_device_logspace_base(device):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
-    if func is "linspace" and is_win_platform():
+    if func == "linspace" and is_win_platform():
         pytest.skip("CPU driver experiences an instability on Windows.")
 
     x_orig = numpy.array([1, 2, 3, 4])
@@ -225,8 +261,52 @@ def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
     dpnp_args = [eval(val, {"x0": x}) for val in args]
 
     dpnp_kwargs = dict(kwargs)
-    dpnp_kwargs["device"] = device_y
+    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
+    dpnp_kwargs["device"] = device_y
+    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
+    assert_allclose(y_orig, y)
+
+    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "func, args, kwargs",
+    [
+        pytest.param("diag", ["x0"], {}),
+        pytest.param("diagflat", ["x0"], {}),
+        pytest.param("ptp", ["x0"], {"axis": 0}),
+    ],
+)
+@pytest.mark.parametrize(
+    "device_x",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "device_y",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_array_creation_cross_device_2d_array(
+    func, args, kwargs, device_x, device_y
+):
+    if func == "linspace" and is_win_platform():
+        pytest.skip("CPU driver experiences an instability on Windows.")
+
+    x_orig = numpy.arange(9).reshape(3, 3)
+    numpy_args = [eval(val, {"x0": x_orig}) for val in args]
+    y_orig = getattr(numpy, func)(*numpy_args, **kwargs)
+
+    x = dpnp.arange(9, device=device_x).reshape(3, 3)
+    dpnp_args = [eval(val, {"x0": x}) for val in args]
+
+    dpnp_kwargs = dict(kwargs)
+    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+
+    dpnp_kwargs["device"] = device_y
     y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
     assert_allclose(y_orig, y)
 
