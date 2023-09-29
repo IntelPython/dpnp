@@ -1,0 +1,6 @@
+﻿dpnp.fft.fftshift
+=================
+
+.. currentmodule:: dpnp.fft
+
+.. autofunction:: fftshift
