@@ -64,6 +64,8 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< std::tuple< T, Axis... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id_3_01std_1_1tuple_3_01_t_00_01_axis_8_8_8_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::lapack::types::HeevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
+    [ "dpnp::backend::ext::vm::HypotContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_hypot_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::HypotOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_hypot_output_type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::index_on_axis< idx, DispatchT, Matcher, Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis.html", null ],
     [ "dpnp::backend::ext::sycl_ext::index_on_axis< idx, DispatchT, Matcher, std::tuple< AxisData... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis_3_01idx_00_01_dispatch_t_00_01_matc014615cac12293ef2d15243fdee2c449.html", null ],
     [ "dpnp::backend::ext::sycl_ext::index_on_axis< idx, DispatchT, Matcher, std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis_3_01idx_00_01_dispatch_t_00_01_matcafd2cf8593c2aa4d8a9103f019cc37b1.html", null ],

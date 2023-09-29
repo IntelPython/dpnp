@@ -1,6 +1,0 @@
-﻿dpnp.fft.ifftn
-==============
-
-.. currentmodule:: dpnp.fft
-
-.. autofunction:: ifftn
