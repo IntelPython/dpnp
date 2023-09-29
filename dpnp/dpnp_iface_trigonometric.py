@@ -1103,9 +1103,9 @@ def logaddexp(
     >>> prob2 = np.log(np.array(2.5e-50))
     >>> prob12 = np.logaddexp(prob1, prob2)
     >>> prob12
-    -113.87649168120691
+    array(-113.87649168)
     >>> np.exp(prob12)
-    3.5000000000000057e-50
+    array(3.5e-50)
 
     """
 
