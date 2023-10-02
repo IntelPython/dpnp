@@ -167,6 +167,7 @@ def test_strides_reciprocal(dtype, shape):
         "fmax",
         "fmin",
         "hypot",
+        "logaddexp",
         "maximum",
         "minimum",
         "multiply",

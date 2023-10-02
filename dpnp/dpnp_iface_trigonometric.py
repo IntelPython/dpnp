@@ -59,6 +59,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_cosh,
     dpnp_hypot,
     dpnp_log,
+    dpnp_logaddexp,
     dpnp_sin,
     dpnp_sinh,
     dpnp_sqrt,
@@ -88,6 +89,7 @@ __all__ = [
     "log10",
     "log1p",
     "log2",
+    "logaddexp",
     "rad2deg",
     "radians",
     "reciprocal",
@@ -1056,6 +1058,69 @@ def log2(x1):
         return dpnp_log2(x1_desc).get_pyobj()
 
     return call_origin(numpy.log2, x1)
+
+
+def logaddexp(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Calculates ``log(exp(x1) + exp(x2))``, element-wise.
+
+    For full documentation refer to :obj:`numpy.logaddexp`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Logarithm of ``exp(x1) + exp(x2)``, element-wise.
+
+    Limitations
+    -----------
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword arguments `kwargs` are currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.log` : Natural logarithm, element-wise.
+    :obj:`dpnp.exp` : Exponential, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> prob1 = np.log(np.array(1e-50))
+    >>> prob2 = np.log(np.array(2.5e-50))
+    >>> prob12 = np.logaddexp(prob1, prob2)
+    >>> prob12
+    array(-113.87649168)
+    >>> np.exp(prob12)
+    array(3.5e-50)
+
+    """
+
+    return check_nd_call_func(
+        numpy.logaddexp,
+        dpnp_logaddexp,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def reciprocal(x1, **kwargs):

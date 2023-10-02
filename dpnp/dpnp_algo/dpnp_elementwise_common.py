@@ -73,6 +73,7 @@ __all__ = [
     "dpnp_less",
     "dpnp_less_equal",
     "dpnp_log",
+    "dpnp_logaddexp",
     "dpnp_logical_and",
     "dpnp_logical_not",
     "dpnp_logical_or",
@@ -1702,6 +1703,58 @@ def dpnp_log(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = log_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_logaddexp_docstring_ = """
+logaddexp(x1, x2, out=None, order="K")
+
+Calculates the natural logarithm of the sum of exponentiations for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the input
+array `x2`.
+
+This function calculates `log(exp(x1) + exp(x2))` more accurately for small
+values of `x`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have a real-valued floating-point
+        data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have a real-valued
+        floating-point data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the result of element-wise result. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+logaddexp_func = BinaryElementwiseFunc(
+    "logaddexp",
+    ti._logaddexp_result_type,
+    ti._logaddexp,
+    _logaddexp_docstring_,
+)
+
+
+def dpnp_logaddexp(x1, x2, out=None, order="K"):
+    """Invokes logaddexp() from dpctl.tensor implementation for logaddexp() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = logaddexp_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
