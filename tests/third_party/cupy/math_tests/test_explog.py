@@ -1,4 +1,5 @@
 import unittest
+import warnings
 
 import numpy
 import pytest
@@ -71,3 +72,13 @@ class TestExplog(unittest.TestCase):
 def test_logaddexp_infinities(xp, dtype, val):
     a = xp.full((2, 3), val, dtype=dtype)
     return xp.logaddexp(a, a)
+
+
+@testing.for_float_dtypes()
+@testing.numpy_cupy_allclose()
+def test_logaddexp_nan(xp, dtype):
+    a = xp.full((2, 3), xp.nan, dtype=dtype)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=RuntimeWarning)
+        result = xp.logaddexp(a, a)
+    return result
