@@ -88,8 +88,6 @@ enum class DPNPFuncName : size_t
                              parameters */
     DPNP_FN_AROUND,       /**< Used in numpy.around() impl  */
     DPNP_FN_ASTYPE,       /**< Used in numpy.astype() impl  */
-    DPNP_FN_ASTYPE_EXT,   /**< Used in numpy.astype() impl, requires extra
-                             parameters */
     DPNP_FN_BITWISE_AND,  /**< Used in numpy.bitwise_and() impl  */
     DPNP_FN_BITWISE_OR,   /**< Used in numpy.bitwise_or() impl  */
     DPNP_FN_BITWISE_XOR,  /**< Used in numpy.bitwise_xor() impl  */
@@ -160,8 +158,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_EIGVALS,     /**< Used in numpy.linalg.eigvals() impl  */
     DPNP_FN_EIGVALS_EXT, /**< Used in numpy.linalg.eigvals() impl, requires
                             extra parameters */
-    DPNP_FN_EQUAL_EXT,   /**< Used in numpy.equal() impl, requires extra
-                            parameters */
     DPNP_FN_ERF,         /**< Used in scipy.special.erf impl  */
     DPNP_FN_ERF_EXT,     /**< Used in scipy.special.erf impl, requires extra
                             parameters */
@@ -187,25 +183,17 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FILL_DIAGONAL_EXT, /**< Used in numpy.fill_diagonal() impl, requires
                                   extra parameters */
     DPNP_FN_FLATTEN,           /**< Used in numpy.flatten() impl  */
-    DPNP_FN_FLATTEN_EXT,       /**< Used in numpy.flatten() impl, requires extra
-                                  parameters  */
     DPNP_FN_FLOOR,             /**< Used in numpy.floor() impl  */
     DPNP_FN_FLOOR_DIVIDE,      /**< Used in numpy.floor_divide() impl  */
-    DPNP_FN_FLOOR_DIVIDE_EXT,  /**< Used in numpy.floor_divide() impl, requires
-                                  extra parameters  */
     DPNP_FN_FMOD,              /**< Used in numpy.fmod() impl  */
     DPNP_FN_FMOD_EXT,  /**< Used in numpy.fmod() impl, requires extra parameters
                         */
     DPNP_FN_FULL,      /**< Used in numpy.full() impl  */
     DPNP_FN_FULL_LIKE, /**< Used in numpy.full_like() impl  */
-    DPNP_FN_GREATER_EXT,       /**< Used in numpy.greater() impl, requires extra
-                                  parameters */
-    DPNP_FN_GREATER_EQUAL_EXT, /**< Used in numpy.greater_equal() impl, requires
-                                  extra parameters */
-    DPNP_FN_HYPOT,             /**< Used in numpy.hypot() impl  */
-    DPNP_FN_HYPOT_EXT,         /**< Used in numpy.hypot() impl, requires extra
-                                  parameters  */
-    DPNP_FN_IDENTITY,          /**< Used in numpy.identity() impl  */
+    DPNP_FN_HYPOT,     /**< Used in numpy.hypot() impl  */
+    DPNP_FN_HYPOT_EXT, /**< Used in numpy.hypot() impl, requires extra
+                          parameters  */
+    DPNP_FN_IDENTITY,  /**< Used in numpy.identity() impl  */
     DPNP_FN_IDENTITY_EXT, /**< Used in numpy.identity() impl, requires extra
                              parameters  */
     DPNP_FN_INITVAL, /**< Used in numpy ones, ones_like, zeros, zeros_like impls
@@ -220,15 +208,11 @@ enum class DPNPFuncName : size_t
     DPNP_FN_KRON_EXT, /**< Used in numpy.kron() impl, requires extra parameters
                        */
     DPNP_FN_LEFT_SHIFT, /**< Used in numpy.left_shift() impl  */
-    DPNP_FN_LESS_EXT, /**< Used in numpy.less() impl, requires extra parameters
-                       */
-    DPNP_FN_LESS_EQUAL_EXT, /**< Used in numpy.less_equal() impl, requires extra
-                               parameters */
-    DPNP_FN_LOG,            /**< Used in numpy.log() impl  */
-    DPNP_FN_LOG10,          /**< Used in numpy.log10() impl  */
-    DPNP_FN_LOG10_EXT,      /**< Used in numpy.log10() impl, requires extra
-                               parameters  */
-    DPNP_FN_LOG2,           /**< Used in numpy.log2() impl  */
+    DPNP_FN_LOG,        /**< Used in numpy.log() impl  */
+    DPNP_FN_LOG10,      /**< Used in numpy.log10() impl  */
+    DPNP_FN_LOG10_EXT,  /**< Used in numpy.log10() impl, requires extra
+                           parameters  */
+    DPNP_FN_LOG2,       /**< Used in numpy.log2() impl  */
     DPNP_FN_LOG2_EXT,  /**< Used in numpy.log2() impl, requires extra parameters
                         */
     DPNP_FN_LOG1P,     /**< Used in numpy.log1p() impl  */
@@ -265,8 +249,6 @@ enum class DPNPFuncName : size_t
                               parameters */
     DPNP_FN_NEGATIVE,      /**< Used in numpy.negative() impl  */
     DPNP_FN_NONZERO,       /**< Used in numpy.nonzero() impl  */
-    DPNP_FN_NOT_EQUAL_EXT, /**< Used in numpy.not_equal() impl, requires extra
-                              parameters */
     DPNP_FN_ONES,          /**< Used in numpy.ones() impl */
     DPNP_FN_ONES_LIKE,     /**< Used in numpy.ones_like() impl */
     DPNP_FN_PARTITION,     /**< Used in numpy.partition() impl */
@@ -294,8 +276,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RECIP_EXT,    /**< Used in numpy.recip() impl, requires extra
                              parameters */
     DPNP_FN_REPEAT,       /**< Used in numpy.repeat() impl  */
-    DPNP_FN_REPEAT_EXT,   /**< Used in numpy.repeat() impl, requires extra
-                             parameters */
     DPNP_FN_RIGHT_SHIFT,  /**< Used in numpy.right_shift() impl  */
     DPNP_FN_RNG_BETA,     /**< Used in numpy.random.beta() impl  */
     DPNP_FN_RNG_BETA_EXT, /**< Used in numpy.random.beta() impl, requires extra

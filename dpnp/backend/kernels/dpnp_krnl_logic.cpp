@@ -181,17 +181,20 @@ static sycl::event dpnp_allclose(sycl::queue &q,
                     continue;
                 }
                 else if (array1[i] ==
-                         -std::numeric_limits<_DataType1>::infinity()) {
+                         -std::numeric_limits<_DataType1>::infinity())
+                {
                     partial &= (array1[i] == array2[i]);
                     continue;
                 }
                 else if (array2[i] ==
-                         std::numeric_limits<_DataType2>::infinity()) {
+                         std::numeric_limits<_DataType2>::infinity())
+                {
                     partial &= (array1[i] == array2[i]);
                     continue;
                 }
                 else if (array2[i] ==
-                         -std::numeric_limits<_DataType2>::infinity()) {
+                         -std::numeric_limits<_DataType2>::infinity())
+                {
                     partial &= (array1[i] == array2[i]);
                     continue;
                 }
@@ -611,7 +614,8 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
                               sg.get_group_id()[0] * max_sg_size);             \
                                                                                \
                 if (start + static_cast<size_t>(vec_sz) * max_sg_size <        \
-                    result_size) {                                             \
+                    result_size)                                               \
+                {                                                              \
                     auto input1_multi_ptr = sycl::address_space_cast<          \
                         sycl::access::address_space::global_space,             \
                         sycl::access::decorated::yes>(&input1_data[start]);    \
@@ -666,47 +670,6 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
         const shape_elem_type *, const shape_elem_type *, const size_t *,      \
         const DPCTLEventVectorRef) =                                           \
         __name__<_DataType_input1, _DataType_input2>;
-
-#include <dpnp_gen_2arg_2type_tbl.hpp>
-
-template <DPNPFuncType FT1, DPNPFuncType... FTs>
-static void func_map_logic_2arg_2type_core(func_map_t &fmap)
-{
-    ((fmap[DPNPFuncName::DPNP_FN_EQUAL_EXT][FT1][FTs] =
-          {eft_BLN, (void *)dpnp_equal_c_ext<func_type_map_t::find_type<FT1>,
-                                             func_type_map_t::find_type<FTs>>}),
-     ...);
-    ((fmap[DPNPFuncName::DPNP_FN_GREATER_EXT][FT1][FTs] =
-          {eft_BLN,
-           (void *)dpnp_greater_c_ext<func_type_map_t::find_type<FT1>,
-                                      func_type_map_t::find_type<FTs>>}),
-     ...);
-    ((fmap[DPNPFuncName::DPNP_FN_GREATER_EQUAL_EXT][FT1][FTs] =
-          {eft_BLN,
-           (void *)dpnp_greater_equal_c_ext<func_type_map_t::find_type<FT1>,
-                                            func_type_map_t::find_type<FTs>>}),
-     ...);
-    ((fmap[DPNPFuncName::DPNP_FN_LESS_EXT][FT1][FTs] =
-          {eft_BLN, (void *)dpnp_less_c_ext<func_type_map_t::find_type<FT1>,
-                                            func_type_map_t::find_type<FTs>>}),
-     ...);
-    ((fmap[DPNPFuncName::DPNP_FN_LESS_EQUAL_EXT][FT1][FTs] =
-          {eft_BLN,
-           (void *)dpnp_less_equal_c_ext<func_type_map_t::find_type<FT1>,
-                                         func_type_map_t::find_type<FTs>>}),
-     ...);
-    ((fmap[DPNPFuncName::DPNP_FN_NOT_EQUAL_EXT][FT1][FTs] =
-          {eft_BLN,
-           (void *)dpnp_not_equal_c_ext<func_type_map_t::find_type<FT1>,
-                                        func_type_map_t::find_type<FTs>>}),
-     ...);
-}
-
-template <DPNPFuncType... FTs>
-static void func_map_logic_2arg_2type_helper(func_map_t &fmap)
-{
-    ((func_map_logic_2arg_2type_core<FTs, FTs...>(fmap)), ...);
-}
 
 void func_map_init_logic(func_map_t &fmap)
 {
@@ -797,9 +760,6 @@ void func_map_init_logic(func_map_t &fmap)
         eft_FLT, (void *)dpnp_any_default_c<float, bool>};
     fmap[DPNPFuncName::DPNP_FN_ANY][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_any_default_c<double, bool>};
-
-    func_map_logic_2arg_2type_helper<eft_BLN, eft_INT, eft_LNG, eft_FLT,
-                                     eft_DBL>(fmap);
 
     return;
 }

@@ -621,6 +621,15 @@ class dpnp_array:
         Parameter `subok` is supported with default value.
         Otherwise the function will be executed sequentially on CPU.
 
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([1, 2, 2.5])
+        >>> x
+        array([1. , 2. , 2.5])
+        >>> x.astype(int)
+        array([1, 2, 2])
+
         """
 
         return dpnp.astype(
@@ -802,6 +811,15 @@ class dpnp_array:
         See Also
         --------
         :obj:`dpnp.ravel`, :obj:`dpnp.flat`
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([[1,2], [3,4]])
+        >>> a.flatten()
+        array([1, 2, 3, 4])
+        >>> a.flatten('F')
+        array([1, 3, 2, 4])
 
         """
 

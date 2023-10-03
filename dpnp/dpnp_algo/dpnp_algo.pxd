@@ -86,7 +86,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ERF
         DPNP_FN_ERF_EXT
         DPNP_FN_EYE
-        DPNP_FN_EYE_EXT
         DPNP_FN_EXP
         DPNP_FN_EXP_EXT
         DPNP_FN_EXP2
@@ -155,7 +154,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RECIP
         DPNP_FN_RECIP_EXT
         DPNP_FN_REPEAT
-        DPNP_FN_REPEAT_EXT
         DPNP_FN_RNG_BETA
         DPNP_FN_RNG_BETA_EXT
         DPNP_FN_RNG_BINOMIAL

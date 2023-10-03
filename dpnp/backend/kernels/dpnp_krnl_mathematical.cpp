@@ -181,7 +181,8 @@ DPCTLSyclEventRef
             }
             else {
                 for (size_t k = start + sg.get_local_id()[0]; k < size;
-                     k += max_sg_size) {
+                     k += max_sg_size)
+                {
                     result[k] = std::abs(array1[k]);
                 }
             }
@@ -724,23 +725,6 @@ void (*dpnp_floor_divide_default_c)(void *,
                                     const shape_elem_type *,
                                     const size_t,
                                     const size_t *) =
-    dpnp_floor_divide_c<_DataType_output, _DataType_input1, _DataType_input2>;
-
-template <typename _DataType_output,
-          typename _DataType_input1,
-          typename _DataType_input2>
-DPCTLSyclEventRef (*dpnp_floor_divide_ext_c)(DPCTLSyclQueueRef,
-                                             void *,
-                                             const void *,
-                                             const size_t,
-                                             const shape_elem_type *,
-                                             const size_t,
-                                             const void *,
-                                             const size_t,
-                                             const shape_elem_type *,
-                                             const size_t,
-                                             const size_t *,
-                                             const DPCTLEventVectorRef) =
     dpnp_floor_divide_c<_DataType_output, _DataType_input1, _DataType_input2>;
 
 template <typename _KernelNameSpecialization1,

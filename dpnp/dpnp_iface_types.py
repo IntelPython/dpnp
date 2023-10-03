@@ -72,7 +72,6 @@ __all__ = [
     "int64",
     "integer",
     "intc",
-    "isdtype",
     "isscalar",
     "issubdtype",
     "issubsctype",
@@ -182,11 +181,6 @@ def finfo(dtype):
     if isinstance(dtype, dpnp_array):
         dtype = dtype.dtype
     return dpt.finfo(dtype)
-
-
-def isdtype(dtype_, kind):
-    """Returns a boolean indicating whether a provided `dtype` is of a specified data type `kind`."""
-    return dpt.isdtype(dtype_, kind)
 
 
 def iinfo(dtype):
