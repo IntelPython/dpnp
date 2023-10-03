@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.13.1dev0+5.g946ff088 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.13.1dev0+6.gd76d44e5a documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9e1c5dbe"></script>
+        <script src="../../_static/documentation_options.js?v=169074a6"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+5.g946ff088
+                0.13.1dev0+6.gd76d44e5a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -147,6 +147,7 @@
     <span class="n">dpnp_cosh</span><span class="p">,</span>
     <span class="n">dpnp_hypot</span><span class="p">,</span>
     <span class="n">dpnp_log</span><span class="p">,</span>
+    <span class="n">dpnp_logaddexp</span><span class="p">,</span>
     <span class="n">dpnp_sin</span><span class="p">,</span>
     <span class="n">dpnp_sinh</span><span class="p">,</span>
     <span class="n">dpnp_sqrt</span><span class="p">,</span>
@@ -176,6 +177,7 @@
     <span class="s2">&quot;log10&quot;</span><span class="p">,</span>
     <span class="s2">&quot;log1p&quot;</span><span class="p">,</span>
     <span class="s2">&quot;log2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;logaddexp&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rad2deg&quot;</span><span class="p">,</span>
     <span class="s2">&quot;radians&quot;</span><span class="p">,</span>
     <span class="s2">&quot;reciprocal&quot;</span><span class="p">,</span>
@@ -1203,6 +1205,72 @@
         <span class="k">return</span> <span class="n">dpnp_log2</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">log2</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="logaddexp">
+<a class="viewcode-back" href="../../reference/generated/dpnp.logaddexp.html#dpnp.logaddexp">[docs]</a>
+<span class="k">def</span> <span class="nf">logaddexp</span><span class="p">(</span>
+    <span class="n">x1</span><span class="p">,</span>
+    <span class="n">x2</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates ``log(exp(x1) + exp(x2))``, element-wise.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.logaddexp`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Logarithm of ``exp(x1) + exp(x2)``, element-wise.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.log` : Natural logarithm, element-wise.</span>
+<span class="sd">    :obj:`dpnp.exp` : Exponential, element-wise.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; prob1 = np.log(np.array(1e-50))</span>
+<span class="sd">    &gt;&gt;&gt; prob2 = np.log(np.array(2.5e-50))</span>
+<span class="sd">    &gt;&gt;&gt; prob12 = np.logaddexp(prob1, prob2)</span>
+<span class="sd">    &gt;&gt;&gt; prob12</span>
+<span class="sd">    array(-113.87649168)</span>
+<span class="sd">    &gt;&gt;&gt; np.exp(prob12)</span>
+<span class="sd">    array(3.5e-50)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">logaddexp</span><span class="p">,</span>
+        <span class="n">dpnp_logaddexp</span><span class="p">,</span>
+        <span class="n">x1</span><span class="p">,</span>
+        <span class="n">x2</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
