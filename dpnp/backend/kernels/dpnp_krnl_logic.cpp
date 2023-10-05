@@ -181,20 +181,17 @@ static sycl::event dpnp_allclose(sycl::queue &q,
                     continue;
                 }
                 else if (array1[i] ==
-                         -std::numeric_limits<_DataType1>::infinity())
-                {
+                         -std::numeric_limits<_DataType1>::infinity()) {
                     partial &= (array1[i] == array2[i]);
                     continue;
                 }
                 else if (array2[i] ==
-                         std::numeric_limits<_DataType2>::infinity())
-                {
+                         std::numeric_limits<_DataType2>::infinity()) {
                     partial &= (array1[i] == array2[i]);
                     continue;
                 }
                 else if (array2[i] ==
-                         -std::numeric_limits<_DataType2>::infinity())
-                {
+                         -std::numeric_limits<_DataType2>::infinity()) {
                     partial &= (array1[i] == array2[i]);
                     continue;
                 }
@@ -614,8 +611,7 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
                               sg.get_group_id()[0] * max_sg_size);             \
                                                                                \
                 if (start + static_cast<size_t>(vec_sz) * max_sg_size <        \
-                    result_size)                                               \
-                {                                                              \
+                    result_size) {                                             \
                     auto input1_multi_ptr = sycl::address_space_cast<          \
                         sycl::access::address_space::global_space,             \
                         sycl::access::decorated::yes>(&input1_data[start]);    \
