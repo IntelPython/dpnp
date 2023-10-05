@@ -1238,8 +1238,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                          sg.get_group_id()[0] * max_sg_size);                  \
                                                                                \
                     if (start + static_cast<size_t>(vec_sz) * max_sg_size <    \
-                        result_size)                                           \
-                    {                                                          \
+                        result_size) {                                         \
                         auto input1_multi_ptr = sycl::address_space_cast<      \
                             sycl::access::address_space::global_space,         \
                             sycl::access::decorated::yes>(                     \
@@ -1301,8 +1300,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                     }                                                          \
                     else {                                                     \
                         for (size_t k = start + sg.get_local_id()[0];          \
-                             k < result_size; k += max_sg_size)                \
-                        {                                                      \
+                             k < result_size; k += max_sg_size) {              \
                             const _DataType_output input1_elem =               \
                                 input1_data[k];                                \
                             const _DataType_output input2_elem =               \
