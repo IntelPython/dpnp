@@ -27,6 +27,7 @@
 # *****************************************************************************
 
 
+import dpctl
 import dpctl.tensor._tensor_impl as ti
 
 import dpnp
@@ -164,3 +165,73 @@ def dpnp_eigh(a, UPLO):
         ht_copy_ev.wait()
 
         return w, out_v
+
+
+def dpnp_solve(a, b):
+    """
+    dpnp_solve(a, b)
+
+    Return the the solution to the system of linear equations with
+    a square coefficient matrix `a` and multiple right-hand sides `b`.
+
+    """
+
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+    b_usm_arr = dpnp.get_usm_ndarray(b)
+
+    b_order = "C" if b.flags.c_contiguous else "F"
+
+    if a.dtype != b.dtype:
+        raise ValueError("a and b must be of the same type")
+
+    exec_q = dpctl.utils.get_execution_queue((a.sycl_queue, b.sycl_queue))
+    if exec_q is None:
+        raise ValueError(
+            "Execution placement can not be unambiguously inferred "
+            "from input arguments."
+        )
+
+    if dpnp.issubdtype(a.dtype, dpnp.floating):
+        res_type = (
+            a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
+        )
+    elif dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        res_type = (
+            a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.complex64
+        )
+    else:
+        res_type = (
+            dpnp.float64 if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
+        )
+
+    a_f = dpnp.empty_like(a, order="F", dtype=res_type)
+    b_f = dpnp.empty_like(b, order="F", dtype=res_type)
+
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a.sycl_queue
+    )
+    b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=b_usm_arr, dst=b_f.get_array(), sycl_queue=b.sycl_queue
+    )
+
+    lapack_ev = li._gesv(
+        exec_q, a_f.get_array(), b_f.get_array(), [a_copy_ev, b_copy_ev]
+    )
+
+    if b_order != "F":
+        out_v = dpnp.empty_like(b_f, order=b_order)
+        ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=b_f.get_array(),
+            dst=out_v.get_array(),
+            sycl_queue=b.sycl_queue,
+            depends=[lapack_ev],
+        )
+        ht_copy_out_ev.wait()
+    else:
+        out_v = b_f
+
+    lapack_ev.wait()
+    b_ht_copy_ev.wait()
+    a_ht_copy_ev.wait()
+
+    return out_v

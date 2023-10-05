@@ -30,6 +30,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "gesv.hpp"
 #include "heevd.hpp"
 #include "syevd.hpp"
 
@@ -40,6 +41,7 @@ namespace py = pybind11;
 void init_dispatch_vectors(void)
 {
     lapack_ext::init_syevd_dispatch_vector();
+    lapack_ext::init_gesv_dispatch_vector();
 }
 
 // populate dispatch tables
@@ -65,5 +67,13 @@ PYBIND11_MODULE(_lapack_impl, m)
           "the eigenvalues and eigenvectors of a real symmetric matrix",
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
           py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("depends") = py::list());
+
+    m.def("_gesv", &lapack_ext::gesv,
+          "Call `gesv` from OneMKL LAPACK library to return "
+          "solution to the system of linear equations with a square "
+          "coefficient matrix A"
+          "and multiple right-hand sides",
+          py::arg("sycl_queue"), py::arg("coeff_matrix"), py::arg("hand_sides"),
           py::arg("depends") = py::list());
 }
