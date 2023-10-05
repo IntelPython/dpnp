@@ -181,8 +181,7 @@ DPCTLSyclEventRef
             }
             else {
                 for (size_t k = start + sg.get_local_id()[0]; k < size;
-                     k += max_sg_size)
-                {
+                     k += max_sg_size) {
                     result[k] = std::abs(array1[k]);
                 }
             }
