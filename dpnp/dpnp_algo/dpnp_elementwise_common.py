@@ -63,6 +63,7 @@ __all__ = [
     "dpnp_floor_divide",
     "dpnp_greater",
     "dpnp_greater_equal",
+    "dpnp_hypot",
     "dpnp_imag",
     "dpnp_invert",
     "dpnp_isfinite",
@@ -72,12 +73,16 @@ __all__ = [
     "dpnp_less",
     "dpnp_less_equal",
     "dpnp_log",
+    "dpnp_logaddexp",
     "dpnp_logical_and",
     "dpnp_logical_not",
     "dpnp_logical_or",
     "dpnp_logical_xor",
+    "dpnp_maximum",
+    "dpnp_minimum",
     "dpnp_multiply",
     "dpnp_negative",
+    "dpnp_positive",
     "dpnp_not_equal",
     "dpnp_power",
     "dpnp_proj",
@@ -1261,6 +1266,66 @@ def dpnp_greater_equal(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_hypot_docstring_ = """
+hypot(x1, x2, out=None, order="K")
+Calculates the hypotenuse for a right triangle with "legs" `x1_i` and `x2_i` of
+input arrays `x1` and `x2`.
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have a real-valued data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have a real-valued data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise hypotenuse. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_hypot(src1, src2, dst, sycl_queue, depends=None):
+    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_hypot_to_call(sycl_queue, src1, src2, dst):
+        # call pybind11 extension for hypot() function from OneMKL VM
+        return vmi._hypot(sycl_queue, src1, src2, dst, depends)
+    return ti._hypot(src1, src2, dst, sycl_queue, depends)
+
+
+hypot_func = BinaryElementwiseFunc(
+    "hypot",
+    ti._hypot_result_type,
+    _call_hypot,
+    _hypot_docstring_,
+)
+
+
+def dpnp_hypot(x1, x2, out=None, order="K"):
+    """
+    Invokes hypot() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for hypot() function.
+    """
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = hypot_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _imag_docstring = """
 imag(x, out=None, order="K")
 
@@ -1641,6 +1706,58 @@ def dpnp_log(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_logaddexp_docstring_ = """
+logaddexp(x1, x2, out=None, order="K")
+
+Calculates the natural logarithm of the sum of exponentiations for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the input
+array `x2`.
+
+This function calculates `log(exp(x1) + exp(x2))` more accurately for small
+values of `x`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have a real-valued floating-point
+        data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have a real-valued
+        floating-point data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the result of element-wise result. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+logaddexp_func = BinaryElementwiseFunc(
+    "logaddexp",
+    ti._logaddexp_result_type,
+    ti._logaddexp,
+    _logaddexp_docstring_,
+)
+
+
+def dpnp_logaddexp(x1, x2, out=None, order="K"):
+    """Invokes logaddexp() from dpctl.tensor implementation for logaddexp() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = logaddexp_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _logical_and_docstring_ = """
 logical_and(x1, x2, out=None, order='K')
 
@@ -1812,6 +1929,98 @@ def dpnp_logical_xor(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_maximum_docstring_ = """
+maximum(x1, x2, out=None, order='K')
+
+Compares two input arrays `x1` and `x2` and returns
+a new array containing the element-wise maxima.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise maxima. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+
+
+maximum_func = BinaryElementwiseFunc(
+    "maximum",
+    ti._maximum_result_type,
+    ti._maximum,
+    _maximum_docstring_,
+)
+
+
+def dpnp_maximum(x1, x2, out=None, order="K"):
+    """Invokes maximum() from dpctl.tensor implementation for maximum() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = maximum_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_minimum_docstring_ = """
+minimum(x1, x2, out=None, order='K')
+
+Compares two input arrays `x1` and `x2` and returns
+a new array containing the element-wise minima.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have numeric data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise minima. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+
+
+minimum_func = BinaryElementwiseFunc(
+    "minimum",
+    ti._minimum_result_type,
+    ti._minimum,
+    _minimum_docstring_,
+)
+
+
+def dpnp_minimum(x1, x2, out=None, order="K"):
+    """Invokes minimum() from dpctl.tensor implementation for minimum() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = minimum_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _multiply_docstring_ = """
 multiply(x1, x2, out=None, order="K")
 
@@ -1960,6 +2169,48 @@ def dpnp_not_equal(x1, x2, out=None, order="K"):
     res_usm = not_equal_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_positive_docstring = """
+positive(x, out=None, order="K")
+
+Computes the numerical positive for each element `x_i` of input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the positive of `x`.
+"""
+
+
+positive_func = UnaryElementwiseFunc(
+    "positive", ti._positive_result_type, ti._positive, _positive_docstring
+)
+
+
+def dpnp_positive(x, out=None, order="K"):
+    """Invokes positive() from dpctl.tensor implementation for positive() function."""
+
+    # TODO: discuss with dpctl if the check is needed to be moved there
+    if not dpnp.isscalar(x) and x.dtype == dpnp.bool:
+        raise TypeError(
+            "DPNP boolean positive, the `+` operator, is not supported."
+        )
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = positive_func(x1_usm, out=out_usm, order=order)
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 

@@ -411,7 +411,6 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_3
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_with_scalar_append
 
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_deg2rad
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_hypot
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_rad2deg
 
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_6_{a_shape=(3, 2), b_shape=(3, 2), shape=(4, 3, 2)}::test_beta

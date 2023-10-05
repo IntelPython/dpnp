@@ -190,10 +190,8 @@ enum class DPNPFuncName : size_t
                         */
     DPNP_FN_FULL,      /**< Used in numpy.full() impl  */
     DPNP_FN_FULL_LIKE, /**< Used in numpy.full_like() impl  */
-    DPNP_FN_HYPOT,     /**< Used in numpy.hypot() impl  */
-    DPNP_FN_HYPOT_EXT, /**< Used in numpy.hypot() impl, requires extra
-                          parameters  */
-    DPNP_FN_IDENTITY,  /**< Used in numpy.identity() impl  */
+    DPNP_FN_HYPOT,             /**< Used in numpy.hypot() impl  */
+    DPNP_FN_IDENTITY,          /**< Used in numpy.identity() impl  */
     DPNP_FN_IDENTITY_EXT, /**< Used in numpy.identity() impl, requires extra
                              parameters  */
     DPNP_FN_INITVAL, /**< Used in numpy ones, ones_like, zeros, zeros_like impls
@@ -226,8 +224,8 @@ enum class DPNPFuncName : size_t
                                 requires extra parameters */
     DPNP_FN_MAX,             /**< Used in numpy.max() impl  */
     DPNP_FN_MAX_EXT, /**< Used in numpy.max() impl, requires extra parameters */
-    DPNP_FN_MAXIMUM, /**< Used in numpy.maximum() impl  */
-    DPNP_FN_MAXIMUM_EXT, /**< Used in numpy.maximum() impl , requires extra
+    DPNP_FN_MAXIMUM, /**< Used in numpy.fmax() impl  */
+    DPNP_FN_MAXIMUM_EXT, /**< Used in numpy.fmax() impl , requires extra
                             parameters */
     DPNP_FN_MEAN,        /**< Used in numpy.mean() impl  */
     DPNP_FN_MEDIAN,      /**< Used in numpy.median() impl  */
@@ -235,8 +233,8 @@ enum class DPNPFuncName : size_t
                             parameters */
     DPNP_FN_MIN,         /**< Used in numpy.min() impl  */
     DPNP_FN_MIN_EXT, /**< Used in numpy.min() impl, requires extra parameters */
-    DPNP_FN_MINIMUM, /**< Used in numpy.minimum() impl  */
-    DPNP_FN_MINIMUM_EXT, /**< Used in numpy.minimum() impl, requires extra
+    DPNP_FN_MINIMUM, /**< Used in numpy.fmin() impl  */
+    DPNP_FN_MINIMUM_EXT, /**< Used in numpy.fmax() impl, requires extra
                             parameters */
     DPNP_FN_MODF,        /**< Used in numpy.modf() impl  */
     DPNP_FN_MODF_EXT, /**< Used in numpy.modf() impl, requires extra parameters
