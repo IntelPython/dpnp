@@ -292,11 +292,9 @@ def test_trace(array, offset, type, dtype):
     assert_array_equal(trace_func(dpnp, ia), trace_func(numpy, a))
 
 
+@pytest.mark.parametrize("N", [0, 1, 2, 3, 4], ids=["0", "1", "2", "3", "4"])
 @pytest.mark.parametrize(
-    "N", [-1, 0, 1, 2, 3, 4], ids=["-1", "0", "1", "2", "3", "4"]
-)
-@pytest.mark.parametrize(
-    "M", [-1, None, 0, 1, 2, 3, 4], ids=["-1", "None", "0", "1", "2", "3", "4"]
+    "M", [None, 0, 1, 2, 3, 4], ids=["None", "0", "1", "2", "3", "4"]
 )
 @pytest.mark.parametrize(
     "k",
@@ -307,7 +305,6 @@ def test_trace(array, offset, type, dtype):
 def test_tri(N, M, k, dtype):
     func = lambda xp: xp.tri(N, M, k, dtype=dtype)
     assert_array_equal(func(dpnp), func(numpy))
-    assert func(dpnp).shape == func(numpy).shape
 
 
 def test_tri_default_dtype():

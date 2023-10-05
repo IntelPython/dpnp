@@ -90,21 +90,6 @@ __all__ = [
     "zeros_like",
 ]
 
-i1 = numpy.iinfo(numpy.int8)
-i2 = numpy.iinfo(numpy.int16)
-i4 = numpy.iinfo(numpy.int32)
-
-
-def _min_int(low, high):
-    """Get small int that fits the range"""
-    if high <= i1.max and low >= i1.min:
-        return numpy.int8
-    if high <= i2.max and low >= i2.min:
-        return numpy.int16
-    if high <= i4.max and low >= i4.min:
-        return numpy.int32
-    return numpy.int64
-
 
 def arange(
     start,
@@ -1632,7 +1617,11 @@ def tri(
             pass
         elif not isinstance(N, int):
             pass
+        elif N < 0:
+            pass
         elif M is not None and not isinstance(M, int):
+            pass
+        elif M is not None and M < 0:
             pass
         elif not isinstance(k, int):
             pass
@@ -1645,28 +1634,14 @@ def tri(
             if M is None:
                 M = N
 
-            m = dpnp.greater_equal(
-                dpnp.arange(
-                    N,
-                    dtype=_min_int(0, N),
-                    device=device,
-                    usm_type=usm_type,
-                    sycl_queue=sycl_queue,
-                )[:, dpnp.newaxis],
-                dpnp.arange(
-                    -k,
-                    M - k,
-                    dtype=_min_int(-k, M - k),
-                    device=device,
-                    usm_type=usm_type,
-                    sycl_queue=sycl_queue,
-                ),
+            m = dpnp.ones(
+                (N, M),
+                dtype=_dtype,
+                device=device,
+                usm_type=usm_type,
+                sycl_queue=sycl_queue,
             )
-
-            # Avoid making a copy if the requested type is already bool
-            m = m.astype(_dtype, copy=False)
-
-            return m
+            return dpnp.tril(m, k=k)
 
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
