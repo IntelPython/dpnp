@@ -1430,9 +1430,9 @@ def swapaxes(a, axis1, axis2):
     )
 
 
-def tile(a, reps):
+def tile(A, reps):
     """
-    Construct an array by repeating A the number of times given by reps.
+    Construct an array by repeating `A` the number of times given by reps.
 
     If `reps` has length ``d``, the result will have dimension of
     ``max(d, A.ndim)``.
@@ -1455,7 +1455,7 @@ def tile(a, reps):
     A : dpnp_array
         The input array.
     reps : array_like
-        The number of repetitions of `a` along each axis.
+        The number of repetitions of `A` along each axis.
 
     Returns
     -------
@@ -1498,7 +1498,7 @@ def tile(a, reps):
            [1, 2, 3, 4]])
     """
 
-    dpt_array = dpnp.get_usm_ndarray(a)
+    dpt_array = dpnp.get_usm_ndarray(A)
     return dpnp_array._create_from_usm_ndarray(dpt.tile(dpt_array, reps))
 
 

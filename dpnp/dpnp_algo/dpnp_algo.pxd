@@ -44,7 +44,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ARGMIN_EXT
         DPNP_FN_ARGSORT
         DPNP_FN_ARGSORT_EXT
-        DPNP_FN_ASTYPE
         DPNP_FN_CBRT
         DPNP_FN_CBRT_EXT
         DPNP_FN_CHOLESKY
@@ -85,7 +84,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_EIGVALS_EXT
         DPNP_FN_ERF
         DPNP_FN_ERF_EXT
-        DPNP_FN_EYE
         DPNP_FN_EXP
         DPNP_FN_EXP_EXT
         DPNP_FN_EXP2
@@ -100,7 +98,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FFT_RFFT_EXT
         DPNP_FN_FILL_DIAGONAL
         DPNP_FN_FILL_DIAGONAL_EXT
-        DPNP_FN_FLATTEN
         DPNP_FN_FMOD
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
@@ -153,7 +150,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RADIANS_EXT
         DPNP_FN_RECIP
         DPNP_FN_RECIP_EXT
-        DPNP_FN_REPEAT
         DPNP_FN_RNG_BETA
         DPNP_FN_RNG_BETA_EXT
         DPNP_FN_RNG_BINOMIAL
