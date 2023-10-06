@@ -29,6 +29,7 @@
 
 import dpctl
 import dpctl.tensor._tensor_impl as ti
+from numpy import prod
 
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
@@ -204,34 +205,109 @@ def dpnp_solve(a, b):
             dpnp.float64 if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
         )
 
-    a_f = dpnp.empty_like(a, order="F", dtype=res_type)
-    b_f = dpnp.empty_like(b, order="F", dtype=res_type)
+    if a.ndim > 2:
+        reshape = False
+        orig_shape_b = b.shape
+        if a.ndim > 3:
+            # get 3d input arrays by reshape
+            if a.ndim == b.ndim:
+                b = b.reshape(prod(b.shape[:-2]), b.shape[-2], b.shape[-1])
+            else:
+                b = b.reshape(prod(b.shape[:-1]), b.shape[-1])
 
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a.sycl_queue
-    )
-    b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=b_usm_arr, dst=b_f.get_array(), sycl_queue=b.sycl_queue
-    )
+            a = a.reshape(prod(a.shape[:-2]), a.shape[-2], a.shape[-1])
 
-    lapack_ev = li._gesv(
-        exec_q, a_f.get_array(), b_f.get_array(), [a_copy_ev, b_copy_ev]
-    )
+            a_usm_arr = dpnp.get_usm_ndarray(a)
+            b_usm_arr = dpnp.get_usm_ndarray(b)
+            reshape = True
 
-    if b_order != "F":
-        out_v = dpnp.empty_like(b_f, order=b_order)
-        ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=b_f.get_array(),
-            dst=out_v.get_array(),
-            sycl_queue=b.sycl_queue,
-            depends=[lapack_ev],
-        )
-        ht_copy_out_ev.wait()
+        op_count = a.shape[0]
+        if op_count == 0:
+            return dpnp.empty_like(b, dtype=res_type)
+
+        coeff_vecs = [None] * op_count
+        val_vecs = [None] * op_count
+        a_ht_copy_ev = [None] * op_count
+        b_ht_copy_ev = [None] * op_count
+        ht_lapack_ev = [None] * op_count
+
+        for i in range(op_count):
+            # oneMKL LAPACK assumes fortran-like array as input, so
+            # allocate a memory with 'F' order for dpnp array of coefficient matrix
+            # and multiple right-hand sides
+            coeff_vecs[i] = dpnp.empty_like(a[i], order="F", dtype=res_type)
+            val_vecs[i] = dpnp.empty_like(b[i], order="F", dtype=res_type)
+
+            # use DPCTL tensor function to fill the array of coefficient matrix
+            # and multiple right-hand sides with content of input array
+            a_ht_copy_ev[i], a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_usm_arr[i],
+                dst=coeff_vecs[i].get_array(),
+                sycl_queue=a.sycl_queue,
+            )
+            b_ht_copy_ev[i], b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=b_usm_arr[i],
+                dst=val_vecs[i].get_array(),
+                sycl_queue=b.sycl_queue,
+            )
+
+            # call LAPACK extension function to get the solution of the system of linear
+            # equations with a portion of the coefficients square matrix
+            ht_lapack_ev[i] = li._gesv(
+                exec_q,
+                coeff_vecs[i].get_array(),
+                val_vecs[i].get_array(),
+                depends=[a_copy_ev, b_copy_ev],
+            )
+
+        for i in range(op_count):
+            ht_lapack_ev[i].wait()
+            b_ht_copy_ev[i].wait()
+            a_ht_copy_ev[i].wait()
+
+        # combine the list of solutions into a single array
+        out_v = dpnp.array(val_vecs, order=b_order)
+        if reshape:
+            # shape of the out_t must be equal to the shape of the right-hand sides
+            out_v = out_v.reshape(orig_shape_b)
+        return out_v
     else:
-        out_v = b_f
+        # oneMKL LAPACK assumes fortran-like array as input, so
+        # allocate a memory with 'F' order for dpnp array of coefficient matrix
+        # and multiple right-hand sides
+        a_f = dpnp.empty_like(a, order="F", dtype=res_type)
+        b_f = dpnp.empty_like(b, order="F", dtype=res_type)
 
-    lapack_ev.wait()
-    b_ht_copy_ev.wait()
-    a_ht_copy_ev.wait()
+        # use DPCTL tensor function to fill the array of coefficient matrix
+        # and multiple right-hand sides with content of input array
+        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a.sycl_queue
+        )
+        b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=b_usm_arr, dst=b_f.get_array(), sycl_queue=b.sycl_queue
+        )
 
-    return out_v
+        # call LAPACK extension function to get the solution of the system of linear
+        # equations with the coefficients square matrix
+        lapack_ev = li._gesv(
+            exec_q, a_f.get_array(), b_f.get_array(), [a_copy_ev, b_copy_ev]
+        )
+
+        if b_order != "F":
+            # need to align order of the result of solutions with the right-hand sides
+            out_v = dpnp.empty_like(b_f, order=b_order)
+            ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=b_f.get_array(),
+                dst=out_v.get_array(),
+                sycl_queue=b.sycl_queue,
+                depends=[lapack_ev],
+            )
+            ht_copy_out_ev.wait()
+        else:
+            out_v = b_f
+
+        lapack_ev.wait()
+        b_ht_copy_ev.wait()
+        a_ht_copy_ev.wait()
+
+        return out_v
