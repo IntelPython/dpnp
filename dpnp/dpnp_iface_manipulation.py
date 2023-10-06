@@ -1321,7 +1321,7 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
     or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
     will be raised.
     Parameters `out` and `dtype` are supported with default value.
-    Keyword argument ``kwargs`` is currently unsupported.
+    Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also

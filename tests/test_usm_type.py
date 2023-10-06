@@ -2,9 +2,13 @@ from math import prod
 
 import dpctl.tensor as dpt
 import dpctl.utils as du
+import numpy
 import pytest
+from numpy.testing import assert_allclose
 
 import dpnp as dp
+
+from .helper import assert_dtype_allclose
 
 list_of_usm_types = ["device", "shared", "host"]
 
@@ -147,7 +151,7 @@ def test_coerced_usm_types_power(usm_type_x, usm_type_y):
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-def test_array_creation(func, args, usm_type_x, usm_type_y):
+def test_array_creation_from_an_array(func, args, usm_type_x, usm_type_y):
     x0 = dp.full(10, 3, usm_type=usm_type_x)
     new_args = [eval(val, {"x0": x0}) for val in args]
 
@@ -156,6 +160,33 @@ def test_array_creation(func, args, usm_type_x, usm_type_y):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
+
+
+@pytest.mark.parametrize(
+    "func, arg, kwargs",
+    [
+        pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
+        pytest.param("full", [(2, 2)], {"fill_value": 5}),
+        pytest.param("eye", [4, 2], {}),
+        pytest.param("identity", [4], {}),
+        pytest.param("linspace", [0, 4, 8], {}),
+        pytest.param("ones", [(2, 2)], {}),
+        pytest.param("tri", [3, 5, 2], {}),
+        pytest.param("zeros", [(2, 2)], {}),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_array_creation_from_scratch(func, arg, kwargs, usm_type):
+    dpnp_kwargs = dict(kwargs)
+    dpnp_kwargs["usm_type"] = usm_type
+    dpnp_array = getattr(dp, func)(*arg, **dpnp_kwargs)
+    numpy_array = getattr(numpy, func)(*arg, dtype=dpnp_array.dtype, **kwargs)
+
+    tol = 1e-06
+    assert_allclose(dpnp_array, numpy_array, rtol=tol, atol=tol)
+    assert dpnp_array.shape == numpy_array.shape
+    assert_dtype_allclose(dpnp_array, numpy_array)
+    assert dpnp_array.usm_type == usm_type
 
 
 @pytest.mark.parametrize(

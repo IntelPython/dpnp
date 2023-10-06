@@ -192,8 +192,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FULL_LIKE, /**< Used in numpy.full_like() impl  */
     DPNP_FN_HYPOT,     /**< Used in numpy.hypot() impl  */
     DPNP_FN_IDENTITY,  /**< Used in numpy.identity() impl  */
-    DPNP_FN_IDENTITY_EXT, /**< Used in numpy.identity() impl, requires extra
-                             parameters  */
     DPNP_FN_INITVAL, /**< Used in numpy ones, ones_like, zeros, zeros_like impls
                       */
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
@@ -418,19 +416,18 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TAKE,    /**< Used in numpy.take() impl  */
     DPNP_FN_TAN,     /**< Used in numpy.tan() impl  */
     DPNP_FN_TANH,    /**< Used in numpy.tanh() impl  */
-    DPNP_FN_TRANSPOSE, /**< Used in numpy.transpose() impl  */
-    DPNP_FN_TRACE,     /**< Used in numpy.trace() impl  */
-    DPNP_FN_TRACE_EXT, /**< Used in numpy.trace() impl, requires extra
-                          parameters */
-    DPNP_FN_TRAPZ,     /**< Used in numpy.trapz() impl  */
-    DPNP_FN_TRAPZ_EXT, /**< Used in numpy.trapz() impl, requires extra
-                          parameters */
-    DPNP_FN_TRI,       /**< Used in numpy.tri() impl  */
-    DPNP_FN_TRI_EXT, /**< Used in numpy.tri() impl, requires extra parameters */
-    DPNP_FN_TRIL,    /**< Used in numpy.tril() impl  */
-    DPNP_FN_TRIU,    /**< Used in numpy.triu() impl  */
-    DPNP_FN_TRUNC,   /**< Used in numpy.trunc() impl  */
-    DPNP_FN_VANDER,  /**< Used in numpy.vander() impl  */
+    DPNP_FN_TRANSPOSE,  /**< Used in numpy.transpose() impl  */
+    DPNP_FN_TRACE,      /**< Used in numpy.trace() impl  */
+    DPNP_FN_TRACE_EXT,  /**< Used in numpy.trace() impl, requires extra
+                           parameters */
+    DPNP_FN_TRAPZ,      /**< Used in numpy.trapz() impl  */
+    DPNP_FN_TRAPZ_EXT,  /**< Used in numpy.trapz() impl, requires extra
+                           parameters */
+    DPNP_FN_TRI,        /**< Used in numpy.tri() impl  */
+    DPNP_FN_TRIL,       /**< Used in numpy.tril() impl  */
+    DPNP_FN_TRIU,       /**< Used in numpy.triu() impl  */
+    DPNP_FN_TRUNC,      /**< Used in numpy.trunc() impl  */
+    DPNP_FN_VANDER,     /**< Used in numpy.vander() impl  */
     DPNP_FN_VANDER_EXT, /**< Used in numpy.vander() impl, requires extra
                            parameters */
     DPNP_FN_VAR,        /**< Used in numpy.var() impl  */
