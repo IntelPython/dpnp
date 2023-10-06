@@ -135,7 +135,13 @@ sycl::event gesv(sycl::queue exec_q,
                  dpctl::tensor::usm_ndarray hand_sides,
                  const std::vector<sycl::event> &depends)
 {
-    // check ndim hand_sides
+    const int coeff_matrix_nd = coeff_matrix.get_ndim();
+
+    if (coeff_matrix_nd != 2) {
+        throw py::value_error(
+            "Unexpected ndim=" + std::to_string(coeff_matrix_nd) +
+            " of an input array with coefficients");
+    }
 
     const py::ssize_t *coeff_matrix_shape = coeff_matrix.get_shape_raw();
     const py::ssize_t *hand_sides_shape = hand_sides.get_shape_raw();
@@ -160,15 +166,9 @@ sycl::event gesv(sycl::queue exec_q,
     }
 
     bool is_coeff_matrix_f_contig = coeff_matrix.is_f_contiguous();
-    bool is_hand_sides_c_contig = hand_sides.is_c_contiguous();
     if (!is_coeff_matrix_f_contig) {
         throw py::value_error("An array with coefficients "
                               "must be F-contiguous");
-    }
-    else if (!is_hand_sides_c_contig) {
-        throw py::value_error(
-            "An array with the output solutions of the coefﬁcient matrix"
-            "must be C-contiguous");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
