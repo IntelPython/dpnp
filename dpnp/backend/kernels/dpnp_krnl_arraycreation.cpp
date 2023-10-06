@@ -393,13 +393,6 @@ void (*dpnp_identity_default_c)(void *,
                                 const size_t) = dpnp_identity_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_identity_ext_c)(DPCTLSyclQueueRef,
-                                         void *,
-                                         const size_t,
-                                         const DPCTLEventVectorRef) =
-    dpnp_identity_c<_DataType>;
-
-template <typename _DataType>
 class dpnp_ones_c_kernel;
 
 template <typename _DataType>
@@ -852,15 +845,6 @@ void (*dpnp_tri_default_c)(void *, const size_t, const size_t, const int) =
     dpnp_tri_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_tri_ext_c)(DPCTLSyclQueueRef,
-                                    void *,
-                                    const size_t,
-                                    const size_t,
-                                    const int,
-                                    const DPCTLEventVectorRef) =
-    dpnp_tri_c<_DataType>;
-
-template <typename _DataType>
 DPCTLSyclEventRef dpnp_tril_c(DPCTLSyclQueueRef q_ref,
                               void *array_in,
                               void *result1,
@@ -1265,21 +1249,6 @@ void func_map_init_arraycreation(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_C128][eft_C128] = {
         eft_C128, (void *)dpnp_identity_default_c<std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_IDENTITY_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_identity_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_IDENTITY_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_identity_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_IDENTITY_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_identity_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_IDENTITY_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_identity_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_IDENTITY_EXT][eft_BLN][eft_BLN] = {
-        eft_BLN, (void *)dpnp_identity_ext_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_IDENTITY_EXT][eft_C64][eft_C64] = {
-        eft_C64, (void *)dpnp_identity_ext_c<std::complex<float>>};
-    fmap[DPNPFuncName::DPNP_FN_IDENTITY_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void *)dpnp_identity_ext_c<std::complex<double>>};
-
     fmap[DPNPFuncName::DPNP_FN_ONES][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_ones_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ONES][eft_LNG][eft_LNG] = {
@@ -1430,15 +1399,6 @@ void func_map_init_arraycreation(func_map_t &fmap)
         eft_FLT, (void *)dpnp_tri_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_TRI][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_tri_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_TRI_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_tri_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRI_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_tri_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRI_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_tri_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRI_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_tri_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_TRIL][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_tril_default_c<int32_t>};
