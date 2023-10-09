@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.reshape &mdash; Data Parallel Extension for NumPy 0.13.1dev0+6.gd76d44e5a documentation</title>
+  <title>dpnp.reshape &mdash; Data Parallel Extension for NumPy 0.13.1dev0+8.g67fdb5151 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=169074a6"></script>
+        <script src="../../_static/documentation_options.js?v=f19d4383"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+6.gd76d44e5a
+                0.13.1dev0+8.g67fdb5151
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -137,7 +137,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp_array</em><em>, </em><em>usm_ndarray}</em>) – Array to be reshaped.</p></li>
-<li><p><strong>newshape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><em>tuple</em></a><em> of </em><em>ints</em>) – The new shape should be compatible with the original shape. If
+<li><p><strong>newshape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em>) – The new shape should be compatible with the original shape. If
 an integer, then the result will be a 1-D array of that length.
 One shape dimension can be -1. In this case, the value is
 inferred from the length of the array and remaining dimensions.</p></li>
@@ -150,7 +150,7 @@ elements using Fortran-like index order, with the first index
 changing fastest, and the last index changing slowest. Note that
 the ‘C’ and ‘F’ options take no account of the memory layout of
 the underlying array, and only refer to the order of indexing.</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – Boolean indicating whether or not to copy the input array.
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Boolean indicating whether or not to copy the input array.
 If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the result array will always be a copy of input <cite>a</cite>.
 If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the result array can never be a copy
 and a ValueError exception will be raised in case the copy is necessary.

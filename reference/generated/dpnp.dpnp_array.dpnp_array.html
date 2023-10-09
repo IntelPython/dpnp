@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.13.1dev0+6.gd76d44e5a documentation</title>
+  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.13.1dev0+8.g67fdb5151 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=169074a6"></script>
+        <script src="../../_static/documentation_options.js?v=f19d4383"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+6.gd76d44e5a
+                0.13.1dev0+8.g67fdb5151
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -237,7 +237,7 @@ of index to the minimum values along the given axis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – <p>Axis along which to sort. If None, the default, the flattened array
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – <p>Axis along which to sort. If None, the default, the flattened array
 is used.
 ..  versionchanged:: 1.13.0</p>
 <blockquote>
@@ -249,7 +249,7 @@ Until then, the axis should be given explicitly when
 </div></blockquote>
 </p></li>
 <li><p><strong>kind</strong> (<em>{'quicksort'</em><em>, </em><em>'mergesort'</em><em>, </em><em>'heapsort'</em><em>, </em><em>'stable'}</em><em>, </em><em>optional</em>) – The sorting algorithm used.</p></li>
-<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em>, </em><em>optional</em>) – When <cite>a</cite> is an array with fields defined, this argument specifies
+<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>, </em><em>optional</em>) – When <cite>a</cite> is an array with fields defined, this argument specifies
 which fields to compare first, second, etc.  Not all fields need be
 specified.</p></li>
 </ul>
@@ -259,7 +259,7 @@ specified.</p></li>
 In other words, <code class="docutils literal notranslate"><span class="pre">a[index_array]</span></code> yields a sorted <cite>a</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
+<dd class="field-odd"><p>ndarray, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -302,7 +302,7 @@ In other words, <code class="docutils literal notranslate"><span class="pre">a[i
 <li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'</em><em>, </em><em>'A'</em><em>, </em><em>'K'}</em>) – Row-major (C-style) or column-major (Fortran-style) order.
 When <code class="docutils literal notranslate"><span class="pre">order</span></code> is ‘A’, it uses ‘F’ if <code class="docutils literal notranslate"><span class="pre">a</span></code> is column-major and uses ‘C’ otherwise.
 And when <code class="docutils literal notranslate"><span class="pre">order</span></code> is ‘K’, it keeps strides as closely as possible.</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a>) – If it is False and no cast happens, then this method returns the array itself.
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If it is False and no cast happens, then this method returns the array itself.
 Otherwise, a copy is returned.</p></li>
 </ul>
 </dd>

@@ -1,6 +1,0 @@
-﻿dpnp.bitwise\_xor
-=================
-
-.. currentmodule:: dpnp
-
-.. autofunction:: bitwise_xor
