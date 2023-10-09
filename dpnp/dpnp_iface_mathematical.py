@@ -127,46 +127,6 @@ __all__ = [
 ]
 
 
-def abs(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Calculate the absolute value element-wise.
-
-    For full documentation refer to :obj:`numpy.absolute`.
-
-    Notes
-    -----
-    :obj:`dpnp.abs` is a shorthand for :obj:`dpnp.absolute`.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([-1.2, 1.2])
-    >>> np.abs(a)
-    array([1.2, 1.2])
-
-    """
-
-    return dpnp.absolute(
-        x,
-        out,
-        order="K",
-        where=where,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
 def absolute(
     x,
     /,
@@ -198,15 +158,22 @@ def absolute(
 
     See Also
     --------
-    :obj:`dpnp.abs` : is a shorthand for this function..
     :obj:`dpnp.fabs` : Calculate the absolute value element-wise excluding complex types.
+
+    Notes
+    -----
+    ``dpnp.abs`` is a shorthand for this function.
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> a = dp.array([-1.2, 1.2])
-    >>> dp.absolute(a)
+    >>> import dpnp as np
+    >>> a = np.array([-1.2, 1.2])
+    >>> np.absolute(a)
     array([1.2, 1.2])
+
+    >>> a = np.array(1.2 + 1j)
+    >>> np.absolute(a)
+    array(1.5620499351813308)
 
     """
 
@@ -221,6 +188,9 @@ def absolute(
         subok=subok,
         **kwargs,
     )
+
+
+abs = absolute
 
 
 def add(
@@ -835,7 +805,7 @@ def fabs(x1, **kwargs):
 
     See Also
     --------
-    :obj:`dpnp.abs` : Calculate the absolute value element-wise.
+    :obj:`dpnp.absolute` : Calculate the absolute value element-wise.
 
     Examples
     --------
@@ -2152,7 +2122,7 @@ def proj(
 
     See Also
     --------
-    :obj:`dpnp.abs` : Returns the magnitude of a complex number, element-wise.
+    :obj:`dpnp.absolute` : Returns the magnitude of a complex number, element-wise.
     :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
 
     Examples
