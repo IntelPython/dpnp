@@ -156,8 +156,6 @@ var NAVTREEINDEX2 =
 "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_tan_output_type.html":[1,0,0,0,0,2,0,26],
 "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_tanh_output_type.html":[1,0,0,0,0,2,0,25],
 "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_trunc_output_type.html":[1,0,0,0,0,2,0,27],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1value__type__of.html":[1,0,0,0,0,2,29],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html":[1,0,0,0,0,2,30],
 "structengine__struct.html":[1,0,8],
 "structfunc__type__map__factory__t.html":[1,0,9],
 "structfunc__type__pair__t.html":[1,0,10],
