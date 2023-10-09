@@ -110,7 +110,9 @@ var annotated_dup =
             [ "SubContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sub_contig_factory.html", null ],
             [ "TanContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_tan_contig_factory.html", null ],
             [ "TanhContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_tanh_contig_factory.html", null ],
-            [ "TruncContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_trunc_contig_factory.html", null ]
+            [ "TruncContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_trunc_contig_factory.html", null ],
+            [ "value_type_of", "structdpnp_1_1backend_1_1ext_1_1vm_1_1value__type__of.html", null ],
+            [ "value_type_of< std::complex< T > >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ]
           ] ]
         ] ]
       ] ]

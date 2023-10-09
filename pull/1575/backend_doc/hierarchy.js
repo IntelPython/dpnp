@@ -117,6 +117,8 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::tuple_of_tuples< std::tuple< Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::tuple_of_tuples< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::UsmArrayMatcher", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_usm_array_matcher.html", null ],
+    [ "dpnp::backend::ext::vm::value_type_of< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1value__type__of.html", null ],
+    [ "dpnp::backend::ext::vm::value_type_of< std::complex< T > >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
     [ "Ps", null, [
       [ "func_type_map_factory_t< Ps >", "structfunc__type__map__factory__t.html", null ]
     ] ]
