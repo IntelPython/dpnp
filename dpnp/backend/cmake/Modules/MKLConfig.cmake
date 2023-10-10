@@ -414,7 +414,7 @@ if(GNU_C_COMPILER OR GNU_Fortran_COMPILER)
   endif()
 endif()
 
-# Additonal compiler & linker options
+# Additional compiler & linker options
 if(CXX_COMPILER_NAME STREQUAL "icpx" OR CXX_COMPILER_NAME STREQUAL "icx.exe")
   list(APPEND MKL_DPCPP_COPT "-fsycl")
   list(APPEND MKL_DPCPP_LOPT "-fsycl")

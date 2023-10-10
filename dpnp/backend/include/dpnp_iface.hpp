@@ -1015,7 +1015,7 @@ INP_DLLEXPORT void
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [in]  array               Input array with data.
- * @param [out] result              Output array with indeces.
+ * @param [out] result              Output array with indices.
  * @param [in]  size                Number of elements in input arrays.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
@@ -1069,7 +1069,7 @@ INP_DLLEXPORT void dpnp_searchsorted_c(void *result,
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [in]  array               Input array with data.
- * @param [out] result              Output array with indeces.
+ * @param [out] result              Output array with indices.
  * @param [in]  size                Number of elements in input arrays.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
@@ -1564,7 +1564,7 @@ INP_DLLEXPORT void dpnp_min_c(void *array,
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [in]  array               Input array with data.
- * @param [out] result              Output array with indeces.
+ * @param [out] result              Output array with indices.
  * @param [in]  size                Number of elements in input array.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
@@ -1585,7 +1585,7 @@ INP_DLLEXPORT void dpnp_argmax_c(void *array, void *result, size_t size);
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [in]  array               Input array with data.
- * @param [out] result              Output array with indeces.
+ * @param [out] result              Output array with indices.
  * @param [in]  size                Number of elements in input array.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
  */
@@ -1606,7 +1606,7 @@ INP_DLLEXPORT void dpnp_argmin_c(void *array, void *result, size_t size);
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [in]  input_in            Input array with data.
- * @param [out] result_out          Output array with indeces.
+ * @param [out] result_out          Output array with indices.
  * @param [in]  input_size          Number of elements in input arrays.
  * @param [in]  decimals            Number of decimal places to round. Support
  * only with default value 0.
@@ -1633,7 +1633,7 @@ INP_DLLEXPORT void dpnp_around_c(const void *input_in,
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [in]  array               Input array with data.
- * @param [out] result              Output array with indeces.
+ * @param [out] result              Output array with indices.
  * @param [in]  shape               Shape of input array.
  * @param [in]  ndim                Number of elements in shape.
  * @param [in]  axis                Axis.
@@ -1819,7 +1819,7 @@ INP_DLLEXPORT void dpnp_triu_c(void *array,
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [in]  array               Input array with data.
- * @param [out] result              Output array with indeces.
+ * @param [out] result              Output array with indices.
  * @param [in]  shape               Shape of input array.
  * @param [in]  ndim                Number of elements in shape.
  * @param [in]  axis                Axis.

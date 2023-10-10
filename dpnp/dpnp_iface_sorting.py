@@ -59,9 +59,9 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
-    Prameters ``axis`` is supported only with default value ``-1``.
-    Prameters ``kind`` is supported only with default value ``None``.
-    Prameters ``order`` is supported only with default value ``None``.
+    Parameters ``axis`` is supported only with default value ``-1``.
+    Parameters ``kind`` is supported only with default value ``None``.
+    Parameters ``order`` is supported only with default value ``None``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also

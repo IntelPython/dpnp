@@ -46,7 +46,7 @@
 
 /**
  * Version of SYCL DPC++ 2023 compiler where a return type of sycl::abs() is
- * changed from unsinged integer to signed one of input vector.
+ * changed from unsigned integer to signed one of input vector.
  */
 #ifndef __SYCL_COMPILER_VECTOR_ABS_CHANGED
 #define __SYCL_COMPILER_VECTOR_ABS_CHANGED 20230503L
@@ -115,17 +115,17 @@ void get_shape_offsets_inkernel(const _DataType *shape,
 
 /**
  * @ingroup BACKEND_UTILS
- * @brief Calculation of indeces in array
+ * @brief Calculation of indices in array
  *
- * Calculates indeces of element in array with given linear position
+ * Calculates indices of element in array with given linear position
  * for example:
  *   idx = 5, shape = (2, 3), ndim = 2,
- *   indeces xyz should be [1, 1]
+ *   indices xyz should be [1, 1]
  *
  * @param [in]  idx     linear index of the element in multy-D array.
  * @param [in]  ndim    number of dimensions.
  * @param [in]  shape   offsets of array.
- * @param [out] xyz     indeces.
+ * @param [out] xyz     indices.
  */
 template <typename _DataType>
 void get_xyz_by_id(size_t idx,
@@ -435,7 +435,7 @@ err:
  *
  * @param [in]  q  sycl::device which is examined for type support.
  *
- * @exception std::runtime_error    type T is out of suppport by the queue.
+ * @exception std::runtime_error    type T is out of support by the queue.
  */
 template <typename T>
 static inline void validate_type_for_device(const sycl::device &d)
@@ -471,7 +471,7 @@ static inline void validate_type_for_device(const sycl::device &d)
  *
  * @param [in]  q  sycl::queue which is examined for type support.
  *
- * @exception std::runtime_error    type T is out of suppport by the queue.
+ * @exception std::runtime_error    type T is out of support by the queue.
  */
 template <typename T>
 static inline void validate_type_for_device(const sycl::queue &q)
@@ -490,15 +490,15 @@ static inline void validate_type_for_device(const sycl::queue &q)
 template <typename T>
 std::ostream &operator<<(std::ostream &out, const std::vector<T> &vec)
 {
-    std::string delimeter;
+    std::string delimiter;
     out << "{";
     // std::copy(vec.begin(), vec.end(), std::ostream_iterator<T>(out, ", "));
     // out << "\b\b}"; // last two 'backspaces' needs to eliminate last
     // delimiter. ex: {2, 3, 4, }
     for (auto &elem : vec) {
-        out << delimeter << elem;
-        if (delimeter.empty()) {
-            delimeter.assign(", ");
+        out << delimiter << elem;
+        if (delimiter.empty()) {
+            delimiter.assign(", ");
         }
     }
     out << "}";

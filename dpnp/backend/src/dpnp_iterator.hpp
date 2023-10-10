@@ -40,7 +40,8 @@
  * @ingroup BACKEND_UTILS
  * @brief Iterator for @ref DPNPC_id type
  *
- * This type should be used to simplify data iteraton over input with parameters
+ * This type should be used to simplify data iteration over input with
+ * parameters
  * "[axis|axes]" It is designed to be used in SYCL environment
  *
  */

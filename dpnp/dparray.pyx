@@ -323,7 +323,7 @@ cdef class dparray:
 
     @property
     def shape(self):
-        """Lengths of axes. A tuple of numbers represents size of each dimention.
+        """Lengths of axes. A tuple of numbers represents size of each dimension.
 
         Setter of this property involves reshaping without copy. If the array
         cannot be reshaped without copy, it raises an exception.
@@ -336,7 +336,7 @@ cdef class dparray:
 
     @shape.setter
     def shape(self, newshape):
-        """Set new lengths of axes. A tuple of numbers represents size of each dimention.
+        """Set new lengths of axes. A tuple of numbers represents size of each dimension.
         It involves reshaping without copy. If the array cannot be reshaped without copy,
         it raises an exception.
 
@@ -344,7 +344,7 @@ cdef class dparray:
 
         """
 
-        self._dparray_shape = newshape  # TODO strides, enpty dimentions and etc.
+        self._dparray_shape = newshape  # TODO strides, enpty dimensions and etc.
 
     @property
     def flags(self) -> _flagsobj:

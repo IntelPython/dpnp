@@ -124,15 +124,15 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // ensure that output is ample enough to accomodate all elements
+    // ensure that output is ample enough to accommodate all elements
     auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if (range + 1 < src_nelems) {
             throw py::value_error(
-                "Destination array can not accomodate all the elements "
+                "Destination array can not accommodate all the elements "
                 "of source array.");
         }
     }
@@ -225,15 +225,15 @@ std::pair<sycl::event, sycl::event> binary_ufunc(
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // ensure that output is ample enough to accomodate all elements
+    // ensure that output is ample enough to accommodate all elements
     auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if (range + 1 < src_nelems) {
             throw py::value_error(
-                "Destination array can not accomodate all the "
+                "Destination array can not accommodate all the "
                 "elements of source array.");
         }
     }
@@ -329,9 +329,9 @@ bool need_to_call_unary_ufunc(sycl::queue exec_q,
         return false;
     }
 
-    // ensure that output is ample enough to accomodate all elements
+    // ensure that output is ample enough to accommodate all elements
     auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
@@ -346,7 +346,7 @@ bool need_to_call_unary_ufunc(sycl::queue exec_q,
         return false;
     }
 
-    // suppport only contiguous inputs
+    // support only contiguous inputs
     bool is_src_c_contig = src.is_c_contiguous();
     bool is_dst_c_contig = dst.is_c_contiguous();
 
@@ -425,9 +425,9 @@ bool need_to_call_binary_ufunc(sycl::queue exec_q,
         return false;
     }
 
-    // ensure that output is ample enough to accomodate all elements
+    // ensure that output is ample enough to accommodate all elements
     auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
@@ -442,7 +442,7 @@ bool need_to_call_binary_ufunc(sycl::queue exec_q,
         return false;
     }
 
-    // suppport only contiguous inputs
+    // support only contiguous inputs
     bool is_src1_c_contig = src1.is_c_contiguous();
     bool is_src2_c_contig = src2.is_c_contiguous();
     bool is_dst_c_contig = dst.is_c_contiguous();
