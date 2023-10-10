@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.random.dpnp_iface_random &mdash; Data Parallel Extension for NumPy 0.13.1dev0+11.g1045081d7 documentation</title>
+  <title>dpnp.random.dpnp_iface_random &mdash; Data Parallel Extension for NumPy 0.13.1dev0+12.g9b170292a documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=2982f5a4"></script>
+        <script src="../../../_static/documentation_options.js?v=d0ca6e01"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+11.g1045081d7
+                0.13.1dev0+12.g9b170292a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -217,7 +217,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``a`` and ``b`` are supported as scalar.</span>
+<span class="sd">    Parameters `a` and `b` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.beta(a, b, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
@@ -259,7 +259,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Output array data type is :obj:`dpnp.int32`.</span>
-<span class="sd">    Parameters ``n`` and ``p`` are supported as scalar.</span>
+<span class="sd">    Parameters `n` and `p` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.binomial(n, p, size)` samples are drawn.</span>
 
 <span class="sd">    Examples</span>
@@ -327,7 +327,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``df`` is supported as a scalar.</span>
+<span class="sd">    Parameter `df` is supported as a scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.chisquare(df, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is default float type.</span>
 
@@ -404,7 +404,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``scale`` is supported as a scalar.</span>
+<span class="sd">    Parameter `scale` is supported as a scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.exponential(scale, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
@@ -441,9 +441,10 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``dfnum`` and ``dfden`` are supported as scalar.</span>
+<span class="sd">    Parameters `dfnum` and `dfden` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.f(dfnum, dfden, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; dfnum, dfden = 3., 2.</span>
@@ -480,7 +481,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``shape`` and ``scale`` are supported as scalar.</span>
+<span class="sd">    Parameters `shape` and `scale` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.gamma(shape, scale, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
@@ -521,7 +522,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``p`` is supported as a scalar.</span>
+<span class="sd">    Parameter `p` is supported as a scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.geometric(p, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.int32`.</span>
 
@@ -558,7 +559,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``loc`` and ``scale`` are supported as scalar.</span>
+<span class="sd">    Parameters `loc` and `scale` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.gumbel(loc, scale, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
@@ -597,7 +598,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``ngood``, ``nbad`` and ``nsample`` are supported as scalar.</span>
+<span class="sd">    Parameters `ngood`, `nbad` and `nsample` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.hypergeometric(shape, scale, size)` samples</span>
 <span class="sd">    are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.int32`.</span>
@@ -652,7 +653,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``loc`` and ``scale`` are supported as scalar.</span>
+<span class="sd">    Parameters `loc` and `scale` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.laplace(loc, scale, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
@@ -690,7 +691,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``loc`` and ``scale`` are supported as scalar.</span>
+<span class="sd">    Parameters `loc` and `scale` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.logistic(loc, scale, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
@@ -732,7 +733,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``mean`` and ``sigma`` are supported as scalar.</span>
+<span class="sd">    Parameters `mean` and `sigma` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.lognormal(mean, sigma, size)` samples</span>
 <span class="sd">    are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
@@ -792,7 +793,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``n`` limited with int32 max. See, `numpy.iinfo(numpy.int32).max`.</span>
+<span class="sd">    Parameter `n` limited with int32 max. See, `numpy.iinfo(numpy.int32).max`.</span>
 <span class="sd">    Sum of ``pvals``, `sum(pvals)` should be between (0, 1).</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.multinomial(n, pvals, size)`</span>
 <span class="sd">    samples are drawn.</span>
@@ -844,7 +845,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``check_valid`` and ``tol`` are not supported.</span>
+<span class="sd">    Parameters `check_valid` and `tol` are not supported.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.multivariate_normal(mean, cov, size, check_valid, tol)`</span>
 <span class="sd">    samples are drawn.</span>
 
@@ -897,7 +898,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``n`` and ``p`` are supported as scalar.</span>
+<span class="sd">    Parameters `n` and `p` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.negative_binomial(n, p, size)` samples</span>
 <span class="sd">    are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.int32`.</span>
@@ -1054,7 +1055,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``a`` is supported as a scalar.</span>
+<span class="sd">    Parameter `a` is supported as a scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.pareto(a, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
@@ -1129,7 +1130,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``lam`` is supported as a scalar.</span>
+<span class="sd">    Parameter `lam` is supported as a scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.poisson(lam, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.int32`.</span>
 
@@ -1167,7 +1168,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``a`` is supported as a scalar.</span>
+<span class="sd">    Parameter `a` is supported as a scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.power(a, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
@@ -1569,7 +1570,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``scale`` is supported as a scalar.</span>
+<span class="sd">    Parameter `scale` is supported as a scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.rayleigh(scale, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
@@ -1793,7 +1794,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``shape`` is supported as a scalar.</span>
+<span class="sd">    Parameter `shape` is supported as a scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.standard_gamma(shape, size)` samples</span>
 <span class="sd">    are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
@@ -1872,7 +1873,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``df`` is supported as a scalar.</span>
+<span class="sd">    Parameter `df` is supported as a scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.standard_t(df, size)` samples</span>
 <span class="sd">    are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
@@ -1911,7 +1912,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``left``, ``mode`` and ``right`` are supported as scalar.</span>
+<span class="sd">    Parameters `left`, `mode` and `right` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.triangular(left, mode, right, size)`</span>
 <span class="sd">    samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
@@ -2021,7 +2022,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``mu`` and ``kappa`` are supported as scalar.</span>
+<span class="sd">    Parameters `mu` and `kappa` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.vonmises(mu, kappa, size)`</span>
 <span class="sd">    samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
@@ -2063,7 +2064,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``mean`` and ``scale`` are supported as scalar.</span>
+<span class="sd">    Parameters `mean` and `scale` are supported as scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.wald(mean, scale, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
@@ -2103,7 +2104,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``a`` is supported as a scalar.</span>
+<span class="sd">    Parameter `a` is supported as a scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.random.weibull(a, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
@@ -2139,7 +2140,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``a`` is supported as a scalar.</span>
+<span class="sd">    Parameter `a`` is supported as a scalar.</span>
 <span class="sd">    Otherwise, :obj:`numpy.zipf.weibull(a, size)` samples are drawn.</span>
 <span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 

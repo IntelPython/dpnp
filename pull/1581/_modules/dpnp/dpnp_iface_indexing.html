@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.13.1dev0+11.g1045081d7 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.13.1dev0+12.g9b170292a documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=2982f5a4"></script>
+        <script src="../../_static/documentation_options.js?v=d0ca6e01"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+11.g1045081d7
+                0.13.1dev0+12.g9b170292a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -317,8 +317,9 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Parameters ``axis1`` and ``axis2`` are supported only with default values.</span>
+<span class="sd">    Parameters `axis1` and `axis2` are supported only with default values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -389,7 +390,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``wrap`` is supported only with default values.</span>
+<span class="sd">    Parameter `wrap` is supported only with default values.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -422,8 +423,9 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters ``dtype`` and ``sparse`` are supported only with default values.</span>
-<span class="sd">    Parameter ``dimensions`` is supported with len &lt;=2.</span>
+<span class="sd">    Parameters `dtype` and `sparse` are supported only with default values.</span>
+<span class="sd">    Parameter `dimensions` is supported with len &lt;=2.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dimensions</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
@@ -688,7 +690,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Arrays of input lists are supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Parameter ``default`` are supported only with default values.</span>
+<span class="sd">    Parameter `default` is supported only with default values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">():</span>
