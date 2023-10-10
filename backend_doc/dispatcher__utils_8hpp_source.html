@@ -483,8 +483,8 @@ $(document).ready(function(){initNavTree('dispatcher__utils_8hpp_source.html',''
 <div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span> </div>
 <div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    FnT operator()(std::initializer_list&lt;DispatchT&gt; values)</div>
 <div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>    {</div>
-<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>        <span class="comment">// though std::initializer_list::size is constexpr it doesnt work for</span></div>
-<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>        <span class="comment">// some reson constexpr auto const list_size = values.size();</span></div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>        <span class="comment">// though std::initializer_list::size is constexpr it doesn&#39;t work for</span></div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>        <span class="comment">// some reason constexpr auto const list_size = values.size();</span></div>
 <div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>        std::array&lt;int, <span class="keyword">sizeof</span>...(Axis)&gt; idx;</div>
 <div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>        <span class="keywordtype">bool</span> found =</div>
 <div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>            <a class="code hl_struct" href="structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space.html">coord_in_space</a>&lt;DispatchT, Matcher, std::tuple&lt;Axis...&gt;&gt;::get(</div>

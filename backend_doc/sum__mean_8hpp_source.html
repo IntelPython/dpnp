@@ -156,7 +156,7 @@ $(document).ready(function(){initNavTree('sum__mean_8hpp_source.html',''); initR
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">size_t</span> out_full_size = out.get_size() * out.get_elemsize();</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">if</span> (out_full_size &gt; local_mem_size) {</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">if</span> (throw_on_fail)</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">throw</span> py::value_error(<span class="stringliteral">&quot;Resulting array exceeds local memroy size&quot;</span> +</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">throw</span> py::value_error(<span class="stringliteral">&quot;Resulting array exceeds local memory size&quot;</span> +</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                  std::to_string(local_mem_size));</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
