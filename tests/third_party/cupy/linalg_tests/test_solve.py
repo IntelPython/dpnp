@@ -61,20 +61,24 @@ class TestSolve(unittest.TestCase):
             with pytest.raises(error_type):
                 xp.linalg.solve(a, b)
 
-    # dpnp.linalg.solve() raises RuntimeError instead of numpy.linalg.LinAlgError
-    # @testing.numpy_cupy_allclose()
-    # def test_solve_singular_empty(self, xp):
-    #     a = xp.zeros((3, 3))  # singular
-    #     b = xp.empty((3, 0))  # nrhs = 0
-    #     # LinAlgError("Singular matrix") is not raised
-    #     return xp.linalg.solve(a, b)
+    def test_solve_singular_empty(self):
+        for xp in (numpy, cupy):
+            a = xp.zeros((3, 3))  # singular
+            b = xp.empty((3, 0))  # nrhs = 0
+            with pytest.raises((numpy.linalg.LinAlgError, ValueError)):
+                xp.linalg.solve(a, b)
 
-    # dpnp.linalg.solve() raises RuntimeError instead of numpy.linalg.LinAlgError
+    # dpnp.linalg.solve() raises a LinAlgError which is defined
+    # through a ValueError in the C++ bindings using pybind11
     def test_invalid_shape(self):
-        # self.check_shape((2, 3), (4,), numpy.linalg.LinAlgError)
+        self.check_shape((2, 3), (4,), (numpy.linalg.LinAlgError, ValueError))
         self.check_shape((3, 3), (2,), ValueError)
         self.check_shape((3, 3), (2, 2), ValueError)
-        # self.check_shape((3, 3, 4), (3,), numpy.linalg.LinAlgError)
+        self.check_shape(
+            (3, 3, 4), (3,), (numpy.linalg.LinAlgError, ValueError)
+        )
         self.check_shape((2, 3, 3), (3,), ValueError)
         self.check_shape((3, 3), (0,), ValueError)
-        # self.check_shape((0, 3, 4), (3,), numpy.linalg.LinAlgError)
+        self.check_shape(
+            (0, 3, 4), (3,), (numpy.linalg.LinAlgError, ValueError)
+        )
