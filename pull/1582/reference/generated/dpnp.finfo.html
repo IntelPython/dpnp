@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.finfo &mdash; Data Parallel Extension for NumPy 0.13.1dev0+11.g239e3fea5 documentation</title>
+  <title>dpnp.finfo &mdash; Data Parallel Extension for NumPy 0.13.1dev0+12.gdb429ea6a documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=1bda0ae5"></script>
+        <script src="../../_static/documentation_options.js?v=bdc0c440"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+11.g239e3fea5
+                0.13.1dev0+12.gdb429ea6a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -141,9 +141,21 @@ If complex, the information is about its component data type.</p>
 </div></blockquote>
 <ul class="simple">
 <li><dl class="simple">
+<dt>dtype: dtype</dt><dd><p>real-valued floating-point data type.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
 <dt>eps: float</dt><dd><p>difference between 1.0 and the next smallest representable
 real-valued floating-point number larger than 1.0 according
 to the IEEE-754 standard.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>epsneg: float</dt><dd><p>difference between 1.0 and the next smallest representable real-valued
+floating-point number smaller than 1.0 according to the IEEE-754
+standard.</p>
 </dd>
 </dl>
 </li>
@@ -158,13 +170,24 @@ to the IEEE-754 standard.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>smallest_normal: float</dt><dd><p>smallest positive real-valued floating-point number with
-full precision.</p>
+<dt>precision: float</dt><dd><p>the approximate number of decimal digits to which this kind of
+floating point type is precise.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>dtype: dtype</dt><dd><p>real-valued floating-point data type.</p>
+<dt>resolution: float</dt><dd><p>the approximate decimal resolution of this type.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tiny: float</dt><dd><p>an alias for <cite>smallest_normal</cite></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>smallest_normal: float</dt><dd><p>smallest positive real-valued floating-point number with
+full precision.</p>
 </dd>
 </dl>
 </li>

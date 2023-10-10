@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_types &mdash; Data Parallel Extension for NumPy 0.13.1dev0+11.g239e3fea5 documentation</title>
+  <title>dpnp.dpnp_iface_types &mdash; Data Parallel Extension for NumPy 0.13.1dev0+12.gdb429ea6a documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=1bda0ae5"></script>
+        <script src="../../_static/documentation_options.js?v=bdc0c440"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+11.g239e3fea5
+                0.13.1dev0+12.gdb429ea6a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -141,7 +141,6 @@
     <span class="s2">&quot;dtype&quot;</span><span class="p">,</span>
     <span class="s2">&quot;e&quot;</span><span class="p">,</span>
     <span class="s2">&quot;euler_gamma&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;iinfo&quot;</span><span class="p">,</span>
     <span class="s2">&quot;float&quot;</span><span class="p">,</span>
     <span class="s2">&quot;float_&quot;</span><span class="p">,</span>
     <span class="s2">&quot;float16&quot;</span><span class="p">,</span>
@@ -149,6 +148,7 @@
     <span class="s2">&quot;float64&quot;</span><span class="p">,</span>
     <span class="s2">&quot;floating&quot;</span><span class="p">,</span>
     <span class="s2">&quot;finfo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;iinfo&quot;</span><span class="p">,</span>
     <span class="s2">&quot;inexact&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Inf&quot;</span><span class="p">,</span>
     <span class="s2">&quot;inf&quot;</span><span class="p">,</span>
@@ -253,19 +253,30 @@
 <span class="sd">        An object have the following attributes</span>
 <span class="sd">        * bits: int</span>
 <span class="sd">            number of bits occupied by dtype.</span>
+<span class="sd">        * dtype: dtype</span>
+<span class="sd">            real-valued floating-point data type.</span>
 <span class="sd">        * eps: float</span>
 <span class="sd">            difference between 1.0 and the next smallest representable</span>
 <span class="sd">            real-valued floating-point number larger than 1.0 according</span>
 <span class="sd">            to the IEEE-754 standard.</span>
+<span class="sd">        * epsneg: float</span>
+<span class="sd">            difference between 1.0 and the next smallest representable real-valued</span>
+<span class="sd">            floating-point number smaller than 1.0 according to the IEEE-754</span>
+<span class="sd">            standard.</span>
 <span class="sd">        * max: float</span>
 <span class="sd">            largest representable real-valued number.</span>
 <span class="sd">        * min: float</span>
 <span class="sd">            smallest representable real-valued number.</span>
+<span class="sd">        * precision: float</span>
+<span class="sd">            the approximate number of decimal digits to which this kind of</span>
+<span class="sd">            floating point type is precise.</span>
+<span class="sd">        * resolution: float</span>
+<span class="sd">            the approximate decimal resolution of this type.</span>
+<span class="sd">        * tiny: float</span>
+<span class="sd">            an alias for `smallest_normal`</span>
 <span class="sd">        * smallest_normal: float</span>
 <span class="sd">            smallest positive real-valued floating-point number with</span>
 <span class="sd">            full precision.</span>
-<span class="sd">        * dtype: dtype</span>
-<span class="sd">            real-valued floating-point data type.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
@@ -293,12 +304,12 @@
 <span class="sd">        An object with the following attributes</span>
 <span class="sd">        * bits: int</span>
 <span class="sd">            number of bits occupied by the data type</span>
+<span class="sd">        * dtype: dtype</span>
+<span class="sd">            integer data type.</span>
 <span class="sd">        * max: int</span>
 <span class="sd">            largest representable number.</span>
 <span class="sd">        * min: int</span>
 <span class="sd">            smallest representable number.</span>
-<span class="sd">        * dtype: dtype</span>
-<span class="sd">            integer data type.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
