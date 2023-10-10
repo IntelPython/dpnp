@@ -194,8 +194,8 @@ enum class DPNPFuncName : size_t
                         */
     DPNP_FN_FULL,      /**< Used in numpy.full() impl  */
     DPNP_FN_FULL_LIKE, /**< Used in numpy.full_like() impl  */
-    DPNP_FN_HYPOT,             /**< Used in numpy.hypot() impl  */
-    DPNP_FN_IDENTITY,          /**< Used in numpy.identity() impl  */
+    DPNP_FN_HYPOT,     /**< Used in numpy.hypot() impl  */
+    DPNP_FN_IDENTITY,  /**< Used in numpy.identity() impl  */
     DPNP_FN_INITVAL, /**< Used in numpy ones, ones_like, zeros, zeros_like impls
                       */
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
@@ -208,11 +208,11 @@ enum class DPNPFuncName : size_t
     DPNP_FN_KRON_EXT, /**< Used in numpy.kron() impl, requires extra parameters
                        */
     DPNP_FN_LEFT_SHIFT, /**< Used in numpy.left_shift() impl  */
-    DPNP_FN_LOG,            /**< Used in numpy.log() impl  */
-    DPNP_FN_LOG10,          /**< Used in numpy.log10() impl  */
-    DPNP_FN_LOG10_EXT,      /**< Used in numpy.log10() impl, requires extra
-                               parameters  */
-    DPNP_FN_LOG2,           /**< Used in numpy.log2() impl  */
+    DPNP_FN_LOG,        /**< Used in numpy.log() impl  */
+    DPNP_FN_LOG10,      /**< Used in numpy.log10() impl  */
+    DPNP_FN_LOG10_EXT,  /**< Used in numpy.log10() impl, requires extra
+                           parameters  */
+    DPNP_FN_LOG2,       /**< Used in numpy.log2() impl  */
     DPNP_FN_LOG2_EXT,  /**< Used in numpy.log2() impl, requires extra parameters
                         */
     DPNP_FN_LOG1P,     /**< Used in numpy.log1p() impl  */

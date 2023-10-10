@@ -667,7 +667,6 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
         const DPCTLEventVectorRef) =                                           \
         __name__<_DataType_input1, _DataType_input2>;
 
-
 void func_map_init_logic(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ALL][eft_BLN][eft_BLN] = {
