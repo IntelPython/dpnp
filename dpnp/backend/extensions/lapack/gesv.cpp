@@ -30,6 +30,7 @@
 #include "utils/type_utils.hpp"
 
 #include "gesv.hpp"
+#include "linalg_exceptions.hpp"
 #include "types_matrix.hpp"
 
 #include "dpnp_utils.hpp"
@@ -102,14 +103,51 @@ static sycl::event gesv_impl(sycl::queue exec_q,
                         // routine for storing intermediate results.
             scratchpad_size, depends);
     } catch (mkl_lapack::exception const &e) {
-        error_msg
-            << "Unexpected MKL exception caught during gesv() call:\nreason: "
-            << e.what() << "\ninfo: " << e.info();
         info = e.info();
+
+        if (info < 0) {
+            error_msg << "Parameter number " << -info
+                      << " had an illegal value.";
+        }
+        else if (info > 0) {
+            T host_U;
+            exec_q.memcpy(&host_U, &a[(info - 1) * lda + info - 1], sizeof(T))
+                .wait();
+
+            using ThresholdType = typename std::conditional<
+                std::is_same<T, float>::value, float,
+                typename std::conditional<
+                    std::is_same<T, double>::value, double,
+                    typename std::conditional<
+                        std::is_same<T, std::complex<float>>::value, float,
+                        double>::type>::type>::type;
+
+            const auto threshold =
+                std::numeric_limits<ThresholdType>::epsilon() * 100;
+            if (std::abs(host_U) < threshold) {
+                sycl::free(scratchpad, exec_q);
+                throw LinAlgError("The input coefficient matrix is singular.");
+            }
+            else {
+                error_msg << "Unexpected MKL exception caught during gesv() "
+                             "call:\nreason: "
+                          << e.what() << "\ninfo: " << e.info();
+            }
+        }
+        else if (info == scratchpad_size && e.detail() != 0) {
+            error_msg
+                << "Insufficient scratchpad size. Required size is at least "
+                << e.detail();
+        }
+        else {
+            error_msg << "Unexpected MKL exception caught during gesv() "
+                         "call:\nreason: "
+                      << e.what() << "\ninfo: " << e.info();
+        }
     } catch (sycl::exception const &e) {
         error_msg << "Unexpected SYCL exception caught during gesv() call:\n"
                   << e.what();
-        info = -1;
+        info = -11;
     }
 
     if (info != 0) // an unexected error occurs

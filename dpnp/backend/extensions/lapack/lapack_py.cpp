@@ -32,6 +32,7 @@
 
 #include "gesv.hpp"
 #include "heevd.hpp"
+#include "linalg_exceptions.hpp"
 #include "syevd.hpp"
 
 namespace lapack_ext = dpnp::backend::ext::lapack;
@@ -52,6 +53,9 @@ void init_dispatch_tables(void)
 
 PYBIND11_MODULE(_lapack_impl, m)
 {
+    py::register_local_exception<lapack_ext::LinAlgError>(m, "LinAlgError",
+                                                          PyExc_ValueError);
+
     init_dispatch_vectors();
     init_dispatch_tables();
 
