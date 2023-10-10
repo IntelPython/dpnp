@@ -56,7 +56,7 @@ def erf(in_array1):
 
     Limitations
     -----------
-    Parameter ``in_array1`` is supported as :obj:`dpnp.ndarray`.
+    Parameter `in_array1` is supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 

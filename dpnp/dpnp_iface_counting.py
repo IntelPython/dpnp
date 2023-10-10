@@ -57,10 +57,10 @@ def count_nonzero(x1, axis=None, *, keepdims=False):
 
     Limitations
     -----------
-        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
-        Otherwise the function will be executed sequentially on CPU.
-        Parameter ``axis`` is supported only with default value `None`.
-        Parameter ``keepdims`` is supported only with default value `False`.
+    Parameter `x1` is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Parameter `axis` is supported only with default value `None`.
+    Parameter `keepdims` is supported only with default value `False`.
 
     Examples
     --------

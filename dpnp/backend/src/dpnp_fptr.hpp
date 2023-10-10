@@ -98,7 +98,7 @@ struct func_type_map_factory_t : public Ps...
 };
 
 /**
- * A map of the FPTR interface to link Data type enum value with accociated C++
+ * A map of the FPTR interface to link Data type enum value with associated C++
  * type
  */
 typedef func_type_map_factory_t<

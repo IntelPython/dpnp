@@ -112,7 +112,7 @@ static sycl::event syevd_impl(sycl::queue exec_q,
         info = -1;
     }
 
-    if (info != 0) // an unexected error occurs
+    if (info != 0) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
             sycl::free(scratchpad, exec_q);
@@ -186,8 +186,9 @@ std::pair<sycl::event, sycl::event>
     bool is_eig_vecs_f_contig = eig_vecs.is_f_contiguous();
     bool is_eig_vals_c_contig = eig_vals.is_c_contiguous();
     if (!is_eig_vecs_f_contig) {
-        throw py::value_error("An array with input matrix / ouput eigenvectors "
-                              "must be F-contiguous");
+        throw py::value_error(
+            "An array with input matrix / output eigenvectors "
+            "must be F-contiguous");
     }
     else if (!is_eig_vals_c_contig) {
         throw py::value_error(
@@ -202,7 +203,7 @@ std::pair<sycl::event, sycl::event>
 
     if (eig_vecs_type_id != eig_vals_type_id) {
         throw py::value_error(
-            "Types of eigenvectors and eigenvalues are missmatched");
+            "Types of eigenvectors and eigenvalues are mismatched");
     }
 
     syevd_impl_fn_ptr_t syevd_fn = syevd_dispatch_vector[eig_vecs_type_id];
