@@ -198,9 +198,9 @@ def inner(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
+    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
 
     See Also
     --------
@@ -256,7 +256,7 @@ def matmul(x1, x2, out=None, **kwargs):
     -----------
     Input arrays are supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
-    Parameter ``out`` is supported as :obj:`dpnp.ndarray` and as default value ``None``.
+    Parameter `out` is supported as :obj:`dpnp.ndarray` and as default value ``None``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -392,11 +392,11 @@ def tensordot(x1, x2, axes=2):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Parameter ``axes`` is supported only with value ``1``.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.
+    Keyword argument `kwargs` is currently unsupported.
+    Parameter `axes` is supported only with value ``1``.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------

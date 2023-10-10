@@ -31,7 +31,7 @@ Notes
 -----
 This module represents DPNP Algo interface to Numba JIT
 
-The code idea gathered from numba-scipy and needs to be syncronized with
+The code idea gathered from numba-scipy and needs to be synchronized with
 https://github.com/numba/numba-scipy/blob/master/numba_scipy/special/
 """
 

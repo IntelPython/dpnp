@@ -197,7 +197,7 @@ static sycl::event dpnp_allclose(sycl::queue &q,
                 }
             }
 
-            // casting integeral to floating type to avoid bad behavior
+            // casting integral to floating type to avoid bad behavior
             // on abs(MIN_INT), which leads to undefined result
             using _Arr2Type = std::conditional_t<std::is_integral_v<_DataType2>,
                                                  _TolType, _DataType2>;
@@ -525,7 +525,7 @@ DPCTLSyclEventRef (*dpnp_any_ext_c)(DPCTLSyclQueueRef,
             }                                                                  \
                                                                                \
             /* memory transfer optimization, use USM-host for temporary speeds \
-             * up tranfer to device */                                         \
+             * up transfer to device */                                        \
             using usm_host_allocatorT =                                        \
                 sycl::usm_allocator<shape_elem_type, sycl::usm::alloc::host>;  \
                                                                                \

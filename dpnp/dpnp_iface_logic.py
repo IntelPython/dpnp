@@ -172,7 +172,7 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the functions will be executed sequentially on CPU.
     Parameters `rtol` and `atol` are supported as scalars. Otherwise
-    ``TypeError`` exeption will be raised.
+    ``TypeError`` exception will be raised.
     Input array data types are limited by supported integer and
     floating DPNP :ref:`Data types`.
 

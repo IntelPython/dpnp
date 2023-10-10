@@ -526,7 +526,7 @@ DPNPFuncData_t get_dpnp_function_ptr(
  * @ingroup BACKEND_API
  * @brief get runtime pointer to selected function
  *
- * Same interface function as @ref get_dpnp_function_ptr with a bit diffrent
+ * Same interface function as @ref get_dpnp_function_ptr with a bit different
  * interface
  *
  * @param [out] result_type  Type of the result provided by the backend API

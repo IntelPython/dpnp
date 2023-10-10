@@ -27,11 +27,11 @@
 
 """Example 2.
 
-This example shows usage of diffrent input data types
+This example shows usage of different input data types
 with same third party library call
 
 Also, it produces performance comparison between a same third party function call
-over diffrent types of input data
+over different types of input data
 
 """
 

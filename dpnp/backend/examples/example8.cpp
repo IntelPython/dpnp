@@ -56,7 +56,7 @@ int main(int, char **)
 
     dpnp_argsort_c<double, long>(array, result, size);
 
-    std::cout << "array with 'sorted' indeces" << std::endl;
+    std::cout << "array with 'sorted' indices" << std::endl;
     for (size_t i = 0; i < size; ++i) {
         std::cout << result[i] << ", ";
     }

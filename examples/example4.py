@@ -58,7 +58,7 @@ for function in [
         data = numpy.array([1, 2, 3, 4], dtype=test_type)
         result = function(data)
         print(
-            f"input:{data.dtype.name:10}: outout:{result.dtype.name:10}: name:{function.__name__}"
+            f"input:{data.dtype.name:10}: output:{result.dtype.name:10}: name:{function.__name__}"
         )
 
 """
