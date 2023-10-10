@@ -53,7 +53,6 @@ __all__ = [
     "dtype",
     "e",
     "euler_gamma",
-    "iinfo",
     "float",
     "float_",
     "float16",
@@ -61,6 +60,7 @@ __all__ = [
     "float64",
     "floating",
     "finfo",
+    "iinfo",
     "inexact",
     "Inf",
     "inf",
@@ -163,19 +163,30 @@ def finfo(dtype):
         An object have the following attributes
         * bits: int
             number of bits occupied by dtype.
+        * dtype: dtype
+            real-valued floating-point data type.
         * eps: float
             difference between 1.0 and the next smallest representable
             real-valued floating-point number larger than 1.0 according
             to the IEEE-754 standard.
+        * epsneg: float
+            difference between 1.0 and the next smallest representable real-valued
+            floating-point number smaller than 1.0 according to the IEEE-754
+            standard.
         * max: float
             largest representable real-valued number.
         * min: float
             smallest representable real-valued number.
+        * precision: float
+            the approximate number of decimal digits to which this kind of
+            floating point type is precise.
+        * resolution: float
+            the approximate decimal resolution of this type.
+        * tiny: float
+            an alias for `smallest_normal`
         * smallest_normal: float
             smallest positive real-valued floating-point number with
             full precision.
-        * dtype: dtype
-            real-valued floating-point data type.
 
     """
     if isinstance(dtype, dpnp_array):
@@ -200,12 +211,12 @@ def iinfo(dtype):
         An object with the following attributes
         * bits: int
             number of bits occupied by the data type
+        * dtype: dtype
+            integer data type.
         * max: int
             largest representable number.
         * min: int
             smallest representable number.
-        * dtype: dtype
-            integer data type.
 
     """
     if isinstance(dtype, dpnp_array):
