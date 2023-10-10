@@ -183,36 +183,52 @@ def atleast_2d(*arys):
 
     For full documentation refer to :obj:`numpy.atleast_2d`.
 
-    Limitations
-    -----------
-    Input arrays is supported as :obj:`dpnp.ndarray`.
+    Parameters
+    ----------
+    arys : {dpnp_array, usm_ndarray}
+        One or more array-like sequences.  Non-array inputs are converted
+        to arrays.  Arrays that already have two or more dimensions are
+        preserved.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array, or list of arrays, each with ``a.ndim >= 2``.
+        Copies are avoided where possible, and views with two or more
+        dimensions are returned.
+
+    See Also
+    --------
+    atleast_1d, atleast_3d
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.atleast_2d(3.0)
+    array([[3.]])
+
+    >>> x = np.arange(3.0)
+    >>> np.atleast_2d(x)
+    array([[0., 1., 2.]])
+
+    >>> np.atleast_2d(1, [1, 2], [[1, 2]])
+    [array([[1]]), array([[1, 2]]), array([[1, 2]])]
+
     """
-
-    all_is_array = True
-    arys_desc = []
+    res = []
     for ary in arys:
-        if not dpnp.isscalar(ary):
-            ary_desc = dpnp.get_dpnp_descriptor(
-                ary, copy_when_nondefault_queue=False
-            )
-            if ary_desc:
-                arys_desc.append(ary_desc)
-                continue
-        all_is_array = False
-        break
-
-    if not use_origin_backend(arys[0]) and all_is_array:
-        result = []
-        for ary_desc in arys_desc:
-            res = dpnp_atleast_2d(ary_desc).get_pyobj()
-            result.append(res)
-
-        if len(result) == 1:
-            return result[0]
+        ary = dpnp.asanyarray(ary)
+        if ary.ndim == 0:
+            result = ary.reshape(1, 1)
+        elif ary.ndim == 1:
+            result = ary[dpnp.newaxis, :]
         else:
-            return result
-
-    return call_origin(numpy.atleast_2d, *arys)
+            result = ary
+        res.append(result)
+    if len(res) == 1:
+        return res[0]
+    else:
+        return res
 
 
 def atleast_3d(*arys):
@@ -221,36 +237,53 @@ def atleast_3d(*arys):
 
     For full documentation refer to :obj:`numpy.atleast_3d`.
 
-    Limitations
-    -----------
-    Input arrays is supported as :obj:`dpnp.ndarray`.
+    Parameters
+    ----------
+    arys : {dpnp_array, usm_ndarray}
+        One or more array-like sequences.  Non-array inputs are converted to
+        arrays.  Arrays that already have three or more dimensions are
+        preserved.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array, or list of arrays, each with ``a.ndim >= 3``.  Copies are
+        avoided where possible, and views with three or more dimensions are
+        returned.  For example, a 1-D array of shape ``(N,)`` becomes a view
+        of shape ``(1, N, 1)``, and a 2-D array of shape ``(M, N)`` becomes a
+        view of shape ``(M, N, 1)``.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.atleast_3d(3.0)
+    array([[[3.]]])
+
+    >>> x = np.arange(3.0)
+    >>> np.atleast_3d(x).shape
+    (1, 3, 1)
+
+    >>> x = np.arange(12.0).reshape(4,3)
+    >>> np.atleast_3d(x).shape
+    (4, 3, 1)
+
     """
-
-    all_is_array = True
-    arys_desc = []
+    res = []
     for ary in arys:
-        if not dpnp.isscalar(ary):
-            ary_desc = dpnp.get_dpnp_descriptor(
-                ary, copy_when_nondefault_queue=False
-            )
-            if ary_desc:
-                arys_desc.append(ary_desc)
-                continue
-        all_is_array = False
-        break
-
-    if not use_origin_backend(arys[0]) and all_is_array:
-        result = []
-        for ary_desc in arys_desc:
-            res = dpnp_atleast_3d(ary_desc).get_pyobj()
-            result.append(res)
-
-        if len(result) == 1:
-            return result[0]
+        ary = dpnp.asanyarray(ary)
+        if ary.ndim == 0:
+            result = ary.reshape(1, 1, 1)
+        elif ary.ndim == 1:
+            result = ary[dpnp.newaxis, :, dpnp.newaxis]
+        elif ary.ndim == 2:
+            result = ary[:, :, dpnp.newaxis]
         else:
-            return result
-
-    return call_origin(numpy.atleast_3d, *arys)
+            result = ary
+        res.append(result)
+    if len(res) == 1:
+        return res[0]
+    else:
+        return res
 
 
 def broadcast_to(array, /, shape, subok=False):

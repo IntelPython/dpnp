@@ -36,8 +36,6 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_atleast_2d",
-    "dpnp_atleast_3d",
     "dpnp_repeat",
 ]
 
@@ -46,60 +44,6 @@ __all__ += [
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_repeat_t)(c_dpctl.DPCTLSyclQueueRef,
                                                         const void *, void * , const size_t , const size_t,
                                                         const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef utils.dpnp_descriptor dpnp_atleast_2d(utils.dpnp_descriptor arr):
-    # it looks like it should be dpnp.copy + dpnp.reshape
-    cdef utils.dpnp_descriptor result
-    cdef size_t arr_ndim = arr.ndim
-    cdef long arr_size = arr.size
-    if arr_ndim == 1:
-        arr_obj = arr.get_array()
-        result = utils_py.create_output_descriptor_py((1, arr_size),
-                                                      arr.dtype,
-                                                      None,
-                                                      device=arr_obj.sycl_device,
-                                                      usm_type=arr_obj.usm_type,
-                                                      sycl_queue=arr_obj.sycl_queue)
-        for i in range(arr_size):
-            result.get_pyobj()[0, i] = arr.get_pyobj()[i]
-        return result
-    else:
-        return arr
-
-
-cpdef utils.dpnp_descriptor dpnp_atleast_3d(utils.dpnp_descriptor arr):
-    # it looks like it should be dpnp.copy + dpnp.reshape
-    cdef utils.dpnp_descriptor result
-    cdef size_t arr_ndim = arr.ndim
-    cdef shape_type_c arr_shape = arr.shape
-    cdef long arr_size = arr.size
-
-    arr_obj = arr.get_array()
-
-    if arr_ndim == 1:
-        result = utils_py.create_output_descriptor_py((1, 1, arr_size),
-                                                      arr.dtype,
-                                                      None,
-                                                      device=arr_obj.sycl_device,
-                                                      usm_type=arr_obj.usm_type,
-                                                      sycl_queue=arr_obj.sycl_queue)
-        for i in range(arr_size):
-            result.get_pyobj()[0, 0, i] = arr.get_pyobj()[i]
-        return result
-    elif arr_ndim == 2:
-        result = utils_py.create_output_descriptor_py((1, arr_shape[0], arr_shape[1]),
-                                                      arr.dtype,
-                                                      None,
-                                                      device=arr_obj.sycl_device,
-                                                      usm_type=arr_obj.usm_type,
-                                                      sycl_queue=arr_obj.sycl_queue)
-        for i in range(arr_shape[0]):
-            for j in range(arr_shape[1]):
-                result.get_pyobj()[0, i, j] = arr.get_pyobj()[i, j]
-        return result
-    else:
-        return arr
 
 
 cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, axes=None):
