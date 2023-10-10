@@ -209,7 +209,7 @@ cpdef utils.dpnp_descriptor dpnp_gradient(utils.dpnp_descriptor y1, int dx=1):
 
     y1_obj = y1.get_array()
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape,
                                                                              dpnp.default_float_type(y1_obj.sycl_queue),
@@ -258,7 +258,7 @@ cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
 
     x1_obj = x1.get_array()
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = x1.shape
     cdef utils.dpnp_descriptor result1 = utils.create_output_descriptor(result_shape,
                                                                         kernel_data.return_type,
@@ -367,13 +367,13 @@ cpdef utils.dpnp_descriptor dpnp_prod(utils.dpnp_descriptor x1,
                                       object initial=None,
                                       object where=True):
     """
-    input:float64   : outout:float64   : name:prod
-    input:float32   : outout:float32   : name:prod
-    input:int64     : outout:int64     : name:prod
-    input:int32     : outout:int64     : name:prod
-    input:bool      : outout:int64     : name:prod
-    input:complex64 : outout:complex64 : name:prod
-    input:complex128: outout:complex128: name:prod
+    input:float64   : output:float64   : name:prod
+    input:float32   : output:float32   : name:prod
+    input:int64     : output:int64     : name:prod
+    input:int32     : output:int64     : name:prod
+    input:bool      : output:int64     : name:prod
+    input:complex64 : output:complex64 : name:prod
+    input:complex128: output:complex128: name:prod
     """
 
     cdef shape_type_c x1_shape = x1.shape
@@ -485,7 +485,7 @@ cpdef utils.dpnp_descriptor dpnp_trapz(utils.dpnp_descriptor y1, utils.dpnp_desc
 
     result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(y1, x1)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = (1,)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
                                                                        kernel_data.return_type,

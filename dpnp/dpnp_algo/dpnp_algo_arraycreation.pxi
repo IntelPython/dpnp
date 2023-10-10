@@ -348,7 +348,7 @@ cpdef utils.dpnp_descriptor dpnp_trace(utils.dpnp_descriptor arr, offset=0, axis
 
     arr_obj = arr.get_array()
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = diagonal_shape[:-1]
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
                                                                        kernel_data.return_type,
@@ -383,7 +383,7 @@ cpdef utils.dpnp_descriptor dpnp_vander(utils.dpnp_descriptor x1, int N, int inc
 
     x1_obj = x1.get_array()
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = (x1.size, N)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
                                                                        kernel_data.return_type,

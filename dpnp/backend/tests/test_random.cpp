@@ -36,7 +36,7 @@
 // TODO
 // * data management will be redesigned: allocation as chars (and casting on
 // teste suits)
-// * this class will be generlized
+// * this class will be generalized
 class RandomTestCase : public ::testing::Test
 {
 public:

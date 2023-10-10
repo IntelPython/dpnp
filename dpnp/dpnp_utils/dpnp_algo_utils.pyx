@@ -28,7 +28,7 @@
 
 """Module Utilities
 
-This module contains differnt helpers and utilities
+This module contains different helpers and utilities
 
 """
 
@@ -129,7 +129,7 @@ def call_origin(function, *args, **kwargs):
     allow_fallback = kwargs.pop("allow_fallback", False)
 
     if not allow_fallback and config.__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ == 1:
-        raise NotImplementedError(f"Requested funtion={function.__name__} with args={args} and kwargs={kwargs} "
+        raise NotImplementedError(f"Requested function={function.__name__} with args={args} and kwargs={kwargs} "
                                    "isn't currently supported and would fall back on NumPy implementation. "
                                    "Define environment variable `DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK` to `0` "
                                    "if the fall back is required to be supported without raising an exception.")
@@ -166,7 +166,7 @@ def call_origin(function, *args, **kwargs):
     exec_q = dpu.get_execution_queue(alloc_queues)
     if exec_q is None:
         exec_q = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue)
-    # print(f"DPNP call_origin(): bakend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
+    # print(f"DPNP call_origin(): backend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     # TODO need to put array memory into NumPy call
     result_origin = function(*args_new, **kwargs_new)
     # print(f"DPNP call_origin(): result from backend. \n\t result_origin={result_origin}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
@@ -255,7 +255,7 @@ def get_usm_allocations(objects):
     Given a list of objects returns a tuple of USM type and SYCL queue
     which can be used for a memory allocation and to follow compute follows data paradigm,
     or returns `(None, None)` if the default USM type and SYCL queue can be used.
-    An exception will be raised, if the paradigm is broked for the given list of objects.
+    An exception will be raised, if the paradigm is broken for the given list of objects.
 
     """
 
@@ -333,7 +333,7 @@ cpdef checker_throw_type_error(function_name, given_type):
 cpdef checker_throw_value_error(function_name, param_name, param, expected):
     # import sys
     # sys.tracebacklimit = 0
-    err_msg = f"{ERROR_PREFIX} in function {function_name}() paramenter '{param_name}'"
+    err_msg = f"{ERROR_PREFIX} in function {function_name}() parameter '{param_name}'"
     err_msg += f" expected `{expected}`, but '{param}' provided"
     raise ValueError(err_msg)
 
@@ -682,18 +682,18 @@ cdef (DPNPFuncType, void *) get_ret_type_and_func(DPNPFuncData kernel_data,
 
 cdef class dpnp_descriptor:
     def __init__(self, obj, dpnp_descriptor orig_desc=None):
-        """ Initialze variables """
+        """ Initialize variables """
         self.origin_pyobj = None
         self.origin_desc = None
         self.descriptor = None
         self.dpnp_descriptor_data_size = 0
         self.dpnp_descriptor_is_scalar = True
 
-        """ Accure DPCTL data container storage """
+        """ Acquire DPCTL data container storage """
         self.descriptor = getattr(obj, "__sycl_usm_array_interface__", None)
         if self.descriptor is None:
 
-            """ Accure main data storage """
+            """ Acquire main data storage """
             self.descriptor = getattr(obj, "__array_interface__", None)
             if self.descriptor is None:
                 return
