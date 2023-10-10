@@ -1077,7 +1077,8 @@ cdef class dparray:
         -----------
         Input array is supported as :obj:`dpnp.ndarray`.
         Input kth is supported as :obj:`int`.
-        Parameters ``axis``, ``kind`` and ``order`` are supported only with default values.
+        Parameters `axis`, `kind` and `order` are supported only with default values.
+
         """
 
         return partition(self, kth, axis, kind, order)

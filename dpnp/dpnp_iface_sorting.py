@@ -59,9 +59,9 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
-    Parameters ``axis`` is supported only with default value ``-1``.
-    Parameters ``kind`` is supported only with default value ``None``.
-    Parameters ``order`` is supported only with default value ``None``.
+    Parameter `axis` is supported only with default value ``-1``.
+    Parameter `kind` is supported only with default value ``None``.
+    Parameter `order` is supported only with default value ``None``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -108,7 +108,8 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
     Input kth is supported as :obj:`int`.
-    Parameters ``axis``, ``kind`` and ``order`` are supported only with default values.
+    Parameters `axis`, `kind` and `order` are supported only with default values.
+
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
@@ -142,7 +143,8 @@ def searchsorted(x1, x2, side="left", sorter=None):
     Input arrays is supported as :obj:`dpnp.ndarray`.
     Input array is supported only sorted.
     Input side is supported only values ``left``, ``right``.
-    Parameters ``sorter`` is supported only with default values.
+    Parameter `sorter` is supported only with default values.
+
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
