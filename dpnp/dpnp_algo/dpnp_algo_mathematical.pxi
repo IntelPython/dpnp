@@ -36,7 +36,6 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_absolute",
     "dpnp_copysign",
     "dpnp_cross",
     "dpnp_cumprod",
@@ -59,50 +58,12 @@ __all__ += [
 ]
 
 
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_custom_elemwise_absolute_1in_1out_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                              void * , void * , size_t,
-                                                                              const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_2out_t)(c_dpctl.DPCTLSyclQueueRef,
                                                      void * , void * , void * , size_t,
                                                      const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*ftpr_custom_trapz_2in_1out_with_2size_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                              void *, void * , void * , double, size_t, size_t,
                                                                              const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef utils.dpnp_descriptor dpnp_absolute(utils.dpnp_descriptor x1):
-    cdef shape_type_c x1_shape = x1.shape
-    cdef size_t x1_shape_size = x1.ndim
-
-    # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ABSOLUTE_EXT, param1_type, param1_type)
-
-    x1_obj = x1.get_array()
-
-    # ceate result array with type given by FPTR data
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(x1_shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=x1_obj.sycl_device,
-                                                                       usm_type=x1_obj.usm_type,
-                                                                       sycl_queue=x1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_custom_elemwise_absolute_1in_1out_t func = <fptr_custom_elemwise_absolute_1in_1out_t > kernel_data.ptr
-    # call FPTR function
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, x1.get_data(), result.get_data(), x1.size, NULL)
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_copysign(utils.dpnp_descriptor x1_obj,

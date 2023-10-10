@@ -325,6 +325,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
 @pytest.mark.parametrize(
     "func,data",
     [
+        pytest.param("abs", [-1.2, 1.2]),
         pytest.param("arccos", [-0.5, 0.0, 0.5]),
         pytest.param("arccosh", [1.5, 3.5, 5.0]),
         pytest.param("arcsin", [-0.5, 0.0, 0.5]),
