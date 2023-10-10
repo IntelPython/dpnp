@@ -531,6 +531,29 @@ class TestExp:
         tol = numpy.finfo(dtype=result.dtype).resolution
         assert_allclose(expected, result.asnumpy(), rtol=tol)
 
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_exp_complex(self, dtype):
+        x1 = numpy.linspace(0, 8, num=10)
+        x2 = numpy.linspace(0, 6, num=10)
+        Xnp = x1 + 1j * x2
+        np_array = numpy.asarray(Xnp, dtype=dtype)
+        np_out = numpy.empty(10, dtype=numpy.complex128)
+
+        # DPNP
+        dp_out_dtype = dpnp.complex64
+        if has_support_aspect64() and dtype != dpnp.complex64:
+            dp_out_dtype = dpnp.complex128
+
+        dp_array = dpnp.array(np_array, dtype=dp_out_dtype)
+        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
+        result = dpnp.exp(dp_array, out=dp_out)
+
+        # original
+        expected = numpy.exp(np_array, out=np_out)
+
+        tol = numpy.finfo(dtype=result.dtype).resolution
+        assert_allclose(expected, result.asnumpy(), rtol=tol)
+
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
     )
