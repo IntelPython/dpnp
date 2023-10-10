@@ -1,5 +1,7 @@
 var hierarchy =
 [
+    [ "dpnp::backend::ext::vm::AbsContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_abs_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::AbsOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_abs_output_type.html", null ],
     [ "dpnp::backend::ext::vm::AcosContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_acos_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::AcoshContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_acosh_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::AcoshOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_acosh_output_type.html", null ],

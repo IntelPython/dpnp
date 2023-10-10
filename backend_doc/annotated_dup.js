@@ -54,6 +54,7 @@ var annotated_dup =
           ] ],
           [ "vm", null, [
             [ "types", null, [
+              [ "AbsOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_abs_output_type.html", null ],
               [ "AcoshOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_acosh_output_type.html", null ],
               [ "AcosOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_acos_output_type.html", null ],
               [ "AddOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_add_output_type.html", null ],
@@ -82,6 +83,7 @@ var annotated_dup =
               [ "TanOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_tan_output_type.html", null ],
               [ "TruncOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_trunc_output_type.html", null ]
             ] ],
+            [ "AbsContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_abs_contig_factory.html", null ],
             [ "AcosContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_acos_contig_factory.html", null ],
             [ "AcoshContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_acosh_contig_factory.html", null ],
             [ "AddContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_add_contig_factory.html", null ],

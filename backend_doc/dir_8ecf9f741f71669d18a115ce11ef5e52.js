@@ -1,5 +1,6 @@
 var dir_8ecf9f741f71669d18a115ce11ef5e52 =
 [
+    [ "abs.hpp", "abs_8hpp_source.html", null ],
     [ "acos.hpp", "acos_8hpp_source.html", null ],
     [ "acosh.hpp", "acosh_8hpp_source.html", null ],
     [ "add.hpp", "add_8hpp_source.html", null ],
