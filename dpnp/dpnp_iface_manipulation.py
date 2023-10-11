@@ -891,7 +891,7 @@ def reshape(a, /, newshape, order="C", copy=None):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Array to be reshaped.
     newshape : int or tuple of ints
         The new shape should be compatible with the original shape. If
@@ -1351,18 +1351,20 @@ def tile(A, reps):
     (1, 1, 2, 2).
 
     Note : Although tile may be used for broadcasting, it is strongly
-    recommended to use numpy's broadcasting operations and functions.
+    recommended to use dpnp's broadcasting operations and functions.
+
+    For full documentation refer to :obj:`numpy.tile`.
 
     Parameters
     ----------
-    A : dpnp_array
+    A : dpnp.ndarray
         The input array.
     reps : array_like
         The number of repetitions of `A` along each axis.
 
     Returns
     -------
-    c : dpnp_array
+    c : dpnp.ndarray
         The tiled output array.
 
     See Also
