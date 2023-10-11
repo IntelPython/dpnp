@@ -674,10 +674,10 @@ class TestDistributionsNegativeBinomial(TestDistribution):
         )
         n = 5
         p = 0.0
-        res = dpnp.asnumpy(dpnp.random.negative_binomial(n=n, p=p, size=10))
-        check_val = numpy.iinfo(res.dtype).min
-        assert len(numpy.unique(res)) == 1
-        assert numpy.unique(res)[0] == check_val
+        res = dpnp.random.negative_binomial(n=n, p=p, size=10)
+        check_val = dpnp.iinfo(res).min
+        assert len(dpnp.unique(res)) == 1
+        assert dpnp.unique(res)[0] == check_val
 
     def test_invalid_args(self):
         n = 10  # parameter `n`, OK
