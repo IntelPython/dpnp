@@ -81,7 +81,7 @@ class RandomState:
         is_cpu = self._sycl_device.is_cpu
         if seed is None:
             low = 0
-            high = numpy.iinfo(numpy.int32).max + 1
+            high = dpnp.iinfo(numpy.int32).max + 1
 
             if is_cpu:
                 # ask NumPy to generate an array of three random integers as default seed value
@@ -237,8 +237,8 @@ class RandomState:
                 dtype = self._validate_float_dtype(
                     dtype, (dpnp.float32, dpnp.float64)
                 )
-                min_floating = numpy.finfo(dtype).min
-                max_floating = numpy.finfo(dtype).max
+                min_floating = dpnp.finfo(dtype).min
+                max_floating = dpnp.finfo(dtype).max
 
                 if (
                     loc >= max_floating or loc <= min_floating
@@ -371,8 +371,8 @@ class RandomState:
                         high = low
                         low = 0
 
-                    min_int = numpy.iinfo("int32").min
-                    max_int = numpy.iinfo("int32").max
+                    min_int = dpnp.iinfo("int32").min
+                    max_int = dpnp.iinfo("int32").max
 
                     if (
                         not self._is_finite_scalar(low)
@@ -587,8 +587,8 @@ class RandomState:
             elif not dpnp.isscalar(high):
                 pass
             else:
-                min_double = numpy.finfo("double").min
-                max_double = numpy.finfo("double").max
+                min_double = dpnp.finfo("double").min
+                max_double = dpnp.finfo("double").max
 
                 if (
                     not self._is_finite_scalar(low)

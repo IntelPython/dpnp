@@ -91,9 +91,9 @@ class TestNormal:
                 )
         # TODO: discuss with opneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
-        # precision = numpy.finfo(dtype=dtype).precision
+        # precision = dpnp.finfo(dtype=dtype).precision
         precision = (
-            8 if dtype == dpnp.float64 else numpy.finfo(dtype=dtype).precision
+            8 if dtype == dpnp.float64 else dpnp.finfo(dtype=dtype).precision
         )
         assert_array_almost_equal(
             dpnp_data.asnumpy(), expected, decimal=precision
@@ -136,8 +136,8 @@ class TestNormal:
         [
             numpy.inf,
             -numpy.inf,
-            numpy.nextafter(numpy.finfo(get_default_floating()).max, 0),
-            numpy.nextafter(numpy.finfo(get_default_floating()).min, 0),
+            numpy.nextafter(dpnp.finfo(get_default_floating()).max, 0),
+            numpy.nextafter(dpnp.finfo(get_default_floating()).min, 0),
         ],
         ids=[
             "numpy.inf",
@@ -170,8 +170,8 @@ class TestNormal:
 
     def test_extreme_bounds(self):
         dtype = get_default_floating()
-        fmin = numpy.finfo(dtype).min
-        fmax = numpy.finfo(dtype).max
+        fmin = dpnp.finfo(dtype).min
+        fmax = dpnp.finfo(dtype).max
 
         size = 1000
         func = RandomState(34567).normal
@@ -228,7 +228,7 @@ class TestNormal:
         )
 
         dtype = get_default_floating()
-        precision = numpy.finfo(dtype=dtype).precision
+        precision = dpnp.finfo(dtype=dtype).precision
         assert_array_almost_equal(actual, expected, decimal=precision)
 
         # check if compute follows data isn't broken
@@ -310,7 +310,7 @@ class TestRand:
                 dtype=dtype,
             )
 
-        precision = numpy.finfo(dtype=dtype).precision
+        precision = dpnp.finfo(dtype=dtype).precision
         assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
         assert_cfd(data, sycl_queue, usm_type)
 
@@ -464,8 +464,8 @@ class TestRandInt:
     def test_bounds_checking(self):
         dtype = dpnp.int32
         func = RandomState().randint
-        low = numpy.iinfo(dtype).min
-        high = numpy.iinfo(dtype).max
+        low = dpnp.iinfo(dtype).min
+        high = dpnp.iinfo(dtype).max
 
         # inf can't be converted to int boundary
         assert_raises(OverflowError, func, -numpy.inf, 0)
@@ -486,8 +486,8 @@ class TestRandInt:
     def test_rng_zero_and_extremes(self):
         dtype = dpnp.int32
         func = RandomState().randint
-        low = numpy.iinfo(dtype).min
-        high = numpy.iinfo(dtype).max
+        low = dpnp.iinfo(dtype).min
+        high = dpnp.iinfo(dtype).max
 
         sycl_device = dpctl.SyclQueue().sycl_device
         if sycl_device.has_aspect_gpu and not sycl_device.has_aspect_fp64:
@@ -507,8 +507,8 @@ class TestRandInt:
 
     def test_full_range(self):
         dtype = dpnp.int32
-        low = numpy.iinfo(dtype).min
-        high = numpy.iinfo(dtype).max
+        low = dpnp.iinfo(dtype).min
+        high = dpnp.iinfo(dtype).max
 
         try:
             RandomState().randint(low, high)
@@ -642,8 +642,8 @@ class TestRandN:
 
         # TODO: discuss with opneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
-        # precision = numpy.finfo(dtype=numpy.float64).precision
-        precision = numpy.finfo(dtype=numpy.float32).precision
+        # precision = dpnp.finfo(dtype=numpy.float64).precision
+        precision = dpnp.finfo(dtype=numpy.float32).precision
         assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
 
         # call with the same seed has to draw the same values
@@ -707,7 +707,7 @@ class TestSeed:
         rs = RandomState(seed)
         a2 = getattr(rs, func)(size=size).asnumpy()
 
-        precision = numpy.finfo(dtype=numpy.float64).precision
+        precision = dpnp.finfo(dtype=numpy.float64).precision
         assert_array_almost_equal(a1, a2, decimal=precision)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -782,8 +782,8 @@ class TestSeed:
             range(-1, -11, -1),
             numpy.arange(4, dtype=numpy.int32),
             dpnp.arange(-3, 3, dtype=numpy.int32),
-            numpy.iinfo(numpy.uint32).max + 1,
-            (1, 7, numpy.iinfo(numpy.uint32).max + 1),
+            dpnp.iinfo(numpy.uint32).max + 1,
+            (1, 7, dpnp.iinfo(numpy.uint32).max + 1),
         ],
         ids=[
             "-1",
@@ -794,8 +794,8 @@ class TestSeed:
             "range(-1, -11, -1)",
             "numpy.arange(4, dtype=numpy.int32)",
             "dpnp.arange(-3, 3, dtype=numpy.int32)",
-            "numpy.iinfo(numpy.uint32).max + 1",
-            "(1, 7, numpy.iinfo(numpy.uint32).max + 1)",
+            "dpnp.iinfo(numpy.uint32).max + 1",
+            "(1, 7, dpnp.iinfo(numpy.uint32).max + 1)",
         ],
     )
     def test_invalid_value(self, seed):
@@ -879,8 +879,8 @@ class TestStandardNormal:
 
         # TODO: discuss with opneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
-        # precision = numpy.finfo(dtype=numpy.float64).precision
-        precision = numpy.finfo(dtype=numpy.float32).precision
+        # precision = dpnp.finfo(dtype=numpy.float64).precision
+        precision = dpnp.finfo(dtype=numpy.float32).precision
         assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
 
         # call with the same seed has to draw the same values
@@ -957,7 +957,7 @@ class TestRandSample:
                 dtype=dtype,
             )
 
-        precision = numpy.finfo(dtype=dtype).precision
+        precision = dpnp.finfo(dtype=dtype).precision
         assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
 
         # call with omitted dimensions has to draw the first element from expected
@@ -1042,7 +1042,7 @@ class TestUniform:
                     ]
                 )
                 assert_array_almost_equal(
-                    actual, expected, decimal=numpy.finfo(dtype=dtype).precision
+                    actual, expected, decimal=dpnp.finfo(dtype=dtype).precision
                 )
             else:
                 expected = numpy.array([[3, 8], [2, 4], [1, 4]])
@@ -1057,7 +1057,7 @@ class TestUniform:
                     ]
                 )
                 assert_array_almost_equal(
-                    actual, expected, decimal=numpy.finfo(dtype=dtype).precision
+                    actual, expected, decimal=dpnp.finfo(dtype=dtype).precision
                 )
             else:
                 expected = numpy.array([[1, 4], [5, 1], [3, 7]])
@@ -1101,13 +1101,13 @@ class TestUniform:
             assert_array_equal(actual, expected)
         else:
             assert_array_almost_equal(
-                actual, expected, decimal=numpy.finfo(dtype=dtype).precision
+                actual, expected, decimal=dpnp.finfo(dtype=dtype).precision
             )
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_range_bounds(self):
-        fmin = numpy.finfo("double").min
-        fmax = numpy.finfo("double").max
+        fmin = dpnp.finfo("double").min
+        fmax = dpnp.finfo("double").max
         func = RandomState().uniform
 
         assert_raises(OverflowError, func, -numpy.inf, 0)
@@ -1146,7 +1146,7 @@ class TestUniform:
         )
 
         dtype = get_default_floating()
-        precision = numpy.finfo(dtype=dtype).precision
+        precision = dpnp.finfo(dtype=dtype).precision
         assert_array_almost_equal(actual, expected, decimal=precision)
 
         # check if compute follows data isn't broken
