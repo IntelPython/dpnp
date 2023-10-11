@@ -1071,7 +1071,7 @@ class TestAdd:
 
 
 class TestDivide:
-    @pytest.mark.parametrize("dtype", get_float_dtypes() + get_complex_dtypes())
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_divide(self, dtype):
         array1_data = numpy.arange(10)
         array2_data = numpy.arange(5, 15)
@@ -1088,12 +1088,11 @@ class TestDivide:
         np_array2 = numpy.array(array2_data, dtype=dtype)
         expected = numpy.divide(np_array1, np_array2, out=out)
 
-        tol = 1e-07
-        assert_allclose(expected, result, rtol=tol, atol=tol)
-        assert_allclose(out, dp_out, rtol=tol, atol=tol)
+        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(dp_out, out)
 
     @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
-    @pytest.mark.parametrize("dtype", get_float_dtypes() + get_complex_dtypes())
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_out_dtypes(self, dtype):
         size = 10
 
@@ -1115,12 +1114,10 @@ class TestDivide:
             dp_out = dpnp.empty(size, dtype=dtype)
 
         result = dpnp.divide(dp_array1, dp_array2, out=dp_out)
-
-        tol = 1e-07
-        assert_allclose(expected, result, rtol=tol, atol=tol)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
-    @pytest.mark.parametrize("dtype", get_float_dtypes() + get_complex_dtypes())
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_out_overlap(self, dtype):
         size = 15
         # DPNP
@@ -1131,10 +1128,9 @@ class TestDivide:
         np_a = numpy.arange(2 * size, dtype=dtype)
         numpy.divide(np_a[size::], np_a[::2], out=np_a[:size:])
 
-        tol = 1e-07
-        assert_allclose(np_a, dp_a, rtol=tol, atol=tol)
+        assert_dtype_allclose(dp_a, np_a)
 
-    @pytest.mark.parametrize("dtype", get_float_dtypes() + get_complex_dtypes())
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_inplace_strided_out(self, dtype):
         size = 21
 
