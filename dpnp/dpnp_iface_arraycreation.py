@@ -1027,7 +1027,7 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
 
     Limitations
     -----------
-    Parameter ``axis`` is supported only with default value ``0``.
+    Parameter `axis` is supported only with default value ``0``.
 
     See Also
     --------
@@ -1514,7 +1514,8 @@ def ptp(arr, axis=None, out=None, keepdims=numpy._NoValue):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Parameters ``out`` and ``keepdims`` are supported only with default values.
+    Parameters `out` and `keepdims` are supported only with default values.
+
     """
     arr_desc = dpnp.get_dpnp_descriptor(arr, copy_when_nondefault_queue=False)
     if not arr_desc:

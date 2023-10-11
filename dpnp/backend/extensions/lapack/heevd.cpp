@@ -114,7 +114,7 @@ static sycl::event heevd_impl(sycl::queue exec_q,
         info = -1;
     }
 
-    if (info != 0) // an unexected error occurs
+    if (info != 0) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
             sycl::free(scratchpad, exec_q);
@@ -188,8 +188,9 @@ std::pair<sycl::event, sycl::event>
     bool is_eig_vecs_f_contig = eig_vecs.is_f_contiguous();
     bool is_eig_vals_c_contig = eig_vals.is_c_contiguous();
     if (!is_eig_vecs_f_contig) {
-        throw py::value_error("An array with input matrix / ouput eigenvectors "
-                              "must be F-contiguous");
+        throw py::value_error(
+            "An array with input matrix / output eigenvectors "
+            "must be F-contiguous");
     }
     else if (!is_eig_vals_c_contig) {
         throw py::value_error(

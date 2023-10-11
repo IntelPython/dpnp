@@ -322,7 +322,7 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
         // TODO: rewrite the condition in general case for ndims > 2
         // (looks like there are such another cases)
         if (ext_input1_ndim == 2 && ext_input2_ndim == 2) {
-            // OneMKL gemm suports only arrays contiguous on inner dimension,
+            // OneMKL gemm supports only arrays contiguous on inner dimension,
             // so stride for at least one dimension should be equal to 1
             if ((ext_input1_strides[0] == 1 || ext_input1_strides[1] == 1) &&
                 (ext_input2_strides[0] == 1 || ext_input2_strides[1] == 1) &&
@@ -392,7 +392,7 @@ DPCTLSyclEventRef dpnp_dot_c(DPCTLSyclQueueRef q_ref,
                     info = -1;
                 }
 
-                if (info != 0) // an unexected error occurs
+                if (info != 0) // an unexpected error occurs
                 {
                     throw std::runtime_error(error_msg.str());
                 }

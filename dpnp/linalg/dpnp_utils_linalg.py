@@ -45,7 +45,7 @@ def dpnp_eigh(a, UPLO):
     Return the eigenvalues and eigenvectors of a complex Hermitian
     (conjugate symmetric) or a real symmetric matrix.
 
-    The main calculation is done by calling an extention function
+    The main calculation is done by calling an extension function
     for LAPACK library of OneMKL. Depending on input type of `a` array,
     it will be either ``heevd`` (for complex types) or ``syevd`` (for others).
 

@@ -298,7 +298,7 @@ cdef class _Engine:
         if sycl_queue is None:
             raise ValueError("SyclQueue isn't defined")
 
-        # keep a refference on SYCL queue
+        # keep a reference on SYCL queue
         self.q = <c_dpctl.SyclQueue> sycl_queue
         self.q_ref = c_dpctl.DPCTLQueue_Copy((self.q).get_queue_ref())
         if self.q_ref is NULL:
@@ -344,7 +344,7 @@ cdef class _Engine:
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NORMAL_EXT, param1_type, param1_type)
 
-        # ceate result array with type given by FPTR data
+        # create result array with type given by FPTR data
         result = utils.create_output_descriptor(result_shape,
                                                 kernel_data.return_type,
                                                 None,
@@ -379,7 +379,7 @@ cdef class _Engine:
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM_EXT, param1_type, param1_type)
 
-        # ceate result array with type given by FPTR data
+        # create result array with type given by FPTR data
         result = utils.create_output_descriptor(result_shape,
                                                 kernel_data.return_type,
                                                 None,
@@ -519,7 +519,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_beta(double a, double b, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_BETA_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -558,7 +558,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_binomial(int ntrial, double p, size):
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_BINOMIAL_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -591,7 +591,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_chisquare(int df, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_CHISQUARE_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -626,7 +626,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_exponential(double beta, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_EXPONENTIAL_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -659,7 +659,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_f(double df_num, double df_den, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_F_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -695,7 +695,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_gamma(double shape, double scale, size):
 
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GAMMA_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -734,7 +734,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_geometric(float p, size):
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GEOMETRIC_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -769,7 +769,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_gumbel(double loc, double scale, size):
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GUMBEL_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -807,7 +807,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_hypergeometric(int l, int s, int m, size):
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_HYPERGEOMETRIC_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -845,7 +845,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_laplace(double loc, double scale, size):
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LAPLACE_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -878,7 +878,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_logistic(double loc, double scale, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGISTIC_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -916,7 +916,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_lognormal(double mean, double stddev, size)
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGNORMAL_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -958,7 +958,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_multinomial(int ntrial, utils.dpnp_descript
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTINOMIAL_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
 
     p_obj = p.get_array()
@@ -1011,7 +1011,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_multivariate_normal(utils.dpnp_descriptor m
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTIVARIATE_NORMAL, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(mean, cov)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
@@ -1063,7 +1063,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_negative_binomial(double a, double p, size)
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NEGATIVE_BINOMIAL_EXT, param1_type, param1_type)
 
-        # ceate result array with type given by FPTR data
+        # create result array with type given by FPTR data
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         result_sycl_queue = result.get_array().sycl_queue
@@ -1095,7 +1095,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_noncentral_chisquare(double df, double nonc
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NONCENTRAL_CHISQUARE_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -1129,7 +1129,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_pareto(double alpha, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_PARETO_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -1177,7 +1177,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_poisson(double lam, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_POISSON_EXT, param1_type, param1_type)
 
-        # ceate result array with type given by FPTR data
+        # create result array with type given by FPTR data
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         result_sycl_queue = result.get_array().sycl_queue
@@ -1209,7 +1209,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_power(double alpha, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_POWER_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -1256,7 +1256,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_rayleigh(double scale, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_RAYLEIGH_EXT, param1_type, param1_type)
 
-        # ceate result array with type given by FPTR data
+        # create result array with type given by FPTR data
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         result_sycl_queue = result.get_array().sycl_queue
@@ -1335,7 +1335,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_cauchy(size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_CAUCHY_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -1370,7 +1370,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_exponential(size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_EXPONENTIAL_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -1417,7 +1417,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_gamma(double shape, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_GAMMA_EXT, param1_type, param1_type)
 
-        # ceate result array with type given by FPTR data
+        # create result array with type given by FPTR data
         result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         result_sycl_queue = result.get_array().sycl_queue
@@ -1449,7 +1449,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_standard_t(double df, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_T_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -1483,7 +1483,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_triangular(double left, double mode, double
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_TRIANGULAR_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -1516,7 +1516,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_vonmises(double mu, double kappa, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_VONMISES_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -1550,7 +1550,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_wald(double mean, double scale, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WALD_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -1588,7 +1588,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_weibull(double a, size):
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WEIBULL_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
@@ -1621,7 +1621,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_zipf(double a, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_ZIPF_EXT, param1_type, param1_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = utils._object_to_tuple(size)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 

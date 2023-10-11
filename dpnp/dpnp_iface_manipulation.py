@@ -850,10 +850,10 @@ def repeat(a, repeats, axis=None):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter ``axis`` is supported with value either ``None`` or ``0``.
+    Parameter `axis` is supported with value either ``None`` or ``0``.
     Dimension of input array are supported to be less than ``2``.
     Otherwise the function will be executed sequentially on CPU.
-    If ``repeats`` is ``tuple`` or ``list``, should be ``len(repeats) > 1``.
+    If `repeats` is ``tuple`` or ``list``, should be ``len(repeats) > 1``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     .. seealso:: :obj:`numpy.tile` tile an array.

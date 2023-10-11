@@ -262,7 +262,7 @@ def get_dpnp_descriptor(
     """
     Return True:
       never
-    Return DPNP internal data discriptor object if:
+    Return DPNP internal data descriptor object if:
       1. We can proceed with input data object with DPNP
       2. We want to handle input data object
     Return False if:
