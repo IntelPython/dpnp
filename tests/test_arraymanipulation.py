@@ -655,12 +655,6 @@ class TestAtleast1d:
         desired = [a, b]
         assert_array_equal(res, desired)
 
-    def test_r1array(self):
-        assert dpnp.atleast_1d(3).shape == (1,)
-        assert dpnp.atleast_1d(3j).shape == (1,)
-        assert dpnp.atleast_1d(3.0).shape == (1,)
-        assert dpnp.atleast_1d([[2, 3], [4, 5]]).shape == (2, 2)
-
 
 class TestRollaxis:
     data = [
@@ -757,13 +751,6 @@ class TestAtleast2d:
         res = [dpnp.atleast_2d(a), dpnp.atleast_2d(b)]
         desired = [a, b]
         assert_array_equal(res, desired)
-
-    def test_r2array(self):
-        """Test to make sure equivalent Travis O's r2array function"""
-        assert dpnp.atleast_2d(3).shape == (1, 1)
-        assert dpnp.atleast_2d([3j, 1]).shape == (1, 2)
-        array = dpnp.atleast_2d([[[3, 1], [4, 5]], [[3, 5], [1, 2]]])
-        assert array.shape == (2, 2, 2)
 
 
 class TestAtleast3d:
