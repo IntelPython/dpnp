@@ -1,0 +1,6 @@
+﻿dpnp.fft.rfft
+=============
+
+.. currentmodule:: dpnp.fft
+
+.. autofunction:: rfft
