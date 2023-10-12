@@ -53,8 +53,8 @@ template <typename T>
 struct AbsOutputType
 {
     using value_type = typename std::disjunction<
-        // TODO: Add complex type here after updating the dispatching to allow
-        // output type to be different than input
+        dpctl_td_ns::TypeMapResultEntry<T, std::complex<double>, double>,
+        dpctl_td_ns::TypeMapResultEntry<T, std::complex<float>, float>,
         dpctl_td_ns::TypeMapResultEntry<T, double>,
         dpctl_td_ns::TypeMapResultEntry<T, float>,
         dpctl_td_ns::DefaultResultEntry<void>>::result_type;

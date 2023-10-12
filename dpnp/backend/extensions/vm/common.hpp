@@ -82,15 +82,8 @@ std::pair<sycl::event, sycl::event>
 {
     // check type_nums
     int src_typenum = src.get_typenum();
-    int dst_typenum = dst.get_typenum();
-
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
-    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
-
-    if (src_typeid != dst_typeid) {
-        throw py::value_error("Input and output arrays have different types.");
-    }
 
     // check that queues are compatible
     if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
@@ -155,7 +148,7 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Input and outpur arrays must be C-contiguous.");
     }
 
-    auto dispatch_fn = dispatch_vector[dst_typeid];
+    auto dispatch_fn = dispatch_vector[src_typeid];
     if (dispatch_fn == nullptr) {
         throw py::value_error("No implementation is defined for ufunc.");
     }
@@ -179,16 +172,13 @@ std::pair<sycl::event, sycl::event> binary_ufunc(
     // check type_nums
     int src1_typenum = src1.get_typenum();
     int src2_typenum = src2.get_typenum();
-    int dst_typenum = dst.get_typenum();
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int src1_typeid = array_types.typenum_to_lookup_id(src1_typenum);
     int src2_typeid = array_types.typenum_to_lookup_id(src2_typenum);
-    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
-    if (src1_typeid != src2_typeid || src2_typeid != dst_typeid) {
-        throw py::value_error(
-            "Either any of input arrays or output array have different types.");
+    if (src1_typeid != src2_typeid) {
+        throw py::value_error("Input arrays have different types.");
     }
 
     // check that queues are compatible
@@ -259,7 +249,7 @@ std::pair<sycl::event, sycl::event> binary_ufunc(
         throw py::value_error("Input and outpur arrays must be C-contiguous.");
     }
 
-    auto dispatch_fn = dispatch_vector[dst_typeid];
+    auto dispatch_fn = dispatch_vector[src1_typeid];
     if (dispatch_fn == nullptr) {
         throw py::value_error("No implementation is defined for ufunc.");
     }
@@ -279,16 +269,8 @@ bool need_to_call_unary_ufunc(sycl::queue exec_q,
 {
     // check type_nums
     int src_typenum = src.get_typenum();
-    int dst_typenum = dst.get_typenum();
-
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
-    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
-
-    // types must be the same
-    if (src_typeid != dst_typeid) {
-        return false;
-    }
 
     // OneMKL VM functions perform a copy on host if no double type support
     if (!exec_q.get_device().has(sycl::aspect::fp64)) {
@@ -356,7 +338,7 @@ bool need_to_call_unary_ufunc(sycl::queue exec_q,
     }
 
     // MKL function is not defined for the type
-    if (dispatch_vector[dst_typeid] == nullptr) {
+    if (dispatch_vector[src_typeid] == nullptr) {
         return false;
     }
     return true;
@@ -372,15 +354,13 @@ bool need_to_call_binary_ufunc(sycl::queue exec_q,
     // check type_nums
     int src1_typenum = src1.get_typenum();
     int src2_typenum = src2.get_typenum();
-    int dst_typenum = dst.get_typenum();
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int src1_typeid = array_types.typenum_to_lookup_id(src1_typenum);
     int src2_typeid = array_types.typenum_to_lookup_id(src2_typenum);
-    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
     // types must be the same
-    if (src1_typeid != src2_typeid || src2_typeid != dst_typeid) {
+    if (src1_typeid != src2_typeid) {
         return false;
     }
 
@@ -454,7 +434,7 @@ bool need_to_call_binary_ufunc(sycl::queue exec_q,
     }
 
     // MKL function is not defined for the type
-    if (dispatch_vector[dst_typeid] == nullptr) {
+    if (dispatch_vector[src1_typeid] == nullptr) {
         return false;
     }
     return true;

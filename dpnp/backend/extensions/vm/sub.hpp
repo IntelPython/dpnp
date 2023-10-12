@@ -50,7 +50,8 @@ sycl::event sub_contig_impl(sycl::queue exec_q,
 
     const T *a = reinterpret_cast<const T *>(in_a);
     const T *b = reinterpret_cast<const T *>(in_b);
-    T *y = reinterpret_cast<T *>(out_y);
+    using resTy = typename types::SubOutputType<T>::value_type;
+    resTy *y = reinterpret_cast<resTy *>(out_y);
 
     return mkl_vm::sub(exec_q,
                        n, // number of elements to be calculated
