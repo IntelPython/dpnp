@@ -174,6 +174,7 @@ sycl::event gesv(sycl::queue exec_q,
                  const std::vector<sycl::event> &depends)
 {
     const int coeff_matrix_nd = coeff_matrix.get_ndim();
+    const int hand_sides_nd = hand_sides.get_ndim();
 
     if (coeff_matrix_nd != 2) {
         throw py::value_error(
@@ -187,8 +188,6 @@ sycl::event gesv(sycl::queue exec_q,
     if (coeff_matrix_shape[0] != coeff_matrix_shape[1]) {
         throw py::value_error("The input coefficients array must be square ");
     }
-
-    // elif check shape coeff_matrix and hand_sides
 
     // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(exec_q,
@@ -230,8 +229,8 @@ sycl::event gesv(sycl::queue exec_q,
     char *hand_sides_data = hand_sides.get_data();
 
     const std::int64_t n = coeff_matrix_shape[0];
-    const std::int64_t nrhs = hand_sides_shape[0];
     const std::int64_t m = hand_sides_shape[0];
+    const std::int64_t nrhs = (hand_sides_nd > 1) ? hand_sides_shape[1] : 1;
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, m);

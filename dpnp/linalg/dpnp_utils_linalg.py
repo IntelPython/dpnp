@@ -205,6 +205,9 @@ def dpnp_solve(a, b):
             dpnp.float64 if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
         )
 
+    if b.size == 0:
+        return dpnp.empty(b.shape, dtype=res_type)
+
     if a.ndim > 2:
         reshape = False
         orig_shape_b = b.shape

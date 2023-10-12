@@ -65,8 +65,14 @@ class TestSolve(unittest.TestCase):
         for xp in (numpy, cupy):
             a = xp.zeros((3, 3))  # singular
             b = xp.empty((3, 0))  # nrhs = 0
-            with pytest.raises((numpy.linalg.LinAlgError, ValueError)):
-                xp.linalg.solve(a, b)
+            # numpy <= 1.24.* raises LinAlgError when b.size == 0
+            # numpy >= 1.25 returns an empty array
+            if xp == numpy:
+                with pytest.raises(numpy.linalg.LinAlgError):
+                    xp.linalg.solve(a, b)
+            else:
+                result = xp.linalg.solve(a, b)
+                assert result.size == 0
 
     # dpnp.linalg.solve() raises a LinAlgError which is defined
     # through a ValueError in the C++ bindings using pybind11
