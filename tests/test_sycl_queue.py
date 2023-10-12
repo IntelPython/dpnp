@@ -1194,3 +1194,27 @@ def test_take(device):
     result_queue = result.get_array().sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_solve(device):
+    x = [[1.0, 2.0], [3.0, 5.0]]
+    y = [1.0, 2.0]
+
+    numpy_x = numpy.array(x)
+    numpy_y = numpy.array(y)
+    dpnp_x = dpnp.array(x, device=device)
+    dpnp_y = dpnp.array(y, device=device)
+
+    result = dpnp.linalg.solve(dpnp_x, dpnp_y)
+    expected = numpy.linalg.solve(numpy_x, numpy_y)
+    assert_allclose(expected, result, rtol=1e-06)
+
+    result_queue = result.sycl_queue
+
+    assert_sycl_queue_equal(result_queue, dpnp_x.sycl_queue)
+    assert_sycl_queue_equal(result_queue, dpnp_y.sycl_queue)
