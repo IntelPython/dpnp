@@ -1,0 +1,6 @@
+﻿dpnp.indices
+============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: indices
