@@ -1165,7 +1165,7 @@ class TestDivide:
         assert_raises(TypeError, numpy.divide, a.asnumpy(), 2, out)
 
 
-class TestFloordivide:
+class TestFloorDivide:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
     )
