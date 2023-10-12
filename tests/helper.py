@@ -18,7 +18,7 @@ def assert_dtype_allclose(dpnp_arr, numpy_arr, check_type=True):
     is_inexact = lambda x: dpnp.issubdtype(x.dtype, dpnp.inexact)
     if is_inexact(dpnp_arr) or is_inexact(numpy_arr):
         tol = 8 * max(
-            numpy.finfo(dpnp_arr.dtype).resolution,
+            dpnp.finfo(dpnp_arr).resolution,
             numpy.finfo(numpy_arr.dtype).resolution,
         )
         assert_allclose(dpnp_arr.asnumpy(), numpy_arr, atol=tol, rtol=tol)

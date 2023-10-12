@@ -79,14 +79,9 @@ tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.
 
 tests/test_strides.py::test_strides_1arg[(10,)-None-cbrt]
 tests/test_strides.py::test_strides_1arg[(10,)-None-degrees]
-tests/test_strides.py::test_strides_1arg[(10,)-None-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-None-exp2]
-tests/test_strides.py::test_strides_1arg[(10,)-None-expm1]
 tests/test_strides.py::test_strides_1arg[(10,)-None-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-None-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-None-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-None-log2]
-tests/test_strides.py::test_strides_1arg[(10,)-None-log10]
 tests/test_strides.py::test_strides_erf[(10,)-None]
 tests/test_strides.py::test_strides_reciprocal[(10,)-None]
 

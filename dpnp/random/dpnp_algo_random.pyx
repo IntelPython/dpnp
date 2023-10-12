@@ -462,7 +462,7 @@ cdef class MT19937(_Engine):
         if value < 0:
             return False
 
-        max_val = numpy.iinfo(numpy.uint32).max
+        max_val = dpnp.iinfo(numpy.uint32).max
         if isinstance(value, dpnp_array):
             max_val = dpnp.array(max_val, dtype=numpy.uint32)
         return value <= max_val
@@ -499,7 +499,7 @@ cdef class MCG59(_Engine):
         if value < 0:
             return False
 
-        max_val = numpy.iinfo(numpy.uint64).max
+        max_val = dpnp.iinfo(numpy.uint64).max
         if isinstance(value, dpnp_array):
             max_val = dpnp.array(max_val, dtype=numpy.uint64)
         return value <= max_val
@@ -1052,7 +1052,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_negative_binomial(double a, double p, size)
 
     result_shape = utils._object_to_tuple(size)
     if p == 0.0:
-        filled_val = numpy.iinfo(dtype).min
+        filled_val = dpnp.iinfo(dtype).min
         return utils.dpnp_descriptor(dpnp.full(result_shape, filled_val, dtype=dtype))
     elif p == 1.0:
         return utils.dpnp_descriptor(dpnp.full(result_shape, 0, dtype=dtype))

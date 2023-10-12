@@ -3,6 +3,7 @@ import unittest
 import numpy
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -15,7 +16,7 @@ class TestFloating(unittest.TestCase):
         return xp.signbit(a)
 
     @testing.for_all_dtypes_combination(("dtype_a", "dtype_b"), no_complex=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_copysign_combination(self, xp, dtype_a, dtype_b):
         a = testing.shaped_arange((2, 3), xp, dtype_a)
         b = testing.shaped_reverse_arange((2, 3), xp, dtype_b)

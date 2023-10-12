@@ -57,8 +57,13 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_atanh,
     dpnp_cos,
     dpnp_cosh,
+    dpnp_exp,
+    dpnp_expm1,
     dpnp_hypot,
     dpnp_log,
+    dpnp_log1p,
+    dpnp_log2,
+    dpnp_log10,
     dpnp_logaddexp,
     dpnp_sin,
     dpnp_sinh,
@@ -726,15 +731,33 @@ def degrees(x1):
     return call_origin(numpy.degrees, x1, **kwargs)
 
 
-def exp(x1, out=None, **kwargs):
+def exp(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Calculate the exponential, element-wise.
 
     For full documentation refer to :obj:`numpy.exp`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The exponential of `x`, element-wise.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -746,24 +769,22 @@ def exp(x1, out=None, **kwargs):
     --------
     >>> import dpnp as np
     >>> x = np.arange(3.)
-    >>> out = np.exp(x)
-    >>> [i for i in out]
-    [1.0, 2.718281828, 7.389056099]
+    >>> np.exp(x)
+    array([1.0, 2.718281828, 7.389056099])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.exp,
+        dpnp_exp,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        out_desc = (
-            dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-            if out is not None
-            else None
-        )
-        return dpnp_exp(x1_desc, out_desc).get_pyobj()
-
-    return call_origin(numpy.exp, x1, out=out, **kwargs)
 
 
 def exp2(x1):
@@ -801,36 +822,67 @@ def exp2(x1):
     return call_origin(numpy.exp2, x1)
 
 
-def expm1(x1):
+def expm1(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Return the exponential of the input array minus one, element-wise.
 
     For full documentation refer to :obj:`numpy.expm1`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The exponential of `x` minus one, element-wise.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    .. seealso:: :obj:`dpnp.log1p` ``log(1 + x)``, the inverse of expm1.
+    See Also
+    --------
+    :obj:`dpnp.exp` : Calculate exponential for all elements in the array.
+    :obj:`dpnp.exp2` : Calculate `2**x` for all elements in the array.
+    :obj:`dpnp.log1p` : Callculate ``log(1 + x)``, the inverse of expm1.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.arange(3.)
-    >>> out = np.expm1(x)
-    >>> [i for i in out]
-    [0.0, 1.718281828, 6.389056099]
+    >>> np.expm1(x)
+    array([0.0, 1.718281828, 6.389056099])
+
+    >>> np.expm1(np.array(1e-10))
+    array(1.00000000005e-10)
+
+    >>> np.exp(np.array(1e-10)) - 1
+    array(1.000000082740371e-10)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.expm1,
+        dpnp_expm1,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_expm1(x1_desc).get_pyobj()
-
-    return call_origin(numpy.expm1, x1)
 
 
 def hypot(
@@ -958,106 +1010,189 @@ def log(
     )
 
 
-def log10(x1):
+def log10(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Return the base 10 logarithm of the input array, element-wise.
 
     For full documentation refer to :obj:`numpy.log10`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x = np.arange(3.)
-    >>> out = np.log10(x)
-    >>> [i for i in out]
-    [-inf, 0.0, 0.30102999566]
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    if x1_desc:
-        return dpnp_log10(x1_desc).get_pyobj()
-
-    return call_origin(numpy.log10, x1)
-
-
-def log1p(x1):
-    """
-    Return the natural logarithm of one plus the input array, element-wise.
-
-    For full documentation refer to :obj:`numpy.log1p`.
+    Returns
+    -------
+    out : dpnp.ndarray
+        The base 10 logarithm of `x`, element-wise.
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.expm1` : ``exp(x) - 1``, the inverse of :obj:`dpnp.log1p`.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x = np.arange(3.)
-    >>> out = np.log1p(x)
-    >>> [i for i in out]
-    [0.0, 0.69314718, 1.09861229]
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    if x1_desc:
-        return dpnp_log1p(x1_desc).get_pyobj()
-
-    return call_origin(numpy.log1p, x1)
-
-
-def log2(x1):
-    """
-    Return the base 2 logarithm of the input array, element-wise.
-
-    For full documentation refer to :obj:`numpy.log2`.
-
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
     :obj:`dpnp.log` : Natural logarithm, element-wise.
-    :obj:`dpnp.log10` : Return the base 10 logarithm of the input array,
-                        element-wise.
-    :obj:`dpnp.log1p` : Return the natural logarithm of one plus
-                        the input array, element-wise.
+    :obj:`dpnp.log2` : Return the base 2 logarithm of the input array, element-wise.
+    :obj:`dpnp.log1p` : Return the natural logarithm of one plus the input array, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(3.)
+    >>> np.log10(x)
+    array([-inf, 0.0, 0.30102999566])
+
+    >>> np.log10(np.array([1e-15, -3.]))
+    array([-15.,  nan])
+
+    """
+
+    return check_nd_call_func(
+        numpy.log10,
+        dpnp_log10,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
+
+
+def log1p(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Return the natural logarithm of one plus the input array, element-wise.
+
+    For full documentation refer to :obj:`numpy.log1p`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The natural logarithm of `1+x`, element-wise.
+
+    Limitations
+    -----------
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.expm1` : ``exp(x) - 1``, the inverse of :obj:`dpnp.log1p`.
+    :obj:`dpnp.log` : Natural logarithm, element-wise.
+    :obj:`dpnp.log10` : Return the base 10 logarithm of the input array, element-wise.
+    :obj:`dpnp.log2` : Return the base 2 logarithm of the input array, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(3.)
+    >>> np.log1p(x)
+    array([0.0, 0.69314718, 1.09861229])
+
+    >>> np.log1p(array(1e-99))
+    array(1e-99)
+
+    >>> np.log(array(1 + 1e-99))
+    array(0.0)
+
+    """
+
+    return check_nd_call_func(
+        numpy.log1p,
+        dpnp_log1p,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
+
+
+def log2(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Return the base 2 logarithm of the input array, element-wise.
+
+    For full documentation refer to :obj:`numpy.log2`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The base 2 logarithm of `x`, element-wise.
+
+    Limitations
+    -----------
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.log` : Natural logarithm, element-wise.
+    :obj:`dpnp.log10` : Return the base 10 logarithm of the input array, element-wise.
+    :obj:`dpnp.log1p` : Return the natural logarithm of one plus the input array, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([0, 1, 2, 2**4])
-    >>> out = np.log2(x)
-    >>> [i for i in out]
-    [-inf, 0.0, 1.0, 4.0]
+    >>> np.log2(x)
+    array([-inf, 0.0, 1.0, 4.0])
+
+    >>> xi = np.array([0+1.j, 1, 2+0.j, 4.j])
+    >>> np.log2(xi)
+    array([ 0.+2.26618007j,  0.+0.j        ,  1.+0.j        ,  2.+2.26618007j])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.log2,
+        dpnp_log2,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_log2(x1_desc).get_pyobj()
-
-    return call_origin(numpy.log2, x1)
 
 
 def logaddexp(
