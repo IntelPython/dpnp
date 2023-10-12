@@ -129,7 +129,8 @@ def atleast_1d(*arys):
     Parameters
     ----------
     arys : {dpnp.ndarray, usm_ndarray}
-        One or more input arrays.
+        One or more array-like sequences. Arrays that already have one or more
+        dimensions are preserved.
 
     Returns
     -------
@@ -167,7 +168,7 @@ def atleast_1d(*arys):
     for ary in arys:
         if not dpnp.is_supported_array_type(ary):
             raise TypeError(
-                "All arrays must be any of supported type, "
+                "Each input array must be any of supported type, "
                 f"but got {type(ary)}"
             )
         if ary.ndim == 0:
@@ -224,7 +225,7 @@ def atleast_2d(*arys):
     for ary in arys:
         if not dpnp.is_supported_array_type(ary):
             raise TypeError(
-                "All arrays must be any of supported type, "
+                "Each input array must be any of supported type, "
                 f"but got {type(ary)}"
             )
         if ary.ndim == 0:
@@ -242,7 +243,7 @@ def atleast_2d(*arys):
         return res
 
 
-def atleast_3d(*arys, device=None, usm_type=None, sycl_queue=None):
+def atleast_3d(*arys):
     """
     View inputs as arrays with at least three dimensions.
 
@@ -287,7 +288,7 @@ def atleast_3d(*arys, device=None, usm_type=None, sycl_queue=None):
     for ary in arys:
         if not dpnp.is_supported_array_type(ary):
             raise TypeError(
-                "All arrays must be any of supported type, "
+                "Each input array must be any of supported type, "
                 f"but got {type(ary)}"
             )
         if ary.ndim == 0:
