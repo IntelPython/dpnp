@@ -358,8 +358,8 @@ def test_norm3(array, ord, axis):
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize(
     "shape",
-    [(2, 2), (3, 4), (5, 3), (16, 16)],
-    ids=["(2,2)", "(3,4)", "(5,3)", "(16,16)"],
+    [(2, 2), (3, 4), (5, 3), (16, 16), (0, 0), (0, 2), (2, 0)],
+    ids=["(2,2)", "(3,4)", "(5,3)", "(16,16)", "(0,0)", "(0,2)", "(2,0)"],
 )
 @pytest.mark.parametrize(
     "mode", ["complete", "reduced"], ids=["complete", "reduced"]

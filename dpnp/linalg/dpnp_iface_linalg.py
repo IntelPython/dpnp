@@ -488,7 +488,9 @@ def qr(x1, mode="reduced"):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
-        if mode != "reduced":
+        if x1_desc.ndim != 2:
+            pass
+        elif mode != "reduced":
             pass
         else:
             result_tup = dpnp_qr(x1_desc, mode)
