@@ -1,7 +1,7 @@
 import dpctl
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_array_equal
+from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp as inp
 
@@ -446,3 +446,40 @@ def test_svd(type, shape):
         assert_allclose(
             inp.asnumpy(dpnp_vt)[i, :], np_vt[i, :], rtol=tol, atol=tol
         )
+
+
+class TestSolve:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_solve(self, dtype):
+        a_np = numpy.array([[1, 0.5], [0.5, 1]])
+        a_dp = inp.array(a_np, dtype=dtype)
+
+        expected = numpy.linalg.solve(a_np, a_np)
+        result = inp.linalg.solve(a_dp, a_dp)
+
+        assert_allclose(expected, result, rtol=1e-06)
+
+    def test_solve_strides(self):
+        a_np = numpy.array(
+            [
+                [2, 3, 1, 4, 5],
+                [5, 6, 7, 8, 9],
+                [9, 7, 7, 2, 3],
+                [1, 4, 5, 1, 8],
+                [8, 9, 8, 5, 3],
+            ]
+        )
+        b_np = numpy.array([5, 8, 9, 2, 1])
+
+        a_dp = inp.array(a_np)
+        b_dp = inp.array(b_np)
+
+        # positive strides
+        expected = numpy.linalg.solve(a_np[::2, ::2], b_np[::2])
+        result = inp.linalg.solve(a_dp[::2, ::2], b_dp[::2])
+        assert_allclose(expected, result, rtol=1e-06)
+
+        # negative strides
+        expected = numpy.linalg.solve(a_np[::-2, ::-2], b_np[::-2])
+        result = inp.linalg.solve(a_dp[::-2, ::-2], b_dp[::-2])
+        assert_allclose(expected, result, rtol=1e-06)

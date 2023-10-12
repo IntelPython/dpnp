@@ -67,7 +67,7 @@ class TestSolve(unittest.TestCase):
             b = xp.empty((3, 0))  # nrhs = 0
             # numpy <= 1.24.* raises LinAlgError when b.size == 0
             # numpy >= 1.25 returns an empty array
-            if xp == numpy:
+            if xp == numpy and testing.numpy_satisfies("<1.25.0"):
                 with pytest.raises(numpy.linalg.LinAlgError):
                     xp.linalg.solve(a, b)
             else:
