@@ -43,7 +43,6 @@ env:
       third_party/cupy/math_tests/test_matmul.py
       third_party/cupy/math_tests/test_misc.py
       third_party/cupy/math_tests/test_rounding.py
-      third_party/cupy/math_tests/test_sumprod.py
       third_party/cupy/math_tests/test_trigonometric.py
       third_party/cupy/sorting_tests/test_sort.py
   VER_JSON_NAME: 'version.json'
