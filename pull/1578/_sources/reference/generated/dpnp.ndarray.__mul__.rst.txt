@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.\_\_mul\_\_
-========================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.__mul__
