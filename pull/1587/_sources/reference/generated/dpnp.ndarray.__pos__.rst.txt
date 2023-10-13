@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.\_\_pos\_\_
+========================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.__pos__
