@@ -1557,7 +1557,7 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     Returns
     -------
     out : dpnp.ndarray
-        The stacked array which has one more dimension than the input arrays.
+        The array formed by stacking the given arrays, will be at least 2-D.
 
     Limitations
     -----------
@@ -1572,6 +1572,8 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
     :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
     :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
+    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third axis).
+    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
     :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
     :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
 
