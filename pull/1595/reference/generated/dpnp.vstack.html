@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.vstack &mdash; Data Parallel Extension for NumPy 0.13.1dev0+34.g96dbd12d8 documentation</title>
+  <title>dpnp.vstack &mdash; Data Parallel Extension for NumPy 0.13.1dev0+35.g8b51d511e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=2587115a"></script>
+        <script src="../../_static/documentation_options.js?v=23311e1d"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+34.g96dbd12d8
+                0.13.1dev0+35.g8b51d511e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -135,7 +135,7 @@
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.vstack.html#numpy.vstack" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.vstack</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>out</strong> – The stacked array which has one more dimension than the input arrays.</p>
+<dd class="field-odd"><p><strong>out</strong> – The array formed by stacking the given arrays, will be at least 2-D.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dpnp.ndarray</p>
@@ -155,6 +155,10 @@ Otherwise the function will be executed sequentially on CPU.</p>
 <dt><a class="reference internal" href="dpnp.stack.html#dpnp.stack" title="dpnp.stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.stack</span></code></a></dt><dd><p>Join a sequence of arrays along a new axis.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.hstack.html#dpnp.hstack" title="dpnp.hstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.hstack</span></code></a></dt><dd><p>Stack arrays in sequence horizontally (column wise).</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dstack</span></code></dt><dd><p>Stack arrays in sequence depth wise (along third axis).</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.column_stack</span></code></dt><dd><p>Stack 1-D arrays as columns into a 2-D array.</p>
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.block</span></code></dt><dd><p>Assemble an nd-array from nested lists of blocks.</p>
 </dd>
