@@ -316,12 +316,18 @@ def broadcast_arrays(*args, subok=False):
 
     For full documentation refer to :obj:`numpy.broadcast_arrays`.
 
+    Returns
+    -------
+    broadcasted : list of dpnp.ndarray
+        These arrays are views on the original arrays.
+
     Limitations
     -----------
     Parameter `args` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
+    Otherwise ``TypeError`` exception will be raised.
     Parameter `subok` is supported with default value.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
@@ -338,19 +344,21 @@ def broadcast_arrays(*args, subok=False):
             [5, 5, 5]])]
 
     """
-
     if subok is not False:
-        pass
-    elif all(dpnp.is_supported_array_type(array) for array in args):
-        dpt_arrays = dpt.broadcast_arrays(
-            *[dpnp.get_usm_ndarray(array) for array in args]
+        raise NotImplementedError(
+            f"Requested function={function.__name__} with subok={subok} isn't currently supported"
         )
-        new_arrays = []
-        for array in dpt_arrays:
-            new_arrays.append(dpnp_array._create_from_usm_ndarray(array))
+
+    new_arrays = []
+    if len(args) == 0:
         return new_arrays
 
-    return call_origin(numpy.broadcast_arrays, args, subok=subok)
+    dpt_arrays = dpt.broadcast_arrays(
+        *[dpnp.get_usm_ndarray(array) for array in args]
+    )
+    for array in dpt_arrays:
+        new_arrays.append(dpnp_array._create_from_usm_ndarray(array))
+    return new_arrays
 
 
 def broadcast_to(array, /, shape, subok=False):
@@ -368,8 +376,9 @@ def broadcast_to(array, /, shape, subok=False):
     -----------
     Parameter `array` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
+    Otherwise ``TypeError`` exception will be raised.
     Parameter `subok` is supported with default value.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types of `array` is limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -388,13 +397,13 @@ def broadcast_to(array, /, shape, subok=False):
     """
 
     if subok is not False:
-        pass
-    elif dpnp.is_supported_array_type(array):
-        dpt_array = dpnp.get_usm_ndarray(array)
-        new_array = dpt.broadcast_to(dpt_array, shape)
-        return dpnp_array._create_from_usm_ndarray(new_array)
+        raise NotImplementedError(
+            f"Requested function={function.__name__} with subok={subok} isn't currently supported"
+        )
 
-    return call_origin(numpy.broadcast_to, array, shape=shape, subok=subok)
+    dpt_array = dpnp.get_usm_ndarray(array)
+    new_array = dpt.broadcast_to(dpt_array, shape)
+    return dpnp_array._create_from_usm_ndarray(new_array)
 
 
 def concatenate(

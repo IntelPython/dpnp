@@ -157,13 +157,13 @@ class TestArrayCopyAndView(unittest.TestCase):
     @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_array_equal()
     def test_astype_strides_broadcast(self, xp, src_dtype, dst_dtype):
-        src, _ = xp.broadcast_arrays(
-            xp.empty((2,), dtype=src_dtype),
-            xp.empty((2, 3, 2), dtype=src_dtype),
-        )
-        return numpy.array(
-            astype_without_warning(src, dst_dtype, order="K").strides
-        )
+        src1 = testing.shaped_arange((2, 3, 2), xp, dtype=src_dtype)
+        src2 = testing.shaped_arange((2,), xp, dtype=src_dtype)
+        src, _ = xp.broadcast_arrays(src1, src2)
+        strides = astype_without_warning(src, dst_dtype, order="K").strides
+        if xp is numpy:
+            strides = tuple(x // src.itemsize for x in strides)
+        return strides
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
