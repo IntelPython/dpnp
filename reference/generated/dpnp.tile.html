@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.atleast_1d &mdash; Data Parallel Extension for NumPy 0.13.1dev0+30.g4850e537 documentation</title>
+  <title>dpnp.tile &mdash; Data Parallel Extension for NumPy 0.13.1dev0+30.g4850e537 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,8 +28,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.atleast_2d" href="dpnp.atleast_2d.html" />
-    <link rel="prev" title="dpnp.transpose" href="dpnp.transpose.html" /> 
+    <link rel="next" title="dpnp.repeat" href="dpnp.repeat.html" />
+    <link rel="prev" title="dpnp.hstack" href="dpnp.hstack.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -66,11 +66,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#basic-operations">Basic operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-array-shape">Changing array shape</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#transpose-like-operations">Transpose-like operations</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#joining-arrays">Joining arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#splitting-arrays">Splitting arrays</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#tiling-arrays">Tiling arrays</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../manipulation.html#tiling-arrays">Tiling arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#adding-and-removing-elements">Adding and removing elements</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#rearranging-elements">Rearranging elements</a></li>
 </ul>
@@ -116,9 +116,9 @@
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
           <li class="breadcrumb-item"><a href="../manipulation.html">Array Manipulation Routines</a></li>
-      <li class="breadcrumb-item active">dpnp.atleast_1d</li>
+      <li class="breadcrumb-item active">dpnp.tile</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/reference/generated/dpnp.atleast_1d.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.tile.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -126,21 +126,34 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dpnp-atleast-1d">
-<h1>dpnp.atleast_1d<a class="headerlink" href="#dpnp-atleast-1d" title="Link to this heading"></a></h1>
+  <section id="dpnp-tile">
+<h1>dpnp.tile<a class="headerlink" href="#dpnp-tile" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpnp.atleast_1d">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">atleast_1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#atleast_1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.atleast_1d" title="Link to this definition"></a></dt>
-<dd><p>Convert inputs to arrays with at least one dimension.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.atleast_1d.html#numpy.atleast_1d" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.atleast_1d</span></code></a>.</p>
+<dt class="sig sig-object py" id="dpnp.tile">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">tile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#tile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.tile" title="Link to this definition"></a></dt>
+<dd><p>Construct an array by repeating <cite>A</cite> the number of times given by reps.</p>
+<p>If <cite>reps</cite> has length <code class="docutils literal notranslate"><span class="pre">d</span></code>, the result will have dimension of
+<code class="docutils literal notranslate"><span class="pre">max(d,</span> <span class="pre">A.ndim)</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">A.ndim</span> <span class="pre">&lt;</span> <span class="pre">d</span></code>, <cite>A</cite> is promoted to be d-dimensional by prepending new
+axes. So a shape (3,) array is promoted to (1, 3) for 2-D replication,
+or shape (1, 1, 3) for 3-D replication. If this is not the desired
+behavior, promote <cite>A</cite> to d-dimensions manually before calling this
+function.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">A.ndim</span> <span class="pre">&gt;</span> <span class="pre">d</span></code>, <cite>reps</cite> is promoted to <cite>A</cite>.ndim by prepending 1’s to it.
+Thus for an <cite>A</cite> of shape (2, 3, 4, 5), a <cite>reps</cite> of (2, 2) is treated as
+(1, 1, 2, 2).</p>
+<p>Note : Although tile may be used for broadcasting, it is strongly
+recommended to use dpnp’s broadcasting operations and functions.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tile.html#numpy.tile" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tile</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>arys</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – One or more array-like sequences. Arrays that already have one or more
-dimensions are preserved.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>dpnp.ndarray</em>) – The input array.</p></li>
+<li><p><strong>reps</strong> (<em>array_like</em>) – The number of repetitions of <cite>A</cite> along each axis.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – An array, or list of arrays, each with <code class="docutils literal notranslate"><span class="pre">a.ndim</span> <span class="pre">&gt;=</span> <span class="pre">1</span></code>.
-Copies are made only if necessary.</p>
+<dd class="field-even"><p><strong>c</strong> – The tiled output array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
@@ -149,31 +162,48 @@ Copies are made only if necessary.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.atleast_2d.html#dpnp.atleast_2d" title="dpnp.atleast_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_2d</span></code></a></dt><dd><p>View inputs as arrays with at least two dimensions.</p>
+<dt><a class="reference internal" href="dpnp.repeat.html#dpnp.repeat" title="dpnp.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.repeat</span></code></a></dt><dd><p>Repeat elements of an array.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.atleast_3d.html#dpnp.atleast_3d" title="dpnp.atleast_3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_3d</span></code></a></dt><dd><p>View inputs as arrays with at least three dimensions.</p>
+<dt><a class="reference internal" href="dpnp.broadcast_to.html#dpnp.broadcast_to" title="dpnp.broadcast_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.broadcast_to</span></code></a></dt><dd><p>Broadcast an array to a new shape</p>
 </dd>
 </dl>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="go">array([1.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">array([0, 1, 2, 0, 1, 2])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="go">[array([1.]), array([3, 4])]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="go">array([[0, 1, 2, 0, 1, 2],</span>
+<span class="go">       [0, 1, 2, 0, 1, 2]])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">9.0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="go">array([[0., 1., 2.],</span>
-<span class="go">       [3., 4., 5.],</span>
-<span class="go">       [6., 7., 8.]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">x</span>
-<span class="go">True</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="go">array([[[0, 1, 2, 0, 1, 2]],</span>
+<span class="go">       [[0, 1, 2, 0, 1, 2]]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">array([[1, 2, 1, 2],</span>
+<span class="go">       [3, 4, 3, 4]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">array([[1, 2],</span>
+<span class="go">       [3, 4],</span>
+<span class="go">       [1, 2],</span>
+<span class="go">       [3, 4]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">array([[1, 2, 3, 4],</span>
+<span class="go">       [1, 2, 3, 4],</span>
+<span class="go">       [1, 2, 3, 4],</span>
+<span class="go">       [1, 2, 3, 4]])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -184,8 +214,8 @@ Copies are made only if necessary.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.transpose.html" class="btn btn-neutral float-left" title="dpnp.transpose" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.atleast_2d.html" class="btn btn-neutral float-right" title="dpnp.atleast_2d" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.hstack.html" class="btn btn-neutral float-left" title="dpnp.hstack" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.repeat.html" class="btn btn-neutral float-right" title="dpnp.repeat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
