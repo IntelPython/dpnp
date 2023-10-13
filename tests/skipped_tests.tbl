@@ -79,14 +79,9 @@ tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.
 
 tests/test_strides.py::test_strides_1arg[(10,)-None-cbrt]
 tests/test_strides.py::test_strides_1arg[(10,)-None-degrees]
-tests/test_strides.py::test_strides_1arg[(10,)-None-exp]
 tests/test_strides.py::test_strides_1arg[(10,)-None-exp2]
-tests/test_strides.py::test_strides_1arg[(10,)-None-expm1]
 tests/test_strides.py::test_strides_1arg[(10,)-None-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-None-log1p]
 tests/test_strides.py::test_strides_1arg[(10,)-None-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-None-log2]
-tests/test_strides.py::test_strides_1arg[(10,)-None-log10]
 tests/test_strides.py::test_strides_erf[(10,)-None]
 tests/test_strides.py::test_strides_reciprocal[(10,)-None]
 
@@ -107,8 +102,6 @@ tests/test_umath.py::test_umaths[('ldexp', 'fi')]
 tests/test_umath.py::test_umaths[('ldexp', 'fl')]
 tests/test_umath.py::test_umaths[('ldexp', 'di')]
 tests/test_umath.py::test_umaths[('ldexp', 'dl')]
-tests/test_umath.py::test_umaths[('logaddexp', 'ff')]
-tests/test_umath.py::test_umaths[('logaddexp', 'dd')]
 tests/test_umath.py::test_umaths[('logaddexp2', 'ff')]
 tests/test_umath.py::test_umaths[('logaddexp2', 'dd')]
 tests/test_umath.py::test_umaths[('nextafter', 'ff')]
@@ -441,6 +434,7 @@ tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_arra
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_length
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_is_equal
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_not_equal
+
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_10_{shapes=[(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]}::test_broadcast
@@ -481,14 +475,6 @@ tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_resha
 
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeatRepeatsNdarray::test_func
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeatRepeatsNdarray::test_method
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTileFailure_param_0_{reps=-1}::test_tile_failure
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTileFailure_param_1_{reps=(-1, -2)}::test_tile_failure
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_0_{reps=0}::test_array_tile
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_1_{reps=1}::test_array_tile
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_2_{reps=2}::test_array_tile
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_3_{reps=(0, 1)}::test_array_tile
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_4_{reps=(2, 3)}::test_array_tile
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_5_{reps=(2, 3, 4, 5)}::test_array_tile
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_457_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='fmod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_465_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='fmod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_537_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='fmod', use_dtype=False}::test_binary
@@ -497,7 +483,6 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticModf::test_m
 
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_3_{name='angle', nargs=1}::test_raises_with_numpy_input
 
-tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2_infinities
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_copysign_float
@@ -508,7 +493,6 @@ tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter
 
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip_min_max_none
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip4
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_absolute_negative
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fmax_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fmin_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num

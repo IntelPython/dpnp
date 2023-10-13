@@ -136,9 +136,9 @@ def average(x1, axis=None, weights=None, returned=False):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Prameters ``axis`` is supported only with default value ``None``.
-    Prameters ``weights`` is supported only with default value ``None``.
-    Prameters ``returned`` is supported only with default value ``False``.
+    Parameter `axis` is supported only with default value ``None``.
+    Parameter `weights` is supported only with default value ``None``.
+    Parameter `returned` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -206,7 +206,7 @@ def correlate(x1, x2, mode="valid"):
     -----------
     Input arrays are supported as :obj:`dpnp.ndarray`.
     Size and shape of input arrays are supported to be equal.
-    Prameters ``mode`` is supported only with default value ``"valid``.
+    Parameter `mode` is supported only with default value ``"valid``.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -267,11 +267,11 @@ def cov(
     Input array ``m`` is supported as :obj:`dpnp.ndarray`.
     Dimension of input array ``m`` is limited by ``m.ndim <= 2``.
     Size and shape of input arrays are supported to be equal.
-    Prameters ``y`` is supported only with default value ``None``.
-    Prameters ``bias`` is supported only with default value ``False``.
-    Prameters ``ddof`` is supported only with default value ``None``.
-    Prameters ``fweights`` is supported only with default value ``None``.
-    Prameters ``aweights`` is supported only with default value ``None``.
+    Parameter `y` is supported only with default value ``None``.
+    Parameter `bias` is supported only with default value ``False``.
+    Parameter `ddof` is supported only with default value ``None``.
+    Parameter `fweights` is supported only with default value ``None``.
+    Parameter `aweights` is supported only with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -360,7 +360,7 @@ def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
-    Prameters ``out`` is supported only with default value ``None``.
+    Parameter `out` is supported only with default value ``None``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -523,10 +523,10 @@ def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Prameters ``axis`` is supported only with default value ``None``.
-    Prameters ``out`` is supported only with default value ``None``.
-    Prameters ``overwrite_input`` is supported only with default value ``False``.
-    Prameters ``keepdims`` is supported only with default value ``False``.
+    Parameter `axis` is supported only with default value ``None``.
+    Parameter `out` is supported only with default value ``None``.
+    Parameter `overwrite_input` is supported only with default value ``False``.
+    Parameter `keepdims` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -572,7 +572,7 @@ def min(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
-    Prameters ``out`` is supported only with default value ``None``.
+    Parameter `out` is supported only with default value ``None``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -616,10 +616,9 @@ def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Prameters ``axis`` is supported only with default value ``None``.
-    Prameters ``dtype`` is supported only with default value ``None``.
-    Prameters ``out`` is supported only with default value ``None``.
-    Prameters ``keepdims`` is supported only with default value ``False``.
+    Parameter `axis` is supported only with default value ``None``.
+    Parameter `dtype` is supported only with default value ``None``.
+    Parameter `out` is supported only with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
     """
 
@@ -662,10 +661,10 @@ def std(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
     Size of input array is limited by ``a.size > 0``.
-    Prameters ``axis`` is supported only with default value ``None``.
-    Prameters ``dtype`` is supported only with default value ``None``.
-    Prameters ``out`` is supported only with default value ``None``.
-    Prameters ``keepdims`` is supported only with default value ``False``.
+    Parameter `axis` is supported only with default value ``None``.
+    Parameter `dtype` is supported only with default value ``None``.
+    Parameter `out` is supported only with default value ``None``.
+    Parameter `keepdims` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -720,10 +719,10 @@ def var(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
     Size of input array is limited by ``a.size > 0``.
-    Prameters ``axis`` is supported only with default value ``None``.
-    Prameters ``dtype`` is supported only with default value ``None``.
-    Prameters ``out`` is supported only with default value ``None``.
-    Prameters ``keepdims`` is supported only with default value ``False``.
+    Parameter `axis` is supported only with default value ``None``.
+    Parameter `dtype` is supported only with default value ``None``.
+    Parameter `out` is supported only with default value ``None``.
+    Parameter `keepdims` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 

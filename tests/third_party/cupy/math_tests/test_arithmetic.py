@@ -210,7 +210,7 @@ class ArithmeticBinaryBase:
             if dtype1 in (numpy.float16, numpy.float32):
                 y = y.astype(numpy.complex64)
 
-        # NumPy returns an output array of another type than DPNP when input ones have diffrent types.
+        # NumPy returns an output array of another type than DPNP when input ones have different types.
         if xp is numpy and dtype1 != dtype2:
             is_array_arg1 = not xp.isscalar(arg1)
             is_array_arg2 = not xp.isscalar(arg2)

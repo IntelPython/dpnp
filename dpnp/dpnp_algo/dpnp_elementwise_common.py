@@ -42,6 +42,7 @@ from dpnp.dpnp_utils import call_origin
 
 __all__ = [
     "check_nd_call_func",
+    "dpnp_abs",
     "dpnp_acos",
     "dpnp_acosh",
     "dpnp_add",
@@ -59,6 +60,8 @@ __all__ = [
     "dpnp_cosh",
     "dpnp_divide",
     "dpnp_equal",
+    "dpnp_exp",
+    "dpnp_expm1",
     "dpnp_floor",
     "dpnp_floor_divide",
     "dpnp_greater",
@@ -73,6 +76,10 @@ __all__ = [
     "dpnp_less",
     "dpnp_less_equal",
     "dpnp_log",
+    "dpnp_log10",
+    "dpnp_log1p",
+    "dpnp_log2",
+    "dpnp_logaddexp",
     "dpnp_logical_and",
     "dpnp_logical_not",
     "dpnp_logical_or",
@@ -166,6 +173,63 @@ def check_nd_call_func(
         subok=subok,
         **kwargs,
     )
+
+
+_abs_docstring = """
+abs(x, out=None, order='K')
+
+Calculates the absolute value for each element `x_i` of input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise absolute values.
+        For complex input, the absolute value is its magnitude.
+        If `x` has a real-valued data type, the returned array has the
+        same data type as `x`. If `x` has a complex floating-point data type,
+        the returned array has a real-valued floating-point data type whose
+        precision matches the precision of `x`.
+"""
+
+
+def _call_abs(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_abs_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for abs() function from OneMKL VM
+        return vmi._abs(sycl_queue, src, dst, depends)
+    return ti._abs(src, dst, sycl_queue, depends)
+
+
+abs_func = UnaryElementwiseFunc(
+    "abs", ti._abs_result_type, _call_abs, _abs_docstring
+)
+
+
+def dpnp_abs(x, out=None, order="K"):
+    """
+    Invokes abs() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for abs() function.
+
+    """
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = abs_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
 _acos_docstring = """
@@ -1077,6 +1141,116 @@ def dpnp_equal(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
+_exp_docstring = """
+exp(x, out=None, order='K')
+
+Computes the exponential for each element `x_i` of input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise exponential of `x`.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+
+def _call_exp(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_exp_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for exp() function from OneMKL VM
+        return vmi._exp(sycl_queue, src, dst, depends)
+    return ti._exp(src, dst, sycl_queue, depends)
+
+
+exp_func = UnaryElementwiseFunc(
+    "exp", ti._exp_result_type, _call_exp, _exp_docstring
+)
+
+
+def dpnp_exp(x, out=None, order="K"):
+    """
+    Invokes exp() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for exp() function.
+    """
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = exp_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_expm1_docstring = """
+expm1(x, out=None, order='K')
+
+Computes the exponential minus 1 for each element `x_i` of input array `x`.
+
+This function calculates `exp(x) - 1.0` more accurately for small values of `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise `exp(x) - 1` results.
+        The data type of the returned array is determined by the Type
+        Promotion Rules.
+"""
+
+
+def _call_expm1(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_expm1_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for expm1() function from OneMKL VM
+        return vmi._expm1(sycl_queue, src, dst, depends)
+    return ti._expm1(src, dst, sycl_queue, depends)
+
+
+expm1_func = UnaryElementwiseFunc(
+    "expm1", ti._expm1_result_type, _call_expm1, _expm1_docstring
+)
+
+
+def dpnp_expm1(x, out=None, order="K"):
+    """
+    Invokes expm1() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for expm1() function.
+    """
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = expm1_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
 _floor_docstring = """
 floor(x, out=None, order='K')
 
@@ -1657,7 +1831,9 @@ def dpnp_less_equal(x1, x2, out=None, order="K"):
 
 _log_docstring = """
 log(x, out=None, order='K')
+
 Computes the natural logarithm element-wise.
+
 Args:
     x (dpnp.ndarray):
         Input array, expected to have numeric data type.
@@ -1670,6 +1846,8 @@ Args:
 Return:
     dpnp.ndarray:
         An array containing the element-wise natural logarithm values.
+        The data type of the returned array is determined by the Type
+        Promotion Rules.
 """
 
 
@@ -1702,6 +1880,213 @@ def dpnp_log(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = log_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_log10_docstring = """
+log10(x, out=None, order='K')
+Computes the base-10 logarithm for each element `x_i` of input array `x`.
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the base-10 logarithm of `x`.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+
+def _call_log10(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_log10_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for log10() function from OneMKL VM
+        return vmi._log10(sycl_queue, src, dst, depends)
+    return ti._log10(src, dst, sycl_queue, depends)
+
+
+log10_func = UnaryElementwiseFunc(
+    "log10", ti._log10_result_type, _call_log10, _log10_docstring
+)
+
+
+def dpnp_log10(x, out=None, order="K"):
+    """
+    Invokes log10() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for log10() function.
+    """
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = log10_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_log1p_docstring = """
+log1p(x, out=None, order='K')
+Computes an approximation of `log(1+x)` element-wise.
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the element-wise `log(1+x)` values. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+def _call_log1p(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_log1p_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for log1p() function from OneMKL VM
+        return vmi._log1p(sycl_queue, src, dst, depends)
+    return ti._log1p(src, dst, sycl_queue, depends)
+
+
+log1p_func = UnaryElementwiseFunc(
+    "log1p", ti._log1p_result_type, _call_log1p, _log1p_docstring
+)
+
+
+def dpnp_log1p(x, out=None, order="K"):
+    """
+    Invokes log1p() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for log1p() function.
+    """
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = log1p_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_log2_docstring = """
+log2(x, out=None, order='K')
+Computes the base-2 logarithm for each element `x_i` of input array `x`.
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    dpnp.ndarray:
+        An array containing the base-2 logarithm of `x`.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+
+def _call_log2(src, dst, sycl_queue, depends=None):
+    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+    if depends is None:
+        depends = []
+
+    if vmi._mkl_log2_to_call(sycl_queue, src, dst):
+        # call pybind11 extension for log2() function from OneMKL VM
+        return vmi._log2(sycl_queue, src, dst, depends)
+    return ti._log2(src, dst, sycl_queue, depends)
+
+
+log2_func = UnaryElementwiseFunc(
+    "log2", ti._log2_result_type, _call_log2, _log2_docstring
+)
+
+
+def dpnp_log2(x, out=None, order="K"):
+    """
+    Invokes log2() function from pybind11 extension of OneMKL VM if possible.
+
+    Otherwise fully relies on dpctl.tensor implementation for log2() function.
+    """
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = log2_func(x1_usm, out=out_usm, order=order)
+    return dpnp_array._create_from_usm_ndarray(res_usm)
+
+
+_logaddexp_docstring_ = """
+logaddexp(x1, x2, out=None, order="K")
+
+Calculates the natural logarithm of the sum of exponentiations for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the input
+array `x2`.
+
+This function calculates `log(exp(x1) + exp(x2))` more accurately for small
+values of `x`.
+
+Args:
+    x1 (dpnp.ndarray):
+        First input array, expected to have a real-valued floating-point
+        data type.
+    x2 (dpnp.ndarray):
+        Second input array, also expected to have a real-valued
+        floating-point data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", None, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the result of element-wise result. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+
+logaddexp_func = BinaryElementwiseFunc(
+    "logaddexp",
+    ti._logaddexp_result_type,
+    ti._logaddexp,
+    _logaddexp_docstring_,
+)
+
+
+def dpnp_logaddexp(x1, x2, out=None, order="K"):
+    """Invokes logaddexp() from dpctl.tensor implementation for logaddexp() function."""
+
+    # dpctl.tensor only works with usm_ndarray or scalar
+    x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
+    x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = logaddexp_func(
+        x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
+    )
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
@@ -2740,7 +3125,7 @@ def dpnp_square(x, out=None, order="K"):
 _subtract_docstring_ = """
 subtract(x1, x2, out=None, order="K")
 
-Calculates the difference bewteen each element `x1_i` of the input
+Calculates the difference between each element `x1_i` of the input
 array `x1` and the respective element `x2_i` of the input array `x2`.
 
 Args:

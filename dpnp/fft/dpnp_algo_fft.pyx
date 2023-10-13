@@ -74,7 +74,7 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
     cdef DPNPFuncType return_type = ret_type_and_func[0]
     cdef fptr_dpnp_fft_fft_t func = < fptr_dpnp_fft_fft_t > ret_type_and_func[1]
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(output_shape,
                                                                        return_type,
                                                                        None,
@@ -133,7 +133,7 @@ cpdef utils.dpnp_descriptor dpnp_rfft(utils.dpnp_descriptor input,
     cdef DPNPFuncType return_type = ret_type_and_func[0]
     cdef fptr_dpnp_fft_fft_t func = < fptr_dpnp_fft_fft_t > ret_type_and_func[1]
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(output_shape,
                                                                        return_type,
                                                                        None,

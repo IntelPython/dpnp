@@ -58,11 +58,9 @@
  */
 enum class DPNPFuncName : size_t
 {
-    DPNP_FN_NONE,         /**< Very first element of the enumeration */
-    DPNP_FN_ABSOLUTE,     /**< Used in numpy.absolute() impl  */
-    DPNP_FN_ABSOLUTE_EXT, /**< Used in numpy.absolute() impl, requires extra
-                             parameters */
-    DPNP_FN_ADD,          /**< Used in numpy.add() impl  */
+    DPNP_FN_NONE,     /**< Very first element of the enumeration */
+    DPNP_FN_ABSOLUTE, /**< Used in numpy.absolute() impl  */
+    DPNP_FN_ADD,      /**< Used in numpy.add() impl  */
     DPNP_FN_ADD_EXT, /**< Used in numpy.add() impl, requires extra parameters */
     DPNP_FN_ALL,     /**< Used in numpy.all() impl  */
     DPNP_FN_ALLCLOSE,     /**< Used in numpy.allclose() impl  */
@@ -160,24 +158,19 @@ enum class DPNPFuncName : size_t
     DPNP_FN_EIGVALS,     /**< Used in numpy.linalg.eigvals() impl  */
     DPNP_FN_EIGVALS_EXT, /**< Used in numpy.linalg.eigvals() impl, requires
                             extra parameters */
-    DPNP_FN_EQUAL_EXT,   /**< Used in numpy.equal() impl, requires extra
-                            parameters */
     DPNP_FN_ERF,         /**< Used in scipy.special.erf impl  */
     DPNP_FN_ERF_EXT,     /**< Used in scipy.special.erf impl, requires extra
                             parameters */
     DPNP_FN_EYE,         /**< Used in numpy.eye() impl  */
     DPNP_FN_EXP,         /**< Used in numpy.exp() impl  */
-    DPNP_FN_EXP_EXT, /**< Used in numpy.exp() impl, requires extra parameters */
-    DPNP_FN_EXP2,    /**< Used in numpy.exp2() impl  */
-    DPNP_FN_EXP2_EXT,  /**< Used in numpy.exp2() impl, requires extra parameters
-                        */
-    DPNP_FN_EXPM1,     /**< Used in numpy.expm1() impl  */
-    DPNP_FN_EXPM1_EXT, /**< Used in numpy.expm1() impl, requires extra
-                          parameters */
-    DPNP_FN_FABS,      /**< Used in numpy.fabs() impl  */
-    DPNP_FN_FABS_EXT,  /**< Used in numpy.fabs() impl, requires extra parameters
-                        */
-    DPNP_FN_FFT_FFT,   /**< Used in numpy.fft.fft() impl  */
+    DPNP_FN_EXP2,        /**< Used in numpy.exp2() impl  */
+    DPNP_FN_EXP2_EXT, /**< Used in numpy.exp2() impl, requires extra parameters
+                       */
+    DPNP_FN_EXPM1,    /**< Used in numpy.expm1() impl  */
+    DPNP_FN_FABS,     /**< Used in numpy.fabs() impl  */
+    DPNP_FN_FABS_EXT, /**< Used in numpy.fabs() impl, requires extra parameters
+                       */
+    DPNP_FN_FFT_FFT,  /**< Used in numpy.fft.fft() impl  */
     DPNP_FN_FFT_FFT_EXT,   /**< Used in numpy.fft.fft() impl, requires extra
                               parameters */
     DPNP_FN_FFT_RFFT,      /**< Used in numpy.fft.rfft() impl  */
@@ -198,14 +191,8 @@ enum class DPNPFuncName : size_t
                         */
     DPNP_FN_FULL,      /**< Used in numpy.full() impl  */
     DPNP_FN_FULL_LIKE, /**< Used in numpy.full_like() impl  */
-    DPNP_FN_GREATER_EXT,       /**< Used in numpy.greater() impl, requires extra
-                                  parameters */
-    DPNP_FN_GREATER_EQUAL_EXT, /**< Used in numpy.greater_equal() impl, requires
-                                  extra parameters */
-    DPNP_FN_HYPOT,             /**< Used in numpy.hypot() impl  */
-    DPNP_FN_IDENTITY,          /**< Used in numpy.identity() impl  */
-    DPNP_FN_IDENTITY_EXT, /**< Used in numpy.identity() impl, requires extra
-                             parameters  */
+    DPNP_FN_HYPOT,     /**< Used in numpy.hypot() impl  */
+    DPNP_FN_IDENTITY,  /**< Used in numpy.identity() impl  */
     DPNP_FN_INITVAL, /**< Used in numpy ones, ones_like, zeros, zeros_like impls
                       */
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
@@ -217,22 +204,12 @@ enum class DPNPFuncName : size_t
     DPNP_FN_KRON,        /**< Used in numpy.kron() impl  */
     DPNP_FN_KRON_EXT, /**< Used in numpy.kron() impl, requires extra parameters
                        */
-    DPNP_FN_LEFT_SHIFT, /**< Used in numpy.left_shift() impl  */
-    DPNP_FN_LESS_EXT, /**< Used in numpy.less() impl, requires extra parameters
-                       */
-    DPNP_FN_LESS_EQUAL_EXT, /**< Used in numpy.less_equal() impl, requires extra
-                               parameters */
-    DPNP_FN_LOG,            /**< Used in numpy.log() impl  */
-    DPNP_FN_LOG10,          /**< Used in numpy.log10() impl  */
-    DPNP_FN_LOG10_EXT,      /**< Used in numpy.log10() impl, requires extra
-                               parameters  */
-    DPNP_FN_LOG2,           /**< Used in numpy.log2() impl  */
-    DPNP_FN_LOG2_EXT,  /**< Used in numpy.log2() impl, requires extra parameters
-                        */
-    DPNP_FN_LOG1P,     /**< Used in numpy.log1p() impl  */
-    DPNP_FN_LOG1P_EXT, /**< Used in numpy.log1p() impl, requires extra
-                          parameters  */
-    DPNP_FN_MATMUL,    /**< Used in numpy.matmul() impl  */
+    DPNP_FN_LEFT_SHIFT,      /**< Used in numpy.left_shift() impl  */
+    DPNP_FN_LOG,             /**< Used in numpy.log() impl  */
+    DPNP_FN_LOG10,           /**< Used in numpy.log10() impl  */
+    DPNP_FN_LOG2,            /**< Used in numpy.log2() impl  */
+    DPNP_FN_LOG1P,           /**< Used in numpy.log1p() impl  */
+    DPNP_FN_MATMUL,          /**< Used in numpy.matmul() impl  */
     DPNP_FN_MATMUL_EXT,      /**< Used in numpy.matmul() impl, requires extra
                                 parameters */
     DPNP_FN_MATRIX_RANK,     /**< Used in numpy.linalg.matrix_rank() impl  */
@@ -263,8 +240,6 @@ enum class DPNPFuncName : size_t
                               parameters */
     DPNP_FN_NEGATIVE,      /**< Used in numpy.negative() impl  */
     DPNP_FN_NONZERO,       /**< Used in numpy.nonzero() impl  */
-    DPNP_FN_NOT_EQUAL_EXT, /**< Used in numpy.not_equal() impl, requires extra
-                              parameters */
     DPNP_FN_ONES,          /**< Used in numpy.ones() impl */
     DPNP_FN_ONES_LIKE,     /**< Used in numpy.ones_like() impl */
     DPNP_FN_PARTITION,     /**< Used in numpy.partition() impl */
@@ -438,19 +413,18 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TAKE,    /**< Used in numpy.take() impl  */
     DPNP_FN_TAN,     /**< Used in numpy.tan() impl  */
     DPNP_FN_TANH,    /**< Used in numpy.tanh() impl  */
-    DPNP_FN_TRANSPOSE, /**< Used in numpy.transpose() impl  */
-    DPNP_FN_TRACE,     /**< Used in numpy.trace() impl  */
-    DPNP_FN_TRACE_EXT, /**< Used in numpy.trace() impl, requires extra
-                          parameters */
-    DPNP_FN_TRAPZ,     /**< Used in numpy.trapz() impl  */
-    DPNP_FN_TRAPZ_EXT, /**< Used in numpy.trapz() impl, requires extra
-                          parameters */
-    DPNP_FN_TRI,       /**< Used in numpy.tri() impl  */
-    DPNP_FN_TRI_EXT, /**< Used in numpy.tri() impl, requires extra parameters */
-    DPNP_FN_TRIL,    /**< Used in numpy.tril() impl  */
-    DPNP_FN_TRIU,    /**< Used in numpy.triu() impl  */
-    DPNP_FN_TRUNC,   /**< Used in numpy.trunc() impl  */
-    DPNP_FN_VANDER,  /**< Used in numpy.vander() impl  */
+    DPNP_FN_TRANSPOSE,  /**< Used in numpy.transpose() impl  */
+    DPNP_FN_TRACE,      /**< Used in numpy.trace() impl  */
+    DPNP_FN_TRACE_EXT,  /**< Used in numpy.trace() impl, requires extra
+                           parameters */
+    DPNP_FN_TRAPZ,      /**< Used in numpy.trapz() impl  */
+    DPNP_FN_TRAPZ_EXT,  /**< Used in numpy.trapz() impl, requires extra
+                           parameters */
+    DPNP_FN_TRI,        /**< Used in numpy.tri() impl  */
+    DPNP_FN_TRIL,       /**< Used in numpy.tril() impl  */
+    DPNP_FN_TRIU,       /**< Used in numpy.triu() impl  */
+    DPNP_FN_TRUNC,      /**< Used in numpy.trunc() impl  */
+    DPNP_FN_VANDER,     /**< Used in numpy.vander() impl  */
     DPNP_FN_VANDER_EXT, /**< Used in numpy.vander() impl, requires extra
                            parameters */
     DPNP_FN_VAR,        /**< Used in numpy.var() impl  */
@@ -543,7 +517,7 @@ DPNPFuncData_t get_dpnp_function_ptr(
  * @ingroup BACKEND_API
  * @brief get runtime pointer to selected function
  *
- * Same interface function as @ref get_dpnp_function_ptr with a bit diffrent
+ * Same interface function as @ref get_dpnp_function_ptr with a bit different
  * interface
  *
  * @param [out] result_type  Type of the result provided by the backend API

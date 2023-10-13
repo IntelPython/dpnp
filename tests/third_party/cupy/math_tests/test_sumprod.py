@@ -276,7 +276,7 @@ class TestNansumNanprodLong(unittest.TestCase):
         return func(a, axis=self.axis, keepdims=self.keepdims)
 
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_nansum_all(self, xp, dtype):
         if (
             not self._numpy_nanprod_implemented()
@@ -286,7 +286,9 @@ class TestNansumNanprodLong(unittest.TestCase):
         return self._test(xp, dtype)
 
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
-    @testing.numpy_cupy_allclose(contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        contiguous_check=False, type_check=has_support_aspect64()
+    )
     def test_nansum_axis_transposed(self, xp, dtype):
         if (
             not self._numpy_nanprod_implemented()
@@ -609,7 +611,7 @@ class TestDiff(unittest.TestCase):
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.16")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_diff_2dim_with_scalar_append(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return xp.diff(a, prepend=1, append=0)
