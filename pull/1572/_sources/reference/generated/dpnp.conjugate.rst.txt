@@ -1,6 +1,0 @@
-﻿dpnp.conjugate
-==============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: conjugate
