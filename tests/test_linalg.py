@@ -130,7 +130,7 @@ def test_det(array):
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_det_empty():
-    a = numpy.empty((0,0,2,2), dtype=numpy.float32)
+    a = numpy.empty((0, 0, 2, 2), dtype=numpy.float32)
     ia = inp.array(a)
 
     np_det = numpy.linalg.det(a)
@@ -139,9 +139,9 @@ def test_det_empty():
     assert dpnp_det.dtype == np_det.dtype
     assert dpnp_det.shape == np_det.shape
 
-    assert_allclose(np_det,dpnp_det)
+    assert_allclose(np_det, dpnp_det)
 
-    
+
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 @pytest.mark.parametrize("size", [2, 4, 8, 16, 300])
 def test_eig_arange(type, size):
@@ -425,7 +425,7 @@ def test_qr(type, shape, mode):
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_qr_not_2D():
-    a = numpy.arange(12, dtype=numpy.float32).reshape((3,2,2))
+    a = numpy.arange(12, dtype=numpy.float32).reshape((3, 2, 2))
     ia = inp.array(a)
 
     np_q, np_r = numpy.linalg.qr(a)
@@ -436,9 +436,9 @@ def test_qr_not_2D():
     assert dpnp_q.shape == np_q.shape
     assert dpnp_r.shape == np_r.shape
 
-    assert_allclose(ia,inp.matmul(dpnp_q, dpnp_r))
+    assert_allclose(ia, inp.matmul(dpnp_q, dpnp_r))
 
-    a = numpy.empty((0,3,2), dtype=numpy.float32)
+    a = numpy.empty((0, 3, 2), dtype=numpy.float32)
     ia = inp.array(a)
 
     np_q, np_r = numpy.linalg.qr(a)
@@ -449,7 +449,7 @@ def test_qr_not_2D():
     assert dpnp_q.shape == np_q.shape
     assert dpnp_r.shape == np_r.shape
 
-    assert_allclose(ia,inp.matmul(dpnp_q, dpnp_r))
+    assert_allclose(ia, inp.matmul(dpnp_q, dpnp_r))
 
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
