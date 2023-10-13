@@ -74,6 +74,7 @@ __all__ = [
     "squeeze",
     "stack",
     "swapaxes",
+    "tile",
     "transpose",
     "unique",
     "vstack",
@@ -993,7 +994,7 @@ def reshape(a, /, newshape, order="C", copy=None):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Array to be reshaped.
     newshape : int or tuple of ints
         The new shape should be compatible with the original shape. If
@@ -1433,6 +1434,84 @@ def swapaxes(a, axis1, axis2):
     return dpnp_array._create_from_usm_ndarray(
         dpt.swapaxes(dpt_array, axis1=axis1, axis2=axis2)
     )
+
+
+def tile(A, reps):
+    """
+    Construct an array by repeating `A` the number of times given by reps.
+
+    If `reps` has length ``d``, the result will have dimension of
+    ``max(d, A.ndim)``.
+
+    If ``A.ndim < d``, `A` is promoted to be d-dimensional by prepending new
+    axes. So a shape (3,) array is promoted to (1, 3) for 2-D replication,
+    or shape (1, 1, 3) for 3-D replication. If this is not the desired
+    behavior, promote `A` to d-dimensions manually before calling this
+    function.
+
+    If ``A.ndim > d``, `reps` is promoted to `A`.ndim by prepending 1's to it.
+    Thus for an `A` of shape (2, 3, 4, 5), a `reps` of (2, 2) is treated as
+    (1, 1, 2, 2).
+
+    Note : Although tile may be used for broadcasting, it is strongly
+    recommended to use dpnp's broadcasting operations and functions.
+
+    For full documentation refer to :obj:`numpy.tile`.
+
+    Parameters
+    ----------
+    A : dpnp.ndarray
+        The input array.
+    reps : array_like
+        The number of repetitions of `A` along each axis.
+
+    Returns
+    -------
+    c : dpnp.ndarray
+        The tiled output array.
+
+    See Also
+    --------
+    :obj:`dpnp.repeat` : Repeat elements of an array.
+    :obj:`dpnp.broadcast_to` : Broadcast an array to a new shape
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([0, 1, 2])
+    >>> np.tile(a, 2)
+    array([0, 1, 2, 0, 1, 2])
+
+    >>> np.tile(a, (2, 2))
+    array([[0, 1, 2, 0, 1, 2],
+           [0, 1, 2, 0, 1, 2]])
+
+    >>> np.tile(a, (2, 1, 2))
+    array([[[0, 1, 2, 0, 1, 2]],
+           [[0, 1, 2, 0, 1, 2]]])
+
+    >>> b = np.array([[1, 2], [3, 4]])
+    >>> np.tile(b, 2)
+    array([[1, 2, 1, 2],
+           [3, 4, 3, 4]])
+
+    >>> np.tile(b, (2, 1))
+    array([[1, 2],
+           [3, 4],
+           [1, 2],
+           [3, 4]])
+
+    >>> c = np.array([1, 2, 3, 4])
+    >>> np.tile(c, (4, 1))
+    array([[1, 2, 3, 4],
+           [1, 2, 3, 4],
+           [1, 2, 3, 4],
+           [1, 2, 3, 4]])
+
+    """
+
+    dpt_array = dpnp.get_usm_ndarray(A)
+    return dpnp_array._create_from_usm_ndarray(dpt.tile(dpt_array, reps))
 
 
 def transpose(a, axes=None):
