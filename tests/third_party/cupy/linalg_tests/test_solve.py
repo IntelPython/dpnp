@@ -54,8 +54,8 @@ class TestSolve(unittest.TestCase):
         self.check_x((0, 2, 2), (0, 2))
         self.check_x((0, 2, 2), (0, 2, 3))
 
-    def check_shape(self, a_shape, b_shape, error_type):
-        for xp in (numpy, cupy):
+    def check_shape(self, a_shape, b_shape, error_types):
+        for xp, error_type in error_types.items():
             a = xp.random.rand(*a_shape)
             b = xp.random.rand(*b_shape)
             with pytest.raises(error_type):
@@ -74,17 +74,20 @@ class TestSolve(unittest.TestCase):
                 result = xp.linalg.solve(a, b)
                 assert result.size == 0
 
-    # dpnp.linalg.solve() raises a LinAlgError which is defined
-    # through a ValueError in the C++ bindings using pybind11
     def test_invalid_shape(self):
-        self.check_shape((2, 3), (4,), (numpy.linalg.LinAlgError, ValueError))
-        self.check_shape((3, 3), (2,), ValueError)
-        self.check_shape((3, 3), (2, 2), ValueError)
-        self.check_shape(
-            (3, 3, 4), (3,), (numpy.linalg.LinAlgError, ValueError)
-        )
-        self.check_shape((2, 3, 3), (3,), ValueError)
-        self.check_shape((3, 3), (0,), ValueError)
-        self.check_shape(
-            (0, 3, 4), (3,), (numpy.linalg.LinAlgError, ValueError)
-        )
+        linalg_errors = {
+            numpy: numpy.linalg.LinAlgError,
+            cupy: cupy.linalg.LinAlgError,
+        }
+        value_errors = {
+            numpy: ValueError,
+            cupy: ValueError,
+        }
+
+        self.check_shape((2, 3), (4,), linalg_errors)
+        self.check_shape((3, 3), (2,), value_errors)
+        self.check_shape((3, 3), (2, 2), value_errors)
+        self.check_shape((3, 3, 4), (3,), linalg_errors)
+        self.check_shape((2, 3, 3), (3,), value_errors)
+        self.check_shape((3, 3), (0,), value_errors)
+        self.check_shape((0, 3, 4), (3,), linalg_errors)

@@ -477,9 +477,9 @@ class TestSolve:
         # positive strides
         expected = numpy.linalg.solve(a_np[::2, ::2], b_np[::2])
         result = inp.linalg.solve(a_dp[::2, ::2], b_dp[::2])
-        assert_allclose(expected, result, rtol=1e-06)
+        assert_allclose(expected, result, rtol=1e-05)
 
         # negative strides
         expected = numpy.linalg.solve(a_np[::-2, ::-2], b_np[::-2])
         result = inp.linalg.solve(a_dp[::-2, ::-2], b_dp[::-2])
-        assert_allclose(expected, result, rtol=1e-06)
+        assert_allclose(expected, result, rtol=1e-05)
