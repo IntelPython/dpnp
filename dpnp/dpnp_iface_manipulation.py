@@ -54,6 +54,7 @@ __all__ = [
     "atleast_1d",
     "atleast_2d",
     "atleast_3d",
+    "broadcast_arrays",
     "broadcast_to",
     "concatenate",
     "copyto",
@@ -308,6 +309,49 @@ def atleast_3d(*arys):
         return res
 
 
+def broadcast_arrays(*args, subok=False):
+    """
+    Broadcast any number of arrays against each other.
+
+    For full documentation refer to :obj:`numpy.broadcast_arrays`.
+
+    Limitations
+    -----------
+    Parameter `args` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `subok` is supported with default value.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.broadcast_to` : Broadcast an array to a new shape.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([[1, 2, 3]])
+    >>> y = np.array([[4], [5]])
+    >>> np.broadcast_arrays(x, y)
+    [array([[1, 2, 3],
+            [1, 2, 3]]), array([[4, 4, 4],
+            [5, 5, 5]])]
+
+    """
+
+    if subok is not False:
+        pass
+    elif all(dpnp.is_supported_array_type(array) for array in args):
+        dpt_arrays = dpt.broadcast_arrays(
+            *[dpnp.get_usm_ndarray(array) for array in args]
+        )
+        new_arrays = []
+        for array in dpt_arrays:
+            new_arrays.append(dpnp_array._create_from_usm_ndarray(array))
+        return new_arrays
+
+    return call_origin(numpy.broadcast_arrays, args, subok=subok)
+
+
 def broadcast_to(array, /, shape, subok=False):
     """
     Broadcast an array to a new shape.
@@ -326,6 +370,10 @@ def broadcast_to(array, /, shape, subok=False):
     Parameter `subok` is supported with default value.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types of `array` is limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against each other.
 
     Examples
     --------
@@ -366,7 +414,7 @@ def concatenate(
     Each array in `arrays` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
     will be raised.
-    Parameters `out` and `dtype are supported with default value.
+    Parameters `out` and `dtype` are supported with default value.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
