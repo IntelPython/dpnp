@@ -53,8 +53,9 @@ void init_dispatch_tables(void)
 
 PYBIND11_MODULE(_lapack_impl, m)
 {
-    py::register_local_exception<lapack_ext::LinAlgError>(m, "LinAlgError",
-                                                          PyExc_ValueError);
+    py::module_ linalg_module = py::module_::import("dpnp.linalg");
+    py::register_exception<lapack_ext::LinAlgError>(
+        linalg_module, "LinAlgError", PyExc_ValueError);
 
     init_dispatch_vectors();
     init_dispatch_tables();
