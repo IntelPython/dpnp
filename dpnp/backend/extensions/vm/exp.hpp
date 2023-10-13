@@ -39,37 +39,37 @@ namespace ext
 namespace vm
 {
 template <typename T>
-sycl::event ceil_contig_impl(sycl::queue exec_q,
-                             const std::int64_t n,
-                             const char *in_a,
-                             char *out_y,
-                             const std::vector<sycl::event> &depends)
+sycl::event exp_contig_impl(sycl::queue exec_q,
+                            const std::int64_t n,
+                            const char *in_a,
+                            char *out_y,
+                            const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
 
     const T *a = reinterpret_cast<const T *>(in_a);
-    using resTy = typename types::CeilOutputType<T>::value_type;
+    using resTy = typename types::ExpOutputType<T>::value_type;
     resTy *y = reinterpret_cast<resTy *>(out_y);
 
-    return mkl_vm::ceil(exec_q,
-                        n, // number of elements to be calculated
-                        a, // pointer `a` containing input vector of size n
-                        y, // pointer `y` to the output vector of size n
-                        depends);
+    return mkl_vm::exp(exec_q,
+                       n, // number of elements to be calculated
+                       a, // pointer `a` containing input vector of size n
+                       y, // pointer `y` to the output vector of size n
+                       depends);
 }
 
 template <typename fnT, typename T>
-struct CeilContigFactory
+struct ExpContigFactory
 {
     fnT get()
     {
         if constexpr (std::is_same_v<
-                          typename types::CeilOutputType<T>::value_type, void>)
+                          typename types::ExpOutputType<T>::value_type, void>)
         {
             return nullptr;
         }
         else {
-            return ceil_contig_impl<T>;
+            return exp_contig_impl<T>;
         }
     }
 };

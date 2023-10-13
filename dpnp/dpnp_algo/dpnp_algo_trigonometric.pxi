@@ -38,12 +38,7 @@ and the rest of the library
 __all__ += [
     'dpnp_cbrt',
     'dpnp_degrees',
-    'dpnp_exp',
     'dpnp_exp2',
-    'dpnp_expm1',
-    'dpnp_log10',
-    'dpnp_log1p',
-    'dpnp_log2',
     'dpnp_radians',
     'dpnp_recip',
     'dpnp_unwrap'
@@ -58,28 +53,8 @@ cpdef utils.dpnp_descriptor dpnp_degrees(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_DEGREES_EXT, x1)
 
 
-cpdef utils.dpnp_descriptor dpnp_exp(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out_strides(DPNP_FN_EXP_EXT, x1, dtype=None, out=out, where=True, func_name='exp')
-
-
 cpdef utils.dpnp_descriptor dpnp_exp2(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_EXP2_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_expm1(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_EXPM1_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_log10(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_LOG10_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_log1p(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_LOG1P_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_log2(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_LOG2_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_recip(utils.dpnp_descriptor x1):

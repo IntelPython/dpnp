@@ -163,17 +163,14 @@ enum class DPNPFuncName : size_t
                             parameters */
     DPNP_FN_EYE,         /**< Used in numpy.eye() impl  */
     DPNP_FN_EXP,         /**< Used in numpy.exp() impl  */
-    DPNP_FN_EXP_EXT, /**< Used in numpy.exp() impl, requires extra parameters */
-    DPNP_FN_EXP2,    /**< Used in numpy.exp2() impl  */
-    DPNP_FN_EXP2_EXT,  /**< Used in numpy.exp2() impl, requires extra parameters
-                        */
-    DPNP_FN_EXPM1,     /**< Used in numpy.expm1() impl  */
-    DPNP_FN_EXPM1_EXT, /**< Used in numpy.expm1() impl, requires extra
-                          parameters */
-    DPNP_FN_FABS,      /**< Used in numpy.fabs() impl  */
-    DPNP_FN_FABS_EXT,  /**< Used in numpy.fabs() impl, requires extra parameters
-                        */
-    DPNP_FN_FFT_FFT,   /**< Used in numpy.fft.fft() impl  */
+    DPNP_FN_EXP2,        /**< Used in numpy.exp2() impl  */
+    DPNP_FN_EXP2_EXT, /**< Used in numpy.exp2() impl, requires extra parameters
+                       */
+    DPNP_FN_EXPM1,    /**< Used in numpy.expm1() impl  */
+    DPNP_FN_FABS,     /**< Used in numpy.fabs() impl  */
+    DPNP_FN_FABS_EXT, /**< Used in numpy.fabs() impl, requires extra parameters
+                       */
+    DPNP_FN_FFT_FFT,  /**< Used in numpy.fft.fft() impl  */
     DPNP_FN_FFT_FFT_EXT,   /**< Used in numpy.fft.fft() impl, requires extra
                               parameters */
     DPNP_FN_FFT_RFFT,      /**< Used in numpy.fft.rfft() impl  */
@@ -207,18 +204,12 @@ enum class DPNPFuncName : size_t
     DPNP_FN_KRON,        /**< Used in numpy.kron() impl  */
     DPNP_FN_KRON_EXT, /**< Used in numpy.kron() impl, requires extra parameters
                        */
-    DPNP_FN_LEFT_SHIFT, /**< Used in numpy.left_shift() impl  */
-    DPNP_FN_LOG,        /**< Used in numpy.log() impl  */
-    DPNP_FN_LOG10,      /**< Used in numpy.log10() impl  */
-    DPNP_FN_LOG10_EXT,  /**< Used in numpy.log10() impl, requires extra
-                           parameters  */
-    DPNP_FN_LOG2,       /**< Used in numpy.log2() impl  */
-    DPNP_FN_LOG2_EXT,  /**< Used in numpy.log2() impl, requires extra parameters
-                        */
-    DPNP_FN_LOG1P,     /**< Used in numpy.log1p() impl  */
-    DPNP_FN_LOG1P_EXT, /**< Used in numpy.log1p() impl, requires extra
-                          parameters  */
-    DPNP_FN_MATMUL,    /**< Used in numpy.matmul() impl  */
+    DPNP_FN_LEFT_SHIFT,      /**< Used in numpy.left_shift() impl  */
+    DPNP_FN_LOG,             /**< Used in numpy.log() impl  */
+    DPNP_FN_LOG10,           /**< Used in numpy.log10() impl  */
+    DPNP_FN_LOG2,            /**< Used in numpy.log2() impl  */
+    DPNP_FN_LOG1P,           /**< Used in numpy.log1p() impl  */
+    DPNP_FN_MATMUL,          /**< Used in numpy.matmul() impl  */
     DPNP_FN_MATMUL_EXT,      /**< Used in numpy.matmul() impl, requires extra
                                 parameters */
     DPNP_FN_MATRIX_RANK,     /**< Used in numpy.linalg.matrix_rank() impl  */
