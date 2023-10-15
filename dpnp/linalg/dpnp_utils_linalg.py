@@ -173,7 +173,8 @@ def dpnp_solve(a, b):
     dpnp_solve(a, b)
 
     Return the the solution to the system of linear equations with
-    a square coefficient matrix `a` and multiple right-hand sides `b`.
+    a square coefficient matrix `a` and multiple dependent variables
+    array `b`.
 
     """
 
@@ -237,12 +238,13 @@ def dpnp_solve(a, b):
         for i in range(op_count):
             # oneMKL LAPACK assumes fortran-like array as input, so
             # allocate a memory with 'F' order for dpnp array of coefficient matrix
-            # and multiple right-hand sides
+            # and multiple dependent variables array
             coeff_vecs[i] = dpnp.empty_like(a[i], order="F", dtype=res_type)
             val_vecs[i] = dpnp.empty_like(b[i], order="F", dtype=res_type)
 
-            # use DPCTL tensor function to fill the array of coefficient matrix
-            # and multiple right-hand sides with content of input array
+            # use DPCTL tensor function to fill the coefficient matrix array
+            # and the array of multiple dependent variables with content
+            # from the input arrays
             a_ht_copy_ev[i], a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=a_usm_arr[i],
                 dst=coeff_vecs[i].get_array(),
@@ -254,8 +256,9 @@ def dpnp_solve(a, b):
                 sycl_queue=b.sycl_queue,
             )
 
-            # call LAPACK extension function to get the solution of the system of linear
-            # equations with a portion of the coefficients square matrix
+            # Call the LAPACK extension function _gesv to solve the system of linear
+            # equations using a portion of the coefficient square matrix and a
+            # corresponding portion of the dependent variables array.
             ht_lapack_ev[i] = li._gesv(
                 exec_q,
                 coeff_vecs[i].get_array(),
@@ -271,18 +274,20 @@ def dpnp_solve(a, b):
         # combine the list of solutions into a single array
         out_v = dpnp.array(val_vecs, order=b_order)
         if reshape:
-            # shape of the out_t must be equal to the shape of the right-hand sides
+            # shape of the out_v must be equal to the shape of the array of
+            # dependent variables
             out_v = out_v.reshape(orig_shape_b)
         return out_v
     else:
         # oneMKL LAPACK assumes fortran-like array as input, so
         # allocate a memory with 'F' order for dpnp array of coefficient matrix
-        # and multiple right-hand sides
+        # and multiple dependent variables
         a_f = dpnp.empty_like(a, order="F", dtype=res_type)
         b_f = dpnp.empty_like(b, order="F", dtype=res_type)
 
-        # use DPCTL tensor function to fill the array of coefficient matrix
-        # and multiple right-hand sides with content of input array
+        # use DPCTL tensor function to fill the coefficient matrix array
+        # and the array of multiple dependent variables with content
+        # from the input arrays
         a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a.sycl_queue
         )
@@ -290,14 +295,15 @@ def dpnp_solve(a, b):
             src=b_usm_arr, dst=b_f.get_array(), sycl_queue=b.sycl_queue
         )
 
-        # call LAPACK extension function to get the solution of the system of linear
-        # equations with the coefficients square matrix
+        # Call the LAPACK extension function _gesv to solve the system of linear
+        # equations with the coefficient square matrix and the dependent variables array.
         lapack_ev = li._gesv(
             exec_q, a_f.get_array(), b_f.get_array(), [a_copy_ev, b_copy_ev]
         )
 
         if b_order != "F":
-            # need to align order of the result of solutions with the right-hand sides
+            # need to align order of the result of solutions with the
+            # input array of multiple dependent variables
             out_v = dpnp.empty_like(b_f, order=b_order)
             ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=b_f.get_array(),

@@ -53,6 +53,7 @@ void init_dispatch_tables(void)
 
 PYBIND11_MODULE(_lapack_impl, m)
 {
+    // Register a custom LinAlgError exception in the dpnp.linalg submodule
     py::module_ linalg_module = py::module_::import("dpnp.linalg");
     py::register_exception<lapack_ext::LinAlgError>(
         linalg_module, "LinAlgError", PyExc_ValueError);
@@ -76,9 +77,8 @@ PYBIND11_MODULE(_lapack_impl, m)
 
     m.def("_gesv", &lapack_ext::gesv,
           "Call `gesv` from OneMKL LAPACK library to return "
-          "solution to the system of linear equations with a square "
-          "coefficient matrix A"
-          "and multiple right-hand sides",
-          py::arg("sycl_queue"), py::arg("coeff_matrix"), py::arg("hand_sides"),
-          py::arg("depends") = py::list());
+          "the solution of a system of linear equations with "
+          "a square coefficient matrix A and multiple dependent variables",
+          py::arg("sycl_queue"), py::arg("coeff_matrix"),
+          py::arg("dependent_vals"), py::arg("depends") = py::list());
 }

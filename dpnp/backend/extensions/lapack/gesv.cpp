@@ -170,67 +170,74 @@ static sycl::event gesv_impl(sycl::queue exec_q,
 
 sycl::event gesv(sycl::queue exec_q,
                  dpctl::tensor::usm_ndarray coeff_matrix,
-                 dpctl::tensor::usm_ndarray hand_sides,
+                 dpctl::tensor::usm_ndarray dependent_vals,
                  const std::vector<sycl::event> &depends)
 {
     const int coeff_matrix_nd = coeff_matrix.get_ndim();
-    const int hand_sides_nd = hand_sides.get_ndim();
+    const int dependent_vals_nd = dependent_vals.get_ndim();
 
     if (coeff_matrix_nd != 2) {
-        throw py::value_error(
-            "Unexpected ndim=" + std::to_string(coeff_matrix_nd) +
-            " of an input array with coefficients");
+        throw py::value_error("The coefficient matrix has ndim=" +
+                              std::to_string(coeff_matrix_nd) +
+                              ", but a 2-dimensional array is expected.");
     }
 
     const py::ssize_t *coeff_matrix_shape = coeff_matrix.get_shape_raw();
-    const py::ssize_t *hand_sides_shape = hand_sides.get_shape_raw();
+    const py::ssize_t *dependent_vals_shape = dependent_vals.get_shape_raw();
 
     if (coeff_matrix_shape[0] != coeff_matrix_shape[1]) {
-        throw py::value_error("The input coefficients array must be square ");
+        throw py::value_error("The coefficient matrix must be square,"
+                              " but got a shape of (" +
+                              std::to_string(coeff_matrix_shape[0]) + ", " +
+                              std::to_string(coeff_matrix_shape[1]) + ").");
     }
 
     // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {coeff_matrix, hand_sides})) {
+                                             {coeff_matrix, dependent_vals}))
+    {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(coeff_matrix, hand_sides)) {
-        throw py::value_error("Arrays with coefficients and hand sides are "
-                              "overlapping segments of memory");
+    if (overlap(coeff_matrix, dependent_vals)) {
+        throw py::value_error(
+            "The arrays of coefficients and dependent variables "
+            "are overlapping segments of memory");
     }
 
     bool is_coeff_matrix_f_contig = coeff_matrix.is_f_contiguous();
     if (!is_coeff_matrix_f_contig) {
-        throw py::value_error("An array with coefficients "
+        throw py::value_error("The coefficient matrix "
                               "must be F-contiguous");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int coeff_matrix_type_id =
         array_types.typenum_to_lookup_id(coeff_matrix.get_typenum());
-    int hand_sides_type_id =
-        array_types.typenum_to_lookup_id(hand_sides.get_typenum());
+    int dependent_vals_type_id =
+        array_types.typenum_to_lookup_id(dependent_vals.get_typenum());
 
-    if (coeff_matrix_type_id != hand_sides_type_id) {
-        throw py::value_error(
-            "Types of coefficients and hand sides are missmatched");
+    if (coeff_matrix_type_id != dependent_vals_type_id) {
+        throw py::value_error("The types of the coefficient matrix and "
+                              "dependent variables are mismatched");
     }
 
     gesv_impl_fn_ptr_t gesv_fn = gesv_dispatch_vector[coeff_matrix_type_id];
     if (gesv_fn == nullptr) {
-        throw py::value_error("No gesv implementation defined for a type of "
-                              "coefﬁcient matrix and hand sides");
+        throw py::value_error(
+            "No gesv implementation defined for the provided type "
+            "of the coefficient matrix.");
     }
 
     char *coeff_matrix_data = coeff_matrix.get_data();
-    char *hand_sides_data = hand_sides.get_data();
+    char *dependent_vals_data = dependent_vals.get_data();
 
     const std::int64_t n = coeff_matrix_shape[0];
-    const std::int64_t m = hand_sides_shape[0];
-    const std::int64_t nrhs = (hand_sides_nd > 1) ? hand_sides_shape[1] : 1;
+    const std::int64_t m = dependent_vals_shape[0];
+    const std::int64_t nrhs =
+        (dependent_vals_nd > 1) ? dependent_vals_shape[1] : 1;
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, m);
@@ -241,7 +248,7 @@ sycl::event gesv(sycl::queue exec_q,
     std::vector<sycl::event> host_task_events;
     sycl::event gesv_ev =
         gesv_fn(exec_q, n, nrhs, coeff_matrix_data, lda, d_ipiv,
-                hand_sides_data, ldb, host_task_events, depends);
+                dependent_vals_data, ldb, host_task_events, depends);
 
     return gesv_ev;
 }

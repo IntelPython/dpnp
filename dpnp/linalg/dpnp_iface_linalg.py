@@ -541,14 +541,14 @@ def solve(a, b):
 
     if a.ndim < 2:
         raise dpnp.linalg.LinAlgError(
-            f"{a.ndim}-dimensional array given. Array must be "
-            "at least two-dimensional"
+            f"{a.ndim}-dimensional array given. The input coefficient "
+            "array must be at least two-dimensional"
         )
 
     m, n = a.shape[-2:]
     if m != n:
         raise dpnp.linalg.LinAlgError(
-            "Last 2 dimensions of the array must be square"
+            "Last 2 dimensions of the input coefficient array must be square"
         )
 
     if not (
