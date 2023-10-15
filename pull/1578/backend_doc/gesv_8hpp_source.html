@@ -135,7 +135,7 @@ $(document).ready(function(){initNavTree('gesv_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>{</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">extern</span> sycl::event gesv(sycl::queue exec_q,</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                        dpctl::tensor::usm_ndarray coeff_matrix,</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                        dpctl::tensor::usm_ndarray hand_sides,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                        dpctl::tensor::usm_ndarray dependent_vals,</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                        <span class="keyword">const</span> std::vector&lt;sycl::event&gt; &amp;depends);</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">extern</span> <span class="keywordtype">void</span> init_gesv_dispatch_vector(<span class="keywordtype">void</span>);</div>
