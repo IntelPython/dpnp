@@ -216,14 +216,6 @@ template <typename _DataType>
 void (*dpnp_elemwise_absolute_default_c)(const void *, void *, size_t) =
     dpnp_elemwise_absolute_c<_DataType>;
 
-template <typename _DataType_input, typename _DataType_output = _DataType_input>
-DPCTLSyclEventRef (*dpnp_elemwise_absolute_ext_c)(DPCTLSyclQueueRef,
-                                                  const void *,
-                                                  void *,
-                                                  size_t,
-                                                  const DPCTLEventVectorRef) =
-    dpnp_elemwise_absolute_c<_DataType_input, _DataType_output>;
-
 template <typename _DataType_output,
           typename _DataType_input1,
           typename _DataType_input2>
@@ -1150,21 +1142,6 @@ void func_map_init_mathematical(func_map_t &fmap)
         eft_FLT, (void *)dpnp_elemwise_absolute_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_elemwise_absolute_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_elemwise_absolute_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_elemwise_absolute_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_elemwise_absolute_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_elemwise_absolute_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_C64][eft_C64] = {
-        eft_FLT,
-        (void *)dpnp_elemwise_absolute_ext_c<std::complex<float>, float>};
-    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE_EXT][eft_C128][eft_C128] = {
-        eft_DBL,
-        (void *)dpnp_elemwise_absolute_ext_c<std::complex<double>, double>};
 
     fmap[DPNPFuncName::DPNP_FN_AROUND][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_around_default_c<int32_t>};

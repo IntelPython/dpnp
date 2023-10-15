@@ -655,12 +655,6 @@ class TestAtleast1d:
         desired = [a, b]
         assert_array_equal(res, desired)
 
-    def test_r1array(self):
-        assert dpnp.atleast_1d(3).shape == (1,)
-        assert dpnp.atleast_1d(3j).shape == (1,)
-        assert dpnp.atleast_1d(3.0).shape == (1,)
-        assert dpnp.atleast_1d([[2, 3], [4, 5]]).shape == (2, 2)
-
 
 class TestRollaxis:
     data = [
@@ -725,3 +719,67 @@ class TestRollaxis:
             jp = j + 1 if j < 4 else j
             res = dpnp.rollaxis(dp_a, axis=-ip, start=-jp)
             exp = numpy.rollaxis(np_a, axis=-ip, start=-jp)
+
+
+class TestAtleast2d:
+    def test_0D_array(self):
+        a = dpnp.array(1)
+        b = dpnp.array(2)
+        res = [dpnp.atleast_2d(a), dpnp.atleast_2d(b)]
+        desired = [dpnp.array([[1]]), dpnp.array([[2]])]
+        assert_array_equal(res, desired)
+
+    def test_1D_array(self):
+        a = dpnp.array([1, 2])
+        b = dpnp.array([2, 3])
+        res = [dpnp.atleast_2d(a), dpnp.atleast_2d(b)]
+        desired = [dpnp.array([[1, 2]]), dpnp.array([[2, 3]])]
+        assert_array_equal(res, desired)
+
+    def test_2D_array(self):
+        a = dpnp.array([[1, 2], [1, 2]])
+        b = dpnp.array([[2, 3], [2, 3]])
+        res = [dpnp.atleast_2d(a), dpnp.atleast_2d(b)]
+        desired = [a, b]
+        assert_array_equal(res, desired)
+
+    def test_3D_array(self):
+        a = dpnp.array([[1, 2], [1, 2]])
+        b = dpnp.array([[2, 3], [2, 3]])
+        a = dpnp.array([a, a])
+        b = dpnp.array([b, b])
+        res = [dpnp.atleast_2d(a), dpnp.atleast_2d(b)]
+        desired = [a, b]
+        assert_array_equal(res, desired)
+
+
+class TestAtleast3d:
+    def test_0D_array(self):
+        a = dpnp.array(1)
+        b = dpnp.array(2)
+        res = [dpnp.atleast_3d(a), dpnp.atleast_3d(b)]
+        desired = [dpnp.array([[[1]]]), dpnp.array([[[2]]])]
+        assert_array_equal(res, desired)
+
+    def test_1D_array(self):
+        a = dpnp.array([1, 2])
+        b = dpnp.array([2, 3])
+        res = [dpnp.atleast_3d(a), dpnp.atleast_3d(b)]
+        desired = [dpnp.array([[[1], [2]]]), dpnp.array([[[2], [3]]])]
+        assert_array_equal(res, desired)
+
+    def test_2D_array(self):
+        a = dpnp.array([[1, 2], [1, 2]])
+        b = dpnp.array([[2, 3], [2, 3]])
+        res = [dpnp.atleast_3d(a), dpnp.atleast_3d(b)]
+        desired = [a[:, :, dpnp.newaxis], b[:, :, dpnp.newaxis]]
+        assert_array_equal(res, desired)
+
+    def test_3D_array(self):
+        a = dpnp.array([[1, 2], [1, 2]])
+        b = dpnp.array([[2, 3], [2, 3]])
+        a = dpnp.array([a, a])
+        b = dpnp.array([b, b])
+        res = [dpnp.atleast_3d(a), dpnp.atleast_3d(b)]
+        desired = [a, b]
+        assert_array_equal(res, desired)

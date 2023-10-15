@@ -170,7 +170,7 @@ cpdef utils.dpnp_descriptor dpnp_inner(dpnp_descriptor array1, dpnp_descriptor a
 
     result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(array1, array2)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape,
                                                                              result_type,
                                                                              None,
@@ -261,7 +261,7 @@ cpdef utils.dpnp_descriptor dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor
 
     result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(in_array1, in_array2)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
                                                                        kernel_data.return_type,
                                                                        None,
@@ -340,7 +340,7 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL_EXT, param1_type, param2_type)
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(in_array1, in_array2)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_result,
                                                                        kernel_data.return_type,

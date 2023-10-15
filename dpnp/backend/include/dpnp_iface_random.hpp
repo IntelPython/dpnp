@@ -205,7 +205,7 @@ INP_DLLEXPORT void dpnp_rng_gamma_c(void *result,
 /**
  * @ingroup BACKEND_RANDOM_API
  * @brief math library implementation of random number generator (gaussian
- * continious distribution)
+ * continuous distribution)
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [out] result              Output array.
@@ -431,7 +431,7 @@ INP_DLLEXPORT void dpnp_rng_multinomial_c(void *result,
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [out] result              Output array.
  * @param [in]  dimen               Dimension of output random vectors.
- * @param [in]  mean_in             Mean arry of dimension.
+ * @param [in]  mean_in             Mean array of dimension.
  * @param [in]  mean_size           Length of `mean_in`.
  * @param [in]  cov                 Variance-covariance matrix.
  * @param [in]  cov_size            Length of `cov_in`.
@@ -518,7 +518,7 @@ INP_DLLEXPORT void dpnp_rng_noncentral_chisquare_c(void *result,
 /**
  * @ingroup BACKEND_RANDOM_API
  * @brief math library implementation of random number generator (normal
- * continious distribution)
+ * continuous distribution)
  *
  * @param [in]  q_ref               Reference to SYCL queue.
  * @param [out] result_out          Output array.
@@ -645,7 +645,7 @@ INP_DLLEXPORT void
  * @param [in]  itemsize            Length of `result` array element in bytes.
  * @param [in]  ndim                Number of array dimensions in `result`
  * arrays.
- * @param [in]  high_dim_size       Number of elements in `result` arrays higer
+ * @param [in]  high_dim_size       Number of elements in `result` arrays higher
  * dimension, or len(result).
  * @param [in]  size                Number of elements in `result` arrays.
  * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.

@@ -48,7 +48,8 @@ sycl::event ln_contig_impl(sycl::queue exec_q,
     type_utils::validate_type_for_device<T>(exec_q);
 
     const T *a = reinterpret_cast<const T *>(in_a);
-    T *y = reinterpret_cast<T *>(out_y);
+    using resTy = typename types::LnOutputType<T>::value_type;
+    resTy *y = reinterpret_cast<resTy *>(out_y);
 
     return mkl_vm::ln(exec_q,
                       n, // number of elements to be calculated

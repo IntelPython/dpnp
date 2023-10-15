@@ -35,7 +35,7 @@ def _get_unwrapped_index_key(key):
     Get an unwrapped index key.
 
     Return a key where each nested instance of DPNP array is unwrapped into USM ndarray
-    for futher processing in DPCTL advanced indexing functions.
+    for further processing in DPCTL advanced indexing functions.
 
     """
 
@@ -1100,7 +1100,7 @@ class dpnp_array:
 
     @property
     def shape(self):
-        """Lengths of axes. A tuple of numbers represents size of each dimention.
+        """Lengths of axes. A tuple of numbers represents size of each dimension.
 
         Setter of this property involves reshaping without copy. If the array
         cannot be reshaped without copy, it raises an exception.
@@ -1116,7 +1116,7 @@ class dpnp_array:
         """
         Set new lengths of axes.
 
-        A tuple of numbers represents size of each dimention.
+        A tuple of numbers represents size of each dimension.
         It involves reshaping without copy. If the array cannot be reshaped without copy,
         it raises an exception.
 

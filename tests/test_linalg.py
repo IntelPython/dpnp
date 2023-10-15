@@ -61,6 +61,25 @@ def test_cholesky(array):
 
 
 @pytest.mark.parametrize(
+    "shape",
+    [
+        (0, 0),
+        (3, 0, 0),
+    ],
+    ids=[
+        "(0, 0)",
+        "(3, 0, 0)",
+    ],
+)
+def test_cholesky_0D(shape):
+    a = numpy.empty(shape)
+    ia = inp.array(a)
+    result = inp.linalg.cholesky(ia)
+    expected = numpy.linalg.cholesky(a)
+    assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize(
     "arr",
     [[[1, 0, -1], [0, 1, 0], [1, 0, 1]], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]],
     ids=[

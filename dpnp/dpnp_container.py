@@ -29,7 +29,7 @@ Container specific part of the DPNP
 
 Notes
 -----
-This module contains code and dependency on diffrent containers used in DPNP
+This module contains code and dependency on different containers used in DPNP
 
 """
 
