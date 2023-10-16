@@ -597,32 +597,46 @@ class dpnp_array:
         return dpt.asnumpy(self._array_obj)
 
     def astype(self, dtype, order="K", casting="unsafe", subok=True, copy=True):
-        """Copy the array with data type casting.
+        """
+        Copy the array with data type casting.
 
-        Args:
-            dtype: Target type.
-            order ({'C', 'F', 'A', 'K'}): Row-major (C-style) or column-major (Fortran-style) order.
-                When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
-                And when ``order`` is 'K', it keeps strides as closely as possible.
-            copy (bool): If it is False and no cast happens, then this method returns the array itself.
-                Otherwise, a copy is returned.
+        Parameters
+        ----------
+        dtype : dtype
+            Target data type.
+        order : {'C', 'F', 'A', 'K'}
+            Row-major (C-style) or column-major (Fortran-style) order.
+            When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
+            And when ``order`` is 'K', it keeps strides as closely as possible.
+        copy : bool
+            If it is False and no cast happens, then this method returns the array itself.
+            Otherwise, a copy is returned.
 
-        Returns:
+        Returns
+        -------
+        out : dpnp.ndarray
             If ``copy`` is False and no cast is required, then the array itself is returned.
             Otherwise, it returns a (possibly casted) copy of the array.
 
-        .. note::
-           This method currently does not support `order``, `casting``, ``copy``, and ``subok`` arguments.
+        Limitations
+        -----------
+        Parameter `subok` is supported with default value.
+        Otherwise ``NotImplementedError`` exception will be raised.
 
-        .. seealso:: :meth:`numpy.ndarray.astype`
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([1, 2, 2.5])
+        >>> x
+        array([1. , 2. , 2.5])
+        >>> x.astype(int)
+        array([1, 2, 2])
 
         """
 
-        new_array = self.__new__(dpnp_array)
-        new_array._array_obj = dpt.astype(
-            self._array_obj, dtype, order=order, casting=casting, copy=copy
+        return dpnp.astype(
+            self, dtype, order=order, casting=casting, subok=subok, copy=copy
         )
-        return new_array
 
     # 'base',
     # 'byteswap',
