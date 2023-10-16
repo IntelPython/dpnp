@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -51,18 +49,20 @@ from dpnp.dpnp_utils import *
 __all__ = ["argmax", "argmin", "searchsorted", "where"]
 
 
-def argmax(x1, axis=None, out=None):
+def argmax(a, axis=None, out=None, keepdims=False):
     """
     Returns the indices of the maximum values along an axis.
 
     For full documentation refer to :obj:`numpy.argmax`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Indices of maximum value of `a`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Parameter `axis` is supported only with default value ``None``.
-    Parameter `out` is supported only with default value ``None``.
+    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -82,42 +82,85 @@ def argmax(x1, axis=None, out=None):
     --------
     >>> import dpnp as np
     >>> a = np.arange(6).reshape((2, 3)) + 10
-    >>> a.shape
-    (2, 3)
-    >>> [i for i in a]
-    [10, 11, 12, 13, 14, 15]
+    >>> a
+    array([[10, 11, 12],
+           [13, 14, 15]])
     >>> np.argmax(a)
-    5
+    array(5)
+
+    >>> np.argmax(a, axis=0)
+    array([1, 1, 1])
+    >>> np.argmax(a, axis=1)
+    array([2, 2])
+
+    >>> b = np.arange(6)
+    >>> b[1] = 5
+    >>> b
+    array([0, 5, 2, 3, 4, 5])
+    >>> np.argmax(b)  # Only the first occurrence is returned.
+    array(1)
+
+    >>> x = np.arange(24).reshape((2, 3, 4))
+    >>> res = np.argmax(x, axis=1, keepdims=True) # Setting keepdims to True
+    >>> res.shape
+    (2, 1, 4)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axis is not None:
-            pass
-        elif out is not None:
-            pass
-        else:
-            result_obj = dpnp_argmax(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    dpt_array = dpnp.get_usm_ndarray(a)
+    if dpt_array.size == 0:
+        # TODO: get rid of this if condition when dpctl supports it
+        for i in range(a.ndim):
+            if a.shape[i] == 0:
+                if i == axis or axis is None:
+                    raise ValueError(
+                        "reduction does not support zero-size arrays"
+                    )
+                else:
+                    indices = [i for i in range(a.ndim) if i != axis]
+                    res_shape = tuple([a.shape[i] for i in indices])
+                    result = dpnp.empty(res_shape, dtype=int)
+    else:
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.argmax(dpt_array, axis=axis, keepdims=keepdims)
+        )
 
-            return result
+    if out is None:
+        return result
+    else:
+        if out.shape != result.shape:
+            raise ValueError(
+                f"Output array of shape {result.shape} is needed, got {out.shape}."
+            )
+        elif not isinstance(out, dpnp_array):
+            if isinstance(out, dpt.usm_ndarray):
+                out = dpnp_array._create_from_usm_ndarray(out)
+            else:
+                raise TypeError(
+                    "Output array must be any of supported type, but got {}".format(
+                        type(out)
+                    )
+                )
 
-    return call_origin(numpy.argmax, x1, axis, out)
+        dpnp.copyto(out, result, casting="safe")
+
+        return out
 
 
-def argmin(x1, axis=None, out=None):
+def argmin(a, axis=None, out=None, keepdims=False):
     """
     Returns the indices of the minimum values along an axis.
 
     For full documentation refer to :obj:`numpy.argmin`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Indices of minimum value of `a`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Parameter `axis` is supported only with default value ``None``.
-    Parameter `out` is supported only with default value ``None``.
+    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -137,28 +180,69 @@ def argmin(x1, axis=None, out=None):
     --------
     >>> import dpnp as np
     >>> a = np.arange(6).reshape((2, 3)) + 10
-    >>> a.shape
-    (2, 3)
-    >>> [i for i in a]
-    [10, 11, 12, 13, 14, 15]
+    >>> a
+    array([[10, 11, 12],
+           [13, 14, 15]])
     >>> np.argmin(a)
-    0
+    array(0)
+
+    >>> np.argmin(a, axis=0)
+    array([0, 0, 0])
+    >>> np.argmin(a, axis=1)
+    array([0, 0])
+
+    >>> b = np.arange(6) + 10
+    >>> b[4] = 10
+    >>> b
+    array([10, 11, 12, 13, 10, 15])
+    >>> np.argmin(b)  # Only the first occurrence is returned.
+    array(0)
+
+    >>> x = np.arange(24).reshape((2, 3, 4))
+    >>> res = np.argmin(x, axis=1, keepdims=True) # Setting keepdims to True
+    >>> res.shape
+    (2, 1, 4)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axis is not None:
-            pass
-        elif out is not None:
-            pass
-        else:
-            result_obj = dpnp_argmin(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    dpt_array = dpnp.get_usm_ndarray(a)
+    if dpt_array.size == 0:
+        # TODO: get rid of this if condition when dpctl supports it
+        for i in range(a.ndim):
+            if a.shape[i] == 0:
+                if i == axis or axis is None:
+                    raise ValueError(
+                        "reduction does not support zero-size arrays"
+                    )
+                else:
+                    indices = [i for i in range(a.ndim) if i != axis]
+                    res_shape = tuple([a.shape[i] for i in indices])
+                    result = dpnp.empty(res_shape, dtype=int)
+    else:
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.argmin(dpt_array, axis=axis, keepdims=keepdims)
+        )
 
-            return result
+    if out is None:
+        return result
+    else:
+        if out.shape != result.shape:
+            raise ValueError(
+                f"Output array of shape {result.shape} is needed, got {out.shape}."
+            )
+        elif not isinstance(out, dpnp_array):
+            if isinstance(out, dpt.usm_ndarray):
+                out = dpnp_array._create_from_usm_ndarray(out)
+            else:
+                raise TypeError(
+                    "Output array must be any of supported type, but got {}".format(
+                        type(out)
+                    )
+                )
 
-    return call_origin(numpy.argmin, x1, axis, out)
+        dpnp.copyto(out, result, casting="safe")
+
+        return out
 
 
 def searchsorted(a, v, side="left", sorter=None):

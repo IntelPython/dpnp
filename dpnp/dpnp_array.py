@@ -490,24 +490,14 @@ class dpnp_array:
         """
         Returns array of indices of the maximum values along the given axis.
 
-        Parameters
-        ----------
-        axis : {None, integer}
-            If None, the index is into the flattened array, otherwise along
-            the specified axis
-        out : {None, array}, optional
-            Array into which the result can be placed. Its type is preserved
-            and it must be of the right shape to hold the output.
-
-        Returns
-        -------
-        index_array : {integer_array}
+        Refer to :obj:`dpnp.argmax` for full documentation.
 
         Examples
         --------
+        >>> import dpnp as np
         >>> a = np.arange(6).reshape(2,3)
         >>> a.argmax()
-        5
+        array(5)
         >>> a.argmax(0)
         array([1, 1, 1])
         >>> a.argmax(1)
@@ -520,21 +510,7 @@ class dpnp_array:
         """
         Return array of indices to the minimum values along the given axis.
 
-        Parameters
-        ----------
-        axis : {None, integer}
-            If None, the index is into the flattened array, otherwise along
-            the specified axis
-        out : {None, array}, optional
-            Array into which the result can be placed. Its type is preserved
-            and it must be of the right shape to hold the output.
-
-        Returns
-        -------
-        ndarray or scalar
-            If multi-dimension input, returns a new ndarray of indices to the
-            minimum values along the given axis.  Otherwise, returns a scalar
-            of index to the minimum values along the given axis.
+        Refer to :obj:`dpnp.argmin` for full documentation.
 
         """
         return dpnp.argmin(self, axis, out)
