@@ -344,21 +344,19 @@ def broadcast_arrays(*args, subok=False):
             [5, 5, 5]])]
 
     """
-    if subok is not False:
-        raise NotImplementedError(
-            f"Requested function={function.__name__} with subok={subok} isn't currently supported"
-        )
 
-    new_arrays = []
+    if subok is not False:
+        raise NotImplementedError(f"subok={subok} is currently not supported")
+
     if len(args) == 0:
-        return new_arrays
+        return []
 
     dpt_arrays = dpt.broadcast_arrays(
         *[dpnp.get_usm_ndarray(array) for array in args]
     )
-    for array in dpt_arrays:
-        new_arrays.append(dpnp_array._create_from_usm_ndarray(array))
-    return new_arrays
+    return [
+        dpnp_array._create_from_usm_ndarray(usm_arr) for usm_arr in dpt_arrays
+    ]
 
 
 def broadcast_to(array, /, shape, subok=False):
@@ -397,9 +395,7 @@ def broadcast_to(array, /, shape, subok=False):
     """
 
     if subok is not False:
-        raise NotImplementedError(
-            f"Requested function={function.__name__} with subok={subok} isn't currently supported"
-        )
+        raise NotImplementedError(f"subok={subok} is currently not supported")
 
     dpt_array = dpnp.get_usm_ndarray(array)
     new_array = dpt.broadcast_to(dpt_array, shape)

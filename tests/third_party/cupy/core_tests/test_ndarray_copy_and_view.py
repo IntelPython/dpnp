@@ -160,9 +160,10 @@ class TestArrayCopyAndView(unittest.TestCase):
         src1 = testing.shaped_arange((2, 3, 2), xp, dtype=src_dtype)
         src2 = testing.shaped_arange((2,), xp, dtype=src_dtype)
         src, _ = xp.broadcast_arrays(src1, src2)
-        strides = astype_without_warning(src, dst_dtype, order="K").strides
+        dst = astype_without_warning(src, dst_dtype, order="K")
+        strides = dst.strides
         if xp is numpy:
-            strides = tuple(x // src.itemsize for x in strides)
+            strides = tuple(x // dst.itemsize for x in strides)
         return strides
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
