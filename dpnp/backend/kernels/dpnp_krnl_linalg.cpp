@@ -612,6 +612,9 @@ DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
     (void)dep_event_vec_ref;
 
     DPCTLSyclEventRef event_ref = nullptr;
+    if (!size_m || !size_n) {
+        return event_ref;
+    }
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
     sycl::event event;

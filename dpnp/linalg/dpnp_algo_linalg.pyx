@@ -142,15 +142,9 @@ cpdef object dpnp_cond(object input, object p):
 cpdef utils.dpnp_descriptor dpnp_det(utils.dpnp_descriptor input):
     cdef shape_type_c input_shape = input.shape
     cdef size_t n = input.shape[-1]
-    cdef size_t size_out = 1
+    cdef shape_type_c result_shape = (1,)
     if input.ndim != 2:
-        output_shape = tuple((list(input.shape))[:-2])
-        for i in range(len(output_shape)):
-            size_out *= output_shape[i]
-
-    cdef shape_type_c result_shape = (size_out,)
-    if size_out > 1:
-        result_shape = output_shape
+        result_shape = tuple((list(input.shape))[:-2])
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 

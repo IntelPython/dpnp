@@ -583,11 +583,9 @@ class TestVstack:
     def test_non_iterable(self):
         assert_raises(TypeError, dpnp.vstack, 1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_empty_input(self):
-        assert_raises(ValueError, dpnp.vstack, ())
+        assert_raises(TypeError, dpnp.vstack, ())
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_0D_array(self):
         a = dpnp.array(1)
         b = dpnp.array(2)
@@ -595,7 +593,6 @@ class TestVstack:
         desired = dpnp.array([[1], [2]])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_1D_array(self):
         a = dpnp.array([1])
         b = dpnp.array([2])
@@ -603,7 +600,6 @@ class TestVstack:
         desired = dpnp.array([[1], [2]])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_2D_array(self):
         a = dpnp.array([[1], [2]])
         b = dpnp.array([[1], [2]])
@@ -611,7 +607,6 @@ class TestVstack:
         desired = dpnp.array([[1], [2], [1], [2]])
         assert_array_equal(res, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_2D_array2(self):
         a = dpnp.array([1, 2])
         b = dpnp.array([1, 2])
@@ -620,8 +615,8 @@ class TestVstack:
         assert_array_equal(res, desired)
 
     def test_generator(self):
-        with assert_warns(FutureWarning):
-            dpnp.vstack((numpy.arange(3) for _ in range(2)))
+        with pytest.raises(TypeError):
+            dpnp.vstack((dpnp.arange(3) for _ in range(2)))
 
 
 class TestAtleast1d:
