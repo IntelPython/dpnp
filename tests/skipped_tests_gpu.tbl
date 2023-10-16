@@ -210,7 +210,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMult
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_3_{d=4, shape=(3, 2)}::test_normal
 
 tests/third_party/intel/test_zero_copy_test1.py::test_dpnp_interaction_with_dpctl_memory
-tests/test_arraymanipulation.py::TestVstack::test_generator
 
 tests/test_linalg.py::test_cond[-1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
 tests/test_linalg.py::test_cond[1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
@@ -612,14 +611,6 @@ tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_resha
 
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeatRepeatsNdarray::test_func
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeatRepeatsNdarray::test_method
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTileFailure_param_0_{reps=-1}::test_tile_failure
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTileFailure_param_1_{reps=(-1, -2)}::test_tile_failure
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_0_{reps=0}::test_array_tile
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_1_{reps=1}::test_array_tile
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_2_{reps=2}::test_array_tile
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_3_{reps=(0, 1)}::test_array_tile
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_4_{reps=(2, 3)}::test_array_tile
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_5_{reps=(2, 3, 4, 5)}::test_array_tile
 
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_3_{name='angle', nargs=1}::test_raises_with_numpy_input
 
