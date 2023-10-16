@@ -114,13 +114,13 @@ static sycl::event gesv_impl(sycl::queue exec_q,
             exec_q.memcpy(&host_U, &a[(info - 1) * lda + info - 1], sizeof(T))
                 .wait();
 
-            using ThresholdType = typename std::conditional<
-                std::is_same<T, float>::value, float,
-                typename std::conditional<
-                    std::is_same<T, double>::value, double,
-                    typename std::conditional<
-                        std::is_same<T, std::complex<float>>::value, float,
-                        double>::type>::type>::type;
+            using ThresholdType = std::conditional_t<
+                std::is_same_v<T, float> ||
+                    std::is_same_v<T, std::complex<float>>,
+                float,
+                std::conditional_t<std::is_same_v<T, double> ||
+                                       std::is_same_v<T, std::complex<double>>,
+                                   double, void>>;
 
             const auto threshold =
                 std::numeric_limits<ThresholdType>::epsilon() * 100;
