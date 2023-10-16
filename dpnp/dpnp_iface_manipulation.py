@@ -1548,20 +1548,61 @@ def unique(ar, **kwargs):
     return call_origin(numpy.unique, ar, **kwargs)
 
 
-def vstack(tup):
+def vstack(tup, *, dtype=None, casting="same_kind"):
     """
     Stack arrays in sequence vertically (row wise).
 
     For full documentation refer to :obj:`numpy.vstack`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The array formed by stacking the given arrays, will be at least 2-D.
+
+    Limitations
+    -----------
+    Each array in `tup` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
+    will be raised.
+    Parameters `dtype` and `casting` are supported with default value.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
+    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
+    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third axis).
+    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
+    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([4, 5, 6])
+    >>> np.vstack((a, b))
+    array([[1, 2, 3],
+           [4, 5, 6]])
+
+    >>> a = np.array([[1], [2], [3]])
+    >>> b = np.array([[4], [5], [6]])
+    >>> np.vstack((a, b))
+    array([[1],
+           [2],
+           [3],
+           [4],
+           [5],
+           [6]])
+
     """
 
-    # TODO:
-    # `call_origin` cannot convert sequence of array to sequence of
-    # nparray
-    tup_new = []
-    for tp in tup:
-        tpx = dpnp.asnumpy(tp) if not isinstance(tp, numpy.ndarray) else tp
-        tup_new.append(tpx)
-
-    return call_origin(numpy.vstack, tup_new)
+    if not hasattr(tup, "__getitem__"):
+        raise TypeError(
+            "Arrays to stack must be passed as a sequence type such as list or tuple."
+        )
+    arrs = dpnp.atleast_2d(*tup)
+    if not isinstance(arrs, list):
+        arrs = [arrs]
+    return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
