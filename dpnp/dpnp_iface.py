@@ -150,12 +150,14 @@ def asnumpy(input, order="C"):
     return numpy.asarray(input, order=order)
 
 
-def astype(x1, dtype, order="K", casting="unsafe", subok=True, copy=True):
+def astype(x1, dtype, order="K", casting="unsafe", copy=True):
     """
     Copy the array with data type casting.
 
     Parameters
     ----------
+    x1 : {dpnp.ndarray, usm_ndarray}
+        Array data type casting.
     dtype : dtype
         Target data type.
     order : {'C', 'F', 'A', 'K'}
@@ -165,6 +167,16 @@ def astype(x1, dtype, order="K", casting="unsafe", subok=True, copy=True):
     copy : bool
         If it is False and no cast happens, then this method returns the array itself.
         Otherwise, a copy is returned.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur. Defaults to 'unsafe' for backwards compatibility.
+        'no' means the data types should not be cast at all.
+        'equiv' means only byte-order changes are allowed.
+        'safe' means only casts which can preserve values are allowed.
+        'same_kind' means only safe casts or casts within a kind, like float64 to float32, are allowed.
+        'unsafe' means any data conversions may be done.
+    copy : bool, optional
+        By default, astype always returns a newly allocated array. If this is set to false, and the dtype,
+        order, and subok requirements are satisfied, the input array is returned instead of a copy.
 
     Returns
     -------
@@ -173,17 +185,7 @@ def astype(x1, dtype, order="K", casting="unsafe", subok=True, copy=True):
         are satisfied, `arr_t` is a new array of the same shape as the input array,
         with dtype, order given by dtype, order.
 
-    Limitations
-    -----------
-    Parameter `subok` is supported with default value.
-    Otherwise ``NotImplementedError`` exception will be raised.
-
     """
-
-    if subok is not True:
-        raise NotImplementedError(
-            f"Requested function={function.__name__} with subok={subok} isn't currently supported"
-        )
 
     if order is None:
         order = "K"

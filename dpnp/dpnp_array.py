@@ -600,8 +600,12 @@ class dpnp_array:
         """
         Copy the array with data type casting.
 
+        For full documentation refer to :obj:`numpy.ndarray.astype`.
+
         Parameters
         ----------
+        x1 : {dpnp.ndarray, usm_ndarray}
+            Array data type casting.
         dtype : dtype
             Target data type.
         order : {'C', 'F', 'A', 'K'}
@@ -611,12 +615,23 @@ class dpnp_array:
         copy : bool
             If it is False and no cast happens, then this method returns the array itself.
             Otherwise, a copy is returned.
+        casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+            Controls what kind of data casting may occur. Defaults to 'unsafe' for backwards compatibility.
+            'no' means the data types should not be cast at all.
+            'equiv' means only byte-order changes are allowed.
+            'safe' means only casts which can preserve values are allowed.
+            'same_kind' means only safe casts or casts within a kind, like float64 to float32, are allowed.
+            'unsafe' means any data conversions may be done.
+        copy : bool, optional
+            By default, astype always returns a newly allocated array. If this is set to false, and the dtype,
+            order, and subok requirements are satisfied, the input array is returned instead of a copy.
 
         Returns
         -------
-        out : dpnp.ndarray
-            If ``copy`` is False and no cast is required, then the array itself is returned.
-            Otherwise, it returns a (possibly casted) copy of the array.
+        arr_t : dpnp.ndarray
+            Unless `copy` is ``False`` and the other conditions for returning the input array
+            are satisfied, `arr_t` is a new array of the same shape as the input array,
+            with dtype, order given by dtype, order.
 
         Limitations
         -----------
@@ -634,9 +649,12 @@ class dpnp_array:
 
         """
 
-        return dpnp.astype(
-            self, dtype, order=order, casting=casting, subok=subok, copy=copy
-        )
+        if subok is not True:
+            raise NotImplementedError(
+                f"subok={subok} is currently not supported"
+            )
+
+        return dpnp.astype(self, dtype, order=order, casting=casting, copy=copy)
 
     # 'base',
     # 'byteswap',

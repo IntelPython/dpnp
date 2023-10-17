@@ -14,6 +14,12 @@ def astype_without_warning(x, dtype, *args, **kwargs):
         return x.astype(dtype, *args, **kwargs)
 
 
+def get_strides(xp, a):
+    if xp is numpy:
+        return tuple(el // a.itemsize for el in a.strides)
+    return a.strides
+
+
 @pytest.mark.skip("'dpnp_array' object has no attribute 'view' yet")
 class TestView:
     @testing.numpy_cupy_array_equal()
@@ -177,8 +183,6 @@ class TestView:
 
 
 class TestArrayCopy:
-    # @pytest.mark.skipif(
-    #     not _util.ENABLE_SLICE_COPY, reason='Special copy disabled')
     @testing.for_orders("CF")
     @testing.for_dtypes(
         [numpy.int16, numpy.int64, numpy.float16, numpy.float64]
@@ -191,34 +195,26 @@ class TestArrayCopy:
         return b
 
     @pytest.mark.skip("Doesn't raise ValueError in numpy")
-    # @pytest.mark.skipif(
-    #     not _util.ENABLE_SLICE_COPY, reason='Special copy disabled')
     def test_isinstance_numpy_copy_wrong_dtype(self):
-        a = numpy.arange(100, dtype=numpy.float64).reshape(10, 10)
+        a = numpy.arange(100, dtype=numpy.float32).reshape(10, 10)
         b = cupy.empty(a.shape, dtype=numpy.int32)
         with pytest.raises(ValueError):
             b[:] = a
 
-    # @pytest.mark.skipif(
-    #     not _util.ENABLE_SLICE_COPY, reason='Special copy disabled')
     def test_isinstance_numpy_copy_wrong_shape(self):
         for xp in (numpy, cupy):
-            a = numpy.arange(100, dtype=numpy.float64).reshape(10, 10)
+            a = numpy.arange(100, dtype=numpy.float32).reshape(10, 10)
             b = cupy.empty(100, dtype=a.dtype)
             with pytest.raises(ValueError):
                 b[:] = a
 
-    # @pytest.mark.skipif(
-    #     not _util.ENABLE_SLICE_COPY, reason='Special copy disabled')
     @testing.numpy_cupy_array_equal()
     def test_isinstance_numpy_copy_not_slice(self, xp):
-        a = xp.arange(5, dtype=numpy.float64)
+        a = xp.arange(5, dtype=numpy.float32)
         a[a < 3] = 0
         return a
 
-    @pytest.mark.skip("Doesn't raise ValueError in numpy")
-    # @pytest.mark.skipif(
-    #     not _util.ENABLE_SLICE_COPY, reason='Special copy disabled')
+    @pytest.mark.skip("copy from host to device is allowed")
     def test_copy_host_to_device_view(self):
         dev = cupy.empty((10, 10), dtype=numpy.float32)[2:5, 1:8]
         host = numpy.arange(3 * 7, dtype=numpy.float32).reshape(3, 7)
@@ -290,7 +286,9 @@ class TestArrayFill:
         a.fill(b)
         return a
 
-    @pytest.mark.skip("Doesn't raise ValueError in numpy")
+    @pytest.mark.skip(
+        "it's allowed to broadcast dpnp array while filling, no exception then"
+    )
     @testing.for_all_dtypes()
     def test_fill_with_nonscalar_ndarray(self, dtype):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
@@ -351,22 +349,15 @@ class TestArrayAsType:
     def test_astype_strides(self, xp, src_dtype, dst_dtype):
         src = testing.shaped_arange((1, 2, 3), xp, dtype=src_dtype)
         dst = astype_without_warning(src, dst_dtype, order="K")
-        strides = dst.strides
-        if xp is numpy:
-            strides = tuple(x // dst.itemsize for x in strides)
-        return strides
+        return get_strides(xp, dst)
 
-    @pytest.mark.skip("Positive strides in numpy")
     @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_equal()
     def test_astype_strides_negative(self, xp, src_dtype, dst_dtype):
         src = testing.shaped_arange((2, 3), xp, dtype=src_dtype)
         src = src[::-1, :]
         dst = astype_without_warning(src, dst_dtype, order="K")
-        strides = dst.strides
-        if xp is numpy:
-            strides = tuple(x // dst.itemsize for x in strides)
-        return strides
+        return tuple(abs(x) for x in get_strides(xp, dst))
 
     @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_equal()
@@ -374,10 +365,7 @@ class TestArrayAsType:
         src = testing.shaped_arange((2, 3, 4), xp, dtype=src_dtype)
         src = xp.swapaxes(src, 1, 0)
         dst = astype_without_warning(src, dst_dtype, order="K")
-        strides = dst.strides
-        if xp is numpy:
-            strides = tuple(x // dst.itemsize for x in strides)
-        return strides
+        return get_strides(xp, dst)
 
     @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_equal()
@@ -386,10 +374,7 @@ class TestArrayAsType:
         src2 = testing.shaped_arange((2,), xp, dtype=src_dtype)
         src, _ = xp.broadcast_arrays(src1, src2)
         dst = astype_without_warning(src, dst_dtype, order="K")
-        strides = dst.strides
-        if xp is numpy:
-            strides = tuple(x // dst.itemsize for x in strides)
-        return strides
+        return get_strides(xp, dst)
 
     @pytest.mark.skip("'dpnp_array' object has no attribute 'view' yet")
     @testing.numpy_cupy_array_equal()
@@ -418,8 +403,6 @@ class TestArrayDiagonal:
     {"src_order": "F"},
 )
 class TestNumPyArrayCopyView:
-    # @pytest.mark.skipif(
-    #     not _util.ENABLE_SLICE_COPY, reason='Special copy disabled')
     @testing.for_orders("CF")
     @testing.for_dtypes(
         [numpy.int16, numpy.int64, numpy.float16, numpy.float64]

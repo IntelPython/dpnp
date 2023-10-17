@@ -240,9 +240,7 @@ tests/test_linalg.py::test_matrix_rank[None-[[1, 2], [3, 4]]-int32]
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestAngle::test_angle
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_inplace
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_inplace
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestScalarConversion::test_scalar_conversion
 
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayAsType::test_astype_strides_broadcast
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayDiagonal::test_diagonal1
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayDiagonal::test_diagonal2
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order
