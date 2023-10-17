@@ -226,8 +226,6 @@ def dpnp_solve(a, b):
             reshape = True
 
         op_count = a.shape[0]
-        if op_count == 0:
-            return dpnp.empty_like(b, dtype=res_type)
 
         coeff_vecs = [None] * op_count
         val_vecs = [None] * op_count
