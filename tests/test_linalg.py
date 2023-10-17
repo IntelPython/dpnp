@@ -5,7 +5,7 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp as inp
 
-from .helper import get_all_dtypes, get_complex_dtypes, has_support_aspect64
+from .helper import get_all_dtypes, has_support_aspect64
 
 
 def vvsort(val, vec, size, xp):
@@ -513,13 +513,32 @@ def test_svd(type, shape):
 class TestSolve:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_solve(self, dtype):
-        a_np = numpy.array([[1, 0.5], [0.5, 1]])
-        a_dp = inp.array(a_np, dtype=dtype)
+        a_np = numpy.array([[1, 0.5], [0.5, 1]], dtype=dtype)
+        a_dp = inp.array(a_np)
 
         expected = numpy.linalg.solve(a_np, a_np)
         result = inp.linalg.solve(a_dp, a_dp)
 
         assert_allclose(expected, result, rtol=1e-06)
+
+    @pytest.mark.parametrize("a_dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("b_dtype", get_all_dtypes(no_bool=True))
+    def test_solve_diff_type(self, a_dtype, b_dtype):
+        a_np = numpy.array([[1, 2], [3, -5]], dtype=a_dtype)
+        b_np = numpy.array([4, 1], dtype=b_dtype)
+
+        a_dp = inp.array(a_np)
+        b_dp = inp.array(b_np)
+
+        expected = numpy.linalg.solve(a_np, b_np)
+        result = inp.linalg.solve(a_dp, b_dp)
+
+        assert_allclose(expected, result, rtol=1e-06)
+
+        if has_support_aspect64():
+            assert expected.dtype == result.dtype
+        else:
+            assert expected.dtype.kind == result.dtype.kind
 
     def test_solve_strides(self):
         a_np = numpy.array(
@@ -547,11 +566,8 @@ class TestSolve:
         assert_allclose(expected, result, rtol=1e-05)
 
     def test_solve_errors(self):
-        # different type
         a_dp = inp.array([[1, 0.5], [0.5, 1]], dtype="float32")
         b_dp = inp.array(a_dp, dtype="float32")
-        a_dp_int = a_dp.astype("int32")
-        assert_raises(ValueError, inp.linalg.solve, a_dp_int, b_dp)
 
         # diffetent queue
         a_queue = dpctl.SyclQueue()
