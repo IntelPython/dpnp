@@ -160,7 +160,9 @@ def det(input):
 
     x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
     if x1_desc:
-        if x1_desc.shape[-1] == x1_desc.shape[-2]:
+        if x1_desc.ndim < 2:
+            pass
+        elif x1_desc.shape[-1] == x1_desc.shape[-2]:
             result_obj = dpnp_det(x1_desc).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
@@ -489,7 +491,9 @@ def qr(x1, mode="reduced"):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
-        if mode != "reduced":
+        if x1_desc.ndim != 2:
+            pass
+        elif mode != "reduced":
             pass
         else:
             result_tup = dpnp_qr(x1_desc, mode)
