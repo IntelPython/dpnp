@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.13.1dev0+32.g3b5a58858 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.13.1dev0+41.gb469ed75e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=d94247e3"></script>
+        <script src="../../_static/documentation_options.js?v=67dc5fa6"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+32.g3b5a58858
+                0.13.1dev0+41.gb469ed75e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -142,6 +142,7 @@
     <span class="s2">&quot;atleast_1d&quot;</span><span class="p">,</span>
     <span class="s2">&quot;atleast_2d&quot;</span><span class="p">,</span>
     <span class="s2">&quot;atleast_3d&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;broadcast_arrays&quot;</span><span class="p">,</span>
     <span class="s2">&quot;broadcast_to&quot;</span><span class="p">,</span>
     <span class="s2">&quot;concatenate&quot;</span><span class="p">,</span>
     <span class="s2">&quot;copyto&quot;</span><span class="p">,</span>
@@ -409,6 +410,58 @@
 
 
 
+<div class="viewcode-block" id="broadcast_arrays">
+<a class="viewcode-back" href="../../reference/generated/dpnp.broadcast_arrays.html#dpnp.broadcast_arrays">[docs]</a>
+<span class="k">def</span> <span class="nf">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Broadcast any number of arrays against each other.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.broadcast_arrays`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    broadcasted : list of dpnp.ndarray</span>
+<span class="sd">        These arrays are views on the original arrays.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter `args` is supported as either :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
+<span class="sd">    Parameter `subok` is supported with default value.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.broadcast_to` : Broadcast an array to a new shape.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([[1, 2, 3]])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([[4], [5]])</span>
+<span class="sd">    &gt;&gt;&gt; np.broadcast_arrays(x, y)</span>
+<span class="sd">    [array([[1, 2, 3],</span>
+<span class="sd">            [1, 2, 3]]), array([[4, 4, 4],</span>
+<span class="sd">            [5, 5, 5]])]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;subok=</span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2"> is currently not supported&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">dpt_arrays</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">[</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_arr</span><span class="p">)</span> <span class="k">for</span> <span class="n">usm_arr</span> <span class="ow">in</span> <span class="n">dpt_arrays</span>
+    <span class="p">]</span></div>
+
+
+
 <div class="viewcode-block" id="broadcast_to">
 <a class="viewcode-back" href="../../reference/generated/dpnp.broadcast_to.html#dpnp.broadcast_to">[docs]</a>
 <span class="k">def</span> <span class="nf">broadcast_to</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -426,9 +479,14 @@
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `array` is supported as either :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
 <span class="sd">    Parameter `subok` is supported with default value.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
 <span class="sd">    Input array data types of `array` is limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against each other.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -442,13 +500,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
-        <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
-        <span class="n">new_array</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">new_array</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;subok=</span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2"> is currently not supported&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span></div>
+    <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="n">new_array</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">new_array</span><span class="p">)</span></div>
 
 
 
@@ -472,7 +528,7 @@
 <span class="sd">    Each array in `arrays` is supported as either :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception</span>
 <span class="sd">    will be raised.</span>
-<span class="sd">    Parameters `out` and `dtype are supported with default value.</span>
+<span class="sd">    Parameters `out` and `dtype` are supported with default value.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    See Also</span>
