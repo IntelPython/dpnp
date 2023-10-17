@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.13.1dev0+44.g4f4339eb8 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.13.1dev0+45.g9dc883c9b documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=1fc06819"></script>
+        <script src="../../_static/documentation_options.js?v=36b6adfb"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+44.g4f4339eb8
+                0.13.1dev0+45.g9dc883c9b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -244,12 +244,14 @@
 
 
 
-<span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copy the array with data type casting.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Array data type casting.</span>
 <span class="sd">    dtype : dtype</span>
 <span class="sd">        Target data type.</span>
 <span class="sd">    order : {&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}</span>
@@ -259,6 +261,16 @@
 <span class="sd">    copy : bool</span>
 <span class="sd">        If it is False and no cast happens, then this method returns the array itself.</span>
 <span class="sd">        Otherwise, a copy is returned.</span>
+<span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
+<span class="sd">        Controls what kind of data casting may occur. Defaults to &#39;unsafe&#39; for backwards compatibility.</span>
+<span class="sd">        &#39;no&#39; means the data types should not be cast at all.</span>
+<span class="sd">        &#39;equiv&#39; means only byte-order changes are allowed.</span>
+<span class="sd">        &#39;safe&#39; means only casts which can preserve values are allowed.</span>
+<span class="sd">        &#39;same_kind&#39; means only safe casts or casts within a kind, like float64 to float32, are allowed.</span>
+<span class="sd">        &#39;unsafe&#39; means any data conversions may be done.</span>
+<span class="sd">    copy : bool, optional</span>
+<span class="sd">        By default, astype always returns a newly allocated array. If this is set to false, and the dtype,</span>
+<span class="sd">        order, and subok requirements are satisfied, the input array is returned instead of a copy.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -267,17 +279,7 @@
 <span class="sd">        are satisfied, `arr_t` is a new array of the same shape as the input array,</span>
 <span class="sd">        with dtype, order given by dtype, order.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `subok` is supported with default value.</span>
-<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Requested function=</span><span class="si">{</span><span class="n">function</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with subok=</span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2"> isn&#39;t currently supported&quot;</span>
-        <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span>

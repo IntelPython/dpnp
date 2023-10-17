@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.13.1dev0+44.g4f4339eb8 documentation</title>
+  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.13.1dev0+45.g9dc883c9b documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=1fc06819"></script>
+        <script src="../../_static/documentation_options.js?v=36b6adfb"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+44.g4f4339eb8
+                0.13.1dev0+45.g9dc883c9b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -295,20 +295,31 @@ In other words, <code class="docutils literal notranslate"><span class="pre">a[i
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.astype">
 <span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unsafe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.astype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.astype" title="Link to this definition"></a></dt>
 <dd><p>Copy the array with data type casting.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.astype.html#numpy.ndarray.astype" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.astype</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Array data type casting.</p></li>
 <li><p><strong>dtype</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a>) – Target data type.</p></li>
 <li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'</em><em>, </em><em>'A'</em><em>, </em><em>'K'}</em>) – Row-major (C-style) or column-major (Fortran-style) order.
 When <code class="docutils literal notranslate"><span class="pre">order</span></code> is ‘A’, it uses ‘F’ if <code class="docutils literal notranslate"><span class="pre">a</span></code> is column-major and uses ‘C’ otherwise.
 And when <code class="docutils literal notranslate"><span class="pre">order</span></code> is ‘K’, it keeps strides as closely as possible.</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If it is False and no cast happens, then this method returns the array itself.
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – If it is False and no cast happens, then this method returns the array itself.
 Otherwise, a copy is returned.</p></li>
+<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) – Controls what kind of data casting may occur. Defaults to ‘unsafe’ for backwards compatibility.
+‘no’ means the data types should not be cast at all.
+‘equiv’ means only byte-order changes are allowed.
+‘safe’ means only casts which can preserve values are allowed.
+‘same_kind’ means only safe casts or casts within a kind, like float64 to float32, are allowed.
+‘unsafe’ means any data conversions may be done.</p></li>
+<li><p><strong>copy</strong> – By default, astype always returns a newly allocated array. If this is set to false, and the dtype,
+order, and subok requirements are satisfied, the input array is returned instead of a copy.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – If <code class="docutils literal notranslate"><span class="pre">copy</span></code> is False and no cast is required, then the array itself is returned.
-Otherwise, it returns a (possibly casted) copy of the array.</p>
+<dd class="field-even"><p><strong>arr_t</strong> – Unless <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> and the other conditions for returning the input array
+are satisfied, <cite>arr_t</cite> is a new array of the same shape as the input array,
+with dtype, order given by dtype, order.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
