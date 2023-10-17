@@ -172,7 +172,7 @@ def dpnp_solve(a, b):
     """
     dpnp_solve(a, b)
 
-    Return the the solution to the system of linear equations with
+    Return the solution to the system of linear equations with
     a square coefficient matrix `a` and multiple dependent variables
     array `b`.
 

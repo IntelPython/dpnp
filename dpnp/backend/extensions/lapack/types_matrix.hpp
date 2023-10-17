@@ -86,8 +86,9 @@ struct SyevdTypePairSupportFactory
  * MKL LAPACK library provides support in oneapi::mkl::lapack::gesv<T>
  * function.
  *
- * @tparam T Type of array containing input matrix A and an output arrays with
- * coefficient matrix and hand sides.
+ * @tparam T Type of array containing the coefficient matrix A and
+ * the array of multiple dependent variables. Upon execution, the array of
+ * multiple dependent variables will be overwritten with the solution.
  */
 template <typename T>
 struct GesvTypePairSupportFactory
