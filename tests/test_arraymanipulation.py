@@ -917,3 +917,14 @@ def test_incompatible_shapes_raise_valueerror(shapes):
     for input_shapes in shapes:
         assert_broadcast_arrays_raise(input_shapes)
         assert_broadcast_arrays_raise(input_shapes[::-1])
+
+
+def test_broadcast_arrays_empty_input():
+    assert dpnp.broadcast_arrays() == []
+
+
+def test_subok_error():
+    x = dpnp.ones((4))
+    with pytest.raises(NotImplementedError):
+        dpnp.broadcast_arrays(x, subok=True)
+        dpnp.broadcast_to(x, (4, 4), subok=True)
