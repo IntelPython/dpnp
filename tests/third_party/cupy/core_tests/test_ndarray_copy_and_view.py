@@ -385,7 +385,11 @@ class TestArrayAsType:
         src1 = testing.shaped_arange((2, 3, 2), xp, dtype=src_dtype)
         src2 = testing.shaped_arange((2,), xp, dtype=src_dtype)
         src, _ = xp.broadcast_arrays(src1, src2)
-        return astype_without_warning(src, dst_dtype, order="K").strides
+        dst = astype_without_warning(src, dst_dtype, order="K")
+        strides = dst.strides
+        if xp is numpy:
+            strides = tuple(x // dst.itemsize for x in strides)
+        return strides
 
     @pytest.mark.skip("'dpnp_array' object has no attribute 'view' yet")
     @testing.numpy_cupy_array_equal()

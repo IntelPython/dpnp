@@ -54,6 +54,7 @@ __all__ = [
     "atleast_1d",
     "atleast_2d",
     "atleast_3d",
+    "broadcast_arrays",
     "broadcast_to",
     "concatenate",
     "copyto",
@@ -309,6 +310,55 @@ def atleast_3d(*arys):
         return res
 
 
+def broadcast_arrays(*args, subok=False):
+    """
+    Broadcast any number of arrays against each other.
+
+    For full documentation refer to :obj:`numpy.broadcast_arrays`.
+
+    Returns
+    -------
+    broadcasted : list of dpnp.ndarray
+        These arrays are views on the original arrays.
+
+    Limitations
+    -----------
+    Parameter `args` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Otherwise ``TypeError`` exception will be raised.
+    Parameter `subok` is supported with default value.
+    Otherwise ``NotImplementedError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.broadcast_to` : Broadcast an array to a new shape.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([[1, 2, 3]])
+    >>> y = np.array([[4], [5]])
+    >>> np.broadcast_arrays(x, y)
+    [array([[1, 2, 3],
+            [1, 2, 3]]), array([[4, 4, 4],
+            [5, 5, 5]])]
+
+    """
+
+    if subok is not False:
+        raise NotImplementedError(f"subok={subok} is currently not supported")
+
+    if len(args) == 0:
+        return []
+
+    dpt_arrays = dpt.broadcast_arrays(
+        *[dpnp.get_usm_ndarray(array) for array in args]
+    )
+    return [
+        dpnp_array._create_from_usm_ndarray(usm_arr) for usm_arr in dpt_arrays
+    ]
+
+
 def broadcast_to(array, /, shape, subok=False):
     """
     Broadcast an array to a new shape.
@@ -324,9 +374,14 @@ def broadcast_to(array, /, shape, subok=False):
     -----------
     Parameter `array` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
+    Otherwise ``TypeError`` exception will be raised.
     Parameter `subok` is supported with default value.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types of `array` is limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against each other.
 
     Examples
     --------
@@ -340,13 +395,11 @@ def broadcast_to(array, /, shape, subok=False):
     """
 
     if subok is not False:
-        pass
-    elif dpnp.is_supported_array_type(array):
-        dpt_array = dpnp.get_usm_ndarray(array)
-        new_array = dpt.broadcast_to(dpt_array, shape)
-        return dpnp_array._create_from_usm_ndarray(new_array)
+        raise NotImplementedError(f"subok={subok} is currently not supported")
 
-    return call_origin(numpy.broadcast_to, array, shape=shape, subok=subok)
+    dpt_array = dpnp.get_usm_ndarray(array)
+    new_array = dpt.broadcast_to(dpt_array, shape)
+    return dpnp_array._create_from_usm_ndarray(new_array)
 
 
 def concatenate(
@@ -367,7 +420,7 @@ def concatenate(
     Each array in `arrays` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
     will be raised.
-    Parameters `out` and `dtype are supported with default value.
+    Parameters `out` and `dtype` are supported with default value.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -1548,20 +1601,61 @@ def unique(ar, **kwargs):
     return call_origin(numpy.unique, ar, **kwargs)
 
 
-def vstack(tup):
+def vstack(tup, *, dtype=None, casting="same_kind"):
     """
     Stack arrays in sequence vertically (row wise).
 
     For full documentation refer to :obj:`numpy.vstack`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The array formed by stacking the given arrays, will be at least 2-D.
+
+    Limitations
+    -----------
+    Each array in `tup` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
+    will be raised.
+    Parameters `dtype` and `casting` are supported with default value.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
+    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
+    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third axis).
+    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
+    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([4, 5, 6])
+    >>> np.vstack((a, b))
+    array([[1, 2, 3],
+           [4, 5, 6]])
+
+    >>> a = np.array([[1], [2], [3]])
+    >>> b = np.array([[4], [5], [6]])
+    >>> np.vstack((a, b))
+    array([[1],
+           [2],
+           [3],
+           [4],
+           [5],
+           [6]])
+
     """
 
-    # TODO:
-    # `call_origin` cannot convert sequence of array to sequence of
-    # nparray
-    tup_new = []
-    for tp in tup:
-        tpx = dpnp.asnumpy(tp) if not isinstance(tp, numpy.ndarray) else tp
-        tup_new.append(tpx)
-
-    return call_origin(numpy.vstack, tup_new)
+    if not hasattr(tup, "__getitem__"):
+        raise TypeError(
+            "Arrays to stack must be passed as a sequence type such as list or tuple."
+        )
+    arrs = dpnp.atleast_2d(*tup)
+    if not isinstance(arrs, list):
+        arrs = [arrs]
+    return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
