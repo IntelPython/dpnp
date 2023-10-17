@@ -545,3 +545,29 @@ class TestSolve:
         expected = numpy.linalg.solve(a_np[::-2, ::-2], b_np[::-2])
         result = inp.linalg.solve(a_dp[::-2, ::-2], b_dp[::-2])
         assert_allclose(expected, result, rtol=1e-05)
+
+    def test_solve_errors(self):
+        # different type
+        a_dp = inp.array([[1, 0.5], [0.5, 1]], dtype="float32")
+        b_dp = inp.array(a_dp, dtype="float32")
+        a_dp_int = a_dp.astype("int32")
+        assert_raises(ValueError, inp.linalg.solve, a_dp_int, b_dp)
+
+        # diffetent queue
+        a_queue = dpctl.SyclQueue()
+        b_queue = dpctl.SyclQueue()
+        a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
+        b_dp_q = inp.array(b_dp, sycl_queue=b_queue)
+        assert_raises(ValueError, inp.linalg.solve, a_dp_q, b_dp_q)
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        b_np = inp.asnumpy(b_dp)
+        assert_raises(TypeError, inp.linalg.solve, a_np, b_dp)
+        assert_raises(TypeError, inp.linalg.solve, a_dp, b_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(
+            inp.linalg.LinAlgError, inp.linalg.solve, a_dp_ndim_1, b_dp
+        )
