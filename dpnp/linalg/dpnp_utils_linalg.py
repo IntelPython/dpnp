@@ -231,9 +231,8 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
             vt_h = dpnp.empty((n, k), dtype=res_type)
             jobu = ord("A")
             jobvt = ord("S")
-        u_h_array, vt_h_array = u_h.get_array(), vt_h.get_array()
     else:
-        u_h_array, vt_h_array = 0, 0
+        u_h, vt_h = dpnp.empty([]), dpnp.empty([])
         jobu = ord("N")
         jobvt = ord("N")
 
@@ -245,8 +244,8 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
         jobvt,
         a_h.get_array(),
         s_h.get_array(),
-        u_h_array,
-        vt_h_array,
+        u_h.get_array(),
+        vt_h.get_array(),
         [a_copy_ev],
     )
 
