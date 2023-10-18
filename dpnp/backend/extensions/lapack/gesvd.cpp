@@ -64,6 +64,8 @@ typedef sycl::event (*gesvd_impl_fn_ptr_t)(sycl::queue,
 static gesvd_impl_fn_ptr_t gesvd_dispatch_table[dpctl_td_ns::num_types]
                                                [dpctl_td_ns::num_types];
 
+// Converts a given character code (ord) to the corresponding
+// oneapi::mkl::jobsvd enumeration value
 const oneapi::mkl::jobsvd process_job(std::int8_t job_val)
 {
     switch (job_val) {
@@ -156,19 +158,7 @@ sycl::event gesvd(sycl::queue exec_q,
                   dpctl::tensor::usm_ndarray out_vt,
                   const std::vector<sycl::event> &depends)
 {
-    // const int eig_vecs_nd = eig_vecs.get_ndim();
-    // const int eig_vals_nd = eig_vals.get_ndim();
-
-    // if (eig_vecs_nd != 2) {
-    //     throw py::value_error("Unexpected ndim=" +
-    //     std::to_string(eig_vecs_nd) +
-    //                           " of an output array with eigenvectors");
-    // }
-    // else if (eig_vals_nd != 1) {
-    //     throw py::value_error("Unexpected ndim=" +
-    //     std::to_string(eig_vals_nd) +
-    //                           " of an output array with eigenvalues");
-    // }
+    // check ndim if required
 
     // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(
@@ -179,36 +169,13 @@ sycl::event gesvd(sycl::queue exec_q,
             "USM allocations are not compatible with the execution queue.");
     }
 
-    // const py::ssize_t *eig_vecs_shape = eig_vecs.get_shape_raw();
-    // const py::ssize_t *eig_vals_shape = eig_vals.get_shape_raw();
-
-    // if (eig_vecs_shape[0] != eig_vecs_shape[1]) {
-    //     throw py::value_error("Output array with eigenvectors with be
-    //     square");
-    // }
-    // else if (eig_vecs_shape[0] != eig_vals_shape[0]) {
-    //     throw py::value_error(
-    //         "Eigenvectors and eigenvalues have different shapes");
-    // }
-
-    // size_t src_nelems(1);
-
-    // for (int i = 0; i < eig_vecs_nd; ++i) {
-    //     src_nelems *= static_cast<size_t>(eig_vecs_shape[i]);
-    // }
-
-    // if (src_nelems == 0) {
-    //     // nothing to do
-    //     return std::make_pair(sycl::event(), sycl::event());
-    // }
+    // check shape if required
 
     // auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     // if (overlap(eig_vecs, eig_vals)) {
     //     throw py::value_error("Arrays with eigenvectors and eigenvalues are "
     //                           "overlapping segments of memory");
     // }
-
-    // need to add the check typenum
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
@@ -218,8 +185,9 @@ sycl::event gesvd(sycl::queue exec_q,
     gesvd_impl_fn_ptr_t gesvd_fn =
         gesvd_dispatch_table[a_array_type_id][out_s_type_id];
     if (gesvd_fn == nullptr) {
-        throw py::value_error("No gesvd implementation defined for a pair of "
-                              "type for eigenvectors and eigenvalues");
+        throw py::value_error(
+            "No gesvd implementation is defined for the given pair "
+            "of array type and output singular values type.");
     }
 
     char *a_array_data = a_array.get_data();
@@ -231,25 +199,16 @@ sycl::event gesvd(sycl::queue exec_q,
 
     const py::ssize_t *a_array_shape = a_array.get_shape_raw();
 
-    const std::int64_t m = a_array_shape[0]; // 2
-    const std::int64_t n = a_array_shape[1]; // 3
+    const std::int64_t m = a_array_shape[0];
+    const std::int64_t n = a_array_shape[1];
     const std::int64_t s = std::min<size_t>(m, n);
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldu = std::max<size_t>(1UL, m);
     const std::int64_t ldvt = std::max<size_t>(1UL, n);
 
-    // char jobu_char = static_cast<char>(jobu_val);
-    // if (jobu_char == 'A'){
-    //     std::cout << "INSIDE IF" << std::endl;
-    // }
     const oneapi::mkl::jobsvd jobu = process_job(jobu_val);
     const oneapi::mkl::jobsvd jobvt = process_job(jobvt_val);
-
-    // const std::int64_t n = eig_vecs_shape[0];
-    // const oneapi::mkl::job jobz_val = static_cast<oneapi::mkl::job>(jobz);
-    // const oneapi::mkl::uplo uplo_val =
-    //     static_cast<oneapi::mkl::uplo>(upper_lower);
 
     std::vector<sycl::event> host_task_events;
     sycl::event gesvd_ev =

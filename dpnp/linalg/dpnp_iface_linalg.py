@@ -563,4 +563,4 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     if hermitian is True:
         raise ValueError("The hermitian argument is only supported as False")
 
-    return dpnp_svd(a, full_matrices=True, compute_uv=True)
+    return dpnp_svd(a, full_matrices, compute_uv)

@@ -211,9 +211,8 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
 
     a_h = dpnp.empty_like(a, order="C", dtype=res_type)
 
-    # use DPCTL tensor function to fill the coefficient matrix array
-    # and the array of multiple dependent variables with content
-    # from the input arrays
+    # use DPCTL tensor function to fill the сopy of the input array
+    # from the input array
     a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
     )
@@ -250,41 +249,6 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
     )
 
     lapack_ev.wait()
+    a_ht_copy_ev.wait()
 
     return u_h, s_h, vt_h
-
-    # use DPCTL tensor function to fill the coefficient matrix array
-    # and the array of multiple dependent variables with content
-    # from the input arrays
-    # a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-    #     src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a.sycl_queue
-    # )
-    # b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-    #     src=b_usm_arr, dst=b_f.get_array(), sycl_queue=b.sycl_queue
-    # )
-
-    # Call the LAPACK extension function _gesv to solve the system of linear
-    # equations with the coefficient square matrix and the dependent variables array.
-    # lapack_ev = li._gesv(
-    #     exec_q, a_f.get_array(), b_f.get_array(), [a_copy_ev, b_copy_ev]
-    # )
-
-    # if b_order != "F":
-    #     # need to align order of the result of solutions with the
-    #     # input array of multiple dependent variables
-    #     out_v = dpnp.empty_like(b_f, order=b_order)
-    #     ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-    #         src=b_f.get_array(),
-    #         dst=out_v.get_array(),
-    #         sycl_queue=b.sycl_queue,
-    #         depends=[lapack_ev],
-    #     )
-    #     ht_copy_out_ev.wait()
-    # else:
-    #     out_v = b_f
-
-    # lapack_ev.wait()
-    # b_ht_copy_ev.wait()
-    # a_ht_copy_ev.wait()
-
-    # return out_v
