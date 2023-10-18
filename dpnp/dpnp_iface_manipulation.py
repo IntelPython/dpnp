@@ -405,10 +405,12 @@ def broadcast_to(array, /, shape, subok=False):
 
 def can_cast(from_, to, casting="safe"):
     """
-    Returns True if cast between data types can occur according to the casting rule.
+    Returns ``True`` if cast between data types can occur according to the casting rule.
 
     If `from` is a scalar or array scalar, also returns ``True`` if the scalar value can
     be cast without overflow or truncation to an integer.
+
+    For full documentation refer to :obj:`numpy.can_cast`.
 
     Parameters
     ----------
@@ -424,13 +426,20 @@ def can_cast(from_, to, casting="safe"):
     out: bool
         True if cast can occur according to the casting rule.
 
+    See Also
+    --------
+    :obj:`dpnp.result_type` : Returns the type that results from applying the NumPy
+        type promotion rules to the arguments.
+
     """
 
-    if isinstance(to, dpnp_array):
-        raise TypeError("Expected dtype type")
+    if dpnp.is_supported_array_type(to):
+        raise TypeError("Cannot construct a dtype from an array")
 
     dtype_from = (
-        from_.dtype if isinstance(from_, dpnp_array) else dpnp.dtype(from_)
+        from_.dtype
+        if dpnp.is_supported_array_type(from_)
+        else dpnp.dtype(from_)
     )
     return dpt.can_cast(dtype_from, to, casting)
 
@@ -552,7 +561,7 @@ def copyto(dst, src, casting="same_kind", where=True):
     elif not dpnp.is_supported_array_type(src):
         src = dpnp.array(src, sycl_queue=dst.sycl_queue)
 
-    if not dpt.can_cast(src.dtype, dst.dtype, casting=casting):
+    if not dpnp.can_cast(src.dtype, dst.dtype, casting=casting):
         raise TypeError(
             f"Cannot cast from {src.dtype} to {dst.dtype} "
             f"according to the rule {casting}."
