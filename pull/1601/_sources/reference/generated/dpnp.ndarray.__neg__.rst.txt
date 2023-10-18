@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.\_\_neg\_\_
-========================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.__neg__
