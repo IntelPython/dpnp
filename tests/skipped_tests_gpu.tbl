@@ -241,8 +241,6 @@ tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestAngle::test_a
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_inplace
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_inplace
 
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayDiagonal::test_diagonal1
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayDiagonal::test_diagonal2
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order_copied
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order_transposed
