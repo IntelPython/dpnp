@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.all
-================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.all
