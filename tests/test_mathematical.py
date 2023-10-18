@@ -1647,6 +1647,7 @@ def test_sum_empty_out(dtype):
     assert_array_equal(out.asnumpy(), numpy.array(0, dtype=dtype))
 
 
+@pytest.mark.usefixtures("suppress_complex_warning")
 @pytest.mark.parametrize(
     "shape",
     [
