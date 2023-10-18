@@ -82,8 +82,8 @@ class TestCommonType(unittest.TestCase):
 @testing.parameterize(
     *testing.product(
         {
-            "obj_type1": ["dtype", "specifier", "array", "primitive"],
-            "obj_type2": ["dtype", "specifier", "array", "primitive"],
+            "obj_type1": ["dtype", "specifier", "scalar", "array", "primitive"],
+            "obj_type2": ["dtype", "specifier", "scalar", "array", "primitive"],
         }
     )
 )
@@ -91,7 +91,11 @@ class TestResultType(unittest.TestCase):
     @testing.for_all_dtypes_combination(names=("dtype1", "dtype2"))
     @testing.numpy_cupy_equal()
     def test_result_type(self, xp, dtype1, dtype2):
+        if "scalar" in {self.obj_type1, self.obj_type2}:
+            pytest.skip("to be aligned with NEP-50")
+
         input1 = _generate_type_routines_input(xp, dtype1, self.obj_type1)
+
         input2 = _generate_type_routines_input(xp, dtype2, self.obj_type2)
         ret = xp.result_type(input1, input2)
         assert isinstance(ret, numpy.dtype)
