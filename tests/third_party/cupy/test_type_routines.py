@@ -25,7 +25,7 @@ def _generate_type_routines_input(xp, dtype, obj_type):
 @testing.parameterize(
     *testing.product(
         {
-            "obj_type": ["dtype", "specifier", "array", "primitive"],
+            "obj_type": ["dtype", "specifier", "scalar", "array", "primitive"],
         }
     )
 )
@@ -33,7 +33,11 @@ class TestCanCast(unittest.TestCase):
     @testing.for_all_dtypes_combination(names=("from_dtype", "to_dtype"))
     @testing.numpy_cupy_equal()
     def test_can_cast(self, xp, from_dtype, to_dtype):
+        if self.obj_type == "scalar":
+            pytest.skip("to be aligned with NEP-50")
+
         from_obj = _generate_type_routines_input(xp, from_dtype, self.obj_type)
+
         ret = xp.can_cast(from_obj, to_dtype)
         assert isinstance(ret, bool)
         return ret
