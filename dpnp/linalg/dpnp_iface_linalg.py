@@ -47,7 +47,7 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.linalg.dpnp_algo_linalg import *
 
-from .dpnp_utils_linalg import dpnp_eigh
+from .dpnp_utils_linalg import dpnp_eigh, dpnp_svd
 
 __all__ = [
     "cholesky",
@@ -498,7 +498,7 @@ def qr(x1, mode="reduced"):
     return call_origin(numpy.linalg.qr, x1, mode)
 
 
-def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
+def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     """
     Singular Value Decomposition.
 
@@ -555,21 +555,12 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not x1_desc.ndim == 2:
-            pass
-        elif full_matrices is not True:
-            pass
-        elif compute_uv is not True:
-            pass
-        elif hermitian is not False:
-            pass
-        else:
-            result_tup = dpnp_svd(x1_desc, full_matrices, compute_uv, hermitian)
+    if not dpnp.is_supported_array_type(a):
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(a))
+        )
 
-            return result_tup
+    if hermitian is True:
+        raise ValueError("The hermitian argument is only supported as False")
 
-    return call_origin(
-        numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian
-    )
+    return dpnp_svd(a, full_matrices=True, compute_uv=True)

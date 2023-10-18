@@ -164,3 +164,128 @@ def dpnp_eigh(a, UPLO):
         ht_copy_ev.wait()
 
         return w, out_v
+
+
+def dpnp_svd(a, full_matrices=True, compute_uv=True):
+    """
+    dpnp_svd(a)
+
+    Return the singular value decomposition (SVD).
+    """
+
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+
+    exec_q = a.sycl_queue
+
+    if dpnp.issubdtype(a.dtype, dpnp.floating):
+        res_type = (
+            a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
+        )
+    elif dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        res_type = (
+            a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.complex64
+        )
+    else:
+        res_type = (
+            dpnp.float64 if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
+        )
+
+    res_type_s = (
+        dpnp.float64 if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
+    )
+
+    m, n = a.shape
+
+    if m == 0 or n == 0:
+        s = dpnp.empty((0,), res_type_s)
+        if compute_uv:
+            if full_matrices:
+                u = dpnp.eye(m, dtype=res_type)
+                vt = dpnp.eye(n, dtype=res_type)
+            else:
+                u = dpnp.empty((m, 0), dtype=res_type)
+                vt = dpnp.empty((0, n), dtype=res_type)
+            return u, s, vt
+        else:
+            return s
+
+    a_h = dpnp.empty_like(a, order="C", dtype=res_type)
+
+    # use DPCTL tensor function to fill the coefficient matrix array
+    # and the array of multiple dependent variables with content
+    # from the input arrays
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
+    )
+
+    k = min(m, n)
+    if compute_uv:
+        if full_matrices:
+            u_h = dpnp.empty((m, m), dtype=res_type)
+            vt_h = dpnp.empty((n, n), dtype=res_type)
+
+            jobu = ord("A")
+            jobvt = ord("A")
+        else:
+            u_h = dpnp.empty((m, m), dtype=res_type)
+            vt_h = dpnp.empty((n, k), dtype=res_type)
+            jobu = ord("A")
+            jobvt = ord("S")
+        u_h_array, vt_h_array = u_h.get_array(), vt_h.get_array()
+    else:
+        u_h_array, vt_h_array = 0, 0
+        jobu = ord("N")
+        jobvt = ord("N")
+
+    s_h = dpnp.empty(k, dtype=res_type_s)
+
+    lapack_ev = li._gesvd(
+        exec_q,
+        jobu,
+        jobvt,
+        a_h.get_array(),
+        s_h.get_array(),
+        u_h_array,
+        vt_h_array,
+        [a_copy_ev],
+    )
+
+    lapack_ev.wait()
+
+    return u_h, s_h, vt_h
+
+    # use DPCTL tensor function to fill the coefficient matrix array
+    # and the array of multiple dependent variables with content
+    # from the input arrays
+    # a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+    #     src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a.sycl_queue
+    # )
+    # b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+    #     src=b_usm_arr, dst=b_f.get_array(), sycl_queue=b.sycl_queue
+    # )
+
+    # Call the LAPACK extension function _gesv to solve the system of linear
+    # equations with the coefficient square matrix and the dependent variables array.
+    # lapack_ev = li._gesv(
+    #     exec_q, a_f.get_array(), b_f.get_array(), [a_copy_ev, b_copy_ev]
+    # )
+
+    # if b_order != "F":
+    #     # need to align order of the result of solutions with the
+    #     # input array of multiple dependent variables
+    #     out_v = dpnp.empty_like(b_f, order=b_order)
+    #     ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+    #         src=b_f.get_array(),
+    #         dst=out_v.get_array(),
+    #         sycl_queue=b.sycl_queue,
+    #         depends=[lapack_ev],
+    #     )
+    #     ht_copy_out_ev.wait()
+    # else:
+    #     out_v = b_f
+
+    # lapack_ev.wait()
+    # b_ht_copy_ev.wait()
+    # a_ht_copy_ev.wait()
+
+    # return out_v

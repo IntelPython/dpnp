@@ -29,6 +29,7 @@ pybind11_add_module(${python_module_name} MODULE
     lapack_py.cpp
     heevd.cpp
     syevd.cpp
+    gesvd.cpp
 )
 
 if (WIN32)

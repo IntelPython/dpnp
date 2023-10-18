@@ -30,6 +30,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "gesvd.hpp"
 #include "heevd.hpp"
 #include "syevd.hpp"
 
@@ -46,6 +47,7 @@ void init_dispatch_vectors(void)
 void init_dispatch_tables(void)
 {
     lapack_ext::init_heevd_dispatch_table();
+    lapack_ext::init_gesvd_dispatch_table();
 }
 
 PYBIND11_MODULE(_lapack_impl, m)
@@ -66,4 +68,11 @@ PYBIND11_MODULE(_lapack_impl, m)
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
           py::arg("eig_vecs"), py::arg("eig_vals"),
           py::arg("depends") = py::list());
+
+    m.def("_gesvd", &lapack_ext::gesvd,
+          "Call `gesvd` from OneMKL LAPACK library to return "
+          "the singular value decomposition of a general rectangular matrix",
+          py::arg("sycl_queue"), py::arg("jobu_val"), py::arg("jobvt_val"),
+          py::arg("a_array"), py::arg("res_s"), py::arg("res_u"),
+          py::arg("res_vt"), py::arg("depends") = py::list());
 }
