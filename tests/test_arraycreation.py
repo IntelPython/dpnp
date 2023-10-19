@@ -201,7 +201,6 @@ def test_fromstring(dtype):
     assert_array_equal(func(dpnp), func(numpy))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 @pytest.mark.parametrize("num", [2, 4, 8, 3, 9, 27])
 @pytest.mark.parametrize("endpoint", [True, False])
@@ -209,17 +208,14 @@ def test_geomspace(dtype, num, endpoint):
     start = 2
     stop = 256
 
-    func = lambda xp: xp.geomspace(start, stop, num, endpoint, dtype)
+    func = lambda xp: xp.geomspace(
+        start, stop, num, endpoint=endpoint, dtype=dtype
+    )
 
     np_res = func(numpy)
     dpnp_res = func(dpnp)
 
-    # Note that the above may not produce exact integers:
-    # (c) https://numpy.org/doc/stable/reference/generated/numpy.geomspace.html
-    if dtype in [numpy.int64, numpy.int32]:
-        assert_allclose(dpnp_res, np_res, atol=1)
-    else:
-        assert_allclose(dpnp_res, np_res)
+    assert_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize("n", [0, 1, 4], ids=["0", "1", "4"])
@@ -716,3 +712,8 @@ def test_set_shape(shape):
     da.shape = shape
 
     assert_array_equal(na, da)
+
+
+def test_linspace_retstep_error():
+    with pytest.raises(NotImplementedError):
+        dpnp.linspace(2, 5, 3, retstep=True)

@@ -50,6 +50,12 @@ import dpnp.dpnp_container as dpnp_container
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
+from .dpnp_algo.dpnp_arraycreation import (
+    dpnp_geomspace,
+    dpnp_linspace,
+    dpnp_logspace,
+)
+
 __all__ = [
     "arange",
     "array",
@@ -1019,15 +1025,23 @@ def full_like(
     return numpy.full_like(x1, fill_value, dtype, order, subok, shape)
 
 
-def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
+def geomspace(
+    start,
+    stop,
+    /,
+    num,
+    *,
+    dtype=None,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+    endpoint=True,
+    axis=0,
+):
     """
     Return numbers spaced evenly on a log scale (a geometric progression).
 
     For full documentation refer to :obj:`numpy.geomspace`.
-
-    Limitations
-    -----------
-    Parameter `axis` is supported only with default value ``0``.
 
     See Also
     --------
@@ -1041,24 +1055,25 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.geomspace(1, 1000, num=4)
-    >>> [i for i in x]
-    [1.0, 10.0, 100.0, 1000.0]
+    >>> np.geomspace(1, 1000, num=4)
+    array([   1.,   10.,  100., 1000.])
+
     >>> x2 = np.geomspace(1, 1000, num=4, endpoint=False)
-    >>> [i for i in x2]
-    [1.0, 5.62341325, 31.6227766, 177.827941]
+    array([  1.        ,   5.62341325,  31.6227766 , 177.827941  ])
 
     """
 
-    if not use_origin_backend():
-        if axis != 0:
-            pass
-        else:
-            return dpnp_geomspace(
-                start, stop, num, endpoint, dtype, axis
-            ).get_pyobj()
-
-    return call_origin(numpy.geomspace, start, stop, num, endpoint, dtype, axis)
+    return dpnp_geomspace(
+        start,
+        stop,
+        num,
+        dtype=dtype,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+        endpoint=endpoint,
+        axis=axis,
+    )
 
 
 def identity(
@@ -1135,9 +1150,8 @@ def linspace(
 
     Limitations
     -----------
-    Parameter `axis` is supported only with default value ``0``.
     Parameter `retstep` is supported only with default value ``False``.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
@@ -1151,36 +1165,29 @@ def linspace(
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.linspace(2.0, 3.0, num=5)
-    >>> [i for i in x]
-    [2.0, 2.25, 2.5, 2.75, 3.0]
-    >>> x2 = np.linspace(2.0, 3.0, num=5, endpoint=False)
-    >>> [i for i in x2]
-    [2.0, 2.2, 2.4, 2.6, 2.8]
-    >>> x3, step = np.linspace(2.0, 3.0, num=5, retstep=True)
-    >>> [i for i in x3], step
-    ([2.0, 2.25, 2.5, 2.75, 3.0], 0.25)
+    >>> np.linspace(2.0, 3.0, num=5)
+    array([2.  , 2.25, 2.5 , 2.75, 3.  ])
+
+    >>> np.linspace(2.0, 3.0, num=5, endpoint=False)
+    array([2. , 2.2, 2.4, 2.6, 2.8])
 
     """
 
     if retstep is not False:
-        pass
-    elif axis != 0:
-        pass
-    else:
-        return dpnp_linspace(
-            start,
-            stop,
-            num,
-            dtype=dtype,
-            device=device,
-            usm_type=usm_type,
-            sycl_queue=sycl_queue,
-            endpoint=endpoint,
+        raise NotImplementedError(
+            f"retstep={retstep} is currently not supported"
         )
 
-    return call_origin(
-        numpy.linspace, start, stop, num, endpoint, retstep, dtype, axis
+    return dpnp_linspace(
+        start,
+        stop,
+        num,
+        dtype=dtype,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+        endpoint=endpoint,
+        axis=axis,
     )
 
 
@@ -1210,15 +1217,24 @@ def loadtxt(fname, **kwargs):
     return call_origin(numpy.loadtxt, fname, **kwargs)
 
 
-def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
+def logspace(
+    start,
+    stop,
+    /,
+    num=50,
+    *,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+    endpoint=True,
+    base=10.0,
+    dtype=None,
+    axis=0,
+):
     """
     Return numbers spaced evenly on a log scale.
 
     For full documentation refer to :obj:`numpy.logspace`.
-
-    Limitations
-    -----------
-    Parameter `axis` is supported only with default value ``0``.
 
     See Also
     --------
@@ -1234,28 +1250,28 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.logspace(2.0, 3.0, num=4)
-    >>> [i for i in x]
-    [100.0, 215.443469, 464.15888336, 1000.0]
-    >>> x2 = np.logspace(2.0, 3.0, num=4, endpoint=False)
-    >>> [i for i in x2]
-    [100.0, 177.827941, 316.22776602, 562.34132519]
-    >>> x3 = np.logspace(2.0, 3.0, num=4, base=2.0)
-    >>> [i for i in x3]
-    [4.0, 5.0396842, 6.34960421, 8.0]
+    >>> np.logspace(2.0, 3.0, num=4)
+    array([ 100.        ,  215.443469  ,  464.15888336, 1000.        ])
+
+    >>> np.logspace(2.0, 3.0, num=4, endpoint=False)
+    array([100.        , 177.827941  , 316.22776602, 562.34132519])
+
+    >>> np.logspace(2.0, 3.0, num=4, base=2.0)
+    array([4.        , 5.0396842 , 6.34960421, 8.        ])
 
     """
 
-    if not use_origin_backend():
-        if axis != 0:
-            checker_throw_value_error("linspace", "axis", axis, 0)
-
-        return dpnp_logspace(
-            start, stop, num, endpoint, base, dtype, axis
-        ).get_pyobj()
-
-    return call_origin(
-        numpy.logspace, start, stop, num, endpoint, base, dtype, axis
+    return dpnp_logspace(
+        start,
+        stop,
+        num=num,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+        endpoint=endpoint,
+        base=base,
+        dtype=dtype,
+        axis=axis,
     )
 
 

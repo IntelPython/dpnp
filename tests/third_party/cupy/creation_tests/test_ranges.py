@@ -214,13 +214,11 @@ class TestRanges(unittest.TestCase):
         stop = [100, 16]
         return xp.linspace(start, stop, num=50, dtype=dtype)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def test_logspace(self, xp, dtype):
         return xp.logspace(0, 2, 5, dtype=dtype)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def test_logspace2(self, xp, dtype):
@@ -231,29 +229,24 @@ class TestRanges(unittest.TestCase):
     def test_logspace_zero_num(self, xp, dtype):
         return xp.logspace(0, 2, 0, dtype=dtype)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def test_logspace_one_num(self, xp, dtype):
         return xp.logspace(0, 2, 1, dtype=dtype)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def test_logspace_no_endpoint(self, xp, dtype):
         return xp.logspace(0, 2, 5, dtype=dtype, endpoint=False)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_allclose(rtol=1e-4, type_check=has_support_aspect64())
     def test_logspace_no_dtype_int(self, xp):
         return xp.logspace(0, 2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_allclose(rtol=1e-4, type_check=has_support_aspect64())
     def test_logspace_no_dtype_float(self, xp):
         return xp.logspace(0.0, 2.0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_allclose()
     def test_logspace_float_args_with_int_dtype(self, xp):
         return xp.logspace(0.1, 2.1, 11, dtype=int)
@@ -263,7 +256,6 @@ class TestRanges(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.logspace(0, 10, -1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose(rtol=1e-04)
     def test_logspace_base(self, xp, dtype):
