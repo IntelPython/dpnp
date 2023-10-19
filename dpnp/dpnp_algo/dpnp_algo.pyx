@@ -54,7 +54,6 @@ import operator
 import numpy
 
 __all__ = [
-    "dpnp_astype",
     "dpnp_flatten",
     "dpnp_queue_initialize",
 ]
@@ -74,9 +73,6 @@ include "dpnp_algo_statistics.pxi"
 include "dpnp_algo_trigonometric.pxi"
 
 
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_astype_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                        const void *, void * , const size_t,
-                                                        const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_flatten_t)(c_dpctl.DPCTLSyclQueueRef,
                                                          void *, const size_t, const size_t,
                                                          const shape_elem_type * , const shape_elem_type * ,
@@ -84,37 +80,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_flatten_t)(c_dpctl.DPCTLSyclQueueR
                                                          const shape_elem_type * , const shape_elem_type * ,
                                                          const long * ,
                                                          const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef utils.dpnp_descriptor dpnp_astype(utils.dpnp_descriptor x1, dtype):
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ASTYPE_EXT, param1_type, param2_type)
-
-    x1_obj = x1.get_array()
-
-    # create result array with type given by FPTR data
-    cdef shape_type_c result_shape = x1.shape
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=x1_obj.sycl_device,
-                                                                       usm_type=x1_obj.usm_type,
-                                                                       sycl_queue=x1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_dpnp_astype_t func = <fptr_dpnp_astype_t > kernel_data.ptr
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, x1.get_data(), result.get_data(), x1.size, NULL)
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1):
