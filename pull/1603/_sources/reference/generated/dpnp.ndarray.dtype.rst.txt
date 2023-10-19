@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.dtype
+==================
+
+.. currentmodule:: dpnp
+
+.. autoproperty:: ndarray.dtype
