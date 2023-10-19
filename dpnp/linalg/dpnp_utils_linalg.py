@@ -175,6 +175,7 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
 
     exec_q = a.sycl_queue
 
+    # TODO: Use linalg_common_type from #1598
     if dpnp.issubdtype(a.dtype, dpnp.floating):
         res_type = (
             a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
@@ -190,7 +191,8 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
 
     res_type_s = (
         dpnp.float64
-        if exec_q.sycl_device.has_aspect_fp64 and res_type == dpnp.float64
+        if exec_q.sycl_device.has_aspect_fp64
+        and (res_type == dpnp.float64 or res_type == dpnp.complex128)
         else dpnp.float32
     )
 
