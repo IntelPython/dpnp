@@ -50,4 +50,3 @@ cdef class dparray:
     cdef void * get_data(self)
 
     cpdef item(self, id=*)
-    cpdef dparray astype(self, dtype, order=*, casting=*, subok=*, copy=*)
