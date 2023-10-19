@@ -41,6 +41,8 @@ namespace lapack
 sycl::event gesvd(sycl::queue exec_q,
                   const std::int8_t jobu_val,
                   const std::int8_t jobvt_val,
+                  const std::int64_t m,
+                  const std::int64_t n,
                   dpctl::tensor::usm_ndarray a_array,
                   dpctl::tensor::usm_ndarray res_s,
                   dpctl::tensor::usm_ndarray res_u,

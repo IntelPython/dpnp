@@ -173,8 +173,6 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
     Return the singular value decomposition (SVD).
     """
 
-    a_usm_arr = dpnp.get_usm_ndarray(a)
-
     exec_q = a.sycl_queue
 
     if dpnp.issubdtype(a.dtype, dpnp.floating):
@@ -191,13 +189,15 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
         )
 
     res_type_s = (
-        dpnp.float64 if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
+        dpnp.float64
+        if exec_q.sycl_device.has_aspect_fp64 and res_type == dpnp.float64
+        else dpnp.float32
     )
 
     m, n = a.shape
 
     if m == 0 or n == 0:
-        s = dpnp.empty((0,), res_type_s)
+        s = dpnp.empty((0,), dtype=res_type_s)
         if compute_uv:
             if full_matrices:
                 u = dpnp.eye(m, dtype=res_type)
@@ -209,7 +209,19 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
         else:
             return s
 
-    a_h = dpnp.empty_like(a, order="C", dtype=res_type)
+    # `a`` must be copied because gesvd destroys the input matrix
+    # `a` must be traspotted if n < m
+    if n >= m:
+        x = a
+        a_h = dpnp.empty_like(a, order="C", dtype=res_type)
+        trans_flag = False
+    else:
+        n, m = a.shape
+        x = a.transpose()
+        a_h = dpnp.empty_like(x, order="C", dtype=res_type)
+        trans_flag = True
+
+    a_usm_arr = dpnp.get_usm_ndarray(x)
 
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
@@ -227,7 +239,7 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
             jobvt = ord("A")
         else:
             u_h = dpnp.empty((m, m), dtype=res_type)
-            vt_h = dpnp.empty((n, k), dtype=res_type)
+            vt_h = dpnp.empty((k, n), dtype=res_type)
             jobu = ord("A")
             jobvt = ord("S")
     else:
@@ -241,6 +253,8 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
         exec_q,
         jobu,
         jobvt,
+        m,
+        n,
         a_h.get_array(),
         s_h.get_array(),
         u_h.get_array(),
@@ -251,4 +265,10 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
     lapack_ev.wait()
     a_ht_copy_ev.wait()
 
-    return u_h, s_h, vt_h
+    if compute_uv:
+        if trans_flag:
+            return vt_h.transpose(), s_h, u_h.transpose()
+        else:
+            return u_h, s_h, vt_h
+    else:
+        return s_h

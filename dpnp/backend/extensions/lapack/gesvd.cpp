@@ -152,6 +152,8 @@ static sycl::event gesvd_impl(sycl::queue exec_q,
 sycl::event gesvd(sycl::queue exec_q,
                   const std::int8_t jobu_val,
                   const std::int8_t jobvt_val,
+                  const std::int64_t m,
+                  const std::int64_t n,
                   dpctl::tensor::usm_ndarray a_array,
                   dpctl::tensor::usm_ndarray out_s,
                   dpctl::tensor::usm_ndarray out_u,
@@ -177,6 +179,8 @@ sycl::event gesvd(sycl::queue exec_q,
     //                           "overlapping segments of memory");
     // }
 
+    // need to add the check equality of types a, out_vt, out_u
+
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
@@ -197,10 +201,6 @@ sycl::event gesvd(sycl::queue exec_q,
 
     const int a_array_nd = a_array.get_ndim();
 
-    const py::ssize_t *a_array_shape = a_array.get_shape_raw();
-
-    const std::int64_t m = a_array_shape[0];
-    const std::int64_t n = a_array_shape[1];
     const std::int64_t s = std::min<size_t>(m, n);
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
@@ -215,8 +215,6 @@ sycl::event gesvd(sycl::queue exec_q,
         gesvd_fn(exec_q, jobu, jobvt, m, n, a_array_data, lda, out_s_data,
                  out_u_data, ldu, out_vt_data, ldvt, host_task_events, depends);
 
-    // sycl::event args_ev = dpctl::utils::keep_args_alive(
-    //     exec_q, {eig_vecs, eig_vals}, host_task_events);
     return gesvd_ev;
 }
 
