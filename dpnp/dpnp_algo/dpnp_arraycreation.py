@@ -99,9 +99,9 @@ def dpnp_geomspace(
 
     both_negative = (dpnp.sign(start) == -1) & (dpnp.sign(stop) == -1)
     if dpnp.any(both_negative):
-        dpnp.negative(start, out=start, where=both_negative)
-        dpnp.negative(stop, out=stop, where=both_negative)
-        dpnp.negative(out_sign, out=out_sign, where=both_negative)
+        dpnp.negative(start[both_negative], out=start[both_negative])
+        dpnp.negative(stop[both_negative], out=stop[both_negative])
+        dpnp.negative(out_sign[both_negative], out=out_sign[both_negative])
 
     log_start = dpnp.log10(start)
     log_stop = dpnp.log10(stop)
@@ -271,7 +271,7 @@ def dpnp_logspace(
         base, dt, usm_type, _usm_type, sycl_queue_normalized
     )
 
-    _base = dpnp.expand_dims(_base, axis=axis)
+    print(res.shape)
     if dtype is None:
         return dpnp.power(_base, res)
     return dpnp.power(_base, res).astype(dtype, copy=False)

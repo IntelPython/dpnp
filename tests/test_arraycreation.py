@@ -201,23 +201,6 @@ def test_fromstring(dtype):
     assert_array_equal(func(dpnp), func(numpy))
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes())
-@pytest.mark.parametrize("num", [2, 4, 8, 3, 9, 27])
-@pytest.mark.parametrize("endpoint", [True, False])
-def test_geomspace(dtype, num, endpoint):
-    start = 2
-    stop = 256
-
-    func = lambda xp: xp.geomspace(
-        start, stop, num, endpoint=endpoint, dtype=dtype
-    )
-
-    np_res = func(numpy)
-    dpnp_res = func(dpnp)
-
-    assert_allclose(dpnp_res, np_res)
-
-
 @pytest.mark.parametrize("n", [0, 1, 4], ids=["0", "1", "4"])
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_identity(n, dtype):
@@ -690,6 +673,12 @@ def test_linspace_complex():
     assert_allclose(func(numpy), func(dpnp))
 
 
+@pytest.mark.parametrize("axis", [0, 1])
+def test_linspace_axis(axis):
+    func = lambda xp: xp.linspace([2, 3], [20, 15], num=10, axis=axis)
+    assert_allclose(func(numpy), func(dpnp))
+
+
 @pytest.mark.parametrize(
     "arrays",
     [[], [[1]], [[1, 2, 3], [4, 5, 6]], [[1, 2], [3, 4], [5, 6]]],
@@ -717,3 +706,70 @@ def test_set_shape(shape):
 def test_linspace_retstep_error():
     with pytest.raises(NotImplementedError):
         dpnp.linspace(2, 5, 3, retstep=True)
+
+
+def test_space_num_error():
+    with pytest.raises(ValueError):
+        dpnp.linspace(2, 5, -3)
+        dpnp.geomspace(2, 5, -3)
+        dpnp.logspace(2, 5, -3)
+
+
+@pytest.mark.parametrize("sign", [-1, 1])
+@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.parametrize("num", [2, 4, 8, 3, 9, 27])
+@pytest.mark.parametrize("endpoint", [True, False])
+def test_geomspace(sign, dtype, num, endpoint):
+    start = 2 * sign
+    stop = 256 * sign
+
+    func = lambda xp: xp.geomspace(
+        start, stop, num, endpoint=endpoint, dtype=dtype
+    )
+
+    np_res = func(numpy)
+    dpnp_res = func(dpnp)
+
+    assert_allclose(dpnp_res, np_res)
+
+
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+# dpnp.sign raise numpy fall back for complex dtype
+def test_geomspace_complex():
+    func = lambda xp: xp.geomspace(1j, 10j, num=10)
+    assert_allclose(func(numpy), func(dpnp))
+
+
+@pytest.mark.parametrize("axis", [0, 1])
+def test_geomspace_axis(axis):
+    func = lambda xp: xp.geomspace([2, 3], [20, 15], num=10, axis=axis)
+    assert_allclose(func(numpy), func(dpnp))
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.parametrize("num", [2, 4, 8, 3, 9, 27])
+@pytest.mark.parametrize("base", [-2, 2])
+@pytest.mark.parametrize("endpoint", [True, False])
+def test_logspace(dtype, num, endpoint, base):
+    start = 2
+    stop = 5
+
+    func = lambda xp: xp.logspace(
+        start, stop, num, endpoint=endpoint, dtype=dtype, base=base
+    )
+
+    np_res = func(numpy)
+    dpnp_res = func(dpnp)
+
+    if dtype in [numpy.int64, numpy.int32]:
+        assert_allclose(dpnp_res, np_res, rtol=1)
+    else:
+        assert_allclose(dpnp_res, np_res)
+
+
+@pytest.mark.parametrize("axis", [0, 1])
+def test_logspace_axis(axis):
+    func = lambda xp: xp.logspace(
+        [2, 3], [20, 15], num=2, base=[[1, 3], [5, 7]], axis=axis
+    )
+    assert_allclose(func(numpy), func(dpnp))
