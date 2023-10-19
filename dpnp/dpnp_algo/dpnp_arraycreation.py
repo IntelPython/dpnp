@@ -235,8 +235,6 @@ def dpnp_logspace(
 
     dt = numpy.result_type(start, stop, float(num))
     dt = utils.map_dtype_to_device(dt, sycl_queue_normalized.sycl_device)
-    if dtype is None:
-        dtype = dt
 
     if dpnp.isscalar(start) and dpnp.isscalar(stop):
         # Call linspace() function for scalars.

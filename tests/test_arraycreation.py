@@ -708,11 +708,21 @@ def test_linspace_retstep_error():
         dpnp.linspace(2, 5, 3, retstep=True)
 
 
+def test_geomspace_zero_error():
+    with pytest.raises(ValueError):
+        dpnp.geomspace(0, 5, 3)
+        dpnp.geomspace(2, 0, 3)
+        dpnp.geomspace(0, 0, 3)
+
+
 def test_space_num_error():
     with pytest.raises(ValueError):
         dpnp.linspace(2, 5, -3)
         dpnp.geomspace(2, 5, -3)
         dpnp.logspace(2, 5, -3)
+        dpnp.linspace([2, 3], 5, -3)
+        dpnp.geomspace([2, 3], 5, -3)
+        dpnp.logspace([2, 3], 5, -3)
 
 
 @pytest.mark.parametrize("sign", [-1, 1])
