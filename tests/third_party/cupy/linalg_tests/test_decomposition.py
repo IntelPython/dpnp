@@ -10,10 +10,10 @@ from tests.third_party.cupy import testing
 from tests.third_party.cupy.testing import condition
 
 
-def stacked_identity(batch_shape, n, dtype):
+def stacked_identity(xp, batch_shape, n, dtype):
     shape = batch_shape + (n, n)
-    idx = cupy.arange(n)
-    x = cupy.zeros(shape, dtype=dtype)
+    idx = xp.arange(n)
+    x = xp.zeros(shape, dtype=dtype)
     x[..., idx, idx] = 1
     return x
 
@@ -65,16 +65,12 @@ class TestSVD(unittest.TestCase):
         # reconstruct the matrix
         k = s_cpu.shape[-1]
 
-        # dpnp.dot/matmul does not support complex type
-        # TODO: remove it when support for complex types for dot/matmul is added
-        xp = cupy
-        if cupy.issubdtype(
-            u_gpu.dtype, cupy.complexfloating
-        ) or cupy.issubdtype(s_gpu.dtype, cupy.complexfloating):
-            u_gpu = cupy.asnumpy(u_gpu)
-            vh_gpu = cupy.asnumpy(vh_gpu)
-            s_gpu = cupy.asnumpy(s_gpu)
-            xp = numpy
+        # dpnp.dot/matmul does not support complex type and unstable on cpu
+        # TODO: remove it when dpnp.dot/matmul is updated
+        u_gpu = cupy.asnumpy(u_gpu)
+        vh_gpu = cupy.asnumpy(vh_gpu)
+        s_gpu = cupy.asnumpy(s_gpu)
+        xp = numpy
 
         if len(shape) == 2:
             if self.full_matrices:
@@ -95,12 +91,12 @@ class TestSVD(unittest.TestCase):
         vh_len = vh_gpu.shape[-2]
         testing.assert_allclose(
             xp.matmul(u_gpu.swapaxes(-1, -2).conj(), u_gpu),
-            stacked_identity(shape[:-2], u_len, dtype),
+            stacked_identity(xp, shape[:-2], u_len, dtype),
             atol=1e-4,
         )
         testing.assert_allclose(
             xp.matmul(vh_gpu, vh_gpu.swapaxes(-1, -2).conj()),
-            stacked_identity(shape[:-2], vh_len, dtype),
+            stacked_identity(xp, shape[:-2], vh_len, dtype),
             atol=1e-4,
         )
 
