@@ -196,29 +196,29 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
         else dpnp.float32
     )
 
-    m, n = a.shape
+    n, m = a.shape
 
     if m == 0 or n == 0:
         s = dpnp.empty((0,), dtype=res_type_s)
         if compute_uv:
             if full_matrices:
-                u = dpnp.eye(m, dtype=res_type)
-                vt = dpnp.eye(n, dtype=res_type)
+                u = dpnp.eye(n, dtype=res_type)
+                vt = dpnp.eye(m, dtype=res_type)
             else:
-                u = dpnp.empty((m, 0), dtype=res_type)
-                vt = dpnp.empty((0, n), dtype=res_type)
+                u = dpnp.empty((n, 0), dtype=res_type)
+                vt = dpnp.empty((0, m), dtype=res_type)
             return u, s, vt
         else:
             return s
 
     # `a`` must be copied because gesvd destroys the input matrix
-    # `a` must be traspotted if n < m
-    if n >= m:
+    # `a` must be traspotted if m >= n
+    if m >= n:
         x = a
         a_h = dpnp.empty_like(a, order="C", dtype=res_type)
         trans_flag = False
     else:
-        n, m = a.shape
+        m, n = a.shape
         x = a.transpose()
         a_h = dpnp.empty_like(x, order="C", dtype=res_type)
         trans_flag = True
@@ -231,25 +231,52 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
         src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
     )
 
-    k = min(m, n)
+    k = n  # = min(m, n) where m >= n is ensured above
     if compute_uv:
         if full_matrices:
-            u_h = dpnp.empty((m, m), dtype=res_type)
-            vt_h = dpnp.empty((n, n), dtype=res_type)
-
+            u_h = dpnp.empty(
+                (m, m),
+                dtype=res_type,
+                usm_type=a.usm_type,
+                sycl_queue=a.sycl_queue,
+            )
+            vt_h = dpnp.empty(
+                (n, n),
+                dtype=res_type,
+                usm_type=a.usm_type,
+                sycl_queue=a.sycl_queue,
+            )
             jobu = ord("A")
             jobvt = ord("A")
         else:
-            u_h = dpnp.empty((m, m), dtype=res_type)
-            vt_h = dpnp.empty((k, n), dtype=res_type)
-            jobu = ord("A")
+            u_h = dpnp.empty_like(x, dtype=res_type)
+            vt_h = dpnp.empty(
+                (k, n),
+                dtype=res_type,
+                usm_type=a.usm_type,
+                sycl_queue=a.sycl_queue,
+            )
+            jobu = ord("S")
             jobvt = ord("S")
     else:
-        u_h, vt_h = dpnp.empty([]), dpnp.empty([])
+        u_h = dpnp.empty(
+            [],
+            dtype=res_type,
+            usm_type=a.usm_type,
+            sycl_queue=a.sycl_queue,
+        )
+        vt_h = dpnp.empty(
+            [],
+            dtype=res_type,
+            usm_type=a.usm_type,
+            sycl_queue=a.sycl_queue,
+        )
         jobu = ord("N")
         jobvt = ord("N")
 
-    s_h = dpnp.empty(k, dtype=res_type_s)
+    s_h = dpnp.empty(
+        k, dtype=res_type_s, usm_type=a.usm_type, sycl_queue=a.sycl_queue
+    )
 
     lapack_ev = li._gesvd(
         exec_q,
@@ -269,8 +296,8 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
 
     if compute_uv:
         if trans_flag:
-            return vt_h.transpose(), s_h, u_h.transpose()
+            return u_h.transpose(), s_h, vt_h.transpose()
         else:
-            return u_h, s_h, vt_h
+            return vt_h, s_h, u_h
     else:
         return s_h
