@@ -107,8 +107,8 @@ static sycl::event gesvd_impl(sycl::queue exec_q,
     T *vt = reinterpret_cast<T *>(out_vt);
 
     const std::int64_t scratchpad_size =
-        oneapi::mkl::lapack::gesvd_scratchpad_size<T>(exec_q, jobu, jobvt, n, m,
-                                                      lda, ldvt, ldu);
+        oneapi::mkl::lapack::gesvd_scratchpad_size<T>(exec_q, jobu, jobvt, m, n,
+                                                      lda, ldu, ldvt);
     T *scratchpad = nullptr;
 
     std::stringstream error_msg;
@@ -119,7 +119,7 @@ static sycl::event gesvd_impl(sycl::queue exec_q,
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
 
         gesvd_event = oneapi::mkl::lapack::gesvd(
-            exec_q, jobu, jobvt, n, m, a, lda, s, vt, ldvt, u, ldu, scratchpad,
+            exec_q, jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, scratchpad,
             scratchpad_size, depends);
     } catch (mkl_lapack::exception const &e) {
         error_msg
@@ -201,9 +201,7 @@ sycl::event gesvd(sycl::queue exec_q,
 
     const int a_array_nd = a_array.get_ndim();
 
-    const std::int64_t s = std::min<size_t>(m, n);
-
-    const std::int64_t lda = std::max<size_t>(1UL, n);
+    const std::int64_t lda = std::max<size_t>(1UL, m);
     const std::int64_t ldu = std::max<size_t>(1UL, m);
     const std::int64_t ldvt = std::max<size_t>(1UL, n);
 
