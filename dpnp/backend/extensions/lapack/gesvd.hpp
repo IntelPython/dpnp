@@ -44,9 +44,9 @@ sycl::event gesvd(sycl::queue exec_q,
                   const std::int64_t m,
                   const std::int64_t n,
                   dpctl::tensor::usm_ndarray a_array,
-                  dpctl::tensor::usm_ndarray res_s,
-                  dpctl::tensor::usm_ndarray res_u,
-                  dpctl::tensor::usm_ndarray res_vt,
+                  dpctl::tensor::usm_ndarray out_s,
+                  dpctl::tensor::usm_ndarray out_u,
+                  dpctl::tensor::usm_ndarray out_vt,
                   const std::vector<sycl::event> &depends);
 
 extern void init_gesvd_dispatch_table(void);
