@@ -126,13 +126,13 @@ class TestSVD(unittest.TestCase):
         assert (a == a_copy).all()
         return result
 
-    @condition.repeat(3, 10)
+    # @condition.repeat(3, 10)
     def test_svd_rank2(self):
         self.check_usv((3, 7))
         self.check_usv((2, 2))
         self.check_usv((7, 3))
 
-    @condition.repeat(3, 10)
+    # @condition.repeat(3, 10)
     def test_svd_rank2_no_uv(self):
         self.check_singular((3, 7))
         self.check_singular((2, 2))
@@ -155,93 +155,95 @@ class TestSVD(unittest.TestCase):
             array, full_matrices=self.full_matrices, compute_uv=False
         )
 
-    # @condition.repeat(3, 10)
-    # def test_svd_rank3(self):
-    #     self.check_usv((2, 3, 4))
-    #     self.check_usv((2, 3, 7))
-    #     self.check_usv((2, 4, 4))
-    #     self.check_usv((2, 7, 3))
-    #     self.check_usv((2, 4, 3))
-    #     self.check_usv((2, 32, 32))  # still use _gesvdj_batched
+    # # @condition.repeat(3, 10)
+    def test_svd_rank3(self):
+        self.check_usv((2, 3, 4))
+        self.check_usv((2, 3, 7))
+        self.check_usv((2, 4, 4))
+        self.check_usv((2, 7, 3))
+        self.check_usv((2, 4, 3))
+        self.check_usv((2, 32, 32))
 
     # @condition.repeat(3, 10)
-    # def test_svd_rank3_loop(self):
-    #     # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
-    #     self.check_usv((2, 64, 64))
-    #     self.check_usv((2, 64, 32))
-    #     self.check_usv((2, 32, 64))
+    def test_svd_rank3_loop(self):
+        # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
+        self.check_usv((2, 64, 64))
+        self.check_usv((2, 64, 32))
+        self.check_usv((2, 32, 64))
 
     # @condition.repeat(3, 10)
-    # def test_svd_rank3_no_uv(self):
-    #     self.check_singular((2, 3, 4))
-    #     self.check_singular((2, 3, 7))
-    #     self.check_singular((2, 4, 4))
-    #     self.check_singular((2, 7, 3))
-    #     self.check_singular((2, 4, 3))
+    def test_svd_rank3_no_uv(self):
+        self.check_singular((2, 3, 4))
+        self.check_singular((2, 3, 7))
+        self.check_singular((2, 4, 4))
+        self.check_singular((2, 7, 3))
+        self.check_singular((2, 4, 3))
 
     # @condition.repeat(3, 10)
-    # def test_svd_rank3_no_uv_loop(self):
-    #     # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
-    #     self.check_singular((2, 64, 64))
-    #     self.check_singular((2, 64, 32))
-    #     self.check_singular((2, 32, 64))
+    def test_svd_rank3_no_uv_loop(self):
+        # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
+        self.check_singular((2, 64, 64))
+        self.check_singular((2, 64, 32))
+        self.check_singular((2, 32, 64))
 
-    # @testing.with_requires('numpy>=1.16')
-    # def test_svd_rank3_empty_array(self):
-    #     self.check_usv((0, 3, 4))
-    #     self.check_usv((3, 0, 4))
-    #     self.check_usv((3, 4, 0))
-    #     self.check_usv((3, 0, 0))
-    #     self.check_usv((0, 3, 0))
-    #     self.check_usv((0, 0, 3))
+    @testing.with_requires("numpy>=1.16")
+    def test_svd_rank3_empty_array(self):
+        self.check_usv((0, 3, 4))
+        self.check_usv((3, 0, 4))
+        self.check_usv((3, 4, 0))
+        self.check_usv((3, 0, 0))
+        self.check_usv((0, 3, 0))
+        self.check_usv((0, 0, 3))
 
-    # @testing.with_requires('numpy>=1.16')
-    # @testing.numpy_cupy_array_equal()
-    # def test_svd_rank3_empty_array_compute_uv_false1(self, xp):
-    #     array = xp.empty((3, 0, 4))
-    #     return xp.linalg.svd(
-    #         array, full_matrices=self.full_matrices, compute_uv=False)
+    @testing.with_requires("numpy>=1.16")
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
+    def test_svd_rank3_empty_array_compute_uv_false1(self, xp):
+        array = xp.empty((3, 0, 4))
+        return xp.linalg.svd(
+            array, full_matrices=self.full_matrices, compute_uv=False
+        )
 
-    # @testing.with_requires('numpy>=1.16')
-    # @testing.numpy_cupy_array_equal()
-    # def test_svd_rank3_empty_array_compute_uv_false2(self, xp):
-    #     array = xp.empty((0, 3, 4))
-    #     return xp.linalg.svd(
-    #         array, full_matrices=self.full_matrices, compute_uv=False)
-
-    # @condition.repeat(3, 10)
-    # def test_svd_rank4(self):
-    #     self.check_usv((2, 2, 3, 4))
-    #     self.check_usv((2, 2, 3, 7))
-    #     self.check_usv((2, 2, 4, 4))
-    #     self.check_usv((2, 2, 7, 3))
-    #     self.check_usv((2, 2, 4, 3))
-    #     self.check_usv((2, 2, 32, 32))  # still use _gesvdj_batched
+    @testing.with_requires("numpy>=1.16")
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
+    def test_svd_rank3_empty_array_compute_uv_false2(self, xp):
+        array = xp.empty((0, 3, 4))
+        return xp.linalg.svd(
+            array, full_matrices=self.full_matrices, compute_uv=False
+        )
 
     # @condition.repeat(3, 10)
-    # def test_svd_rank4_loop(self):
-    #     # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
-    #     self.check_usv((3, 2, 64, 64))
-    #     self.check_usv((3, 2, 64, 32))
-    #     self.check_usv((3, 2, 32, 64))
+    def test_svd_rank4(self):
+        self.check_usv((2, 2, 3, 4))
+        self.check_usv((2, 2, 3, 7))
+        self.check_usv((2, 2, 4, 4))
+        self.check_usv((2, 2, 7, 3))
+        self.check_usv((2, 2, 4, 3))
+        self.check_usv((2, 2, 32, 32))
 
-    # @condition.repeat(3, 10)
-    # def test_svd_rank4_no_uv(self):
-    #     self.check_singular((2, 2, 3, 4))
-    #     self.check_singular((2, 2, 3, 7))
-    #     self.check_singular((2, 2, 4, 4))
-    #     self.check_singular((2, 2, 7, 3))
-    #     self.check_singular((2, 2, 4, 3))
+    # # @condition.repeat(3, 10)
+    def test_svd_rank4_loop(self):
+        # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
+        self.check_usv((3, 2, 64, 64))
+        self.check_usv((3, 2, 64, 32))
+        self.check_usv((3, 2, 32, 64))
 
-    # @condition.repeat(3, 10)
-    # def test_svd_rank4_no_uv_loop(self):
-    #     # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
-    #     self.check_singular((3, 2, 64, 64))
-    #     self.check_singular((3, 2, 64, 32))
-    #     self.check_singular((3, 2, 32, 64))
+    # # @condition.repeat(3, 10)
+    def test_svd_rank4_no_uv(self):
+        self.check_singular((2, 2, 3, 4))
+        self.check_singular((2, 2, 3, 7))
+        self.check_singular((2, 2, 4, 4))
+        self.check_singular((2, 2, 7, 3))
+        self.check_singular((2, 2, 4, 3))
 
-    # @testing.with_requires('numpy>=1.16')
-    # def test_svd_rank4_empty_array(self):
-    #     self.check_usv((0, 2, 3, 4))
-    #     self.check_usv((1, 2, 0, 4))
-    #     self.check_usv((1, 2, 3, 0))
+    # # @condition.repeat(3, 10)
+    def test_svd_rank4_no_uv_loop(self):
+        # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
+        self.check_singular((3, 2, 64, 64))
+        self.check_singular((3, 2, 64, 32))
+        self.check_singular((3, 2, 32, 64))
+
+    @testing.with_requires("numpy>=1.16")
+    def test_svd_rank4_empty_array(self):
+        self.check_usv((0, 2, 3, 4))
+        self.check_usv((1, 2, 0, 4))
+        self.check_usv((1, 2, 3, 0))

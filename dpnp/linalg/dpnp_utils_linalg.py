@@ -28,6 +28,7 @@
 
 
 import dpctl.tensor._tensor_impl as ti
+from numpy import prod
 
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
@@ -36,6 +37,14 @@ __all__ = ["dpnp_eigh"]
 
 _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
+
+
+def _stacked_identity(batch_shape, n, dtype, usm_type=None, sycl_queue=None):
+    shape = batch_shape + (n, n)
+    idx = dpnp.arange(n, usm_type=usm_type, sycl_queue=sycl_queue)
+    x = dpnp.zeros(shape, dtype=dtype, usm_type=usm_type, sycl_queue=sycl_queue)
+    x[..., idx, idx] = 1
+    return x
 
 
 def dpnp_eigh(a, UPLO):
@@ -166,6 +175,130 @@ def dpnp_eigh(a, UPLO):
         return w, out_v
 
 
+def _dpnp_svd_batch(
+    a, res_type, res_type_s, full_matrices=True, compute_uv=True
+):
+    reshape = False
+    batch_shape_orig = a.shape[:-2]
+
+    if a.ndim > 3:
+        # get 3d input arrays by reshape
+        a = a.reshape(prod(a.shape[:-2]), a.shape[-2], a.shape[-1])
+        reshape = True
+
+    batch_shape = a.shape[:-2]
+    batch_size = prod(batch_shape)
+    n, m = a.shape[-2:]
+
+    if batch_size == 0:
+        k = min(m, n)
+        s = dpnp.empty(
+            batch_shape_orig + (k,),
+            dtype=res_type_s,
+            usm_type=a.usm_type,
+            sycl_queue=a.sycl_queue,
+        )
+        if compute_uv:
+            if full_matrices:
+                u = dpnp.empty(
+                    batch_shape_orig + (n, n),
+                    dtype=res_type,
+                    usm_type=a.usm_type,
+                    sycl_queue=a.sycl_queue,
+                )
+                vt = dpnp.empty(
+                    batch_shape_orig + (m, m),
+                    dtype=res_type,
+                    usm_type=a.usm_type,
+                    sycl_queue=a.sycl_queue,
+                )
+            else:
+                u = dpnp.empty(
+                    batch_shape_orig + (n, k),
+                    dtype=res_type,
+                    usm_type=a.usm_type,
+                    sycl_queue=a.sycl_queue,
+                )
+                vt = dpnp.empty(
+                    batch_shape_orig + (k, m),
+                    dtype=res_type,
+                    usm_type=a.usm_type,
+                    sycl_queue=a.sycl_queue,
+                )
+            return u, s, vt
+        else:
+            return s
+    elif m == 0 or n == 0:
+        s = dpnp.empty(
+            batch_shape_orig + (0,),
+            dtype=res_type_s,
+            usm_type=a.usm_type,
+            sycl_queue=a.sycl_queue,
+        )
+        if compute_uv:
+            if full_matrices:
+                u = _stacked_identity(
+                    batch_shape_orig,
+                    n,
+                    dtype=res_type,
+                    usm_type=a.usm_type,
+                    sycl_queue=a.sycl_queue,
+                )
+                vt = _stacked_identity(
+                    batch_shape_orig,
+                    m,
+                    dtype=res_type,
+                    usm_type=a.usm_type,
+                    sycl_queue=a.sycl_queue,
+                )
+            else:
+                u = dpnp.empty(
+                    batch_shape_orig + (n, 0),
+                    dtype=res_type,
+                    usm_type=a.usm_type,
+                    sycl_queue=a.sycl_queue,
+                )
+                vt = dpnp.empty(
+                    batch_shape_orig + (0, m),
+                    dtype=res_type,
+                    usm_type=a.usm_type,
+                    sycl_queue=a.sycl_queue,
+                )
+            return u, s, vt
+        else:
+            return s
+
+    u_matrices = [None] * batch_size
+    s_matrices = [None] * batch_size
+    vt_matrices = [None] * batch_size
+    for i in range(batch_size):
+        if compute_uv:
+            vt_matrices[i], s_matrices[i], u_matrices[i] = dpnp_svd(
+                a[i], full_matrices, compute_uv
+            )
+        else:
+            s_matrices[i] = dpnp_svd(a[i], full_matrices, compute_uv)
+
+    if compute_uv:
+        out_s = dpnp.array(s_matrices)
+        out_vt = dpnp.array(vt_matrices)
+        out_u = dpnp.array(u_matrices)
+        if reshape:
+            return (
+                out_vt.reshape(batch_shape_orig + out_vt.shape[-2:]),
+                out_s.reshape(batch_shape_orig + out_s.shape[-1:]),
+                out_u.reshape(batch_shape_orig + out_u.shape[-2:]),
+            )
+        else:
+            return out_vt, out_s, out_u
+    else:
+        out_s = dpnp.array(s_matrices)
+        if reshape:
+            return out_s.reshape(batch_shape_orig + out_s.shape[-1:])
+        else:
+            return out_s
+
+
 def dpnp_svd(a, full_matrices=True, compute_uv=True):
     """
     dpnp_svd(a)
@@ -196,108 +329,114 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
         else dpnp.float32
     )
 
-    n, m = a.shape
+    if a.ndim > 2:
+        return _dpnp_svd_batch(
+            a, res_type, res_type_s, full_matrices, compute_uv
+        )
 
-    if m == 0 or n == 0:
-        s = dpnp.empty((0,), dtype=res_type_s)
+    else:
+        n, m = a.shape
+
+        if m == 0 or n == 0:
+            s = dpnp.empty((0,), dtype=res_type_s)
+            if compute_uv:
+                if full_matrices:
+                    u = dpnp.eye(n, dtype=res_type)
+                    vt = dpnp.eye(m, dtype=res_type)
+                else:
+                    u = dpnp.empty((n, 0), dtype=res_type)
+                    vt = dpnp.empty((0, m), dtype=res_type)
+                return u, s, vt
+            else:
+                return s
+
+        # `a`` must be copied because gesvd destroys the input matrix
+        # `a` must be traspotted if m >= n
+        if m >= n:
+            x = a
+            a_h = dpnp.empty_like(a, order="C", dtype=res_type)
+            trans_flag = False
+        else:
+            m, n = a.shape
+            x = a.transpose()
+            a_h = dpnp.empty_like(x, order="C", dtype=res_type)
+            trans_flag = True
+
+        a_usm_arr = dpnp.get_usm_ndarray(x)
+
+        # use DPCTL tensor function to fill the сopy of the input array
+        # from the input array
+        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
+        )
+
+        k = n  # = min(m, n) where m >= n is ensured above
         if compute_uv:
             if full_matrices:
-                u = dpnp.eye(n, dtype=res_type)
-                vt = dpnp.eye(m, dtype=res_type)
+                u_h = dpnp.empty(
+                    (m, m),
+                    dtype=res_type,
+                    usm_type=a.usm_type,
+                    sycl_queue=a.sycl_queue,
+                )
+                vt_h = dpnp.empty(
+                    (n, n),
+                    dtype=res_type,
+                    usm_type=a.usm_type,
+                    sycl_queue=a.sycl_queue,
+                )
+                jobu = ord("A")
+                jobvt = ord("A")
             else:
-                u = dpnp.empty((n, 0), dtype=res_type)
-                vt = dpnp.empty((0, m), dtype=res_type)
-            return u, s, vt
+                u_h = dpnp.empty_like(x, dtype=res_type)
+                vt_h = dpnp.empty(
+                    (k, n),
+                    dtype=res_type,
+                    usm_type=a.usm_type,
+                    sycl_queue=a.sycl_queue,
+                )
+                jobu = ord("S")
+                jobvt = ord("S")
         else:
-            return s
-
-    # `a`` must be copied because gesvd destroys the input matrix
-    # `a` must be traspotted if m >= n
-    if m >= n:
-        x = a
-        a_h = dpnp.empty_like(a, order="C", dtype=res_type)
-        trans_flag = False
-    else:
-        m, n = a.shape
-        x = a.transpose()
-        a_h = dpnp.empty_like(x, order="C", dtype=res_type)
-        trans_flag = True
-
-    a_usm_arr = dpnp.get_usm_ndarray(x)
-
-    # use DPCTL tensor function to fill the сopy of the input array
-    # from the input array
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
-    )
-
-    k = n  # = min(m, n) where m >= n is ensured above
-    if compute_uv:
-        if full_matrices:
             u_h = dpnp.empty(
-                (m, m),
+                [],
                 dtype=res_type,
                 usm_type=a.usm_type,
                 sycl_queue=a.sycl_queue,
             )
             vt_h = dpnp.empty(
-                (n, n),
+                [],
                 dtype=res_type,
                 usm_type=a.usm_type,
                 sycl_queue=a.sycl_queue,
             )
-            jobu = ord("A")
-            jobvt = ord("A")
-        else:
-            u_h = dpnp.empty_like(x, dtype=res_type)
-            vt_h = dpnp.empty(
-                (k, n),
-                dtype=res_type,
-                usm_type=a.usm_type,
-                sycl_queue=a.sycl_queue,
-            )
-            jobu = ord("S")
-            jobvt = ord("S")
-    else:
-        u_h = dpnp.empty(
-            [],
-            dtype=res_type,
-            usm_type=a.usm_type,
-            sycl_queue=a.sycl_queue,
+            jobu = ord("N")
+            jobvt = ord("N")
+
+        s_h = dpnp.empty(
+            k, dtype=res_type_s, usm_type=a.usm_type, sycl_queue=a.sycl_queue
         )
-        vt_h = dpnp.empty(
-            [],
-            dtype=res_type,
-            usm_type=a.usm_type,
-            sycl_queue=a.sycl_queue,
+
+        lapack_ev = li._gesvd(
+            exec_q,
+            jobu,
+            jobvt,
+            m,
+            n,
+            a_h.get_array(),
+            s_h.get_array(),
+            u_h.get_array(),
+            vt_h.get_array(),
+            [a_copy_ev],
         )
-        jobu = ord("N")
-        jobvt = ord("N")
 
-    s_h = dpnp.empty(
-        k, dtype=res_type_s, usm_type=a.usm_type, sycl_queue=a.sycl_queue
-    )
+        lapack_ev.wait()
+        a_ht_copy_ev.wait()
 
-    lapack_ev = li._gesvd(
-        exec_q,
-        jobu,
-        jobvt,
-        m,
-        n,
-        a_h.get_array(),
-        s_h.get_array(),
-        u_h.get_array(),
-        vt_h.get_array(),
-        [a_copy_ev],
-    )
-
-    lapack_ev.wait()
-    a_ht_copy_ev.wait()
-
-    if compute_uv:
-        if trans_flag:
-            return u_h.transpose(), s_h, vt_h.transpose()
+        if compute_uv:
+            if trans_flag:
+                return u_h.transpose(), s_h, vt_h.transpose()
+            else:
+                return vt_h, s_h, u_h
         else:
-            return vt_h, s_h, u_h
-    else:
-        return s_h
+            return s_h
