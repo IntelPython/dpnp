@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.13.1dev0+51.gf58d19d97 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.13.1dev0+52.g38b0c4f5c documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=fdc9970f"></script>
+        <script src="../../_static/documentation_options.js?v=d5c1e318"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+51.gf58d19d97
+                0.13.1dev0+52.g38b0c4f5c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -466,37 +466,45 @@
 <span class="sd">    Utility to process complementary keyword arguments &#39;device&#39; and &#39;sycl_queue&#39;</span>
 <span class="sd">    in subsequent calls of functions from `dpctl.tensor` module.</span>
 
-<span class="sd">    If both arguments &#39;device&#39; and &#39;sycl_queue&#39; have default value `None`</span>
+<span class="sd">    If both arguments &#39;device&#39; and &#39;sycl_queue&#39; have default value ``None``</span>
 <span class="sd">    and &#39;obj&#39; has `sycl_queue` attribute, it assumes that Compute Follows Data</span>
 <span class="sd">    approach has to be applied and so the resulting SYCL queue will be normalized</span>
 <span class="sd">    based on the queue value from &#39;obj&#39;.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        obj (optional): A python object. Can be an instance of `dpnp_array`,</span>
-<span class="sd">            `dpctl.tensor.usm_ndarray`, an object representing SYCL USM allocation</span>
-<span class="sd">            and implementing `__sycl_usm_array_interface__` protocol,</span>
-<span class="sd">            an instance of `numpy.ndarray`, an object supporting Python buffer protocol,</span>
-<span class="sd">            a Python scalar, or a (possibly nested) sequence of Python scalars.</span>
-<span class="sd">        sycl_queue (:class:`dpctl.SyclQueue`, optional):</span>
-<span class="sd">            explicitly indicates where USM allocation is done</span>
-<span class="sd">            and the population code (if any) is executed.</span>
-<span class="sd">            Value `None` is interpreted as get the SYCL queue</span>
-<span class="sd">            from `obj` parameter if not None, from `device` keyword,</span>
-<span class="sd">            or use default queue.</span>
-<span class="sd">            Default: None</span>
-<span class="sd">        device (string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,</span>
-<span class="sd">            :class:`dpctl.tensor.Device`, optional):</span>
-<span class="sd">            array-API keyword indicating non-partitioned SYCL device</span>
-<span class="sd">            where array is allocated.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : object, optional</span>
+<span class="sd">        A python object. Can be an instance of `dpnp_array`,</span>
+<span class="sd">        `dpctl.tensor.usm_ndarray`, an object representing SYCL USM allocation</span>
+<span class="sd">        and implementing `__sycl_usm_array_interface__` protocol, an instance</span>
+<span class="sd">        of `numpy.ndarray`, an object supporting Python buffer protocol,</span>
+<span class="sd">        a Python scalar, or a (possibly nested) sequence of Python scalars.</span>
+<span class="sd">    sycl_queue : class:`dpctl.SyclQueue`, optional</span>
+<span class="sd">        A queue which explicitly indicates where USM allocation is done</span>
+<span class="sd">        and the population code (if any) is executed.</span>
+<span class="sd">        Value ``None`` is interpreted as to get the SYCL queue from either</span>
+<span class="sd">        `obj` parameter if not ``None`` or from `device` keyword,</span>
+<span class="sd">        or to use default queue.</span>
+<span class="sd">    device : {string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,</span>
+<span class="sd">              :class:`dpctl.tensor.Device`}, optional</span>
+<span class="sd">        An array-API keyword indicating non-partitioned SYCL device</span>
+<span class="sd">        where array is allocated.</span>
+
 <span class="sd">    Returns</span>
-<span class="sd">        :class:`dpctl.SyclQueue` object normalized by `normalize_queue_device` call</span>
+<span class="sd">    -------</span>
+<span class="sd">    sycl_queue: dpctl.SyclQueue</span>
+<span class="sd">        A :class:`dpctl.SyclQueue` object normalized by `normalize_queue_device` call</span>
 <span class="sd">        of `dpctl.tensor` module invoked with &#39;device&#39; and &#39;sycl_queue&#39; values.</span>
 <span class="sd">        If both incoming &#39;device&#39; and &#39;sycl_queue&#39; are None and &#39;obj&#39; has `sycl_queue` attribute,</span>
 <span class="sd">        the normalization will be performed for &#39;obj.sycl_queue&#39; value.</span>
-<span class="sd">    Raises:</span>
-<span class="sd">        TypeError: if argument is not of the expected type, or keywords</span>
-<span class="sd">            imply incompatible queues.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If argument is not of the expected type, or keywords imply incompatible queues.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">if</span> <span class="p">(</span>
         <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="ow">and</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="kc">None</span>
@@ -505,12 +513,9 @@
     <span class="p">):</span>
         <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">sycl_queue</span>
 
-    <span class="c1"># TODO: remove check dpt._device has attribute &#39;normalize_queue_device&#39;</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="s2">&quot;normalize_queue_device&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">_device</span><span class="o">.</span><span class="n">normalize_queue_device</span><span class="p">(</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
-        <span class="p">)</span>
-    <span class="k">return</span> <span class="n">sycl_queue</span>
+    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">_device</span><span class="o">.</span><span class="n">normalize_queue_device</span><span class="p">(</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+    <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
