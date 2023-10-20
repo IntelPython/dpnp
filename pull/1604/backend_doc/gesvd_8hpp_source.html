@@ -139,9 +139,9 @@ $(document).ready(function(){initNavTree('gesvd_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                  <span class="keyword">const</span> std::int64_t m,</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                  <span class="keyword">const</span> std::int64_t n,</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                  dpctl::tensor::usm_ndarray a_array,</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                  dpctl::tensor::usm_ndarray res_s,</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                  dpctl::tensor::usm_ndarray res_u,</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                  dpctl::tensor::usm_ndarray res_vt,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                  dpctl::tensor::usm_ndarray out_s,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                  dpctl::tensor::usm_ndarray out_u,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                  dpctl::tensor::usm_ndarray out_vt,</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                  <span class="keyword">const</span> std::vector&lt;sycl::event&gt; &amp;depends);</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">extern</span> <span class="keywordtype">void</span> init_gesvd_dispatch_table(<span class="keywordtype">void</span>);</div>
