@@ -199,13 +199,11 @@ def test_array_creation_follow_device_logspace_base(device):
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.skip("muted until the issue reported by SAT-5969 is resolved")
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
         pytest.param("diag", ["x0"], {}),
         pytest.param("diagflat", ["x0"], {}),
-        pytest.param("ptp", ["x0"], {"axis": 0}),
     ],
 )
 @pytest.mark.parametrize(
@@ -226,6 +224,7 @@ def test_array_creation_follow_device_2d_array(func, args, kwargs, device):
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
 
+@pytest.mark.skip("muted until the issue reported by SAT-5969 is resolved")
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
@@ -276,7 +275,6 @@ def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
     [
         pytest.param("diag", ["x0"], {}),
         pytest.param("diagflat", ["x0"], {}),
-        pytest.param("ptp", ["x0"], {"axis": 0}),
     ],
 )
 @pytest.mark.parametrize(
@@ -375,6 +373,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("negative", [1.0, 0.0, -1.0]),
         pytest.param("positive", [1.0, 0.0, -1.0]),
         pytest.param("prod", [1.0, 2.0]),
+        pytest.param("ptp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
