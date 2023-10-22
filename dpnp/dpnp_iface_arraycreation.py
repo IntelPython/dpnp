@@ -86,7 +86,6 @@ __all__ = [
     "ogrid",
     "ones",
     "ones_like",
-    "ptp",
     "trace",
     "tri",
     "tril",
@@ -1647,69 +1646,6 @@ def ones_like(
         )
 
     return call_origin(numpy.ones_like, x1, dtype, order, subok, shape)
-
-
-def ptp(
-    arr,
-    /,
-    axis=None,
-    out=None,
-    keepdims=numpy._NoValue,
-    *,
-    device=None,
-    usm_type=None,
-    sycl_queue=None,
-):
-    """
-    Range of values (maximum - minimum) along an axis.
-
-    For full documentation refer to :obj:`numpy.ptp`.
-
-    Returns
-    -------
-    ptp : dpnp.ndarray
-        The range of a given array.
-
-    Limitations
-    -----------
-    Input array is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out` and `keepdims` are supported only with default values.
-    Otherwise the function will be executed sequentially on CPU.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x = np.array([[4, 9, 2, 10],[6, 9, 7, 12]])
-    >>> np.ptp(x, axis=1)
-    array([8, 6])
-
-    >>> np.ptp(x, axis=0)
-    array([2, 0, 5, 2])
-
-    >>> np.ptp(x)
-    array(10)
-    """
-    if not isinstance(arr, (dpnp.ndarray, dpt.usm_ndarray)):
-        pass
-    elif axis is not None and not isinstance(axis, int):
-        pass
-    elif out is not None:
-        pass
-    elif keepdims is not numpy._NoValue:
-        pass
-    else:
-        max_array = dpnp.max(arr, axis=axis)
-        min_array = dpnp.min(arr, axis=axis)
-
-        _usm_type = arr.usm_type if usm_type is None else usm_type
-        _sycl_queue = dpnp.get_normalized_queue_device(
-            arr, sycl_queue=sycl_queue, device=device
-        )
-        return dpnp.array(
-            max_array - min_array, usm_type=_usm_type, sycl_queue=_sycl_queue
-        )
-
-    return call_origin(numpy.ptp, arr, axis, out, keepdims)
 
 
 def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):

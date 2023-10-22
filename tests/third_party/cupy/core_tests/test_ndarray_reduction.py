@@ -9,7 +9,6 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestArrayReduction(unittest.TestCase):
     @testing.for_all_dtypes()
@@ -149,70 +148,70 @@ class TestArrayReduction(unittest.TestCase):
     @testing.numpy_cupy_allclose()
     def test_ptp_all(self, xp, dtype):
         a = testing.shaped_random((2, 3), xp, dtype)
-        return a.ptp()
+        return xp.ptp(a)
 
     @testing.with_requires("numpy>=1.15")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def test_ptp_all_keepdims(self, xp, dtype):
         a = testing.shaped_random((2, 3), xp, dtype)
-        return a.ptp(keepdims=True)
+        return xp.ptp(a, keepdims=True)
 
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def test_ptp_axis_large(self, xp, dtype):
         a = testing.shaped_random((3, 1000), xp, dtype)
-        return a.ptp(axis=0)
+        return xp.ptp(a, axis=0)
 
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def test_ptp_axis0(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
-        return a.ptp(axis=0)
+        return xp.ptp(a, axis=0)
 
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def test_ptp_axis1(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
-        return a.ptp(axis=1)
+        return xp.ptp(a, axis=1)
 
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def test_ptp_axis2(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
-        return a.ptp(axis=2)
+        return xp.ptp(a, axis=2)
 
     @testing.with_requires("numpy>=1.15")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def test_ptp_multiple_axes(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
-        return a.ptp(axis=(1, 2))
+        return xp.ptp(a, axis=(1, 2))
 
     @testing.with_requires("numpy>=1.15")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def test_ptp_multiple_axes_keepdims(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
-        return a.ptp(axis=(1, 2), keepdims=True)
+        return xp.ptp(a, axis=(1, 2), keepdims=True)
 
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
     def test_ptp_nan(self, xp, dtype):
         a = xp.array([float("nan"), 1, -1], dtype)
-        return a.ptp()
+        return xp.ptp(a)
 
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose()
     def test_ptp_nan_real(self, xp, dtype):
         a = xp.array([float("nan"), 1, -1], dtype)
-        return a.ptp()
+        return xp.ptp(a)
 
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose()
     def test_ptp_nan_imag(self, xp, dtype):
         a = xp.array([float("nan") * 1.0j, 1.0j, -1.0j], dtype)
-        return a.ptp()
+        return xp.ptp(a)
 
 
 @testing.parameterize(

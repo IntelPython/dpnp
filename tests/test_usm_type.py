@@ -179,7 +179,6 @@ def test_array_creation_from_1d_array(func, args, usm_type_x, usm_type_y):
     [
         pytest.param("diag", ["x0"]),
         pytest.param("diagflat", ["x0"]),
-        pytest.param("ptp", ["x0", "0"]),
     ],
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
@@ -403,6 +402,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param("positive", [1.0, 0.0, -1.0]),
         pytest.param("prod", [1.0, 2.0]),
         pytest.param("proj", [complex(1.0, 2.0), complex(dp.inf, -1.0)]),
+        pytest.param("ptp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
