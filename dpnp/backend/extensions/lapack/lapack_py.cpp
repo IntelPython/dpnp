@@ -30,6 +30,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "getrf.hpp"
 #include "heevd.hpp"
 #include "syevd.hpp"
 
@@ -40,6 +41,7 @@ namespace py = pybind11;
 void init_dispatch_vectors(void)
 {
     lapack_ext::init_syevd_dispatch_vector();
+    lapack_ext::init_getrf_dispatch_vector();
 }
 
 // populate dispatch tables
@@ -66,4 +68,10 @@ PYBIND11_MODULE(_lapack_impl, m)
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
           py::arg("eig_vecs"), py::arg("eig_vals"),
           py::arg("depends") = py::list());
+
+    m.def("_getrf", &lapack_ext::getrf,
+          "Call `getrf` from OneMKL LAPACK library to return "
+          "the LU factorization of a general n x n matrix",
+          py::arg("sycl_queue"), py::arg("n"), py::arg("a_array"),
+          py::arg("ipiv_array"), py::arg("depends") = py::list());
 }

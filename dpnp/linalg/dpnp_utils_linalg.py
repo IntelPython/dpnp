@@ -164,3 +164,102 @@ def dpnp_eigh(a, UPLO):
         ht_copy_ev.wait()
 
         return w, out_v
+
+
+def _lu_factor(a, dtype=dpnp.float32):
+    """Compute pivoted LU decomposition.
+
+    Decompose a given batch of square matrices. Inputs and outputs are
+    transposed.
+
+    Args:
+        a (dpnp.ndarray): The input matrix with dimension ``(..., N, N)``.
+           The dimension condition is not checked.
+        dtype (dpnp.dtype): float32, float64, complex64, or complex128.
+
+    Returns:
+        tuple:
+        lu_t (dpnp.ndarray):
+            ``L`` without its unit diagonal and ``U`` with
+            dimension ``(..., N, N)``.
+        piv (dpnp.ndarray):
+            1-origin pivot indices with dimension
+            ``(..., N)``.
+
+    See Also
+    --------
+    :obj:`scipy.linalg.lu_factor`
+
+    """
+
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+
+    # TODO: use dpnp.linalg.LinAlgError
+    if a.ndim < 2:
+        raise ValueError(
+            f"{a.ndim}-dimensional array given. The input "
+            "array must be at least two-dimensional"
+        )
+
+    n, m = a.shape[-2:]
+    # TODO: use dpnp.linalg.LinAlgError
+    if m != n:
+        raise ValueError("Last 2 dimensions of the input array must be square")
+
+    # orig_shape = a.shape
+
+    a_order = "C" if a.flags.c_contiguous else "F"
+
+    exec_q = a.sycl_queue
+    if exec_q is None:
+        raise ValueError(
+            "Execution placement can not be unambiguously inferred "
+            "from input arguments."
+        )
+
+    # TODO: Use linalg_common_type from #1598
+    if dpnp.issubdtype(a.dtype, dpnp.floating):
+        res_type = (
+            a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
+        )
+    elif dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        res_type = (
+            a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.complex64
+        )
+    else:
+        res_type = (
+            dpnp.float64 if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
+        )
+
+    a_h = dpnp.empty_like(a, order="C", dtype=res_type)
+    ipiv_h = dpnp.empty(
+        n, dtype=dpnp.int64, usm_type=a.usm_type, sycl_queue=a.sycl_queue
+    )
+
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
+    )
+
+    lapack_ev = li._getrf(
+        exec_q, n, a_h.get_array(), ipiv_h.get_array(), [a_copy_ev]
+    )
+
+    if a_order != "C":
+        # need to align order of the result of solutions with the
+        # input array of multiple dependent variables
+        a_h_f = dpnp.empty_like(a_h, order=a_order)
+        ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_h.get_array(),
+            dst=a_h_f.get_array(),
+            sycl_queue=a.sycl_queue,
+            depends=[lapack_ev],
+        )
+        ht_copy_out_ev.wait()
+        out_v = (a_h_f, ipiv_h)
+    else:
+        out_v = (a_h, ipiv_h)
+
+    lapack_ev.wait()
+    a_ht_copy_ev.wait()
+
+    return out_v
