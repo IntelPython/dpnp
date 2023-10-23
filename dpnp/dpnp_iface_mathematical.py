@@ -41,6 +41,7 @@ it contains:
 
 
 import dpctl.tensor as dpt
+import dpctl.utils as du
 import numpy
 from numpy.core.numeric import normalize_axis_tuple
 
@@ -1750,34 +1751,63 @@ def nancumsum(x1, **kwargs):
     return call_origin(numpy.nancumsum, x1, **kwargs)
 
 
-def nanprod(x1, **kwargs):
+def nanprod(
+    a,
+    axis=None,
+    dtype=None,
+    out=None,
+    keepdims=False,
+    initial=None,
+    where=True,
+):
     """
     Calculate prod() function treating 'Not a Numbers' (NaN) as ones.
 
     For full documentation refer to :obj:`numpy.nanprod`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
+
+    .. seealso:: :obj:`dpnp.prod` : Returns product across array propagating NaNs.
+
     Limitations
     -----------
-    Parameter `x1` is supported as :obj:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
+    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `initial`, and `where` are only supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> np.nanprod(np.array([1, 2]))
-    2
-    >>> np.nanprod(np.array([[1, 2], [3, 4]]))
-    24
+    >>> np.nanprod(np.array(1))
+    array(1)
+    >>> np.nanprod(np.array([1]))
+    array(1)
+    >>> np.nanprod(np.array([1, np.nan]))
+    array(1.0)
+    >>> a = np.array([[1, 2], [3, np.nan]])
+    >>> np.nanprod(a)
+    array(6.0)
+    >>> np.nanprod(a, axis=0)
+    array([3., 2.])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_nanprod(x1_desc).get_pyobj()
+    mask = dpnp.isnan(a)
+    dpnp.copyto(a, 1, where=mask)
 
-    return call_origin(numpy.nanprod, x1, **kwargs)
+    return dpnp.prod(
+        a,
+        axis=axis,
+        dtype=dtype,
+        out=out,
+        keepdims=keepdims,
+        initial=initial,
+        where=where,
+    )
 
 
 def nansum(x1, **kwargs):
@@ -2030,7 +2060,7 @@ def power(
 
 
 def prod(
-    x1,
+    a,
     axis=None,
     dtype=None,
     out=None,
@@ -2043,43 +2073,99 @@ def prod(
 
     For full documentation refer to :obj:`numpy.prod`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Return the product of array elements over a given axis.
+
     Limitations
     -----------
-    Parameter `where` is unsupported.
+    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `initial`, and `where` are only supported with their default values.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by DPNP :ref:`Data types`.
+
+    .. seealso:: :obj:`dpnp.nanprod` : Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> np.prod(np.array([[1, 2], [3, 4]]))
-    24
     >>> np.prod(np.array([1, 2]))
-    2
+    array(2)
+
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> np.prod(a)
+    array(24)
+
+    >>> np.prod(a, axis=1)
+    array([ 2, 12])
+    >>> np.prod(a, axis=0)
+    array([3, 8])
+
+    >>> x = np.array([1, 2, 3], dtype=np.int8)
+    >>> np.prod(x).dtype == int
+    True
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if where is not True:
-            pass
-        else:
-            out_desc = (
-                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-                if out is not None
-                else None
-            )
-            result_obj = dpnp_prod(
-                x1_desc, axis, dtype, out_desc, keepdims, initial, where
-            ).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(
-                result_obj, keepdims
-            )
+    # Product reduction for complex output are known to fail for Gen9 with 2024.0 compiler
+    # TODO: get rid of this temporary work around when OneAPI 2024.1 is released
+    if not isinstance(a, (dpnp_array, dpt.usm_ndarray)):
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(a))
+        )
+    _dtypes = (a.dtype, dtype)
+    _any_complex = any(
+        dpt.isdtype(dpnp.dtype(dt), "complex floating") for dt in _dtypes
+    )
+    device_mask = (
+        du.intel_device_info(a.sycl_device).get("device_id", 0) & 0xFF00
+    )
+    if _any_complex and device_mask in [0x3E00, 0x9B00]:
+        return call_origin(
+            numpy.prod,
+            a,
+            axis=axis,
+            dtype=dtype,
+            out=out,
+            keepdims=keepdims,
+            initial=initial,
+            where=where,
+        )
+    if initial is not None:
+        pass
+    elif where is not True:
+        pass
+    else:
+        dpt_array = dpnp.get_usm_ndarray(a)
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
+        )
 
+        if out is None:
             return result
+        else:
+            if out.shape != result.shape:
+                raise ValueError(
+                    f"Output array of shape {result.shape} is needed, got {out.shape}."
+                )
+            elif not isinstance(out, dpnp_array):
+                if isinstance(out, dpt.usm_ndarray):
+                    out = dpnp_array._create_from_usm_ndarray(out)
+                else:
+                    raise TypeError(
+                        "Output array must be any of supported type, but got {}".format(
+                            type(out)
+                        )
+                    )
+
+            dpnp.copyto(out, result, casting="safe")
+
+            return out
 
     return call_origin(
         numpy.prod,
-        x1,
+        a,
         axis=axis,
         dtype=dtype,
         out=out,

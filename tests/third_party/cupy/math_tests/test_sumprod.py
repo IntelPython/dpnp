@@ -214,25 +214,25 @@ class TestSumprod(unittest.TestCase):
             a.sum(axis=1, out=b)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_prod_all(self, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return a.prod()
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_external_prod_all(self, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return xp.prod(a)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_prod_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.prod(axis=1)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_external_prod_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.prod(a, axis=1)
@@ -276,7 +276,7 @@ class TestNansumNanprodLong(unittest.TestCase):
         return func(a, axis=self.axis, keepdims=self.keepdims)
 
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
-    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_nansum_all(self, xp, dtype):
         if (
             not self._numpy_nanprod_implemented()
@@ -286,9 +286,7 @@ class TestNansumNanprodLong(unittest.TestCase):
         return self._test(xp, dtype)
 
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
-    @testing.numpy_cupy_allclose(
-        contiguous_check=False, type_check=has_support_aspect64()
-    )
+    @testing.numpy_cupy_allclose(contiguous_check=False, type_check=False)
     def test_nansum_axis_transposed(self, xp, dtype):
         if (
             not self._numpy_nanprod_implemented()

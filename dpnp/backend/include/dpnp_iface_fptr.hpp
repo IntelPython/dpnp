@@ -244,9 +244,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_PLACE,         /**< Used in numpy.place() impl  */
     DPNP_FN_POWER,         /**< Used in numpy.power() impl  */
     DPNP_FN_PROD,          /**< Used in numpy.prod() impl  */
-    DPNP_FN_PROD_EXT, /**< Used in numpy.prod() impl, requires extra parameters
-                       */
-    DPNP_FN_PTP,      /**< Used in numpy.ptp() impl  */
+    DPNP_FN_PTP,           /**< Used in numpy.ptp() impl  */
     DPNP_FN_PTP_EXT, /**< Used in numpy.ptp() impl, requires extra parameters */
     DPNP_FN_PUT,     /**< Used in numpy.put() impl  */
     DPNP_FN_PUT_ALONG_AXIS,     /**< Used in numpy.put_along_axis() impl  */
