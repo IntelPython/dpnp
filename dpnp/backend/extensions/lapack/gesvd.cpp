@@ -121,10 +121,23 @@ static sycl::event gesvd_impl(sycl::queue exec_q,
             mkl_lapack::gesvd(exec_q, jobu, jobvt, m, n, a, lda, s, u, ldu, vt,
                               ldvt, scratchpad, scratchpad_size, depends);
     } catch (mkl_lapack::exception const &e) {
-        error_msg
-            << "Unexpected MKL exception caught during gesvd() call:\nreason: "
-            << e.what() << "\ninfo: " << e.info();
         info = e.info();
+        detail = e.detail();
+        error_msg << "MKL LAPACK exception caught during gesvd() call:\n"
+                  << "Reason: " << e.what() << "\n"
+                  << "Info: " << info << "\n";
+        if (info < 0) {
+            error_msg << "Parameter " << -info << " had an illegal value.\n";
+        }
+        else if (info > 0) {
+            error_msg << "The algorithm computing SVD failed to converge; "
+                      << info << " off-diagonal elements of an intermediate "
+                      << "bidiagonal form did not converge to zero.\n";
+        }
+        else if (info == scratchpad_size && detail != 0) {
+            error_msg << "Insufficient scratchpad size. Required size: "
+                      << detail << ".\n";
+        }
     } catch (sycl::exception const &e) {
         error_msg << "Unexpected SYCL exception caught during gesvd() call:\n"
                   << e.what();
