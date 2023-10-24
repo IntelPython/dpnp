@@ -1091,38 +1091,5 @@ void func_map_init_linalg_func(func_map_t &fmap)
         eft_C128, (void *)dpnp_svd_default_c<std::complex<double>,
                                              std::complex<double>, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_INT][eft_INT] = {
-        get_default_floating_type(),
-        (void *)dpnp_svd_ext_c<
-            int32_t, func_type_map_t::find_type<get_default_floating_type()>,
-            func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)
-            dpnp_svd_ext_c<int32_t,
-                           func_type_map_t::find_type<
-                               get_default_floating_type<std::false_type>()>,
-                           func_type_map_t::find_type<
-                               get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_LNG][eft_LNG] = {
-        get_default_floating_type(),
-        (void *)dpnp_svd_ext_c<
-            int64_t, func_type_map_t::find_type<get_default_floating_type()>,
-            func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)
-            dpnp_svd_ext_c<int64_t,
-                           func_type_map_t::find_type<
-                               get_default_floating_type<std::false_type>()>,
-                           func_type_map_t::find_type<
-                               get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_svd_ext_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_svd_ext_c<double, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_C128][eft_C128] = {
-        eft_C128,
-        (void *)
-            dpnp_svd_ext_c<std::complex<double>, std::complex<double>, double>};
-
     return;
 }
