@@ -66,7 +66,7 @@ static gesvd_impl_fn_ptr_t gesvd_dispatch_table[dpctl_td_ns::num_types]
 
 // Converts a given character code (ord) to the corresponding
 // oneapi::mkl::jobsvd enumeration value
-const oneapi::mkl::jobsvd process_job(std::int8_t job_val)
+oneapi::mkl::jobsvd process_job(std::int8_t job_val)
 {
     switch (job_val) {
     case 'A':
@@ -173,7 +173,13 @@ sycl::event gesvd(sycl::queue exec_q,
                   dpctl::tensor::usm_ndarray out_vt,
                   const std::vector<sycl::event> &depends)
 {
-    // check ndim if required
+    const int a_array_nd = a_array.get_ndim();
+
+    if (a_array_nd != 2) {
+        throw py::value_error(
+            "The input array has ndim=" + std::to_string(a_array_nd) +
+            ", but a 2-dimensional array is expected.");
+    }
 
     // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(
@@ -184,20 +190,32 @@ sycl::event gesvd(sycl::queue exec_q,
             "USM allocations are not compatible with the execution queue.");
     }
 
-    // check shape if required
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(a_array, out_s) || overlap(a_array, out_u) ||
+        overlap(a_array, out_vt) || overlap(out_s, out_u) ||
+        overlap(out_s, out_vt) || overlap(out_u, out_vt))
+    {
+        throw py::value_error("Arrays have overlapping segments of memory");
+    }
 
-    // auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    // if (overlap(eig_vecs, eig_vals)) {
-    //     throw py::value_error("Arrays with eigenvectors and eigenvalues are "
-    //                           "overlapping segments of memory");
-    // }
-
-    // need to add the check equality of types a, out_vt, out_u
+    bool is_a_array_c_contig = a_array.is_c_contiguous();
+    if (!is_a_array_c_contig) {
+        throw py::value_error("The input array must be C-contiguous");
+    }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
+    int out_u_type_id = array_types.typenum_to_lookup_id(out_u.get_typenum());
     int out_s_type_id = array_types.typenum_to_lookup_id(out_s.get_typenum());
+    int out_vt_type_id = array_types.typenum_to_lookup_id(out_vt.get_typenum());
+
+    if (a_array_type_id != out_u_type_id || a_array_type_id != out_vt_type_id) {
+        throw py::type_error(
+            "Input array, output left singular vectors array, "
+            "and outpuy right singular vectors array must have "
+            "the same data type");
+    }
 
     gesvd_impl_fn_ptr_t gesvd_fn =
         gesvd_dispatch_table[a_array_type_id][out_s_type_id];
@@ -211,8 +229,6 @@ sycl::event gesvd(sycl::queue exec_q,
     char *out_s_data = out_s.get_data();
     char *out_u_data = out_u.get_data();
     char *out_vt_data = out_vt.get_data();
-
-    const int a_array_nd = a_array.get_ndim();
 
     const std::int64_t lda = std::max<size_t>(1UL, m);
     const std::int64_t ldu = std::max<size_t>(1UL, m);
