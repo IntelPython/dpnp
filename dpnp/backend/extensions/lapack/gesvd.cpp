@@ -106,9 +106,8 @@ static sycl::event gesvd_impl(sycl::queue exec_q,
     T *u = reinterpret_cast<T *>(out_u);
     T *vt = reinterpret_cast<T *>(out_vt);
 
-    const std::int64_t scratchpad_size =
-        oneapi::mkl::lapack::gesvd_scratchpad_size<T>(exec_q, jobu, jobvt, m, n,
-                                                      lda, ldu, ldvt);
+    const std::int64_t scratchpad_size = mkl_lapack::gesvd_scratchpad_size<T>(
+        exec_q, jobu, jobvt, m, n, lda, ldu, ldvt);
     T *scratchpad = nullptr;
 
     std::stringstream error_msg;
@@ -118,9 +117,9 @@ static sycl::event gesvd_impl(sycl::queue exec_q,
     try {
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
 
-        gesvd_event = oneapi::mkl::lapack::gesvd(
-            exec_q, jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, scratchpad,
-            scratchpad_size, depends);
+        gesvd_event =
+            mkl_lapack::gesvd(exec_q, jobu, jobvt, m, n, a, lda, s, u, ldu, vt,
+                              ldvt, scratchpad, scratchpad_size, depends);
     } catch (mkl_lapack::exception const &e) {
         error_msg
             << "Unexpected MKL exception caught during gesvd() call:\nreason: "
