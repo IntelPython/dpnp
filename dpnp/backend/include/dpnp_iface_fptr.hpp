@@ -90,10 +90,8 @@ enum class DPNPFuncName : size_t
     DPNP_FN_BITWISE_OR,   /**< Used in numpy.bitwise_or() impl  */
     DPNP_FN_BITWISE_XOR,  /**< Used in numpy.bitwise_xor() impl  */
     DPNP_FN_CBRT,         /**< Used in numpy.cbrt() impl  */
-    DPNP_FN_CBRT_EXT, /**< Used in numpy.cbrt() impl, requires extra parameters
-                       */
-    DPNP_FN_CEIL,     /**< Used in numpy.ceil() impl  */
-    DPNP_FN_CHOLESKY, /**< Used in numpy.linalg.cholesky() impl  */
+    DPNP_FN_CEIL,         /**< Used in numpy.ceil() impl  */
+    DPNP_FN_CHOLESKY,     /**< Used in numpy.linalg.cholesky() impl  */
     DPNP_FN_CHOLESKY_EXT, /**< Used in numpy.linalg.cholesky() impl, requires
                              extra parameters */
     DPNP_FN_CONJUGATE,    /**< Used in numpy.conjugate() impl  */
@@ -104,9 +102,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_COPY_EXT, /**< Used in numpy.copy() impl, requires extra parameters
                        */
     DPNP_FN_COPYSIGN, /**< Used in numpy.copysign() impl  */
-    DPNP_FN_COPYSIGN_EXT,  /**< Used in numpy.copysign() impl, requires extra
-                              parameters */
-    DPNP_FN_COPYTO,        /**< Used in numpy.copyto() impl  */
+    DPNP_FN_COPYTO,   /**< Used in numpy.copyto() impl  */
     DPNP_FN_COPYTO_EXT,    /**< Used in numpy.copyto() impl, requires extra
                               parameters */
     DPNP_FN_CORRELATE,     /**< Used in numpy.correlate() impl  */
@@ -160,10 +156,8 @@ enum class DPNPFuncName : size_t
     DPNP_FN_EYE,         /**< Used in numpy.eye() impl  */
     DPNP_FN_EXP,         /**< Used in numpy.exp() impl  */
     DPNP_FN_EXP2,        /**< Used in numpy.exp2() impl  */
-    DPNP_FN_EXP2_EXT, /**< Used in numpy.exp2() impl, requires extra parameters
-                       */
-    DPNP_FN_EXPM1,    /**< Used in numpy.expm1() impl  */
-    DPNP_FN_FABS,     /**< Used in numpy.fabs() impl  */
+    DPNP_FN_EXPM1,       /**< Used in numpy.expm1() impl  */
+    DPNP_FN_FABS,        /**< Used in numpy.fabs() impl  */
     DPNP_FN_FABS_EXT, /**< Used in numpy.fabs() impl, requires extra parameters
                        */
     DPNP_FN_FFT_FFT,  /**< Used in numpy.fft.fft() impl  */

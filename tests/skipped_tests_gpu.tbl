@@ -530,7 +530,6 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNu
 
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2_infinities
-tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_copysign_float
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_frexp
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_ldexp
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_combination
@@ -567,7 +566,6 @@ tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip1
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip2
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip3
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip2
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_cbrt
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fabs
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fabs_negative
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_scalar_nan

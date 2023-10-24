@@ -55,9 +55,11 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_atan,
     dpnp_atan2,
     dpnp_atanh,
+    dpnp_cbrt,
     dpnp_cos,
     dpnp_cosh,
     dpnp_exp,
+    dpnp_exp2,
     dpnp_expm1,
     dpnp_hypot,
     dpnp_log,
@@ -65,6 +67,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_log2,
     dpnp_log10,
     dpnp_logaddexp,
+    dpnp_rsqrt,
     dpnp_sin,
     dpnp_sinh,
     dpnp_sqrt,
@@ -98,6 +101,7 @@ __all__ = [
     "rad2deg",
     "radians",
     "reciprocal",
+    "rsqrt",
     "sin",
     "sinh",
     "sqrt",
@@ -532,34 +536,59 @@ def arctanh(
     )
 
 
-def cbrt(x1):
+def cbrt(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Return the cube-root of an array, element-wise.
 
     For full documentation refer to :obj:`numpy.cbrt`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The cube-root of each element in `x`.
+
     Limitations
     -----------
-    Input array is supported as :class:`dpnp.ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by real-valued data types.
+
+    See Also
+    --------
+    :obj:`dpnp.sqrt` : Return the positive square-root of an array, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([1, 8, 27])
-    >>> out = np.cbrt(x)
-    >>> [i for i in out]
-    [1.0, 2.0, 3.0]
+    >>> np.cbrt(x)
+    array([1., 2., 3.])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.cbrt,
+        dpnp_cbrt,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_cbrt(x1_desc).get_pyobj()
-
-    return call_origin(numpy.cbrt, x1, **kwargs)
 
 
 def cos(
@@ -787,39 +816,59 @@ def exp(
     )
 
 
-def exp2(x1):
+def exp2(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Calculate `2**p` for all `p` in the input array.
 
     For full documentation refer to :obj:`numpy.exp2`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Element-wise 2 to the power `x`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.power` : First array elements raised to powers from
-                        second array, element-wise.
+    :obj:`dpnp.power` : First array elements raised to powers from second array, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.arange(3.)
-    >>> out = np.exp2(x)
-    >>> [i for i in out]
-    [1.0, 2.0, 4.0]
+    >>> np.exp2(x)
+    array([1., 2., 4.])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.exp2,
+        dpnp_exp2,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_exp2(x1_desc).get_pyobj()
-
-    return call_origin(numpy.exp2, x1)
 
 
 def expm1(
@@ -1288,6 +1337,60 @@ def reciprocal(x1, **kwargs):
         return dpnp_recip(x1_desc).get_pyobj()
 
     return call_origin(numpy.reciprocal, x1, **kwargs)
+
+
+def rsqrt(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Computes the reciprocal square-root for each element `x_i` for input array `x`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The reciprocal square-root, element-wise.
+
+    Limitations
+    -----------
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by real-valued data types.
+
+    See Also
+    --------
+    :obj:`dpnp.sqrt` : Return the positive square-root of an array, element-wise.
+    :obj:`dpnp.reciprocal` : Return the reciprocal of an array, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1,8,27])
+    >>> np.rsqrt(x)
+    array([1.        , 0.35355338, 0.19245009])
+
+    """
+
+    return check_nd_call_func(
+        None,
+        dpnp_rsqrt,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def rad2deg(x1):

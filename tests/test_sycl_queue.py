@@ -262,6 +262,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("arcsinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("arctan", [-1.0, 0.0, 1.0]),
         pytest.param("arctanh", [-0.5, 0.0, 0.5]),
+        pytest.param("cbrt", [1.0, 8.0, 27.0]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
         pytest.param("copy", [1.0, 2.0, 3.0]),
@@ -275,6 +276,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
@@ -365,6 +367,25 @@ def test_proj(device):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_rsqrt(device):
+    X = [1.0, 8.0, 27.0]
+    Y = [1.0, 0.35355338, 0.19245009]
+
+    x = dpnp.array(X, device=device)
+    result = dpnp.rsqrt(x)
+    expected = dpnp.array(Y)
+    assert_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
     "func,data1,data2",
     [
         pytest.param(
@@ -373,15 +394,9 @@ def test_proj(device):
             [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
         ),
         pytest.param(
-            "allclose",
-            [1.0, dpnp.inf, -dpnp.inf],
-            [1.0, dpnp.inf, -dpnp.inf],
+            "allclose", [1.0, dpnp.inf, -dpnp.inf], [1.0, dpnp.inf, -dpnp.inf]
         ),
-        pytest.param(
-            "arctan2",
-            [[-1, +1, +1, -1]],
-            [[-1, -1, +1, +1]],
-        ),
+        pytest.param("arctan2", [[-1, +1, +1, -1]], [[-1, -1, +1, +1]]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param(
@@ -403,15 +418,9 @@ def test_proj(device):
             [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
         ),
         pytest.param(
-            "hypot",
-            [[1.0, 2.0, 3.0, 4.0]],
-            [[-1.0, -2.0, -4.0, -5.0]],
+            "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
-        pytest.param(
-            "logaddexp",
-            [[-1, 2, 5, 9]],
-            [[4, -3, 2, -8]],
-        ),
+        pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param(
             "matmul", [[1.0, 0.0], [0.0, 1.0]], [[4.0, 1.0], [1.0, 2.0]]
         ),
