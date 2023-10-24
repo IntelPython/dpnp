@@ -112,6 +112,7 @@ static sycl::event gesvd_impl(sycl::queue exec_q,
 
     std::stringstream error_msg;
     std::int64_t info = 0;
+    std::int64_t detail = 0;
 
     sycl::event gesvd_event;
     try {
