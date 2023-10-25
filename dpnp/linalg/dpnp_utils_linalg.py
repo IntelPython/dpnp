@@ -32,7 +32,7 @@ import dpctl.tensor._tensor_impl as ti
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
 
-__all__ = ["dpnp_eigh"]
+__all__ = ["dpnp_eigh", "_lu_factor"]
 
 _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
@@ -231,9 +231,12 @@ def _lu_factor(a, dtype=dpnp.float32):
             dpnp.float64 if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
         )
 
-    a_h = dpnp.empty_like(a, order="C", dtype=res_type)
+    a_h = dpnp.empty_like(a, order="F", dtype=res_type)
     ipiv_h = dpnp.empty(
         n, dtype=dpnp.int64, usm_type=a.usm_type, sycl_queue=a.sycl_queue
+    )
+    dev_info_h = dpnp.empty(
+        1, dtype=dpnp.int64, usm_type=a.usm_type, sycl_queue=a.sycl_queue
     )
 
     a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -241,10 +244,15 @@ def _lu_factor(a, dtype=dpnp.float32):
     )
 
     lapack_ev = li._getrf(
-        exec_q, n, a_h.get_array(), ipiv_h.get_array(), [a_copy_ev]
+        exec_q,
+        n,
+        a_h.get_array(),
+        ipiv_h.get_array(),
+        dev_info_h.get_array(),
+        [a_copy_ev],
     )
 
-    if a_order != "C":
+    if a_order != "F":
         # need to align order of the result of solutions with the
         # input array of multiple dependent variables
         a_h_f = dpnp.empty_like(a_h, order=a_order)
@@ -255,9 +263,9 @@ def _lu_factor(a, dtype=dpnp.float32):
             depends=[lapack_ev],
         )
         ht_copy_out_ev.wait()
-        out_v = (a_h_f, ipiv_h)
+        out_v = (a_h_f, ipiv_h, dev_info_h)
     else:
-        out_v = (a_h, ipiv_h)
+        out_v = (a_h, ipiv_h, dev_info_h)
 
     lapack_ev.wait()
     a_ht_copy_ev.wait()
