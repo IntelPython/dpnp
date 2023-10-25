@@ -42,6 +42,7 @@ sycl::event getrf(sycl::queue exec_q,
                   const std::int64_t n,
                   dpctl::tensor::usm_ndarray a_array,
                   dpctl::tensor::usm_ndarray ipiv_array,
+                  dpctl::tensor::usm_ndarray dev_info_array,
                   const std::vector<sycl::event> &depends);
 
 extern void init_getrf_dispatch_vector(void);

@@ -51,6 +51,7 @@ typedef sycl::event (*getrf_impl_fn_ptr_t)(sycl::queue,
                                            char *,
                                            std::int64_t,
                                            std::int64_t *,
+                                           std::int64_t *,
                                            std::vector<sycl::event> &,
                                            const std::vector<sycl::event> &);
 
@@ -62,6 +63,7 @@ static sycl::event getrf_impl(sycl::queue exec_q,
                               char *in_a,
                               std::int64_t lda,
                               std::int64_t *ipiv,
+                              std::int64_t *dev_info,
                               std::vector<sycl::event> &host_task_events,
                               const std::vector<sycl::event> &depends)
 {
@@ -106,8 +108,18 @@ static sycl::event getrf_impl(sycl::queue exec_q,
         if (scratchpad != nullptr) {
             sycl::free(scratchpad, exec_q);
         }
-        throw std::runtime_error(error_msg.str());
+
+        if (info < 0) {
+            throw std::runtime_error(error_msg.str());
+        }
     }
+
+    sycl::event write_info_event = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(getrf_event);
+        cgh.single_task([=]() { dev_info[0] = info; });
+    });
+
+    host_task_events.push_back(write_info_event);
 
     sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(getrf_event);
@@ -122,6 +134,7 @@ sycl::event getrf(sycl::queue q,
                   const std::int64_t n,
                   dpctl::tensor::usm_ndarray a_array,
                   dpctl::tensor::usm_ndarray ipiv_array,
+                  dpctl::tensor::usm_ndarray dev_info_array,
                   const std::vector<sycl::event> &depends = {})
 {
 
@@ -144,12 +157,13 @@ sycl::event getrf(sycl::queue q,
     char *ipiv_array_data = ipiv_array.get_data();
     std::int64_t *d_ipiv = reinterpret_cast<std::int64_t *>(ipiv_array_data);
 
-    // std::vector<std::int64_t> ipiv(n);
-    // std::int64_t* d_ipiv = sycl::malloc_device<std::int64_t>(n, q);
+    char *dev_info_array_data = dev_info_array.get_data();
+    std::int64_t *d_dev_info =
+        reinterpret_cast<std::int64_t *>(dev_info_array_data);
 
     std::vector<sycl::event> host_task_events;
-    sycl::event getrf_ev =
-        getrf_fn(q, n, a_array_data, lda, d_ipiv, host_task_events, depends);
+    sycl::event getrf_ev = getrf_fn(q, n, a_array_data, lda, d_ipiv, d_dev_info,
+                                    host_task_events, depends);
 
     return getrf_ev;
 }
