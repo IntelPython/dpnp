@@ -354,6 +354,8 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the maximum of an array or maximum along an axis.
 
+    For full documentation refer to :obj:`numpy.max`.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -396,19 +398,56 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    if out is not None:
-        pass
-    elif initial is not None:
-        pass
+    if initial is not None:
+        raise NotImplementedError(
+            "initial keyword arguemnts is only supported by its default value."
+        )
     elif where is not True:
-        pass
+        raise NotImplementedError(
+            "where keyword arguemnts is only supported by its default values."
+        )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
-        return dpnp_array._create_from_usm_ndarray(
-            dpt.max(dpt_array, axis=axis, keepdims=keepdims)
-        )
+        if dpt_array.size == 0:
+            # TODO: get rid of this if condition when dpctl supports it
+            for i in range(a.ndim):
+                if a.shape[i] == 0:
+                    if i not in axis:
+                        indices = [i for i in range(a.ndim) if i not in axis]
+                        res_shape = tuple([a.shape[i] for i in indices])
+                        result = dpnp.empty(res_shape, dtype=a.dtype)
+                    else:
+                        raise ValueError(
+                            "reduction does not support zero-size arrays"
+                        )
+        else:
+            result = dpnp_array._create_from_usm_ndarray(
+                dpt.max(dpt_array, axis=axis, keepdims=keepdims)
+            )
+        if out is None:
+            return result
+        else:
+            if out.shape != result.shape:
+                raise ValueError(
+                    f"Output array of shape {result.shape} is needed, got {out.shape}."
+                )
+            elif out.dtype != result.dtype:
+                raise ValueError(
+                    f"Output array of type {result.dtype} is needed, got {out.dtype}."
+                )
+            elif not isinstance(out, dpnp_array):
+                if isinstance(out, dpt.usm_ndarray):
+                    out = dpnp.array(out)
+                else:
+                    raise ValueError(
+                        "An array must be any of supported type, but got {}".format(
+                            type(out)
+                        )
+                    )
 
-    return call_origin(numpy.max, a, axis, out, keepdims, initial, where)
+            dpnp.copyto(out, result)
+
+            return out
 
 
 def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
@@ -606,19 +645,56 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    if out is not None:
-        pass
-    elif initial is not None:
-        pass
+    if initial is not None:
+        raise NotImplementedError(
+            "initial keyword arguemnts is only supported by its default value."
+        )
     elif where is not True:
-        pass
+        raise NotImplementedError(
+            "where keyword arguemnts is only supported by its default values."
+        )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
-        return dpnp_array._create_from_usm_ndarray(
-            dpt.min(dpt_array, axis=axis, keepdims=keepdims)
-        )
+        if dpt_array.size == 0:
+            # TODO: get rid of this if condition when dpctl supports it
+            for i in range(a.ndim):
+                if a.shape[i] == 0:
+                    if i not in axis:
+                        indices = [i for i in range(a.ndim) if i not in axis]
+                        res_shape = tuple([a.shape[i] for i in indices])
+                        result = dpnp.empty(res_shape, dtype=a.dtype)
+                    else:
+                        raise ValueError(
+                            "reduction does not support zero-size arrays"
+                        )
+        else:
+            result = dpnp_array._create_from_usm_ndarray(
+                dpt.min(dpt_array, axis=axis, keepdims=keepdims)
+            )
+        if out is None:
+            return result
+        else:
+            if out.shape != result.shape:
+                raise ValueError(
+                    f"Output array of shape {result.shape} is needed, got {out.shape}."
+                )
+            elif out.dtype != result.dtype:
+                raise ValueError(
+                    f"Output array of type {result.dtype} is needed, got {out.dtype}."
+                )
+            elif not isinstance(out, dpnp_array):
+                if isinstance(out, dpt.usm_ndarray):
+                    out = dpnp.array(out)
+                else:
+                    raise ValueError(
+                        "An array must be any of supported type, but got {}".format(
+                            type(out)
+                        )
+                    )
 
-    return call_origin(numpy.min, a, axis, out, keepdims, initial, where)
+            dpnp.copyto(out, result)
+
+            return out
 
 
 def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
