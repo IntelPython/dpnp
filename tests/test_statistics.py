@@ -1,7 +1,10 @@
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from numpy.testing import assert_allclose
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal,
+)
 
 import dpnp
 
@@ -190,3 +193,64 @@ def test_cov_1D_rowvar(dtype):
     a = dpnp.array([[0, 1, 2]], dtype=dtype)
     b = numpy.array([[0, 1, 2]], dtype=dtype)
     assert_allclose(numpy.cov(b, rowvar=False), dpnp.cov(a, rowvar=False))
+
+
+@pytest.mark.parametrize(
+    "axis",
+    [None, 0, 1],
+    ids=["None", "0", "1"],
+)
+@pytest.mark.parametrize(
+    "v",
+    [
+        [[0, 0], [0, 0]],
+        [[1, 2], [1, 2]],
+        [[1, 2], [3, 4]],
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+    ],
+    ids=[
+        "[[0, 0], [0, 0]]",
+        "[[1, 2], [1, 2]]",
+        "[[1, 2], [3, 4]]",
+        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+    ],
+)
+def test_ptp(v, axis):
+    a = numpy.array(v)
+    ia = dpnp.array(a)
+    expected = numpy.ptp(a, axis)
+    result = dpnp.ptp(ia, axis)
+    assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize(
+    "axis",
+    [None, 0, 1],
+    ids=["None", "0", "1"],
+)
+@pytest.mark.parametrize(
+    "v",
+    [
+        [[0, 0], [0, 0]],
+        [[1, 2], [1, 2]],
+        [[1, 2], [3, 4]],
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+    ],
+    ids=[
+        "[[0, 0], [0, 0]]",
+        "[[1, 2], [1, 2]]",
+        "[[1, 2], [3, 4]]",
+        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+    ],
+)
+def test_ptp_out(v, axis):
+    a = numpy.array(v)
+    ia = dpnp.array(a)
+    expected = numpy.ptp(a, axis)
+    result = dpnp.array(numpy.empty_like(expected))
+    dpnp.ptp(ia, axis, out=result)
+    assert_array_equal(expected, result)

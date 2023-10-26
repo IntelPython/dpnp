@@ -218,6 +218,7 @@ def full(
 ):
     """Validate input parameters before passing them into `dpctl.tensor` module"""
     dpu.validate_usm_type(usm_type, allow_none=True)
+
     sycl_queue_normalized = dpnp.get_normalized_queue_device(
         fill_value, sycl_queue=sycl_queue, device=device
     )

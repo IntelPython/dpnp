@@ -155,11 +155,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like_s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_strides
 
-tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_list
-tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_tuple
-tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_list
-tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_tuple
-
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid0
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid2

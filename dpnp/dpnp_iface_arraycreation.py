@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -581,7 +579,7 @@ def copy(a, order="K", subok=False):
     return array(a, order=order, subok=subok, copy=True)
 
 
-def diag(x1, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
+def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     """
     Extract a diagonal or construct a diagonal array.
 
@@ -594,9 +592,8 @@ def diag(x1, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `k` is only supported as integer data type.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise ``TypeError`` exception will be raised.
 
     See Also
     --------
@@ -629,56 +626,44 @@ def diag(x1, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
 
     """
 
-    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
-        pass
-    elif not isinstance(k, int):
-        pass
+    if not isinstance(k, int):
+        raise TypeError("An integer is required, but got {}".format(type(k)))
     else:
-        _usm_type = x1.usm_type if usm_type is None else usm_type
-        _sycl_queue = dpnp.get_normalized_queue_device(
-            x1, sycl_queue=sycl_queue, device=device
-        )
-        x1 = (
-            x1.to_device(_sycl_queue.sycl_device)
-            if x1.sycl_queue != _sycl_queue
-            else x1
+        v = dpnp.asarray(
+            v, device=device, usm_type=usm_type, sycl_queue=sycl_queue
         )
 
         init0 = max(0, -k)
         init1 = max(0, k)
-        if x1.ndim == 1:
-            size = x1.shape[0] + abs(k)
+        if v.ndim == 1:
+            size = v.shape[0] + abs(k)
             m = dpnp.zeros(
                 (size, size),
-                dtype=x1.dtype,
-                usm_type=_usm_type,
-                sycl_queue=_sycl_queue,
+                dtype=v.dtype,
+                usm_type=v.usm_type,
+                sycl_queue=v.sycl_queue,
             )
-            for i in range(x1.shape[0]):
-                m[(init0 + i), init1 + i] = x1[i]
+            for i in range(v.shape[0]):
+                m[(init0 + i), init1 + i] = v[i]
             return m
-        elif x1.ndim == 2:
-            size = min(
-                x1.shape[0], x1.shape[0] + k, x1.shape[1], x1.shape[1] - k
-            )
+        elif v.ndim == 2:
+            size = min(v.shape[0], v.shape[0] + k, v.shape[1], v.shape[1] - k)
             if size < 0:
                 size = 0
             m = dpnp.zeros(
                 (size,),
-                dtype=x1.dtype,
-                usm_type=_usm_type,
-                sycl_queue=_sycl_queue,
+                dtype=v.dtype,
+                usm_type=v.usm_type,
+                sycl_queue=v.sycl_queue,
             )
             for i in range(size):
-                m[i] = x1[(init0 + i), init1 + i]
+                m[i] = v[(init0 + i), init1 + i]
             return m
         else:
             raise ValueError("Input must be a 1-D or 2-D array.")
 
-    return call_origin(numpy.diag, x1, k)
 
-
-def diagflat(x1, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
+def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     """
     Create a two-dimensional array with the flattened input as a diagonal.
 
@@ -697,9 +682,8 @@ def diagflat(x1, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `k` is only supported as integer data type.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise ``TypeError`` exception will be raised.
 
     Examples
     --------
@@ -719,19 +703,15 @@ def diagflat(x1, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         [0, 0, 0, 0, 0]])
 
     """
-    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
-        pass
-    elif not isinstance(k, int):
-        pass
-    else:
-        _usm_type = x1.usm_type if usm_type is None else usm_type
-        _sycl_queue = dpnp.get_normalized_queue_device(
-            x1, sycl_queue=sycl_queue, device=device
-        )
-        v = dpnp.ravel(x1)
-        return dpnp.diag(v, k, usm_type=_usm_type, sycl_queue=_sycl_queue)
 
-    return call_origin(numpy.diagflat, x1, k)
+    if not isinstance(k, int):
+        raise TypeError("An integer is required, but got {}".format(type(k)))
+    else:
+        v = dpnp.asarray(
+            v, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+        )
+        v = dpnp.ravel(v)
+        return dpnp.diag(v, k, usm_type=v.usm_type, sycl_queue=v.sycl_queue)
 
 
 def empty(
@@ -1030,6 +1010,7 @@ def full(
     [10, 10, 10, 10]
 
     """
+
     if like is not None:
         pass
     elif order not in ("C", "c", "F", "f", None):
@@ -1871,8 +1852,8 @@ def vander(
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameter `N`, if it is not ``None``, is only supported as integer data type.
+    Otherwise ``TypeError`` exception will be raised.
 
     Examples
     --------
@@ -1899,10 +1880,12 @@ def vander(
            [  1,   5,  25, 125]])
     """
 
-    if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
-        pass
-    elif N is not None and not isinstance(N, int):
-        pass
+    x1 = dpnp.asarray(
+        x1, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
+
+    if N is not None and not isinstance(N, int):
+        raise TypeError("An integer is required, but got {}".format(type(N)))
     elif x1.ndim != 1:
         raise ValueError("x1 must be a one-dimensional array or sequence.")
     else:
@@ -1910,32 +1893,20 @@ def vander(
             N = x1.size
 
         _dtype = int if x1.dtype == bool else x1.dtype
-        _usm_type = x1.usm_type if usm_type is None else usm_type
-        _sycl_queue = dpnp.get_normalized_queue_device(
-            x1, sycl_queue=sycl_queue, device=device
-        )
-        x1 = (
-            x1.to_device(_sycl_queue.sycl_device)
-            if x1.sycl_queue != _sycl_queue
-            else x1
-        )
-
         m = empty(
             (x1.size, N),
             dtype=_dtype,
-            usm_type=_usm_type,
-            sycl_queue=_sycl_queue,
+            usm_type=x1.usm_type,
+            sycl_queue=x1.sycl_queue,
         )
         tmp = m[:, ::-1] if not increasing else m
         dpnp.power(
             x1.reshape(-1, 1),
-            dpnp.arange(N, dtype=_dtype, sycl_queue=_sycl_queue),
+            dpnp.arange(N, dtype=_dtype, sycl_queue=x1.sycl_queue),
             out=tmp,
         )
 
         return m
-
-    return call_origin(numpy.vander, x1, N=N, increasing=increasing)
 
 
 def zeros(

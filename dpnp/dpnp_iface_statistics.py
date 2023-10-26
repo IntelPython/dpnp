@@ -713,7 +713,6 @@ def ptp(
     Limitations
     -----------
     Input array is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
 
     Examples
     --------
@@ -730,16 +729,11 @@ def ptp(
 
     """
 
-    if not isinstance(a, (dpnp.ndarray, dpt.usm_ndarray)):
-        pass
-    else:
-        return dpnp.subtract(
-            dpnp.max(a, axis=axis, keepdims=keepdims),
-            dpnp.min(a, axis=axis, keepdims=keepdims),
-            out=out,
-        )
-
-    return call_origin(numpy.ptp, a, axis, out, keepdims)
+    return dpnp.subtract(
+        dpnp.max(a, axis=axis, keepdims=keepdims, out=out),
+        dpnp.min(a, axis=axis, keepdims=keepdims),
+        out=out,
+    )
 
 
 def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):

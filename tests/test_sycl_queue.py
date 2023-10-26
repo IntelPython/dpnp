@@ -270,6 +270,7 @@ def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
+@pytest.mark.skip("muted until the issue reported by SAT-5969 is resolved")
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [

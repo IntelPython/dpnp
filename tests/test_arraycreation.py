@@ -117,41 +117,40 @@ def test_arange(start, stop, step, dtype):
         "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
     ],
 )
-def test_diag(v, k):
+def test_diag_diagflat(v, k):
     a = numpy.array(v)
     ia = dpnp.array(a)
     expected = numpy.diag(a, k)
     result = dpnp.diag(ia, k)
     assert_array_equal(expected, result)
 
+    expected = numpy.diagflat(a, k)
+    result = dpnp.diagflat(ia, k)
+    assert_array_equal(expected, result)
+
 
 @pytest.mark.parametrize(
-    "axis",
-    [None, 0, 1],
-    ids=["None", "0", "1"],
-)
-@pytest.mark.parametrize(
-    "v",
+    "seq",
     [
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
+        [0, 1, 2, 3, 4],
+        (0, 1, 2, 3, 4),
         [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
         [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
     ],
     ids=[
-        "[[0, 0], [0, 0]]",
-        "[[1, 2], [1, 2]]",
-        "[[1, 2], [3, 4]]",
+        "[0, 1, 2, 3, 4]",
+        "(0, 1, 2, 3, 4)",
         "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
         "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
     ],
 )
-def test_ptp(v, axis):
-    a = numpy.array(v)
-    ia = dpnp.array(a)
-    expected = numpy.ptp(a, axis)
-    result = dpnp.ptp(ia, axis)
+def test_diag_diagflat_seq(seq):
+    expected = numpy.diag(seq)
+    result = dpnp.diag(seq)
+    assert_array_equal(expected, result)
+
+    expected = numpy.diagflat(seq)
+    result = dpnp.diagflat(seq)
     assert_array_equal(expected, result)
 
 
@@ -458,7 +457,7 @@ def test_triu_size_null(k):
 def test_vander(array, dtype, n, increase):
     if dtype in [dpnp.complex64, dpnp.complex128] and array == [0, 3, 5]:
         pytest.skip(
-            "dpnp.power(dpnp.array(complex(0,0)), dpnp.array(0)) returns nan+nanj while it should be 1+0j"
+            "per array API dpnp.power(complex(0,0)), 0) returns nan+nanj while NumPy returns 1+0j"
         )
     vander_func = lambda xp, x: xp.vander(x, N=n, increasing=increase)
 
@@ -466,6 +465,16 @@ def test_vander(array, dtype, n, increase):
     a_dpnp = dpnp.array(array, dtype=dtype)
 
     assert_allclose(vander_func(numpy, a_np), vander_func(dpnp, a_dpnp))
+
+
+@pytest.mark.parametrize(
+    "sequence",
+    [[1, 2, 3, 4], (1, 2, 3, 4)],
+    ids=["[1, 2, 3, 4]", "(1, 2, 3, 4)"],
+)
+def test_vander_seq(sequence):
+    vander_func = lambda xp, x: xp.vander(x)
+    assert_allclose(vander_func(numpy, sequence), vander_func(dpnp, sequence))
 
 
 @pytest.mark.parametrize(
