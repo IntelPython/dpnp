@@ -363,14 +363,15 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Limitations
     -----------
-    Input and output arrays are only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Input and output arrays are only supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, and `initial` are supported only with their default values.
     Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.min` : Return tha minimum of an array.
+    :obj:`dpnp.min` : Return the minimum of an array.
     :obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagates NaNs.
     :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
     :obj:`dpnp.amax` : The maximum value of an array along a given axis, propagates NaNs.
@@ -400,11 +401,11 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     if initial is not None:
         raise NotImplementedError(
-            "initial keyword arguemnt is only supported by its default value."
+            "initial keyword argument is only supported by its default value."
         )
     elif where is not True:
         raise NotImplementedError(
-            "where keyword arguemnt is only supported by its default value."
+            "where keyword argument is only supported by its default value."
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
@@ -607,14 +608,15 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Limitations
     -----------
-    Input and output arrays are only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Input and output arrays are only supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, and `initial` are supported only with their default values.
     Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.max` : Return tha maximum of an array.
+    :obj:`dpnp.max` : Return the maximum of an array.
     :obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagates NaNs.
     :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
     :obj:`dpnp.amin` : The minimum value of an array along a given axis, propagates NaNs.
@@ -644,11 +646,11 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     if initial is not None:
         raise NotImplementedError(
-            "initial keyword arguemnt is only supported by its default value."
+            "initial keyword argument is only supported by its default value."
         )
     elif where is not True:
         raise NotImplementedError(
-            "where keyword arguemnt is only supported by its default values."
+            "where keyword argument is only supported by its default values."
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
