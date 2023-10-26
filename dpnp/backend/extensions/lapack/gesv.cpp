@@ -53,7 +53,6 @@ typedef sycl::event (*gesv_impl_fn_ptr_t)(sycl::queue,
                                           const std::int64_t,
                                           char *,
                                           std::int64_t,
-                                          std::int64_t *,
                                           char *,
                                           std::int64_t,
                                           std::vector<sycl::event> &,
@@ -67,7 +66,6 @@ static sycl::event gesv_impl(sycl::queue exec_q,
                              const std::int64_t nrhs,
                              char *in_a,
                              std::int64_t lda,
-                             std::int64_t *ipiv,
                              char *in_b,
                              std::int64_t ldb,
                              std::vector<sycl::event> &host_task_events,
@@ -82,6 +80,8 @@ static sycl::event gesv_impl(sycl::queue exec_q,
         mkl_lapack::gesv_scratchpad_size<T>(exec_q, n, nrhs, lda, ldb);
     T *scratchpad = nullptr;
 
+    std::int64_t *ipiv = nullptr;
+
     std::stringstream error_msg;
     std::int64_t info = 0;
     bool sycl_exception_caught = false;
@@ -89,6 +89,7 @@ static sycl::event gesv_impl(sycl::queue exec_q,
     sycl::event gesv_event;
     try {
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
+        ipiv = sycl::malloc_device<std::int64_t>(n, exec_q);
 
         gesv_event = mkl_lapack::gesv(
             exec_q,
@@ -151,13 +152,19 @@ static sycl::event gesv_impl(sycl::queue exec_q,
         if (scratchpad != nullptr) {
             sycl::free(scratchpad, exec_q);
         }
+        if (ipiv != nullptr) {
+            sycl::free(ipiv, exec_q);
+        }
         throw std::runtime_error(error_msg.str());
     }
 
     sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(gesv_event);
         auto ctx = exec_q.get_context();
-        cgh.host_task([ctx, scratchpad]() { sycl::free(scratchpad, ctx); });
+        cgh.host_task([ctx, scratchpad, ipiv]() {
+            sycl::free(scratchpad, ctx);
+            sycl::free(ipiv, ctx);
+        });
     });
     host_task_events.push_back(clean_up_event);
 
@@ -238,13 +245,10 @@ sycl::event gesv(sycl::queue exec_q,
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, m);
 
-    std::vector<std::int64_t> ipiv(n);
-    std::int64_t *d_ipiv = sycl::malloc_device<std::int64_t>(n, exec_q);
-
     std::vector<sycl::event> host_task_events;
     sycl::event gesv_ev =
-        gesv_fn(exec_q, n, nrhs, coeff_matrix_data, lda, d_ipiv,
-                dependent_vals_data, ldb, host_task_events, depends);
+        gesv_fn(exec_q, n, nrhs, coeff_matrix_data, lda, dependent_vals_data,
+                ldb, host_task_events, depends);
 
     return gesv_ev;
 }
