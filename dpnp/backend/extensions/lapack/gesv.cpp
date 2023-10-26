@@ -84,6 +84,7 @@ static sycl::event gesv_impl(sycl::queue exec_q,
 
     std::stringstream error_msg;
     std::int64_t info = 0;
+    bool sycl_exception_caught = false;
 
     sycl::event gesv_event;
     try {
@@ -142,10 +143,10 @@ static sycl::event gesv_impl(sycl::queue exec_q,
     } catch (sycl::exception const &e) {
         error_msg << "Unexpected SYCL exception caught during gesv() call:\n"
                   << e.what();
-        info = -11;
+        sycl_exception_caught = true;
     }
 
-    if (info != 0) // an unexected error occurs
+    if (info != 0 || sycl_exception_caught) // an unexected error occurs
     {
         if (scratchpad != nullptr) {
             sycl::free(scratchpad, exec_q);
