@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev0+55.g830cb303f documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev0+57.gc2ef8046b documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8d2aa313"></script>
+        <script src="../../_static/documentation_options.js?v=025f0e7f"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+55.g830cb303f
+                0.13.1dev0+57.gc2ef8046b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -474,14 +474,15 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array `a` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameters `out`, `where`, and `initial` are supported only with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input and output arrays are only supported as either :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, and `initial` are supported only with their default values.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.min` : Return tha minimum of an array.</span>
+<span class="sd">    :obj:`dpnp.min` : Return the minimum of an array.</span>
 <span class="sd">    :obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagates NaNs.</span>
 <span class="sd">    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.</span>
 <span class="sd">    :obj:`dpnp.amax` : The maximum value of an array along a given axis, propagates NaNs.</span>
@@ -511,11 +512,11 @@
 
     <span class="k">if</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;initial keyword arguemnts is only supported by its default value.&quot;</span>
+            <span class="s2">&quot;initial keyword argument is only supported by its default value.&quot;</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;where keyword arguemnts is only supported by its default values.&quot;</span>
+            <span class="s2">&quot;where keyword argument is only supported by its default values.&quot;</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
@@ -542,21 +543,17 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Output array of shape </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
-            <span class="k">elif</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">.&quot;</span>
-                <span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-                    <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="s2">&quot;Output array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                             <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
 
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">out</span></div>
 
@@ -730,14 +727,15 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array `a` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameters `out`, `where`, and `initial` are supported only with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input and output arrays are only supported as either :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, and `initial` are supported only with their default values.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.max` : Return tha maximum of an array.</span>
+<span class="sd">    :obj:`dpnp.max` : Return the maximum of an array.</span>
 <span class="sd">    :obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagates NaNs.</span>
 <span class="sd">    :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.</span>
 <span class="sd">    :obj:`dpnp.amin` : The minimum value of an array along a given axis, propagates NaNs.</span>
@@ -767,11 +765,11 @@
 
     <span class="k">if</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;initial keyword arguemnts is only supported by its default value.&quot;</span>
+            <span class="s2">&quot;initial keyword argument is only supported by its default value.&quot;</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;where keyword arguemnts is only supported by its default values.&quot;</span>
+            <span class="s2">&quot;where keyword argument is only supported by its default values.&quot;</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
@@ -798,21 +796,17 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Output array of shape </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
-            <span class="k">elif</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">.&quot;</span>
-                <span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-                    <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="s2">&quot;Output array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                             <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
 
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">out</span></div>
 
