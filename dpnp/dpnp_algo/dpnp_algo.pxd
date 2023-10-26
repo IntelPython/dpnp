@@ -42,8 +42,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ARGMIN_EXT
         DPNP_FN_ARGSORT
         DPNP_FN_ARGSORT_EXT
-        DPNP_FN_ASTYPE
-        DPNP_FN_ASTYPE_EXT
         DPNP_FN_CBRT
         DPNP_FN_CBRT_EXT
         DPNP_FN_CHOLESKY
@@ -333,7 +331,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*dpnp_reduction_c_t)(c_dpctl.DPCTLSyclQueueRe
                                                         const long*,
                                                         const c_dpctl.DPCTLEventVectorRef)
 
-cpdef dpnp_descriptor dpnp_astype(dpnp_descriptor x1, dtype)
 cpdef dpnp_descriptor dpnp_flatten(dpnp_descriptor x1)
 
 

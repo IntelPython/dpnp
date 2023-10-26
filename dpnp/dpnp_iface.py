@@ -46,6 +46,7 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 
+import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
@@ -149,41 +150,56 @@ def asnumpy(input, order="C"):
     return numpy.asarray(input, order=order)
 
 
-def astype(x1, dtype, order="K", casting="unsafe", subok=True, copy=True):
-    """Copy the array with data type casting."""
-    if isinstance(x1, dpnp_array):
-        return x1.astype(dtype, order=order, casting=casting, copy=copy)
+def astype(x1, dtype, order="K", casting="unsafe", copy=True):
+    """
+    Copy the array with data type casting.
 
-    if isinstance(x1, dpt.usm_ndarray):
-        return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
+    Parameters
+    ----------
+    x1 : {dpnp.ndarray, usm_ndarray}
+        Array data type casting.
+    dtype : dtype
+        Target data type.
+    order : {'C', 'F', 'A', 'K'}
+        Row-major (C-style) or column-major (Fortran-style) order.
+        When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
+        And when ``order`` is 'K', it keeps strides as closely as possible.
+    copy : bool
+        If it is False and no cast happens, then this method returns the array itself.
+        Otherwise, a copy is returned.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur. Defaults to 'unsafe' for backwards compatibility.
+        'no' means the data types should not be cast at all.
+        'equiv' means only byte-order changes are allowed.
+        'safe' means only casts which can preserve values are allowed.
+        'same_kind' means only safe casts or casts within a kind, like float64 to float32, are allowed.
+        'unsafe' means any data conversions may be done.
+    copy : bool, optional
+        By default, astype always returns a newly allocated array. If this is set to false, and the dtype,
+        order, and subok requirements are satisfied, the input array is returned instead of a copy.
 
-    x1_desc = get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if not x1_desc:
-        pass
-    elif order != "K":
-        pass
-    elif casting != "unsafe":
-        pass
-    elif not subok:
-        pass
-    elif not copy:
-        pass
-    elif x1_desc.dtype == numpy.complex128 or dtype == numpy.complex128:
-        pass
-    elif x1_desc.dtype == numpy.complex64 or dtype == numpy.complex64:
-        pass
-    else:
-        return dpnp_astype(x1_desc, dtype).get_pyobj()
+    Returns
+    -------
+    arr_t : dpnp.ndarray
+        Unless `copy` is ``False`` and the other conditions for returning the input array
+        are satisfied, `arr_t` is a new array of the same shape as the input array,
+        with dtype, order given by dtype, order.
 
-    return call_origin(
-        numpy.ndarray.astype,
-        x1,
-        dtype,
-        order=order,
-        casting=casting,
-        subok=subok,
-        copy=copy,
+    """
+
+    if order is None:
+        order = "K"
+
+    x1_obj = dpnp.get_usm_ndarray(x1)
+    array_obj = dpt.astype(
+        x1_obj, dtype, order=order, casting=casting, copy=copy
     )
+
+    # return x1 if dpctl returns a zero copy of x1_obj
+    if array_obj is x1_obj and isinstance(x1, dpnp_array):
+        return x1
+
+    return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
 def convert_single_elem_array_to_scalar(obj, keepdims=False):
@@ -350,37 +366,45 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
     Utility to process complementary keyword arguments 'device' and 'sycl_queue'
     in subsequent calls of functions from `dpctl.tensor` module.
 
-    If both arguments 'device' and 'sycl_queue' have default value `None`
+    If both arguments 'device' and 'sycl_queue' have default value ``None``
     and 'obj' has `sycl_queue` attribute, it assumes that Compute Follows Data
     approach has to be applied and so the resulting SYCL queue will be normalized
     based on the queue value from 'obj'.
 
-    Args:
-        obj (optional): A python object. Can be an instance of `dpnp_array`,
-            `dpctl.tensor.usm_ndarray`, an object representing SYCL USM allocation
-            and implementing `__sycl_usm_array_interface__` protocol,
-            an instance of `numpy.ndarray`, an object supporting Python buffer protocol,
-            a Python scalar, or a (possibly nested) sequence of Python scalars.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional):
-            explicitly indicates where USM allocation is done
-            and the population code (if any) is executed.
-            Value `None` is interpreted as get the SYCL queue
-            from `obj` parameter if not None, from `device` keyword,
-            or use default queue.
-            Default: None
-        device (string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,
-            :class:`dpctl.tensor.Device`, optional):
-            array-API keyword indicating non-partitioned SYCL device
-            where array is allocated.
+    Parameters
+    ----------
+    obj : object, optional
+        A python object. Can be an instance of `dpnp_array`,
+        `dpctl.tensor.usm_ndarray`, an object representing SYCL USM allocation
+        and implementing `__sycl_usm_array_interface__` protocol, an instance
+        of `numpy.ndarray`, an object supporting Python buffer protocol,
+        a Python scalar, or a (possibly nested) sequence of Python scalars.
+    sycl_queue : class:`dpctl.SyclQueue`, optional
+        A queue which explicitly indicates where USM allocation is done
+        and the population code (if any) is executed.
+        Value ``None`` is interpreted as to get the SYCL queue from either
+        `obj` parameter if not ``None`` or from `device` keyword,
+        or to use default queue.
+    device : {string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,
+              :class:`dpctl.tensor.Device`}, optional
+        An array-API keyword indicating non-partitioned SYCL device
+        where array is allocated.
+
     Returns
-        :class:`dpctl.SyclQueue` object normalized by `normalize_queue_device` call
+    -------
+    sycl_queue: dpctl.SyclQueue
+        A :class:`dpctl.SyclQueue` object normalized by `normalize_queue_device` call
         of `dpctl.tensor` module invoked with 'device' and 'sycl_queue' values.
         If both incoming 'device' and 'sycl_queue' are None and 'obj' has `sycl_queue` attribute,
         the normalization will be performed for 'obj.sycl_queue' value.
-    Raises:
-        TypeError: if argument is not of the expected type, or keywords
-            imply incompatible queues.
+
+    Raises
+    ------
+    TypeError
+        If argument is not of the expected type, or keywords imply incompatible queues.
+
     """
+
     if (
         device is None
         and sycl_queue is None
@@ -389,12 +413,9 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
     ):
         sycl_queue = obj.sycl_queue
 
-    # TODO: remove check dpt._device has attribute 'normalize_queue_device'
-    if hasattr(dpt._device, "normalize_queue_device"):
-        return dpt._device.normalize_queue_device(
-            sycl_queue=sycl_queue, device=device
-        )
-    return sycl_queue
+    return dpt._device.normalize_queue_device(
+        sycl_queue=sycl_queue, device=device
+    )
 
 
 def get_usm_ndarray(a):

@@ -928,3 +928,14 @@ def test_subok_error():
     with pytest.raises(NotImplementedError):
         dpnp.broadcast_arrays(x, subok=True)
         dpnp.broadcast_to(x, (4, 4), subok=True)
+
+
+def test_can_cast():
+    X = dpnp.ones((2, 2), dtype=dpnp.int64)
+    pytest.raises(TypeError, dpnp.can_cast, X, 1)
+    pytest.raises(TypeError, dpnp.can_cast, X, X)
+
+    X_np = numpy.ones((2, 2), dtype=numpy.int64)
+    assert dpnp.can_cast(X, "float32") == numpy.can_cast(X_np, "float32")
+    assert dpnp.can_cast(X, dpnp.int32) == numpy.can_cast(X_np, numpy.int32)
+    assert dpnp.can_cast(X, dpnp.int64) == numpy.can_cast(X_np, numpy.int64)
