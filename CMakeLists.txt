@@ -1,8 +1,4 @@
-cmake_minimum_required(VERSION 3.21...3.26 FATAL_ERROR)
-
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
-  cmake_policy(SET CMP0135 NEW)
-endif()
+cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
 project(dpnp
   DESCRIPTION "NumPy-like API accelerated by SYCL."
@@ -27,7 +23,7 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DPCTL_MODULE_PATH})
 
 
-find_package(IntelDPCPP REQUIRED)
+find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
 find_package(TBB QUIET)
 if(TBB_FOUND)
     find_package(TBB REQUIRED)
@@ -77,7 +73,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(pybind11)
 
-find_package(PythonExtensions REQUIRED)
+find_package(Python REQUIRED COMPONENTS Development.Module)
 find_package(NumPy REQUIRED)
 
 set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
