@@ -29,6 +29,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/type_utils.hpp"
 
+#include "common_helpers.hpp"
 #include "gesv.hpp"
 #include "linalg_exceptions.hpp"
 #include "types_matrix.hpp"
@@ -114,13 +115,7 @@ static sycl::event gesv_impl(sycl::queue exec_q,
             exec_q.memcpy(&host_U, &a[(info - 1) * lda + info - 1], sizeof(T))
                 .wait();
 
-            using ThresholdType = std::conditional_t<
-                std::is_same_v<T, float> ||
-                    std::is_same_v<T, std::complex<float>>,
-                float,
-                std::conditional_t<std::is_same_v<T, double> ||
-                                       std::is_same_v<T, std::complex<double>>,
-                                   double, void>>;
+            using ThresholdType = typename helper::value_type_of<T>::type;
 
             const auto threshold =
                 std::numeric_limits<ThresholdType>::epsilon() * 100;
