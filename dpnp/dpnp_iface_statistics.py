@@ -363,9 +363,9 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Limitations
     -----------
-    Input array `a` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out`, `where`, and `initial` are supported only with their default values.
-    Otherwise the function will be executed sequentially on CPU.
+    Input and output arrays are only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, and `initial` are supported only with their default values.
+    Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -400,16 +400,17 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     if initial is not None:
         raise NotImplementedError(
-            "initial keyword arguemnts is only supported by its default value."
+            "initial keyword arguemnt is only supported by its default value."
         )
     elif where is not True:
         raise NotImplementedError(
-            "where keyword arguemnts is only supported by its default values."
+            "where keyword arguemnt is only supported by its default value."
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
         if dpt_array.size == 0:
             # TODO: get rid of this if condition when dpctl supports it
+            axis = (axis,) if isinstance(axis, int) else axis
             for i in range(a.ndim):
                 if a.shape[i] == 0:
                     if i not in axis:
@@ -431,21 +432,17 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
                 raise ValueError(
                     f"Output array of shape {result.shape} is needed, got {out.shape}."
                 )
-            elif out.dtype != result.dtype:
-                raise ValueError(
-                    f"Output array of type {result.dtype} is needed, got {out.dtype}."
-                )
             elif not isinstance(out, dpnp_array):
                 if isinstance(out, dpt.usm_ndarray):
-                    out = dpnp.array(out)
+                    out = dpnp_array._create_from_usm_ndarray(out)
                 else:
-                    raise ValueError(
-                        "An array must be any of supported type, but got {}".format(
+                    raise TypeError(
+                        "Output array must be any of supported type, but got {}".format(
                             type(out)
                         )
                     )
 
-            dpnp.copyto(out, result)
+            dpnp.copyto(out, result, casting="safe")
 
             return out
 
@@ -610,9 +607,9 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Limitations
     -----------
-    Input array `a` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out`, `where`, and `initial` are supported only with their default values.
-    Otherwise the function will be executed sequentially on CPU.
+    Input and output arrays are only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, and `initial` are supported only with their default values.
+    Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -647,11 +644,11 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     if initial is not None:
         raise NotImplementedError(
-            "initial keyword arguemnts is only supported by its default value."
+            "initial keyword arguemnt is only supported by its default value."
         )
     elif where is not True:
         raise NotImplementedError(
-            "where keyword arguemnts is only supported by its default values."
+            "where keyword arguemnt is only supported by its default values."
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
@@ -678,21 +675,17 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
                 raise ValueError(
                     f"Output array of shape {result.shape} is needed, got {out.shape}."
                 )
-            elif out.dtype != result.dtype:
-                raise ValueError(
-                    f"Output array of type {result.dtype} is needed, got {out.dtype}."
-                )
             elif not isinstance(out, dpnp_array):
                 if isinstance(out, dpt.usm_ndarray):
-                    out = dpnp.array(out)
+                    out = dpnp_array._create_from_usm_ndarray(out)
                 else:
-                    raise ValueError(
-                        "An array must be any of supported type, but got {}".format(
+                    raise TypeError(
+                        "Output array must be any of supported type, but got {}".format(
                             type(out)
                         )
                     )
 
-            dpnp.copyto(out, result)
+            dpnp.copyto(out, result, casting="safe")
 
             return out
 
