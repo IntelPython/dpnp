@@ -76,18 +76,6 @@ def run(
         env=env,
     )
 
-    # def find_objects():
-    #     import os
-
-    #     objects = []
-    #     dpnp_path = os.getcwd()
-    #     search_path = os.path.join(dpnp_path, "dpnp")
-    #     files = os.listdir(search_path)
-    #     for file in files:
-    #         if file.endswith("_c.so"):
-    #             objects.extend(["-object", os.path.join(search_path, file)])
-    #     return objects
-
     def find_objects():
         import os
 
@@ -96,13 +84,15 @@ def run(
         search_path = os.path.join(dpnp_path, "dpnp")
         for root, _, files in os.walk(search_path):
             for file in files:
-                if file.endswith("_c.so") or root.find("extensions") != -1 and file.find("_impl.cpython") != -1:
+                if (
+                    file.endswith("_c.so")
+                    or root.find("extensions") != -1
+                    and file.find("_impl.cpython") != -1
+                ):
                     objects.extend(["-object", os.path.join(root, file)])
         return objects
 
     objects = find_objects()
-    print("\nobjects:\n", objects)
-
     instr_profile_fn = "dpnp_pytest.profdata"
     # generate instrumentation profile data
     subprocess.check_call(
