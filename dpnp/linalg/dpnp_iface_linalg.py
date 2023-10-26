@@ -47,7 +47,7 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.linalg.dpnp_algo_linalg import *
 
-from .dpnp_utils_linalg import dpnp_eigh
+from .dpnp_utils_linalg import dpnp_eigh, _lu_factor
 
 __all__ = [
     "cholesky",
@@ -157,17 +157,19 @@ def det(input):
         Determinant of `input`.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.ndim < 2:
-            pass
-        elif x1_desc.shape[-1] == x1_desc.shape[-2]:
-            result_obj = dpnp_det(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    # x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
+    # if x1_desc:
+    #     if x1_desc.ndim < 2:
+    #         pass
+    #     elif x1_desc.shape[-1] == x1_desc.shape[-2]:
+    #         result_obj = dpnp_det(x1_desc).get_pyobj()
+    #         result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-            return result
+    #         return result
 
-    return call_origin(numpy.linalg.det, input)
+    # return call_origin(numpy.linalg.det, input)
+
+    return _lu_factor(input)
 
 
 def eig(x1):
@@ -577,3 +579,111 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     return call_origin(
         numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian
     )
+
+"""
+def _lu_factor(a, dtype=dpnp.float32):
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+    shape = a.shape[:-2]
+
+    # TODO: use dpnp.linalg.LinAlgError
+    if a.ndim < 2:
+        raise ValueError(
+            f"{a.ndim}-dimensional array given. The input "
+            "array must be at least two-dimensional"
+        )
+
+    n, m = a.shape[-2:]
+    # TODO: use dpnp.linalg.LinAlgError
+    if m != n:
+        raise ValueError("Last 2 dimensions of the input array must be square")
+
+    # orig_shape = a.shape
+
+    a_order = "C" if a.flags.c_contiguous else "F"
+
+    exec_q = a.sycl_queue
+    if exec_q is None:
+        raise ValueError(
+            "Execution placement can not be unambiguously inferred "
+            "from input arguments."
+        )
+
+    # TODO: Use linalg_common_type from #1598
+    if dpnp.issubdtype(a.dtype, dpnp.floating):
+        res_type = (
+            a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
+        )
+    elif dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        res_type = (
+            a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.complex64
+        )
+    else:
+        res_type = (
+            dpnp.float64 if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
+        )
+
+    logdet_dtype = numpy.dtype(res_type)
+    dtype = numpy.dtype(res_type) #a.dtype
+
+    a_h = dpnp.empty_like(a, order="F", dtype=res_type)
+    ipiv_h = dpnp.empty(
+        n, dtype=dpnp.int64, usm_type=a.usm_type, sycl_queue=a.sycl_queue
+    )
+    dev_info_h = dpnp.empty(
+        1, dtype=dpnp.int64, usm_type=a.usm_type, sycl_queue=a.sycl_queue
+    )
+
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
+    )
+
+    lapack_ev = li._getrf(
+        exec_q, n, a_h.get_array(), ipiv_h.get_array(),dev_info_h.get_array(), [a_copy_ev]
+    )
+
+    if a_order != "F":
+        # need to align order of the result of solutions with the
+        # input array of multiple dependent variables
+        a_h_f = dpnp.empty_like(a_h, order=a_order)
+        ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_h.get_array(),
+            dst=a_h_f.get_array(),
+            sycl_queue=a.sycl_queue,
+            depends=[lapack_ev],
+        )
+        ht_copy_out_ev.wait()
+        out_v = (a_h_f, ipiv_h, dev_info_h)
+    else:
+        out_v = (a_h, ipiv_h, dev_info_h)
+
+    lapack_ev.wait()
+    a_ht_copy_ev.wait()
+
+    lu_np = dpnp.asnumpy(out_v[0])
+    ipiv_np = dpnp.asnumpy(out_v[1])
+    dev_info_np = dpnp.asnumpy(out_v[2])
+
+
+    diag = numpy.diagonal(lu_np, axis1=-2, axis2=-1)
+    logdet = numpy.log(numpy.abs(diag)).sum(axis=-1)
+
+    non_zero = numpy.count_nonzero(ipiv_np != numpy.arange(1, n + 1), axis=-1)
+    if dtype.kind == "f":
+        non_zero += numpy.count_nonzero(diag < 0, axis=-1)
+
+    sign = (non_zero % 2) * -2 + 1
+    if dtype.kind == "c":
+        sign = sign * numpy.prod(diag / numpy.abs(diag), axis=-1)
+
+    sign = sign.astype(dtype)
+    logdet = logdet.astype(logdet_dtype, copy=False)
+    singular = dev_info_np > 0
+    res_sign = numpy.where(singular, dtype.type(0), sign).reshape(shape)
+    res_logdet = numpy.where(singular, logdet_dtype.type('-inf'), logdet).reshape(shape)
+
+    res = res_sign * numpy.exp(res_logdet)
+
+    return res
+    # return out_v
+
+"""
