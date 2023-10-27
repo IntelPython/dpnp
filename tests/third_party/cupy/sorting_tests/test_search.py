@@ -91,8 +91,8 @@ class TestSearch(unittest.TestCase):
         a = testing.shaped_random((2, 3), xp, dtype)
         return a.argmin()
 
-    @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
     def test_argmin_nan(self, xp, dtype):
         a = xp.array([float("nan"), -1, 1], dtype)
         return a.argmin()

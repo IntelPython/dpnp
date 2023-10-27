@@ -49,7 +49,7 @@ from dpnp.dpnp_utils import *
 __all__ = ["argmax", "argmin", "searchsorted", "where"]
 
 
-def argmax(a, axis=None, out=None, keepdims=False):
+def argmax(a, axis=None, out=None, *, keepdims=False):
     """
     Returns the indices of the maximum values along an axis.
 
@@ -62,11 +62,13 @@ def argmax(a, axis=None, out=None, keepdims=False):
 
     Limitations
     -----------
-    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Input and output arrays are only supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
+    :obj:`dpnp.ndarray.argmax` : Equivalent function.
     :obj:`dpnp.argmin` : Returns the indices of the minimum values along an axis.
     :obj:`dpnp.amax` : The maximum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
@@ -147,7 +149,7 @@ def argmax(a, axis=None, out=None, keepdims=False):
         return out
 
 
-def argmin(a, axis=None, out=None, keepdims=False):
+def argmin(a, axis=None, out=None, *, keepdims=False):
     """
     Returns the indices of the minimum values along an axis.
 
@@ -160,11 +162,13 @@ def argmin(a, axis=None, out=None, keepdims=False):
 
     Limitations
     -----------
-    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Input and output arrays are only supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
+    :obj:`dpnp.ndarray.argmin` : Equivalent function.
     :obj:`dpnp.argmax` : Returns the indices of the maximum values along an axis.
     :obj:`dpnp.amin` : The minimum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.

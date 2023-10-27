@@ -492,17 +492,6 @@ class dpnp_array:
 
         Refer to :obj:`dpnp.argmax` for full documentation.
 
-        Examples
-        --------
-        >>> import dpnp as np
-        >>> a = np.arange(6).reshape(2,3)
-        >>> a.argmax()
-        array(5)
-        >>> a.argmax(0)
-        array([1, 1, 1])
-        >>> a.argmax(1)
-        array([2, 2])
-
         """
         return dpnp.argmax(self, axis, out)
 
