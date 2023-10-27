@@ -116,7 +116,8 @@ def run(
                 "-ignore-filename-regex=/tmp/icpx*",
                 "-instr-profile=" + instr_profile_fn,
             ]
-            + objects,
+            + objects
+            + ["-sources", "dpnp"],
             stdout=fh,
         )
 
