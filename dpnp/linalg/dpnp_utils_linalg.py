@@ -40,9 +40,9 @@ _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
 
 
-def linalg_common_type(*arrays):
+def _common_type(*arrays):
     """
-    linalg_common_type(*arrays)
+    _common_type(*arrays)
 
     Common type for linalg
 
@@ -71,7 +71,7 @@ def linalg_common_type(*arrays):
     default = dpnp.default_float_type().name
     dtype_common = _common_type_internal(default, *dtypes)
 
-    return dtype_common, dtype_common
+    return dtype_common
 
 
 def _common_type_internal(default_dtype, *dtypes):
@@ -233,8 +233,7 @@ def dpnp_solve(a, b):
             "from input arguments."
         )
 
-    dtype, res_type = linalg_common_type(a, b)
-
+    res_type = _common_type(a, b)
     if b.size == 0:
         return dpnp.empty(b_shape, dtype=res_type)
 
@@ -266,7 +265,7 @@ def dpnp_solve(a, b):
             # oneMKL LAPACK assumes fortran-like array as input, so
             # allocate a memory with 'F' order for dpnp array of coefficient matrix
             # and multiple dependent variables array
-            coeff_vecs[i] = dpnp.empty_like(a[i], order="F", dtype=dtype)
+            coeff_vecs[i] = dpnp.empty_like(a[i], order="F", dtype=res_type)
             val_vecs[i] = dpnp.empty_like(b[i], order="F", dtype=res_type)
 
             # use DPCTL tensor function to fill the coefficient matrix array
@@ -309,7 +308,7 @@ def dpnp_solve(a, b):
         # oneMKL LAPACK assumes fortran-like array as input, so
         # allocate a memory with 'F' order for dpnp array of coefficient matrix
         # and multiple dependent variables
-        a_f = dpnp.empty_like(a, order="F", dtype=dtype)
+        a_f = dpnp.empty_like(a, order="F", dtype=res_type)
         b_f = dpnp.empty_like(b, order="F", dtype=res_type)
 
         # use DPCTL tensor function to fill the coefficient matrix array
