@@ -61,6 +61,13 @@ PYBIND11_MODULE(_lapack_impl, m)
     init_dispatch_vectors();
     init_dispatch_tables();
 
+    m.def("_gesv", &lapack_ext::gesv,
+          "Call `gesv` from OneMKL LAPACK library to return "
+          "the solution of a system of linear equations with "
+          "a square coefficient matrix A and multiple dependent variables",
+          py::arg("sycl_queue"), py::arg("coeff_matrix"),
+          py::arg("dependent_vals"), py::arg("depends") = py::list());
+
     m.def("_heevd", &lapack_ext::heevd,
           "Call `heevd` from OneMKL LAPACK library to return "
           "the eigenvalues and eigenvectors of a complex Hermitian matrix",
@@ -74,11 +81,4 @@ PYBIND11_MODULE(_lapack_impl, m)
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
           py::arg("eig_vecs"), py::arg("eig_vals"),
           py::arg("depends") = py::list());
-
-    m.def("_gesv", &lapack_ext::gesv,
-          "Call `gesv` from OneMKL LAPACK library to return "
-          "the solution of a system of linear equations with "
-          "a square coefficient matrix A and multiple dependent variables",
-          py::arg("sycl_queue"), py::arg("coeff_matrix"),
-          py::arg("dependent_vals"), py::arg("depends") = py::list());
 }

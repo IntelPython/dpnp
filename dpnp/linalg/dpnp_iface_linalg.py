@@ -533,6 +533,7 @@ def solve(a, b):
     array([-1.,  1.])
 
     """
+
     if not dpnp.is_supported_array_type(a):
         raise TypeError(
             "An array must be any of supported type, but got {}".format(type(a))
