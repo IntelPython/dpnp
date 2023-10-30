@@ -1,6 +1,0 @@
-﻿dpnp.random.standard\_cauchy
-============================
-
-.. currentmodule:: dpnp.random
-
-.. autofunction:: standard_cauchy

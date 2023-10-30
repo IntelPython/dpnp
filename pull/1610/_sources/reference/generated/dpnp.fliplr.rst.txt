@@ -1,6 +1,0 @@
-﻿dpnp.fliplr
-===========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: fliplr

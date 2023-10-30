@@ -1,6 +1,0 @@
-﻿dpnp.vander
-===========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: vander
