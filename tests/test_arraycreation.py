@@ -91,6 +91,7 @@ def test_arange(start, stop, step, dtype):
         assert_array_equal(exp_array, res_array)
 
 
+@pytest.mark.parametrize("func", ["diag", "diagflat"])
 @pytest.mark.parametrize(
     "k",
     [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
@@ -117,18 +118,22 @@ def test_arange(start, stop, step, dtype):
         "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
     ],
 )
-def test_diag_diagflat(v, k):
+def test_diag_diagflat(func, v, k):
     a = numpy.array(v)
     ia = dpnp.array(a)
-    expected = numpy.diag(a, k)
-    result = dpnp.diag(ia, k)
-    assert_array_equal(expected, result)
-
-    expected = numpy.diagflat(a, k)
-    result = dpnp.diagflat(ia, k)
+    expected = getattr(numpy, func)(a, k)
+    result = getattr(dpnp, func)(ia, k)
     assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize("func", ["diag", "diagflat"])
+def test_diag_diagflat_raise_error(func):
+    ia = dpnp.array([0, 1, 2, 3, 4])
+    with pytest.raises(TypeError):
+        getattr(dpnp, func)(ia, k=2.0)
+
+
+@pytest.mark.parametrize("func", ["diag", "diagflat"])
 @pytest.mark.parametrize(
     "seq",
     [
@@ -144,13 +149,9 @@ def test_diag_diagflat(v, k):
         "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
     ],
 )
-def test_diag_diagflat_seq(seq):
-    expected = numpy.diag(seq)
-    result = dpnp.diag(seq)
-    assert_array_equal(expected, result)
-
-    expected = numpy.diagflat(seq)
-    result = dpnp.diagflat(seq)
+def test_diag_diagflat_seq(func, seq):
+    expected = getattr(numpy, func)(seq)
+    result = getattr(dpnp, func)(seq)
     assert_array_equal(expected, result)
 
 
@@ -465,6 +466,16 @@ def test_vander(array, dtype, n, increase):
     a_dpnp = dpnp.array(array, dtype=dtype)
 
     assert_allclose(vander_func(numpy, a_np), vander_func(dpnp, a_dpnp))
+
+
+def test_vander_raise_error():
+    a = dpnp.array([1, 2, 3, 4])
+    with pytest.raises(TypeError):
+        dpnp.vander(a, N=1.0)
+
+    a = dpnp.array([[1, 2], [3, 4]])
+    with pytest.raises(ValueError):
+        dpnp.vander(a)
 
 
 @pytest.mark.parametrize(
