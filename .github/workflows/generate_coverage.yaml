@@ -52,8 +52,7 @@ jobs:
 
       - name: Build dpnp with coverage
         run: |
-          python scripts/gen_coverage.py \
-            --pytest-opts="--ignore tests/test_random.py --ignore tests/test_mathematical.py --ignore tests/test_sum.py --ignore tests/test_linalg.py"
+          python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py"
 
       - name: Install coverall dependencies
         run: |
