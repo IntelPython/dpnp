@@ -8,6 +8,7 @@ function(build_dpnp_cython_ext _trgt _src _dest)
   add_dependencies(${_trgt} ${_trgt_deps})
   if (DPNP_GENERATE_COVERAGE)
     target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
+    target_compile_options(${_trgt} PRIVATE "-fno-sycl-use-footer")
   endif()
   target_compile_definitions(${_trgt} PRIVATE NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION)
   # NumPy
