@@ -172,6 +172,10 @@ def test_array_creation_follow_device(func, args, kwargs, device):
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
 
+@pytest.mark.skipif(
+    numpy.lib.NumpyVersion(numpy.__version__) < "1.25.0",
+    reason="numpy.logspace supports a non-scalar base argument since 1.25.0",
+)
 @pytest.mark.parametrize(
     "device",
     valid_devices,
