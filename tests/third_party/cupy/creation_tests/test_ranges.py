@@ -1,3 +1,4 @@
+import functools
 import math
 import sys
 import unittest
@@ -8,6 +9,27 @@ import pytest
 import dpnp as cupy
 from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
+
+
+def skip_int_equality_before_numpy_1_20(names=("dtype",)):
+    """Require numpy/numpy#16841 or skip the equality check."""
+
+    def decorator(wrapped):
+        if numpy.lib.NumpyVersion(numpy.__version__) >= "1.20.0":
+            return wrapped
+
+        @functools.wraps(wrapped)
+        def wrapper(self, *args, **kwargs):
+            xp = kwargs["xp"]
+            dtypes = [kwargs[name] for name in names]
+            ret = wrapped(self, *args, **kwargs)
+            if any(numpy.issubdtype(dtype, numpy.integer) for dtype in dtypes):
+                ret = xp.zeros_like(ret)
+            return ret
+
+        return wrapper
+
+    return decorator
 
 
 @testing.gpu
@@ -78,6 +100,14 @@ class TestRanges(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_linspace2(self, xp, dtype):
         return xp.linspace(10, 0, 5, dtype=dtype)
+
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_array_equal()
+    @skip_int_equality_before_numpy_1_20()
+    def test_linspace3(self, xp, dtype):
+        if xp.dtype(dtype).kind == "u":
+            pytest.skip()
+        return xp.linspace(-10, 8, 9, dtype=dtype)
 
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
@@ -260,6 +290,17 @@ class TestRanges(unittest.TestCase):
     @testing.numpy_cupy_allclose(rtol=1e-04)
     def test_logspace_base(self, xp, dtype):
         return xp.logspace(0, 2, 5, base=2.0, dtype=dtype)
+
+    # See #7946 and https://github.com/numpy/numpy/issues/24957
+    @testing.with_requires("numpy>=1.16, !=1.25.*, !=1.26.*")
+    @testing.for_all_dtypes_combination(
+        names=("dtype_range", "dtype_out"), no_bool=True, no_complex=True
+    )
+    @testing.numpy_cupy_allclose(rtol=1e-6, contiguous_check=False)
+    def test_logspace_array_start_stop_axis1(self, xp, dtype_range, dtype_out):
+        start = xp.array([0, 2], dtype=dtype_range)
+        stop = xp.array([2, 0], dtype=dtype_range)
+        return xp.logspace(start, stop, num=5, dtype=dtype_out, axis=1)
 
 
 @testing.parameterize(

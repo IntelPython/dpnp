@@ -322,9 +322,6 @@ tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid4
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid5
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_negative_size
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_no_dtype_int
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_one_num_no_endopoint_with_retstep
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_with_retstep
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_zero_num_no_endopoint_with_retstep
 
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_1_{axes=None, norm=None, s=(1, None), shape=(3, 4)}::test_fft2
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_7_{axes=(), norm=None, s=None, shape=(3, 4)}::test_fft2

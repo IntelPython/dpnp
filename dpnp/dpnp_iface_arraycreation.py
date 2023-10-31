@@ -1148,11 +1148,6 @@ def linspace(
 
     For full documentation refer to :obj:`numpy.linspace`.
 
-    Limitations
-    -----------
-    Parameter `retstep` is supported only with default value ``False``.
-    Otherwise ``NotImplementedError`` exception will be raised.
-
     See Also
     --------
     :obj:`dpnp.arange` : Similar to `linspace`, but uses a step size (instead
@@ -1173,11 +1168,6 @@ def linspace(
 
     """
 
-    if retstep is not False:
-        raise NotImplementedError(
-            f"retstep={retstep} is currently not supported"
-        )
-
     return dpnp_linspace(
         start,
         stop,
@@ -1187,6 +1177,7 @@ def linspace(
         usm_type=usm_type,
         sycl_queue=sycl_queue,
         endpoint=endpoint,
+        retstep=retstep,
         axis=axis,
     )
 
