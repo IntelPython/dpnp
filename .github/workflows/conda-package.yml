@@ -28,6 +28,7 @@ env:
       test_umath.py
       test_usm_type.py
       third_party/cupy/core_tests
+      third_party/cupy/linalg_tests/test_norms.py
       third_party/cupy/linalg_tests/test_product.py
       third_party/cupy/logic_tests/test_comparison.py
       third_party/cupy/logic_tests/test_truth.py
