@@ -25,12 +25,15 @@
 
 
 set(python_module_name _lapack_impl)
-pybind11_add_module(${python_module_name} MODULE
-    lapack_py.cpp
-    heevd.cpp
-    syevd.cpp
-    gesv.cpp
+set(_module_src
+    ${CMAKE_CURRENT_SOURCE_DIR}/lapack_py.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gesv.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/heevd.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/syevd.cpp
 )
+
+pybind11_add_module(${python_module_name} MODULE ${_module_src})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
 
 if (WIN32)
     if (${CMAKE_VERSION} VERSION_LESS "3.27")

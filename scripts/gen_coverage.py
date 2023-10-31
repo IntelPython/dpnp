@@ -82,10 +82,14 @@ def run(
         objects = []
         dpnp_path = os.getcwd()
         search_path = os.path.join(dpnp_path, "dpnp")
-        files = os.listdir(search_path)
-        for file in files:
-            if file.endswith("_c.so"):
-                objects.extend(["-object", os.path.join(search_path, file)])
+        for root, _, files in os.walk(search_path):
+            for file in files:
+                if (
+                    file.endswith("_c.so")
+                    or root.find("extensions") != -1
+                    and file.find("_impl.cpython") != -1
+                ):
+                    objects.extend(["-object", os.path.join(root, file)])
         return objects
 
     objects = find_objects()
@@ -112,7 +116,8 @@ def run(
                 "-ignore-filename-regex=/tmp/icpx*",
                 "-instr-profile=" + instr_profile_fn,
             ]
-            + objects,
+            + objects
+            + ["-sources", "dpnp"],
             stdout=fh,
         )
 

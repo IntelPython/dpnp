@@ -25,9 +25,12 @@
 
 
 set(python_module_name _vm_impl)
-pybind11_add_module(${python_module_name} MODULE
-    vm_py.cpp
+set(_module_src
+    ${CMAKE_CURRENT_SOURCE_DIR}/vm_py.cpp
 )
+
+pybind11_add_module(${python_module_name} MODULE ${_module_src})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
 
 if (WIN32)
     if (${CMAKE_VERSION} VERSION_LESS "3.27")
