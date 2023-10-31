@@ -1043,6 +1043,11 @@ def geomspace(
 
     For full documentation refer to :obj:`numpy.geomspace`.
 
+    Returns
+    -------
+    samples : dpnp.ndarray
+        num samples, equally spaced on a log scale.
+
     See Also
     --------
     :obj:`dpnp.logspace` : Similar to geomspace, but with endpoints specified
@@ -1057,9 +1062,22 @@ def geomspace(
     >>> import dpnp as np
     >>> np.geomspace(1, 1000, num=4)
     array([   1.,   10.,  100., 1000.])
-
-    >>> x2 = np.geomspace(1, 1000, num=4, endpoint=False)
+    >>> np.geomspace(1, 1000, num=3, endpoint=False)
+    array([  1.,  10., 100.])
+    >>> np.geomspace(1, 1000, num=4, endpoint=False)
     array([  1.        ,   5.62341325,  31.6227766 , 177.827941  ])
+    >>> np.geomspace(1, 256, num=9)
+    array([  1.,   2.,   4.,   8.,  16.,  32.,  64., 128., 256.])
+
+    >>> np.geomspace(1, 256, num=9, dtype=int)
+    array([  1,   2,   4,   7,  16,  32,  63, 127, 256])
+    >>> np.around(np.geomspace(1, 256, num=9)).astype(int)
+    array([  1,   2,   4,   8,  16,  32,  64, 128, 256])
+
+    >>> np.geomspace(1000, 1, num=4)
+    array([1000.,  100.,   10.,    1.])
+    >>> np.geomspace(-1000, -1, num=4)
+    array([-1000.,  -100.,   -10.,    -1.])
 
     """
 
@@ -1148,6 +1166,17 @@ def linspace(
 
     For full documentation refer to :obj:`numpy.linspace`.
 
+    Returns
+    -------
+    samples : dpnp.ndarray
+        There are num equally spaced samples in the closed interval
+        [`start`, `stop`] or the half-open interval [`start`, `stop`)
+        (depending on whether `endpoint` is ``True`` or ``False``).
+    step : float, optional
+        Only returned if `retstep` is ``True``
+
+    Size of spacing between samples.
+
     See Also
     --------
     :obj:`dpnp.arange` : Similar to `linspace`, but uses a step size (instead
@@ -1165,6 +1194,9 @@ def linspace(
 
     >>> np.linspace(2.0, 3.0, num=5, endpoint=False)
     array([2. , 2.2, 2.4, 2.6, 2.8])
+
+    >>> np.linspace(2.0, 3.0, num=5, retstep=True)
+    (array([2.  , 2.25, 2.5 , 2.75, 3.  ]), array(0.25))
 
     """
 
@@ -1227,6 +1259,11 @@ def logspace(
 
     For full documentation refer to :obj:`numpy.logspace`.
 
+    Returns
+    -------
+    samples : dpnp.ndarray
+        num samples, equally spaced on a log scale.
+
     See Also
     --------
     :obj:`dpnp.arange` : Similar to linspace, with the step size specified
@@ -1249,6 +1286,10 @@ def logspace(
 
     >>> np.logspace(2.0, 3.0, num=4, base=2.0)
     array([4.        , 5.0396842 , 6.34960421, 8.        ])
+
+    >>> np.logspace(2.0, 3.0, num=4, base=[2.0, 3.0], axis=-1)
+    array([[ 4.        ,  5.0396842 ,  6.34960421,  8.        ],
+           [ 9.        , 12.98024613, 18.72075441, 27.        ]])
 
     """
 

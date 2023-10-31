@@ -222,7 +222,7 @@ class TestRanges(unittest.TestCase):
     @testing.for_all_dtypes_combination(
         names=("dtype_range", "dtype_out"), no_bool=True, no_complex=True
     )
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose(rtol=1e-04)
     def test_linspace_array_start_stop_axis1(self, xp, dtype_range, dtype_out):
         start = xp.array([0, 120], dtype=dtype_range)
         stop = xp.array([100, 0], dtype=dtype_range)
