@@ -166,7 +166,7 @@ def dpnp_eigh(a, UPLO):
         return w, out_v
 
 
-def _lu_factor(a, dtype=dpnp.float32):
+def _lu_factor(a, res_type):
     """Compute pivoted LU decomposition.
 
     Decompose a given batch of square matrices. Inputs and outputs are
@@ -192,8 +192,6 @@ def _lu_factor(a, dtype=dpnp.float32):
 
     """
 
-    a_usm_arr = dpnp.get_usm_ndarray(a)
-
     # TODO: use dpnp.linalg.LinAlgError
     if a.ndim < 2:
         raise ValueError(
@@ -217,57 +215,95 @@ def _lu_factor(a, dtype=dpnp.float32):
             "from input arguments."
         )
 
-    # TODO: Use linalg_common_type from #1598
-    if dpnp.issubdtype(a.dtype, dpnp.floating):
-        res_type = (
-            a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
-        )
-    elif dpnp.issubdtype(a.dtype, dpnp.complexfloating):
-        res_type = (
-            a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.complex64
-        )
-    else:
-        res_type = (
-            dpnp.float64 if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
-        )
+    if a.ndim > 2:
+        orig_shape = a.shape
+        a = a.reshape(-1, n, n)
+        batch_size = a.shape[0]
+        a_usm_arr = dpnp.get_usm_ndarray(a)
 
-    a_h = dpnp.empty_like(a, order="F", dtype=res_type)
-    ipiv_h = dpnp.empty(
-        n, dtype=dpnp.int64, usm_type=a.usm_type, sycl_queue=a.sycl_queue
-    )
-    dev_info_h = dpnp.empty(
-        1, dtype=dpnp.int64, usm_type=a.usm_type, sycl_queue=a.sycl_queue
-    )
-
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
-    )
-
-    lapack_ev = li._getrf(
-        exec_q,
-        n,
-        a_h.get_array(),
-        ipiv_h.get_array(),
-        dev_info_h.get_array(),
-        [a_copy_ev],
-    )
-
-    if a_order != "F":
-        # need to align order of the result of solutions with the
-        # input array of multiple dependent variables
-        a_h_f = dpnp.empty_like(a_h, order=a_order)
-        ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_h.get_array(),
-            dst=a_h_f.get_array(),
+        a_vecs = [None] * batch_size
+        ipiv_h = dpnp.empty(
+            (batch_size, n),
+            dtype=dpnp.int64,
+            usm_type=a.usm_type,
             sycl_queue=a.sycl_queue,
-            depends=[lapack_ev],
         )
-        ht_copy_out_ev.wait()
-        out_v = (a_h_f, ipiv_h, dev_info_h)
+        dev_info_h = dpnp.empty(
+            (batch_size,),
+            dtype=dpnp.int64,
+            usm_type=a.usm_type,
+            sycl_queue=a.sycl_queue,
+        )
+        a_ht_copy_ev = [None] * batch_size
+        ht_lapack_ev = [None] * batch_size
+
+        for i in range(batch_size):
+            a_vecs[i] = dpnp.empty_like(a[i], order="F", dtype=res_type)
+            a_ht_copy_ev[i], a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_usm_arr[i],
+                dst=a_vecs[i].get_array(),
+                sycl_queue=a.sycl_queue,
+            )
+
+            ht_lapack_ev[i] = li._getrf(
+                exec_q,
+                n,
+                a_vecs[i].get_array(),
+                ipiv_h[i].get_array(),
+                dev_info_h[i].get_array(),
+                [a_copy_ev],
+            )
+
+        for i in range(batch_size):
+            ht_lapack_ev[i].wait()
+            a_ht_copy_ev[i].wait()
+
+        out_v = dpnp.array(a_vecs, order=a_order).reshape(orig_shape)
+        out_ipiv = ipiv_h.reshape(orig_shape[:-1])
+        out_dev_info = dev_info_h.reshape(orig_shape[:-2])
+
+        return (out_v, out_ipiv, out_dev_info)
+
     else:
-        out_v = (a_h, ipiv_h, dev_info_h)
+        a_usm_arr = dpnp.get_usm_ndarray(a)
 
-    lapack_ev.wait()
-    a_ht_copy_ev.wait()
+        a_h = dpnp.empty_like(a, order="F", dtype=res_type)
+        ipiv_h = dpnp.empty(
+            n, dtype=dpnp.int64, usm_type=a.usm_type, sycl_queue=a.sycl_queue
+        )
+        dev_info_h = dpnp.empty(
+            1, dtype=dpnp.int64, usm_type=a.usm_type, sycl_queue=a.sycl_queue
+        )
 
-    return out_v
+        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
+        )
+
+        lapack_ev = li._getrf(
+            exec_q,
+            n,
+            a_h.get_array(),
+            ipiv_h.get_array(),
+            dev_info_h.get_array(),
+            [a_copy_ev],
+        )
+
+        if a_order != "F":
+            # need to align order of the result of solutions with the
+            # input array of multiple dependent variables
+            a_h_f = dpnp.empty_like(a_h, order=a_order)
+            ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_h.get_array(),
+                dst=a_h_f.get_array(),
+                sycl_queue=a.sycl_queue,
+                depends=[lapack_ev],
+            )
+            ht_copy_out_ev.wait()
+            out_v = (a_h_f, ipiv_h, dev_info_h)
+        else:
+            out_v = (a_h, ipiv_h, dev_info_h)
+
+        lapack_ev.wait()
+        a_ht_copy_ev.wait()
+
+        return out_v
