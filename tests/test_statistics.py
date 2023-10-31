@@ -22,97 +22,67 @@ def test_median(dtype, size):
     assert_allclose(dpnp_res, np_res)
 
 
+@pytest.mark.parametrize("func", ["max", "min"])
 @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
 @pytest.mark.parametrize("keepdims", [False, True])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-def test_max_min(axis, keepdims, dtype):
+def test_max_min(func, axis, keepdims, dtype):
     a = numpy.arange(768, dtype=dtype).reshape((4, 4, 6, 8))
     ia = dpnp.array(a)
 
-    np_res = numpy.max(a, axis=axis, keepdims=keepdims)
-    dpnp_res = dpnp.max(ia, axis=axis, keepdims=keepdims)
-
-    assert dpnp_res.shape == np_res.shape
-    assert_allclose(dpnp_res, np_res)
-
-    np_res = numpy.min(a, axis=axis, keepdims=keepdims)
-    dpnp_res = dpnp.min(ia, axis=axis, keepdims=keepdims)
+    np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
+    dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
 
     assert dpnp_res.shape == np_res.shape
     assert_allclose(dpnp_res, np_res)
 
 
+@pytest.mark.parametrize("func", ["max", "min"])
 @pytest.mark.parametrize("axis", [None, 0, 1, -1])
 @pytest.mark.parametrize("keepdims", [False, True])
-def test_max_min_bool(axis, keepdims):
+def test_max_min_bool(func, axis, keepdims):
     a = numpy.arange(2, dtype=dpnp.bool)
     a = numpy.tile(a, (2, 2))
     ia = dpnp.array(a)
 
-    np_res = numpy.max(a, axis=axis, keepdims=keepdims)
-    dpnp_res = dpnp.max(ia, axis=axis, keepdims=keepdims)
-
-    assert dpnp_res.shape == np_res.shape
-    assert_allclose(dpnp_res, np_res)
-
-    np_res = numpy.min(a, axis=axis, keepdims=keepdims)
-    dpnp_res = dpnp.min(ia, axis=axis, keepdims=keepdims)
+    np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
+    dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
 
     assert dpnp_res.shape == np_res.shape
     assert_allclose(dpnp_res, np_res)
 
 
-def test_max_min_out():
+@pytest.mark.parametrize("func", ["max", "min"])
+def test_max_min_out(func):
     a = numpy.arange(6).reshape((2, 3))
     ia = dpnp.array(a)
 
-    np_res = numpy.max(a, axis=0)
+    np_res = getattr(numpy, func)(a, axis=0)
     dpnp_res = dpnp.array(numpy.empty_like(np_res))
-    dpnp.max(ia, axis=0, out=dpnp_res)
+    getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
     assert_allclose(dpnp_res, np_res)
 
     dpnp_res = dpt.asarray(numpy.empty_like(np_res))
-    dpnp.max(ia, axis=0, out=dpnp_res)
+    getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
     assert_allclose(dpnp_res, np_res)
 
     dpnp_res = numpy.empty_like(np_res)
     with pytest.raises(TypeError):
-        dpnp.max(ia, axis=0, out=dpnp_res)
+        getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
 
     dpnp_res = dpnp.array(numpy.empty((2, 3)))
     with pytest.raises(ValueError):
-        dpnp.max(ia, axis=0, out=dpnp_res)
-
-    np_res = numpy.min(a, axis=0)
-    dpnp_res = dpnp.array(numpy.empty_like(np_res))
-    dpnp.min(ia, axis=0, out=dpnp_res)
-    assert_allclose(dpnp_res, np_res)
-
-    dpnp_res = dpt.asarray(numpy.empty_like(np_res))
-    dpnp.min(ia, axis=0, out=dpnp_res)
-    assert_allclose(dpnp_res, np_res)
-
-    dpnp_res = numpy.empty_like(np_res)
-    with pytest.raises(TypeError):
-        dpnp.min(ia, axis=0, out=dpnp_res)
-
-    dpnp_res = dpnp.array(numpy.empty((2, 3)))
-    with pytest.raises(ValueError):
-        dpnp.min(ia, axis=0, out=dpnp_res)
+        getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
 
 
-def test_max_min_NotImplemented():
+@pytest.mark.parametrize("func", ["max", "min"])
+def test_max_min_NotImplemented(func):
     ia = dpnp.arange(5)
 
     with pytest.raises(NotImplementedError):
-        dpnp.max(ia, where=False)
+        getattr(dpnp, func)(ia, where=False)
     with pytest.raises(NotImplementedError):
-        dpnp.max(ia, initial=6)
-
-    with pytest.raises(NotImplementedError):
-        dpnp.min(ia, where=False)
-    with pytest.raises(NotImplementedError):
-        dpnp.min(ia, initial=6)
+        getattr(dpnp, func)(ia, initial=6)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
