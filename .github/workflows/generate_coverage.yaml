@@ -39,26 +39,32 @@ jobs:
       - name: Install Lcov
         run: |
           sudo apt-get install lcov
+
       - name: Install dpnp dependencies
         run: |
           conda install cython llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
               dpctl dpcpp_linux-64 sysroot_linux-64">=2.28" mkl-devel-dpcpp tbb-devel onedpl-devel ${{ env.CHANNELS }}
+
       - name: Conda info
         run: |
           conda info
           conda list
+
       - name: Build dpnp with coverage
         run: |
           python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py"
+
       - name: Install coverall dependencies
         run: |
           sudo gem install coveralls-lcov
           pip install coveralls==3.2.0
+
       - name: Upload coverage data to coveralls.io
         run: |
           echo "Processing pytest-coverage"
           export DPNP_PYTEST_LCOV=$(find . -name dpnp_pytest.lcov)
           coveralls-lcov -v -n $DPNP_PYTEST_LCOV > pytest-dpnp-c-api-coverage.json
+
           # merge file with coverage data and upload
           echo "Merging files with coverage data"
           coveralls --service=github --merge=pytest-dpnp-c-api-coverage.json
