@@ -508,15 +508,15 @@ def concatenate(
 
     if dtype is not None and out is not None:
         raise TypeError(
-            "stack() only takes `out` or `dtype` as an argument, but both were provided."
+            "concatenate() only takes `out` or `dtype` as an argument, but both were provided."
         )
 
     usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
     usm_res = dpt.concat(usm_arrays, axis=axis)
     res = dpnp_array._create_from_usm_ndarray(usm_res)
     if dtype is not None:
-        res = res.astype(dtype, casting=casting)
-    if out is not None:
+        res = res.astype(dtype, casting=casting, copy=False)
+    elif out is not None:
         dpnp.copyto(out, res, casting=casting)
         return out
     return res
@@ -1424,15 +1424,15 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
 
     if dtype is not None and out is not None:
         raise TypeError(
-            "concatenate() only takes `out` or `dtype` as an argument, but both were provided."
+            "stack() only takes `out` or `dtype` as an argument, but both were provided."
         )
 
     usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
     usm_res = dpt.stack(usm_arrays, axis=axis)
     res = dpnp_array._create_from_usm_ndarray(usm_res)
     if dtype is not None:
-        res = res.astype(dtype, casting=casting)
-    if out is not None:
+        res = res.astype(dtype, casting=casting, copy=False)
+    elif out is not None:
         dpnp.copyto(out, res, casting=casting)
         return out
     return res
