@@ -1,0 +1,6 @@
+﻿dpnp.trapz
+==========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: trapz
