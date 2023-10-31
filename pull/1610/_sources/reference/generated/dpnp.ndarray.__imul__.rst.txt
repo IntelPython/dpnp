@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.\_\_imul\_\_
-=========================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.__imul__
