@@ -25,9 +25,12 @@
 
 
 set(python_module_name _sycl_ext_impl)
-pybind11_add_module(${python_module_name} MODULE
-    sum_mean.cpp
+set(_module_src
+    ${CMAKE_CURRENT_SOURCE_DIR}/sum_mean.cpp
 )
+
+pybind11_add_module(${python_module_name} MODULE ${_module_src})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
 
 if (WIN32)
     if (${CMAKE_VERSION} VERSION_LESS "3.27")
