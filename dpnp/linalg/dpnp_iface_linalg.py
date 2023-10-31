@@ -47,7 +47,7 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.linalg.dpnp_algo_linalg import *
 
-from .dpnp_utils_linalg import dpnp_eigh, _lu_factor
+from .dpnp_utils_linalg import _lu_factor, dpnp_eigh
 
 __all__ = [
     "cholesky",
@@ -63,6 +63,7 @@ __all__ = [
     "norm",
     "qr",
     "svd",
+    "slogdet",
 ]
 
 
@@ -580,10 +581,39 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
         numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian
     )
 
-"""
-def _lu_factor(a, dtype=dpnp.float32):
-    a_usm_arr = dpnp.get_usm_ndarray(a)
-    shape = a.shape[:-2]
+
+def slogdet(a):
+    """Returns sign and logarithm of the determinant of an array.
+
+    It calculates the natural logarithm of the determinant of a given value.
+
+    Args:
+        a (dpnp.ndarray): The input matrix with dimension ``(..., N, N)``.
+
+    Returns:
+        tuple of :class:`~dpnp.ndarray`:
+            It returns a tuple ``(sign, logdet)``. ``sign`` represents each
+            sign of the determinant as a real number ``0``, ``1`` or ``-1``.
+            'logdet' represents the natural logarithm of the absolute of the
+            determinant.
+            If the determinant is zero, ``sign`` will be ``0`` and ``logdet``
+            will be ``-inf``.
+            The shapes of both ``sign`` and ``logdet`` are equal to
+            ``a.shape[:-2]``.
+
+    .. warning::
+        This function calls one or more cuSOLVER routine(s) which may yield
+        invalid results if input conditions are not met.
+        To detect these invalid results, you can set the `linalg`
+        configuration to a value that is not `ignore` in
+        :func:`cupyx.errstate` or :func:`cupyx.seterr`.
+
+    .. warning::
+        To produce the same results as :func:`numpy.linalg.slogdet` for
+        singular inputs, set the `linalg` configuration to `raise`.
+
+    .. seealso:: :func:`numpy.linalg.slogdet`
+    """
 
     # TODO: use dpnp.linalg.LinAlgError
     if a.ndim < 2:
@@ -597,17 +627,8 @@ def _lu_factor(a, dtype=dpnp.float32):
     if m != n:
         raise ValueError("Last 2 dimensions of the input array must be square")
 
-    # orig_shape = a.shape
-
-    a_order = "C" if a.flags.c_contiguous else "F"
-
     exec_q = a.sycl_queue
-    if exec_q is None:
-        raise ValueError(
-            "Execution placement can not be unambiguously inferred "
-            "from input arguments."
-        )
-
+    # dtype, sign_dtype = _util.linalg_common_type(a)
     # TODO: Use linalg_common_type from #1598
     if dpnp.issubdtype(a.dtype, dpnp.floating):
         res_type = (
@@ -622,68 +643,58 @@ def _lu_factor(a, dtype=dpnp.float32):
             dpnp.float64 if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
         )
 
-    logdet_dtype = numpy.dtype(res_type)
-    dtype = numpy.dtype(res_type) #a.dtype
+    res_type = dpnp.dtype(res_type)
+    logdet_dtype = dpnp.dtype(res_type.char.lower())
 
-    a_h = dpnp.empty_like(a, order="F", dtype=res_type)
-    ipiv_h = dpnp.empty(
-        n, dtype=dpnp.int64, usm_type=a.usm_type, sycl_queue=a.sycl_queue
+    a_shape = a.shape
+    shape = a_shape[:-2]
+    n = a_shape[-2]
+
+    if a.size == 0:
+        # empty batch (result is empty, too) or empty matrices det([[]]) == 1
+        sign = dpnp.ones(shape, res_type)
+        logdet = dpnp.zeros(shape, logdet_dtype)
+        return sign, logdet
+
+    lu, ipiv, dev_info = _lu_factor(a, res_type)
+
+    # dev_info < 0 means illegal value (in dimensions, strides, and etc.) that
+    # should never happen even if the matrix contains nan or inf.
+    # TODO(kataoka): assert dev_info >= 0 if synchronization is allowed for
+    # debugging purposes.
+
+    # Transposing 'lu' to swap the last two axes for compatibility
+    # with 'dpnp.diagonal' as it does not support 'axis1' and 'axis2' arguments.
+    # TODO: Replace with 'dpnp.diagonal(lu, axis1=-2, axis2=-1)' when supported.
+    lu_transposed = lu.transpose(-2, -1, *range(lu.ndim - 2))
+    diag = dpnp.diagonal(lu_transposed)
+
+    logdet = dpnp.log(dpnp.abs(diag)).sum(axis=-1)
+
+    # Transposing 'ipiv' and reshaping 'arange_values' for element-wise comparison
+    # as 'dpnp.count_nonzero' does not support the 'axis' parameter.
+    ipiv_transposed = ipiv.transpose(-1, *range(ipiv.ndim - 1))
+    arange_shape = [1] * a.ndim
+    arange_shape[-2] = n
+    arange_values = dpnp.arange(1, n + 1, sycl_queue=exec_q).reshape(
+        arange_shape
     )
-    dev_info_h = dpnp.empty(
-        1, dtype=dpnp.int64, usm_type=a.usm_type, sycl_queue=a.sycl_queue
-    )
 
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
-    )
+    # ipiv is 1-origin
+    # TODO: Replace with 'dpnp.count_nonzero(ipiv != dpnp.arange(1, n + 1), axis=-1)'
+    # when supported.
+    non_zero = dpnp.count_nonzero(ipiv_transposed != arange_values)
+    if res_type.kind == "f":
+        non_zero += dpnp.count_nonzero(diag < 0)
 
-    lapack_ev = li._getrf(
-        exec_q, n, a_h.get_array(), ipiv_h.get_array(),dev_info_h.get_array(), [a_copy_ev]
-    )
+    sign = -(1 ** (non_zero % 2))
+    if res_type.kind == "c":
+        sign = sign * dpnp.prod(diag / dpnp.abs(diag), axis=-1)
 
-    if a_order != "F":
-        # need to align order of the result of solutions with the
-        # input array of multiple dependent variables
-        a_h_f = dpnp.empty_like(a_h, order=a_order)
-        ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_h.get_array(),
-            dst=a_h_f.get_array(),
-            sycl_queue=a.sycl_queue,
-            depends=[lapack_ev],
-        )
-        ht_copy_out_ev.wait()
-        out_v = (a_h_f, ipiv_h, dev_info_h)
-    else:
-        out_v = (a_h, ipiv_h, dev_info_h)
-
-    lapack_ev.wait()
-    a_ht_copy_ev.wait()
-
-    lu_np = dpnp.asnumpy(out_v[0])
-    ipiv_np = dpnp.asnumpy(out_v[1])
-    dev_info_np = dpnp.asnumpy(out_v[2])
-
-
-    diag = numpy.diagonal(lu_np, axis1=-2, axis2=-1)
-    logdet = numpy.log(numpy.abs(diag)).sum(axis=-1)
-
-    non_zero = numpy.count_nonzero(ipiv_np != numpy.arange(1, n + 1), axis=-1)
-    if dtype.kind == "f":
-        non_zero += numpy.count_nonzero(diag < 0, axis=-1)
-
-    sign = (non_zero % 2) * -2 + 1
-    if dtype.kind == "c":
-        sign = sign * numpy.prod(diag / numpy.abs(diag), axis=-1)
-
-    sign = sign.astype(dtype)
+    sign = sign.astype(res_type)
     logdet = logdet.astype(logdet_dtype, copy=False)
-    singular = dev_info_np > 0
-    res_sign = numpy.where(singular, dtype.type(0), sign).reshape(shape)
-    res_logdet = numpy.where(singular, logdet_dtype.type('-inf'), logdet).reshape(shape)
-
-    res = res_sign * numpy.exp(res_logdet)
-
-    return res
-    # return out_v
-
-"""
+    singular = dev_info > 0
+    return (
+        dpnp.where(singular, res_type.type(0), sign).reshape(shape),
+        dpnp.where(singular, logdet_dtype.type("-inf"), logdet).reshape(shape),
+    )
