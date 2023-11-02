@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_counting &mdash; Data Parallel Extension for NumPy 0.13.1dev0+57.g90128a44e documentation</title>
+  <title>dpnp.dpnp_iface_counting &mdash; Data Parallel Extension for NumPy 0.13.1dev0+59.g576e2fae7 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3b03927b"></script>
+        <script src="../../_static/documentation_options.js?v=ee43e280"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+57.g90128a44e
+                0.13.1dev0+59.g576e2fae7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -142,7 +142,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    count : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        Number of non-zero values in the array along a given axis.</span>
 <span class="sd">        Otherwise, a zero-dimensional array with the total number of</span>
 <span class="sd">        non-zero values in the array is returned.</span>
@@ -164,7 +164,7 @@
 <span class="sd">    &gt;&gt;&gt; np.count_nonzero(np.eye(4))</span>
 <span class="sd">    array(4)</span>
 <span class="sd">    &gt;&gt;&gt; a = np.array([[0, 1, 7, 0],</span>
-<span class="sd">    ...               [3, 0, 2, 19]])</span>
+<span class="sd">                      [3, 0, 2, 19]])</span>
 <span class="sd">    &gt;&gt;&gt; np.count_nonzero(a)</span>
 <span class="sd">    array(5)</span>
 <span class="sd">    &gt;&gt;&gt; np.count_nonzero(a, axis=0)</span>
