@@ -426,7 +426,7 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
             k, dtype=res_type_s, usm_type=a_usm_type, sycl_queue=a_sycl_queue
         )
 
-        lapack_ev = li._gesvd(
+        ht_lapack_ev, _ = li._gesvd(
             a_sycl_queue,
             jobu,
             jobvt,
@@ -439,7 +439,7 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
             [a_copy_ev],
         )
 
-        lapack_ev.wait()
+        ht_lapack_ev.wait()
         a_ht_copy_ev.wait()
 
         if compute_uv:

@@ -183,16 +183,17 @@ static sycl::event gesvd_impl(sycl::queue exec_q,
     return gesvd_event;
 }
 
-sycl::event gesvd(sycl::queue exec_q,
-                  const std::int8_t jobu_val,
-                  const std::int8_t jobvt_val,
-                  const std::int64_t m,
-                  const std::int64_t n,
-                  dpctl::tensor::usm_ndarray a_array,
-                  dpctl::tensor::usm_ndarray out_s,
-                  dpctl::tensor::usm_ndarray out_u,
-                  dpctl::tensor::usm_ndarray out_vt,
-                  const std::vector<sycl::event> &depends)
+std::pair<sycl::event, sycl::event>
+    gesvd(sycl::queue exec_q,
+          const std::int8_t jobu_val,
+          const std::int8_t jobvt_val,
+          const std::int64_t m,
+          const std::int64_t n,
+          dpctl::tensor::usm_ndarray a_array,
+          dpctl::tensor::usm_ndarray out_s,
+          dpctl::tensor::usm_ndarray out_u,
+          dpctl::tensor::usm_ndarray out_vt,
+          const std::vector<sycl::event> &depends)
 {
     const int a_array_nd = a_array.get_ndim();
 
@@ -263,7 +264,10 @@ sycl::event gesvd(sycl::queue exec_q,
         gesvd_fn(exec_q, jobu, jobvt, m, n, a_array_data, lda, out_s_data,
                  out_u_data, ldu, out_vt_data, ldvt, host_task_events, depends);
 
-    return gesvd_ev;
+    sycl::event args_ev = dpctl::utils::keep_args_alive(
+        exec_q, {a_array, out_s, out_u, out_vt}, host_task_events);
+
+    return std::make_pair(args_ev, gesvd_ev);
 }
 
 template <typename fnT, typename T, typename RealT>
