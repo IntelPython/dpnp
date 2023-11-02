@@ -118,9 +118,30 @@ static sycl::event gesvd_impl(sycl::queue exec_q,
     try {
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
 
-        gesvd_event =
-            mkl_lapack::gesvd(exec_q, jobu, jobvt, m, n, a, lda, s, u, ldu, vt,
-                              ldvt, scratchpad, scratchpad_size, depends);
+        gesvd_event = mkl_lapack::gesvd(
+            exec_q,
+            jobu,  // Character specifying how to compute the matrix U:
+                   // 'A' computes all columns of U,
+                   // 'S' computes the first min(m,n) columns of U,
+                   // 'O' overwrites A with the columns of U,
+                   // 'N' does not compute U.
+            jobvt, // Character specifying how to compute the matrix VT:
+                   // 'A' computes all rows of VT,
+                   // 'S' computes the first min(m,n) rows of VT,
+                   // 'O' overwrites A with the rows of VT,
+                   // 'N' does not compute VT.
+            m,     // The number of rows in the input matrix A (0 <= m).
+            n,     // The number of columns in the input matrix A (0 <= n).
+            a,     // Pointer to the input matrix A of size (m x n).
+            lda,   // The leading dimension of A, must be at least max(1, m).
+            s,     // Pointer to the array containing the singular values.
+            u,   // Pointer to the matrix U in the singular value decomposition.
+            ldu, // The leading dimension of U, must be at least max(1, m).
+            vt, // Pointer to the matrix VT in the singular value decomposition.
+            ldvt, // The leading dimension of VT, must be at least max(1, n).
+            scratchpad, // Pointer to scratchpad memory to be used by MKL
+                        // routine for storing intermediate results.
+            scratchpad_size, depends);
     } catch (mkl_lapack::exception const &e) {
         info = e.info();
         detail = e.detail();
