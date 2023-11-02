@@ -72,6 +72,7 @@ __all__ = [
     "int64",
     "integer",
     "intc",
+    "intp",
     "isscalar",
     "issubdtype",
     "issubsctype",
@@ -119,6 +120,7 @@ int32 = numpy.int32
 int64 = numpy.int64
 integer = numpy.integer
 intc = numpy.intc
+intp = numpy.intp
 number = numpy.number
 signedinteger = numpy.signedinteger
 single = numpy.single

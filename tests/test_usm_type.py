@@ -338,6 +338,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
             "cos", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
+        pytest.param("count_nonzero", [0, 1, 7, 0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),

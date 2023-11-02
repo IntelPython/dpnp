@@ -39,48 +39,54 @@ it contains:
 
 """
 
-
-import numpy
-
 import dpnp
-from dpnp.dpnp_algo.dpnp_algo import *  # TODO need to investigate why dpnp.dpnp_algo can not be used
-from dpnp.dpnp_utils import *
 
 __all__ = ["count_nonzero"]
 
 
-def count_nonzero(x1, axis=None, *, keepdims=False):
+def count_nonzero(a, axis=None, *, keepdims=False):
     """
-    Counts the number of non-zero values in the array ``in_array1``.
+    Counts the number of non-zero values in the array `a`.
 
     For full documentation refer to :obj:`numpy.count_nonzero`.
 
+    Returns
+    -------
+    count : dpnp.ndarray
+        Number of non-zero values in the array along a given axis.
+        Otherwise, a zero-dimensional array with the total number of
+        non-zero values in the array is returned.
+
     Limitations
     -----------
-    Parameter `x1` is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Parameter `axis` is supported only with default value `None`.
-    Parameter `keepdims` is supported only with default value `False`.
+    Parameters `a` is supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Otherwise ``TypeError`` exception will be raised.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.nonzero` : Return the coordinates of all the non-zero values.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> np.count_nonzero(np.array([1, 0, 3, 0, 5])
-    3
-    >>> np.count_nonzero(np.array([[1, 0, 3, 0, 5],[0, 9, 0, 7, 0]]))
-    5
+    >>> np.count_nonzero(np.eye(4))
+    array(4)
+    >>> a = np.array([[0, 1, 7, 0],
+    ...               [3, 0, 2, 19]])
+    >>> np.count_nonzero(a)
+    array(5)
+    >>> np.count_nonzero(a, axis=0)
+    array([1, 1, 2, 1])
+    >>> np.count_nonzero(a, axis=1)
+    array([2, 3])
+    >>> np.count_nonzero(a, axis=1, keepdims=True)
+    array([[2],
+           [3]])
 
     """
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axis is not None:
-            pass
-        elif keepdims is not False:
-            pass
-        else:
-            result_obj = dpnp_count_nonzero(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-            return result
-
-    return call_origin(numpy.count_nonzero, x1, axis, keepdims=keepdims)
+    # TODO: might be improved by implementing an extension with `count_nonzero` kernel
+    a = dpnp.astype(a, dpnp.bool, copy=False)
+    return a.sum(axis=axis, dtype=dpnp.intp, keepdims=keepdims)
