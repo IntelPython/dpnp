@@ -17,7 +17,7 @@ class TestCount(unittest.TestCase):
                 # CuPy returns zero-dimensional array instead of
                 # returning a scalar value
                 assert isinstance(c, xp.ndarray)
-                assert c.dtype == "l"
+                assert c.dtype == "p"
                 assert c.shape == ()
             return int(c)
 
@@ -32,7 +32,7 @@ class TestCount(unittest.TestCase):
                 # CuPy returns zero-dimensional array instead of
                 # returning a scalar value
                 assert isinstance(c, xp.ndarray)
-                assert c.dtype == "l"
+                assert c.dtype == "p"
                 assert c.shape == ()
             return int(c)
 
