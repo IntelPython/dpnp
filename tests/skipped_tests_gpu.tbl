@@ -719,10 +719,6 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_3_{axis=(0, 2, 3), shape=(20, 30, 40, 50)}::test_nansum_axes
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodExtra_param_0_{shape=(2, 3, 4)}::test_nansum_out
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodExtra_param_1_{shape=(20, 30, 40)}::test_nansum_out
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_11_{axis=0, func='nanprod', keepdims=True, shape=(20, 30, 40), transpose_axes=False}::test_nansum_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_11_{axis=0, func='nanprod', keepdims=True, shape=(20, 30, 40), transpose_axes=False}::test_nansum_axis_transposed
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_15_{axis=0, func='nanprod', keepdims=False, shape=(20, 30, 40), transpose_axes=False}::test_nansum_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_15_{axis=0, func='nanprod', keepdims=False, shape=(20, 30, 40), transpose_axes=False}::test_nansum_axis_transposed
 
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont

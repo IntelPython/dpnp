@@ -1761,16 +1761,19 @@ def nanprod(
     where=True,
 ):
     """
-    Calculate prod() function treating 'Not a Numbers' (NaN) as ones.
+    Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
 
     For full documentation refer to :obj:`numpy.nanprod`.
 
     Returns
     -------
     out : dpnp.ndarray
-        Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
+        A new array holding the result is returned unless `out` is specified, in which case it is returned.
 
-    .. seealso:: :obj:`dpnp.prod` : Returns product across array propagating NaNs.
+    See Also
+    --------
+    :obj:`dpnp.prod` : Returns product across array propagating NaNs.
+    :obj:`dpnp.isnan` : Test element-wise for NaN and return result as a boolean array.
 
     Limitations
     -----------
@@ -1796,8 +1799,14 @@ def nanprod(
 
     """
 
-    mask = dpnp.isnan(a)
-    dpnp.copyto(a, 1, where=mask)
+    if issubclass(a.dtype.type, dpnp.inexact):
+        mask = dpnp.isnan(a)
+    else:
+        mask = None
+
+    if mask is not None:
+        a = dpnp.array(a, copy=True)
+        dpnp.copyto(a, 1, where=mask)
 
     return dpnp.prod(
         a,
@@ -2069,14 +2078,14 @@ def prod(
     where=True,
 ):
     """
-    Calculate product of array elements over a given axis.
+    Return the product of array elements over a given axis.
 
     For full documentation refer to :obj:`numpy.prod`.
 
     Returns
     -------
     out : dpnp.ndarray
-        Return the product of array elements over a given axis.
+        A new array holding the result is returned unless `out` is specified, in which case it is returned.
 
     Limitations
     -----------
@@ -2085,7 +2094,9 @@ def prod(
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by DPNP :ref:`Data types`.
 
-    .. seealso:: :obj:`dpnp.nanprod` : Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
+    See Also
+    --------
+    :obj:`dpnp.nanprod` : Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
 
     Examples
     --------
@@ -2116,7 +2127,7 @@ def prod(
         )
     _dtypes = (a.dtype, dtype)
     _any_complex = any(
-        dpt.isdtype(dpnp.dtype(dt), "complex floating") for dt in _dtypes
+        dpnp.issubdtype(dt, dpnp.complexfloating) for dt in _dtypes
     )
     device_mask = (
         du.intel_device_info(a.sycl_device).get("device_id", 0) & 0xFF00
@@ -2132,10 +2143,14 @@ def prod(
             initial=initial,
             where=where,
         )
-    if initial is not None:
-        pass
+    elif initial is not None:
+        raise NotImplementedError(
+            "initial keyword argument is only supported by its default value."
+        )
     elif where is not True:
-        pass
+        raise NotImplementedError(
+            "where keyword argument is only supported by its default value."
+        )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
         result = dpnp_array._create_from_usm_ndarray(
@@ -2162,17 +2177,6 @@ def prod(
             dpnp.copyto(out, result, casting="safe")
 
             return out
-
-    return call_origin(
-        numpy.prod,
-        a,
-        axis=axis,
-        dtype=dtype,
-        out=out,
-        keepdims=keepdims,
-        initial=initial,
-        where=where,
-    )
 
 
 def proj(

@@ -267,6 +267,17 @@ class TestNansumNanprodLong(unittest.TestCase):
         )
 
     def _test(self, xp, dtype):
+        if (
+            self.func == "nanprod"
+            and self.shape == (20, 30, 40)
+            and has_support_aspect64()
+        ):
+            # If input type is float, NumPy returns the same data type but
+            # dpctl (and dpnp) returns default platform float following array api.
+            # When input is `float32` and output is a very large number, dpnp returns
+            # the number because it is `float64` but NumPy returns `inf` since it is `float32`.
+            pytest.skip("Output is a very large number.")
+
         a = testing.shaped_arange(self.shape, xp, dtype)
         if self.transpose_axes:
             a = a.transpose(2, 0, 1)

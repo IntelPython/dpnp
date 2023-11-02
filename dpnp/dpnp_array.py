@@ -1026,9 +1026,7 @@ class dpnp_array:
         """
         Returns the prod along a given axis.
 
-        .. seealso::
-           :obj:`dpnp.prod` for full documentation,
-           :meth:`dpnp.dparray.sum`
+        For full documentation refer to :obj:`dpnp.prod`.
 
         """
 
