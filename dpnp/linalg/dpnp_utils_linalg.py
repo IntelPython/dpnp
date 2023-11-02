@@ -284,7 +284,7 @@ def dpnp_solve(a, b):
             # Call the LAPACK extension function _gesv to solve the system of linear
             # equations using a portion of the coefficient square matrix and a
             # corresponding portion of the dependent variables array.
-            ht_lapack_ev[i] = li._gesv(
+            ht_lapack_ev[i], _ = li._gesv(
                 exec_q,
                 coeff_vecs[i].get_array(),
                 val_vecs[i].get_array(),
@@ -322,7 +322,7 @@ def dpnp_solve(a, b):
 
         # Call the LAPACK extension function _gesv to solve the system of linear
         # equations with the coefficient square matrix and the dependent variables array.
-        lapack_ev = li._gesv(
+        ht_lapack_ev, lapack_ev = li._gesv(
             exec_q, a_f.get_array(), b_f.get_array(), [a_copy_ev, b_copy_ev]
         )
 
@@ -340,7 +340,7 @@ def dpnp_solve(a, b):
         else:
             out_v = b_f
 
-        lapack_ev.wait()
+        ht_lapack_ev.wait()
         b_ht_copy_ev.wait()
         a_ht_copy_ev.wait()
 

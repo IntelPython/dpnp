@@ -171,10 +171,11 @@ static sycl::event gesv_impl(sycl::queue exec_q,
     return gesv_event;
 }
 
-sycl::event gesv(sycl::queue exec_q,
-                 dpctl::tensor::usm_ndarray coeff_matrix,
-                 dpctl::tensor::usm_ndarray dependent_vals,
-                 const std::vector<sycl::event> &depends)
+std::pair<sycl::event, sycl::event>
+    gesv(sycl::queue exec_q,
+         dpctl::tensor::usm_ndarray coeff_matrix,
+         dpctl::tensor::usm_ndarray dependent_vals,
+         const std::vector<sycl::event> &depends)
 {
     const int coeff_matrix_nd = coeff_matrix.get_ndim();
     const int dependent_vals_nd = dependent_vals.get_ndim();
@@ -250,7 +251,10 @@ sycl::event gesv(sycl::queue exec_q,
         gesv_fn(exec_q, n, nrhs, coeff_matrix_data, lda, dependent_vals_data,
                 ldb, host_task_events, depends);
 
-    return gesv_ev;
+    sycl::event args_ev = dpctl::utils::keep_args_alive(
+        exec_q, {coeff_matrix, dependent_vals}, host_task_events);
+
+    return std::make_pair(args_ev, gesv_ev);
 }
 
 template <typename fnT, typename T>
