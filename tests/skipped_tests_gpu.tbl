@@ -565,16 +565,6 @@ tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_par
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_2_{shapes=[(3, 2), (3, 4)]}::test_invalid_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_3_{shapes=[(0,), (2,)]}::test_invalid_broadcast
 
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_ravel2
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_ravel3
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_external_ravel
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_ravel
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_zerosize
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_zerosize2
-
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeatRepeatsNdarray::test_func
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeatRepeatsNdarray::test_method
-
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_3_{name='angle', nargs=1}::test_raises_with_numpy_input
 
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2

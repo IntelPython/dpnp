@@ -94,8 +94,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FFT_RFFT_EXT
         DPNP_FN_FILL_DIAGONAL
         DPNP_FN_FILL_DIAGONAL_EXT
-        DPNP_FN_FLATTEN
-        DPNP_FN_FLATTEN_EXT
         DPNP_FN_FMOD
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
@@ -138,8 +136,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RADIANS_EXT
         DPNP_FN_RECIP
         DPNP_FN_RECIP_EXT
-        DPNP_FN_REPEAT
-        DPNP_FN_REPEAT_EXT
         DPNP_FN_RNG_BETA
         DPNP_FN_RNG_BETA_EXT
         DPNP_FN_RNG_BINOMIAL
@@ -331,8 +327,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*dpnp_reduction_c_t)(c_dpctl.DPCTLSyclQueueRe
                                                         const long*,
                                                         const c_dpctl.DPCTLEventVectorRef)
 
-cpdef dpnp_descriptor dpnp_flatten(dpnp_descriptor x1)
-
 
 """
 Internal functions
@@ -367,12 +361,6 @@ cpdef dpnp_descriptor dpnp_fmax(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, 
                                    dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_fmin(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
-"""
-Array manipulation routines
-"""
-cpdef dpnp_descriptor dpnp_repeat(dpnp_descriptor array1, repeats, axes=*)
-
-
 """
 Statistics functions
 """

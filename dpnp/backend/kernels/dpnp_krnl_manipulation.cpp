@@ -103,15 +103,6 @@ void (*dpnp_repeat_default_c)(const void *,
                               const size_t,
                               const size_t) = dpnp_repeat_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_repeat_ext_c)(DPCTLSyclQueueRef,
-                                       const void *,
-                                       void *,
-                                       const size_t,
-                                       const size_t,
-                                       const DPCTLEventVectorRef) =
-    dpnp_repeat_c<_DataType>;
-
 template <typename _KernelNameSpecialization>
 class dpnp_elemwise_transpose_c_kernel;
 
@@ -231,15 +222,6 @@ void func_map_init_manipulation(func_map_t &fmap)
         eft_FLT, (void *)dpnp_repeat_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_repeat_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_REPEAT_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_repeat_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_REPEAT_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_repeat_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_REPEAT_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_repeat_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_REPEAT_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_repeat_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_elemwise_transpose_default_c<int32_t>};

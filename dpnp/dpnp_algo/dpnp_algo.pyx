@@ -54,7 +54,6 @@ import operator
 import numpy
 
 __all__ = [
-    "dpnp_flatten",
     "dpnp_queue_initialize",
 ]
 
@@ -64,7 +63,6 @@ include "dpnp_algo_counting.pxi"
 include "dpnp_algo_indexing.pxi"
 include "dpnp_algo_linearalgebra.pxi"
 include "dpnp_algo_logic.pxi"
-include "dpnp_algo_manipulation.pxi"
 include "dpnp_algo_mathematical.pxi"
 include "dpnp_algo_searching.pxi"
 include "dpnp_algo_sorting.pxi"
@@ -80,53 +78,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_flatten_t)(c_dpctl.DPCTLSyclQueueR
                                                          const shape_elem_type * , const shape_elem_type * ,
                                                          const long * ,
                                                          const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1):
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FLATTEN_EXT, param1_type, param1_type)
-
-    cdef shape_type_c x1_shape = x1.shape
-    cdef shape_type_c x1_strides = utils.strides_to_vector(x1.strides, x1_shape)
-
-    x1_obj = x1.get_array()
-
-    # create result array with type given by FPTR data
-    cdef shape_type_c result_shape = (x1.size,)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=x1_obj.sycl_device,
-                                                                       usm_type=x1_obj.usm_type,
-                                                                       sycl_queue=x1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result_shape)
-
-    cdef fptr_dpnp_flatten_t func = <fptr_dpnp_flatten_t > kernel_data.ptr
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    result.get_data(),
-                                                    result.size,
-                                                    result.ndim,
-                                                    result_shape.data(),
-                                                    result_strides.data(),
-                                                    x1.get_data(),
-                                                    x1.size,
-                                                    x1.ndim,
-                                                    x1_shape.data(),
-                                                    x1_strides.data(),
-                                                    NULL,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
 
 
 cpdef dpnp_queue_initialize():
