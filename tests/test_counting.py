@@ -11,10 +11,14 @@ from .helper import (
 )
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
 @pytest.mark.parametrize("size", [2, 4, 8, 16, 3, 9, 27, 81])
 def test_count_nonzero(dtype, size):
-    a = numpy.arange(size, dtype=dtype)
+    if dtype != dpnp.bool:
+        a = numpy.arange(size, dtype=dtype)
+    else:
+        a = numpy.resize(numpy.arange(2, dtype=dtype), size)
+
     for i in range(int(size / 2)):
         a[(i * (int(size / 3) - 1)) % size] = 0
 
