@@ -52,7 +52,7 @@ def count_nonzero(a, axis=None, *, keepdims=False):
 
     Returns
     -------
-    count : dpnp.ndarray
+    out : dpnp.ndarray
         Number of non-zero values in the array along a given axis.
         Otherwise, a zero-dimensional array with the total number of
         non-zero values in the array is returned.
@@ -74,7 +74,7 @@ def count_nonzero(a, axis=None, *, keepdims=False):
     >>> np.count_nonzero(np.eye(4))
     array(4)
     >>> a = np.array([[0, 1, 7, 0],
-    ...               [3, 0, 2, 19]])
+                      [3, 0, 2, 19]])
     >>> np.count_nonzero(a)
     array(5)
     >>> np.count_nonzero(a, axis=0)
