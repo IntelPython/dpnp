@@ -29,7 +29,6 @@
 
 import dpctl
 import dpctl.tensor._tensor_impl as ti
-from numpy import prod
 
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
@@ -243,25 +242,25 @@ def dpnp_solve(a, b):
         if a.ndim > 3:
             # get 3d input arrays by reshape
             if a.ndim == b.ndim:
-                b = b.reshape(prod(b_shape[:-2]), b_shape[-2], b_shape[-1])
+                b = b.reshape(-1, b_shape[-2], b_shape[-1])
             else:
-                b = b.reshape(prod(b_shape[:-1]), b_shape[-1])
+                b = b.reshape(-1, b_shape[-1])
 
-            a = a.reshape(prod(a_shape[:-2]), a_shape[-2], a_shape[-1])
+            a = a.reshape(-1, a_shape[-2], a_shape[-1])
 
             a_usm_arr = dpnp.get_usm_ndarray(a)
             b_usm_arr = dpnp.get_usm_ndarray(b)
             reshape = True
 
-        op_count = a.shape[0]
+        batch_size = a.shape[0]
 
-        coeff_vecs = [None] * op_count
-        val_vecs = [None] * op_count
-        a_ht_copy_ev = [None] * op_count
-        b_ht_copy_ev = [None] * op_count
-        ht_lapack_ev = [None] * op_count
+        coeff_vecs = [None] * batch_size
+        val_vecs = [None] * batch_size
+        a_ht_copy_ev = [None] * batch_size
+        b_ht_copy_ev = [None] * batch_size
+        ht_lapack_ev = [None] * batch_size
 
-        for i in range(op_count):
+        for i in range(batch_size):
             # oneMKL LAPACK assumes fortran-like array as input, so
             # allocate a memory with 'F' order for dpnp array of coefficient matrix
             # and multiple dependent variables array
@@ -292,7 +291,7 @@ def dpnp_solve(a, b):
                 depends=[a_copy_ev, b_copy_ev],
             )
 
-        for i in range(op_count):
+        for i in range(batch_size):
             ht_lapack_ev[i].wait()
             b_ht_copy_ev[i].wait()
             a_ht_copy_ev[i].wait()
@@ -334,7 +333,7 @@ def dpnp_solve(a, b):
             ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=b_f.get_array(),
                 dst=out_v.get_array(),
-                sycl_queue=b.sycl_queue,
+                sycl_queue=exec_q,
                 depends=[lapack_ev],
             )
             ht_copy_out_ev.wait()
