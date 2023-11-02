@@ -508,6 +508,32 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
 
     For full documentation refer to :obj:`numpy.linalg.svd`.
 
+    Returns
+    -------
+    u : { (…, M, M), (…, M, K) } dpnp.ndarray
+        Unitary matrix, where M is the number of rows of the input array `a`.
+        The shape of the matrix `u` depends on the value of `full_matrices`.
+        If `full_matrices` is True, `u` has the shape (…, M, M).
+        If `full_matrices` is False, `u` has the shape (…, M, K),
+        where K = min(M, N), and N is the number of columns of the input array `a`.
+        If `compute_uv` is False, neither `u` or `Vh` are computed.
+    s : (…, K) dpnp.ndarray
+        Vector containing the singular values of `a`, sorted in descending order.
+        The length of `s` is min(M, N).
+    Vh : { (…, N, N), (…, K, N) } dpnp.ndarray
+        Unitary matrix, where N is the number of columns of the input array `a`.
+        The shape of the matrix `Vh` depends on the value of `full_matrices`.
+        If `full_matrices` is True, `Vh` has the shape (…, N, N).
+        If `full_matrices` is False, `Vh` has the shape (…, K, N).
+        If `compute_uv` is False, neither `u` or `Vh` are computed.
+
+    Limitations
+    -----------
+    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameter `hermitian` is supported only with default value ``False``.
+    Otherwise, the function raises `ValueError` exception.
+
     Examples
     --------
     >>> import dpnp as np
