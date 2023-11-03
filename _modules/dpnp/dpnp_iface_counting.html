@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_counting &mdash; Data Parallel Extension for NumPy 0.13.1dev0+54.gd389bd476 documentation</title>
+  <title>dpnp.dpnp_iface_counting &mdash; Data Parallel Extension for NumPy 0.13.1dev0+55.g83d28d704 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7ca23cb1"></script>
+        <script src="../../_static/documentation_options.js?v=9e3cd64a"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+54.gd389bd476
+                0.13.1dev0+55.g83d28d704
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -127,53 +127,59 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-
-<span class="kn">import</span> <span class="nn">numpy</span>
-
 <span class="kn">import</span> <span class="nn">dpnp</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>  <span class="c1"># TODO need to investigate why dpnp.dpnp_algo can not be used</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;count_nonzero&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="count_nonzero">
 <a class="viewcode-back" href="../../reference/generated/dpnp.count_nonzero.html#dpnp.count_nonzero">[docs]</a>
-<span class="k">def</span> <span class="nf">count_nonzero</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">count_nonzero</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Counts the number of non-zero values in the array ``in_array1``.</span>
+<span class="sd">    Counts the number of non-zero values in the array `a`.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.count_nonzero`.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Number of non-zero values in the array along a given axis.</span>
+<span class="sd">        Otherwise, a zero-dimensional array with the total number of</span>
+<span class="sd">        non-zero values in the array is returned.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Parameter `axis` is supported only with default value `None`.</span>
-<span class="sd">    Parameter `keepdims` is supported only with default value `False`.</span>
+<span class="sd">    Parameters `a` is supported as either :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.nonzero` : Return the coordinates of all the non-zero values.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.count_nonzero(np.array([1, 0, 3, 0, 5])</span>
-<span class="sd">    3</span>
-<span class="sd">    &gt;&gt;&gt; np.count_nonzero(np.array([[1, 0, 3, 0, 5],[0, 9, 0, 7, 0]]))</span>
-<span class="sd">    5</span>
+<span class="sd">    &gt;&gt;&gt; np.count_nonzero(np.eye(4))</span>
+<span class="sd">    array(4)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[0, 1, 7, 0],</span>
+<span class="sd">                      [3, 0, 2, 19]])</span>
+<span class="sd">    &gt;&gt;&gt; np.count_nonzero(a)</span>
+<span class="sd">    array(5)</span>
+<span class="sd">    &gt;&gt;&gt; np.count_nonzero(a, axis=0)</span>
+<span class="sd">    array([1, 1, 2, 1])</span>
+<span class="sd">    &gt;&gt;&gt; np.count_nonzero(a, axis=1)</span>
+<span class="sd">    array([2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.count_nonzero(a, axis=1, keepdims=True)</span>
+<span class="sd">    array([[2],</span>
+<span class="sd">           [3]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">keepdims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_count_nonzero</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">result</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
+    <span class="c1"># TODO: might be improved by implementing an extension with `count_nonzero` kernel</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 </pre></div>
 
