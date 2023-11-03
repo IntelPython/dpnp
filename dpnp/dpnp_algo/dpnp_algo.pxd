@@ -54,8 +54,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_COPYSIGN_EXT
         DPNP_FN_CORRELATE
         DPNP_FN_CORRELATE_EXT
-        DPNP_FN_COUNT_NONZERO
-        DPNP_FN_COUNT_NONZERO_EXT
         DPNP_FN_CROSS
         DPNP_FN_CROSS_EXT
         DPNP_FN_CUMPROD
