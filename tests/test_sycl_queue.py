@@ -238,11 +238,12 @@ def test_meshgrid(device_x, device_y):
         pytest.param("arctanh", [-0.5, 0.0, 0.5]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
+        pytest.param("copy", [1.0, 2.0, 3.0]),
         pytest.param(
             "cos", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
-        pytest.param("copy", [1.0, 2.0, 3.0]),
+        pytest.param("count_nonzero", [3, 0, 2, -1.2]),
         pytest.param("cumprod", [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
         pytest.param("cumsum", [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),

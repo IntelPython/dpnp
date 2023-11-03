@@ -115,25 +115,23 @@ enum class DPNPFuncName : size_t
     DPNP_FN_COS,           /**< Used in numpy.cos() impl  */
     DPNP_FN_COSH,          /**< Used in numpy.cosh() impl  */
     DPNP_FN_COUNT_NONZERO, /**< Used in numpy.count_nonzero() impl  */
-    DPNP_FN_COUNT_NONZERO_EXT, /**< Used in numpy.count_nonzero() impl, requires
-                                  extra parameters */
-    DPNP_FN_COV,               /**< Used in numpy.cov() impl  */
-    DPNP_FN_CROSS,             /**< Used in numpy.cross() impl  */
-    DPNP_FN_CROSS_EXT,         /**< Used in numpy.cross() impl, requires extra
-                                  parameters */
-    DPNP_FN_CUMPROD,           /**< Used in numpy.cumprod() impl  */
-    DPNP_FN_CUMPROD_EXT,       /**< Used in numpy.cumprod() impl, requires extra
-                                  parameters */
-    DPNP_FN_CUMSUM,            /**< Used in numpy.cumsum() impl  */
-    DPNP_FN_CUMSUM_EXT,        /**< Used in numpy.cumsum() impl, requires extra
-                                  parameters */
-    DPNP_FN_DEGREES,           /**< Used in numpy.degrees() impl  */
-    DPNP_FN_DEGREES_EXT,       /**< Used in numpy.degrees() impl, requires extra
-                                  parameters */
-    DPNP_FN_DET,               /**< Used in numpy.linalg.det() impl  */
-    DPNP_FN_DET_EXT,  /**< Used in numpy.linalg.det() impl, requires extra
-                         parameters */
-    DPNP_FN_DIAG,     /**< Used in numpy.diag() impl  */
+    DPNP_FN_COV,           /**< Used in numpy.cov() impl  */
+    DPNP_FN_CROSS,         /**< Used in numpy.cross() impl  */
+    DPNP_FN_CROSS_EXT,     /**< Used in numpy.cross() impl, requires extra
+                              parameters */
+    DPNP_FN_CUMPROD,       /**< Used in numpy.cumprod() impl  */
+    DPNP_FN_CUMPROD_EXT,   /**< Used in numpy.cumprod() impl, requires extra
+                              parameters */
+    DPNP_FN_CUMSUM,        /**< Used in numpy.cumsum() impl  */
+    DPNP_FN_CUMSUM_EXT,    /**< Used in numpy.cumsum() impl, requires extra
+                              parameters */
+    DPNP_FN_DEGREES,       /**< Used in numpy.degrees() impl  */
+    DPNP_FN_DEGREES_EXT,   /**< Used in numpy.degrees() impl, requires extra
+                              parameters */
+    DPNP_FN_DET,           /**< Used in numpy.linalg.det() impl  */
+    DPNP_FN_DET_EXT,       /**< Used in numpy.linalg.det() impl, requires extra
+                              parameters */
+    DPNP_FN_DIAG,          /**< Used in numpy.diag() impl  */
     DPNP_FN_DIAG_EXT, /**< Used in numpy.diag() impl, requires extra parameters
                        */
     DPNP_FN_DIAG_INDICES,     /**< Used in numpy.diag_indices() impl  */
