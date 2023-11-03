@@ -40,10 +40,12 @@ it contains:
 """
 
 
+import dpctl
 import dpctl.tensor as dpt
 import numpy
 
 import dpnp
+import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
@@ -282,50 +284,110 @@ def matmul(x1, x2, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-    if x1_desc and x2_desc and not kwargs:
-        if x1_desc.ndim != 2 or x2_desc.ndim != 2:
-            pass
-        elif not x1_desc.ndim:
-            pass
-        elif not x2_desc.ndim:
-            pass
-        elif not x1_desc.size:
-            pass
-        elif not x2_desc.size:
-            pass
-        else:
-            if 0:
-                """
-                Cost model checks
-                """
+    # x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    # x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
+    # if x1_desc and x2_desc and not kwargs:
+    #     if x1_desc.ndim != 2 or x2_desc.ndim != 2:
+    #         pass
+    #     elif not x1_desc.ndim:
+    #         pass
+    #     elif not x2_desc.ndim:
+    #         pass
+    #     elif not x1_desc.size:
+    #         pass
+    #     elif not x2_desc.size:
+    #         pass
+    #     else:
+    #         if 0:
+    #             """
+    #             Cost model checks
+    #             """
 
-                array1_size = x1_desc.size
-                array2_size = x2_desc.size
-                cost_size = 4096  # 2D array shape(64, 64)
+    #             array1_size = x1_desc.size
+    #             array2_size = x2_desc.size
+    #             cost_size = 4096  # 2D array shape(64, 64)
 
-                if (x1_desc.dtype == dpnp.float64) or (
-                    x1_desc.dtype == dpnp.float32
-                ):
-                    """
-                    Floating point types are handled via original math library better than SYCL math library
-                    """
-                    cost_size = 262144  # 2D array shape(512, 512)
+    #             if (x1_desc.dtype == dpnp.float64) or (
+    #                 x1_desc.dtype == dpnp.float32
+    #             ):
+    #                 """
+    #                 Floating point types are handled via original math library better than SYCL math library
+    #                 """
+    #                 cost_size = 262144  # 2D array shape(512, 512)
 
-                if (array1_size > cost_size) and (array2_size > cost_size):
-                    return dpnp_matmul(x1_desc, x2_desc, out)
-            else:
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
-                    )
-                    if out is not None
-                    else None
-                )
-                return dpnp_matmul(x1_desc, x2_desc, out_desc).get_pyobj()
+    #             if (array1_size > cost_size) and (array2_size > cost_size):
+    #                 return dpnp_matmul(x1_desc, x2_desc, out)
+    #         else:
+    #             out_desc = (
+    #                 dpnp.get_dpnp_descriptor(
+    #                     out, copy_when_nondefault_queue=False
+    #                 )
+    #                 if out is not None
+    #                 else None
+    #             )
+    #             return dpnp_matmul(x1_desc, x2_desc, out_desc).get_pyobj()
 
-    return call_origin(numpy.matmul, x1, x2, out=out, **kwargs)
+    # return call_origin(numpy.matmul, x1, x2, out=out, **kwargs)
+
+    if not dpnp.is_supported_array_type(x1):
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(
+                type(x1)
+            )
+        )
+
+    if not dpnp.is_supported_array_type(x2):
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(
+                type(x2)
+            )
+        )
+
+    if x1.ndim != 2:
+        raise ValueError(
+            f"{x1.ndim}-dimensional array given. The input "
+            "array must be two-dimensional"
+        )
+
+    if x2.ndim != 2:
+        raise ValueError(
+            f"{x2.ndim}-dimensional array given. The input "
+            "array must be two-dimensional"
+        )
+
+    if x1.shape[1] != x2.shape[0]:
+        raise ValueError(
+            "Input operand 1 has a mismatch in its core dimension 0, "
+            "with gufunc signature (n?,k),(k,m?)->(n?,m?) "
+            f"(size {x1.shape[1]} is different from {x2.shape[0]})"
+        )
+
+    exec_q = dpctl.utils.get_execution_queue((x1.sycl_queue, x2.sycl_queue))
+    if exec_q is None:
+        raise ValueError(
+            "Execution placement can not be unambiguously inferred "
+            "from input arguments."
+        )
+
+    # Determine the resulting type
+    # Now supports input arrays of float type
+    result = dpnp.empty(
+        (x1.shape[0], x2.shape[1]), dtype="float32", sycl_queue=exec_q
+    )
+
+    # x1_usm_arr = dpnp.get_usm_ndarray(x1)
+    # x2_usm_arr = dpnp.get_usm_ndarray(x2)
+    # res_usm_arr = dpnp.get_usm_ndarray(result)
+
+    # Is it necessary to do a copy of the input arrays?!
+
+    ht_blas_ev, _ = bi._gemm(
+        exec_q, x1.get_array(), x2.get_array(), result.get_array(), []
+    )
+
+    ht_blas_ev.wait()
+
+    return result
 
 
 def outer(x1, x2, out=None):
