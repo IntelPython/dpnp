@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.13.1dev0+58.g69740ce16 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=85eb0ff2"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="reference/index.html" />
+    <link rel="prev" title="Overview" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+              <div class="version">
+                0.13.1dev0+58.g69740ce16
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#device-drivers">Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#python-interpreter">Python Interpreter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-package-from-anaconda">Install Package from Anaconda</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#build-and-install-conda-package">Build and Install Conda Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#build-and-install-with-scikit-build">Build and Install with scikit-build</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Quick Start Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/quick_start_guide.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="quick-start-guide"></span><section id="id1">
+<h1>Quick Start Guide<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<section id="device-drivers">
+<h2>Device Drivers<a class="headerlink" href="#device-drivers" title="Link to this heading"></a></h2>
+<p>To start programming data parallel devices beyond CPU, you will need
+an appropriate hardware. The Data Parallel Extension for NumPy* works fine
+on Intel © laptops with integrated graphics. In majority of cases,
+your Windows*-based laptop already has all necessary device drivers installed.
+But if you want the most up-to-date driver, you can always
+<a class="reference external" href="https://www.intel.com/content/www/us/en/download-center/home.html">update it to the latest one</a>.
+Follow device driver installation instructions to complete the step.</p>
+</section>
+<section id="python-interpreter">
+<h2>Python Interpreter<a class="headerlink" href="#python-interpreter" title="Link to this heading"></a></h2>
+<p>You will need Python 3.8, 3.9, or 3.10 installed on your system. If you
+do not have one yet the easiest way to do that is to install
+<a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html">Intel Distribution for Python*</a>. It installs all essential Python numerical
+and machine learning packages optimized for the Intel hardware, including
+Data Parallel Extension for NumPy*.
+If you have Python installation from another vendor, it is fine too. All you
+need is to install Data Parallel Extension for NumPy* manually as shown
+in the next installation section.</p>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<section id="install-package-from-anaconda">
+<h3>Install Package from Anaconda<a class="headerlink" href="#install-package-from-anaconda" title="Link to this heading"></a></h3>
+<p>It is recommended to use conda packages from the <code class="docutils literal notranslate"><span class="pre">anaconda.org/intel</span></code>
+channel. You will need one of the commands below:</p>
+<ul class="simple">
+<li><p>Conda: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">dpnp</span> <span class="pre">-c</span> <span class="pre">intel</span> <span class="pre">-c</span> <span class="pre">conda-forge</span></code></p></li>
+<li><p>Pip: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-i</span> <span class="pre">https://pypi.anaconda.org/intel/simple</span> <span class="pre">dpnp</span></code></p></li>
+</ul>
+<p>These commands install dpnp package along with its dependencies, including
+<code class="docutils literal notranslate"><span class="pre">dpctl</span></code> package with <a class="reference external" href="https://intelpython.github.io/dpctl/latest/index.html">Data Parallel Control Library</a> and all required
+compiler runtimes and OneMKL.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Before installing with conda or pip it is strongly advised to update <code class="docutils literal notranslate"><span class="pre">conda</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code> to latest versions</p>
+</div>
+</section>
+<section id="build-and-install-conda-package">
+<h3>Build and Install Conda Package<a class="headerlink" href="#build-and-install-conda-package" title="Link to this heading"></a></h3>
+<p>Alternatively you can create and activate a local conda build environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>conda-build
+conda<span class="w"> </span>activate<span class="w"> </span>build-env
+</pre></div>
+</div>
+<p>And to build dpnp package from the sources:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>build<span class="w"> </span>conda-recipe<span class="w"> </span>-c<span class="w"> </span>intel<span class="w"> </span>-c<span class="w"> </span>conda-forge
+</pre></div>
+</div>
+<p>Finanly, to install the result package:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>dpnp<span class="w"> </span>-c<span class="w"> </span><span class="nb">local</span>
+</pre></div>
+</div>
+</section>
+<section id="build-and-install-with-scikit-build">
+<h3>Build and Install with scikit-build<a class="headerlink" href="#build-and-install-with-scikit-build" title="Link to this heading"></a></h3>
+<p>Another way to build and install dpnp package from the source is to use Python
+<code class="docutils literal notranslate"><span class="pre">setuptools</span></code> and <code class="docutils literal notranslate"><span class="pre">scikit-build</span></code>. You will need to create a local conda
+build environment by command below depending on hosting OS.</p>
+<p>On Linux:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_linux-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w"> </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>pytest<span class="w"> </span>-c<span class="w"> </span>intel<span class="w"> </span>-c<span class="w"> </span>conda-forge
+conda<span class="w"> </span>activate<span class="w"> </span>build-env
+</pre></div>
+</div>
+<p>On Windows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_win-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w"> </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>pytest<span class="w"> </span>-c<span class="w"> </span>intel<span class="w"> </span>-c<span class="w"> </span>conda-forge
+conda<span class="w"> </span>activate<span class="w"> </span>build-env
+</pre></div>
+</div>
+<p>To build and install the package on Linux OS, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>install<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx
+</pre></div>
+</div>
+<p>To build and install the package on Windows OS, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>install<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icx
+</pre></div>
+</div>
+<p>Alternatively, to develop on Linux OS, you can use the driver script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py
+</pre></div>
+</div>
+</section>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
+<p>If you want to execute the scope of Python test suites which are available
+by the source, you will need to run a command as below:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-s<span class="w"> </span>tests
+</pre></div>
+</div>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>The examples below demonstrates a simple usage of the Data Parallel Extension for NumPy*</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">How to create an array and to sum the elements</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="linenos"> 4</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Array x allocated on the device:&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Result y is located on the device:&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>  <span class="c1"># The same device as x</span>
+<span class="linenos"> 9</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of y is:&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># 0-dimensional array</span>
+<span class="linenos">10</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;y =&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>  <span class="c1"># Expect 6</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">How to create an array on the specific device type and how the next computations follow it</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="linenos"> 4</span><span class="k">try</span><span class="p">:</span>
+<span class="linenos"> 5</span>    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+<span class="linenos"> 6</span><span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<span class="linenos"> 7</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GPU device is not available&quot;</span><span class="p">)</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Array x allocated on the device:&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Result y is located on the device:&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>  <span class="c1"># The same device as x</span>
+<span class="linenos">14</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of y is:&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># 0-dimensional array</span>
+<span class="linenos">15</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;y=&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>  <span class="c1"># Expect 6</span>
+</pre></div>
+</div>
+</div>
+<p>More examples on how to use <code class="docutils literal notranslate"><span class="pre">dpnp</span></code> can be found in <code class="docutils literal notranslate"><span class="pre">dpnp/examples</span></code>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="reference/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2023, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
