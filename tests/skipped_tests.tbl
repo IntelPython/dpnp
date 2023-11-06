@@ -811,10 +811,6 @@ tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers::test_hig
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers::test_normal
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers::test_size_is_not_none
 
-tests/third_party/cupy/sorting_tests/test_count.py::TestCount::test_count_nonzero
-tests/third_party/cupy/sorting_tests/test_count.py::TestCount::test_count_nonzero_int_axis
-tests/third_party/cupy/sorting_tests/test_count.py::TestCount::test_count_nonzero_tuple_axis
-tests/third_party/cupy/sorting_tests/test_count.py::TestCount::test_count_nonzero_zero_dim
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_0_{func='argmin', is_module=True, shape=(3, 4)}::test_argminmax_dtype
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_1_{func='argmin', is_module=True, shape=()}::test_argminmax_dtype
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_2_{func='argmin', is_module=False, shape=(3, 4)}::test_argminmax_dtype
