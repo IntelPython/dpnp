@@ -42,11 +42,13 @@ it contains:
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as ti
 import numpy
 
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_algo import *
+from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
 
 __all__ = [
@@ -284,82 +286,12 @@ def matmul(x1, x2, out=None, **kwargs):
 
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    # x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-    # if x1_desc and x2_desc and not kwargs:
-    #     if x1_desc.ndim != 2 or x2_desc.ndim != 2:
-    #         pass
-    #     elif not x1_desc.ndim:
-    #         pass
-    #     elif not x2_desc.ndim:
-    #         pass
-    #     elif not x1_desc.size:
-    #         pass
-    #     elif not x2_desc.size:
-    #         pass
-    #     else:
-    #         if 0:
-    #             """
-    #             Cost model checks
-    #             """
+    x1_ndim = x1.ndim
+    x2_ndim = x2.ndim
 
-    #             array1_size = x1_desc.size
-    #             array2_size = x2_desc.size
-    #             cost_size = 4096  # 2D array shape(64, 64)
-
-    #             if (x1_desc.dtype == dpnp.float64) or (
-    #                 x1_desc.dtype == dpnp.float32
-    #             ):
-    #                 """
-    #                 Floating point types are handled via original math library better than SYCL math library
-    #                 """
-    #                 cost_size = 262144  # 2D array shape(512, 512)
-
-    #             if (array1_size > cost_size) and (array2_size > cost_size):
-    #                 return dpnp_matmul(x1_desc, x2_desc, out)
-    #         else:
-    #             out_desc = (
-    #                 dpnp.get_dpnp_descriptor(
-    #                     out, copy_when_nondefault_queue=False
-    #                 )
-    #                 if out is not None
-    #                 else None
-    #             )
-    #             return dpnp_matmul(x1_desc, x2_desc, out_desc).get_pyobj()
-
-    # return call_origin(numpy.matmul, x1, x2, out=out, **kwargs)
-
-    if not dpnp.is_supported_array_type(x1):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(
-                type(x1)
-            )
-        )
-
-    if not dpnp.is_supported_array_type(x2):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(
-                type(x2)
-            )
-        )
-
-    if x1.ndim != 2:
+    if x1_ndim == 0 or x2_ndim == 0:
         raise ValueError(
-            f"{x1.ndim}-dimensional array given. The input "
-            "array must be two-dimensional"
-        )
-
-    if x2.ndim != 2:
-        raise ValueError(
-            f"{x2.ndim}-dimensional array given. The input "
-            "array must be two-dimensional"
-        )
-
-    if x1.shape[1] != x2.shape[0]:
-        raise ValueError(
-            "Input operand 1 has a mismatch in its core dimension 0, "
-            "with gufunc signature (n?,k),(k,m?)->(n?,m?) "
-            f"(size {x1.shape[1]} is different from {x2.shape[0]})"
+            "matmul: Input operand does not have enough dimensions"
         )
 
     exec_q = dpctl.utils.get_execution_queue((x1.sycl_queue, x2.sycl_queue))
@@ -369,25 +301,199 @@ def matmul(x1, x2, out=None, **kwargs):
             "from input arguments."
         )
 
-    # Determine the resulting type
-    # Now supports input arrays of float type
-    result = dpnp.empty(
-        (x1.shape[0], x2.shape[1]), dtype="float32", sycl_queue=exec_q
-    )
+    squeeze_flag = x1_ndim == 1 or x2_ndim == 1
+    if x1_ndim == 1:
+        x1 = x1[dpnp.newaxis, :]
+        x1_ndim = x1.ndim
 
-    # x1_usm_arr = dpnp.get_usm_ndarray(x1)
-    # x2_usm_arr = dpnp.get_usm_ndarray(x2)
-    # res_usm_arr = dpnp.get_usm_ndarray(result)
+    if x2_ndim == 1:
+        x2 = x2[:, dpnp.newaxis]
+        x2_ndim = x2.ndim
 
+    x1_shape = x1.shape
+    x2_shape = x2.shape
+    if x1_shape[-1] != x2_shape[-2]:
+        raise ValueError(
+            "Input operand 1 has a mismatch in its core dimension 0, "
+            "with gufunc signature (n?,k),(k,m?)->(n?,m?) "
+            f"(size {x1_shape[1]} is different from {x2_shape[0]})"
+        )
+
+    # Determine the result data type # should be corrected for integer data type # VAHID
+    res_dtype = _common_type(x1, x2)
+    if x1.dtype != res_dtype:
+        x1 = dpnp.astype(x1, res_dtype)
+    if x2.dtype != res_dtype:
+        x2 = dpnp.astype(x2, res_dtype)
+
+    if x1_ndim == 2 and x2_ndim == 2:
+        res_shape = (x1.shape[0], x2.shape[1])
+    else:
+        if x1_ndim != x2_ndim:
+            diff = abs(x1_ndim - x2_ndim)
+
+            if x1_ndim < x2_ndim:
+                x1 = x1.reshape((1,) * diff + x1.shape)
+                x1_ndim = x1.ndim
+                x1_shape = x1.shape
+                res_shape = x2_shape[:-2] + (x1_shape[-2], x2_shape[-1])
+            else:
+                x2 = x2.reshape((1,) * diff + x2.shape)
+                x2_ndim = x2.ndim
+                x2_shape = x2.shape
+                res_shape = x1_shape[:-2] + (x1_shape[-2], x2_shape[-1])
+        else:
+            for i in range(x1_ndim - 2):
+                if x1_shape[i] != x2_shape[i]:
+                    if x1_shape[i] == 1:
+                        x1 = dpnp.repeat(x1, x2_shape[i], axis=i)
+                    elif x2_shape[i] == 1:
+                        x2 = dpnp.repeat(x2, x1_shape[i], axis=i)
+                    else:
+                        raise ValueError(
+                            "operands could not be broadcast together with remapped shapes."
+                        )
+            x1_shape = x1.shape
+            x2_shape = x2.shape
+            res_shape = x1_shape[:-1] + (x2_shape[-1],)
+
+    result = dpnp.empty(res_shape, dtype=res_dtype, sycl_queue=exec_q)
     # Is it necessary to do a copy of the input arrays?!
+    isRowMajor = True
+    if result.size == 0:
+        pass
+    else:
+        if x1.size == 0 or x2.size == 0:
+            result = dpnp.zeros(res_shape, dtype=res_dtype, sycl_queue=exec_q)
+        else:
+            if x1_ndim == 2 and x2_ndim == 2:
+                ht_blas_ev, _ = bi._gemm(
+                    exec_q,
+                    dpnp.get_usm_ndarray(x1),
+                    dpnp.get_usm_ndarray(x2),
+                    dpnp.get_usm_ndarray(result),
+                    isRowMajor,
+                    [],
+                )
+            else:
+                # if_a_f_contig = a.flags["F_CONTIGUOUS"]
+                # if_b_f_contig = b.flags["F_CONTIGUOUS"]
+                # if_out_f_contig = out.flags["F_CONTIGUOUS"]
 
-    ht_blas_ev, _ = bi._gemm(
-        exec_q, x1.get_array(), x2.get_array(), result.get_array(), []
-    )
+                # x1_strides = a.strides if not if_a_f_contig else a.strides[::-1]
+                # x2_strides = b.strides if not if_b_f_contig else b.strides[::-1]
+                # res_strides = out.strides if not if_out_f_contig else out.strides[::-1]
 
-    ht_blas_ev.wait()
+                x1_strides = x1.strides
+                x2_strides = x2.strides
+                res_strides = result.strides
 
-    return result
+                is_support_gemm(x1_strides, x1_ndim)
+                is_support_gemm(x2_strides, x2_ndim)
+
+                transa = is_row(x1_strides, x1_ndim)
+                transb = is_row(x2_strides, x2_ndim)
+
+                batch_size = res_shape[:-2][0]  # VAHID
+                m = x1_shape[-2]
+                n = x2_shape[-1]
+                k = x1_shape[-1]
+
+                # lda = max(x1_shape[-2:])
+                # ldb = max(x2_shape[-2:])
+                # ldc = max(res_shape[-2:])
+                lda = k if transa else m
+                ldb = n if transb else k
+                ldc = n  # column major m, row major n # VAHID
+
+                stridea = x1_strides[0]
+                strideb = x2_strides[0]
+                stridec = res_strides[-3]
+
+                if x1_ndim > 3:
+                    iter = ti._contract_iter2(
+                        res_shape[:-2], x1_strides[:-2], x2_strides[:-2]
+                    )
+                    if len(iter[0]) != 1:
+                        raise ValueError(
+                            "Input arrays cannot be used in gemm_batch"
+                        )
+                    batch_size = iter[0][0]
+                    stridea = iter[1][0]
+                    strideb = iter[3][0]
+
+                ht_blas_ev, _ = bi._gemm_batch(
+                    exec_q,
+                    dpnp.get_usm_ndarray(x1),
+                    dpnp.get_usm_ndarray(x2),
+                    dpnp.get_usm_ndarray(result),
+                    m,
+                    n,
+                    k,
+                    batch_size,
+                    lda,
+                    ldb,
+                    ldc,
+                    stridea,
+                    strideb,
+                    stridec,
+                    transa,
+                    transb,
+                    [],
+                )
+
+            ht_blas_ev.wait()
+
+    if squeeze_flag:
+        result = dpnp.squeeze(result)
+
+    if out is None:
+        return result
+    else:
+        if out.shape != result.shape:
+            raise ValueError(
+                f"Output array of shape {result.shape} is needed, got {out.shape}."
+            )
+        elif not isinstance(out, dpnp_array):
+            if isinstance(out, dpt.usm_ndarray):
+                out = dpnp_array._create_from_usm_ndarray(out)
+            else:
+                raise TypeError(
+                    "Output array must be any of supported type, but got {}".format(
+                        type(out)
+                    )
+                )
+
+        dpnp.copyto(out, result, casting="safe")
+
+        return out
+
+
+def is_support_gemm(strides, ndim):
+    if strides[ndim - 1] != 1 and strides[ndim - 2] != 1:
+        raise ValueError(
+            "The input matrices must be contiguous on inner dimension."
+        )
+
+
+def is_row(strides, ndim):
+    return strides[ndim - 1] == 1
+
+
+def _common_type(*arrays):
+    dtypes = [arr.dtype for arr in arrays]
+
+    default = dpnp.default_float_type().name
+    dtype_common = _common_type_internal(default, *dtypes)
+
+    return dtype_common
+
+
+def _common_type_internal(default_dtype, *dtypes):
+    inexact_dtypes = [
+        dtype if dtype.kind in "fc" else default_dtype for dtype in dtypes
+    ]
+    return dpnp.result_type(*inexact_dtypes)
 
 
 def outer(x1, x2, out=None):

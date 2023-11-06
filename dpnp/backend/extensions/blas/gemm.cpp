@@ -58,6 +58,7 @@ typedef sycl::event (*gemm_impl_fn_ptr_t)(sycl::queue,
                                           const std::int64_t,
                                           char *,
                                           const std::int64_t,
+                                          const bool,
                                           const std::vector<sycl::event> &);
 
 static gemm_impl_fn_ptr_t gemm_dispatch_table[dpctl_td_ns::num_types]
@@ -76,6 +77,7 @@ static sycl::event gemm_impl(sycl::queue exec_q,
                              const std::int64_t ld_array_2,
                              char *resultC,
                              const std::int64_t ld_result,
+                             const bool isRowMajor,
                              const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<Tab>(exec_q);
@@ -92,24 +94,54 @@ static sycl::event gemm_impl(sycl::queue exec_q,
     sycl::event gemm_event;
     try {
         // Need to add logic to call column_major::gemm
-        gemm_event = mkl_blas::row_major::gemm(
-            exec_q,
-            transA, // Parameter indicating whether matrix A is not transposed
-                    // ('N'), transposed ('T'), or conjugate transposed ('C').
-            transB, // Same as transA but for matrix B.
-            m,      // Number of rows in matrices A and C.
-            n,      // Number of columns in matrices B and C.
-            k,      // Number of columns in matrix A and rows in matrix B.
-            Tab(1), // Scaling factor for the product of matrices A and B.
-            a,      // Pointer to matrix A.
-            ld_array_1, // Leading dimension of matrix A, which is the stride
-                        // between successive rows (for row major layout).
-            b,          // Pointer to matrix B.
-            ld_array_2, // Leading dimension of matrix B, similar to ld_array_1.
-            Tab(0),     // Scaling factor for matrix C.
-            res,        // Pointer to matrix C, where the result is stored.
-            ld_result,  // Leading dimension of matrix C.
-            depends);
+        if (isRowMajor) {
+            gemm_event = mkl_blas::row_major::gemm(
+                exec_q,
+                transA, // Parameter indicating whether matrix A is not
+                        // transposed
+                        // ('N'), transposed ('T'), or conjugate transposed
+                        // ('C').
+                transB, // Same as transA but for matrix B.
+                m,      // Number of rows in matrices A and C.
+                n,      // Number of columns in matrices B and C.
+                k,      // Number of columns in matrix A and rows in matrix B.
+                Tab(1), // Scaling factor for the product of matrices A and B.
+                a,      // Pointer to matrix A.
+                ld_array_1, // Leading dimension of matrix A, which is the
+                            // stride between successive rows (for row major
+                            // layout).
+                b,          // Pointer to matrix B.
+                ld_array_2, // Leading dimension of matrix B, similar to
+                            // ld_array_1.
+                Tab(0),     // Scaling factor for matrix C.
+                res,        // Pointer to matrix C, where the result is stored.
+                ld_result,  // Leading dimension of matrix C.
+                depends);
+        }
+        else {
+            gemm_event = mkl_blas::column_major::gemm(
+                exec_q,
+                transA, // Parameter indicating whether matrix A is not
+                        // transposed
+                        // ('N'), transposed ('T'), or conjugate transposed
+                        // ('C').
+                transB, // Same as transA but for matrix B.
+                m,      // Number of rows in matrices A and C.
+                n,      // Number of columns in matrices B and C.
+                k,      // Number of columns in matrix A and rows in matrix B.
+                Tab(1), // Scaling factor for the product of matrices A and B.
+                a,      // Pointer to matrix A.
+                ld_array_1, // Leading dimension of matrix A, which is the
+                            // stride between successive rows (for row major
+                            // layout).
+                b,          // Pointer to matrix B.
+                ld_array_2, // Leading dimension of matrix B, similar to
+                            // ld_array_1.
+                Tab(0),     // Scaling factor for matrix C.
+                res,        // Pointer to matrix C, where the result is stored.
+                ld_result,  // Leading dimension of matrix C.
+                depends);
+        }
     } catch (oneapi::mkl::exception const &e) {
         error_msg
             << "Unexpected MKL exception caught during gemm() call:\nreason: "
@@ -134,6 +166,7 @@ std::pair<sycl::event, sycl::event>
          dpctl::tensor::usm_ndarray matrixA,
          dpctl::tensor::usm_ndarray matrixB,
          dpctl::tensor::usm_ndarray resultC,
+         const bool isRowMajor,
          const std::vector<sycl::event> &depends)
 {
     const int matrixA_nd = matrixA.get_ndim();
@@ -234,7 +267,8 @@ std::pair<sycl::event, sycl::event>
     std::vector<sycl::event> host_task_events;
     sycl::event gemm_ev =
         gemm_fn(exec_q, transA, transB, m, n, k, a_typeless_ptr, ld_array_1,
-                b_typeless_ptr, ld_array_2, r_typeless_ptr, ld_result, depends);
+                b_typeless_ptr, ld_array_2, r_typeless_ptr, ld_result,
+                isRowMajor, depends);
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {matrixA, matrixB, resultC}, host_task_events);

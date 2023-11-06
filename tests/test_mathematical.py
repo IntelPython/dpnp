@@ -2044,3 +2044,52 @@ def test_inplace_remainder(dtype):
     dp_a %= 4
 
     assert_allclose(dp_a, np_a)
+
+
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+)
+def test_inplace_floor_divide(dtype):
+    size = 21
+    np_a = numpy.arange(size, dtype=dtype)
+    dp_a = dpnp.arange(size, dtype=dtype)
+
+    np_a //= 4
+    dp_a //= 4
+
+    assert_allclose(dp_a, np_a)
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize(
+    "shape_pair",
+    [
+        ((4,), (4, 4)),
+        ((4, 4), (4,)),
+        ((4, 4, 4, 4), (4, 4)),
+        ((4, 4), (4, 4, 4, 4)),
+        ((4,), (4,)),
+        ((4, 4, 4), (4, 4, 4)),
+    ],
+    ids=[
+        "((4,), (4, 4))",
+        "((4, 4), (4,))",
+        "((4, 4, 4, 4), (4, 4))",
+        "((4, 4), (4, 4, 4, 4))",
+        "((4,), (4,))",
+        "((4, 4, 4), (4, 4, 4))",
+    ],
+)
+def test_matmul(dtype, shape_pair):
+    shape1, shape2 = shape_pair
+    size1 = numpy.prod(shape1)
+    size2 = numpy.prod(shape2)
+    a1 = numpy.arange(size1, dtype=dtype).reshape(shape1)
+    a2 = numpy.arange(size2, dtype=dtype).reshape(shape2)
+
+    b1 = dpnp.asarray(a1)
+    b2 = dpnp.asarray(a2)
+
+    result = dpnp.matmul(b1, b2)
+    expected = numpy.matmul(a1, a2)
+    assert_allclose(expected, result)

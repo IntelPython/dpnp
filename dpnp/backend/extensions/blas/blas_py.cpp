@@ -39,15 +39,25 @@ namespace py = pybind11;
 void init_dispatch_tables(void)
 {
     blas_ext::init_gemm_dispatch_table();
+    blas_ext::init_gemm_batch_dispatch_table();
 }
 
 PYBIND11_MODULE(_blas_impl, m)
 {
     init_dispatch_tables();
 
-    m.def("_gemm", &blas_ext::gemm,
-          "Call `gemm` from OneMKL LAPACK library to return "
-          "the matrix-matrix product with general matrices.",
-          py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
-          py::arg("matrixC"), py::arg("depends") = py::list());
+    {
+        m.def("_gemm", &blas_ext::gemm,
+              "Call `gemm` from OneMKL LAPACK library to return "
+              "the matrix-matrix product with 2-D matrices.",
+              py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
+              py::arg("matrixC"), py::arg("isRowMajor"),
+              py::arg("depends") = py::list());
+    }
+
+    {
+        m.def("_gemm_batch", &blas_ext::gemm_batch,
+              "Call `gemm_batch` from OneMKL LAPACK library to return "
+              "the matrix-matrix product with general matrices.");
+    }
 }

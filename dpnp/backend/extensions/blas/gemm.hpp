@@ -43,9 +43,31 @@ extern std::pair<sycl::event, sycl::event>
          dpctl::tensor::usm_ndarray matrixA,
          dpctl::tensor::usm_ndarray matrixB,
          dpctl::tensor::usm_ndarray resultC,
+         const bool isRowMajor,
          const std::vector<sycl::event> &depends);
 
+// extern sycl::event
+extern std::pair<sycl::event, sycl::event>
+    gemm_batch(sycl::queue q,
+               dpctl::tensor::usm_ndarray matrixA,
+               dpctl::tensor::usm_ndarray matrixB,
+               dpctl::tensor::usm_ndarray resultC,
+               const std::int64_t m,
+               const std::int64_t n,
+               const std::int64_t k,
+               const std::int64_t batch_size,
+               const std::int64_t ld_array_1,
+               const std::int64_t ld_array_2,
+               const std::int64_t ld_result,
+               size_t stridea,
+               size_t strideb,
+               size_t stridec,
+               const std::int64_t transA_int,
+               const std::int64_t transB_int,
+               const std::vector<sycl::event> &depends);
+
 extern void init_gemm_dispatch_table(void);
+extern void init_gemm_batch_dispatch_table(void);
 } // namespace blas
 } // namespace ext
 } // namespace backend

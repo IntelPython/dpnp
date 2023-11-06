@@ -60,6 +60,29 @@ struct GemmTypePairSupportFactory
         dpctl_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, float>,
         dpctl_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, sycl::half>,
         dpctl_td_ns::TypePairDefinedEntry<Tab, float, Tc, float>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab, double, Tc, double>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab,
+                                          std::complex<float>,
+                                          Tc,
+                                          std::complex<float>>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab,
+                                          std::complex<double>,
+                                          Tc,
+                                          std::complex<double>>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+template <typename Tab, typename Tc>
+struct GemmBatchTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, std::int32_t>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, float>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, float>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, sycl::half>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab, float, Tc, float>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab, double, Tc, double>,
         dpctl_td_ns::TypePairDefinedEntry<Tab,
                                           std::complex<float>,
                                           Tc,
