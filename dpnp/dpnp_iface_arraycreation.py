@@ -1045,7 +1045,7 @@ def geomspace(
 
     Returns
     -------
-    samples : dpnp.ndarray
+    out : dpnp.ndarray
         num samples, equally spaced on a log scale.
 
     See Also
@@ -1168,7 +1168,7 @@ def linspace(
 
     Returns
     -------
-    samples : dpnp.ndarray
+    out : dpnp.ndarray
         There are num equally spaced samples in the closed interval
         [`start`, `stop`] or the half-open interval [`start`, `stop`)
         (depending on whether `endpoint` is ``True`` or ``False``).

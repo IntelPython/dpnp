@@ -633,6 +633,11 @@ def test_linspace(start, stop, num, dtype, retstep):
 
 
 @pytest.mark.parametrize(
+    "func",
+    ["geomspace", "linspace", "logspace"],
+    ids=["geomspace", "linspace", "logspace"],
+)
+@pytest.mark.parametrize(
     "start_dtype",
     [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
     ids=["float64", "float32", "int64", "int32"],
@@ -642,10 +647,10 @@ def test_linspace(start, stop, num, dtype, retstep):
     [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
     ids=["float64", "float32", "int64", "int32"],
 )
-def test_linspace_dtype(start_dtype, stop_dtype):
+def test_space_numpy_dtype(func, start_dtype, stop_dtype):
     start = numpy.array([1, 2, 3], dtype=start_dtype)
     stop = numpy.array([11, 7, -2], dtype=stop_dtype)
-    dpnp.linspace(start, stop, 10)
+    getattr(dpnp, func)(start, stop, 10)
 
 
 @pytest.mark.parametrize(

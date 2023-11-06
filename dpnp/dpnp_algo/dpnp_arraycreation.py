@@ -37,11 +37,11 @@ def dpnp_geomspace(
     else:
         _usm_type = usm_type
 
-    if not hasattr(start, "dtype"):
+    if not dpnp.is_supported_array_type(start):
         start = dpnp.asarray(
             start, usm_type=_usm_type, sycl_queue=sycl_queue_normalized
         )
-    if not hasattr(stop, "dtype"):
+    if not dpnp.is_supported_array_type(stop):
         stop = dpnp.asarray(
             stop, usm_type=_usm_type, sycl_queue=sycl_queue_normalized
         )
