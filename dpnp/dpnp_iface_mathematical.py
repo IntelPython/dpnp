@@ -1799,14 +1799,15 @@ def nanprod(
 
     """
 
-    if issubclass(a.dtype.type, dpnp.inexact):
-        mask = dpnp.isnan(a)
+    if dpnp.is_supported_array_or_scalar(a):
+        if issubclass(a.dtype.type, dpnp.inexact):
+            mask = dpnp.isnan(a)
+            a = dpnp.array(a, copy=True)
+            dpnp.copyto(a, 1, where=mask)
     else:
-        mask = None
-
-    if mask is not None:
-        a = dpnp.array(a, copy=True)
-        dpnp.copyto(a, 1, where=mask)
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(a))
+        )
 
     return dpnp.prod(
         a,

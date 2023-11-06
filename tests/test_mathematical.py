@@ -549,11 +549,13 @@ def test_prod_nanprod_out(func):
         getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
 
 
-def test_prod_Error():
+def test_prod_nanprod_Error():
     ia = dpnp.arange(5)
 
     with pytest.raises(TypeError):
         dpnp.prod(dpnp.asnumpy(ia))
+    with pytest.raises(TypeError):
+        dpnp.nanprod(dpnp.asnumpy(ia))
     with pytest.raises(NotImplementedError):
         dpnp.prod(ia, where=False)
     with pytest.raises(NotImplementedError):
