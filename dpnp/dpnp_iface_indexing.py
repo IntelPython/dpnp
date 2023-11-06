@@ -218,8 +218,9 @@ def diagonal(x1, offset=0, axis1=0, axis2=1):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Parameters ``axis1`` and ``axis2`` are supported only with default values.
+    Parameters `axis1` and `axis2` are supported only with default values.
     Otherwise the function will be executed sequentially on CPU.
+
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
@@ -284,7 +285,7 @@ def fill_diagonal(x1, val, wrap=False):
 
     Limitations
     -----------
-    Parameter ``wrap`` is supported only with default values.
+    Parameter `wrap` is supported only with default values.
 
     See Also
     --------
@@ -314,8 +315,9 @@ def indices(dimensions, dtype=int, sparse=False):
 
     Limitations
     -----------
-    Parameters ``dtype`` and ``sparse`` are supported only with default values.
-    Parameter ``dimensions`` is supported with len <=2.
+    Parameters `dtype` and `sparse` are supported only with default values.
+    Parameter `dimensions` is supported with len <=2.
+
     """
 
     if not isinstance(dimensions, (tuple, list)):
@@ -562,7 +564,7 @@ def select(condlist, choicelist, default=0):
     Limitations
     -----------
     Arrays of input lists are supported as :obj:`dpnp.ndarray`.
-    Parameter ``default`` are supported only with default values.
+    Parameter `default` is supported only with default values.
     """
 
     if not use_origin_backend():

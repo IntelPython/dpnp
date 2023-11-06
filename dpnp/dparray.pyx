@@ -41,12 +41,11 @@ from libcpp cimport bool as cpp_bool
 import numpy
 
 from dpnp.dpnp_algo import (
-    dpnp_astype,
     dpnp_flatten,
 )
 
 # to avoid interference with Python internal functions
-from dpnp.dpnp_iface import asnumpy
+from dpnp.dpnp_iface import asnumpy, astype
 from dpnp.dpnp_iface import get_dpnp_descriptor as iface_get_dpnp_descriptor
 from dpnp.dpnp_iface import prod as iface_prod
 from dpnp.dpnp_iface import sum as iface_sum
@@ -323,7 +322,7 @@ cdef class dparray:
 
     @property
     def shape(self):
-        """Lengths of axes. A tuple of numbers represents size of each dimention.
+        """Lengths of axes. A tuple of numbers represents size of each dimension.
 
         Setter of this property involves reshaping without copy. If the array
         cannot be reshaped without copy, it raises an exception.
@@ -336,7 +335,7 @@ cdef class dparray:
 
     @shape.setter
     def shape(self, newshape):
-        """Set new lengths of axes. A tuple of numbers represents size of each dimention.
+        """Set new lengths of axes. A tuple of numbers represents size of each dimension.
         It involves reshaping without copy. If the array cannot be reshaped without copy,
         it raises an exception.
 
@@ -344,7 +343,7 @@ cdef class dparray:
 
         """
 
-        self._dparray_shape = newshape  # TODO strides, enpty dimentions and etc.
+        self._dparray_shape = newshape  # TODO strides, enpty dimensions and etc.
 
     @property
     def flags(self) -> _flagsobj:
@@ -870,47 +869,36 @@ cdef class dparray:
     def __truediv__(self, other):
         return divide(self, other)
 
-    cpdef dparray astype(self, dtype, order='K', casting='unsafe', subok=True, copy=True):
-        """Copy the array with data type casting.
+    def astype(self, dtype, order='K', casting='unsafe', subok=True, copy=True):
+        """
+        Copy the array with data type casting.
 
-        Args:
-            dtype: Target type.
-            order ({'C', 'F', 'A', 'K'}): Row-major (C-style) or column-major (Fortran-style) order.
-                When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
-                And when ``order`` is 'K', it keeps strides as closely as possible.
-            copy (bool): If it is False and no cast happens, then this method returns the array itself.
-                Otherwise, a copy is returned.
+        Parameters
+        ----------
+        dtype : dtype
+            Target data type.
+        order : {'C', 'F', 'A', 'K'}
+            Row-major (C-style) or column-major (Fortran-style) order.
+            When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
+            And when ``order`` is 'K', it keeps strides as closely as possible.
+        copy : bool
+            If it is False and no cast happens, then this method returns the array itself.
+            Otherwise, a copy is returned.
 
-        Returns:
+        Returns
+        -------
+        out : dpnp.ndarray
             If ``copy`` is False and no cast is required, then the array itself is returned.
             Otherwise, it returns a (possibly casted) copy of the array.
 
-        .. note::
-           This method currently does not support `order``, `casting``, ``copy``, and ``subok`` arguments.
-
-        .. seealso:: :meth:`numpy.ndarray.astype`
+        Limitations
+        -----------
+        Parameter `subok` is supported with default value.
+        Otherwise ``NotImplementedError`` exception will be raised.
 
         """
 
-        if casting is not 'unsafe':
-            pass
-        elif subok is not True:
-            pass
-        elif copy is not True:
-            pass
-        elif order is not 'K':
-            pass
-        elif self.dtype == numpy.complex128 or dtype == numpy.complex128:
-            pass
-        elif self.dtype == numpy.complex64 or dtype == numpy.complex64:
-            pass
-        else:
-            self_desc = iface_get_dpnp_descriptor(self)
-            return dpnp_astype(self_desc, dtype).get_pyobj()
-
-        result = dp2nd_array(self).astype(dtype=dtype, order=order, casting=casting, subok=subok, copy=copy)
-
-        return nd2dp_array(result)
+        return astype(self, dtype, order=order, casting=casting, subok=subok, copy=copy)
 
     def conj(self):
         """
@@ -1077,7 +1065,8 @@ cdef class dparray:
         -----------
         Input array is supported as :obj:`dpnp.ndarray`.
         Input kth is supported as :obj:`int`.
-        Parameters ``axis``, ``kind`` and ``order`` are supported only with default values.
+        Parameters `axis`, `kind` and `order` are supported only with default values.
+
         """
 
         return partition(self, kth, axis, kind, order)

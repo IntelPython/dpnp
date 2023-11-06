@@ -292,14 +292,6 @@ template <typename _DataType_input, typename _DataType_output>
 void (*dpnp_count_nonzero_default_c)(void *, void *, size_t) =
     dpnp_count_nonzero_c<_DataType_input, _DataType_output>;
 
-template <typename _DataType_input, typename _DataType_output>
-DPCTLSyclEventRef (*dpnp_count_nonzero_ext_c)(DPCTLSyclQueueRef,
-                                              void *,
-                                              void *,
-                                              size_t,
-                                              const DPCTLEventVectorRef) =
-    dpnp_count_nonzero_c<_DataType_input, _DataType_output>;
-
 template <typename _DataType>
 class dpnp_max_c_kernel;
 
@@ -1272,17 +1264,6 @@ void func_map_init_statistics(func_map_t &fmap)
         eft_LNG, (void *)dpnp_count_nonzero_default_c<float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_DBL][eft_DBL] = {
         eft_LNG, (void *)dpnp_count_nonzero_default_c<double, int64_t>};
-
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO_EXT][eft_BLN][eft_BLN] = {
-        eft_LNG, (void *)dpnp_count_nonzero_ext_c<bool, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO_EXT][eft_INT][eft_INT] = {
-        eft_LNG, (void *)dpnp_count_nonzero_ext_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_count_nonzero_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO_EXT][eft_FLT][eft_FLT] = {
-        eft_LNG, (void *)dpnp_count_nonzero_ext_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO_EXT][eft_DBL][eft_DBL] = {
-        eft_LNG, (void *)dpnp_count_nonzero_ext_c<double, int64_t>};
 
     fmap[DPNPFuncName::DPNP_FN_COV][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_cov_default_c<double>};

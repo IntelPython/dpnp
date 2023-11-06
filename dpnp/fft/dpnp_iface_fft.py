@@ -818,7 +818,7 @@ def rfftfreq(n=None, d=1.0):
 
     Limitations
     -----------
-    Parameter ``d`` is unsupported.
+    Parameter `d` is unsupported.
 
     """
 

@@ -34,7 +34,10 @@ Notes
 This module provides public type interface file for the library
 """
 
+import dpctl.tensor as dpt
 import numpy
+
+from dpnp.dpnp_array import dpnp_array
 
 __all__ = [
     "bool",
@@ -50,12 +53,14 @@ __all__ = [
     "dtype",
     "e",
     "euler_gamma",
+    "finfo",
     "float",
     "float_",
     "float16",
     "float32",
     "float64",
     "floating",
+    "iinfo",
     "inexact",
     "Inf",
     "inf",
@@ -67,6 +72,7 @@ __all__ = [
     "int64",
     "integer",
     "intc",
+    "intp",
     "isscalar",
     "issubdtype",
     "issubsctype",
@@ -114,6 +120,7 @@ int32 = numpy.int32
 int64 = numpy.int64
 integer = numpy.integer
 intc = numpy.intc
+intp = numpy.intp
 number = numpy.number
 signedinteger = numpy.signedinteger
 single = numpy.single
@@ -138,6 +145,85 @@ NZERO = numpy.NZERO
 pi = numpy.pi
 PINF = numpy.PINF
 PZERO = numpy.PZERO
+
+
+def finfo(dtype):
+    """
+    Returns machine limits for floating-point data types.
+
+    For full documentation refer to :obj:`numpy.finfo`.
+
+    Parameters
+    ----------
+    dtype : dtype, dpnp_array
+        Floating-point dtype or an array with floating point data type.
+        If complex, the information is about its component data type.
+
+    Returns
+    -------
+    out : finfo_object
+        An object have the following attributes
+        * bits: int
+            number of bits occupied by dtype.
+        * dtype: dtype
+            real-valued floating-point data type.
+        * eps: float
+            difference between 1.0 and the next smallest representable
+            real-valued floating-point number larger than 1.0 according
+            to the IEEE-754 standard.
+        * epsneg: float
+            difference between 1.0 and the next smallest representable real-valued
+            floating-point number smaller than 1.0 according to the IEEE-754
+            standard.
+        * max: float
+            largest representable real-valued number.
+        * min: float
+            smallest representable real-valued number.
+        * precision: float
+            the approximate number of decimal digits to which this kind of
+            floating point type is precise.
+        * resolution: float
+            the approximate decimal resolution of this type.
+        * tiny: float
+            an alias for `smallest_normal`
+        * smallest_normal: float
+            smallest positive real-valued floating-point number with
+            full precision.
+
+    """
+    if isinstance(dtype, dpnp_array):
+        dtype = dtype.dtype
+    return dpt.finfo(dtype)
+
+
+def iinfo(dtype):
+    """
+    Returns machine limits for integer data types.
+
+    For full documentation refer to :obj:`numpy.iinfo`.
+
+    Parameters
+    ----------
+    dtype : dtype, dpnp_array
+        Integer dtype or an array with integer dtype.
+
+    Returns
+    -------
+    out : iinfo_object
+        An object with the following attributes
+        * bits: int
+            number of bits occupied by the data type
+        * dtype: dtype
+            integer data type.
+        * max: int
+            largest representable number.
+        * min: int
+            smallest representable number.
+
+    """
+    if isinstance(dtype, dpnp_array):
+        dtype = dtype.dtype
+    return dpt.iinfo(dtype)
 
 
 def isscalar(obj):

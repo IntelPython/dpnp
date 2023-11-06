@@ -88,7 +88,7 @@ cpdef utils.dpnp_descriptor dpnp_cholesky(utils.dpnp_descriptor input_):
 
     input_obj = input_.get_array()
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(input_.shape,
                                                                        kernel_data.return_type,
                                                                        None,
@@ -152,7 +152,7 @@ cpdef utils.dpnp_descriptor dpnp_det(utils.dpnp_descriptor input):
 
     input_obj = input.get_array()
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
                                                                        kernel_data.return_type,
                                                                        None,
@@ -242,7 +242,7 @@ cpdef utils.dpnp_descriptor dpnp_eigvals(utils.dpnp_descriptor input):
     cdef DPNPFuncType return_type = ret_type_and_func[0]
     cdef custom_linalg_1in_1out_with_size_func_ptr_t_ func = < custom_linalg_1in_1out_with_size_func_ptr_t_ > ret_type_and_func[1]
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef utils.dpnp_descriptor res_val = utils.create_output_descriptor((size,),
                                                                          return_type,
                                                                          None,
@@ -282,7 +282,7 @@ cpdef utils.dpnp_descriptor dpnp_inv(utils.dpnp_descriptor input):
     cdef DPNPFuncType return_type = ret_type_and_func[0]
     cdef custom_linalg_1in_1out_func_ptr_t func = < custom_linalg_1in_1out_func_ptr_t > ret_type_and_func[1]
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(input_shape,
                                                                        return_type,
                                                                        None,
@@ -316,7 +316,7 @@ cpdef utils.dpnp_descriptor dpnp_matrix_rank(utils.dpnp_descriptor input):
 
     input_obj = input.get_array()
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor((1,),
                                                                        kernel_data.return_type,
                                                                        None,

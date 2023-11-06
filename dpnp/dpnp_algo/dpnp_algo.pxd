@@ -33,8 +33,6 @@ from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
-        DPNP_FN_ABSOLUTE
-        DPNP_FN_ABSOLUTE_EXT
         DPNP_FN_ALLCLOSE
         DPNP_FN_ALLCLOSE_EXT
         DPNP_FN_ARANGE
@@ -44,8 +42,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ARGMIN_EXT
         DPNP_FN_ARGSORT
         DPNP_FN_ARGSORT_EXT
-        DPNP_FN_ASTYPE
-        DPNP_FN_ASTYPE_EXT
         DPNP_FN_CBRT
         DPNP_FN_CBRT_EXT
         DPNP_FN_CHOLESKY
@@ -58,8 +54,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_COPYSIGN_EXT
         DPNP_FN_CORRELATE
         DPNP_FN_CORRELATE_EXT
-        DPNP_FN_COUNT_NONZERO
-        DPNP_FN_COUNT_NONZERO_EXT
         DPNP_FN_CROSS
         DPNP_FN_CROSS_EXT
         DPNP_FN_CUMPROD
@@ -88,12 +82,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ERF_EXT
         DPNP_FN_EYE
         DPNP_FN_EYE_EXT
-        DPNP_FN_EXP
-        DPNP_FN_EXP_EXT
         DPNP_FN_EXP2
         DPNP_FN_EXP2_EXT
-        DPNP_FN_EXPM1
-        DPNP_FN_EXPM1_EXT
         DPNP_FN_FABS
         DPNP_FN_FABS_EXT
         DPNP_FN_FFT_FFT
@@ -108,20 +98,10 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
         DPNP_FN_FULL_LIKE
-        DPNP_FN_HYPOT
-        DPNP_FN_HYPOT_EXT
-        DPNP_FN_IDENTITY
-        DPNP_FN_IDENTITY_EXT
         DPNP_FN_INV
         DPNP_FN_INV_EXT
         DPNP_FN_KRON
         DPNP_FN_KRON_EXT
-        DPNP_FN_LOG10
-        DPNP_FN_LOG10_EXT
-        DPNP_FN_LOG1P
-        DPNP_FN_LOG1P_EXT
-        DPNP_FN_LOG2
-        DPNP_FN_LOG2_EXT
         DPNP_FN_MATMUL
         DPNP_FN_MATMUL_EXT
         DPNP_FN_MATRIX_RANK
@@ -244,8 +224,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TRANSPOSE
         DPNP_FN_TRAPZ
         DPNP_FN_TRAPZ_EXT
-        DPNP_FN_TRI
-        DPNP_FN_TRI_EXT
         DPNP_FN_TRIL
         DPNP_FN_TRIL_EXT
         DPNP_FN_TRIU
@@ -351,7 +329,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*dpnp_reduction_c_t)(c_dpctl.DPCTLSyclQueueRe
                                                         const long*,
                                                         const c_dpctl.DPCTLEventVectorRef)
 
-cpdef dpnp_descriptor dpnp_astype(dpnp_descriptor x1, dtype)
 cpdef dpnp_descriptor dpnp_flatten(dpnp_descriptor x1)
 
 
@@ -384,13 +361,10 @@ cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 """
 Mathematical functions
 """
-cpdef dpnp_descriptor dpnp_hypot(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                 dpnp_descriptor out=*, object where=*)
-cpdef dpnp_descriptor dpnp_maximum(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
+cpdef dpnp_descriptor dpnp_fmax(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
-cpdef dpnp_descriptor dpnp_minimum(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
+cpdef dpnp_descriptor dpnp_fmin(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
-
 """
 Array manipulation routines
 """
@@ -420,11 +394,6 @@ Trigonometric functions
 """
 cpdef dpnp_descriptor dpnp_cbrt(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_degrees(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_exp(dpnp_descriptor array1, dpnp_descriptor out)
 cpdef dpnp_descriptor dpnp_exp2(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_expm1(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_log10(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_log1p(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_log2(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_radians(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_recip(dpnp_descriptor array1)

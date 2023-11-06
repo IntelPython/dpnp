@@ -127,7 +127,7 @@ def beta(a, b, size=None):
 
     Limitations
     -----------
-    Parameters ``a`` and ``b`` are supported as scalar.
+    Parameters `a` and `b` are supported as scalar.
     Otherwise, :obj:`numpy.random.beta(a, b, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
 
@@ -166,7 +166,7 @@ def binomial(n, p, size=None):
     Limitations
     -----------
     Output array data type is :obj:`dpnp.int32`.
-    Parameters ``n`` and ``p`` are supported as scalar.
+    Parameters `n` and `p` are supported as scalar.
     Otherwise, :obj:`numpy.random.binomial(n, p, size)` samples are drawn.
 
     Examples
@@ -228,7 +228,7 @@ def chisquare(df, size=None):
 
     Limitations
     -----------
-    Parameter ``df`` is supported as a scalar.
+    Parameter `df` is supported as a scalar.
     Otherwise, :obj:`numpy.random.chisquare(df, size)` samples are drawn.
     Output array data type is default float type.
 
@@ -296,7 +296,7 @@ def exponential(scale=1.0, size=None):
 
     Limitations
     -----------
-    Parameter ``scale`` is supported as a scalar.
+    Parameter `scale` is supported as a scalar.
     Otherwise, :obj:`numpy.random.exponential(scale, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
 
@@ -330,9 +330,10 @@ def f(dfnum, dfden, size=None):
 
     Limitations
     -----------
-    Parameters ``dfnum`` and ``dfden`` are supported as scalar.
+    Parameters `dfnum` and `dfden` are supported as scalar.
     Otherwise, :obj:`numpy.random.f(dfnum, dfden, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
+
     Examples
     --------
     >>> dfnum, dfden = 3., 2.
@@ -366,7 +367,7 @@ def gamma(shape, scale=1.0, size=None):
 
     Limitations
     -----------
-    Parameters ``shape`` and ``scale`` are supported as scalar.
+    Parameters `shape` and `scale` are supported as scalar.
     Otherwise, :obj:`numpy.random.gamma(shape, scale, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
 
@@ -404,7 +405,7 @@ def geometric(p, size=None):
 
     Limitations
     -----------
-    Parameter ``p`` is supported as a scalar.
+    Parameter `p` is supported as a scalar.
     Otherwise, :obj:`numpy.random.geometric(p, size)` samples are drawn.
     Output array data type is :obj:`dpnp.int32`.
 
@@ -438,7 +439,7 @@ def gumbel(loc=0.0, scale=1.0, size=None):
 
     Limitations
     -----------
-    Parameters ``loc`` and ``scale`` are supported as scalar.
+    Parameters `loc` and `scale` are supported as scalar.
     Otherwise, :obj:`numpy.random.gumbel(loc, scale, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
 
@@ -474,7 +475,7 @@ def hypergeometric(ngood, nbad, nsample, size=None):
 
     Limitations
     -----------
-    Parameters ``ngood``, ``nbad`` and ``nsample`` are supported as scalar.
+    Parameters `ngood`, `nbad` and `nsample` are supported as scalar.
     Otherwise, :obj:`numpy.random.hypergeometric(shape, scale, size)` samples
     are drawn.
     Output array data type is :obj:`dpnp.int32`.
@@ -526,7 +527,7 @@ def laplace(loc=0.0, scale=1.0, size=None):
 
     Limitations
     -----------
-    Parameters ``loc`` and ``scale`` are supported as scalar.
+    Parameters `loc` and `scale` are supported as scalar.
     Otherwise, :obj:`numpy.random.laplace(loc, scale, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
 
@@ -561,7 +562,7 @@ def logistic(loc=0.0, scale=1.0, size=None):
 
     Limitations
     -----------
-    Parameters ``loc`` and ``scale`` are supported as scalar.
+    Parameters `loc` and `scale` are supported as scalar.
     Otherwise, :obj:`numpy.random.logistic(loc, scale, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
 
@@ -600,7 +601,7 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
 
     Limitations
     -----------
-    Parameters ``mean`` and ``sigma`` are supported as scalar.
+    Parameters `mean` and `sigma` are supported as scalar.
     Otherwise, :obj:`numpy.random.lognormal(mean, sigma, size)` samples
     are drawn.
     Output array data type is :obj:`dpnp.float64`.
@@ -654,7 +655,7 @@ def multinomial(n, pvals, size=None):
 
     Limitations
     -----------
-    Parameter ``n`` limited with int32 max. See, `numpy.iinfo(numpy.int32).max`.
+    Parameter `n` limited with int32 max. See, `numpy.iinfo(numpy.int32).max`.
     Sum of ``pvals``, `sum(pvals)` should be between (0, 1).
     Otherwise, :obj:`numpy.random.multinomial(n, pvals, size)`
     samples are drawn.
@@ -674,7 +675,7 @@ def multinomial(n, pvals, size=None):
         d = len(pvals)
         if n < 0:
             pass
-        elif n > numpy.iinfo(dpnp.int32).max:
+        elif n > dpnp.iinfo(dpnp.int32).max:
             pass
         elif pvals_sum > 1.0:
             pass
@@ -703,7 +704,7 @@ def multivariate_normal(mean, cov, size=None, check_valid="warn", tol=1e-8):
 
     Limitations
     -----------
-    Parameters ``check_valid`` and ``tol`` are not supported.
+    Parameters `check_valid` and `tol` are not supported.
     Otherwise, :obj:`numpy.random.multivariate_normal(mean, cov, size, check_valid, tol)`
     samples are drawn.
 
@@ -753,7 +754,7 @@ def negative_binomial(n, p, size=None):
 
     Limitations
     -----------
-    Parameters ``n`` and ``p`` are supported as scalar.
+    Parameters `n` and `p` are supported as scalar.
     Otherwise, :obj:`numpy.random.negative_binomial(n, p, size)` samples
     are drawn.
     Output array data type is :obj:`dpnp.int32`.
@@ -898,7 +899,7 @@ def pareto(a, size=None):
 
     Limitations
     -----------
-    Parameter ``a`` is supported as a scalar.
+    Parameter `a` is supported as a scalar.
     Otherwise, :obj:`numpy.random.pareto(a, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
 
@@ -967,7 +968,7 @@ def poisson(lam=1.0, size=None):
 
     Limitations
     -----------
-    Parameter ``lam`` is supported as a scalar.
+    Parameter `lam` is supported as a scalar.
     Otherwise, :obj:`numpy.random.poisson(lam, size)` samples are drawn.
     Output array data type is :obj:`dpnp.int32`.
 
@@ -1002,7 +1003,7 @@ def power(a, size=None):
 
     Limitations
     -----------
-    Parameter ``a`` is supported as a scalar.
+    Parameter `a` is supported as a scalar.
     Otherwise, :obj:`numpy.random.power(a, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
 
@@ -1380,7 +1381,7 @@ def rayleigh(scale=1.0, size=None):
 
     Limitations
     -----------
-    Parameter ``scale`` is supported as a scalar.
+    Parameter `scale` is supported as a scalar.
     Otherwise, :obj:`numpy.random.rayleigh(scale, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
 
@@ -1586,7 +1587,7 @@ def standard_gamma(shape, size=None):
 
     Limitations
     -----------
-    Parameter ``shape`` is supported as a scalar.
+    Parameter `shape` is supported as a scalar.
     Otherwise, :obj:`numpy.random.standard_gamma(shape, size)` samples
     are drawn.
     Output array data type is :obj:`dpnp.float64`.
@@ -1659,7 +1660,7 @@ def standard_t(df, size=None):
 
     Limitations
     -----------
-    Parameter ``df`` is supported as a scalar.
+    Parameter `df` is supported as a scalar.
     Otherwise, :obj:`numpy.random.standard_t(df, size)` samples
     are drawn.
     Output array data type is :obj:`dpnp.float64`.
@@ -1695,7 +1696,7 @@ def triangular(left, mode, right, size=None):
 
     Limitations
     -----------
-    Parameter ``left``, ``mode`` and ``right`` are supported as scalar.
+    Parameters `left`, `mode` and `right` are supported as scalar.
     Otherwise, :obj:`numpy.random.triangular(left, mode, right, size)`
     samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
@@ -1799,7 +1800,7 @@ def vonmises(mu, kappa, size=None):
 
     Limitations
     -----------
-    Parameter ``mu`` and ``kappa`` are supported as scalar.
+    Parameters `mu` and `kappa` are supported as scalar.
     Otherwise, :obj:`numpy.random.vonmises(mu, kappa, size)`
     samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
@@ -1838,7 +1839,7 @@ def wald(mean, scale, size=None):
 
     Limitations
     -----------
-    Parameters ``mean`` and ``scale`` are supported as scalar.
+    Parameters `mean` and `scale` are supported as scalar.
     Otherwise, :obj:`numpy.random.wald(mean, scale, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
 
@@ -1875,7 +1876,7 @@ def weibull(a, size=None):
 
     Limitations
     -----------
-    Parameter ``a`` is supported as a scalar.
+    Parameter `a` is supported as a scalar.
     Otherwise, :obj:`numpy.random.weibull(a, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
 
@@ -1908,7 +1909,7 @@ def zipf(a, size=None):
 
     Limitations
     -----------
-    Parameter ``a`` is supported as a scalar.
+    Parameter `a`` is supported as a scalar.
     Otherwise, :obj:`numpy.zipf.weibull(a, size)` samples are drawn.
     Output array data type is :obj:`dpnp.float64`.
 

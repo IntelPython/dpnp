@@ -151,9 +151,7 @@ def test_randn_normal_distribution():
     assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsBeta(TestDistribution):
     def test_moments(self):
@@ -179,9 +177,7 @@ class TestDistributionsBeta(TestDistribution):
         self.check_seed("beta", {"a": a, "b": b})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsBinomial(TestDistribution):
     def test_extreme_value(self):
@@ -220,9 +216,7 @@ class TestDistributionsBinomial(TestDistribution):
         self.check_seed("binomial", {"n": n, "p": p})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsChisquare(TestDistribution):
     def test_invalid_args(self):
@@ -234,9 +228,7 @@ class TestDistributionsChisquare(TestDistribution):
         self.check_seed("chisquare", {"df": df})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsExponential(TestDistribution):
     def test_invalid_args(self):
@@ -248,9 +240,7 @@ class TestDistributionsExponential(TestDistribution):
         self.check_seed("exponential", {"scale": scale})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsF(TestDistribution):
     def test_moments(self):
@@ -284,9 +274,7 @@ class TestDistributionsF(TestDistribution):
         self.check_seed("f", {"dfnum": dfnum, "dfden": dfden})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsGamma(TestDistribution):
     def test_moments(self):
@@ -337,9 +325,7 @@ class TestDistributionsGeometric(TestDistribution):
         self.check_seed("geometric", {"p": p})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsGumbel(TestDistribution):
     def test_extreme_value(self):
@@ -371,9 +357,7 @@ class TestDistributionsGumbel(TestDistribution):
         self.check_seed("gumbel", {"loc": loc, "scale": scale})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-6001"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsHypergeometric(TestDistribution):
     def test_extreme_value(self):
@@ -460,9 +444,7 @@ class TestDistributionsHypergeometric(TestDistribution):
         )
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsLaplace(TestDistribution):
     def test_extreme_value(self):
@@ -493,9 +475,7 @@ class TestDistributionsLaplace(TestDistribution):
         self.check_seed("laplace", {"loc": loc, "scale": scale})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsLogistic(TestDistribution):
     def test_moments(self):
@@ -521,9 +501,7 @@ class TestDistributionsLogistic(TestDistribution):
         self.check_seed("logistic", {"loc": loc, "scale": scale})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsLognormal(TestDistribution):
     def test_extreme_value(self):
@@ -559,9 +537,7 @@ class TestDistributionsLognormal(TestDistribution):
         self.check_seed("lognormal", {"mean": mean, "sigma": sigma})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsMultinomial(TestDistribution):
     def test_extreme_value(self):
@@ -658,9 +634,7 @@ class TestDistributionsMultivariateNormal(TestDistribution):
         self.check_seed("multivariate_normal", {"mean": mean, "cov": cov})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsNegativeBinomial(TestDistribution):
     def test_extreme_value(self):
@@ -674,10 +648,10 @@ class TestDistributionsNegativeBinomial(TestDistribution):
         )
         n = 5
         p = 0.0
-        res = dpnp.asnumpy(dpnp.random.negative_binomial(n=n, p=p, size=10))
-        check_val = numpy.iinfo(res.dtype).min
-        assert len(numpy.unique(res)) == 1
-        assert numpy.unique(res)[0] == check_val
+        res = dpnp.random.negative_binomial(n=n, p=p, size=10)
+        check_val = dpnp.iinfo(res).min
+        assert len(dpnp.unique(res)) == 1
+        assert dpnp.unique(res)[0] == check_val
 
     def test_invalid_args(self):
         n = 10  # parameter `n`, OK
@@ -692,9 +666,7 @@ class TestDistributionsNegativeBinomial(TestDistribution):
         self.check_seed("negative_binomial", {"n": n, "p": p})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 class TestDistributionsNormal(TestDistribution):
     def test_extreme_value(self):
         loc = 5
@@ -724,9 +696,7 @@ class TestDistributionsNormal(TestDistribution):
         self.check_seed("normal", {"loc": loc, "scale": scale})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsNoncentralChisquare:
     @pytest.mark.parametrize(
@@ -772,9 +742,7 @@ class TestDistributionsNoncentralChisquare:
         assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsPareto(TestDistribution):
     def test_moments(self):
@@ -793,9 +761,7 @@ class TestDistributionsPareto(TestDistribution):
         self.check_seed("pareto", {"a": a})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsPoisson(TestDistribution):
     def test_extreme_value(self):
@@ -817,9 +783,7 @@ class TestDistributionsPoisson(TestDistribution):
         self.check_seed("poisson", {"lam": lam})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsPower(TestDistribution):
     def test_moments(self):
@@ -839,9 +803,7 @@ class TestDistributionsPower(TestDistribution):
         self.check_seed("power", {"a": a})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsRayleigh(TestDistribution):
     def test_extreme_value(self):
@@ -883,9 +845,7 @@ class TestDistributionsStandardExponential(TestDistribution):
         self.check_seed("standard_exponential", {})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsStandardGamma(TestDistribution):
     def test_extreme_value(self):
@@ -917,9 +877,7 @@ class TestDistributionsStandardNormal(TestDistribution):
         self.check_seed("standard_normal", {})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsStandardT(TestDistribution):
     def test_moments(self):
@@ -938,9 +896,7 @@ class TestDistributionsStandardT(TestDistribution):
         self.check_seed("standard_t", {"df": 10.0})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsTriangular(TestDistribution):
     def test_moments(self):
@@ -987,9 +943,7 @@ class TestDistributionsTriangular(TestDistribution):
         )
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 class TestDistributionsUniform(TestDistribution):
     def test_extreme_value(self):
         low = 1.0
@@ -1014,9 +968,7 @@ class TestDistributionsUniform(TestDistribution):
         self.check_seed("uniform", {"low": low, "high": high})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsVonmises:
     @pytest.mark.parametrize(
@@ -1057,9 +1009,7 @@ class TestDistributionsVonmises:
         assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsWald(TestDistribution):
     def test_moments(self):
@@ -1091,9 +1041,7 @@ class TestDistributionsWald(TestDistribution):
         self.check_seed("wald", {"mean": mean, "scale": scale})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsWeibull(TestDistribution):
     def test_extreme_value(self):
@@ -1110,9 +1058,7 @@ class TestDistributionsWeibull(TestDistribution):
         self.check_seed("weibull", {"a": a})
 
 
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="Failed on Iris Xe: SAT-5989"
-)
+@pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsZipf(TestDistribution):
     def test_invalid_args(self):
@@ -1159,14 +1105,15 @@ class TestPermutationsTestShuffle:
         actual_x = dpnp.sort(output_x)
         assert_array_equal(actual_x, desired_x)
 
+    @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
     @pytest.mark.parametrize(
         "conv",
         [
             lambda x: dpnp.array([]),
-            # lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8),
+            lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8),
             lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32),
-            # lambda x: dpnp.asarray(x).astype(dpnp.complex64),
-            # lambda x: dpnp.astype(dpnp.asarray(x), object),
+            lambda x: dpnp.asarray(x).astype(dpnp.complex64),
+            lambda x: dpnp.astype(dpnp.asarray(x), object),
             lambda x: dpnp.asarray([[i, i] for i in x]),
             lambda x: dpnp.vstack([x, x]).T,
             lambda x: (
@@ -1180,10 +1127,10 @@ class TestPermutationsTestShuffle:
         ],
         ids=[
             "lambda x: dpnp.array([])",
-            # 'lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)',
+            "lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)",
             "lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32)",
-            # 'lambda x: dpnp.asarray(x).astype(dpnp.complex64)',
-            # 'lambda x: dpnp.astype(dpnp.asarray(x), object)',
+            "lambda x: dpnp.asarray(x).astype(dpnp.complex64)",
+            "lambda x: dpnp.astype(dpnp.asarray(x), object)",
             "lambda x: dpnp.asarray([[i, i] for i in x])",
             "lambda x: dpnp.vstack([x, x]).T",
             "lambda x: (dpnp.asarray([(i, i) for i in x], ["

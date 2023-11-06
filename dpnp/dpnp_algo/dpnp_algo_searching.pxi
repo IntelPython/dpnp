@@ -55,7 +55,7 @@ cpdef utils.dpnp_descriptor dpnp_argmax(utils.dpnp_descriptor in_array1):
 
     in_array1_obj = in_array1.get_array()
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = (1,)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
                                                                        kernel_data.return_type,
@@ -91,7 +91,7 @@ cpdef utils.dpnp_descriptor dpnp_argmin(utils.dpnp_descriptor in_array1):
 
     in_array1_obj = in_array1.get_array()
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = (1,)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
                                                                        kernel_data.return_type,
