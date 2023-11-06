@@ -197,7 +197,8 @@ def _make_binary_func(
 ):
     impl_fn = dpt_binary_fn.get_implementation_function()
     type_resolver_fn = dpt_binary_fn.get_type_result_resolver_function()
-    fn_inplce = dpt_binary_fn.get_implementation_inplace_function()
+    inplce_fn = dpt_binary_fn.get_implementation_inplace_function()
+    acceptance_fn = dpt_binary_fn.get_type_promotion_path_acceptance_function()
 
     def _call_func(src1, src2, dst, sycl_queue, depends=None):
         """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
@@ -213,7 +214,12 @@ def _make_binary_func(
         return impl_fn(src1, src2, dst, sycl_queue, depends)
 
     func = dpt_binary_fn.__class__(
-        name, type_resolver_fn, _call_func, fn_docstring, fn_inplce
+        name,
+        type_resolver_fn,
+        _call_func,
+        fn_docstring,
+        inplce_fn,
+        acceptance_fn,
     )
     return func
 
