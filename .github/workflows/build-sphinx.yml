@@ -125,7 +125,7 @@ jobs:
             working-directory: 'dpnp/backend/doc'
 
       - name: Copy backend docs
-        run: cp -r dpnp/backend/doc/html doc/_build/html/backend_doc
+        run: cp -r dpnp/backend/doc/html ${{ env.PUBLISH_DIR }}backend_doc
 
       # https://github.com/marketplace/actions/github-pages-action
       - name: Deploy docs
@@ -136,6 +136,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.PUBLISH_DIR }}
+          keep_files: true # TODO: temporary bug fix https://github.com/IntelPython/dpnp/issues/1620
+          commit_message: ${{ github.event.head_commit.message }}
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
 
       - name: Publish pull-request docs
         if: |
@@ -148,7 +152,6 @@ jobs:
           allow_empty_commit : true
           keep_files: true
           commit_message: ${{ github.event.head_commit.message }}
-          publish_branch: gh-pages
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
 
