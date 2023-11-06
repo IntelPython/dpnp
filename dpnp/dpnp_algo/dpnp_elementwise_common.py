@@ -27,13 +27,7 @@
 # *****************************************************************************
 
 
-from sys import platform
-
-import dpctl.tensor._tensor_impl as ti
-from dpctl.tensor._elementwise_common import (
-    BinaryElementwiseFunc,
-    UnaryElementwiseFunc,
-)
+import dpctl.tensor as dpt
 
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
@@ -175,6 +169,61 @@ def check_nd_call_func(
     )
 
 
+def _make_unary_func(
+    name, dpt_unary_fn, fn_docstring, mkl_fn_to_call=None, mkl_impl_fn=None
+):
+    impl_fn = dpt_unary_fn.get_implementation_function()
+    type_resolver_fn = dpt_unary_fn.get_type_result_resolver_function()
+
+    def _call_func(src, dst, sycl_queue, depends=None):
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
+
+        if mkl_fn_to_call is not None and mkl_fn_to_call(sycl_queue, src, dst):
+            # call pybind11 extension for unary function from OneMKL VM
+            return mkl_impl_fn(sycl_queue, src, dst, depends)
+        return impl_fn(src, dst, sycl_queue, depends)
+
+    func = dpt_unary_fn.__class__(
+        name, type_resolver_fn, _call_func, fn_docstring
+    )
+    return func
+
+
+def _make_binary_func(
+    name, dpt_binary_fn, fn_docstring, mkl_fn_to_call=None, mkl_impl_fn=None
+):
+    impl_fn = dpt_binary_fn.get_implementation_function()
+    type_resolver_fn = dpt_binary_fn.get_type_result_resolver_function()
+    inplce_fn = dpt_binary_fn.get_implementation_inplace_function()
+    acceptance_fn = dpt_binary_fn.get_type_promotion_path_acceptance_function()
+
+    def _call_func(src1, src2, dst, sycl_queue, depends=None):
+        """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+
+        if depends is None:
+            depends = []
+
+        if mkl_fn_to_call is not None and mkl_fn_to_call(
+            sycl_queue, src1, src2, dst
+        ):
+            # call pybind11 extension for binary function from OneMKL VM
+            return mkl_impl_fn(sycl_queue, src1, src2, dst, depends)
+        return impl_fn(src1, src2, dst, sycl_queue, depends)
+
+    func = dpt_binary_fn.__class__(
+        name,
+        type_resolver_fn,
+        _call_func,
+        fn_docstring,
+        inplce_fn,
+        acceptance_fn,
+    )
+    return func
+
+
 _abs_docstring = """
 abs(x, out=None, order='K')
 
@@ -199,21 +248,8 @@ Return:
         precision matches the precision of `x`.
 """
 
-
-def _call_abs(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_abs_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for abs() function from OneMKL VM
-        return vmi._abs(sycl_queue, src, dst, depends)
-    return ti._abs(src, dst, sycl_queue, depends)
-
-
-abs_func = UnaryElementwiseFunc(
-    "abs", ti._abs_result_type, _call_abs, _abs_docstring
+abs_func = _make_unary_func(
+    "abs", dpt.abs, _abs_docstring, vmi._mkl_abs_to_call, vmi._abs
 )
 
 
@@ -253,21 +289,8 @@ Return:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_acos(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_acos_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for acos() function from OneMKL VM
-        return vmi._acos(sycl_queue, src, dst, depends)
-    return ti._acos(src, dst, sycl_queue, depends)
-
-
-acos_func = UnaryElementwiseFunc(
-    "acos", ti._acos_result_type, _call_acos, _acos_docstring
+acos_func = _make_unary_func(
+    "arccos", dpt.acos, _acos_docstring, vmi._mkl_acos_to_call, vmi._acos
 )
 
 
@@ -307,21 +330,8 @@ Return:
         the Type Promotion Rules.
 """
 
-
-def _call_acosh(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_acosh_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for acosh() function from OneMKL VM
-        return vmi._acosh(sycl_queue, src, dst, depends)
-    return ti._acosh(src, dst, sycl_queue, depends)
-
-
-acosh_func = UnaryElementwiseFunc(
-    "acosh", ti._acosh_result_type, _call_acosh, _acosh_docstring
+acosh_func = _make_unary_func(
+    "arccosh", dpt.acosh, _acosh_docstring, vmi._mkl_acosh_to_call, vmi._acosh
 )
 
 
@@ -340,7 +350,7 @@ def dpnp_acosh(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_add_docstring_ = """
+_add_docstring = """
 add(x1, x2, out=None, order="K")
 
 Calculates the sum for each element `x1_i` of the input array `x1` with
@@ -363,21 +373,8 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_add(src1, src2, dst, sycl_queue, depends=None):
-    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_add_to_call(sycl_queue, src1, src2, dst):
-        # call pybind11 extension for add() function from OneMKL VM
-        return vmi._add(sycl_queue, src1, src2, dst, depends)
-    return ti._add(src1, src2, dst, sycl_queue, depends)
-
-
-add_func = BinaryElementwiseFunc(
-    "add", ti._add_result_type, _call_add, _add_docstring_, ti._add_inplace
+add_func = _make_binary_func(
+    "add", dpt.add, _add_docstring, vmi._mkl_add_to_call, vmi._add
 )
 
 
@@ -420,21 +417,8 @@ Return:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_asin(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_asin_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for asin() function from OneMKL VM
-        return vmi._asin(sycl_queue, src, dst, depends)
-    return ti._asin(src, dst, sycl_queue, depends)
-
-
-asin_func = UnaryElementwiseFunc(
-    "asin", ti._asin_result_type, _call_asin, _asin_docstring
+asin_func = _make_unary_func(
+    "arcsin", dpt.asin, _asin_docstring, vmi._mkl_asin_to_call, vmi._asin
 )
 
 
@@ -474,21 +458,8 @@ Return:
         the Type Promotion Rules.
 """
 
-
-def _call_asinh(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_asinh_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for asinh() function from OneMKL VM
-        return vmi._asinh(sycl_queue, src, dst, depends)
-    return ti._asinh(src, dst, sycl_queue, depends)
-
-
-asinh_func = UnaryElementwiseFunc(
-    "asinh", ti._asinh_result_type, _call_asinh, _asinh_docstring
+asinh_func = _make_unary_func(
+    "arcsinh", dpt.asinh, _asinh_docstring, vmi._mkl_asinh_to_call, vmi._asinh
 )
 
 
@@ -528,21 +499,8 @@ Return:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_atan(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_atan_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for atan() function from OneMKL VM
-        return vmi._atan(sycl_queue, src, dst, depends)
-    return ti._atan(src, dst, sycl_queue, depends)
-
-
-atan_func = UnaryElementwiseFunc(
-    "atan", ti._atan_result_type, _call_atan, _atan_docstring
+atan_func = _make_unary_func(
+    "arctan", dpt.atan, _atan_docstring, vmi._mkl_atan_to_call, vmi._atan
 )
 
 
@@ -561,7 +519,7 @@ def dpnp_atan(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_atan2_docstring_ = """
+_atan2_docstring = """
 atan2(x1, x2, out=None, order="K")
 
 Calculates the inverse tangent of the quotient `x1_i/x2_i` for each element
@@ -588,24 +546,8 @@ Returns:
         determined by Type Promotion Rules.
 """
 
-
-def _call_atan2(src1, src2, dst, sycl_queue, depends=None):
-    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_atan2_to_call(sycl_queue, src1, src2, dst):
-        # call pybind11 extension for atan2() function from OneMKL VM
-        return vmi._atan2(sycl_queue, src1, src2, dst, depends)
-    return ti._atan2(src1, src2, dst, sycl_queue, depends)
-
-
-atan2_func = BinaryElementwiseFunc(
-    "atan2",
-    ti._atan2_result_type,
-    _call_atan2,
-    _atan2_docstring_,
+atan2_func = _make_binary_func(
+    "arctan2", dpt.atan2, _atan2_docstring, vmi._mkl_atan2_to_call, vmi._atan2
 )
 
 
@@ -648,21 +590,8 @@ Return:
         the Type Promotion Rules.
 """
 
-
-def _call_atanh(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_atanh_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for atanh() function from OneMKL VM
-        return vmi._atanh(sycl_queue, src, dst, depends)
-    return ti._atanh(src, dst, sycl_queue, depends)
-
-
-atanh_func = UnaryElementwiseFunc(
-    "atanh", ti._atanh_result_type, _call_atanh, _atanh_docstring
+atanh_func = _make_unary_func(
+    "arctanh", dpt.atanh, _atanh_docstring, vmi._mkl_atanh_to_call, vmi._atanh
 )
 
 
@@ -681,7 +610,7 @@ def dpnp_atanh(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_bitwise_and_docstring_ = """
+_bitwise_and_docstring = """
 bitwise_and(x1, x2, out=None, order='K')
 
 Computes the bitwise AND of the underlying binary representation of each
@@ -706,12 +635,8 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-bitwise_and_func = BinaryElementwiseFunc(
-    "bitwise_and",
-    ti._bitwise_and_result_type,
-    ti._bitwise_and,
-    _bitwise_and_docstring_,
+bitwise_and_func = _make_binary_func(
+    "bitwise_and", dpt.bitwise_and, _bitwise_and_docstring
 )
 
 
@@ -729,7 +654,7 @@ def dpnp_bitwise_and(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_bitwise_or_docstring_ = """
+_bitwise_or_docstring = """
 bitwise_or(x1, x2, out=None, order='K')
 
 Computes the bitwise OR of the underlying binary representation of each
@@ -754,12 +679,8 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-bitwise_or_func = BinaryElementwiseFunc(
-    "bitwise_or",
-    ti._bitwise_or_result_type,
-    ti._bitwise_or,
-    _bitwise_or_docstring_,
+bitwise_or_func = _make_binary_func(
+    "bitwise_or", dpt.bitwise_or, _bitwise_or_docstring
 )
 
 
@@ -777,7 +698,7 @@ def dpnp_bitwise_or(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_bitwise_xor_docstring_ = """
+_bitwise_xor_docstring = """
 bitwise_xor(x1, x2, out=None, order='K')
 
 Computes the bitwise XOR of the underlying binary representation of each
@@ -802,12 +723,8 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-bitwise_xor_func = BinaryElementwiseFunc(
-    "bitwise_xor",
-    ti._bitwise_xor_result_type,
-    ti._bitwise_xor,
-    _bitwise_xor_docstring_,
+bitwise_xor_func = _make_binary_func(
+    "bitwise_xor", dpt.bitwise_xor, _bitwise_xor_docstring
 )
 
 
@@ -846,21 +763,8 @@ Return:
         The returned array has the same data type as `x`.
 """
 
-
-def _call_ceil(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_ceil_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for ceil() function from OneMKL VM
-        return vmi._ceil(sycl_queue, src, dst, depends)
-    return ti._ceil(src, dst, sycl_queue, depends)
-
-
-ceil_func = UnaryElementwiseFunc(
-    "ceil", ti._ceil_result_type, _call_ceil, _ceil_docstring
+ceil_func = _make_unary_func(
+    "ceil", dpt.ceil, _ceil_docstring, vmi._mkl_ceil_to_call, vmi._ceil
 )
 
 
@@ -898,21 +802,8 @@ Return:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_cos(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_cos_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for cos() function from OneMKL VM
-        return vmi._cos(sycl_queue, src, dst, depends)
-    return ti._cos(src, dst, sycl_queue, depends)
-
-
-cos_func = UnaryElementwiseFunc(
-    "cos", ti._cos_result_type, _call_cos, _cos_docstring
+cos_func = _make_unary_func(
+    "cos", dpt.cos, _cos_docstring, vmi._mkl_cos_to_call, vmi._cos
 )
 
 
@@ -951,21 +842,8 @@ Return:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_cosh(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_cosh_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for cosh() function from OneMKL VM
-        return vmi._cosh(sycl_queue, src, dst, depends)
-    return ti._cosh(src, dst, sycl_queue, depends)
-
-
-cosh_func = UnaryElementwiseFunc(
-    "cosh", ti._cosh_result_type, _call_cosh, _cosh_docstring
+cosh_func = _make_unary_func(
+    "cosh", dpt.cosh, _cosh_docstring, vmi._mkl_cosh_to_call, vmi._cosh
 )
 
 
@@ -1004,21 +882,8 @@ Return:
         The returned array has the same data type as `x`.
 """
 
-
-def _call_conj(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_conj_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for conj() function from OneMKL VM
-        return vmi._conj(sycl_queue, src, dst, depends)
-    return ti._conj(src, dst, sycl_queue, depends)
-
-
-conj_func = UnaryElementwiseFunc(
-    "conj", ti._conj_result_type, _call_conj, _conj_docstring
+conj_func = _make_unary_func(
+    "conj", dpt.conj, _conj_docstring, vmi._mkl_conj_to_call, vmi._conj
 )
 
 
@@ -1036,7 +901,7 @@ def dpnp_conj(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_divide_docstring_ = """
+_divide_docstring = """
 divide(x1, x2, out=None, order="K")
 
 Calculates the ratio for each element `x1_i` of the input array `x1` with
@@ -1059,24 +924,8 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_divide(src1, src2, dst, sycl_queue, depends=None):
-    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_div_to_call(sycl_queue, src1, src2, dst):
-        # call pybind11 extension for div() function from OneMKL VM
-        return vmi._div(sycl_queue, src1, src2, dst, depends)
-    return ti._divide(src1, src2, dst, sycl_queue, depends)
-
-
-divide_func = BinaryElementwiseFunc(
-    "divide",
-    ti._divide_result_type,
-    _call_divide,
-    _divide_docstring_,
+divide_func = _make_binary_func(
+    "divide", dpt.divide, _divide_docstring, vmi._mkl_div_to_call, vmi._div
 )
 
 
@@ -1098,9 +947,9 @@ def dpnp_divide(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_equal_docstring_ = """
-
+_equal_docstring = """
 equal(x1, x2, out=None, order="K")
+
 Calculates equality results for each element `x1_i` of
 the input array `x1` the respective element `x2_i` of the input array `x2`.
 
@@ -1121,10 +970,7 @@ Returns:
         The data type of the returned array is determined by the Type Promotion Rules.
 """
 
-
-equal_func = BinaryElementwiseFunc(
-    "equal", ti._equal_result_type, ti._equal, _equal_docstring_
-)
+equal_func = _make_binary_func("equal", dpt.equal, _equal_docstring)
 
 
 def dpnp_equal(x1, x2, out=None, order="K"):
@@ -1162,21 +1008,8 @@ Return:
         the Type Promotion Rules.
 """
 
-
-def _call_exp(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_exp_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for exp() function from OneMKL VM
-        return vmi._exp(sycl_queue, src, dst, depends)
-    return ti._exp(src, dst, sycl_queue, depends)
-
-
-exp_func = UnaryElementwiseFunc(
-    "exp", ti._exp_result_type, _call_exp, _exp_docstring
+exp_func = _make_unary_func(
+    "exp", dpt.exp, _exp_docstring, vmi._mkl_exp_to_call, vmi._exp
 )
 
 
@@ -1218,21 +1051,8 @@ Return:
         Promotion Rules.
 """
 
-
-def _call_expm1(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_expm1_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for expm1() function from OneMKL VM
-        return vmi._expm1(sycl_queue, src, dst, depends)
-    return ti._expm1(src, dst, sycl_queue, depends)
-
-
-expm1_func = UnaryElementwiseFunc(
-    "expm1", ti._expm1_result_type, _call_expm1, _expm1_docstring
+expm1_func = _make_unary_func(
+    "expm1", dpt.expm1, _expm1_docstring, vmi._mkl_expm1_to_call, vmi._expm1
 )
 
 
@@ -1272,21 +1092,8 @@ Return:
         The returned array has the same data type as `x`.
 """
 
-
-def _call_floor(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_floor_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for floor() function from OneMKL VM
-        return vmi._floor(sycl_queue, src, dst, depends)
-    return ti._floor(src, dst, sycl_queue, depends)
-
-
-floor_func = UnaryElementwiseFunc(
-    "floor", ti._floor_result_type, _call_floor, _floor_docstring
+floor_func = _make_unary_func(
+    "floor", dpt.floor, _floor_docstring, vmi._mkl_floor_to_call, vmi._floor
 )
 
 
@@ -1304,11 +1111,13 @@ def dpnp_floor(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_floor_divide_docstring_ = """
+_floor_divide_docstring = """
 floor_divide(x1, x2, out=None, order="K")
+
 Calculates the ratio for each element `x1_i` of the input array `x1` with
 the respective element `x2_i` of the input array `x2` to the greatest
 integer-value number that is not greater than the division result.
+
 Args:
     x1 (dpnp.ndarray):
         First input array, expected to have numeric data type.
@@ -1327,12 +1136,8 @@ Returns:
         Promotion Rules
 """
 
-
-floor_divide_func = BinaryElementwiseFunc(
-    "floor_divide",
-    ti._floor_divide_result_type,
-    ti._floor_divide,
-    _floor_divide_docstring_,
+floor_divide_func = _make_binary_func(
+    "floor_divide", dpt.floor_divide, _floor_divide_docstring
 )
 
 
@@ -1350,7 +1155,7 @@ def dpnp_floor_divide(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_greater_docstring_ = """
+_greater_docstring = """
 greater(x1, x2, out=None, order="K")
 
 Calculates the greater-than results for each element `x1_i` of
@@ -1373,10 +1178,7 @@ Returns:
         The data type of the returned array is determined by the Type Promotion Rules.
 """
 
-
-greater_func = BinaryElementwiseFunc(
-    "greater", ti._greater_result_type, ti._greater, _greater_docstring_
-)
+greater_func = _make_binary_func("greater", dpt.greater, _greater_docstring)
 
 
 def dpnp_greater(x1, x2, out=None, order="K"):
@@ -1393,7 +1195,7 @@ def dpnp_greater(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_greater_equal_docstring_ = """
+_greater_equal_docstring = """
 greater_equal(x1, x2, out=None, order="K")
 
 Calculates the greater-than or equal-to results for each element `x1_i` of
@@ -1416,12 +1218,8 @@ Returns:
         The data type of the returned array is determined by the Type Promotion Rules.
 """
 
-
-greater_equal_func = BinaryElementwiseFunc(
-    "greater_equal",
-    ti._greater_equal_result_type,
-    ti._greater_equal,
-    _greater_equal_docstring_,
+greater_equal_func = _make_binary_func(
+    "greater_equal", dpt.greater_equal, _greater_equal_docstring
 )
 
 
@@ -1439,10 +1237,12 @@ def dpnp_greater_equal(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_hypot_docstring_ = """
+_hypot_docstring = """
 hypot(x1, x2, out=None, order="K")
+
 Calculates the hypotenuse for a right triangle with "legs" `x1_i` and `x2_i` of
 input arrays `x1` and `x2`.
+
 Args:
     x1 (dpnp.ndarray):
         First input array, expected to have a real-valued data type.
@@ -1460,24 +1260,8 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_hypot(src1, src2, dst, sycl_queue, depends=None):
-    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_hypot_to_call(sycl_queue, src1, src2, dst):
-        # call pybind11 extension for hypot() function from OneMKL VM
-        return vmi._hypot(sycl_queue, src1, src2, dst, depends)
-    return ti._hypot(src1, src2, dst, sycl_queue, depends)
-
-
-hypot_func = BinaryElementwiseFunc(
-    "hypot",
-    ti._hypot_result_type,
-    _call_hypot,
-    _hypot_docstring_,
+hypot_func = _make_binary_func(
+    "hypot", dpt.hypot, _hypot_docstring, vmi._mkl_hypot_to_call, vmi._hypot
 )
 
 
@@ -1522,10 +1306,7 @@ Returns:
         with the same floating-point precision as complex input.
 """
 
-
-imag_func = UnaryElementwiseFunc(
-    "imag", ti._imag_result_type, ti._imag, _imag_docstring
-)
+imag_func = _make_unary_func("imag", dpt.imag, _imag_docstring)
 
 
 def dpnp_imag(x, out=None, order="K"):
@@ -1560,13 +1341,7 @@ Return:
         input array.
 """
 
-
-invert_func = UnaryElementwiseFunc(
-    "invert",
-    ti._bitwise_invert_result_type,
-    ti._bitwise_invert,
-    _invert_docstring,
-)
+invert_func = _make_unary_func("invert", dpt.bitwise_invert, _invert_docstring)
 
 
 def dpnp_invert(x, out=None, order="K"):
@@ -1601,10 +1376,7 @@ Returns:
         The data type of the returned array is `bool`.
 """
 
-
-isfinite_func = UnaryElementwiseFunc(
-    "isfinite", ti._isfinite_result_type, ti._isfinite, _isfinite_docstring
-)
+isfinite_func = _make_unary_func("isfinite", dpt.isfinite, _isfinite_docstring)
 
 
 def dpnp_isfinite(x, out=None, order="K"):
@@ -1638,10 +1410,7 @@ Returns:
         False otherwise. The data type of the returned array is `bool`.
 """
 
-
-isinf_func = UnaryElementwiseFunc(
-    "isinf", ti._isinf_result_type, ti._isinf, _isinf_docstring
-)
+isinf_func = _make_unary_func("isinf", dpt.isinf, _isinf_docstring)
 
 
 def dpnp_isinf(x, out=None, order="K"):
@@ -1675,10 +1444,7 @@ Returns:
         The data type of the returned array is `bool`.
 """
 
-
-isnan_func = UnaryElementwiseFunc(
-    "isnan", ti._isnan_result_type, ti._isnan, _isnan_docstring
-)
+isnan_func = _make_unary_func("isnan", dpt.isnan, _isnan_docstring)
 
 
 def dpnp_isnan(x, out=None, order="K"):
@@ -1692,7 +1458,7 @@ def dpnp_isnan(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_left_shift_docstring_ = """
+_left_shift_docstring = """
 left_shift(x1, x2, out=None, order='K')
 
 Shifts the bits of each element `x1_i` of the input array x1 to the left by
@@ -1717,12 +1483,8 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-left_shift_func = BinaryElementwiseFunc(
-    "bitwise_left_shift",
-    ti._bitwise_left_shift_result_type,
-    ti._bitwise_left_shift,
-    _left_shift_docstring_,
+left_shift_func = _make_binary_func(
+    "left_shift", dpt.bitwise_left_shift, _left_shift_docstring
 )
 
 
@@ -1740,7 +1502,7 @@ def dpnp_left_shift(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_less_docstring_ = """
+_less_docstring = """
 less(x1, x2, out=None, order="K")
 
 Calculates the less-than results for each element `x1_i` of
@@ -1763,10 +1525,7 @@ Returns:
         The data type of the returned array is determined by the Type Promotion Rules.
 """
 
-
-less_func = BinaryElementwiseFunc(
-    "less", ti._less_result_type, ti._less, _less_docstring_
-)
+less_func = _make_binary_func("less", dpt.less, _less_docstring)
 
 
 def dpnp_less(x1, x2, out=None, order="K"):
@@ -1783,7 +1542,7 @@ def dpnp_less(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_less_equal_docstring_ = """
+_less_equal_docstring = """
 less_equal(x1, x2, out=None, order="K")
 
 Calculates the less-than or equal-to results for each element `x1_i` of
@@ -1806,12 +1565,8 @@ Returns:
         The data type of the returned array is determined by the Type Promotion Rules.
 """
 
-
-less_equal_func = BinaryElementwiseFunc(
-    "less_equal",
-    ti._less_equal_result_type,
-    ti._less_equal,
-    _less_equal_docstring_,
+less_equal_func = _make_binary_func(
+    "less_equal", dpt.less_equal, _less_equal_docstring
 )
 
 
@@ -1850,21 +1605,8 @@ Return:
         Promotion Rules.
 """
 
-
-def _call_log(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_ln_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for ln() function from OneMKL VM
-        return vmi._ln(sycl_queue, src, dst, depends)
-    return ti._log(src, dst, sycl_queue, depends)
-
-
-log_func = UnaryElementwiseFunc(
-    "log", ti._log_result_type, _call_log, _log_docstring
+log_func = _make_unary_func(
+    "log", dpt.log, _log_docstring, vmi._mkl_ln_to_call, vmi._ln
 )
 
 
@@ -1885,7 +1627,9 @@ def dpnp_log(x, out=None, order="K"):
 
 _log10_docstring = """
 log10(x, out=None, order='K')
+
 Computes the base-10 logarithm for each element `x_i` of input array `x`.
+
 Args:
     x (dpnp.ndarray):
         Input array, expected to have numeric data type.
@@ -1902,21 +1646,8 @@ Return:
         Type Promotion Rules.
 """
 
-
-def _call_log10(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_log10_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for log10() function from OneMKL VM
-        return vmi._log10(sycl_queue, src, dst, depends)
-    return ti._log10(src, dst, sycl_queue, depends)
-
-
-log10_func = UnaryElementwiseFunc(
-    "log10", ti._log10_result_type, _call_log10, _log10_docstring
+log10_func = _make_unary_func(
+    "log10", dpt.log10, _log10_docstring, vmi._mkl_log10_to_call, vmi._log10
 )
 
 
@@ -1937,7 +1668,9 @@ def dpnp_log10(x, out=None, order="K"):
 
 _log1p_docstring = """
 log1p(x, out=None, order='K')
+
 Computes an approximation of `log(1+x)` element-wise.
+
 Args:
     x (dpnp.ndarray):
         Input array, expected to have numeric data type.
@@ -1953,21 +1686,8 @@ Return:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_log1p(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_log1p_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for log1p() function from OneMKL VM
-        return vmi._log1p(sycl_queue, src, dst, depends)
-    return ti._log1p(src, dst, sycl_queue, depends)
-
-
-log1p_func = UnaryElementwiseFunc(
-    "log1p", ti._log1p_result_type, _call_log1p, _log1p_docstring
+log1p_func = _make_unary_func(
+    "log1p", dpt.log1p, _log1p_docstring, vmi._mkl_log1p_to_call, vmi._log1p
 )
 
 
@@ -1988,7 +1708,9 @@ def dpnp_log1p(x, out=None, order="K"):
 
 _log2_docstring = """
 log2(x, out=None, order='K')
+
 Computes the base-2 logarithm for each element `x_i` of input array `x`.
+
 Args:
     x (dpnp.ndarray):
         Input array, expected to have numeric data type.
@@ -2005,21 +1727,8 @@ Return:
         Type Promotion Rules.
 """
 
-
-def _call_log2(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_log2_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for log2() function from OneMKL VM
-        return vmi._log2(sycl_queue, src, dst, depends)
-    return ti._log2(src, dst, sycl_queue, depends)
-
-
-log2_func = UnaryElementwiseFunc(
-    "log2", ti._log2_result_type, _call_log2, _log2_docstring
+log2_func = _make_unary_func(
+    "log2", dpt.log2, _log2_docstring, vmi._mkl_log2_to_call, vmi._log2
 )
 
 
@@ -2038,7 +1747,7 @@ def dpnp_log2(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_logaddexp_docstring_ = """
+_logaddexp_docstring = """
 logaddexp(x1, x2, out=None, order="K")
 
 Calculates the natural logarithm of the sum of exponentiations for each element
@@ -2067,12 +1776,8 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-logaddexp_func = BinaryElementwiseFunc(
-    "logaddexp",
-    ti._logaddexp_result_type,
-    ti._logaddexp,
-    _logaddexp_docstring_,
+logaddexp_func = _make_binary_func(
+    "logaddexp", dpt.logaddexp, _logaddexp_docstring
 )
 
 
@@ -2090,7 +1795,7 @@ def dpnp_logaddexp(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_logical_and_docstring_ = """
+_logical_and_docstring = """
 logical_and(x1, x2, out=None, order='K')
 
 Computes the logical AND for each element `x1_i` of the input array `x1`
@@ -2112,12 +1817,8 @@ Returns:
         An array containing the element-wise logical AND results.
 """
 
-
-logical_and_func = BinaryElementwiseFunc(
-    "logical_and",
-    ti._logical_and_result_type,
-    ti._logical_and,
-    _logical_and_docstring_,
+logical_and_func = _make_binary_func(
+    "logical_and", dpt.logical_and, _logical_and_docstring
 )
 
 
@@ -2135,9 +1836,11 @@ def dpnp_logical_and(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_logical_not_docstring_ = """
+_logical_not_docstring = """
 logical_not(x, out=None, order='K')
+
 Computes the logical NOT for each element `x_i` of input array `x`.
+
 Args:
     x (dpnp.ndarray):
         Input array.
@@ -2152,12 +1855,8 @@ Return:
         An array containing the element-wise logical NOT results.
 """
 
-
-logical_not_func = UnaryElementwiseFunc(
-    "logical_not",
-    ti._logical_not_result_type,
-    ti._logical_not,
-    _logical_not_docstring_,
+logical_not_func = _make_unary_func(
+    "logical_not", dpt.logical_not, _logical_not_docstring
 )
 
 
@@ -2172,7 +1871,7 @@ def dpnp_logical_not(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_logical_or_docstring_ = """
+_logical_or_docstring = """
 logical_or(x1, x2, out=None, order='K')
 
 Computes the logical OR for each element `x1_i` of the input array `x1`
@@ -2194,12 +1893,8 @@ Returns:
         An array containing the element-wise logical OR results.
 """
 
-
-logical_or_func = BinaryElementwiseFunc(
-    "logical_or",
-    ti._logical_or_result_type,
-    ti._logical_or,
-    _logical_or_docstring_,
+logical_or_func = _make_binary_func(
+    "logical_or", dpt.logical_or, _logical_or_docstring
 )
 
 
@@ -2217,7 +1912,7 @@ def dpnp_logical_or(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_logical_xor_docstring_ = """
+_logical_xor_docstring = """
 logical_xor(x1, x2, out=None, order='K')
 
 Computes the logical XOR for each element `x1_i` of the input array `x1`
@@ -2239,11 +1934,8 @@ Returns:
         An array containing the element-wise logical XOR results.
 """
 
-logical_xor_func = BinaryElementwiseFunc(
-    "logical_xor",
-    ti._logical_xor_result_type,
-    ti._logical_xor,
-    _logical_xor_docstring_,
+logical_xor_func = _make_binary_func(
+    "logical_xor", dpt.logical_xor, _logical_xor_docstring
 )
 
 
@@ -2261,7 +1953,7 @@ def dpnp_logical_xor(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_maximum_docstring_ = """
+_maximum_docstring = """
 maximum(x1, x2, out=None, order='K')
 
 Compares two input arrays `x1` and `x2` and returns
@@ -2284,13 +1976,7 @@ Returns:
         the returned array is determined by the Type Promotion Rules.
 """
 
-
-maximum_func = BinaryElementwiseFunc(
-    "maximum",
-    ti._maximum_result_type,
-    ti._maximum,
-    _maximum_docstring_,
-)
+maximum_func = _make_binary_func("maximum", dpt.maximum, _maximum_docstring)
 
 
 def dpnp_maximum(x1, x2, out=None, order="K"):
@@ -2307,7 +1993,7 @@ def dpnp_maximum(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_minimum_docstring_ = """
+_minimum_docstring = """
 minimum(x1, x2, out=None, order='K')
 
 Compares two input arrays `x1` and `x2` and returns
@@ -2330,13 +2016,7 @@ Returns:
         the returned array is determined by the Type Promotion Rules.
 """
 
-
-minimum_func = BinaryElementwiseFunc(
-    "minimum",
-    ti._minimum_result_type,
-    ti._minimum,
-    _minimum_docstring_,
-)
+minimum_func = _make_binary_func("minimum", dpt.minimum, _minimum_docstring)
 
 
 def dpnp_minimum(x1, x2, out=None, order="K"):
@@ -2353,7 +2033,7 @@ def dpnp_minimum(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_multiply_docstring_ = """
+_multiply_docstring = """
 multiply(x1, x2, out=None, order="K")
 
 Calculates the product for each element `x1_i` of the input array `x1`
@@ -2376,25 +2056,12 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_multiply(src1, src2, dst, sycl_queue, depends=None):
-    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_mul_to_call(sycl_queue, src1, src2, dst):
-        # call pybind11 extension for mul() function from OneMKL VM
-        return vmi._mul(sycl_queue, src1, src2, dst, depends)
-    return ti._multiply(src1, src2, dst, sycl_queue, depends)
-
-
-multiply_func = BinaryElementwiseFunc(
+multiply_func = _make_binary_func(
     "multiply",
-    ti._multiply_result_type,
-    _call_multiply,
-    _multiply_docstring_,
-    ti._multiply_inplace,
+    dpt.multiply,
+    _multiply_docstring,
+    vmi._mkl_mul_to_call,
+    vmi._mul,
 )
 
 
@@ -2435,10 +2102,7 @@ Returns:
         An array containing the negative of `x`.
 """
 
-
-negative_func = UnaryElementwiseFunc(
-    "negative", ti._negative_result_type, ti._negative, _negative_docstring
-)
+negative_func = _make_unary_func("negative", dpt.negative, _negative_docstring)
 
 
 def dpnp_negative(x, out=None, order="K"):
@@ -2459,7 +2123,7 @@ def dpnp_negative(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_not_equal_docstring_ = """
+_not_equal_docstring = """
 not_equal(x1, x2, out=None, order="K")
 
 Calculates inequality results for each element `x1_i` of
@@ -2482,11 +2146,8 @@ Returns:
         The data type of the returned array is determined by the Type Promotion Rules.
 """
 
-not_equal_func = BinaryElementwiseFunc(
-    "not_equal",
-    ti._not_equal_result_type,
-    ti._not_equal,
-    _not_equal_docstring_,
+not_equal_func = _make_binary_func(
+    "not_equal", dpt.not_equal, _not_equal_docstring
 )
 
 
@@ -2523,10 +2184,7 @@ Returns:
         An array containing the positive of `x`.
 """
 
-
-positive_func = UnaryElementwiseFunc(
-    "positive", ti._positive_result_type, ti._positive, _positive_docstring
-)
+positive_func = _make_unary_func("positive", dpt.positive, _positive_docstring)
 
 
 def dpnp_positive(x, out=None, order="K"):
@@ -2546,7 +2204,7 @@ def dpnp_positive(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_power_docstring_ = """
+_power_docstring = """
 power(x1, x2, out=None, order="K")
 
 Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
@@ -2570,24 +2228,8 @@ Returns:
         The data type of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_pow(src1, src2, dst, sycl_queue, depends=None):
-    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    # TODO: remove this check when OneMKL is fixed on Windows
-    is_win = platform.startswith("win")
-
-    if not is_win and vmi._mkl_pow_to_call(sycl_queue, src1, src2, dst):
-        # call pybind11 extension for pow() function from OneMKL VM
-        return vmi._pow(sycl_queue, src1, src2, dst, depends)
-    return ti._pow(src1, src2, dst, sycl_queue, depends)
-
-
-pow_func = BinaryElementwiseFunc(
-    "pow", ti._pow_result_type, _call_pow, _power_docstring_
+power_func = _make_binary_func(
+    "power", dpt.pow, _power_docstring, vmi._mkl_pow_to_call, vmi._pow
 )
 
 
@@ -2603,7 +2245,7 @@ def dpnp_power(x1, x2, out=None, order="K"):
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
-    res_usm = pow_func(
+    res_usm = power_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
     return dpnp_array._create_from_usm_ndarray(res_usm)
@@ -2629,10 +2271,7 @@ Returns:
         The returned array has the same data type as `x`.
 """
 
-
-proj_func = UnaryElementwiseFunc(
-    "proj", ti._proj_result_type, ti._proj, _proj_docstring
-)
+proj_func = _make_unary_func("proj", dpt.proj, _proj_docstring)
 
 
 def dpnp_proj(x, out=None, order="K"):
@@ -2669,10 +2308,7 @@ Returns:
         with the same floating-point precision as complex input.
 """
 
-
-real_func = UnaryElementwiseFunc(
-    "real", ti._real_result_type, ti._real, _real_docstring
-)
+real_func = _make_unary_func("real", dpt.real, _real_docstring)
 
 
 def dpnp_real(x, out=None, order="K"):
@@ -2686,11 +2322,13 @@ def dpnp_real(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_remainder_docstring_ = """
+_remainder_docstring = """
 remainder(x1, x2, out=None, order='K')
+
 Calculates the remainder of division for each element `x1_i` of the input array
 `x1` with the respective element `x2_i` of the input array `x2`.
 This function is equivalent to the Python modulus operator.
+
 Args:
     x1 (dpnp.ndarray):
         First input array, expected to have a real-valued data type.
@@ -2708,12 +2346,8 @@ Returns:
         the returned array is determined by the Type Promotion Rules.
 """
 
-
-remainder_func = BinaryElementwiseFunc(
-    "remainder",
-    ti._remainder_result_type,
-    ti._remainder,
-    _remainder_docstring_,
+remainder_func = _make_binary_func(
+    "remainder", dpt.remainder, _remainder_docstring
 )
 
 
@@ -2729,7 +2363,7 @@ def dpnp_remainder(x1, x2, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_right_shift_docstring_ = """
+_right_shift_docstring = """
 right_shift(x1, x2, out=None, order='K')
 
 Shifts the bits of each element `x1_i` of the input array `x1` to the right
@@ -2753,12 +2387,8 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-right_shift_func = BinaryElementwiseFunc(
-    "bitwise_right_shift",
-    ti._bitwise_right_shift_result_type,
-    ti._bitwise_right_shift,
-    _right_shift_docstring_,
+right_shift_func = _make_binary_func(
+    "right_shift", dpt.bitwise_right_shift, _right_shift_docstring
 )
 
 
@@ -2778,8 +2408,10 @@ def dpnp_right_shift(x1, x2, out=None, order="K"):
 
 _round_docstring = """
 round(x, out=None, order='K')
+
 Rounds each element `x_i` of the input array `x` to
 the nearest integer-valued number.
+
 Args:
     x (dpnp.ndarray):
         Input array, expected to have numeric data type.
@@ -2795,21 +2427,8 @@ Return:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_round(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_round_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for round() function from OneMKL VM
-        return vmi._round(sycl_queue, src, dst, depends)
-    return ti._round(src, dst, sycl_queue, depends)
-
-
-round_func = UnaryElementwiseFunc(
-    "round", ti._round_result_type, _call_round, _round_docstring
+round_func = _make_unary_func(
+    "round", dpt.round, _round_docstring, vmi._mkl_round_to_call, vmi._round
 )
 
 
@@ -2851,10 +2470,7 @@ Returns:
         returned array is determined by the Type Promotion Rules.
 """
 
-
-sign_func = UnaryElementwiseFunc(
-    "sign", ti._sign_result_type, ti._sign, _sign_docstring
-)
+sign_func = _make_unary_func("sign", dpt.sign, _sign_docstring)
 
 
 def dpnp_sign(x, out=None, order="K"):
@@ -2893,10 +2509,7 @@ Returns:
         must have a data type of `bool`.
 """
 
-
-signbit_func = UnaryElementwiseFunc(
-    "signbit", ti._signbit_result_type, ti._signbit, _signbit_docstring
-)
+signbit_func = _make_unary_func("signbit", dpt.signbit, _signbit_docstring)
 
 
 def dpnp_signbit(x, out=None, order="K"):
@@ -2930,21 +2543,8 @@ Return:
         returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_sin(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_sin_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for sin() function from OneMKL VM
-        return vmi._sin(sycl_queue, src, dst, depends)
-    return ti._sin(src, dst, sycl_queue, depends)
-
-
-sin_func = UnaryElementwiseFunc(
-    "sin", ti._sin_result_type, _call_sin, _sin_docstring
+sin_func = _make_unary_func(
+    "sin", dpt.sin, _sin_docstring, vmi._mkl_sin_to_call, vmi._sin
 )
 
 
@@ -2983,21 +2583,8 @@ Return:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_sinh(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_sinh_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for sinh() function from OneMKL VM
-        return vmi._sinh(sycl_queue, src, dst, depends)
-    return ti._sinh(src, dst, sycl_queue, depends)
-
-
-sinh_func = UnaryElementwiseFunc(
-    "sinh", ti._sinh_result_type, _call_sinh, _sinh_docstring
+sinh_func = _make_unary_func(
+    "sinh", dpt.sinh, _sinh_docstring, vmi._mkl_sinh_to_call, vmi._sinh
 )
 
 
@@ -3016,9 +2603,11 @@ def dpnp_sinh(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_sqrt_docstring_ = """
+_sqrt_docstring = """
 sqrt(x, out=None, order='K')
+
 Computes the non-negative square-root for each element `x_i` for input array `x`.
+
 Args:
     x (dpnp.ndarray):
         Input array.
@@ -3033,24 +2622,8 @@ Return:
         An array containing the element-wise square-root results.
 """
 
-
-def _call_sqrt(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_sqrt_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for sqrt() function from OneMKL VM
-        return vmi._sqrt(sycl_queue, src, dst, depends)
-    return ti._sqrt(src, dst, sycl_queue, depends)
-
-
-sqrt_func = UnaryElementwiseFunc(
-    "sqrt",
-    ti._sqrt_result_type,
-    _call_sqrt,
-    _sqrt_docstring_,
+sqrt_func = _make_unary_func(
+    "sqrt", dpt.sqrt, _sqrt_docstring, vmi._mkl_sqrt_to_call, vmi._sqrt
 )
 
 
@@ -3069,9 +2642,11 @@ def dpnp_sqrt(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_square_docstring_ = """
+_square_docstring = """
 square(x, out=None, order='K')
+
 Computes `x_i**2` (or `x_i*x_i`) for each element `x_i` of input array `x`.
+
 Args:
     x (dpnp.ndarray):
         Input array.
@@ -3086,24 +2661,8 @@ Return:
         An array containing the element-wise square results.
 """
 
-
-def _call_square(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_sqr_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for sqr() function from OneMKL VM
-        return vmi._sqr(sycl_queue, src, dst, depends)
-    return ti._square(src, dst, sycl_queue, depends)
-
-
-square_func = UnaryElementwiseFunc(
-    "square",
-    ti._square_result_type,
-    _call_square,
-    _square_docstring_,
+square_func = _make_unary_func(
+    "square", dpt.square, _square_docstring, vmi._mkl_sqr_to_call, vmi._sqr
 )
 
 
@@ -3122,7 +2681,7 @@ def dpnp_square(x, out=None, order="K"):
     return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-_subtract_docstring_ = """
+_subtract_docstring = """
 subtract(x1, x2, out=None, order="K")
 
 Calculates the difference between each element `x1_i` of the input
@@ -3145,25 +2704,12 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_subtract(src1, src2, dst, sycl_queue, depends=None):
-    """A callback to register in BinaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_sub_to_call(sycl_queue, src1, src2, dst):
-        # call pybind11 extension for sub() function from OneMKL VM
-        return vmi._sub(sycl_queue, src1, src2, dst, depends)
-    return ti._subtract(src1, src2, dst, sycl_queue, depends)
-
-
-subtract_func = BinaryElementwiseFunc(
+subtract_func = _make_binary_func(
     "subtract",
-    ti._subtract_result_type,
-    _call_subtract,
-    _subtract_docstring_,
-    ti._subtract_inplace,
+    dpt.subtract,
+    _subtract_docstring,
+    vmi._mkl_sub_to_call,
+    vmi._sub,
 )
 
 
@@ -3216,21 +2762,8 @@ Return:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_tan(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_tan_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for tan() function from OneMKL VM
-        return vmi._tan(sycl_queue, src, dst, depends)
-    return ti._tan(src, dst, sycl_queue, depends)
-
-
-tan_func = UnaryElementwiseFunc(
-    "tan", ti._tan_result_type, _call_tan, _tan_docstring
+tan_func = _make_unary_func(
+    "tan", dpt.tan, _tan_docstring, vmi._mkl_tan_to_call, vmi._tan
 )
 
 
@@ -3269,21 +2802,8 @@ Return:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_tanh(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_tanh_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for tanh() function from OneMKL VM
-        return vmi._tanh(sycl_queue, src, dst, depends)
-    return ti._tanh(src, dst, sycl_queue, depends)
-
-
-tanh_func = UnaryElementwiseFunc(
-    "tanh", ti._tanh_result_type, _call_tanh, _tanh_docstring
+tanh_func = _make_unary_func(
+    "tanh", dpt.tanh, _tanh_docstring, vmi._mkl_tanh_to_call, vmi._tanh
 )
 
 
@@ -3325,21 +2845,8 @@ Return:
         of the returned array is determined by the Type Promotion Rules.
 """
 
-
-def _call_trunc(src, dst, sycl_queue, depends=None):
-    """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
-
-    if depends is None:
-        depends = []
-
-    if vmi._mkl_trunc_to_call(sycl_queue, src, dst):
-        # call pybind11 extension for trunc() function from OneMKL VM
-        return vmi._trunc(sycl_queue, src, dst, depends)
-    return ti._trunc(src, dst, sycl_queue, depends)
-
-
-trunc_func = UnaryElementwiseFunc(
-    "trunc", ti._trunc_result_type, _call_trunc, _trunc_docstring
+trunc_func = _make_unary_func(
+    "trunc", dpt.trunc, _trunc_docstring, vmi._mkl_trunc_to_call, vmi._trunc
 )
 
 
