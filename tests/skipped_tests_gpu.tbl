@@ -17,30 +17,6 @@ tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: (dpnp
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray(x).astype(dpnp.int8)]
 
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-copy-data3]
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-cumprod-data4]
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-cumsum-data5]
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-ediff1d-data7]
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-fabs-data8]
-
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-copy-data3]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-cumprod-data4]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-cumsum-data5]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-ediff1d-data7]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-fabs-data8]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nancumprod-data11]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nancumsum-data12]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nanprod-data13]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-nansum-data14]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-prod-data16]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-sum-data18]
-tests/test_sycl_queue.py::test_1in_1out[level_zero:gpu:0-trapz-data19]
-
-tests/test_sycl_queue.py::test_modf[level_zero:gpu:0]
-
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-trapz-data19]
-tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-trapz-data19]
-
 tests/test_umath.py::test_umaths[('divmod', 'ii')]
 tests/test_umath.py::test_umaths[('divmod', 'll')]
 tests/test_umath.py::test_umaths[('divmod', 'ff')]
@@ -83,20 +59,6 @@ tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndicesFrom_param_
 tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndicesFrom_param_1_{shape=(0, 0)}::test_diag_indices_from
 tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndicesFrom_param_2_{shape=(2, 2, 2)}::test_diag_indices_from
 
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_external_prod_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_external_prod_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out_wrong_shape
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_1dim
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_2dim_without_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_2dim
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum_2dim
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_2dim
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_2_{p_shape=(3, 2), shape=(4, 3, 2)}::test_geometric
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_3_{p_shape=(3, 2), shape=(3, 2)}::test_geometric
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_0_{nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
@@ -197,13 +159,6 @@ tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test
 
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_vdot
 
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_out_noncontiguous
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_axis_out_noncontiguous
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_out_noncontiguous
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum_axis_out_noncontiguous
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum_out_noncontiguous
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_axis_out_noncontiguous
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_out_noncontiguous
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_0_{d=2, shape=(4, 3, 2)}::test_normal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_1_{d=2, shape=(3, 2)}::test_normal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_2_{d=4, shape=(4, 3, 2)}::test_normal
@@ -273,6 +228,7 @@ tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_pa
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_6_{order='F', shape=(10, 20, 30)}::test_cub_min
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_max
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_min
+
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_K_strides_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_K_strides_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_K_strides_reshape
@@ -729,6 +685,8 @@ tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_diff
 tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_diff_types[full]
 
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out_wrong_shape
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_ndarray_cumprod_2dim_with_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim_with_n
@@ -736,6 +694,15 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_with
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_arraylike
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_huge_array
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_numpy_array
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_out_noncontiguous
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_1dim
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_2dim_without_axis
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_2dim
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum_2dim
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_2dim
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_arraylike
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_numpy_array
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum_arraylike
@@ -752,14 +719,7 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_3_{axis=(0, 2, 3), shape=(20, 30, 40, 50)}::test_nansum_axes
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodExtra_param_0_{shape=(2, 3, 4)}::test_nansum_out
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodExtra_param_1_{shape=(20, 30, 40)}::test_nansum_out
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_11_{axis=0, func='nanprod', keepdims=True, shape=(20, 30, 40), transpose_axes=False}::test_nansum_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_11_{axis=0, func='nanprod', keepdims=True, shape=(20, 30, 40), transpose_axes=False}::test_nansum_axis_transposed
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_13_{axis=0, func='nanprod', keepdims=False, shape=(2, 3, 4), transpose_axes=False}::test_nansum_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_13_{axis=0, func='nanprod', keepdims=False, shape=(2, 3, 4), transpose_axes=False}::test_nansum_axis_transposed
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_15_{axis=0, func='nanprod', keepdims=False, shape=(20, 30, 40), transpose_axes=False}::test_nansum_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_15_{axis=0, func='nanprod', keepdims=False, shape=(20, 30, 40), transpose_axes=False}::test_nansum_axis_transposed
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_axis_transposed
+
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_period

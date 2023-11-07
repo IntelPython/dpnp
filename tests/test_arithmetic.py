@@ -22,14 +22,12 @@ class TestArithmetic(unittest.TestCase):
 
         return c
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_float_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_nanprod(self, xp, dtype):
         a = xp.array([-2.5, -1.5, xp.nan, 10.5, 1.5, xp.nan], dtype=dtype)
         return xp.nanprod(a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
     def test_nansum(self, xp, dtype):
