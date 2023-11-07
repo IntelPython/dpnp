@@ -40,7 +40,6 @@ __all__ += [
     "dpnp_diag_indices",
     "dpnp_diagonal",
     "dpnp_fill_diagonal",
-    "dpnp_indices",
     "dpnp_put_along_axis",
     "dpnp_putmask",
     "dpnp_select",
@@ -247,40 +246,6 @@ cpdef dpnp_fill_diagonal(dpnp_descriptor x1, val):
 
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
-
-
-cpdef object dpnp_indices(dimensions):
-    len_dimensions = len(dimensions)
-    res_shape = []
-    res_shape.append(len_dimensions)
-    for i in range(len_dimensions):
-        res_shape.append(dimensions[i])
-
-    result = []
-    if len_dimensions == 1:
-        res = []
-        for i in range(dimensions[0]):
-            res.append(i)
-        result.append(res)
-    else:
-        res1 = []
-        for i in range(dimensions[0]):
-            res = []
-            for j in range(dimensions[1]):
-                res.append(i)
-            res1.append(res)
-        result.append(res1)
-
-        res2 = []
-        for i in range(dimensions[0]):
-            res = []
-            for j in range(dimensions[1]):
-                res.append(j)
-            res2.append(res)
-        result.append(res2)
-
-    dpnp_result = dpnp.array(result)
-    return dpnp_result
 
 
 cpdef dpnp_put_along_axis(dpnp_descriptor arr, dpnp_descriptor indices, dpnp_descriptor values, int axis):
