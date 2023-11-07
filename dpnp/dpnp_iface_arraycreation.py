@@ -1173,9 +1173,8 @@ def linspace(
         [`start`, `stop`] or the half-open interval [`start`, `stop`)
         (depending on whether `endpoint` is ``True`` or ``False``).
     step : float, optional
-        Only returned if `retstep` is ``True``
-
-    Size of spacing between samples.
+        Only returned if `retstep` is ``True``.
+        Size of spacing between samples.
 
     See Also
     --------
