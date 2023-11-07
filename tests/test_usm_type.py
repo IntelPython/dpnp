@@ -458,3 +458,9 @@ def test_take(usm_type_x, usm_type_ind):
     assert x.usm_type == usm_type_x
     assert ind.usm_type == usm_type_ind
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_indices(usm_type):
+    x = dp.indices((2,), usm_type=usm_type)
+    assert x.usm_type == usm_type

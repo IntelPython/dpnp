@@ -307,31 +307,73 @@ def fill_diagonal(x1, val, wrap=False):
     return call_origin(numpy.fill_diagonal, x1, val, wrap, dpnp_inplace=True)
 
 
-def indices(dimensions, dtype=int, sparse=False):
+def indices(
+    dimensions,
+    dtype=int,
+    sparse=False,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Return an array representing the indices of a grid.
 
+    Compute an array where the subarrays contain index values 0, 1, …
+    varying only along the corresponding axis.
+
     For full documentation refer to :obj:`numpy.indices`.
 
-    Limitations
-    -----------
-    Parameters `dtype` and `sparse` are supported only with default values.
-    Parameter `dimensions` is supported with len <=2.
+    Parameters
+    ----------
+    dimensions : sequence of ints
+        The shape of the grid.
+
+    dtype : dtype, optional
+        Data type of the result.
+
+    sparse : boolean, optional
+        Return a sparse representation of the grid instead of a dense representation.
+        Default is False.
+
+    Returns
+    -------
+    grid : one dpnp.ndarray or tuple of dpnp.ndarray
+        If sparse is False:
+        Returns one array of grid indices, grid.shape = (len(dimensions),) + tuple(dimensions).
+
+        If sparse is True:
+        Returns a tuple of arrays, with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
+        with dimensions[i] in the ith place.
 
     """
 
-    if not isinstance(dimensions, (tuple, list)):
-        pass
-    elif len(dimensions) > 2 or len(dimensions) == 0:
-        pass
-    elif dtype != int:
-        pass
-    elif sparse:
-        pass
+    dimensions = tuple(dimensions)
+    N = len(dimensions)
+    shape = (1,) * N
+    sycl_queue_normalized = dpnp.get_normalized_queue_device(
+        sycl_queue=sycl_queue, device=device
+    )
+    if sparse:
+        res = ()
     else:
-        return dpnp_indices(dimensions)
-
-    return call_origin(numpy.indices, dimensions, dtype, sparse)
+        res = dpnp.empty(
+            (N,) + dimensions,
+            dtype=dtype,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue_normalized,
+        )
+    for i, dim in enumerate(dimensions):
+        idx = dpnp.arange(
+            dim,
+            dtype=dtype,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue_normalized,
+        ).reshape(shape[:i] + (dim,) + shape[i + 1 :])
+        if sparse:
+            res = res + (idx,)
+        else:
+            res[i] = idx
+    return res
 
 
 def nonzero(x, /):

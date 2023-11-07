@@ -179,10 +179,13 @@ def test_fill_diagonal(array, val):
         "[3, 2]",
     ],
 )
-def test_indices(dimension):
-    expected = numpy.indices(dimension)
-    result = dpnp.indices(dimension)
-    assert_array_equal(expected, result)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize("sparse", [True, False], ids=["True", "False"])
+def test_indices(dimension, dtype, sparse):
+    expected = numpy.indices(dimension, dtype=dtype, sparse=sparse)
+    result = dpnp.indices(dimension, dtype=dtype, sparse=sparse)
+    for Xnp, X in zip(expected, result):
+        assert_array_equal(Xnp, X)
 
 
 @pytest.mark.parametrize(
