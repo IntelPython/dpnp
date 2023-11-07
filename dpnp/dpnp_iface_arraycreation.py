@@ -1260,7 +1260,7 @@ def logspace(
 
     Returns
     -------
-    samples : dpnp.ndarray
+    out: dpnp.ndarray
         num samples, equally spaced on a log scale.
 
     See Also
