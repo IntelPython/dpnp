@@ -11,9 +11,6 @@ tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: (dpnp
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray(x).astype(dpnp.int8)]
 
-tests/test_sycl_queue.py::test_1in_1out[opencl:gpu:0-trapz-data19]
-tests/test_sycl_queue.py::test_1in_1out[opencl:cpu:0-trapz-data19]
-
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_1_{axes=None, norm=None, s=(1, None), shape=(3, 4)}::test_fft2
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_7_{axes=(), norm=None, s=None, shape=(3, 4)}::test_fft2
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft2_param_7_{axes=(), norm=None, s=None, shape=(3, 4)}::test_ifft2
@@ -121,7 +118,6 @@ tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatte
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order_copied
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order_transposed
 
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_min_nan
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_all
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_all_keepdims
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_axis0
@@ -204,10 +200,6 @@ tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid3
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid3
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid4
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid5
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_array_start_stop_axis1
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_one_num_no_endopoint_with_retstep
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_with_retstep
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_zero_num_no_endopoint_with_retstep
 tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_AxisConcatenator_init1
 tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_len
 tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_1
@@ -610,14 +602,7 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_3_{axis=(0, 2, 3), shape=(20, 30, 40, 50)}::test_nansum_axes
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodExtra_param_0_{shape=(2, 3, 4)}::test_nansum_out
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodExtra_param_1_{shape=(20, 30, 40)}::test_nansum_out
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_11_{axis=0, func='nanprod', keepdims=True, shape=(20, 30, 40), transpose_axes=False}::test_nansum_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_11_{axis=0, func='nanprod', keepdims=True, shape=(20, 30, 40), transpose_axes=False}::test_nansum_axis_transposed
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_13_{axis=0, func='nanprod', keepdims=False, shape=(2, 3, 4), transpose_axes=False}::test_nansum_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_13_{axis=0, func='nanprod', keepdims=False, shape=(2, 3, 4), transpose_axes=False}::test_nansum_axis_transposed
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_15_{axis=0, func='nanprod', keepdims=False, shape=(20, 30, 40), transpose_axes=False}::test_nansum_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_15_{axis=0, func='nanprod', keepdims=False, shape=(20, 30, 40), transpose_axes=False}::test_nansum_axis_transposed
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_axis_transposed
+
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_period
@@ -797,19 +782,11 @@ tests/third_party/cupy/random_tests/test_sample.py::TestMultinomial_param_4_{siz
 tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_float1
 tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_goodness_of_fit
 tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_goodness_of_fit_2
-
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_bound_1
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_bound_2
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_goodness_of_fit
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_goodness_of_fit_2
-tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers::test_high_is_none
-tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers::test_normal
-tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers::test_size_is_not_none
 
-tests/third_party/cupy/sorting_tests/test_count.py::TestCount::test_count_nonzero
-tests/third_party/cupy/sorting_tests/test_count.py::TestCount::test_count_nonzero_int_axis
-tests/third_party/cupy/sorting_tests/test_count.py::TestCount::test_count_nonzero_tuple_axis
-tests/third_party/cupy/sorting_tests/test_count.py::TestCount::test_count_nonzero_zero_dim
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_0_{func='argmin', is_module=True, shape=(3, 4)}::test_argminmax_dtype
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_1_{func='argmin', is_module=True, shape=()}::test_argminmax_dtype
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_2_{func='argmin', is_module=False, shape=(3, 4)}::test_argminmax_dtype

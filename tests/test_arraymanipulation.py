@@ -305,7 +305,6 @@ class TestConcatenate:
         dp_res = dpnp.concatenate((dp_a0.T, dp_a1.T, dp_a2.T), axis=0)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
     )
@@ -329,7 +328,6 @@ class TestConcatenate:
         assert_array_equal(dp_out.asnumpy(), np_out)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
     )
@@ -487,7 +485,6 @@ class TestStack:
         dp_res = dpnp.stack(dp_arrays, axis=1)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_out(self, dtype):
         np_a = numpy.array([1, 2, 3], dtype=dtype)
@@ -536,7 +533,6 @@ class TestStack:
         with pytest.raises(TypeError):
             dpnp.stack((x for x in range(3)))
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("arr_dtype", get_all_dtypes())
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
@@ -552,7 +548,6 @@ class TestStack:
         dp_res = dpnp.stack((dp_a, dp_b), axis=1, casting="unsafe", dtype=dtype)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("arr_dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("dtype", [dpnp.bool, dpnp.int32, dpnp.int64])
     def test_invalid_casting_dtype(self, arr_dtype, dtype):
@@ -1050,3 +1045,17 @@ def test_repeat_strided_repeats():
     res = dpnp.repeat(x, reps)
     assert res.shape == x.shape
     assert dpnp.all(res == x)
+
+
+def test_concatenate_out_dtype():
+    x = dpnp.ones((5, 5))
+    out = dpnp.empty_like(x)
+    with pytest.raises(TypeError):
+        dpnp.concatenate([x], out=out, dtype="i4")
+
+
+def test_stack_out_dtype():
+    x = dpnp.ones((5, 5))
+    out = dpnp.empty_like(x)
+    with pytest.raises(TypeError):
+        dpnp.stack([x], out=out, dtype="i4")

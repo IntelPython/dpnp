@@ -452,18 +452,28 @@ def concatenate(
 
     For full documentation refer to :obj:`numpy.concatenate`.
 
+    Parameters
+    ----------
+    arrays : {dpnp.ndarray, usm_ndarray}
+        The arrays must have the same shape, except in the dimension corresponding
+        to axis (the first, by default).
+    axis : int, optional
+        The axis along which the arrays will be joined. If axis is None, arrays are
+        flattened before use. Default is 0.
+    out : dpnp.ndarray, optional
+        If provided, the destination to place the result. The shape must be correct,
+        matching that of what concatenate would have returned if no out argument were
+        specified.
+    dtype : str or dtype
+        If provided, the destination array will have this dtype. Cannot be provided
+        together with out.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur. Defaults to 'same_kind'.
+
     Returns
     -------
     out : dpnp.ndarray
         The concatenated array.
-
-    Limitations
-    -----------
-    Each array in `arrays` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
-    will be raised.
-    Parameters `out` and `dtype` are supported with default value.
-    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -496,25 +506,20 @@ def concatenate(
 
     """
 
-    if out is not None:
-        pass
-    elif dtype is not None:
-        pass
-    elif casting != "same_kind":
-        pass
-    else:
-        usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
-        usm_res = dpt.concat(usm_arrays, axis=axis)
-        return dpnp_array._create_from_usm_ndarray(usm_res)
+    if dtype is not None and out is not None:
+        raise TypeError(
+            "concatenate() only takes `out` or `dtype` as an argument, but both were provided."
+        )
 
-    return call_origin(
-        numpy.concatenate,
-        arrays,
-        axis=axis,
-        out=out,
-        dtype=dtype,
-        casting=casting,
-    )
+    usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
+    usm_res = dpt.concat(usm_arrays, axis=axis)
+    res = dpnp_array._create_from_usm_ndarray(usm_res)
+    if dtype is not None:
+        res = res.astype(dtype, casting=casting, copy=False)
+    elif out is not None:
+        dpnp.copyto(out, res, casting=casting)
+        return out
+    return res
 
 
 def copyto(dst, src, casting="same_kind", where=True):
@@ -868,18 +873,20 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
 
     For full documentation refer to :obj:`numpy.hstack`.
 
+    Parameters
+    ----------
+    tup : {dpnp.ndarray, usm_ndarray}
+        The arrays must have the same shape along all but the second axis,
+        except 1-D arrays which can be any length.
+    dtype : str or dtype
+        If provided, the destination array will have this dtype.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur. Defaults to 'same_kind'.
+
     Returns
     -------
     out : dpnp.ndarray
         The stacked array which has one more dimension than the input arrays.
-
-    Limitations
-    -----------
-    Each array in `tup` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
-    will be raised.
-    Parameters `dtype` and `casting` are supported with default value.
-    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -1379,25 +1386,31 @@ def squeeze(a, /, axis=None):
     )
 
 
-def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
+def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
     """
     Join a sequence of arrays along a new axis.
 
     For full documentation refer to :obj:`numpy.stack`.
 
+    Parameters
+    ----------
+    arrays : {dpnp.ndarray, usm_ndarray}
+        Each array must have the same shape.
+    axis : int, optional
+        The axis in the result array along which the input arrays are stacked.
+    out : dpnp.ndarray, optional
+        If provided, the destination to place the result. The shape must be correct,
+        matching that of what stack would have returned if no out argument were specified.
+    dtype : str or dtype
+        If provided, the destination array will have this dtype. Cannot be provided
+        together with out.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur. Defaults to 'same_kind'.
+
     Returns
     -------
     out : dpnp.ndarray
         The stacked array which has one more dimension than the input arrays.
-
-    Limitations
-    -----------
-    Each array in `arrays` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
-    will be raised.
-    Parameters `out` and `dtype` are supported with default value.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -1431,25 +1444,20 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
 
     """
 
-    if kwargs:
-        pass
-    elif out is not None:
-        pass
-    elif dtype is not None:
-        pass
-    else:
-        usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
-        usm_res = dpt.stack(usm_arrays, axis=axis)
-        return dpnp_array._create_from_usm_ndarray(usm_res)
+    if dtype is not None and out is not None:
+        raise TypeError(
+            "stack() only takes `out` or `dtype` as an argument, but both were provided."
+        )
 
-    return call_origin(
-        numpy.stack,
-        arrays,
-        axis=axis,
-        out=out,
-        dtype=dtype,
-        **kwargs,
-    )
+    usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
+    usm_res = dpt.stack(usm_arrays, axis=axis)
+    res = dpnp_array._create_from_usm_ndarray(usm_res)
+    if dtype is not None:
+        res = res.astype(dtype, casting=casting, copy=False)
+    elif out is not None:
+        dpnp.copyto(out, res, casting=casting)
+        return out
+    return res
 
 
 def swapaxes(a, axis1, axis2):
@@ -1671,18 +1679,20 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
 
     For full documentation refer to :obj:`numpy.vstack`.
 
+    Parameters
+    ----------
+    tup : {dpnp.ndarray, usm_ndarray}
+        The arrays must have the same shape along all but the first axis.
+        1-D arrays must have the same length.
+    dtype : str or dtype
+        If provided, the destination array will have this dtype.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur. Defaults to 'same_kind'.
+
     Returns
     -------
     out : dpnp.ndarray
         The array formed by stacking the given arrays, will be at least 2-D.
-
-    Limitations
-    -----------
-    Each array in `tup` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
-    will be raised.
-    Parameters `dtype` and `casting` are supported with default value.
-    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------

@@ -54,8 +54,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_COPYSIGN_EXT
         DPNP_FN_CORRELATE
         DPNP_FN_CORRELATE_EXT
-        DPNP_FN_COUNT_NONZERO
-        DPNP_FN_COUNT_NONZERO_EXT
         DPNP_FN_CROSS
         DPNP_FN_CROSS_EXT
         DPNP_FN_CUMPROD
@@ -106,14 +104,10 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MATMUL_EXT
         DPNP_FN_MATRIX_RANK
         DPNP_FN_MATRIX_RANK_EXT
-        DPNP_FN_MAX
-        DPNP_FN_MAX_EXT
         DPNP_FN_MAXIMUM
         DPNP_FN_MAXIMUM_EXT
         DPNP_FN_MEDIAN
         DPNP_FN_MEDIAN_EXT
-        DPNP_FN_MIN
-        DPNP_FN_MIN_EXT
         DPNP_FN_MINIMUM
         DPNP_FN_MINIMUM_EXT
         DPNP_FN_MODF
@@ -126,8 +120,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_PARTITION
         DPNP_FN_PARTITION_EXT
         DPNP_FN_PLACE
-        DPNP_FN_PROD
-        DPNP_FN_PROD_EXT
         DPNP_FN_PTP
         DPNP_FN_PTP_EXT
         DPNP_FN_QR
@@ -361,10 +353,6 @@ cpdef dpnp_descriptor dpnp_fmax(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, 
                                    dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_fmin(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
-"""
-Statistics functions
-"""
-cpdef dpnp_descriptor dpnp_min(dpnp_descriptor a, axis)
 
 
 """
