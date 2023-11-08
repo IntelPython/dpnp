@@ -140,13 +140,17 @@ def test_coerced_usm_types_power(usm_type_x, usm_type_y):
 @pytest.mark.parametrize(
     "func, args",
     [
+        pytest.param("empty_like", ["x0"]),
         pytest.param("full", ["10", "x0[3]"]),
         pytest.param("full_like", ["x0", "4"]),
-        pytest.param("zeros_like", ["x0"]),
-        pytest.param("ones_like", ["x0"]),
-        pytest.param("empty_like", ["x0"]),
-        pytest.param("linspace", ["x0[0:2]", "4", "4"]),
+        pytest.param("geomspace", ["x0[0:3]", "8", "4"]),
+        pytest.param("geomspace", ["1", "x0[3:5]", "4"]),
+        pytest.param("linspace", ["x0[0:2]", "8", "4"]),
         pytest.param("linspace", ["0", "x0[3:5]", "4"]),
+        pytest.param("logspace", ["x0[0:2]", "8", "4"]),
+        pytest.param("logspace", ["0", "x0[3:5]", "4"]),
+        pytest.param("ones_like", ["x0"]),
+        pytest.param("zeros_like", ["x0"]),
     ],
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
@@ -168,8 +172,10 @@ def test_array_creation_from_an_array(func, args, usm_type_x, usm_type_y):
         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
+        pytest.param("geomspace", [1, 4, 8], {}),
         pytest.param("identity", [4], {}),
         pytest.param("linspace", [0, 4, 8], {}),
+        pytest.param("logspace", [0, 4, 8], {}),
         pytest.param("ones", [(2, 2)], {}),
         pytest.param("tri", [3, 5, 2], {}),
         pytest.param("zeros", [(2, 2)], {}),
@@ -187,6 +193,18 @@ def test_array_creation_from_scratch(func, arg, kwargs, usm_type):
     assert dpnp_array.shape == numpy_array.shape
     assert_dtype_allclose(dpnp_array, numpy_array)
     assert dpnp_array.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_logspace_base(usm_type_x, usm_type_y):
+    x0 = dp.full(10, 2, usm_type=usm_type_x)
+
+    x = dp.logspace([2, 2], 8, 4, base=x0[3:5])
+    y = dp.logspace([2, 2], 8, 4, base=x0[3:5], usm_type=usm_type_y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
 
 
 @pytest.mark.parametrize(

@@ -85,8 +85,10 @@ def vvsort(val, vec, size, xp):
         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
+        pytest.param("geomspace", [1, 4, 8], {}),
         pytest.param("identity", [4], {}),
         pytest.param("linspace", [0, 4, 8], {}),
+        pytest.param("logspace", [0, 4, 8], {}),
         pytest.param("ones", [(2, 2)], {}),
         pytest.param("tri", [3, 5, 2], {}),
         pytest.param("zeros", [(2, 2)], {}),
@@ -140,12 +142,16 @@ def test_empty_like(device_x, device_y):
     "func, args, kwargs",
     [
         pytest.param("full_like", ["x0"], {"fill_value": 5}),
+        pytest.param("geomspace", ["x0[0:3]", "8", "4"], {}),
+        pytest.param("geomspace", ["1", "x0[2:4]", "4"], {}),
+        pytest.param("linspace", ["x0[0:2]", "8", "4"], {}),
+        pytest.param("linspace", ["0", "x0[2:4]", "4"], {}),
+        pytest.param("logspace", ["x0[0:2]", "8", "4"], {}),
+        pytest.param("logspace", ["0", "x0[2:4]", "4"], {}),
         pytest.param("ones_like", ["x0"], {}),
-        pytest.param("zeros_like", ["x0"], {}),
         pytest.param("tril", ["x0.reshape((2,2))"], {}),
         pytest.param("triu", ["x0.reshape((2,2))"], {}),
-        pytest.param("linspace", ["x0", "4", "4"], {}),
-        pytest.param("linspace", ["1", "x0", "4"], {}),
+        pytest.param("zeros_like", ["x0"], {}),
     ],
 )
 @pytest.mark.parametrize(
@@ -162,7 +168,27 @@ def test_array_creation_follow_device(func, args, kwargs, device):
     dpnp_args = [eval(val, {"x0": x}) for val in args]
 
     y = getattr(dpnp, func)(*dpnp_args, **kwargs)
-    assert_allclose(y_orig, y)
+    assert_allclose(y_orig, y, rtol=1e-04)
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.skipif(
+    numpy.lib.NumpyVersion(numpy.__version__) < "1.25.0",
+    reason="numpy.logspace supports a non-scalar base argument since 1.25.0",
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_array_creation_follow_device_logspace_base(device):
+    x_orig = numpy.array([1, 2, 3, 4])
+    y_orig = numpy.logspace(0, 8, 4, base=x_orig[1:3])
+
+    x = dpnp.array([1, 2, 3, 4], device=device)
+    y = dpnp.logspace(0, 8, 4, base=x[1:3])
+
+    assert_allclose(y_orig, y, rtol=1e-04)
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
 
