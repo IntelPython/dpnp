@@ -152,13 +152,10 @@ def test_empty_like(device_x, device_y):
         pytest.param("ones_like", ["x0"], {}),
         pytest.param("tril", ["x0.reshape((2,2))"], {}),
         pytest.param("triu", ["x0.reshape((2,2))"], {}),
-<<<<<<< HEAD
-        pytest.param("zeros_like", ["x0"], {}),
-=======
         pytest.param("linspace", ["x0", "4", "4"], {}),
         pytest.param("linspace", ["1", "x0", "4"], {}),
         pytest.param("vander", ["x0"], {}),
->>>>>>> rework implementation of diag, diagflat, vander, and ptp
+        pytest.param("zeros_like", ["x0"], {}),
     ],
 )
 @pytest.mark.parametrize(
