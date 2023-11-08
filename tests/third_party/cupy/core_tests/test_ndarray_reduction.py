@@ -215,6 +215,65 @@ class TestArrayReduction(unittest.TestCase):
         return a.ptp()
 
 
+@testing.parameterize(
+    *testing.product(
+        {
+            # TODO(leofang): make a @testing.for_all_axes decorator
+            "shape_and_axis": [
+                ((), None),
+                ((0,), (0,)),
+                ((0, 2), (0,)),
+                ((0, 2), (1,)),
+                ((0, 2), (0, 1)),
+                ((2, 0), (0,)),
+                ((2, 0), (1,)),
+                ((2, 0), (0, 1)),
+                ((0, 2, 3), (0,)),
+                ((0, 2, 3), (1,)),
+                ((0, 2, 3), (2,)),
+                ((0, 2, 3), (0, 1)),
+                ((0, 2, 3), (1, 2)),
+                ((0, 2, 3), (0, 2)),
+                ((0, 2, 3), (0, 1, 2)),
+                ((2, 0, 3), (0,)),
+                ((2, 0, 3), (1,)),
+                ((2, 0, 3), (2,)),
+                ((2, 0, 3), (0, 1)),
+                ((2, 0, 3), (1, 2)),
+                ((2, 0, 3), (0, 2)),
+                ((2, 0, 3), (0, 1, 2)),
+                ((2, 3, 0), (0,)),
+                ((2, 3, 0), (1,)),
+                ((2, 3, 0), (2,)),
+                ((2, 3, 0), (0, 1)),
+                ((2, 3, 0), (1, 2)),
+                ((2, 3, 0), (0, 2)),
+                ((2, 3, 0), (0, 1, 2)),
+            ],
+            "order": ("C", "F"),
+            "func": ("min", "max"),
+        }
+    )
+)
+class TestArrayReductionZeroSize:
+    @testing.numpy_cupy_allclose(
+        contiguous_check=False, accept_error=ValueError
+    )
+    def test_zero_size(self, xp):
+        shape, axis = self.shape_and_axis
+        # NumPy only supports axis being an int
+        if self.func in ("argmax", "argmin"):
+            if axis is not None and len(axis) == 1:
+                axis = axis[0]
+            else:
+                pytest.skip(
+                    f"NumPy does not support axis={axis} for {self.func}"
+                )
+        # dtype is irrelevant here, just pick one
+        a = testing.shaped_random(shape, xp, xp.float32, order=self.order)
+        return getattr(a, self.func)(axis=axis)
+
+
 # This class compares CUB results against NumPy's
 @testing.parameterize(
     *testing.product(
