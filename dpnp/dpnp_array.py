@@ -25,7 +25,6 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
-import numpy
 
 import dpnp
 
@@ -939,11 +938,15 @@ class dpnp_array:
         self,
         axis=None,
         out=None,
-        keepdims=numpy._NoValue,
-        initial=numpy._NoValue,
-        where=numpy._NoValue,
+        keepdims=False,
+        initial=None,
+        where=True,
     ):
-        """Return the maximum along an axis."""
+        """
+        Return the maximum along an axis.
+
+        Refer to :obj:`dpnp.max` for full documentation.
+        """
 
         return dpnp.max(self, axis, out, keepdims, initial, where)
 
@@ -956,11 +959,15 @@ class dpnp_array:
         self,
         axis=None,
         out=None,
-        keepdims=numpy._NoValue,
-        initial=numpy._NoValue,
-        where=numpy._NoValue,
+        keepdims=False,
+        initial=None,
+        where=True,
     ):
-        """Return the minimum along a given axis."""
+        """
+        Return the minimum along a given axis.
+
+        Refer to :obj:`dpnp.min` for full documentation.
+        """
 
         return dpnp.min(self, axis, out, keepdims, initial, where)
 

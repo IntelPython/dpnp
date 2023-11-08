@@ -1401,9 +1401,9 @@ def maximum(
     :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
     :obj:`dpnp.amax` : The maximum value of an array along a given axis, propagates NaNs.
     :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
-    :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
-    :obj:`dpnp.amix` : The minimum value of an array along a given axis, propagates NaNs.
-    :obj:`dpnp.nanmix` : The minimum value of an array along a given axis, ignores NaNs.
+    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
+    :obj:`dpnp.amax` : The maximum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
 
     Examples
     --------
@@ -1480,9 +1480,9 @@ def minimum(
     :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
     :obj:`dpnp.amin` : The minimum value of an array along a given axis, propagates NaNs.
     :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
-    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
-    :obj:`dpnp.amax` : The maximum value of an array along a given axis, propagates NaNs.
-    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
+    :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
+    :obj:`dpnp.amin` : The minimum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
 
     Examples
     --------

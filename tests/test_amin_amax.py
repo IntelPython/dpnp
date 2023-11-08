@@ -7,7 +7,7 @@ import dpnp
 from .helper import get_all_dtypes
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_amax(dtype):
     a = numpy.array(
         [
@@ -25,7 +25,7 @@ def test_amax(dtype):
         assert_allclose(expected, result)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_amin(dtype):
     a = numpy.array(
         [
@@ -55,8 +55,7 @@ def _get_min_max_input(type, shape):
     return a.reshape(shape)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 @pytest.mark.parametrize(
     "shape", [(4,), (2, 3), (4, 5, 6)], ids=["(4,)", "(2,3)", "(4,5,6)"]
 )
@@ -74,8 +73,7 @@ def test_amax_diff_shape(dtype, shape):
     numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 @pytest.mark.parametrize(
     "shape", [(4,), (2, 3), (4, 5, 6)], ids=["(4,)", "(2,3)", "(4,5,6)"]
 )
