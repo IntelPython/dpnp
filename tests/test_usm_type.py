@@ -140,25 +140,19 @@ def test_coerced_usm_types_power(usm_type_x, usm_type_y):
 @pytest.mark.parametrize(
     "func, args",
     [
-<<<<<<< HEAD
-        pytest.param("empty_like", ["x0"]),
-=======
         pytest.param("diag", ["x0"]),
->>>>>>> rework implementation of diag, diagflat, vander, and ptp
+        pytest.param("empty_like", ["x0"]),
         pytest.param("full", ["10", "x0[3]"]),
         pytest.param("full_like", ["x0", "4"]),
         pytest.param("geomspace", ["x0[0:3]", "8", "4"]),
         pytest.param("geomspace", ["1", "x0[3:5]", "4"]),
         pytest.param("linspace", ["x0[0:2]", "8", "4"]),
         pytest.param("linspace", ["0", "x0[3:5]", "4"]),
-<<<<<<< HEAD
         pytest.param("logspace", ["x0[0:2]", "8", "4"]),
         pytest.param("logspace", ["0", "x0[3:5]", "4"]),
         pytest.param("ones_like", ["x0"]),
-        pytest.param("zeros_like", ["x0"]),
-=======
         pytest.param("vander", ["x0"]),
->>>>>>> rework implementation of diag, diagflat, vander, and ptp
+        pytest.param("zeros_like", ["x0"]),
     ],
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
