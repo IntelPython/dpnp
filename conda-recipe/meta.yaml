@@ -8,7 +8,7 @@ requirements:
     host:
       - python
       - setuptools
-      - numpy 1.21
+      - numpy
       - cython
       - cmake >=3.21
       - ninja
