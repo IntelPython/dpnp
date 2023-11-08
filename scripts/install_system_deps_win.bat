@@ -87,7 +87,7 @@ start /b /wait webimage.exe -s -x -f webimage_extracted
 del webimage.exe
 
 echo ========================= install onepai =================================
-:: it is expected that multy-line end-line symbol will be diffrent on MS :-)
+:: it is expected that multy-line end-line symbol will be different on MS :-)
 call webimage_extracted\bootstrapper.exe -s --action install                   ^
                                             --eula=accept                      ^
                                             --continue-with-optional-error=yes ^

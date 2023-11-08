@@ -35,7 +35,7 @@ def _get_unwrapped_index_key(key):
     Get an unwrapped index key.
 
     Return a key where each nested instance of DPNP array is unwrapped into USM ndarray
-    for futher processing in DPCTL advanced indexing functions.
+    for further processing in DPCTL advanced indexing functions.
 
     """
 
@@ -344,7 +344,9 @@ class dpnp_array:
         """Return self|value."""
         return dpnp.bitwise_or(self, other)
 
-    # '__pos__',
+    def __pos__(self):
+        """Return +self."""
+        return dpnp.positive(self)
 
     def __pow__(self, other):
         """Return self**value."""
@@ -595,32 +597,64 @@ class dpnp_array:
         return dpt.asnumpy(self._array_obj)
 
     def astype(self, dtype, order="K", casting="unsafe", subok=True, copy=True):
-        """Copy the array with data type casting.
+        """
+        Copy the array with data type casting.
 
-        Args:
-            dtype: Target type.
-            order ({'C', 'F', 'A', 'K'}): Row-major (C-style) or column-major (Fortran-style) order.
-                When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
-                And when ``order`` is 'K', it keeps strides as closely as possible.
-            copy (bool): If it is False and no cast happens, then this method returns the array itself.
-                Otherwise, a copy is returned.
+        For full documentation refer to :obj:`numpy.ndarray.astype`.
 
-        Returns:
-            If ``copy`` is False and no cast is required, then the array itself is returned.
-            Otherwise, it returns a (possibly casted) copy of the array.
+        Parameters
+        ----------
+        x1 : {dpnp.ndarray, usm_ndarray}
+            Array data type casting.
+        dtype : dtype
+            Target data type.
+        order : {'C', 'F', 'A', 'K'}
+            Row-major (C-style) or column-major (Fortran-style) order.
+            When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
+            And when ``order`` is 'K', it keeps strides as closely as possible.
+        copy : bool
+            If it is False and no cast happens, then this method returns the array itself.
+            Otherwise, a copy is returned.
+        casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+            Controls what kind of data casting may occur. Defaults to 'unsafe' for backwards compatibility.
+            'no' means the data types should not be cast at all.
+            'equiv' means only byte-order changes are allowed.
+            'safe' means only casts which can preserve values are allowed.
+            'same_kind' means only safe casts or casts within a kind, like float64 to float32, are allowed.
+            'unsafe' means any data conversions may be done.
+        copy : bool, optional
+            By default, astype always returns a newly allocated array. If this is set to false, and the dtype,
+            order, and subok requirements are satisfied, the input array is returned instead of a copy.
 
-        .. note::
-           This method currently does not support `order``, `casting``, ``copy``, and ``subok`` arguments.
+        Returns
+        -------
+        arr_t : dpnp.ndarray
+            Unless `copy` is ``False`` and the other conditions for returning the input array
+            are satisfied, `arr_t` is a new array of the same shape as the input array,
+            with dtype, order given by dtype, order.
 
-        .. seealso:: :meth:`numpy.ndarray.astype`
+        Limitations
+        -----------
+        Parameter `subok` is supported with default value.
+        Otherwise ``NotImplementedError`` exception will be raised.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([1, 2, 2.5])
+        >>> x
+        array([1. , 2. , 2.5])
+        >>> x.astype(int)
+        array([1, 2, 2])
 
         """
 
-        new_array = self.__new__(dpnp_array)
-        new_array._array_obj = dpt.astype(
-            self._array_obj, dtype, order=order, casting=casting, copy=copy
-        )
-        return new_array
+        if subok is not True:
+            raise NotImplementedError(
+                f"subok={subok} is currently not supported"
+            )
+
+        return dpnp.astype(self, dtype, order=order, casting=casting, copy=copy)
 
     # 'base',
     # 'byteswap',
@@ -1098,7 +1132,7 @@ class dpnp_array:
 
     @property
     def shape(self):
-        """Lengths of axes. A tuple of numbers represents size of each dimention.
+        """Lengths of axes. A tuple of numbers represents size of each dimension.
 
         Setter of this property involves reshaping without copy. If the array
         cannot be reshaped without copy, it raises an exception.
@@ -1114,7 +1148,7 @@ class dpnp_array:
         """
         Set new lengths of axes.
 
-        A tuple of numbers represents size of each dimention.
+        A tuple of numbers represents size of each dimension.
         It involves reshaping without copy. If the array cannot be reshaped without copy,
         it raises an exception.
 

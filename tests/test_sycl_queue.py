@@ -85,8 +85,10 @@ def vvsort(val, vec, size, xp):
         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
+        pytest.param("identity", [4], {}),
         pytest.param("linspace", [0, 4, 8], {}),
         pytest.param("ones", [(2, 2)], {}),
+        pytest.param("tri", [3, 5, 2], {}),
         pytest.param("zeros", [(2, 2)], {}),
     ],
 )
@@ -236,26 +238,34 @@ def test_meshgrid(device_x, device_y):
         pytest.param("arctanh", [-0.5, 0.0, 0.5]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
+        pytest.param("copy", [1.0, 2.0, 3.0]),
         pytest.param(
             "cos", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
-        pytest.param("copy", [1.0, 2.0, 3.0]),
+        pytest.param("count_nonzero", [3, 0, 2, -1.2]),
         pytest.param("cumprod", [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
         pytest.param("cumsum", [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
+        pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
+        pytest.param("log", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("log10", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
+        pytest.param("log2", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("nancumprod", [1.0, dpnp.nan]),
         pytest.param("nancumsum", [1.0, dpnp.nan]),
         pytest.param("nanprod", [1.0, dpnp.nan]),
         pytest.param("nansum", [1.0, dpnp.nan]),
         pytest.param("negative", [1.0, 0.0, -1.0]),
+        pytest.param("positive", [1.0, 0.0, -1.0]),
         pytest.param("prod", [1.0, 2.0]),
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
@@ -357,10 +367,22 @@ def test_proj(device):
         pytest.param(
             "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
         ),
+        pytest.param("fmax", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
+        pytest.param("fmin", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
         pytest.param(
             "fmod",
             [-3.0, -2.0, -1.0, 1.0, 2.0, 3.0],
             [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
+        ),
+        pytest.param(
+            "hypot",
+            [[1.0, 2.0, 3.0, 4.0]],
+            [[-1.0, -2.0, -4.0, -5.0]],
+        ),
+        pytest.param(
+            "logaddexp",
+            [[-1, 2, 5, 9]],
+            [[4, -3, 2, -8]],
         ),
         pytest.param(
             "matmul", [[1.0, 0.0], [0.0, 1.0]], [[4.0, 1.0], [1.0, 2.0]]

@@ -264,7 +264,7 @@ static void func_map_init_bitwise_1arg_1type(func_map_t &fmap)
             }                                                                  \
                                                                                \
             /* memory transfer optimization, use USM-host for temporary speeds \
-             * up tranfer to device */                                         \
+             * up transfer to device */                                        \
             using usm_host_allocatorT =                                        \
                 sycl::usm_allocator<shape_elem_type, sycl::usm::alloc::host>;  \
                                                                                \

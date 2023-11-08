@@ -145,7 +145,6 @@ class TestJoin(unittest.TestCase):
         with pytest.raises(ValueError):
             cupy.concatenate((a, b, c))
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(name="dtype")
     @testing.numpy_cupy_array_equal()
     def test_concatenate_out(self, xp, dtype):
@@ -156,7 +155,6 @@ class TestJoin(unittest.TestCase):
         xp.concatenate((a, b, c), axis=1, out=out)
         return out
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_concatenate_out_same_kind(self, xp):
         a = testing.shaped_arange((3, 4), xp, xp.float32)
@@ -166,7 +164,6 @@ class TestJoin(unittest.TestCase):
         xp.concatenate((a, b, c), axis=1, out=out)
         return out
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_concatenate_out_invalid_shape(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((3, 4), xp, xp.float32)
@@ -176,7 +173,6 @@ class TestJoin(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.concatenate((a, b, c), axis=1, out=out)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_concatenate_out_invalid_shape_2(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((3, 4), xp, xp.float32)
@@ -186,7 +182,6 @@ class TestJoin(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.concatenate((a, b, c), axis=1, out=out)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_concatenate_out_invalid_dtype(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((3, 4), xp, xp.float32)
@@ -204,7 +199,6 @@ class TestJoin(unittest.TestCase):
         b = testing.shaped_arange((3, 4), xp, dtype2)
         return xp.concatenate((a, b))
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(accept_error=TypeError)
     def test_concatenate_out_different_dtype(self, xp, dtype1, dtype2):
@@ -213,7 +207,6 @@ class TestJoin(unittest.TestCase):
         out = xp.zeros((6, 4), dtype=dtype2)
         return xp.concatenate((a, b), out=out)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.20.0")
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(accept_error=TypeError)
@@ -222,7 +215,6 @@ class TestJoin(unittest.TestCase):
         b = testing.shaped_arange((3, 4), xp, dtype1)
         return xp.concatenate((a, b), dtype=dtype2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.20.0")
     def test_concatenate_dtype_invalid_out(self):
         for xp in (numpy, cupy):
@@ -232,7 +224,6 @@ class TestJoin(unittest.TestCase):
             with pytest.raises(TypeError):
                 xp.concatenate((a, b), out=out, dtype=xp.int64)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.20.0")
     @testing.for_castings()
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
@@ -290,7 +281,6 @@ class TestJoin(unittest.TestCase):
         c = testing.shaped_arange((2, 3), xp)
         return xp.hstack((a, b, c))
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.24.0")
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(accept_error=TypeError)
@@ -299,7 +289,6 @@ class TestJoin(unittest.TestCase):
         b = testing.shaped_arange((3, 4), xp, dtype1)
         return xp.hstack((a, b), dtype=dtype2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.24.0")
     @testing.for_castings()
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
@@ -312,27 +301,23 @@ class TestJoin(unittest.TestCase):
         # may raise TypeError or ComplexWarning
         return xp.hstack((a, b), dtype=dtype2, casting=casting)
 
-    @pytest.mark.skip("dpnp.vstack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_vstack_vectors(self, xp):
         a = xp.arange(3)
         b = xp.arange(2, -1, -1)
         return xp.vstack((a, b))
 
-    @pytest.mark.skip("dpnp.vstack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_vstack_single_element(self, xp):
         a = xp.arange(3)
         return xp.vstack((a,))
 
-    @pytest.mark.skip("dpnp.vstack() is not implemented yet")
     def test_vstack_wrong_ndim(self):
         a = cupy.empty((3,))
         b = cupy.empty((3, 1))
         with pytest.raises(ValueError):
             cupy.vstack((a, b))
 
-    @pytest.mark.skip("dpnp.vstack() is not implemented yet")
     @testing.with_requires("numpy>=1.24.0")
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(accept_error=TypeError)
@@ -341,18 +326,8 @@ class TestJoin(unittest.TestCase):
         b = testing.shaped_arange((3, 4), xp, dtype1)
         return xp.vstack((a, b), dtype=dtype2)
 
-    @pytest.mark.skip("dpnp.vstack() is not implemented yet")
     @testing.with_requires("numpy>=1.24.0")
-    @pytest.mark.parametrize(
-        "casting",
-        [
-            "no",
-            "equiv",
-            "safe",
-            "same_kind",
-            "unsafe",
-        ],
-    )
+    @testing.for_castings()
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(
         accept_error=(TypeError, numpy.ComplexWarning)
@@ -435,7 +410,6 @@ class TestJoin(unittest.TestCase):
         with pytest.raises(numpy.AxisError):
             return cupy.stack([a, a], axis=3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(name="dtype")
     @testing.numpy_cupy_array_equal()
     def test_stack_out(self, xp, dtype):
@@ -446,7 +420,6 @@ class TestJoin(unittest.TestCase):
         xp.stack((a, b, c), axis=1, out=out)
         return out
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_stack_out_same_kind(self, xp):
         a = testing.shaped_arange((3, 4), xp, xp.float32)
@@ -456,7 +429,6 @@ class TestJoin(unittest.TestCase):
         xp.stack((a, b, c), axis=1, out=out)
         return out
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_stack_out_invalid_shape(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((3, 4), xp, xp.float32)
@@ -466,7 +438,6 @@ class TestJoin(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.stack((a, b, c), axis=1, out=out)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_stack_out_invalid_shape_2(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((3, 4), xp, xp.float32)
@@ -476,7 +447,6 @@ class TestJoin(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.stack((a, b, c), axis=1, out=out)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_stack_out_invalid_dtype(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((3, 4), xp, xp.float32)
@@ -486,7 +456,6 @@ class TestJoin(unittest.TestCase):
             with pytest.raises(TypeError):
                 xp.stack((a, b, c), axis=1, out=out)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.24.0")
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(accept_error=TypeError)
@@ -495,7 +464,6 @@ class TestJoin(unittest.TestCase):
         b = testing.shaped_arange((3, 4), xp, dtype1)
         return xp.stack((a, b), dtype=dtype2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.24.0")
     @testing.for_castings()
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])

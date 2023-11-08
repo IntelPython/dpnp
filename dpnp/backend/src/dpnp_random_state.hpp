@@ -73,7 +73,7 @@ struct mcg59_struct : engine_struct
  *
  * @param [in]  mt19937       A structure with MKL engine which will be filled
  *                            with generated value by MKL.
- * @param [in]  q_ref         A refference on SYCL queue which will be used to
+ * @param [in]  q_ref         A reference on SYCL queue which will be used to
  *                            obtain random numbers.
  * @param [in]  seed          An initial condition of the generator state.
  */
@@ -90,7 +90,7 @@ INP_DLLEXPORT void MT19937_InitScalarSeed(mt19937_struct *mt19937,
  *
  * @param [in]  mt19937       A structure with MKL engine which will be filled
  *                            with generated value by MKL.
- * @param [in]  q_ref         A refference on SYCL queue which will be used to
+ * @param [in]  q_ref         A reference on SYCL queue which will be used to
  *                            obtain random numbers.
  * @param [in]  seed          A vector with the initial conditions of the
  *                            generator state.
@@ -119,7 +119,7 @@ INP_DLLEXPORT void MT19937_Delete(mt19937_struct *mt19937);
  *
  * @param [in]  mcg59         A structure with MKL engine which will be filled
  *                            with generated value by MKL.
- * @param [in]  q_ref         A refference on SYCL queue which will be used to
+ * @param [in]  q_ref         A reference on SYCL queue which will be used to
  *                            obtain random numbers.
  * @param [in]  seed          An initial condition of the generator state.
  */

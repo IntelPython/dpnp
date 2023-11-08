@@ -115,7 +115,7 @@ def arange(
 
     Limitations
     -----------
-    Parameter ``like`` is supported only with default value ``None``.
+    Parameter `like` is supported only with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -668,8 +668,8 @@ def empty(
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
-    Parameter ``like`` is supported only with default value ``None``.
+    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
+    Parameter `like` is supported only with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -724,9 +724,9 @@ def empty_like(
 
     Limitations
     -----------
-    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
-    Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
-    Parameter ``subok`` is supported only with default value ``False``.
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Parameter `order` is supported with values ``"C"`` or ``"F"``.
+    Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -790,8 +790,8 @@ def eye(
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
-    Parameter ``like`` is supported only with default value ``None``.
+    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
+    Parameter `like` is supported only with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
 
     """
@@ -916,8 +916,8 @@ def full(
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
-    Parameter ``like`` is supported only with default value ``None``.
+    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
+    Parameter `like` is supported only with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -973,9 +973,9 @@ def full_like(
 
     Limitations
     -----------
-    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
-    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
-    Parameter ``subok`` is supported only with default value ``False``.
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
+    Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -1027,7 +1027,7 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
 
     Limitations
     -----------
-    Parameter ``axis`` is supported only with default value ``0``.
+    Parameter `axis` is supported only with default value ``0``.
 
     See Also
     --------
@@ -1061,7 +1061,9 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
     return call_origin(numpy.geomspace, start, stop, num, endpoint, dtype, axis)
 
 
-def identity(n, dtype=None, *, like=None):
+def identity(
+    n, dtype=None, *, device=None, usm_type="device", sycl_queue=None, like=None
+):
     """
     Return the identity array.
 
@@ -1069,9 +1071,22 @@ def identity(n, dtype=None, *, like=None):
 
     For full documentation refer to :obj:`numpy.identity`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        `n` x `n` array with its main diagonal set to one,
+        and all other elements 0.
+
     Limitations
     -----------
-    Parameter ``like`` is currently not supported .
+    Parameter `like` is currently not supported.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.eye` : Return a 2-D array with ones on the diagonal and zeros elsewhere.
+    :obj:`dpnp.ones` : Return a new array setting values to one.
+    :obj:`dpnp.diag` : Return diagonal 2-D array from an input 1-D array.
 
     Examples
     --------
@@ -1086,11 +1101,16 @@ def identity(n, dtype=None, *, like=None):
         if like is not None:
             pass
         elif n < 0:
-            pass
+            raise ValueError("negative dimensions are not allowed")
         else:
             _dtype = dpnp.default_float_type() if dtype is None else dtype
-            return dpnp_identity(n, _dtype).get_pyobj()
-
+            return dpnp.eye(
+                n,
+                dtype=_dtype,
+                device=device,
+                usm_type=usm_type,
+                sycl_queue=sycl_queue,
+            )
     return call_origin(numpy.identity, n, dtype=dtype, like=like)
 
 
@@ -1115,8 +1135,8 @@ def linspace(
 
     Limitations
     -----------
-    Parameter ``axis`` is supported only with default value ``0``.
-    Parameter ``retstep`` is supported only with default value ``False``.
+    Parameter `axis` is supported only with default value ``0``.
+    Parameter `retstep` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -1198,7 +1218,7 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
 
     Limitations
     -----------
-    Parameter ``axis`` is supported only with default value ``0``.
+    Parameter `axis` is supported only with default value ``0``.
 
     See Also
     --------
@@ -1252,8 +1272,8 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     Limitations
     -----------
     Each array instance from `xi` is supported as either :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter ``copy`` is supported only with default value ``True``.
-    Parameter ``sparse`` is supported only with default value ``False``.
+    Parameter `copy` is supported only with default value ``True``.
+    Parameter `sparse` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
 
     Examples
@@ -1379,8 +1399,8 @@ def ones(
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
-    Parameter ``like`` is supported only with default value ``None``.
+    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
+    Parameter `like` is supported only with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -1439,9 +1459,9 @@ def ones_like(
 
     Limitations
     -----------
-    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
-    Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
-    Parameter ``subok`` is supported only with default value ``False``.
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Parameter `order` is supported with values ``"C"`` or ``"F"``.
+    Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -1494,7 +1514,8 @@ def ptp(arr, axis=None, out=None, keepdims=numpy._NoValue):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Parameters ``out`` and ``keepdims`` are supported only with default values.
+    Parameters `out` and `keepdims` are supported only with default values.
+
     """
     arr_desc = dpnp.get_dpnp_descriptor(arr, copy_when_nondefault_queue=False)
     if not arr_desc:
@@ -1523,7 +1544,7 @@ def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Parameters ``axis1``, ``axis2``, ``out`` and ``dtype`` are supported only with default values.
+    Parameters `axis1`, `axis2`, `out` and `dtype` are supported only with default values.
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
@@ -1546,11 +1567,36 @@ def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
     return call_origin(numpy.trace, x1, offset, axis1, axis2, dtype, out)
 
 
-def tri(N, M=None, k=0, dtype=dpnp.float, **kwargs):
+def tri(
+    N,
+    M=None,
+    k=0,
+    dtype=dpnp.float,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+    **kwargs,
+):
     """
     An array with ones at and below the given diagonal and zeros elsewhere.
 
     For full documentation refer to :obj:`numpy.tri`.
+
+    Returns
+    -------
+    out : ndarray of shape (N, M)
+        Array with its lower triangle filled with ones and zeros elsewhere.
+
+    Limitations
+    -----------
+    Parameter `M`, `N`, and `k` are only supported as integer data type.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.tril` : Return lower triangle of an array.
+    :obj:`dpnp.triu` : Return upper triangle of an array.
 
     Examples
     --------
@@ -1586,7 +1632,17 @@ def tri(N, M=None, k=0, dtype=dpnp.float, **kwargs):
                 if dtype in (dpnp.float, None)
                 else dtype
             )
-            return dpnp_tri(N, M, k, _dtype).get_pyobj()
+            if M is None:
+                M = N
+
+            m = dpnp.ones(
+                (N, M),
+                dtype=_dtype,
+                device=device,
+                usm_type=usm_type,
+                sycl_queue=sycl_queue,
+            )
+            return dpnp.tril(m, k=k)
 
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
@@ -1737,8 +1793,8 @@ def zeros(
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with values ``"C"`` and ``"F"``.
-    Parameter ``like`` is supported only with default value ``None``.
+    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
+    Parameter `like` is supported only with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
@@ -1796,9 +1852,9 @@ def zeros_like(
 
     Limitations
     -----------
-    Parameter ``x1`` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
-    Parameter ``order`` is supported with values ``"C"`` or ``"F"``.
-    Parameter ``subok`` is supported only with default value ``False``.
+    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Parameter `order` is supported with values ``"C"`` or ``"F"``.
+    Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also

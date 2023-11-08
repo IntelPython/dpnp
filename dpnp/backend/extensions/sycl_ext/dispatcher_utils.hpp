@@ -388,8 +388,8 @@ struct CartesianDispatcher
 
     FnT operator()(std::initializer_list<DispatchT> values)
     {
-        // though std::initializer_list::size is constexpr it doesnt work for
-        // some reson constexpr auto const list_size = values.size();
+        // though std::initializer_list::size is constexpr it doesn't work for
+        // some reason constexpr auto const list_size = values.size();
         std::array<int, sizeof...(Axis)> idx;
         bool found =
             coord_in_space<DispatchT, Matcher, std::tuple<Axis...>>::get(

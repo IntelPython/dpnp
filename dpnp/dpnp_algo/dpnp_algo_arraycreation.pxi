@@ -39,12 +39,10 @@ __all__ += [
     "dpnp_copy",
     "dpnp_diag",
     "dpnp_geomspace",
-    "dpnp_identity",
     "dpnp_linspace",
     "dpnp_logspace",
     "dpnp_ptp",
     "dpnp_trace",
-    "dpnp_tri",
     "dpnp_vander",
 ]
 
@@ -164,28 +162,6 @@ cpdef utils.dpnp_descriptor dpnp_geomspace(start, stop, num, endpoint, dtype, ax
         result.get_pyobj()[0] = start
         if endpoint and result.size > 1:
             result.get_pyobj()[result.size - 1] = stop
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_identity(n, result_dtype):
-    cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_IDENTITY_EXT, dtype_in, DPNP_FT_NONE)
-
-    cdef shape_type_c shape_in = (n, n)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_in, kernel_data.return_type, None)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_1out_t func = <fptr_1out_t > kernel_data.ptr
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), n, NULL)
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
 
@@ -372,7 +348,7 @@ cpdef utils.dpnp_descriptor dpnp_trace(utils.dpnp_descriptor arr, offset=0, axis
 
     arr_obj = arr.get_array()
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = diagonal_shape[:-1]
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
                                                                        kernel_data.return_type,
@@ -401,39 +377,13 @@ cpdef utils.dpnp_descriptor dpnp_trace(utils.dpnp_descriptor arr, offset=0, axis
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_tri(N, M=None, k=0, dtype=dpnp.float):
-    if M is None:
-        M = N
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRI_EXT, param1_type, param1_type)
-
-    cdef shape_type_c shape_in = (N, M)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_in, kernel_data.return_type, None)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_indexing_1out_func_ptr_t func = <custom_indexing_1out_func_ptr_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, result.get_data(), N, M, k, NULL)
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
 cpdef utils.dpnp_descriptor dpnp_vander(utils.dpnp_descriptor x1, int N, int increasing):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_VANDER_EXT, param1_type, DPNP_FT_NONE)
 
     x1_obj = x1.get_array()
 
-    # ceate result array with type given by FPTR data
+    # create result array with type given by FPTR data
     cdef shape_type_c result_shape = (x1.size, N)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
                                                                        kernel_data.return_type,

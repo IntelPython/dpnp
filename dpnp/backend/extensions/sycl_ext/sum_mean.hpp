@@ -61,7 +61,7 @@ bool check_limitations(const dpctl::tensor::usm_ndarray &in,
     size_t out_full_size = out.get_size() * out.get_elemsize();
     if (out_full_size > local_mem_size) {
         if (throw_on_fail)
-            throw py::value_error("Resulting array exceeds local memroy size" +
+            throw py::value_error("Resulting array exceeds local memory size" +
                                   std::to_string(local_mem_size));
 
         return false;
