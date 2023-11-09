@@ -410,23 +410,10 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
-        if dpt_array.size == 0:
-            # TODO: get rid of this if condition when dpctl supports it
-            axis = (axis,) if isinstance(axis, int) else axis
-            for i in range(a.ndim):
-                if a.shape[i] == 0:
-                    if axis is None or i in axis:
-                        raise ValueError(
-                            "reduction does not support zero-size arrays"
-                        )
-                    else:
-                        indices = [i for i in range(a.ndim) if i not in axis]
-                        res_shape = tuple([a.shape[i] for i in indices])
-                        result = dpnp.empty(res_shape, dtype=a.dtype)
-        else:
-            result = dpnp_array._create_from_usm_ndarray(
-                dpt.max(dpt_array, axis=axis, keepdims=keepdims)
-            )
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.max(dpt_array, axis=axis, keepdims=keepdims)
+        )
+
         if out is None:
             return result
         else:
@@ -655,22 +642,10 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
-        if dpt_array.size == 0:
-            # TODO: get rid of this if condition when dpctl supports it
-            for i in range(a.ndim):
-                if a.shape[i] == 0:
-                    if axis is None or i in axis:
-                        raise ValueError(
-                            "reduction does not support zero-size arrays"
-                        )
-                    else:
-                        indices = [i for i in range(a.ndim) if i not in axis]
-                        res_shape = tuple([a.shape[i] for i in indices])
-                        result = dpnp.empty(res_shape, dtype=a.dtype)
-        else:
-            result = dpnp_array._create_from_usm_ndarray(
-                dpt.min(dpt_array, axis=axis, keepdims=keepdims)
-            )
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.min(dpt_array, axis=axis, keepdims=keepdims)
+        )
+
         if out is None:
             return result
         else:

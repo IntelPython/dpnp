@@ -110,22 +110,9 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     """
 
     dpt_array = dpnp.get_usm_ndarray(a)
-    if dpt_array.size == 0:
-        # TODO: get rid of this if condition when dpctl supports it
-        for i in range(a.ndim):
-            if a.shape[i] == 0:
-                if i == axis or axis is None:
-                    raise ValueError(
-                        "reduction does not support zero-size arrays"
-                    )
-                else:
-                    indices = [i for i in range(a.ndim) if i != axis]
-                    res_shape = tuple([a.shape[i] for i in indices])
-                    result = dpnp.empty(res_shape, dtype=int)
-    else:
-        result = dpnp_array._create_from_usm_ndarray(
-            dpt.argmax(dpt_array, axis=axis, keepdims=keepdims)
-        )
+    result = dpnp_array._create_from_usm_ndarray(
+        dpt.argmax(dpt_array, axis=axis, keepdims=keepdims)
+    )
 
     if out is None:
         return result
@@ -210,22 +197,9 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     """
 
     dpt_array = dpnp.get_usm_ndarray(a)
-    if dpt_array.size == 0:
-        # TODO: get rid of this if condition when dpctl supports it
-        for i in range(a.ndim):
-            if a.shape[i] == 0:
-                if i == axis or axis is None:
-                    raise ValueError(
-                        "reduction does not support zero-size arrays"
-                    )
-                else:
-                    indices = [i for i in range(a.ndim) if i != axis]
-                    res_shape = tuple([a.shape[i] for i in indices])
-                    result = dpnp.empty(res_shape, dtype=int)
-    else:
-        result = dpnp_array._create_from_usm_ndarray(
-            dpt.argmin(dpt_array, axis=axis, keepdims=keepdims)
-        )
+    result = dpnp_array._create_from_usm_ndarray(
+        dpt.argmin(dpt_array, axis=axis, keepdims=keepdims)
+    )
 
     if out is None:
         return result
