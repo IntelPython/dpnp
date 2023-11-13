@@ -1,6 +1,0 @@
-﻿dpnp.linalg.svd
-===============
-
-.. currentmodule:: dpnp.linalg
-
-.. autofunction:: svd
