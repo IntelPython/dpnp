@@ -449,6 +449,20 @@ def copysign(
 
     For full documentation refer to :obj:`numpy.copysign`.
 
+    Parameters
+    ----------
+    x1 : {dpnp.ndarray, usm_ndarray}
+        First input array, expected to have a real floating-point data type.
+    x2 : {dpnp.ndarray, usm_ndarray}
+        Second input array, also expected to have a real floating-point data
+        type.
+    out : ({None, dpnp.ndarray, usm_ndarray}, optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order : ({'C', 'F', 'A', 'K'}, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+
     Returns
     -------
     out : dpnp.ndarray

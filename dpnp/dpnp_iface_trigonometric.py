@@ -552,6 +552,17 @@ def cbrt(
 
     For full documentation refer to :obj:`numpy.cbrt`.
 
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array, expected to have a real-valued data type.
+    out : ({None, dpnp.ndarray, usm_ndarray}, optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order : ({'C', 'F', 'A', 'K'}, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+
     Returns
     -------
     out : dpnp.ndarray
@@ -831,6 +842,17 @@ def exp2(
     Calculate `2**p` for all `p` in the input array.
 
     For full documentation refer to :obj:`numpy.exp2`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array, expected to have a floating-point data type.
+    out : ({None, dpnp.ndarray, usm_ndarray}, optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order : ({'C', 'F', 'A', 'K'}, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
 
     Returns
     -------
@@ -1353,6 +1375,17 @@ def rsqrt(
     """
     Computes the reciprocal square-root for each element `x_i` for input array `x`.
 
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array, expected to have a real floating-point data type.
+    out : ({None, dpnp.ndarray, usm_ndarray}, optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order : ({'C', 'F', 'A', 'K'}, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K"
+
     Returns
     -------
     out : dpnp.ndarray
@@ -1374,7 +1407,7 @@ def rsqrt(
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([1,8,27])
+    >>> x = np.array([1, 8, 27])
     >>> np.rsqrt(x)
     array([1.        , 0.35355338, 0.19245009])
 
