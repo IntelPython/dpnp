@@ -26,7 +26,7 @@ requirements:
     run:
       - python
       - dpctl >=0.15.0
-      - dpcpp-cpp-rt >= 2024.0
+      - dpcpp-cpp-rt >=2024.0
       - {{ pin_compatible('mkl-dpcpp', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
 
