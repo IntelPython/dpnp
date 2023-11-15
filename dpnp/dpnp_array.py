@@ -1054,39 +1054,7 @@ class dpnp_array:
         """
         Return a contiguous flattened array.
 
-        For full documentation refer to :obj:`numpy.ndarray.ravel`.
-
-        Parameters
-        ----------
-        order : {'C', 'F'}, optional
-            The elements of a are read using this index order. ``C`` means to index
-            the elements in row-major, C-style order, with the last axis index
-            changing fastest, back to the first axis index changing slowest. ``F``
-            means to index the elements in column-major, Fortran-style order, with
-            the first index changing fastest, and the last index changing slowest.
-            By default, ``C`` index order is used.
-
-        Returns
-        -------
-        y : dpnp_array
-            `y` is a contiguous 1-D array of the same subtype as a, with shape (a.size,)
-
-        See Also
-        --------
-        :obj:`dpnp.reshape` : Change the shape of an array without changing its data.
-
-        Examples
-        --------
-        >>> import dpnp as np
-        >>> x = np.array([[1, 2, 3], [4, 5, 6]])
-        >>> x.ravel()
-        array([1, 2, 3, 4, 5, 6])
-
-        >>> x.reshape(-1)
-        array([1, 2, 3, 4, 5, 6])
-
-        >>> x.ravel(order='F')
-        array([1, 4, 2, 5, 3, 6])
+        For full documentation refer to :obj:`dpnp.ravel`.
 
         """
 
@@ -1131,28 +1099,7 @@ class dpnp_array:
         """
         Repeat elements of an array.
 
-        For full documentation refer to :obj:`numpy.ndarray.repeat`.
-
-        Parameters
-        ----------
-        repeat : Union[int, Tuple[int, ...]]
-            The number of repetitions for each element.
-            `repeats` is broadcasted to fit the shape of the given axis.
-        axis : Optional[int]
-            The axis along which to repeat values. The `axis` is required
-            if input array has more than one dimension.
-
-        Returns
-        -------
-        out : dpnp_array
-            Array with repeated elements.
-
-        Examples
-        --------
-        >>> import dpnp as np
-        >>> x = np.array([3])
-        >>> x.repeat(4)
-        array([3, 3, 3, 3])
+        For full documentation refer to :obj:`dpnp.repeat`.
 
         """
 

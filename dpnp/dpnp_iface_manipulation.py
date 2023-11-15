@@ -979,10 +979,10 @@ def ravel(a, order="C"):
     Parameters
     ----------
     x : {dpnp_array, usm_ndarray}
-        Input array. The elements in a are read in the order specified by order,
+        Input array. The elements in `a` are read in the order specified by order,
         and packed as a 1-D array.
     order : {'C', 'F'}, optional
-        The elements of a are read using this index order. ``C`` means to index
+        The elements of `a` are read using this index order. ``C`` means to index
         the elements in row-major, C-style order, with the last axis index
         changing fastest, back to the first axis index changing slowest. ``F``
         means to index the elements in column-major, Fortran-style order, with
@@ -991,8 +991,8 @@ def ravel(a, order="C"):
 
     Returns
     -------
-    y : dpnp_array
-        `y` is a contiguous 1-D array of the same subtype as a, with shape (a.size,)
+    out : dpnp_array
+        `out` is a contiguous 1-D array of the same subtype as `a`, with shape (a.size,)
 
     See Also
     --------
@@ -1026,17 +1026,17 @@ def repeat(a, repeats, axis=None):
     ----------
     x : {dpnp_array, usm_ndarray}
         Input array.
-    repeat : Union[int, Tuple[int, ...]]
-        The number of repetitions for each element.
-        `repeats` is broadcasted to fit the shape of the given axis.
-    axis : Optional[int]
-        The axis along which to repeat values. The `axis` is required
-        if input array has more than one dimension.
+    repeat : int or array of int
+        The number of repetitions for each element. `repeats` is broadcasted to fit
+        the shape of the given axis.
+    axis : int, optional
+        The axis along which to repeat values. By default, use the flattened input array,
+        and return a flat output array.
 
     Returns
     -------
     out : dpnp_array
-        Array with repeated elements.
+        Output array which has the same shape as `a`, except along the given axis.
 
     See Also
     --------
@@ -1048,6 +1048,17 @@ def repeat(a, repeats, axis=None):
     >>> x = np.array([3])
     >>> np.repeat(x, 4)
     array([3, 3, 3, 3])
+
+    >>> x = np.array([[1,2], [3,4]])
+    >>> np.repeat(x, 2)
+    array([1, 1, 2, 2, 3, 3, 4, 4])
+    >>> np.repeat(x, 3, axis=1)
+    array([[1, 1, 1, 2, 2, 2],
+           [3, 3, 3, 4, 4, 4]])
+    >>> np.repeat(x, [1, 2], axis=0)
+    array([[1, 2],
+           [3, 4],
+           [3, 4]])
 
     """
 
