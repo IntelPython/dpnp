@@ -109,6 +109,12 @@
    .. automethod:: put
 
 
+   .. automethod:: ravel
+
+
+   .. automethod:: repeat
+
+
    .. automethod:: reshape
 
 

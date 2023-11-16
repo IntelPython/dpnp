@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.13.1dev0+79.gc31557cdc documentation</title>
+  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.13.1dev0+86.g96021f0f8 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=32cdc714"></script>
+        <script src="../_static/documentation_options.js?v=586ae628"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+79.gc31557cdc
+                0.13.1dev0+86.g96021f0f8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -101,12 +101,14 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.transpose.html">dpnp.ndarray.transpose</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.swapaxes.html">dpnp.ndarray.swapaxes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.flatten.html">dpnp.ndarray.flatten</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.ravel.html">dpnp.ndarray.ravel</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.squeeze.html">dpnp.ndarray.squeeze</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#item-selection-and-manipulation">Item selection and manipulation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.take.html">dpnp.ndarray.take</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.put.html">dpnp.ndarray.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.repeat.html">dpnp.ndarray.repeat</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.choose.html">dpnp.ndarray.choose</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
@@ -394,7 +396,10 @@ replaced with <code class="docutils literal notranslate"><span class="pre">n</sp
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.flatten.html#dpnp.ndarray.flatten" title="dpnp.ndarray.flatten"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.flatten</span></code></a></p></td>
 <td><p>Return a copy of the array collapsed into one dimension.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.squeeze.html#dpnp.ndarray.squeeze" title="dpnp.ndarray.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.squeeze</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.ravel.html#dpnp.ndarray.ravel" title="dpnp.ndarray.ravel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.ravel</span></code></a></p></td>
+<td><p>Return a contiguous flattened array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.squeeze.html#dpnp.ndarray.squeeze" title="dpnp.ndarray.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.squeeze</span></code></a></p></td>
 <td><p>Remove single-dimensional entries from the shape of an array.</p></td>
 </tr>
 </tbody>
@@ -414,19 +419,22 @@ the operation should proceed.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.put.html#dpnp.ndarray.put" title="dpnp.ndarray.put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.put</span></code></a></p></td>
 <td><p>Puts values of an array into another array along a given axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.choose.html#dpnp.ndarray.choose" title="dpnp.ndarray.choose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.choose</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.repeat.html#dpnp.ndarray.repeat" title="dpnp.ndarray.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.repeat</span></code></a></p></td>
+<td><p>Repeat elements of an array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.choose.html#dpnp.ndarray.choose" title="dpnp.ndarray.choose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.choose</span></code></a></p></td>
 <td><p>Construct an array from an index array and a set of arrays to choose from.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.argsort.html#dpnp.ndarray.argsort" title="dpnp.ndarray.argsort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.argsort</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.argsort.html#dpnp.ndarray.argsort" title="dpnp.ndarray.argsort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.argsort</span></code></a></p></td>
 <td><p>Return an ndarray of indices that sort the array along the specified axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.partition.html#dpnp.ndarray.partition" title="dpnp.ndarray.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.partition</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.partition.html#dpnp.ndarray.partition" title="dpnp.ndarray.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.partition</span></code></a></p></td>
 <td><p>Return a partitioned copy of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.nonzero.html#dpnp.ndarray.nonzero" title="dpnp.ndarray.nonzero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.nonzero</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.nonzero.html#dpnp.ndarray.nonzero" title="dpnp.ndarray.nonzero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.nonzero</span></code></a></p></td>
 <td><p>Return the indices of the elements that are non-zero.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.diagonal.html#dpnp.ndarray.diagonal" title="dpnp.ndarray.diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.diagonal</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.diagonal.html#dpnp.ndarray.diagonal" title="dpnp.ndarray.diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.diagonal</span></code></a></p></td>
 <td><p>Return specified diagonals.</p></td>
 </tr>
 </tbody>

@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.strides
-====================
-
-.. currentmodule:: dpnp
-
-.. autoproperty:: ndarray.strides
