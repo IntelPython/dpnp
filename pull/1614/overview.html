@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview &mdash; Data Parallel Extension for NumPy 0.13.1dev0+85.gde17f40e8 documentation</title>
+  <title>Overview &mdash; Data Parallel Extension for NumPy 0.13.1dev0+86.g92c29ef33 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=6fd20bf9"></script>
+        <script src="_static/documentation_options.js?v=efeeae4b"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+85.gde17f40e8
+                0.13.1dev0+86.g92c29ef33
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -103,13 +103,13 @@ on Anaconda cloud. Please refer the <a class="reference internal" href="quick_st
 </pre></div>
 </div>
 <p>The <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> class is a compatible alternative of
-<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">x</span></code> in the above example is an instance of <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> that
 is created identically to <code class="docutils literal notranslate"><span class="pre">NumPy*</span></code>’s one. The key difference of
-<a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> from <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> is that the memory
+<a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> from <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> is that the memory
 is allocated on the default <a class="reference external" href="https://www.khronos.org/sycl/">SYCL*</a> device, which is a <code class="docutils literal notranslate"><span class="pre">&quot;gpu&quot;</span></code> on systems
 with integrated or discrete GPU (otherwise it is the <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code> device
 on systems that do not have GPU).</p>

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.random.RandomState &mdash; Data Parallel Extension for NumPy 0.13.1dev0+85.gde17f40e8 documentation</title>
+  <title>dpnp.random.RandomState &mdash; Data Parallel Extension for NumPy 0.13.1dev0+86.g92c29ef33 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=6fd20bf9"></script>
+        <script src="../../_static/documentation_options.js?v=efeeae4b"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+85.gde17f40e8
+                0.13.1dev0+86.g92c29ef33
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -126,7 +126,7 @@
 <dt class="sig sig-object py" id="dpnp.random.RandomState">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.random.</span></span><span class="sig-name descname"><span class="pre">RandomState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_random_state.html#RandomState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.RandomState" title="Link to this definition"></a></dt>
 <dd><p>A container for the Mersenne Twister pseudo-random number generator.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>.</p>
+<p>For full documentation refer to <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -147,7 +147,7 @@ an instance of <code class="xref py py-class docutils literal notranslate"><span
 <dt class="sig sig-object py" id="dpnp.random.RandomState.get_state">
 <span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_random_state.html#RandomState.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.RandomState.get_state" title="Link to this definition"></a></dt>
 <dd><p>Return an internal state of the generator.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.get_state.html#numpy.random.RandomState.get_state" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.get_state</span></code></a>.</p>
+<p>For full documentation refer to <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.get_state</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>out</strong> – An object representing the internal state of the generator.</p>
@@ -190,7 +190,7 @@ an instance of <code class="xref py py-class docutils literal notranslate"><span
 <dt class="sig sig-object py" id="dpnp.random.RandomState.normal">
 <span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_random_state.html#RandomState.normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.RandomState.normal" title="Link to this definition"></a></dt>
 <dd><p>Draw random samples from a normal (Gaussian) distribution.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.normal.html#numpy.random.RandomState.normal" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.normal</span></code></a>.</p>
+<p>For full documentation refer to <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.normal</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
@@ -227,7 +227,7 @@ Parameter <cite>dtype</cite> is supported only as <code class="xref py py-obj do
 <dd><p>Draw random values in a given shape.</p>
 <p>Create an array of the given shape and populate it with random samples
 from a uniform distribution over [0, 1).</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.rand.html#numpy.random.RandomState.rand" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.rand</span></code></a>.</p>
+<p>For full documentation refer to <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.rand</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
@@ -262,7 +262,7 @@ Output array data type is <code class="xref py py-obj docutils literal notransla
 <dd><p>Draw random integers from <cite>low</cite> (inclusive) to <cite>high</cite> (exclusive).</p>
 <p>Return random integers from the “discrete uniform” distribution of the specified type
 in the “half-open” interval [low, high).</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.randint.html#numpy.random.RandomState.randint" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.randint</span></code></a>.</p>
+<p>For full documentation refer to <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.randint</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
@@ -300,7 +300,7 @@ Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class
 <dt class="sig sig-object py" id="dpnp.random.RandomState.randn">
 <span class="sig-name descname"><span class="pre">randn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_random_state.html#RandomState.randn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.RandomState.randn" title="Link to this definition"></a></dt>
 <dd><p>Return a sample (or samples) from the “standard normal” distribution.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.randn.html#numpy.random.RandomState.randn" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.randn</span></code></a>.</p>
+<p>For full documentation refer to <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.randn</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
@@ -341,7 +341,7 @@ mean 3 and standard deviation 2.5:</p>
 <span class="sig-name descname"><span class="pre">random_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_random_state.html#RandomState.random_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.RandomState.random_sample" title="Link to this definition"></a></dt>
 <dd><p>Draw random floats in the half-open interval [0.0, 1.0).</p>
 <p>Results are from the “continuous uniform” distribution over the interval.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.random_sample.html#numpy.random.RandomState.random_sample" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.random_sample</span></code></a>.</p>
+<p>For full documentation refer to <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.random_sample</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
@@ -372,7 +372,7 @@ or <code class="xref py py-obj docutils literal notranslate"><span class="pre">d
 <dt class="sig sig-object py" id="dpnp.random.RandomState.standard_normal">
 <span class="sig-name descname"><span class="pre">standard_normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_random_state.html#RandomState.standard_normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.RandomState.standard_normal" title="Link to this definition"></a></dt>
 <dd><p>Draw samples from a standard Normal distribution (mean=0, stdev=1).</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.standard_normal.html#numpy.random.RandomState.standard_normal" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.standard_normal</span></code></a>.</p>
+<p>For full documentation refer to <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.standard_normal</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
@@ -407,7 +407,7 @@ or <code class="xref py py-obj docutils literal notranslate"><span class="pre">d
 <dd><p>Draw samples from a uniform distribution.</p>
 <p>Samples are uniformly distributed over the half-open interval [low, high) (includes low, but excludes high).
 In other words, any value within the given interval is equally likely to be drawn by uniform.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.uniform.html#numpy.random.RandomState.uniform" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.uniform</span></code></a>.</p>
+<p>For full documentation refer to <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.uniform</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p>
