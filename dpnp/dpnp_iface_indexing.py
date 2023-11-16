@@ -327,23 +327,51 @@ def indices(
     ----------
     dimensions : sequence of ints
         The shape of the grid.
-
     dtype : dtype, optional
         Data type of the result.
-
     sparse : boolean, optional
         Return a sparse representation of the grid instead of a dense representation.
-        Default is False.
+        Default is ``False``.
 
     Returns
     -------
-    grid : one dpnp.ndarray or tuple of dpnp.ndarray
-        If sparse is False:
+    out : one dpnp.ndarray or tuple of dpnp.ndarray
+        If sparse is ``False``:
         Returns one array of grid indices, grid.shape = (len(dimensions),) + tuple(dimensions).
 
-        If sparse is True:
+        If sparse is ``True``:
         Returns a tuple of arrays, with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
         with dimensions[i] in the ith place.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> grid = np.indices((2, 3))
+    >>> grid.shape
+    (2, 2, 3)
+    >>> grid[0]
+    array([[0, 0, 0],
+           [1, 1, 1]])
+    >>> grid[1]
+    array([[0, 1, 2],
+           [0, 1, 2]])
+
+    >>> x = np.arange(20).reshape(5, 4)
+    >>> row, col = np.indices((2, 3))
+    >>> x[row, col]
+    array([[0, 1, 2],
+           [4, 5, 6]])
+
+    >>> i, j = np.indices((2, 3), sparse=True)
+    >>> i.shape
+    (2, 1)
+    >>> j.shape
+    (1, 3)
+    >>> i
+    array([[0],
+           [1]])
+    >>> j
+    array([[0, 1, 2]])
 
     """
 
