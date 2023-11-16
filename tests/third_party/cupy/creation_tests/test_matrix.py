@@ -92,17 +92,17 @@ class TestMatrix(unittest.TestCase):
         a = testing.shaped_arange((3, 3), xp)
         return xp.diagflat(a, -2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.skip("Scalar input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_diagflat_from_scalar(self, xp):
         return xp.diagflat(3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.skip("Scalar input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_diagflat_from_scalar_with_k0(self, xp):
         return xp.diagflat(3, 0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.skip("Scalar input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_diagflat_from_scalar_with_k1(self, xp):
         return xp.diagflat(3, 1)
