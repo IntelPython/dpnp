@@ -976,27 +976,44 @@ def ravel(a, order="C"):
 
     For full documentation refer to :obj:`numpy.ravel`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    x : {dpnp_array, usm_ndarray}
+        Input array. The elements in `a` are read in the order specified by order,
+        and packed as a 1-D array.
+    order : {'C', 'F'}, optional
+        The elements of `a` are read using this index order. ``C`` means to index
+        the elements in row-major, C-style order, with the last axis index
+        changing fastest, back to the first axis index changing slowest. ``F``
+        means to index the elements in column-major, Fortran-style order, with
+        the first index changing fastest, and the last index changing slowest.
+        By default, ``C`` index order is used.
+
+    Returns
+    -------
+    out : dpnp_array
+        `out` is a contiguous 1-D array of the same subtype as `a`, with shape (a.size,)
+
+    See Also
+    --------
+    :obj:`dpnp.reshape` : Change the shape of an array without changing its data.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([[1, 2, 3], [4, 5, 6]])
-    >>> out = np.ravel(x)
-    >>> [i for i in out]
-    [1, 2, 3, 4, 5, 6]
+    >>> np.ravel(x)
+    array([1, 2, 3, 4, 5, 6])
+
+    >>> x.reshape(-1)
+    array([1, 2, 3, 4, 5, 6])
+
+    >>> np.ravel(x, order='F')
+    array([1, 4, 2, 5, 3, 6])
 
     """
 
-    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
-    if a_desc:
-        return dpnp_flatten(a_desc).get_pyobj()
-
-    return call_origin(numpy.ravel, a, order=order)
+    return dpnp.reshape(a, -1, order=order)
 
 
 def repeat(a, repeats, axis=None):
@@ -1005,39 +1022,55 @@ def repeat(a, repeats, axis=None):
 
     For full documentation refer to :obj:`numpy.repeat`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter `axis` is supported with value either ``None`` or ``0``.
-    Dimension of input array are supported to be less than ``2``.
-    Otherwise the function will be executed sequentially on CPU.
-    If `repeats` is ``tuple`` or ``list``, should be ``len(repeats) > 1``.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    x : {dpnp_array, usm_ndarray}
+        Input array.
+    repeat : int or array of int
+        The number of repetitions for each element. `repeats` is broadcasted to fit
+        the shape of the given axis.
+    axis : int, optional
+        The axis along which to repeat values. By default, use the flattened input array,
+        and return a flat output array.
 
-    .. seealso:: :obj:`numpy.tile` tile an array.
+    Returns
+    -------
+    out : dpnp_array
+        Output array which has the same shape as `a`, except along the given axis.
+
+    See Also
+    --------
+    :obj:`dpnp.tile` : Construct an array by repeating A the number of times given by reps.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.repeat(3, 4)
-    >>> [i for i in x]
-    [3, 3, 3, 3]
+    >>> x = np.array([3])
+    >>> np.repeat(x, 4)
+    array([3, 3, 3, 3])
+
+    >>> x = np.array([[1,2], [3,4]])
+    >>> np.repeat(x, 2)
+    array([1, 1, 2, 2, 3, 3, 4, 4])
+    >>> np.repeat(x, 3, axis=1)
+    array([[1, 1, 1, 2, 2, 2],
+           [3, 3, 3, 4, 4, 4]])
+    >>> np.repeat(x, [1, 2], axis=0)
+    array([[1, 2],
+           [3, 4],
+           [3, 4]])
 
     """
 
-    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
-    if a_desc:
-        if axis is not None and axis != 0:
-            pass
-        elif a_desc.ndim >= 2:
-            pass
-        elif not dpnp.isscalar(repeats) and len(repeats) > 1:
-            pass
-        else:
-            repeat_val = repeats if dpnp.isscalar(repeats) else repeats[0]
-            return dpnp_repeat(a_desc, repeat_val, axis).get_pyobj()
-
-    return call_origin(numpy.repeat, a, repeats, axis)
+    rep = repeats
+    if isinstance(repeats, dpnp_array):
+        rep = dpnp.get_usm_ndarray(repeats)
+    if axis is None and a.ndim > 1:
+        usm_arr = dpnp.get_usm_ndarray(a.flatten())
+    else:
+        usm_arr = dpnp.get_usm_ndarray(a)
+    usm_arr = dpt.repeat(usm_arr, rep, axis=axis)
+    return dpnp_array._create_from_usm_ndarray(usm_arr)
 
 
 def reshape(a, /, newshape, order="C", copy=None):
