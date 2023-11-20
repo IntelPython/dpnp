@@ -9,7 +9,7 @@ on:
 env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
-  CHANNELS: '-c dppy/label/dev -c intel/label/validation -c intel -c conda-forge --override-channels'
+  CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   # TODO: to add test_arraymanipulation.py back to the scope once crash on Windows is gone
   TEST_SCOPE: >-
       test_arraycreation.py
@@ -328,7 +328,7 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Install opencl_rt
-        run: conda install opencl_rt -c intel/label/validation -c intel --override-channels
+        run: conda install opencl_rt -c intel --override-channels
 
       - name: Install dpnp
         run: |
