@@ -565,6 +565,35 @@ class TestSolve:
         result = inp.linalg.solve(a_dp[::-2, ::-2], b_dp[::-2])
         assert_allclose(expected, result, rtol=1e-05)
 
+    @pytest.mark.parametrize(
+        "matrix, vector",
+        [
+            ([[1, 2], [2, 4]], [1, 2]),
+            ([[0, 0], [0, 0]], [0, 0]),
+            ([[1, 1], [1, 1]], [2, 2]),
+            ([[2, 4], [1, 2]], [3, 1.5]),
+            ([[1, 2], [0, 0]], [3, 0]),
+            ([[1, 0], [2, 0]], [3, 4]),
+        ],
+        ids=[
+            "Linearly dependent rows",
+            "Zero matrix",
+            "Identical rows",
+            "Linearly dependent columns",
+            "Zero row",
+            "Zero column",
+        ],
+    )
+    def test_solve_singular_matrix(self, matrix, vector):
+        a_np = numpy.array(matrix, dtype="float32")
+        b_np = numpy.array(vector, dtype="float32")
+
+        a_dp = inp.array(a_np)
+        b_dp = inp.array(b_np)
+
+        assert_raises(numpy.linalg.LinAlgError, numpy.linalg.solve, a_np, b_np)
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.solve, a_dp, b_dp)
+
     def test_solve_errors(self):
         a_dp = inp.array([[1, 0.5], [0.5, 1]], dtype="float32")
         b_dp = inp.array(a_dp, dtype="float32")
