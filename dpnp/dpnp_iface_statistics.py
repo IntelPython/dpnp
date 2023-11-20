@@ -60,6 +60,7 @@ __all__ = [
     "mean",
     "median",
     "min",
+    "ptp",
     "nanvar",
     "std",
     "var",
@@ -690,6 +691,49 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
             dpnp.copyto(out, result, casting="safe")
 
             return out
+
+
+def ptp(
+    a,
+    /,
+    axis=None,
+    out=None,
+    keepdims=False,
+):
+    """
+    Range of values (maximum - minimum) along an axis.
+
+    For full documentation refer to :obj:`numpy.ptp`.
+
+    Returns
+    -------
+    ptp : dpnp.ndarray
+        The range of a given array.
+
+    Limitations
+    -----------
+    Input array is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([[4, 9, 2, 10],[6, 9, 7, 12]])
+    >>> np.ptp(x, axis=1)
+    array([8, 6])
+
+    >>> np.ptp(x, axis=0)
+    array([2, 0, 5, 2])
+
+    >>> np.ptp(x)
+    array(10)
+
+    """
+
+    return dpnp.subtract(
+        dpnp.max(a, axis=axis, keepdims=keepdims, out=out),
+        dpnp.min(a, axis=axis, keepdims=keepdims),
+        out=out,
+    )
 
 
 def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):

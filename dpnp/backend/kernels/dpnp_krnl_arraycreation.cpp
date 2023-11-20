@@ -201,18 +201,6 @@ void (*dpnp_diag_default_c)(void *,
                             const size_t) = dpnp_diag_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_diag_ext_c)(DPCTLSyclQueueRef,
-                                     void *,
-                                     void *,
-                                     const int,
-                                     shape_elem_type *,
-                                     shape_elem_type *,
-                                     const size_t,
-                                     const size_t,
-                                     const DPCTLEventVectorRef) =
-    dpnp_diag_c<_DataType>;
-
-template <typename _DataType>
 DPCTLSyclEventRef dpnp_eye_c(DPCTLSyclQueueRef q_ref,
                              void *result1,
                              int k,
@@ -569,23 +557,6 @@ void (*dpnp_ptp_default_c)(void *,
                            const shape_elem_type *,
                            const size_t) = dpnp_ptp_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_ptp_ext_c)(DPCTLSyclQueueRef,
-                                    void *,
-                                    const size_t,
-                                    const size_t,
-                                    const shape_elem_type *,
-                                    const shape_elem_type *,
-                                    const void *,
-                                    const size_t,
-                                    const size_t,
-                                    const shape_elem_type *,
-                                    const shape_elem_type *,
-                                    const shape_elem_type *,
-                                    const size_t,
-                                    const DPCTLEventVectorRef) =
-    dpnp_ptp_c<_DataType>;
-
 template <typename _DataType_input, typename _DataType_output>
 DPCTLSyclEventRef dpnp_vander_c(DPCTLSyclQueueRef q_ref,
                                 const void *array1_in,
@@ -671,16 +642,6 @@ void (*dpnp_vander_default_c)(const void *,
                               const size_t,
                               const size_t,
                               const int) =
-    dpnp_vander_c<_DataType_input, _DataType_output>;
-
-template <typename _DataType_input, typename _DataType_output>
-DPCTLSyclEventRef (*dpnp_vander_ext_c)(DPCTLSyclQueueRef,
-                                       const void *,
-                                       void *,
-                                       const size_t,
-                                       const size_t,
-                                       const int,
-                                       const DPCTLEventVectorRef) =
     dpnp_vander_c<_DataType_input, _DataType_output>;
 
 template <typename _DataType, typename _ResultType>
@@ -1192,15 +1153,6 @@ void func_map_init_arraycreation(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_DIAG][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_diag_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_DIAG_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_diag_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIAG_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_diag_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIAG_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_diag_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_DIAG_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_diag_ext_c<double>};
-
     fmap[DPNPFuncName::DPNP_FN_EYE][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_eye_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_EYE][eft_LNG][eft_LNG] = {
@@ -1284,15 +1236,6 @@ void func_map_init_arraycreation(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_PTP][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_ptp_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_PTP_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_ptp_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_PTP_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_ptp_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_PTP_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_ptp_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_PTP_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_ptp_ext_c<double>};
-
     fmap[DPNPFuncName::DPNP_FN_VANDER][eft_INT][eft_INT] = {
         eft_LNG, (void *)dpnp_vander_default_c<int32_t, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_VANDER][eft_LNG][eft_LNG] = {
@@ -1307,23 +1250,6 @@ void func_map_init_arraycreation(func_map_t &fmap)
         eft_C128,
         (void *)
             dpnp_vander_default_c<std::complex<double>, std::complex<double>>};
-
-    fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_INT][eft_INT] = {
-        eft_LNG, (void *)dpnp_vander_ext_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_vander_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_vander_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_vander_ext_c<double, double>};
-    fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_BLN][eft_BLN] = {
-        eft_LNG, (void *)dpnp_vander_ext_c<bool, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_C64][eft_C64] = {
-        eft_C64,
-        (void *)dpnp_vander_ext_c<std::complex<float>, std::complex<float>>};
-    fmap[DPNPFuncName::DPNP_FN_VANDER_EXT][eft_C128][eft_C128] = {
-        eft_C128,
-        (void *)dpnp_vander_ext_c<std::complex<double>, std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_TRACE][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_trace_default_c<int32_t, int32_t>};
