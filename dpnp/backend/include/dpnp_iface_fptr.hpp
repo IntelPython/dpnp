@@ -170,8 +170,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FILL_DIAGONAL_EXT, /**< Used in numpy.fill_diagonal() impl, requires
                                   extra parameters */
     DPNP_FN_FLATTEN,           /**< Used in numpy.flatten() impl  */
-    DPNP_FN_FLATTEN_EXT,       /**< Used in numpy.flatten() impl, requires extra
-                                  parameters  */
     DPNP_FN_FLOOR,             /**< Used in numpy.floor() impl  */
     DPNP_FN_FLOOR_DIVIDE,      /**< Used in numpy.floor_divide() impl  */
     DPNP_FN_FLOOR_DIVIDE_EXT,  /**< Used in numpy.floor_divide() impl, requires
@@ -252,8 +250,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RECIP_EXT,    /**< Used in numpy.recip() impl, requires extra
                              parameters */
     DPNP_FN_REPEAT,       /**< Used in numpy.repeat() impl  */
-    DPNP_FN_REPEAT_EXT,   /**< Used in numpy.repeat() impl, requires extra
-                             parameters */
     DPNP_FN_RIGHT_SHIFT,  /**< Used in numpy.right_shift() impl  */
     DPNP_FN_RNG_BETA,     /**< Used in numpy.random.beta() impl  */
     DPNP_FN_RNG_BETA_EXT, /**< Used in numpy.random.beta() impl, requires extra
