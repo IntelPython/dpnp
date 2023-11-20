@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev1+1.g630dae25 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev1+2.g5bcf910be documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=272276ed"></script>
+        <script src="../../_static/documentation_options.js?v=22a3c728"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+1.g630dae25
+                0.13.1dev1+2.g5bcf910be
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -148,6 +148,7 @@
     <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
     <span class="s2">&quot;median&quot;</span><span class="p">,</span>
     <span class="s2">&quot;min&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ptp&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nanvar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;std&quot;</span><span class="p">,</span>
     <span class="s2">&quot;var&quot;</span><span class="p">,</span>
@@ -810,6 +811,52 @@
             <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">out</span></div>
+
+
+
+<div class="viewcode-block" id="ptp">
+<a class="viewcode-back" href="../../reference/generated/dpnp.ptp.html#dpnp.ptp">[docs]</a>
+<span class="k">def</span> <span class="nf">ptp</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Range of values (maximum - minimum) along an axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.ptp`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ptp : dpnp.ndarray</span>
+<span class="sd">        The range of a given array.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Input array is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([[4, 9, 2, 10],[6, 9, 7, 12]])</span>
+<span class="sd">    &gt;&gt;&gt; np.ptp(x, axis=1)</span>
+<span class="sd">    array([8, 6])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.ptp(x, axis=0)</span>
+<span class="sd">    array([2, 0, 5, 2])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.ptp(x)</span>
+<span class="sd">    array(10)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">),</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">),</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
