@@ -55,16 +55,28 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
 
     For full documentation refer to :obj:`numpy.argmax`.
 
+    Parameters
+    ----------
+    a :  {dpnp_array, usm_ndarray}
+        Input array.
+    axis : int, optional
+        By default, the index is into the flattened array, otherwise
+        along the specified axis.
+    out :  {dpnp_array, usm_ndarray}, optional
+        If provided, the result will be inserted into this array. It should
+        be of the appropriate shape and dtype.
+    keepdims : bool, optional
+        If this is set to True, the axes which are reduced are left
+        in the result as dimensions with size one. With this option,
+        the result will broadcast correctly against the array.
+
     Returns
     -------
     out : dpnp.ndarray
-        Indices of maximum value of `a`.
-
-    Limitations
-    -----------
-    Input and output arrays are only supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+        Indices of maximum value of `a`. It has the same shape as `a.shape`
+        with the dimension along `axis` removed. If `keepdims` is set to True,
+        then the size of `axis` will be 1 with the resulting array having same
+        shape as `a.shape`.
 
     See Also
     --------
@@ -142,16 +154,28 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
 
     For full documentation refer to :obj:`numpy.argmin`.
 
+    Parameters
+    ----------
+    a : {dpnp_array, usm_ndarray}
+        Input array.
+    axis : int, optional
+        By default, the index is into the flattened array, otherwise
+        along the specified axis.
+    out : {dpnp_array, usm_ndarray}, optional
+        If provided, the result will be inserted into this array. It should
+        be of the appropriate shape and dtype.
+    keepdims : bool, optional
+        If this is set to True, the axes which are reduced are left
+        in the result as dimensions with size one. With this option,
+        the result will broadcast correctly against the array.
+
     Returns
     -------
     out : dpnp.ndarray
-        Indices of minimum value of `a`.
-
-    Limitations
-    -----------
-    Input and output arrays are only supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+        Indices of minimum value of `a`. It has the same shape as `a.shape`
+        with the dimension along `axis` removed. If `keepdims` is set to True,
+        then the size of `axis` will be 1 with the resulting array having same
+        shape as `a.shape`.
 
     See Also
     --------
