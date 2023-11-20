@@ -486,7 +486,7 @@ class dpnp_array:
             self, axis=axis, out=out, keepdims=keepdims, where=where
         )
 
-    def argmax(self, axis=None, out=None):
+    def argmax(self, axis=None, out=None, *, keepdims=False):
         """
         Returns array of indices of the maximum values along the given axis.
 
@@ -495,7 +495,7 @@ class dpnp_array:
         """
         return dpnp.argmax(self, axis, out)
 
-    def argmin(self, axis=None, out=None):
+    def argmin(self, axis=None, out=None, *, keepdims=False):
         """
         Return array of indices to the minimum values along the given axis.
 
