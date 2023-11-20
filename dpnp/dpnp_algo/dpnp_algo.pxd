@@ -64,8 +64,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_DEGREES_EXT
         DPNP_FN_DET
         DPNP_FN_DET_EXT
-        DPNP_FN_DIAG
-        DPNP_FN_DIAG_EXT
         DPNP_FN_DIAG_INDICES
         DPNP_FN_DIAG_INDICES_EXT
         DPNP_FN_DIAGONAL
@@ -120,8 +118,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_PARTITION
         DPNP_FN_PARTITION_EXT
         DPNP_FN_PLACE
-        DPNP_FN_PTP
-        DPNP_FN_PTP_EXT
         DPNP_FN_QR
         DPNP_FN_QR_EXT
         DPNP_FN_RADIANS
@@ -218,8 +214,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TRIL_EXT
         DPNP_FN_TRIU
         DPNP_FN_TRIU_EXT
-        DPNP_FN_VANDER
-        DPNP_FN_VANDER_EXT
         DPNP_FN_VAR
         DPNP_FN_VAR_EXT
         DPNP_FN_ZEROS

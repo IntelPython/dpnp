@@ -59,19 +59,16 @@ class TestMatrix(unittest.TestCase):
         self.assertIsInstance(r, xp.ndarray)
         return r
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_diag_scaler(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
                 xp.diag(1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_diag_0dim(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
                 xp.diag(xp.zeros(()))
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_diag_3dim(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
@@ -92,17 +89,14 @@ class TestMatrix(unittest.TestCase):
         a = testing.shaped_arange((3, 3), xp)
         return xp.diagflat(a, -2)
 
-    @pytest.mark.skip("Scalar input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_diagflat_from_scalar(self, xp):
         return xp.diagflat(3)
 
-    @pytest.mark.skip("Scalar input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_diagflat_from_scalar_with_k0(self, xp):
         return xp.diagflat(3, 0)
 
-    @pytest.mark.skip("Scalar input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_diagflat_from_scalar_with_k1(self, xp):
         return xp.diagflat(3, 1)
@@ -183,3 +177,41 @@ class TestTriLowerAndUpper(unittest.TestCase):
     def test_triu_posi(self, xp, dtype):
         m = testing.shaped_arange(self.shape, xp, dtype)
         return xp.triu(m, k=1)
+
+
+@testing.parameterize(
+    *testing.product({"N": [None, 0, 1, 2, 3], "increasing": [False, True]})
+)
+class TestVander(unittest.TestCase):
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose(type_check=False)
+    def test_vander(self, xp, dtype):
+        a = testing.shaped_arange((3,), xp, dtype=dtype)
+        return xp.vander(a, N=self.N, increasing=self.increasing)
+
+    @testing.numpy_cupy_allclose()
+    def test_vander_array_like_list(self, xp):
+        a = [0, 1, 2, 3, 4, 5, 6]
+        return xp.vander(a, N=self.N, increasing=self.increasing)
+
+    @testing.numpy_cupy_allclose()
+    def test_vander_array_like_tuple(self, xp):
+        a = (0, 1, 2, 3, 4, 5, 6)
+        return xp.vander(a, N=self.N, increasing=self.increasing)
+
+    def test_vander_scalar(self):
+        for xp in (numpy, cupy):
+            with pytest.raises(ValueError):
+                xp.vander(1, N=self.N, increasing=self.increasing)
+
+    def test_vander_0dim(self):
+        for xp in (numpy, cupy):
+            a = xp.zeros(())
+            with pytest.raises(ValueError):
+                xp.vander(a, N=self.N, increasing=self.increasing)
+
+    def test_vander_2dim(self):
+        for xp in (numpy, cupy):
+            m = xp.zeros((2, 2))
+            with pytest.raises(ValueError):
+                xp.vander(m, N=self.N, increasing=self.increasing)
