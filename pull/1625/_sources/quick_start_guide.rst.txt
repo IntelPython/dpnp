@@ -1,0 +1,148 @@
+.. _quick_start_guide:
+.. include:: ./ext_links.txt
+
+.. |copy| unicode:: U+000A9
+
+.. |trade| unicode:: U+2122
+
+=================
+Quick Start Guide
+=================
+
+Device Drivers
+=================
+
+To start programming data parallel devices beyond CPU, you will need
+an appropriate hardware. The Data Parallel Extension for NumPy* works fine
+on Intel |copy| laptops with integrated graphics. In majority of cases,
+your Windows*-based laptop already has all necessary device drivers installed.
+But if you want the most up-to-date driver, you can always
+`update it to the latest one <https://www.intel.com/content/www/us/en/download-center/home.html>`_.
+Follow device driver installation instructions to complete the step.
+
+
+Python Interpreter
+=================
+
+You will need Python 3.8, 3.9, or 3.10 installed on your system. If you
+do not have one yet the easiest way to do that is to install
+`Intel Distribution for Python*`_. It installs all essential Python numerical
+and machine learning packages optimized for the Intel hardware, including
+Data Parallel Extension for NumPy*.
+If you have Python installation from another vendor, it is fine too. All you
+need is to install Data Parallel Extension for NumPy* manually as shown
+in the next installation section.
+
+
+Installation
+============
+
+Install Package from Anaconda
+---------------------
+
+It is recommended to use conda packages from the ``anaconda.org/intel``
+channel. You will need one of the commands below:
+
+* Conda: ``conda install dpnp -c intel -c conda-forge``
+
+* Pip: ``pip install -i https://pypi.anaconda.org/intel/simple dpnp``
+
+These commands install dpnp package along with its dependencies, including
+``dpctl`` package with `Data Parallel Control Library`_ and all required
+compiler runtimes and OneMKL.
+
+.. note::
+   Before installing with conda or pip it is strongly advised to update ``conda`` and ``pip`` to latest versions
+
+
+Build and Install Conda Package
+-------------------------------
+
+Alternatively you can create and activate a local conda build environment:
+
+.. code-block:: bash
+
+    conda create -n build-env conda-build
+    conda activate build-env
+
+And to build dpnp package from the sources:
+
+.. code-block:: bash
+
+    conda build conda-recipe -c intel -c conda-forge
+
+Finanly, to install the result package:
+
+.. code-block:: bash
+
+    conda install dpnp -c local
+
+
+Build and Install with scikit-build
+-----------------------------------
+
+Another way to build and install dpnp package from the source is to use Python
+``setuptools`` and ``scikit-build``. You will need to create a local conda
+build environment by command below depending on hosting OS.
+
+On Linux:
+
+.. code-block:: bash
+
+    conda create -n build-env dpctl cython dpcpp_linux-64 mkl-devel-dpcpp tbb-devel onedpl-devel cmake scikit-build ninja pytest -c intel -c conda-forge
+    conda activate build-env
+
+On Windows:
+
+.. code-block:: bash
+
+    conda create -n build-env dpctl cython dpcpp_win-64 mkl-devel-dpcpp tbb-devel onedpl-devel cmake scikit-build ninja pytest -c intel -c conda-forge
+    conda activate build-env
+
+To build and install the package on Linux OS, run:
+
+.. code-block:: bash
+
+    python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
+
+To build and install the package on Windows OS, run:
+
+.. code-block:: bash
+
+    python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx
+
+Alternatively, to develop on Linux OS, you can use the driver script:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py
+
+
+Testing
+=======
+
+If you want to execute the scope of Python test suites which are available
+by the source, you will need to run a command as below:
+
+.. code-block:: bash
+
+    pytest -s tests
+
+Examples
+========
+
+The examples below demonstrates a simple usage of the Data Parallel Extension for NumPy*
+
+.. literalinclude:: ../examples/example_sum.py
+  :linenos:
+  :language: python
+  :lines: 35-
+  :caption: How to create an array and to sum the elements
+
+.. literalinclude:: ../examples/example_cfd.py
+  :linenos:
+  :language: python
+  :lines: 34-
+  :caption: How to create an array on the specific device type and how the next computations follow it
+
+More examples on how to use ``dpnp`` can be found in ``dpnp/examples``.
