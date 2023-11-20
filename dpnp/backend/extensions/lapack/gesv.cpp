@@ -147,7 +147,7 @@ static sycl::event gesv_impl(sycl::queue exec_q,
         sycl_exception_caught = true;
     }
 
-    if (info != 0 || sycl_exception_caught) // an unexected error occurs
+    if (info != 0 || sycl_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
             sycl::free(scratchpad, exec_q);

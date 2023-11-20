@@ -5,7 +5,7 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp as inp
 
-from .helper import get_all_dtypes, has_support_aspect64
+from .helper import assert_dtype_allclose, get_all_dtypes, has_support_aspect64
 
 
 def vvsort(val, vec, size, xp):
@@ -534,11 +534,7 @@ class TestSolve:
         result = inp.linalg.solve(a_dp, b_dp)
 
         assert_allclose(expected, result, rtol=1e-06)
-
-        if has_support_aspect64():
-            assert expected.dtype == result.dtype
-        else:
-            assert expected.dtype.kind == result.dtype.kind
+        assert_dtype_allclose(result, expected)
 
     def test_solve_strides(self):
         a_np = numpy.array(

@@ -41,8 +41,8 @@ namespace py = pybind11;
 // populate dispatch vectors
 void init_dispatch_vectors(void)
 {
-    lapack_ext::init_syevd_dispatch_vector();
     lapack_ext::init_gesv_dispatch_vector();
+    lapack_ext::init_syevd_dispatch_vector();
 }
 
 // populate dispatch tables

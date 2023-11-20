@@ -51,7 +51,6 @@ def _common_type(*arrays):
 
     Key differences from `numpy.common_type`:
     - It accepts ``bool_`` arrays.
-    - It doesn't consider ``float16`` arrays since they are not supported.
     - The default floating-point data type is determined by the capabilities of the device,
       as indicated by `dpnp.default_float_type()`.
 
@@ -235,7 +234,7 @@ def dpnp_solve(a, b):
 
     res_type = _common_type(a, b)
     if b.size == 0:
-        return dpnp.empty(b_shape, dtype=res_type)
+        return dpnp.empty_like(b, dtype=res_type)
 
     if a.ndim > 2:
         reshape = False
