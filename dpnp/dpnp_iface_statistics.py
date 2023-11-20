@@ -414,26 +414,7 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
             dpt.max(dpt_array, axis=axis, keepdims=keepdims)
         )
 
-        if out is None:
-            return result
-        else:
-            if out.shape != result.shape:
-                raise ValueError(
-                    f"Output array of shape {result.shape} is needed, got {out.shape}."
-                )
-            elif not isinstance(out, dpnp_array):
-                if isinstance(out, dpt.usm_ndarray):
-                    out = dpnp_array._create_from_usm_ndarray(out)
-                else:
-                    raise TypeError(
-                        "Output array must be any of supported type, but got {}".format(
-                            type(out)
-                        )
-                    )
-
-            dpnp.copyto(out, result, casting="safe")
-
-            return out
+        return dpnp._copyto(result, out)
 
 
 def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
@@ -638,7 +619,7 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         )
     elif where is not True:
         raise NotImplementedError(
-            "where keyword argument is only supported by its default values."
+            "where keyword argument is only supported by its default value."
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
@@ -646,26 +627,7 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
             dpt.min(dpt_array, axis=axis, keepdims=keepdims)
         )
 
-        if out is None:
-            return result
-        else:
-            if out.shape != result.shape:
-                raise ValueError(
-                    f"Output array of shape {result.shape} is needed, got {out.shape}."
-                )
-            elif not isinstance(out, dpnp_array):
-                if isinstance(out, dpt.usm_ndarray):
-                    out = dpnp_array._create_from_usm_ndarray(out)
-                else:
-                    raise TypeError(
-                        "Output array must be any of supported type, but got {}".format(
-                            type(out)
-                        )
-                    )
-
-            dpnp.copyto(out, result, casting="safe")
-
-            return out
+        return dpnp._copyto(result, out)
 
 
 def ptp(

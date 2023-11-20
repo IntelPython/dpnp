@@ -69,6 +69,7 @@ __all__ = [
     "get_usm_ndarray_or_scalar",
     "is_supported_array_or_scalar",
     "is_supported_array_type",
+    "_copyto",
 ]
 
 from dpnp import float64, isscalar
@@ -516,3 +517,46 @@ def is_supported_array_type(a):
     """
 
     return isinstance(a, (dpnp_array, dpt.usm_ndarray))
+
+
+def _copyto(a, out=None):
+    """
+    If `out` is provided, `a` will be inserted into this array.
+    Otherwise, `a` is returned.
+
+    Parameters
+    ----------
+    a : {dpnp_array}
+        An input array.
+
+    out : {dpnp_array, usm_ndarray}
+        If provided, the input will be inserted into this array.
+        It should be of the appropriate shape.
+
+    Returns
+    -------
+    out : {dpnp_array}
+        Return `out` if provided, otherwise return `a`.
+
+    """
+
+    if out is None:
+        return a
+    else:
+        if out.shape != a.shape:
+            raise ValueError(
+                f"Output array of shape {a.shape} is needed, got {out.shape}."
+            )
+        elif not isinstance(out, dpnp_array):
+            if isinstance(out, dpt.usm_ndarray):
+                out = dpnp_array._create_from_usm_ndarray(out)
+            else:
+                raise TypeError(
+                    "Output array must be any of supported type, but got {}".format(
+                        type(out)
+                    )
+                )
+
+        dpnp.copyto(out, a, casting="safe")
+
+        return out
