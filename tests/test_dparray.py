@@ -233,3 +233,16 @@ def test_array_as_index(shape, index_dtype):
     ind_arr = dpnp.ones(shape, dtype=index_dtype)
     a = numpy.arange(ind_arr.size + 1)
     assert a[tuple(ind_arr)] == a[1]
+
+
+def test_ravel():
+    a = dpnp.ones((2, 2))
+    b = a.ravel()
+    a[0, 0] = 5
+    assert_array_equal(a.ravel(), b)
+
+
+def test_repeat():
+    numpy_array = numpy.arange(4).repeat(3)
+    dpnp_array = dpnp.arange(4).repeat(3)
+    assert_array_equal(numpy_array, dpnp_array)
