@@ -118,7 +118,8 @@ cpdef utils.dpnp_descriptor dpnp_cholesky(utils.dpnp_descriptor input_):
 
 cpdef object dpnp_cond(object input, object p):
     if p in ('f', 'fro'):
-        input = dpnp.ravel(input, order='K')
+        # TODO: change order='K' when support is implemented
+        input = dpnp.ravel(input, order='C')
         sqnorm = dpnp.dot(input, input)
         res = dpnp.sqrt(sqnorm)
         ret = dpnp.array([res])
@@ -368,7 +369,8 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
             (ord in ('f', 'fro') and ndim == 2) or
                 (ord == 2 and ndim == 1)):
 
-            input = dpnp.ravel(input, order='K')
+            # TODO: change order='K' when support is implemented
+            input = dpnp.ravel(input, order='C')
             sqnorm = dpnp.dot(input, input)
             ret = dpnp.sqrt([sqnorm], dtype=res_type)
             return dpnp.array(ret.reshape(1, *ret.shape), dtype=res_type)

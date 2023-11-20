@@ -6,7 +6,6 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
-@testing.gpu
 class TestCount(unittest.TestCase):
     @testing.for_all_dtypes()
     def test_count_nonzero(self, dtype):
@@ -17,12 +16,12 @@ class TestCount(unittest.TestCase):
             if xp is cupy:
                 # CuPy returns zero-dimensional array instead of
                 # returning a scalar value
-                self.assertIsInstance(c, xp.ndarray)
-                self.assertEqual(c.dtype, "l")
-                self.assertEqual(c.shape, ())
+                assert isinstance(c, xp.ndarray)
+                assert c.dtype == "p"
+                assert c.shape == ()
             return int(c)
 
-        self.assertEqual(func(numpy), func(cupy))
+        assert func(numpy) == func(cupy)
 
     @testing.for_all_dtypes()
     def test_count_nonzero_zero_dim(self, dtype):
@@ -32,12 +31,12 @@ class TestCount(unittest.TestCase):
             if xp is cupy:
                 # CuPy returns zero-dimensional array instead of
                 # returning a scalar value
-                self.assertIsInstance(c, xp.ndarray)
-                self.assertEqual(c.dtype, "l")
-                self.assertEqual(c.shape, ())
+                assert isinstance(c, xp.ndarray)
+                assert c.dtype == "p"
+                assert c.shape == ()
             return int(c)
 
-        self.assertEqual(func(numpy), func(cupy))
+        assert func(numpy) == func(cupy)
 
     @testing.for_all_dtypes()
     def test_count_nonzero_int_axis(self, dtype):

@@ -25,7 +25,6 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
-import numpy
 
 import dpnp
 
@@ -939,11 +938,15 @@ class dpnp_array:
         self,
         axis=None,
         out=None,
-        keepdims=numpy._NoValue,
-        initial=numpy._NoValue,
-        where=numpy._NoValue,
+        keepdims=False,
+        initial=None,
+        where=True,
     ):
-        """Return the maximum along an axis."""
+        """
+        Return the maximum along an axis.
+
+        Refer to :obj:`dpnp.max` for full documentation.
+        """
 
         return dpnp.max(self, axis, out, keepdims, initial, where)
 
@@ -956,11 +959,15 @@ class dpnp_array:
         self,
         axis=None,
         out=None,
-        keepdims=numpy._NoValue,
-        initial=numpy._NoValue,
-        where=numpy._NoValue,
+        keepdims=False,
+        initial=None,
+        where=True,
     ):
-        """Return the minimum along a given axis."""
+        """
+        Return the minimum along a given axis.
+
+        Refer to :obj:`dpnp.min` for full documentation.
+        """
 
         return dpnp.min(self, axis, out, keepdims, initial, where)
 
@@ -1026,9 +1033,7 @@ class dpnp_array:
         """
         Returns the prod along a given axis.
 
-        .. seealso::
-           :obj:`dpnp.prod` for full documentation,
-           :meth:`dpnp.dparray.sum`
+        For full documentation refer to :obj:`dpnp.prod`.
 
         """
 
@@ -1045,7 +1050,15 @@ class dpnp_array:
 
         return dpnp.put(self, indices, vals, axis=axis, mode=mode)
 
-    # 'ravel',
+    def ravel(self, order="C"):
+        """
+        Return a contiguous flattened array.
+
+        For full documentation refer to :obj:`dpnp.ravel`.
+
+        """
+
+        return dpnp.ravel(self, order=order)
 
     @property
     def real(self):
@@ -1082,7 +1095,15 @@ class dpnp_array:
         """
         dpnp.copyto(self._array_obj.real, value)
 
-    # 'repeat',
+    def repeat(self, repeats, axis=None):
+        """
+        Repeat elements of an array.
+
+        For full documentation refer to :obj:`dpnp.repeat`.
+
+        """
+
+        return dpnp.repeat(self, repeats, axis=axis)
 
     def reshape(self, *sh, **kwargs):
         """
