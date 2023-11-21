@@ -29,6 +29,7 @@
 
 import dpctl
 import dpctl.tensor._tensor_impl as ti
+import dpctl.utils as du
 from numpy import prod
 
 import dpnp
@@ -233,8 +234,9 @@ def dpnp_solve(a, b):
         )
 
     res_type = _common_type(a, b)
+    res_usm_type = du.get_coerced_usm_type([a.usm_type, b.usm_type])
     if b.size == 0:
-        return dpnp.empty_like(b, dtype=res_type)
+        return dpnp.empty_like(b, dtype=res_type, usm_type=res_usm_type)
 
     if a.ndim > 2:
         reshape = False
@@ -264,8 +266,12 @@ def dpnp_solve(a, b):
             # oneMKL LAPACK assumes fortran-like array as input, so
             # allocate a memory with 'F' order for dpnp array of coefficient matrix
             # and multiple dependent variables array
-            coeff_vecs[i] = dpnp.empty_like(a[i], order="F", dtype=res_type)
-            val_vecs[i] = dpnp.empty_like(b[i], order="F", dtype=res_type)
+            coeff_vecs[i] = dpnp.empty_like(
+                a[i], order="F", dtype=res_type, usm_type=res_usm_type
+            )
+            val_vecs[i] = dpnp.empty_like(
+                b[i], order="F", dtype=res_type, usm_type=res_usm_type
+            )
 
             # use DPCTL tensor function to fill the coefficient matrix array
             # and the array of multiple dependent variables with content
@@ -297,7 +303,7 @@ def dpnp_solve(a, b):
             a_ht_copy_ev[i].wait()
 
         # combine the list of solutions into a single array
-        out_v = dpnp.array(val_vecs, order=b_order)
+        out_v = dpnp.array(val_vecs, order=b_order, usm_type=res_usm_type)
         if reshape:
             # shape of the out_v must be equal to the shape of the array of
             # dependent variables
@@ -307,8 +313,12 @@ def dpnp_solve(a, b):
         # oneMKL LAPACK assumes fortran-like array as input, so
         # allocate a memory with 'F' order for dpnp array of coefficient matrix
         # and multiple dependent variables
-        a_f = dpnp.empty_like(a, order="F", dtype=res_type)
-        b_f = dpnp.empty_like(b, order="F", dtype=res_type)
+        a_f = dpnp.empty_like(
+            a, order="F", dtype=res_type, usm_type=res_usm_type
+        )
+        b_f = dpnp.empty_like(
+            b, order="F", dtype=res_type, usm_type=res_usm_type
+        )
 
         # use DPCTL tensor function to fill the coefficient matrix array
         # and the array of multiple dependent variables with content
