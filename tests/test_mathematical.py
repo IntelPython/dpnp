@@ -1876,6 +1876,12 @@ class TestPower:
         dp_arr = dpnp.array(np_arr)
         func = lambda x: x**2
 
+        # TODO: unmute the test once it's available
+        if is_win_platform():
+            pytest.skip(
+                "Until the latest dpctl is available on internal channel"
+            )
+
         assert_dtype_allclose(func(dp_arr), func(np_arr))
 
     @pytest.mark.parametrize("val", [0, 1], ids=["0", "1"])

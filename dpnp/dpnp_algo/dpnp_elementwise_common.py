@@ -167,11 +167,80 @@ def check_nd_call_func(
     )
 
 
+"""
+Below utility functions are required to keep backward compitibility
+with DPC++ 2023.2 and dpctl 0.15.0. Otherwise we can't collect coverage report,
+since DPC++ 2024.0 has the reported crash issue while running for coverage
+and the latest dpctl (i.e. >0.15.0) can't be installed with DPC++ 2023.2.
+
+TODO: remove the w/a once the above issue is resolved.
+"""
+
+
+def _get_impl_fn(dpt_fn):
+    if hasattr(dpt_fn, "get_implementation_function"):
+        return dpt_fn.get_implementation_function()
+
+    if hasattr(dpt_fn, "__name__"):
+        if dpt_fn.__name__ == "UnaryElementwiseFunc":
+            return dpt_fn.unary_fn_
+        elif dpt_fn.__name__ == "BinaryElementwiseFunc":
+            return dpt_fn.binary_fn_
+
+    raise TypeError(
+        "Expected an instance of elementwise func class, but got {}".format(
+            type(dpt_fn)
+        )
+    )
+
+
+def _get_type_resolver_fn(dpt_fn):
+    if hasattr(dpt_fn, "get_type_result_resolver_function"):
+        return dpt_fn.get_type_result_resolver_function()
+
+    if hasattr(dpt_fn, "result_type_resolver_fn_"):
+        return dpt_fn.result_type_resolver_fn_
+
+    raise TypeError(
+        "Expected an instance of elementwise func class, but got {}".format(
+            type(dpt_fn)
+        )
+    )
+
+
+def _get_impl_inplace_fn(dpt_fn):
+    if hasattr(dpt_fn, "get_implementation_inplace_function"):
+        return dpt_fn.get_implementation_inplace_function()
+
+    if hasattr(dpt_fn, "binary_inplace_fn_"):
+        return dpt_fn.binary_inplace_fn_
+
+    raise TypeError(
+        "Expected an instance of elementwise func class, but got {}".format(
+            type(dpt_fn)
+        )
+    )
+
+
+def _get_type_promotion_fn(dpt_fn):
+    if hasattr(dpt_fn, "get_type_promotion_path_acceptance_function"):
+        return dpt_fn.get_type_promotion_path_acceptance_function()
+
+    if hasattr(dpt_fn, "acceptance_fn_"):
+        return dpt_fn.acceptance_fn_
+
+    raise TypeError(
+        "Expected an instance of elementwise func class, but got {}".format(
+            type(dpt_fn)
+        )
+    )
+
+
 def _make_unary_func(
     name, dpt_unary_fn, fn_docstring, mkl_fn_to_call=None, mkl_impl_fn=None
 ):
-    impl_fn = dpt_unary_fn.get_implementation_function()
-    type_resolver_fn = dpt_unary_fn.get_type_result_resolver_function()
+    impl_fn = _get_impl_fn(dpt_unary_fn)
+    type_resolver_fn = _get_type_resolver_fn(dpt_unary_fn)
 
     def _call_func(src, dst, sycl_queue, depends=None):
         """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
@@ -193,10 +262,10 @@ def _make_unary_func(
 def _make_binary_func(
     name, dpt_binary_fn, fn_docstring, mkl_fn_to_call=None, mkl_impl_fn=None
 ):
-    impl_fn = dpt_binary_fn.get_implementation_function()
-    type_resolver_fn = dpt_binary_fn.get_type_result_resolver_function()
-    inplce_fn = dpt_binary_fn.get_implementation_inplace_function()
-    acceptance_fn = dpt_binary_fn.get_type_promotion_path_acceptance_function()
+    impl_fn = _get_impl_fn(dpt_binary_fn)
+    type_resolver_fn = _get_type_resolver_fn(dpt_binary_fn)
+    inplce_fn = _get_impl_inplace_fn(dpt_binary_fn)
+    acceptance_fn = _get_type_promotion_fn(dpt_binary_fn)
 
     def _call_func(src1, src2, dst, sycl_queue, depends=None):
         """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
