@@ -250,7 +250,7 @@ def kron(x1, x2):
     return call_origin(numpy.kron, x1, x2)
 
 
-def matmul(x1, x2, out=None, **kwargs):
+def matmul(x1, x2, out=None, dtype=None, **kwargs):
     """
     Matrix product of two arrays.
 
@@ -258,9 +258,11 @@ def matmul(x1, x2, out=None, **kwargs):
 
     Limitations
     -----------
-    Input arrays are supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Parameter `out` is supported as :obj:`dpnp.ndarray` and as default value ``None``.
+    Input arrays are supported are supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameter `out` is supported as as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Keyword argument `kwargs` is currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -278,11 +280,36 @@ def matmul(x1, x2, out=None, **kwargs):
     >>> c = np.ones([9, 5, 4, 3])
     >>> np.matmul(a, c).shape
     (9, 5, 7, 3)
+
     >>> a = np.array([[1, 0], [0, 1]])
     >>> b = np.array([[4, 1], [2, 2]])
     >>> np.matmul(a, b)
     array([[4, 1],
            [2, 2]])
+
+    >>> a = np.array([[1, 0], [0, 1]])
+    >>> b = np.array([1, 2])
+    >>> np.matmul(a, b)
+    array([1, 2])
+    >>> np.matmul(b, a)
+    array([1, 2])
+
+    >>> a = np.arange(2 * 2 * 4).reshape((2, 2, 4))
+    >>> b = np.arange(2 * 2 * 4).reshape((2, 4, 2))
+    >>> np.matmul(a,b).shape
+    (2, 2, 2)
+    >>> np.matmul(a, b)[0, 1, 1]
+    array(98)
+    >>> np.sum(a[0, 1, :] * b[0 , :, 1])
+    array(98)
+
+    The ``@`` operator can be used as a shorthand for ``matmul`` on
+    :class:`dpnp.ndarray`.
+
+    >>> x1 = np.array([2j, 3j])
+    >>> x2 = np.array([2j, 3j])
+    >>> x1 @ x2
+    array(-13+0j)
 
     """
 
@@ -319,89 +346,132 @@ def matmul(x1, x2, out=None, **kwargs):
             f"(size {x1_shape[1]} is different from {x2_shape[0]})"
         )
 
-    # Determine the result data type # should be corrected for integer data type # VAHID
-    res_dtype = _common_type(x1, x2)
-    if x1.dtype != res_dtype:
-        x1 = dpnp.astype(x1, res_dtype)
-    if x2.dtype != res_dtype:
-        x2 = dpnp.astype(x2, res_dtype)
+    # Determine the result data type
+    if dtype is not None:
+        res_dtype = dtype
+        if x1.dtype != res_dtype:
+            x1 = dpnp.astype(x1, res_dtype, casting="same_kind")
+        if x2.dtype != res_dtype:
+            x2 = dpnp.astype(x2, res_dtype, casting="same_kind")
+    else:
+        res_dtype = dpnp.result_type(x1, x2)
+    # Determine the data type that works in gemm
+    gemm_dtype = _common_type(x1, x2)
+    if x1.dtype != gemm_dtype:
+        x1 = dpnp.astype(x1, gemm_dtype)
+    if x2.dtype != gemm_dtype:
+        x2 = dpnp.astype(x2, gemm_dtype)
 
+    x1_is_2D = False
+    x1_is_2D = False
     if x1_ndim == 2 and x2_ndim == 2:
         res_shape = (x1.shape[0], x2.shape[1])
     else:
+        x1_is_2D = dpnp.all(dpnp.array(x1_shape[:-2]) == 1)
+        x2_is_2D = dpnp.all(dpnp.array(x2_shape[:-2]) == 1)
+
         if x1_ndim != x2_ndim:
             diff = abs(x1_ndim - x2_ndim)
-
             if x1_ndim < x2_ndim:
                 x1 = x1.reshape((1,) * diff + x1.shape)
                 x1_ndim = x1.ndim
                 x1_shape = x1.shape
-                res_shape = x2_shape[:-2] + (x1_shape[-2], x2_shape[-1])
             else:
                 x2 = x2.reshape((1,) * diff + x2.shape)
                 x2_ndim = x2.ndim
                 x2_shape = x2.shape
-                res_shape = x1_shape[:-2] + (x1_shape[-2], x2_shape[-1])
-        else:
-            for i in range(x1_ndim - 2):
-                if x1_shape[i] != x2_shape[i]:
-                    if x1_shape[i] == 1:
-                        x1 = dpnp.repeat(x1, x2_shape[i], axis=i)
-                    elif x2_shape[i] == 1:
-                        x2 = dpnp.repeat(x2, x1_shape[i], axis=i)
-                    else:
-                        raise ValueError(
-                            "operands could not be broadcast together with remapped shapes."
-                        )
-            x1_shape = x1.shape
-            x2_shape = x2.shape
-            res_shape = x1_shape[:-1] + (x2_shape[-1],)
 
-    result = dpnp.empty(res_shape, dtype=res_dtype, sycl_queue=exec_q)
-    # Is it necessary to do a copy of the input arrays?!
-    isRowMajor = True
+        # examining the option to align inputs when their shapes differ but they are 1-D in some dimensions.
+        tmp_shape = list(x1_shape[:-2])
+        for i in range(x1_ndim - 2):
+            if x1_shape[i] != x2_shape[i]:
+                if x1_shape[i] == 1:
+                    tmp_shape[i] = x2_shape[i]
+                    # If the `x1` array is initially 2D, there's no need to duplicate the data when adding a new axis; GEMM handles it automatically.
+                    if not x1_is_2D:
+                        x1 = dpnp.repeat(x1, x2_shape[i], axis=i)
+                elif x2_shape[i] == 1:
+                    tmp_shape[i] = x1_shape[i]
+                    if not x2_is_2D:
+                        x2 = dpnp.repeat(x2, x1_shape[i], axis=i)
+                else:
+                    raise ValueError(
+                        "operands could not be broadcast together with remapped shapes."
+                    )
+        x1_shape = x1.shape
+        x2_shape = x2.shape
+        res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
+
+    result = dpnp.empty(res_shape, dtype=gemm_dtype, sycl_queue=exec_q)
     if result.size == 0:
         pass
     else:
         if x1.size == 0 or x2.size == 0:
-            result = dpnp.zeros(res_shape, dtype=res_dtype, sycl_queue=exec_q)
+            result = dpnp.zeros(res_shape, dtype=gemm_dtype, sycl_queue=exec_q)
         else:
+            ht_copy_ev_x1 = dpctl.SyclEvent()
+            ht_copy_ev_x2 = dpctl.SyclEvent()
             if x1_ndim == 2 and x2_ndim == 2:
                 ht_blas_ev, _ = bi._gemm(
                     exec_q,
                     dpnp.get_usm_ndarray(x1),
                     dpnp.get_usm_ndarray(x2),
                     dpnp.get_usm_ndarray(result),
-                    isRowMajor,
                     [],
                 )
             else:
-                # if_a_f_contig = a.flags["F_CONTIGUOUS"]
-                # if_b_f_contig = b.flags["F_CONTIGUOUS"]
-                # if_out_f_contig = out.flags["F_CONTIGUOUS"]
+                # is_support_gemm(x1_strides, x1_ndim)
+                # is_support_gemm(x2_strides, x2_ndim)
 
-                # x1_strides = a.strides if not if_a_f_contig else a.strides[::-1]
-                # x2_strides = b.strides if not if_b_f_contig else b.strides[::-1]
-                # res_strides = out.strides if not if_out_f_contig else out.strides[::-1]
+                copy_ev_x1 = dpctl.SyclEvent()
+                if not x1.flags["C_CONTIGUOUS"]:
+                    v = dpnp.empty_like(x1, order="C")
+                    (
+                        ht_copy_ev_x1,
+                        copy_ev_x1,
+                    ) = ti._copy_usm_ndarray_into_usm_ndarray(
+                        src=dpnp.get_usm_ndarray(x1),
+                        dst=v.get_array(),
+                        sycl_queue=x1.sycl_queue,
+                    )
+                    x1 = v
+
+                copy_ev_x2 = dpctl.SyclEvent()
+                if not x2.flags["C_CONTIGUOUS"]:
+                    v = dpnp.empty_like(x2, order="C")
+                    (
+                        ht_copy_ev_x2,
+                        copy_ev_x2,
+                    ) = ti._copy_usm_ndarray_into_usm_ndarray(
+                        src=dpnp.get_usm_ndarray(x2),
+                        dst=v.get_array(),
+                        sycl_queue=x2.sycl_queue,
+                    )
+                    x2 = v
 
                 x1_strides = x1.strides
                 x2_strides = x2.strides
                 res_strides = result.strides
 
-                is_support_gemm(x1_strides, x1_ndim)
-                is_support_gemm(x2_strides, x2_ndim)
+                if x1_is_2D:
+                    x1_strides = tuple(
+                        str_i if sh_i > 1 else 0
+                        for sh_i, str_i in zip(x1.shape, x1_strides)
+                    )
+                if x2_is_2D:
+                    x2_strides = tuple(
+                        str_i if sh_i > 1 else 0
+                        for sh_i, str_i in zip(x2.shape, x2_strides)
+                    )
 
-                transa = is_row(x1_strides, x1_ndim)
-                transb = is_row(x2_strides, x2_ndim)
+                transa = True  # is_row(x1_strides, x1_ndim)
+                transb = True  # is_row(x2_strides, x2_ndim)
 
                 batch_size = res_shape[:-2][0]  # VAHID
                 m = x1_shape[-2]
                 n = x2_shape[-1]
                 k = x1_shape[-1]
 
-                # lda = max(x1_shape[-2:])
-                # ldb = max(x2_shape[-2:])
-                # ldc = max(res_shape[-2:])
                 lda = k if transa else m
                 ldb = n if transb else k
                 ldc = n  # column major m, row major n # VAHID
@@ -414,6 +484,7 @@ def matmul(x1, x2, out=None, **kwargs):
                     iter = ti._contract_iter2(
                         res_shape[:-2], x1_strides[:-2], x2_strides[:-2]
                     )
+
                     if len(iter[0]) != 1:
                         raise ValueError(
                             "Input arrays cannot be used in gemm_batch"
@@ -439,15 +510,20 @@ def matmul(x1, x2, out=None, **kwargs):
                     stridec,
                     transa,
                     transb,
-                    [],
+                    [copy_ev_x1, copy_ev_x2],
                 )
 
             ht_blas_ev.wait()
+            ht_copy_ev_x1.wait()
+            ht_copy_ev_x2.wait()
 
     if squeeze_flag:
         result = dpnp.squeeze(result)
 
-    if out is None:
+    if gemm_dtype != res_dtype:
+        result = dpnp.astype(result, res_dtype)
+
+    if out is None:  # VAHID: replace with get_result_array function
         return result
     else:
         if out.shape != result.shape:

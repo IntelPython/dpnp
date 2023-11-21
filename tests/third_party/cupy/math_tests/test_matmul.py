@@ -57,22 +57,17 @@ from tests.third_party.cupy import testing
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestMatmul(unittest.TestCase):
     @testing.for_all_dtypes(name="dtype1")
-    @testing.numpy_cupy_allclose(
-        rtol=1e-3, atol=1e-3, type_check=False
-    )  # required for uint8
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
     def test_operator_matmul(self, xp, dtype1):
         x1 = testing.shaped_arange(self.shape_pair[0], xp, dtype1)
         x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype1)
         return operator.matmul(x1, x2)
 
     @testing.for_all_dtypes(name="dtype1")
-    @testing.numpy_cupy_allclose(
-        rtol=1e-3, atol=1e-3, type_check=False
-    )  # required for uint8
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
     def test_cupy_matmul(self, xp, dtype1):
         x1 = testing.shaped_arange(self.shape_pair[0], xp, dtype1)
         x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype1)
@@ -98,7 +93,6 @@ class TestMatmul(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
 class TestMatmulLarge(unittest.TestCase):
     # Avoid overflow
@@ -114,9 +108,7 @@ class TestMatmulLarge(unittest.TestCase):
     }
 
     @testing.for_all_dtypes(name="dtype1")
-    @testing.numpy_cupy_allclose(
-        rtol=1e-3, atol=1e-3, type_check=False
-    )  # required for uint8
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
     def test_operator_matmul(self, xp, dtype1):
         if (dtype1, dtype1) in self.skip_dtypes or (
             dtype1,
@@ -128,9 +120,7 @@ class TestMatmulLarge(unittest.TestCase):
         return operator.matmul(x1, x2)
 
     @testing.for_all_dtypes(name="dtype1")
-    @testing.numpy_cupy_allclose(
-        rtol=1e-3, atol=1e-3, type_check=False
-    )  # required for uint8
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
     def test_cupy_matmul(self, xp, dtype1):
         if (dtype1, dtype1) in self.skip_dtypes or (
             dtype1,

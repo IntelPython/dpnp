@@ -58,7 +58,6 @@ typedef sycl::event (*gemm_impl_fn_ptr_t)(sycl::queue,
                                           const std::int64_t,
                                           char *,
                                           const std::int64_t,
-                                          const bool,
                                           const std::vector<sycl::event> &);
 
 static gemm_impl_fn_ptr_t gemm_dispatch_table[dpctl_td_ns::num_types]
@@ -72,12 +71,11 @@ static sycl::event gemm_impl(sycl::queue exec_q,
                              const std::int64_t n,
                              const std::int64_t k,
                              char *matrixA,
-                             const std::int64_t ld_array_1,
+                             const std::int64_t lda,
                              char *matrixB,
-                             const std::int64_t ld_array_2,
+                             const std::int64_t ldb,
                              char *resultC,
-                             const std::int64_t ld_result,
-                             const bool isRowMajor,
+                             const std::int64_t ldc,
                              const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<Tab>(exec_q);
@@ -93,55 +91,26 @@ static sycl::event gemm_impl(sycl::queue exec_q,
 
     sycl::event gemm_event;
     try {
-        // Need to add logic to call column_major::gemm
-        if (isRowMajor) {
-            gemm_event = mkl_blas::row_major::gemm(
-                exec_q,
-                transA, // Parameter indicating whether matrix A is not
-                        // transposed
-                        // ('N'), transposed ('T'), or conjugate transposed
-                        // ('C').
-                transB, // Same as transA but for matrix B.
-                m,      // Number of rows in matrices A and C.
-                n,      // Number of columns in matrices B and C.
-                k,      // Number of columns in matrix A and rows in matrix B.
-                Tab(1), // Scaling factor for the product of matrices A and B.
-                a,      // Pointer to matrix A.
-                ld_array_1, // Leading dimension of matrix A, which is the
-                            // stride between successive rows (for row major
-                            // layout).
-                b,          // Pointer to matrix B.
-                ld_array_2, // Leading dimension of matrix B, similar to
-                            // ld_array_1.
-                Tab(0),     // Scaling factor for matrix C.
-                res,        // Pointer to matrix C, where the result is stored.
-                ld_result,  // Leading dimension of matrix C.
-                depends);
-        }
-        else {
-            gemm_event = mkl_blas::column_major::gemm(
-                exec_q,
-                transA, // Parameter indicating whether matrix A is not
-                        // transposed
-                        // ('N'), transposed ('T'), or conjugate transposed
-                        // ('C').
-                transB, // Same as transA but for matrix B.
-                m,      // Number of rows in matrices A and C.
-                n,      // Number of columns in matrices B and C.
-                k,      // Number of columns in matrix A and rows in matrix B.
-                Tab(1), // Scaling factor for the product of matrices A and B.
-                a,      // Pointer to matrix A.
-                ld_array_1, // Leading dimension of matrix A, which is the
-                            // stride between successive rows (for row major
-                            // layout).
-                b,          // Pointer to matrix B.
-                ld_array_2, // Leading dimension of matrix B, similar to
-                            // ld_array_1.
-                Tab(0),     // Scaling factor for matrix C.
-                res,        // Pointer to matrix C, where the result is stored.
-                ld_result,  // Leading dimension of matrix C.
-                depends);
-        }
+        gemm_event = mkl_blas::row_major::gemm(
+            exec_q,
+            transA, // Parameter indicating whether matrix A is not
+                    // transposed ('N'), transposed ('T'),
+                    // or conjugate transposed ('C').
+            transB, // Same as transA but for matrix B.
+            m,      // Number of rows in matrices A and C.
+            n,      // Number of columns in matrices B and C.
+            k,      // Number of columns in matrix A and rows in matrix B.
+            Tab(1), // Scaling factor for the product of matrices A and B.
+            a,      // Pointer to matrix A.
+            lda,    // Leading dimension of matrix A, which is the
+                    // stride between successive rows (for row major
+                    // layout).
+            b,      // Pointer to matrix B.
+            ldb,    // Leading dimension of matrix B, similar to lda
+            Tab(0), // Scaling factor for matrix C.
+            res,    // Pointer to matrix C, where the result is stored.
+            ldc,    // Leading dimension of matrix C.
+            depends);
     } catch (oneapi::mkl::exception const &e) {
         error_msg
             << "Unexpected MKL exception caught during gemm() call:\nreason: "
@@ -166,14 +135,12 @@ std::pair<sycl::event, sycl::event>
          dpctl::tensor::usm_ndarray matrixA,
          dpctl::tensor::usm_ndarray matrixB,
          dpctl::tensor::usm_ndarray resultC,
-         const bool isRowMajor,
          const std::vector<sycl::event> &depends)
 {
     const int matrixA_nd = matrixA.get_ndim();
     const int matrixB_nd = matrixB.get_ndim();
     const int resultC_nd = resultC.get_ndim();
 
-    // TODO: Add support for more two-dimensional arrays
     if ((matrixA_nd != 2) || (matrixB_nd != 2) || (resultC_nd != 2)) {
         throw py::value_error("The input matrices must be of 2 dimensions.");
     }
@@ -186,9 +153,6 @@ std::pair<sycl::event, sycl::event>
         throw std::runtime_error(
             "USM allocations are not compatible with the execution queue.");
     }
-
-    // bool is_matrixA_c_contig = matrixA.is_c_contiguous();
-    // bool is_matrixB_c_contig = matrixB.is_c_contiguous();
 
     bool is_matrixA_f_contig = matrixA.is_f_contiguous();
     bool is_matrixB_f_contig = matrixB.is_f_contiguous();
@@ -209,38 +173,15 @@ std::pair<sycl::event, sycl::event>
                                         ? oneapi::mkl::transpose::T
                                         : oneapi::mkl::transpose::N;
 
-    // // support only 2d matrices
-    // auto isRowm = [](const dpctl::tensor::usm_ndarray m) {
-    //         const py::ssize_t *m_s = m.get_strides_raw();
-    //         return m_s[1] == 1;
-    // };
-
-    // if (!is_matrixA_c_contig && !is_matrixA_f_contig){
-    //     transA = isRowm(matrixA) ? oneapi::mkl::transpose::N
-    //                              : oneapi::mkl::transpose::T;
-
-    // }
-
-    // if (!is_matrixB_c_contig && !is_matrixB_f_contig){
-    //     transB = isRowm(matrixB) ? oneapi::mkl::transpose::N
-    //                              : oneapi::mkl::transpose::T;
-    // }
-
     const std::int64_t m = a_shape[0];
     const std::int64_t n = b_shape[1];
     const std::int64_t k = a_shape[1];
 
-    // const std::int64_t ld_array_1 =
-    //     (transA == oneapi::mkl::transpose::nontrans) ? k : m;
-    // const std::int64_t ld_array_2 =
-    //     (transB == oneapi::mkl::transpose::nontrans) ? n : k;
-    // const std::int64_t ld_result = res_shape[1];
-
-    const std::int64_t ld_array_1 =
+    const std::int64_t lda =
         (transA == oneapi::mkl::transpose::N) ? a_shape[1] : a_shape[0];
-    const std::int64_t ld_array_2 =
+    const std::int64_t ldb =
         (transB == oneapi::mkl::transpose::N) ? b_shape[1] : b_shape[0];
-    const std::int64_t ld_result = res_shape[1];
+    const std::int64_t ldc = res_shape[1];
 
     int matrixA_typenum = matrixA.get_typenum();
     int matrixB_typenum = matrixB.get_typenum();
@@ -266,9 +207,8 @@ std::pair<sycl::event, sycl::event>
 
     std::vector<sycl::event> host_task_events;
     sycl::event gemm_ev =
-        gemm_fn(exec_q, transA, transB, m, n, k, a_typeless_ptr, ld_array_1,
-                b_typeless_ptr, ld_array_2, r_typeless_ptr, ld_result,
-                isRowMajor, depends);
+        gemm_fn(exec_q, transA, transB, m, n, k, a_typeless_ptr, lda,
+                b_typeless_ptr, ldb, r_typeless_ptr, ldc, depends);
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {matrixA, matrixB, resultC}, host_task_events);

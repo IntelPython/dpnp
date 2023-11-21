@@ -100,7 +100,6 @@ static sycl::event gemm_batch_impl(sycl::queue exec_q,
 
     sycl::event gemm_batch_event;
     try {
-        // Need to add logic to call column_major::gemm
         gemm_batch_event = oneapi::mkl::blas::row_major::gemm_batch(
             exec_q, transA, transB, m, n, k, Tab(1), a, ld_array_1, stridea, b,
             ld_array_2, strideb, Tab(0), res, ld_result, stridec, batch_size,
@@ -124,8 +123,6 @@ static sycl::event gemm_batch_impl(sycl::queue exec_q,
     return gemm_batch_event;
 }
 
-// std::pair<sycl::event, sycl::event>
-// sycl::event
 std::pair<sycl::event, sycl::event>
     gemm_batch(sycl::queue exec_q,
                dpctl::tensor::usm_ndarray matrixA,
@@ -182,15 +179,11 @@ std::pair<sycl::event, sycl::event>
     char *r_typeless_ptr = resultC.get_data();
 
     std::vector<sycl::event> host_task_events;
-    // sycl::event res_ev;
     sycl::event gemm_batch_ev =
         gemm_batch_fn(exec_q, m, n, k, batch_size, ld_array_1, ld_array_2,
                       ld_result, stridea, strideb, stridec, transA, transB,
                       a_typeless_ptr, b_typeless_ptr, r_typeless_ptr, depends);
 
-    //    res_ev = gemm_batch_ev;
-
-    //    return res_ev;
     sycl::event args_batch_ev = dpctl::utils::keep_args_alive(
         exec_q, {matrixA, matrixB, resultC}, host_task_events);
     return std::make_pair(args_batch_ev, gemm_batch_ev);

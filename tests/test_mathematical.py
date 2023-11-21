@@ -1,5 +1,6 @@
 from itertools import permutations
 
+import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
@@ -2062,30 +2063,47 @@ def test_inplace_floor_divide(dtype):
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 @pytest.mark.parametrize(
+    "order_pair", [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")]
+)
+@pytest.mark.parametrize(
     "shape_pair",
     [
-        ((4,), (4, 4)),
-        ((4, 4), (4,)),
-        ((4, 4, 4, 4), (4, 4)),
-        ((4, 4), (4, 4, 4, 4)),
         ((4,), (4,)),
-        ((4, 4, 4), (4, 4, 4)),
-    ],
-    ids=[
-        "((4,), (4, 4))",
-        "((4, 4), (4,))",
-        "((4, 4, 4, 4), (4, 4))",
-        "((4, 4), (4, 4, 4, 4))",
-        "((4,), (4,))",
-        "((4, 4, 4), (4, 4, 4))",
+        ((4,), (4, 2)),
+        ((2, 4), (4,)),
+        ((2, 4), (4, 3)),
+        ((1, 2, 3), (1, 3, 5)),
+        ((4, 2, 3), (4, 3, 5)),
+        ((1, 2, 3), (4, 3, 5)),
+        ((2, 3), (4, 3, 5)),
+        ((4, 2, 3), (1, 3, 5)),
+        ((4, 2, 3), (3, 5)),
+        ((1, 1, 4, 3), (1, 1, 3, 5)),
+        ((6, 7, 4, 3), (6, 7, 3, 5)),
+        ((6, 7, 4, 3), (1, 1, 3, 5)),
+        ((6, 7, 4, 3), (1, 3, 5)),
+        ((6, 7, 4, 3), (3, 5)),
+        ((6, 7, 4, 3), (1, 7, 3, 5)),
+        ((6, 7, 4, 3), (7, 3, 5)),
+        ((6, 7, 4, 3), (6, 1, 3, 5)),
+        ((1, 1, 4, 3), (6, 7, 3, 5)),
+        ((1, 4, 3), (6, 7, 3, 5)),
+        ((4, 3), (6, 7, 3, 5)),
+        ((6, 1, 4, 3), (6, 7, 3, 5)),
+        ((1, 7, 4, 3), (6, 7, 3, 5)),
+        ((7, 4, 3), (6, 7, 3, 5)),
+        ((1, 5, 3, 2), (6, 5, 2, 4)),
+        ((5, 3, 2), (6, 5, 2, 4)),
+        ((1, 3, 3), (10, 1, 3, 1)),
     ],
 )
-def test_matmul(dtype, shape_pair):
+def test_matmul(dtype, order_pair, shape_pair):
+    order1, order2 = order_pair
     shape1, shape2 = shape_pair
-    size1 = numpy.prod(shape1)
-    size2 = numpy.prod(shape2)
-    a1 = numpy.arange(size1, dtype=dtype).reshape(shape1)
-    a2 = numpy.arange(size2, dtype=dtype).reshape(shape2)
+    a1 = numpy.arange(numpy.prod(shape1), dtype=dtype).reshape(shape1)
+    a2 = numpy.arange(numpy.prod(shape2), dtype=dtype).reshape(shape2)
+    a1 = numpy.array(a1, order=order1)
+    a2 = numpy.array(a2, order=order2)
 
     b1 = dpnp.asarray(a1)
     b2 = dpnp.asarray(a2)
@@ -2093,3 +2111,76 @@ def test_matmul(dtype, shape_pair):
     result = dpnp.matmul(b1, b2)
     expected = numpy.matmul(a1, a2)
     assert_allclose(expected, result)
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
+def test_matmul_out(dtype):
+    a1 = numpy.arange(5 * 4, dtype=dtype).reshape(5, 4)
+    a2 = numpy.arange(7 * 4, dtype=dtype).reshape(4, 7)
+
+    b1 = dpnp.asarray(a1)
+    b2 = dpnp.asarray(a2)
+
+    result = dpnp.empty((5, 7), dtype=dtype)
+    dpnp.matmul(b1, b2, out=result)
+    expected = numpy.matmul(a1, a2)
+    assert_allclose(expected, result)
+
+
+class TestMatmulInvalidCases:
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((3, 2), ()),
+            ((), (3, 2)),
+            ((), ()),
+        ],
+    )
+    def test_zero_dim(self, shape_pair):
+        for xp in (numpy, dpnp):
+            shape1, shape2 = shape_pair
+            x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
+            x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
+            with pytest.raises(ValueError):
+                xp.matmul(x1, x2)
+
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((5, 3, 1), (3, 1, 4)),
+            ((3, 2, 3), (3, 2, 4)),
+            ((3, 2), (1,)),
+            ((1, 2), (3, 1)),
+            ((4, 3, 2), (6, 5, 2, 4)),
+            ((6, 5, 3, 2), (3, 2, 4)),
+        ],
+    )
+    def test_invalid_shape(self, shape_pair):
+        for xp in (numpy, dpnp):
+            shape1, shape2 = shape_pair
+            x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
+            x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
+            with pytest.raises(ValueError):
+                xp.matmul(x1, x2)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True)[:-1])
+    def test_invalid_dtype(self, dtype):
+        dpnp_dtype = get_all_dtypes(no_none=True)[-1]
+        a1 = dpnp.arange(5 * 4, dtype=dpnp_dtype).reshape(5, 4)
+        a2 = dpnp.arange(7 * 4, dtype=dpnp_dtype).reshape(4, 7)
+        dp_out = dpnp.empty((5, 7), dtype=dtype)
+
+        with pytest.raises(TypeError):
+            dpnp.matmul(a1, a2, out=dp_out)
+
+    def test_exe_q(self):
+        try:
+            x1 = dpnp.ones((5, 4), device="cpu")
+        except dpctl.SyclDeviceCreationError:
+            pytest.skip("No SYCL devices available")
+        try:
+            x2 = dpnp.ones((4, 7), device="gpu")
+        except dpctl.SyclDeviceCreationError:
+            pytest.skip("No SYCL devices available")
+        with pytest.raises(ValueError):
+            dpnp.matmul(x1, x2)

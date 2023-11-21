@@ -51,8 +51,7 @@ PYBIND11_MODULE(_blas_impl, m)
               "Call `gemm` from OneMKL LAPACK library to return "
               "the matrix-matrix product with 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
-              py::arg("matrixC"), py::arg("isRowMajor"),
-              py::arg("depends") = py::list());
+              py::arg("matrixC"), py::arg("depends") = py::list());
     }
 
     {

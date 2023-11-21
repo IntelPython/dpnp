@@ -43,7 +43,6 @@ extern std::pair<sycl::event, sycl::event>
          dpctl::tensor::usm_ndarray matrixA,
          dpctl::tensor::usm_ndarray matrixB,
          dpctl::tensor::usm_ndarray resultC,
-         const bool isRowMajor,
          const std::vector<sycl::event> &depends);
 
 // extern sycl::event
