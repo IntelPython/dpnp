@@ -2158,7 +2158,7 @@ def prod(
             dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
         )
 
-        return dpnp._copyto(result, out)
+        return dpnp.get_result_array(result, out)
 
 
 def proj(

@@ -126,7 +126,7 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
         dpt.argmax(dpt_array, axis=axis, keepdims=keepdims)
     )
 
-    return dpnp._copyto(result, out)
+    return dpnp.get_result_array(result, out)
 
 
 def argmin(a, axis=None, out=None, *, keepdims=False):
@@ -206,7 +206,7 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
         dpt.argmin(dpt_array, axis=axis, keepdims=keepdims)
     )
 
-    return dpnp._copyto(result, out)
+    return dpnp.get_result_array(result, out)
 
 
 def searchsorted(a, v, side="left", sorter=None):

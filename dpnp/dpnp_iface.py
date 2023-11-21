@@ -69,7 +69,7 @@ __all__ = [
     "get_usm_ndarray_or_scalar",
     "is_supported_array_or_scalar",
     "is_supported_array_type",
-    "_copyto",
+    "get_result_array",
 ]
 
 from dpnp import float64, isscalar
@@ -519,18 +519,20 @@ def is_supported_array_type(a):
     return isinstance(a, (dpnp_array, dpt.usm_ndarray))
 
 
-def _copyto(a, out=None):
+def get_result_array(a, out=None):
     """
-    If `out` is provided, `a` will be inserted into this array.
-    Otherwise, `a` is returned.
+    If `out` is provided, value of `a` array will be copied into the
+    `out` array according to ``safe`` casting rule.
+    Otherwise, the input array `a` is returned.
 
     Parameters
     ----------
     a : {dpnp_array}
-        An input array.
+        Input array.
 
     out : {dpnp_array, usm_ndarray}
-        If provided, the input will be inserted into this array.
+        If provided, value of `a` array will be copied into it
+        according to ``safe`` casting rule.
         It should be of the appropriate shape.
 
     Returns

@@ -59,3 +59,18 @@ def test_argmax_argmin_out(func):
     dpnp_res = dpnp.array(numpy.empty((2, 3)))
     with pytest.raises(ValueError):
         getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+
+
+@pytest.mark.parametrize("axis", [None, 0, 1, -1])
+@pytest.mark.parametrize("keepdims", [False, True])
+def test_ndarray_argmax_argmin(axis, keepdims):
+    a = numpy.arange(192, dtype="f4").reshape((4, 6, 8))
+    ia = dpnp.array(a)
+
+    np_res = a.argmax(axis=axis, keepdims=keepdims)
+    dpnp_res = ia.argmax(axis=axis, keepdims=keepdims)
+    assert_allclose(dpnp_res, np_res)
+
+    np_res = a.argmin(axis=axis, keepdims=keepdims)
+    dpnp_res = ia.argmin(axis=axis, keepdims=keepdims)
+    assert_allclose(dpnp_res, np_res)

@@ -493,7 +493,7 @@ class dpnp_array:
         Refer to :obj:`dpnp.argmax` for full documentation.
 
         """
-        return dpnp.argmax(self, axis, out)
+        return dpnp.argmax(self, axis, out, keepdims=keepdims)
 
     def argmin(self, axis=None, out=None, *, keepdims=False):
         """
@@ -502,7 +502,7 @@ class dpnp_array:
         Refer to :obj:`dpnp.argmin` for full documentation.
 
         """
-        return dpnp.argmin(self, axis, out)
+        return dpnp.argmin(self, axis, out, keepdims=keepdims)
 
     # 'argpartition',
 

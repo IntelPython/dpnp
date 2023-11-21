@@ -414,7 +414,7 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
             dpt.max(dpt_array, axis=axis, keepdims=keepdims)
         )
 
-        return dpnp._copyto(result, out)
+        return dpnp.get_result_array(result, out)
 
 
 def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
@@ -627,7 +627,7 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
             dpt.min(dpt_array, axis=axis, keepdims=keepdims)
         )
 
-        return dpnp._copyto(result, out)
+        return dpnp.get_result_array(result, out)
 
 
 def ptp(
