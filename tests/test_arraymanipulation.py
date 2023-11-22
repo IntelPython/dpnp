@@ -305,7 +305,6 @@ class TestConcatenate:
         dp_res = dpnp.concatenate((dp_a0.T, dp_a1.T, dp_a2.T), axis=0)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
     )
@@ -329,7 +328,6 @@ class TestConcatenate:
         assert_array_equal(dp_out.asnumpy(), np_out)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
     )
@@ -487,7 +485,6 @@ class TestStack:
         dp_res = dpnp.stack(dp_arrays, axis=1)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_out(self, dtype):
         np_a = numpy.array([1, 2, 3], dtype=dtype)
@@ -536,7 +533,6 @@ class TestStack:
         with pytest.raises(TypeError):
             dpnp.stack((x for x in range(3)))
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("arr_dtype", get_all_dtypes())
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
@@ -552,7 +548,6 @@ class TestStack:
         dp_res = dpnp.stack((dp_a, dp_b), axis=1, casting="unsafe", dtype=dtype)
         assert_array_equal(dp_res.asnumpy(), np_res)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("arr_dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("dtype", [dpnp.bool, dpnp.int32, dpnp.int64])
     def test_invalid_casting_dtype(self, arr_dtype, dtype):
@@ -939,3 +934,128 @@ def test_can_cast():
     assert dpnp.can_cast(X, "float32") == numpy.can_cast(X_np, "float32")
     assert dpnp.can_cast(X, dpnp.int32) == numpy.can_cast(X_np, numpy.int32)
     assert dpnp.can_cast(X, dpnp.int64) == numpy.can_cast(X_np, numpy.int64)
+
+
+def test_repeat_scalar_sequence_agreement():
+    x = dpnp.arange(5, dtype="i4")
+    expected_res = dpnp.empty(10, dtype="i4")
+    expected_res[1::2], expected_res[::2] = x, x
+
+    # scalar case
+    reps = 2
+    res = dpnp.repeat(x, reps)
+    assert dpnp.all(res == expected_res)
+
+    # tuple
+    reps = (2, 2, 2, 2, 2)
+    res = dpnp.repeat(x, reps)
+    assert dpnp.all(res == expected_res)
+
+
+def test_repeat_as_broadcasting():
+    reps = 5
+    x = dpnp.arange(reps, dtype="i4")
+    x1 = x[:, dpnp.newaxis]
+    expected_res = dpnp.broadcast_to(x1, (reps, reps))
+
+    res = dpnp.repeat(x1, reps, axis=1)
+    assert dpnp.all(res == expected_res)
+
+    x2 = x[dpnp.newaxis, :]
+    expected_res = dpnp.broadcast_to(x2, (reps, reps))
+
+    res = dpnp.repeat(x2, reps, axis=0)
+    assert dpnp.all(res == expected_res)
+
+
+def test_repeat_axes():
+    reps = 2
+    x = dpnp.reshape(dpnp.arange(5 * 10, dtype="i4"), (5, 10))
+    expected_res = dpnp.empty((x.shape[0] * 2, x.shape[1]), dtype=x.dtype)
+    expected_res[::2, :], expected_res[1::2] = x, x
+    res = dpnp.repeat(x, reps, axis=0)
+    assert dpnp.all(res == expected_res)
+
+    expected_res = dpnp.empty((x.shape[0], x.shape[1] * 2), dtype=x.dtype)
+    expected_res[:, ::2], expected_res[:, 1::2] = x, x
+    res = dpnp.repeat(x, reps, axis=1)
+    assert dpnp.all(res == expected_res)
+
+
+def test_repeat_size_0_outputs():
+    x = dpnp.ones((3, 0, 5), dtype="i4")
+    reps = 10
+    res = dpnp.repeat(x, reps, axis=0)
+    assert res.size == 0
+    assert res.shape == (30, 0, 5)
+
+    res = dpnp.repeat(x, reps, axis=1)
+    assert res.size == 0
+    assert res.shape == (3, 0, 5)
+
+    res = dpnp.repeat(x, (2, 2, 2), axis=0)
+    assert res.size == 0
+    assert res.shape == (6, 0, 5)
+
+    x = dpnp.ones((3, 2, 5))
+    res = dpnp.repeat(x, 0, axis=1)
+    assert res.size == 0
+    assert res.shape == (3, 0, 5)
+
+    x = dpnp.ones((3, 2, 5))
+    res = dpnp.repeat(x, (0, 0), axis=1)
+    assert res.size == 0
+    assert res.shape == (3, 0, 5)
+
+
+def test_repeat_strides():
+    reps = 2
+    x = dpnp.reshape(dpnp.arange(10 * 10, dtype="i4"), (10, 10))
+    x1 = x[:, ::-2]
+    expected_res = dpnp.empty((10, 10), dtype="i4")
+    expected_res[:, ::2], expected_res[:, 1::2] = x1, x1
+    res = dpnp.repeat(x1, reps, axis=1)
+    assert dpnp.all(res == expected_res)
+    res = dpnp.repeat(x1, (reps,) * x1.shape[1], axis=1)
+    assert dpnp.all(res == expected_res)
+
+    x1 = x[::-2, :]
+    expected_res = dpnp.empty((10, 10), dtype="i4")
+    expected_res[::2, :], expected_res[1::2, :] = x1, x1
+    res = dpnp.repeat(x1, reps, axis=0)
+    assert dpnp.all(res == expected_res)
+    res = dpnp.repeat(x1, (reps,) * x1.shape[0], axis=0)
+    assert dpnp.all(res == expected_res)
+
+
+def test_repeat_casting():
+    x = dpnp.arange(5, dtype="i4")
+    # i4 is cast to i8
+    reps = dpnp.ones(5, dtype="i4")
+    res = dpnp.repeat(x, reps)
+    assert res.shape == x.shape
+    assert dpnp.all(res == x)
+
+
+def test_repeat_strided_repeats():
+    x = dpnp.arange(5, dtype="i4")
+    reps = dpnp.ones(10, dtype="i8")
+    reps[::2] = 0
+    reps = reps[::-2]
+    res = dpnp.repeat(x, reps)
+    assert res.shape == x.shape
+    assert dpnp.all(res == x)
+
+
+def test_concatenate_out_dtype():
+    x = dpnp.ones((5, 5))
+    out = dpnp.empty_like(x)
+    with pytest.raises(TypeError):
+        dpnp.concatenate([x], out=out, dtype="i4")
+
+
+def test_stack_out_dtype():
+    x = dpnp.ones((5, 5))
+    out = dpnp.empty_like(x)
+    with pytest.raises(TypeError):
+        dpnp.stack([x], out=out, dtype="i4")

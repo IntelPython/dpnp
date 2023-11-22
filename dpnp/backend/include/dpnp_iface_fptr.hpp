@@ -115,28 +115,24 @@ enum class DPNPFuncName : size_t
     DPNP_FN_COS,           /**< Used in numpy.cos() impl  */
     DPNP_FN_COSH,          /**< Used in numpy.cosh() impl  */
     DPNP_FN_COUNT_NONZERO, /**< Used in numpy.count_nonzero() impl  */
-    DPNP_FN_COUNT_NONZERO_EXT, /**< Used in numpy.count_nonzero() impl, requires
-                                  extra parameters */
-    DPNP_FN_COV,               /**< Used in numpy.cov() impl  */
-    DPNP_FN_CROSS,             /**< Used in numpy.cross() impl  */
-    DPNP_FN_CROSS_EXT,         /**< Used in numpy.cross() impl, requires extra
-                                  parameters */
-    DPNP_FN_CUMPROD,           /**< Used in numpy.cumprod() impl  */
-    DPNP_FN_CUMPROD_EXT,       /**< Used in numpy.cumprod() impl, requires extra
-                                  parameters */
-    DPNP_FN_CUMSUM,            /**< Used in numpy.cumsum() impl  */
-    DPNP_FN_CUMSUM_EXT,        /**< Used in numpy.cumsum() impl, requires extra
-                                  parameters */
-    DPNP_FN_DEGREES,           /**< Used in numpy.degrees() impl  */
-    DPNP_FN_DEGREES_EXT,       /**< Used in numpy.degrees() impl, requires extra
-                                  parameters */
-    DPNP_FN_DET,               /**< Used in numpy.linalg.det() impl  */
-    DPNP_FN_DET_EXT,  /**< Used in numpy.linalg.det() impl, requires extra
-                         parameters */
-    DPNP_FN_DIAG,     /**< Used in numpy.diag() impl  */
-    DPNP_FN_DIAG_EXT, /**< Used in numpy.diag() impl, requires extra parameters
-                       */
-    DPNP_FN_DIAG_INDICES,     /**< Used in numpy.diag_indices() impl  */
+    DPNP_FN_COV,           /**< Used in numpy.cov() impl  */
+    DPNP_FN_CROSS,         /**< Used in numpy.cross() impl  */
+    DPNP_FN_CROSS_EXT,     /**< Used in numpy.cross() impl, requires extra
+                              parameters */
+    DPNP_FN_CUMPROD,       /**< Used in numpy.cumprod() impl  */
+    DPNP_FN_CUMPROD_EXT,   /**< Used in numpy.cumprod() impl, requires extra
+                              parameters */
+    DPNP_FN_CUMSUM,        /**< Used in numpy.cumsum() impl  */
+    DPNP_FN_CUMSUM_EXT,    /**< Used in numpy.cumsum() impl, requires extra
+                              parameters */
+    DPNP_FN_DEGREES,       /**< Used in numpy.degrees() impl  */
+    DPNP_FN_DEGREES_EXT,   /**< Used in numpy.degrees() impl, requires extra
+                              parameters */
+    DPNP_FN_DET,           /**< Used in numpy.linalg.det() impl  */
+    DPNP_FN_DET_EXT,       /**< Used in numpy.linalg.det() impl, requires extra
+                              parameters */
+    DPNP_FN_DIAG,          /**< Used in numpy.diag() impl  */
+    DPNP_FN_DIAG_INDICES,  /**< Used in numpy.diag_indices() impl  */
     DPNP_FN_DIAG_INDICES_EXT, /**< Used in numpy.diag_indices() impl, requires
                                  extra parameters */
     DPNP_FN_DIAGONAL,         /**< Used in numpy.diagonal() impl  */
@@ -178,8 +174,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FILL_DIAGONAL_EXT, /**< Used in numpy.fill_diagonal() impl, requires
                                   extra parameters */
     DPNP_FN_FLATTEN,           /**< Used in numpy.flatten() impl  */
-    DPNP_FN_FLATTEN_EXT,       /**< Used in numpy.flatten() impl, requires extra
-                                  parameters  */
     DPNP_FN_FLOOR,             /**< Used in numpy.floor() impl  */
     DPNP_FN_FLOOR_DIVIDE,      /**< Used in numpy.floor_divide() impl  */
     DPNP_FN_FLOOR_DIVIDE_EXT,  /**< Used in numpy.floor_divide() impl, requires
@@ -214,44 +208,39 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MATRIX_RANK_EXT, /**< Used in numpy.linalg.matrix_rank() impl,
                                 requires extra parameters */
     DPNP_FN_MAX,             /**< Used in numpy.max() impl  */
-    DPNP_FN_MAX_EXT, /**< Used in numpy.max() impl, requires extra parameters */
-    DPNP_FN_MAXIMUM, /**< Used in numpy.fmax() impl  */
-    DPNP_FN_MAXIMUM_EXT, /**< Used in numpy.fmax() impl , requires extra
-                            parameters */
-    DPNP_FN_MEAN,        /**< Used in numpy.mean() impl  */
-    DPNP_FN_MEDIAN,      /**< Used in numpy.median() impl  */
-    DPNP_FN_MEDIAN_EXT,  /**< Used in numpy.median() impl, requires extra
-                            parameters */
-    DPNP_FN_MIN,         /**< Used in numpy.min() impl  */
-    DPNP_FN_MIN_EXT, /**< Used in numpy.min() impl, requires extra parameters */
-    DPNP_FN_MINIMUM, /**< Used in numpy.fmin() impl  */
-    DPNP_FN_MINIMUM_EXT, /**< Used in numpy.fmax() impl, requires extra
-                            parameters */
-    DPNP_FN_MODF,        /**< Used in numpy.modf() impl  */
+    DPNP_FN_MAXIMUM,         /**< Used in numpy.fmax() impl  */
+    DPNP_FN_MAXIMUM_EXT,     /**< Used in numpy.fmax() impl , requires extra
+                                parameters */
+    DPNP_FN_MEAN,            /**< Used in numpy.mean() impl  */
+    DPNP_FN_MEDIAN,          /**< Used in numpy.median() impl  */
+    DPNP_FN_MEDIAN_EXT,      /**< Used in numpy.median() impl, requires extra
+                                parameters */
+    DPNP_FN_MIN,             /**< Used in numpy.min() impl  */
+    DPNP_FN_MINIMUM,         /**< Used in numpy.fmin() impl  */
+    DPNP_FN_MINIMUM_EXT,     /**< Used in numpy.fmax() impl, requires extra
+                                parameters */
+    DPNP_FN_MODF,            /**< Used in numpy.modf() impl  */
     DPNP_FN_MODF_EXT, /**< Used in numpy.modf() impl, requires extra parameters
                        */
     DPNP_FN_MULTIPLY, /**< Used in numpy.multiply() impl  */
-    DPNP_FN_MULTIPLY_EXT,  /**< Used in numpy.multiply() impl, requires extra
-                              parameters */
-    DPNP_FN_NANVAR,        /**< Used in numpy.nanvar() impl  */
-    DPNP_FN_NANVAR_EXT,    /**< Used in numpy.nanvar() impl, requires extra
-                              parameters */
-    DPNP_FN_NEGATIVE,      /**< Used in numpy.negative() impl  */
-    DPNP_FN_NONZERO,       /**< Used in numpy.nonzero() impl  */
-    DPNP_FN_ONES,          /**< Used in numpy.ones() impl */
-    DPNP_FN_ONES_LIKE,     /**< Used in numpy.ones_like() impl */
-    DPNP_FN_PARTITION,     /**< Used in numpy.partition() impl */
-    DPNP_FN_PARTITION_EXT, /**< Used in numpy.partition() impl, requires extra
-                              parameters */
-    DPNP_FN_PLACE,         /**< Used in numpy.place() impl  */
-    DPNP_FN_POWER,         /**< Used in numpy.power() impl  */
-    DPNP_FN_PROD,          /**< Used in numpy.prod() impl  */
-    DPNP_FN_PROD_EXT, /**< Used in numpy.prod() impl, requires extra parameters
-                       */
-    DPNP_FN_PTP,      /**< Used in numpy.ptp() impl  */
-    DPNP_FN_PTP_EXT, /**< Used in numpy.ptp() impl, requires extra parameters */
-    DPNP_FN_PUT,     /**< Used in numpy.put() impl  */
-    DPNP_FN_PUT_ALONG_AXIS,     /**< Used in numpy.put_along_axis() impl  */
+    DPNP_FN_MULTIPLY_EXT,   /**< Used in numpy.multiply() impl, requires extra
+                               parameters */
+    DPNP_FN_NANVAR,         /**< Used in numpy.nanvar() impl  */
+    DPNP_FN_NANVAR_EXT,     /**< Used in numpy.nanvar() impl, requires extra
+                               parameters */
+    DPNP_FN_NEGATIVE,       /**< Used in numpy.negative() impl  */
+    DPNP_FN_NONZERO,        /**< Used in numpy.nonzero() impl  */
+    DPNP_FN_ONES,           /**< Used in numpy.ones() impl */
+    DPNP_FN_ONES_LIKE,      /**< Used in numpy.ones_like() impl */
+    DPNP_FN_PARTITION,      /**< Used in numpy.partition() impl */
+    DPNP_FN_PARTITION_EXT,  /**< Used in numpy.partition() impl, requires extra
+                               parameters */
+    DPNP_FN_PLACE,          /**< Used in numpy.place() impl  */
+    DPNP_FN_POWER,          /**< Used in numpy.power() impl  */
+    DPNP_FN_PROD,           /**< Used in numpy.prod() impl  */
+    DPNP_FN_PTP,            /**< Used in numpy.ptp() impl  */
+    DPNP_FN_PUT,            /**< Used in numpy.put() impl  */
+    DPNP_FN_PUT_ALONG_AXIS, /**< Used in numpy.put_along_axis() impl  */
     DPNP_FN_PUT_ALONG_AXIS_EXT, /**< Used in numpy.put_along_axis() impl,
                                    requires extra parameters */
     DPNP_FN_QR,                 /**< Used in numpy.linalg.qr() impl  */
@@ -265,8 +254,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RECIP_EXT,    /**< Used in numpy.recip() impl, requires extra
                              parameters */
     DPNP_FN_REPEAT,       /**< Used in numpy.repeat() impl  */
-    DPNP_FN_REPEAT_EXT,   /**< Used in numpy.repeat() impl, requires extra
-                             parameters */
     DPNP_FN_RIGHT_SHIFT,  /**< Used in numpy.right_shift() impl  */
     DPNP_FN_RNG_BETA,     /**< Used in numpy.random.beta() impl  */
     DPNP_FN_RNG_BETA_EXT, /**< Used in numpy.random.beta() impl, requires extra
@@ -411,21 +398,19 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TAKE,    /**< Used in numpy.take() impl  */
     DPNP_FN_TAN,     /**< Used in numpy.tan() impl  */
     DPNP_FN_TANH,    /**< Used in numpy.tanh() impl  */
-    DPNP_FN_TRANSPOSE,  /**< Used in numpy.transpose() impl  */
-    DPNP_FN_TRACE,      /**< Used in numpy.trace() impl  */
-    DPNP_FN_TRACE_EXT,  /**< Used in numpy.trace() impl, requires extra
-                           parameters */
-    DPNP_FN_TRAPZ,      /**< Used in numpy.trapz() impl  */
-    DPNP_FN_TRAPZ_EXT,  /**< Used in numpy.trapz() impl, requires extra
-                           parameters */
-    DPNP_FN_TRI,        /**< Used in numpy.tri() impl  */
-    DPNP_FN_TRIL,       /**< Used in numpy.tril() impl  */
-    DPNP_FN_TRIU,       /**< Used in numpy.triu() impl  */
-    DPNP_FN_TRUNC,      /**< Used in numpy.trunc() impl  */
-    DPNP_FN_VANDER,     /**< Used in numpy.vander() impl  */
-    DPNP_FN_VANDER_EXT, /**< Used in numpy.vander() impl, requires extra
-                           parameters */
-    DPNP_FN_VAR,        /**< Used in numpy.var() impl  */
+    DPNP_FN_TRANSPOSE, /**< Used in numpy.transpose() impl  */
+    DPNP_FN_TRACE,     /**< Used in numpy.trace() impl  */
+    DPNP_FN_TRACE_EXT, /**< Used in numpy.trace() impl, requires extra
+                          parameters */
+    DPNP_FN_TRAPZ,     /**< Used in numpy.trapz() impl  */
+    DPNP_FN_TRAPZ_EXT, /**< Used in numpy.trapz() impl, requires extra
+                          parameters */
+    DPNP_FN_TRI,       /**< Used in numpy.tri() impl  */
+    DPNP_FN_TRIL,      /**< Used in numpy.tril() impl  */
+    DPNP_FN_TRIU,      /**< Used in numpy.triu() impl  */
+    DPNP_FN_TRUNC,     /**< Used in numpy.trunc() impl  */
+    DPNP_FN_VANDER,    /**< Used in numpy.vander() impl  */
+    DPNP_FN_VAR,       /**< Used in numpy.var() impl  */
     DPNP_FN_VAR_EXT, /**< Used in numpy.var() impl, requires extra parameters */
     DPNP_FN_ZEROS,   /**< Used in numpy.zeros() impl */
     DPNP_FN_ZEROS_LIKE, /**< Used in numpy.zeros_like() impl */

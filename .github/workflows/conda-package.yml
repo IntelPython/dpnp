@@ -13,6 +13,7 @@ env:
   # TODO: to add test_arraymanipulation.py back to the scope once crash on Windows is gone
   TEST_SCOPE: >-
       test_arraycreation.py
+      test_amin_amax.py
       test_dot.py
       test_dparray.py
       test_copy.py
@@ -46,6 +47,7 @@ env:
       third_party/cupy/math_tests/test_rounding.py
       third_party/cupy/math_tests/test_trigonometric.py
       third_party/cupy/sorting_tests/test_sort.py
+      third_party/cupy/sorting_tests/test_count.py
   VER_JSON_NAME: 'version.json'
   VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
@@ -422,7 +424,7 @@ jobs:
         run: conda install anaconda-client
 
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.5.2
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0

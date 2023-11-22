@@ -452,18 +452,28 @@ def concatenate(
 
     For full documentation refer to :obj:`numpy.concatenate`.
 
+    Parameters
+    ----------
+    arrays : {dpnp.ndarray, usm_ndarray}
+        The arrays must have the same shape, except in the dimension corresponding
+        to axis (the first, by default).
+    axis : int, optional
+        The axis along which the arrays will be joined. If axis is None, arrays are
+        flattened before use. Default is 0.
+    out : dpnp.ndarray, optional
+        If provided, the destination to place the result. The shape must be correct,
+        matching that of what concatenate would have returned if no out argument were
+        specified.
+    dtype : str or dtype
+        If provided, the destination array will have this dtype. Cannot be provided
+        together with out.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur. Defaults to 'same_kind'.
+
     Returns
     -------
     out : dpnp.ndarray
         The concatenated array.
-
-    Limitations
-    -----------
-    Each array in `arrays` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
-    will be raised.
-    Parameters `out` and `dtype` are supported with default value.
-    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -496,25 +506,20 @@ def concatenate(
 
     """
 
-    if out is not None:
-        pass
-    elif dtype is not None:
-        pass
-    elif casting != "same_kind":
-        pass
-    else:
-        usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
-        usm_res = dpt.concat(usm_arrays, axis=axis)
-        return dpnp_array._create_from_usm_ndarray(usm_res)
+    if dtype is not None and out is not None:
+        raise TypeError(
+            "concatenate() only takes `out` or `dtype` as an argument, but both were provided."
+        )
 
-    return call_origin(
-        numpy.concatenate,
-        arrays,
-        axis=axis,
-        out=out,
-        dtype=dtype,
-        casting=casting,
-    )
+    usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
+    usm_res = dpt.concat(usm_arrays, axis=axis)
+    res = dpnp_array._create_from_usm_ndarray(usm_res)
+    if dtype is not None:
+        res = res.astype(dtype, casting=casting, copy=False)
+    elif out is not None:
+        dpnp.copyto(out, res, casting=casting)
+        return out
+    return res
 
 
 def copyto(dst, src, casting="same_kind", where=True):
@@ -868,18 +873,20 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
 
     For full documentation refer to :obj:`numpy.hstack`.
 
+    Parameters
+    ----------
+    tup : {dpnp.ndarray, usm_ndarray}
+        The arrays must have the same shape along all but the second axis,
+        except 1-D arrays which can be any length.
+    dtype : str or dtype
+        If provided, the destination array will have this dtype.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur. Defaults to 'same_kind'.
+
     Returns
     -------
     out : dpnp.ndarray
         The stacked array which has one more dimension than the input arrays.
-
-    Limitations
-    -----------
-    Each array in `tup` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
-    will be raised.
-    Parameters `dtype` and `casting` are supported with default value.
-    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -969,27 +976,44 @@ def ravel(a, order="C"):
 
     For full documentation refer to :obj:`numpy.ravel`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    x : {dpnp_array, usm_ndarray}
+        Input array. The elements in `a` are read in the order specified by order,
+        and packed as a 1-D array.
+    order : {'C', 'F'}, optional
+        The elements of `a` are read using this index order. ``C`` means to index
+        the elements in row-major, C-style order, with the last axis index
+        changing fastest, back to the first axis index changing slowest. ``F``
+        means to index the elements in column-major, Fortran-style order, with
+        the first index changing fastest, and the last index changing slowest.
+        By default, ``C`` index order is used.
+
+    Returns
+    -------
+    out : dpnp_array
+        `out` is a contiguous 1-D array of the same subtype as `a`, with shape (a.size,)
+
+    See Also
+    --------
+    :obj:`dpnp.reshape` : Change the shape of an array without changing its data.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([[1, 2, 3], [4, 5, 6]])
-    >>> out = np.ravel(x)
-    >>> [i for i in out]
-    [1, 2, 3, 4, 5, 6]
+    >>> np.ravel(x)
+    array([1, 2, 3, 4, 5, 6])
+
+    >>> x.reshape(-1)
+    array([1, 2, 3, 4, 5, 6])
+
+    >>> np.ravel(x, order='F')
+    array([1, 4, 2, 5, 3, 6])
 
     """
 
-    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
-    if a_desc:
-        return dpnp_flatten(a_desc).get_pyobj()
-
-    return call_origin(numpy.ravel, a, order=order)
+    return dpnp.reshape(a, -1, order=order)
 
 
 def repeat(a, repeats, axis=None):
@@ -998,39 +1022,55 @@ def repeat(a, repeats, axis=None):
 
     For full documentation refer to :obj:`numpy.repeat`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter `axis` is supported with value either ``None`` or ``0``.
-    Dimension of input array are supported to be less than ``2``.
-    Otherwise the function will be executed sequentially on CPU.
-    If `repeats` is ``tuple`` or ``list``, should be ``len(repeats) > 1``.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    x : {dpnp_array, usm_ndarray}
+        Input array.
+    repeat : int or array of int
+        The number of repetitions for each element. `repeats` is broadcasted to fit
+        the shape of the given axis.
+    axis : int, optional
+        The axis along which to repeat values. By default, use the flattened input array,
+        and return a flat output array.
 
-    .. seealso:: :obj:`numpy.tile` tile an array.
+    Returns
+    -------
+    out : dpnp_array
+        Output array which has the same shape as `a`, except along the given axis.
+
+    See Also
+    --------
+    :obj:`dpnp.tile` : Construct an array by repeating A the number of times given by reps.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.repeat(3, 4)
-    >>> [i for i in x]
-    [3, 3, 3, 3]
+    >>> x = np.array([3])
+    >>> np.repeat(x, 4)
+    array([3, 3, 3, 3])
+
+    >>> x = np.array([[1,2], [3,4]])
+    >>> np.repeat(x, 2)
+    array([1, 1, 2, 2, 3, 3, 4, 4])
+    >>> np.repeat(x, 3, axis=1)
+    array([[1, 1, 1, 2, 2, 2],
+           [3, 3, 3, 4, 4, 4]])
+    >>> np.repeat(x, [1, 2], axis=0)
+    array([[1, 2],
+           [3, 4],
+           [3, 4]])
 
     """
 
-    a_desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
-    if a_desc:
-        if axis is not None and axis != 0:
-            pass
-        elif a_desc.ndim >= 2:
-            pass
-        elif not dpnp.isscalar(repeats) and len(repeats) > 1:
-            pass
-        else:
-            repeat_val = repeats if dpnp.isscalar(repeats) else repeats[0]
-            return dpnp_repeat(a_desc, repeat_val, axis).get_pyobj()
-
-    return call_origin(numpy.repeat, a, repeats, axis)
+    rep = repeats
+    if isinstance(repeats, dpnp_array):
+        rep = dpnp.get_usm_ndarray(repeats)
+    if axis is None and a.ndim > 1:
+        usm_arr = dpnp.get_usm_ndarray(a.flatten())
+    else:
+        usm_arr = dpnp.get_usm_ndarray(a)
+    usm_arr = dpt.repeat(usm_arr, rep, axis=axis)
+    return dpnp_array._create_from_usm_ndarray(usm_arr)
 
 
 def reshape(a, /, newshape, order="C", copy=None):
@@ -1357,25 +1397,31 @@ def squeeze(a, /, axis=None):
     )
 
 
-def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
+def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
     """
     Join a sequence of arrays along a new axis.
 
     For full documentation refer to :obj:`numpy.stack`.
 
+    Parameters
+    ----------
+    arrays : {dpnp.ndarray, usm_ndarray}
+        Each array must have the same shape.
+    axis : int, optional
+        The axis in the result array along which the input arrays are stacked.
+    out : dpnp.ndarray, optional
+        If provided, the destination to place the result. The shape must be correct,
+        matching that of what stack would have returned if no out argument were specified.
+    dtype : str or dtype
+        If provided, the destination array will have this dtype. Cannot be provided
+        together with out.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur. Defaults to 'same_kind'.
+
     Returns
     -------
     out : dpnp.ndarray
         The stacked array which has one more dimension than the input arrays.
-
-    Limitations
-    -----------
-    Each array in `arrays` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
-    will be raised.
-    Parameters `out` and `dtype` are supported with default value.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -1409,25 +1455,20 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, **kwargs):
 
     """
 
-    if kwargs:
-        pass
-    elif out is not None:
-        pass
-    elif dtype is not None:
-        pass
-    else:
-        usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
-        usm_res = dpt.stack(usm_arrays, axis=axis)
-        return dpnp_array._create_from_usm_ndarray(usm_res)
+    if dtype is not None and out is not None:
+        raise TypeError(
+            "stack() only takes `out` or `dtype` as an argument, but both were provided."
+        )
 
-    return call_origin(
-        numpy.stack,
-        arrays,
-        axis=axis,
-        out=out,
-        dtype=dtype,
-        **kwargs,
-    )
+    usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
+    usm_res = dpt.stack(usm_arrays, axis=axis)
+    res = dpnp_array._create_from_usm_ndarray(usm_res)
+    if dtype is not None:
+        res = res.astype(dtype, casting=casting, copy=False)
+    elif out is not None:
+        dpnp.copyto(out, res, casting=casting)
+        return out
+    return res
 
 
 def swapaxes(a, axis1, axis2):
@@ -1649,18 +1690,20 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
 
     For full documentation refer to :obj:`numpy.vstack`.
 
+    Parameters
+    ----------
+    tup : {dpnp.ndarray, usm_ndarray}
+        The arrays must have the same shape along all but the first axis.
+        1-D arrays must have the same length.
+    dtype : str or dtype
+        If provided, the destination array will have this dtype.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur. Defaults to 'same_kind'.
+
     Returns
     -------
     out : dpnp.ndarray
         The array formed by stacking the given arrays, will be at least 2-D.
-
-    Limitations
-    -----------
-    Each array in `tup` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
-    will be raised.
-    Parameters `dtype` and `casting` are supported with default value.
-    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------

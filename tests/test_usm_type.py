@@ -140,19 +140,45 @@ def test_coerced_usm_types_power(usm_type_x, usm_type_y):
 @pytest.mark.parametrize(
     "func, args",
     [
+        pytest.param("diag", ["x0"]),
+        pytest.param("empty_like", ["x0"]),
         pytest.param("full", ["10", "x0[3]"]),
         pytest.param("full_like", ["x0", "4"]),
-        pytest.param("zeros_like", ["x0"]),
-        pytest.param("ones_like", ["x0"]),
-        pytest.param("empty_like", ["x0"]),
-        pytest.param("linspace", ["x0[0:2]", "4", "4"]),
+        pytest.param("geomspace", ["x0[0:3]", "8", "4"]),
+        pytest.param("geomspace", ["1", "x0[3:5]", "4"]),
+        pytest.param("linspace", ["x0[0:2]", "8", "4"]),
         pytest.param("linspace", ["0", "x0[3:5]", "4"]),
+        pytest.param("logspace", ["x0[0:2]", "8", "4"]),
+        pytest.param("logspace", ["0", "x0[3:5]", "4"]),
+        pytest.param("ones_like", ["x0"]),
+        pytest.param("vander", ["x0"]),
+        pytest.param("zeros_like", ["x0"]),
     ],
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-def test_array_creation_from_an_array(func, args, usm_type_x, usm_type_y):
+def test_array_creation_from_1d_array(func, args, usm_type_x, usm_type_y):
     x0 = dp.full(10, 3, usm_type=usm_type_x)
+    new_args = [eval(val, {"x0": x0}) for val in args]
+
+    x = getattr(dp, func)(*new_args)
+    y = getattr(dp, func)(*new_args, usm_type=usm_type_y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+
+
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("diag", ["x0"]),
+        pytest.param("diagflat", ["x0"]),
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_array_creation_from_2d_array(func, args, usm_type_x, usm_type_y):
+    x0 = dp.arange(25, usm_type=usm_type_x).reshape(5, 5)
     new_args = [eval(val, {"x0": x0}) for val in args]
 
     x = getattr(dp, func)(*new_args)
@@ -168,8 +194,10 @@ def test_array_creation_from_an_array(func, args, usm_type_x, usm_type_y):
         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
+        pytest.param("geomspace", [1, 4, 8], {}),
         pytest.param("identity", [4], {}),
         pytest.param("linspace", [0, 4, 8], {}),
+        pytest.param("logspace", [0, 4, 8], {}),
         pytest.param("ones", [(2, 2)], {}),
         pytest.param("tri", [3, 5, 2], {}),
         pytest.param("zeros", [(2, 2)], {}),
@@ -187,6 +215,18 @@ def test_array_creation_from_scratch(func, arg, kwargs, usm_type):
     assert dpnp_array.shape == numpy_array.shape
     assert_dtype_allclose(dpnp_array, numpy_array)
     assert dpnp_array.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_logspace_base(usm_type_x, usm_type_y):
+    x0 = dp.full(10, 2, usm_type=usm_type_x)
+
+    x = dp.logspace([2, 2], 8, 4, base=x0[3:5])
+    y = dp.logspace([2, 2], 8, 4, base=x0[3:5], usm_type=usm_type_y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
 
 
 @pytest.mark.parametrize(
@@ -338,6 +378,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
             "cos", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
+        pytest.param("count_nonzero", [0, 1, 7, 0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
@@ -348,9 +389,14 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param("log10", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("log2", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("nanprod", [1.0, 2.0, dp.nan]),
+        pytest.param("max", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("negative", [1.0, 0.0, -1.0]),
         pytest.param("positive", [1.0, 0.0, -1.0]),
+        pytest.param("prod", [1.0, 2.0]),
         pytest.param("proj", [complex(1.0, 2.0), complex(dp.inf, -1.0)]),
+        pytest.param("ptp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
