@@ -347,14 +347,39 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
         n, m = a.shape
 
         if m == 0 or n == 0:
-            s = dpnp.empty((0,), dtype=res_type_s)
+            s = dpnp.empty(
+                (0,),
+                dtype=res_type_s,
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
             if compute_uv:
                 if full_matrices:
-                    u = dpnp.eye(n, dtype=res_type)
-                    vt = dpnp.eye(m, dtype=res_type)
+                    u = dpnp.eye(
+                        n,
+                        dtype=res_type,
+                        usm_type=a_usm_type,
+                        sycl_queue=a_sycl_queue,
+                    )
+                    vt = dpnp.eye(
+                        m,
+                        dtype=res_type,
+                        usm_type=a_usm_type,
+                        sycl_queue=a_sycl_queue,
+                    )
                 else:
-                    u = dpnp.empty((n, 0), dtype=res_type)
-                    vt = dpnp.empty((0, m), dtype=res_type)
+                    u = dpnp.empty(
+                        (n, 0),
+                        dtype=res_type,
+                        usm_type=a_usm_type,
+                        sycl_queue=a_sycl_queue,
+                    )
+                    vt = dpnp.empty(
+                        (0, m),
+                        dtype=res_type,
+                        usm_type=a_usm_type,
+                        sycl_queue=a_sycl_queue,
+                    )
                 return u, s, vt
             else:
                 return s
