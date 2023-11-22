@@ -1,5 +1,5 @@
 {% set required_compiler_and_mkl_version = "2024.0" %}
-{% set required_dpctl_version = "0.15.1dev1" %}
+{% set required_dpctl_version = "0.15.1dev2" %}
 
 package:
     name: dpnp
@@ -28,9 +28,9 @@ requirements:
       - sysroot_linux-64 >=2.28 # [linux]
     run:
       - python
-      - dpctl >={{ required_dpctl_version }}
-      - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x') }}
-      - {{ pin_compatible('mkl-dpcpp', min_pin='x.x') }}
+      - {{ pin_compatible('dpctl', min_pin='x.x.x', max_pin=None) }}
+      - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
+      - {{ pin_compatible('mkl-dpcpp', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
 
 build:
