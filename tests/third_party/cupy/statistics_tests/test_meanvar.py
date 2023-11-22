@@ -181,6 +181,8 @@ class TestMeanVar(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(rtol=1e-06)
     def test_mean_all_float32_dtype(self, xp, dtype):
+        if dtype == xp.int32:
+            pytest.skip("skip until issue #1468 is solved in dpctl")
         a = xp.full((2, 3, 4), 123456789, dtype=dtype)
         return xp.mean(a, dtype=numpy.float32)
 

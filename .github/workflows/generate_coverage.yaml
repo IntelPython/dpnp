@@ -42,8 +42,10 @@ jobs:
 
       - name: Install dpnp dependencies
         run: |
+          # use DPC++ compiler 2023.2 to work around an issue with crash
           conda install cython llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
-              dpctl dpcpp_linux-64 sysroot_linux-64">=2.28" mkl-devel-dpcpp tbb-devel onedpl-devel ${{ env.CHANNELS }}
+              dpctl dpcpp_linux-64"=2023.2" sysroot_linux-64">=2.28" mkl-devel-dpcpp tbb-devel"=2021.10" \
+              onedpl-devel ${{ env.CHANNELS }}
 
       - name: Conda info
         run: |

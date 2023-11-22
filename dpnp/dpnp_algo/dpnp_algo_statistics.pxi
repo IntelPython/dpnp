@@ -38,9 +38,7 @@ and the rest of the library
 __all__ += [
     "dpnp_average",
     "dpnp_correlate",
-    "dpnp_max",
     "dpnp_median",
-    "dpnp_min",
     "dpnp_nanvar",
     "dpnp_std",
     "dpnp_var",
@@ -64,16 +62,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_statistic_1in_1out_func_ptr_t)(c_dpct
                                                                           void *, void * , shape_elem_type * , size_t,
                                                                           shape_elem_type * , size_t,
                                                                           const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*custom_statistic_1in_1out_func_ptr_t_max)(c_dpctl.DPCTLSyclQueueRef,
-                                                                              void *,
-                                                                              void * ,
-                                                                              const size_t,
-                                                                              shape_elem_type * ,
-                                                                              size_t,
-                                                                              shape_elem_type * ,
-                                                                              size_t,
-                                                                              const c_dpctl.DPCTLEventVectorRef)
-
 
 cdef utils.dpnp_descriptor call_fptr_custom_std_var_1in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1, ddof):
     cdef shape_type_c x1_shape = x1.shape
@@ -177,86 +165,6 @@ cpdef utils.dpnp_descriptor dpnp_correlate(utils.dpnp_descriptor x1, utils.dpnp_
     return result
 
 
-cdef utils.dpnp_descriptor _dpnp_max(utils.dpnp_descriptor x1, _axis_, shape_type_c result_shape):
-    cdef shape_type_c x1_shape = x1.shape
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MAX_EXT, param1_type, param1_type)
-
-    x1_obj = x1.get_array()
-
-    # create result array with type given by FPTR data
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=x1_obj.sycl_device,
-                                                                       usm_type=x1_obj.usm_type,
-                                                                       sycl_queue=x1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_statistic_1in_1out_func_ptr_t_max func = <custom_statistic_1in_1out_func_ptr_t_max > kernel_data.ptr
-    cdef shape_type_c axis
-    cdef Py_ssize_t axis_size = 0
-    cdef shape_type_c axis_ = axis
-
-    if _axis_ is not None:
-        axis = _axis_
-        axis_.reserve(len(axis))
-        for shape_it in axis:
-            axis_.push_back(shape_it)
-        axis_size = len(axis)
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    x1.get_data(),
-                                                    result.get_data(),
-                                                    result.size,
-                                                    x1_shape.data(),
-                                                    x1.ndim,
-                                                    axis_.data(),
-                                                    axis_size,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_max(utils.dpnp_descriptor x1, axis):
-    cdef shape_type_c x1_shape = x1.shape
-    cdef shape_type_c output_shape
-
-    if axis is None:
-        axis_ = axis
-        output_shape.push_back(1)
-    else:
-        if isinstance(axis, int):
-            if axis < 0:
-                axis_ = tuple([x1.ndim - axis])
-            else:
-                axis_ = tuple([axis])
-        else:
-            _axis_ = []
-            for i in range(len(axis)):
-                if axis[i] < 0:
-                    _axis_.append(x1.ndim - axis[i])
-                else:
-                    _axis_.append(axis[i])
-            axis_ = tuple(_axis_)
-
-        output_shape.resize(len(x1_shape) - len(axis_), 0)
-        ind = 0
-        for id, shape_axis in enumerate(x1_shape):
-            if id not in axis_:
-                output_shape[ind] = shape_axis
-                ind += 1
-
-    return _dpnp_max(x1, axis_, output_shape)
-
 cpdef utils.dpnp_descriptor dpnp_median(utils.dpnp_descriptor array1):
     cdef shape_type_c x1_shape = array1.shape
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
@@ -299,85 +207,6 @@ cpdef utils.dpnp_descriptor dpnp_median(utils.dpnp_descriptor array1):
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor _dpnp_min(utils.dpnp_descriptor x1, _axis_, shape_type_c shape_output):
-    cdef shape_type_c x1_shape = x1.shape
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MIN_EXT, param1_type, param1_type)
-
-    x1_obj = x1.get_array()
-
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_output,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=x1_obj.sycl_device,
-                                                                       usm_type=x1_obj.usm_type,
-                                                                       sycl_queue=x1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_statistic_1in_1out_func_ptr_t_max func = <custom_statistic_1in_1out_func_ptr_t_max > kernel_data.ptr
-    cdef shape_type_c axis
-    cdef Py_ssize_t axis_size = 0
-    cdef shape_type_c axis_ = axis
-
-    if _axis_ is not None:
-        axis = _axis_
-        axis_.reserve(len(axis))
-        for shape_it in axis:
-            if shape_it < 0:
-                raise ValueError("DPNP algo::_dpnp_min(): Negative values in 'shape' are not allowed")
-            axis_.push_back(shape_it)
-        axis_size = len(axis)
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    x1.get_data(),
-                                                    result.get_data(),
-                                                    result.size,
-                                                    x1_shape.data(),
-                                                    x1.ndim,
-                                                    axis_.data(),
-                                                    axis_size,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_min(utils.dpnp_descriptor x1, axis):
-    cdef shape_type_c x1_shape = x1.shape
-    cdef shape_type_c shape_output
-
-    if axis is None:
-        axis_ = axis
-        shape_output = (1,)
-    else:
-        if isinstance(axis, int):
-            if axis < 0:
-                axis_ = tuple([x1.ndim - axis])
-            else:
-                axis_ = tuple([axis])
-        else:
-            _axis_ = []
-            for i in range(len(axis)):
-                if axis[i] < 0:
-                    _axis_.append(x1.ndim - axis[i])
-                else:
-                    _axis_.append(axis[i])
-            axis_ = tuple(_axis_)
-
-        for id, shape_axis in enumerate(x1_shape):
-            if id not in axis_:
-                shape_output.push_back(shape_axis)
-
-    return _dpnp_min(x1, axis_, shape_output)
 
 
 cpdef utils.dpnp_descriptor dpnp_nanvar(utils.dpnp_descriptor arr, ddof):

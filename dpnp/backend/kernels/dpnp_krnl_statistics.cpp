@@ -503,18 +503,6 @@ void (*dpnp_max_default_c)(void *,
                            const shape_elem_type *,
                            size_t) = dpnp_max_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_max_ext_c)(DPCTLSyclQueueRef,
-                                    void *,
-                                    void *,
-                                    const size_t,
-                                    const shape_elem_type *,
-                                    size_t,
-                                    const shape_elem_type *,
-                                    size_t,
-                                    const DPCTLEventVectorRef) =
-    dpnp_max_c<_DataType>;
-
 template <typename _DataType, typename _ResultType>
 DPCTLSyclEventRef dpnp_mean_c(DPCTLSyclQueueRef q_ref,
                               void *array1_in,
@@ -886,18 +874,6 @@ void (*dpnp_min_default_c)(void *,
                            size_t,
                            const shape_elem_type *,
                            size_t) = dpnp_min_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_min_ext_c)(DPCTLSyclQueueRef,
-                                    void *,
-                                    void *,
-                                    const size_t,
-                                    const shape_elem_type *,
-                                    size_t,
-                                    const shape_elem_type *,
-                                    size_t,
-                                    const DPCTLEventVectorRef) =
-    dpnp_min_c<_DataType>;
 
 template <typename _DataType>
 DPCTLSyclEventRef dpnp_nanvar_c(DPCTLSyclQueueRef q_ref,
@@ -1283,15 +1259,6 @@ void func_map_init_statistics(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_MAX][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_max_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_MAX_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_max_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_MAX_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_max_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_MAX_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_max_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_MAX_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_max_ext_c<double>};
-
     fmap[DPNPFuncName::DPNP_FN_MEAN][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_mean_default_c<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_MEAN][eft_LNG][eft_LNG] = {
@@ -1339,15 +1306,6 @@ void func_map_init_statistics(func_map_t &fmap)
         eft_FLT, (void *)dpnp_min_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_MIN][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_min_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_MIN_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_min_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_MIN_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_min_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_MIN_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_min_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_MIN_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_min_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_nanvar_default_c<int32_t>};

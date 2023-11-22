@@ -1,6 +1,10 @@
+import dpctl.tensor as dpt
 import numpy
 import pytest
-from numpy.testing import assert_allclose
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal,
+)
 
 import dpnp
 
@@ -21,19 +25,67 @@ def test_median(dtype, size):
     assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("axis", [0, 1, -1, 2, -2, (1, 2), (0, -2)])
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
-def test_max(axis, dtype):
+@pytest.mark.parametrize("func", ["max", "min"])
+@pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
+@pytest.mark.parametrize("keepdims", [False, True])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+def test_max_min(func, axis, keepdims, dtype):
     a = numpy.arange(768, dtype=dtype).reshape((4, 4, 6, 8))
     ia = dpnp.array(a)
 
-    np_res = numpy.max(a, axis=axis)
-    dpnp_res = dpnp.max(ia, axis=axis)
+    np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
+    dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
 
+    assert dpnp_res.shape == np_res.shape
     assert_allclose(dpnp_res, np_res)
+
+
+@pytest.mark.parametrize("func", ["max", "min"])
+@pytest.mark.parametrize("axis", [None, 0, 1, -1])
+@pytest.mark.parametrize("keepdims", [False, True])
+def test_max_min_bool(func, axis, keepdims):
+    a = numpy.arange(2, dtype=dpnp.bool)
+    a = numpy.tile(a, (2, 2))
+    ia = dpnp.array(a)
+
+    np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
+    dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
+
+    assert dpnp_res.shape == np_res.shape
+    assert_allclose(dpnp_res, np_res)
+
+
+@pytest.mark.parametrize("func", ["max", "min"])
+def test_max_min_out(func):
+    a = numpy.arange(6).reshape((2, 3))
+    ia = dpnp.array(a)
+
+    np_res = getattr(numpy, func)(a, axis=0)
+    dpnp_res = dpnp.array(numpy.empty_like(np_res))
+    getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+    assert_allclose(dpnp_res, np_res)
+
+    dpnp_res = dpt.asarray(numpy.empty_like(np_res))
+    getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+    assert_allclose(dpnp_res, np_res)
+
+    dpnp_res = numpy.empty_like(np_res)
+    with pytest.raises(TypeError):
+        getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+
+    dpnp_res = dpnp.array(numpy.empty((2, 3)))
+    with pytest.raises(ValueError):
+        getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+
+
+@pytest.mark.parametrize("func", ["max", "min"])
+def test_max_min_NotImplemented(func):
+    ia = dpnp.arange(5)
+
+    with pytest.raises(NotImplementedError):
+        getattr(dpnp, func)(ia, where=False)
+    with pytest.raises(NotImplementedError):
+        getattr(dpnp, func)(ia, initial=6)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -141,3 +193,64 @@ def test_cov_1D_rowvar(dtype):
     a = dpnp.array([[0, 1, 2]], dtype=dtype)
     b = numpy.array([[0, 1, 2]], dtype=dtype)
     assert_allclose(numpy.cov(b, rowvar=False), dpnp.cov(a, rowvar=False))
+
+
+@pytest.mark.parametrize(
+    "axis",
+    [None, 0, 1],
+    ids=["None", "0", "1"],
+)
+@pytest.mark.parametrize(
+    "v",
+    [
+        [[0, 0], [0, 0]],
+        [[1, 2], [1, 2]],
+        [[1, 2], [3, 4]],
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+    ],
+    ids=[
+        "[[0, 0], [0, 0]]",
+        "[[1, 2], [1, 2]]",
+        "[[1, 2], [3, 4]]",
+        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+    ],
+)
+def test_ptp(v, axis):
+    a = numpy.array(v)
+    ia = dpnp.array(a)
+    expected = numpy.ptp(a, axis)
+    result = dpnp.ptp(ia, axis)
+    assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize(
+    "axis",
+    [None, 0, 1],
+    ids=["None", "0", "1"],
+)
+@pytest.mark.parametrize(
+    "v",
+    [
+        [[0, 0], [0, 0]],
+        [[1, 2], [1, 2]],
+        [[1, 2], [3, 4]],
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+    ],
+    ids=[
+        "[[0, 0], [0, 0]]",
+        "[[1, 2], [1, 2]]",
+        "[[1, 2], [3, 4]]",
+        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+    ],
+)
+def test_ptp_out(v, axis):
+    a = numpy.array(v)
+    ia = dpnp.array(a)
+    expected = numpy.ptp(a, axis)
+    result = dpnp.array(numpy.empty_like(expected))
+    dpnp.ptp(ia, axis, out=result)
+    assert_array_equal(expected, result)
