@@ -5,7 +5,12 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp as inp
 
-from .helper import assert_dtype_allclose, get_all_dtypes, has_support_aspect64
+from .helper import (
+    assert_dtype_allclose,
+    get_all_dtypes,
+    has_support_aspect64,
+    is_cpu_device,
+)
 
 
 def vvsort(val, vec, size, xp):
@@ -561,6 +566,8 @@ class TestSolve:
         result = inp.linalg.solve(a_dp[::-2, ::-2], b_dp[::-2])
         assert_allclose(expected, result, rtol=1e-05)
 
+    # TODO: remove skipif when MKLD-16626 is resolved
+    @pytest.mark.skipif(is_cpu_device(), reason="MKL bug MKLD-16626")
     @pytest.mark.parametrize(
         "matrix, vector",
         [
