@@ -1039,8 +1039,6 @@ class dpnp_array:
 
         return dpnp.prod(self, axis, dtype, out, keepdims, initial, where)
 
-    # 'ptp'
-
     def put(self, indices, vals, /, *, axis=None, mode="wrap"):
         """
         Puts values of an array into another array along a given axis.
