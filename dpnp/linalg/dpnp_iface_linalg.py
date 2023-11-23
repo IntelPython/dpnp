@@ -671,21 +671,10 @@ def slogdet(a):
 
     logdet = dpnp.log(dpnp.abs(diag)).sum(axis=-1)
 
-    # Transposing 'ipiv' and reshaping 'arange_values' for element-wise comparison
-    # as 'dpnp.count_nonzero' does not support the 'axis' parameter.
-    ipiv_transposed = ipiv.transpose(-1, *range(ipiv.ndim - 1))
-    arange_shape = [1] * a.ndim
-    arange_shape[-2] = n
-    arange_values = dpnp.arange(1, n + 1, sycl_queue=exec_q).reshape(
-        arange_shape
-    )
-
     # ipiv is 1-origin
-    # TODO: Replace with 'dpnp.count_nonzero(ipiv != dpnp.arange(1, n + 1), axis=-1)'
-    # when supported.
-    non_zero = dpnp.count_nonzero(ipiv_transposed != arange_values)
+    non_zero = dpnp.count_nonzero(ipiv != dpnp.arange(1, n + 1), axis=-1)
     if res_type.kind == "f":
-        non_zero += dpnp.count_nonzero(diag < 0)
+        non_zero += dpnp.count_nonzero(diag < 0, axis=-1)
 
     sign = -(1 ** (non_zero % 2))
     if res_type.kind == "c":
