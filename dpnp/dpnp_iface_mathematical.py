@@ -2158,26 +2158,7 @@ def prod(
             dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
         )
 
-        if out is None:
-            return result
-        else:
-            if out.shape != result.shape:
-                raise ValueError(
-                    f"Output array of shape {result.shape} is needed, got {out.shape}."
-                )
-            elif not isinstance(out, dpnp_array):
-                if isinstance(out, dpt.usm_ndarray):
-                    out = dpnp_array._create_from_usm_ndarray(out)
-                else:
-                    raise TypeError(
-                        "Output array must be any of supported type, but got {}".format(
-                            type(out)
-                        )
-                    )
-
-            dpnp.copyto(out, result, casting="safe")
-
-            return out
+        return dpnp.get_result_array(result, out)
 
 
 def proj(

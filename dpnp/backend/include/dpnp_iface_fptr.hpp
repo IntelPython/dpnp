@@ -76,11 +76,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARCTAN2,      /**< Used in numpy.arctan2() impl  */
     DPNP_FN_ARCTANH,      /**< Used in numpy.arctanh() impl  */
     DPNP_FN_ARGMAX,       /**< Used in numpy.argmax() impl  */
-    DPNP_FN_ARGMAX_EXT,   /**< Used in numpy.argmax() impl, requires extra
-                             parameters */
     DPNP_FN_ARGMIN,       /**< Used in numpy.argmin() impl  */
-    DPNP_FN_ARGMIN_EXT,   /**< Used in numpy.argmin() impl, requires extra
-                             parameters */
     DPNP_FN_ARGSORT,      /**< Used in numpy.argsort() impl  */
     DPNP_FN_ARGSORT_EXT,  /**< Used in numpy.argsort() impl, requires extra
                              parameters */
