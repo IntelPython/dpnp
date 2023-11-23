@@ -477,6 +477,11 @@ def copysign(
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported real data types.
 
+    See Also
+    --------
+    :obj:`dpnp.negative` : Return the numerical negative of each element of `x`.
+    :obj:`dpnp.positive` : Return the numerical positive of each element of `x`.
+
     Examples
     --------
     >>> import dpnp as np

@@ -869,6 +869,8 @@ def exp2(
 
     See Also
     --------
+    :obj:`dpnp.exp` : Calculate exponential for all elements in the array.
+    :obj:`dpnp.expm1` : ``exp(x) - 1``, the inverse of :obj:`dpnp.log1p`.
     :obj:`dpnp.power` : First array elements raised to powers from second array, element-wise.
 
     Examples
@@ -1627,6 +1629,11 @@ def sqrt(
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.cbrt` : Return the cube-root of an array, element-wise.
+    :obj:`dpnp.rsqrt` : Return the reciprocal square-root of an array, element-wise.
 
     Examples
     --------

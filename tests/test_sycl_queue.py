@@ -373,11 +373,9 @@ def test_proj(device):
 )
 def test_rsqrt(device):
     X = [1.0, 8.0, 27.0]
-    Y = [1.0, 0.35355338, 0.19245009]
-
     x = dpnp.array(X, device=device)
     result = dpnp.rsqrt(x)
-    expected = dpnp.array(Y)
+    expected = 1 / numpy.sqrt(x.asnumpy())
     assert_allclose(result, expected)
 
     expected_queue = x.get_array().sycl_queue

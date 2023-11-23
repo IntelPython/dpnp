@@ -8,7 +8,7 @@ from tests.third_party.cupy import testing
 
 class TestMisc:
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(atol=1e-5, type_check=False)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def check_unary(self, name, xp, dtype, no_bool=False):
         if no_bool and numpy.dtype(dtype).char == "?":
             return numpy.int_(0)

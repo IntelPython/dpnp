@@ -159,16 +159,22 @@ def check_nd_call_func(
                 )
             )
         return dpnp_func(*x_args, out=out, order=order)
-    return call_origin(
-        origin_func,
-        *x_args,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+    if origin_func is not None:
+        return call_origin(
+            origin_func,
+            *x_args,
+            out=out,
+            where=where,
+            order=order,
+            dtype=dtype,
+            subok=subok,
+            **kwargs,
+        )
+    else:
+        raise NotImplementedError(
+            f"Requested function={dpnp_func.__name__} with args={x_args} and kwargs={kwargs} "
+            "isn't currently supported."
+        )
 
 
 def _make_unary_func(
@@ -238,7 +244,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -282,7 +288,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -323,7 +329,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -367,7 +373,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -410,7 +416,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -451,7 +457,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type..
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -492,7 +498,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type..
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -539,7 +545,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -583,7 +589,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -629,7 +635,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -673,7 +679,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -717,7 +723,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -757,7 +763,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -797,7 +803,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -836,7 +842,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -879,7 +885,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -916,7 +922,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -956,7 +962,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -999,7 +1005,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1045,7 +1051,7 @@ Args:
         Output array to populate.
         Array have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1082,7 +1088,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -1123,7 +1129,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -1166,7 +1172,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -1208,7 +1214,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -1251,7 +1257,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1294,7 +1300,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1334,7 +1340,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1376,7 +1382,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1419,7 +1425,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1456,7 +1462,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -1491,7 +1497,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1526,7 +1532,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1560,7 +1566,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1599,7 +1605,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1641,7 +1647,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1681,7 +1687,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1720,7 +1726,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -1761,7 +1767,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -1802,7 +1808,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -1842,7 +1848,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -1892,7 +1898,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1934,7 +1940,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -1972,7 +1978,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -2010,7 +2016,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2051,7 +2057,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2092,7 +2098,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2132,7 +2138,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2172,7 +2178,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2219,7 +2225,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2262,7 +2268,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2301,7 +2307,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2343,7 +2349,7 @@ Args:
         Output array to populate. Array must have the correct
         shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Output array, if parameter `out` is `None`.
+        Output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2387,7 +2393,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2421,7 +2427,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2462,7 +2468,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2503,7 +2509,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2543,7 +2549,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -2582,7 +2588,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2621,7 +2627,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2660,7 +2666,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2694,7 +2700,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -2734,7 +2740,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -2774,7 +2780,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -2813,7 +2819,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -2855,7 +2861,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C","F","A","K", None, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Returns:
     dpnp.ndarray:
@@ -2913,7 +2919,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -2953,7 +2959,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
@@ -2996,7 +3002,7 @@ Args:
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order ("C", "F", "A", "K", optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 Return:
     dpnp.ndarray:
