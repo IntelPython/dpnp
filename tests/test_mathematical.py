@@ -1876,13 +1876,13 @@ class TestPower:
         dp_arr = dpnp.array(np_arr)
         func = lambda x: x**2
 
-        # Linux: ((inf + 0j) ** 2) == (Inf + NaNj) in dpnp and == (NaN + NaNj) in numpy
-        # Win:   ((inf + 0j) ** 2) == (Inf + 0j)   in dpnp and == (Inf + NaNj) in numpy
+        # TODO: unmute the test once it's available
         if is_win_platform():
-            assert_equal(func(dp_arr)[5], numpy.inf)
-        else:
-            assert_equal(func(dp_arr)[5], (numpy.inf + 0j) * 1)
-        assert_allclose(func(np_arr)[:5], func(dp_arr).asnumpy()[:5], rtol=1e-6)
+            pytest.skip(
+                "Until the latest dpctl is available on internal channel"
+            )
+
+        assert_dtype_allclose(func(dp_arr), func(np_arr))
 
     @pytest.mark.parametrize("val", [0, 1], ids=["0", "1"])
     @pytest.mark.parametrize("dtype", [dpnp.int32, dpnp.int64])
