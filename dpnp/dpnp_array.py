@@ -1039,8 +1039,6 @@ class dpnp_array:
 
         return dpnp.prod(self, axis, dtype, out, keepdims, initial, where)
 
-    # 'ptp'
-
     def put(self, indices, vals, /, *, axis=None, mode="wrap"):
         """
         Puts values of an array into another array along a given axis.
@@ -1050,7 +1048,15 @@ class dpnp_array:
 
         return dpnp.put(self, indices, vals, axis=axis, mode=mode)
 
-    # 'ravel',
+    def ravel(self, order="C"):
+        """
+        Return a contiguous flattened array.
+
+        For full documentation refer to :obj:`dpnp.ravel`.
+
+        """
+
+        return dpnp.ravel(self, order=order)
 
     @property
     def real(self):
@@ -1087,7 +1093,15 @@ class dpnp_array:
         """
         dpnp.copyto(self._array_obj.real, value)
 
-    # 'repeat',
+    def repeat(self, repeats, axis=None):
+        """
+        Repeat elements of an array.
+
+        For full documentation refer to :obj:`dpnp.repeat`.
+
+        """
+
+        return dpnp.repeat(self, repeats, axis=axis)
 
     def reshape(self, *sh, **kwargs):
         """

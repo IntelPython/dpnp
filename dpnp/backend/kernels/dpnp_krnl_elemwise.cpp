@@ -910,19 +910,6 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_FLATTEN][eft_C128][eft_C128] = {
         eft_C128, (void *)dpnp_copy_c_default<std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_FLATTEN_EXT][eft_BLN][eft_BLN] = {
-        eft_BLN, (void *)dpnp_copy_c_ext<bool>};
-    fmap[DPNPFuncName::DPNP_FN_FLATTEN_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_copy_c_ext<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FLATTEN_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_copy_c_ext<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FLATTEN_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_copy_c_ext<float>};
-    fmap[DPNPFuncName::DPNP_FN_FLATTEN_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_copy_c_ext<double>};
-    fmap[DPNPFuncName::DPNP_FN_FLATTEN_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void *)dpnp_copy_c_ext<std::complex<double>>};
-
     fmap[DPNPFuncName::DPNP_FN_NEGATIVE][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_negative_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_NEGATIVE][eft_LNG][eft_LNG] = {

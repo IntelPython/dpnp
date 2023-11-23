@@ -109,12 +109,6 @@ tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes
 tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_3_{order='C', shape=(2, 3)}::test_item
 tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_4_{order='F', shape=(2, 3)}::test_item
 
-tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction
-tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_list
-tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_tuple
-tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_list
-tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_tuple
-
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_1darray
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_fill_diagonal
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_5_{shape=(3, 3), val=(2,), wrap=False}::test_1darray
@@ -200,17 +194,7 @@ tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatte
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order_copied
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order_transposed
 
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_all
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_all_keepdims
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_axis0
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_axis1
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_axis2
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_axis_large
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_multiple_axes
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_multiple_axes_keepdims
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan_imag
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_nan_real
+
 
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_max
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_min
@@ -515,16 +499,6 @@ tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_par
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_1_{shapes=[(3, 2), (2, 3)]}::test_invalid_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_2_{shapes=[(3, 2), (3, 4)]}::test_invalid_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_3_{shapes=[(0,), (2,)]}::test_invalid_broadcast
-
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_ravel2
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_ravel3
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_external_ravel
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_ravel
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_zerosize
-tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_zerosize2
-
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeatRepeatsNdarray::test_func
-tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeatRepeatsNdarray::test_method
 
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_3_{name='angle', nargs=1}::test_raises_with_numpy_input
 
