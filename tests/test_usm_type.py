@@ -372,6 +372,8 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param("arcsinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("arctan", [-1.0, 0.0, 1.0]),
         pytest.param("arctanh", [-0.5, 0.0, 0.5]),
+        pytest.param("argmax", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("argmin", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("cbrt", [1, 8, 27]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),

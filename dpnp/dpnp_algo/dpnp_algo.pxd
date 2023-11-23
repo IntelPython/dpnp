@@ -36,10 +36,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ALLCLOSE
         DPNP_FN_ALLCLOSE_EXT
         DPNP_FN_ARANGE
-        DPNP_FN_ARGMAX
-        DPNP_FN_ARGMAX_EXT
-        DPNP_FN_ARGMIN
-        DPNP_FN_ARGMIN_EXT
         DPNP_FN_ARGSORT
         DPNP_FN_ARGSORT_EXT
         DPNP_FN_CHOLESKY
@@ -348,12 +344,6 @@ Sorting functions
 """
 cpdef dpnp_descriptor dpnp_argsort(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_sort(dpnp_descriptor array1)
-
-"""
-Searching functions
-"""
-cpdef dpnp_descriptor dpnp_argmax(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_argmin(dpnp_descriptor array1)
 
 """
 Trigonometric functions
