@@ -130,12 +130,13 @@ static sycl::event getrf_impl(sycl::queue exec_q,
     return getrf_event;
 }
 
-sycl::event getrf(sycl::queue q,
-                  const std::int64_t n,
-                  dpctl::tensor::usm_ndarray a_array,
-                  dpctl::tensor::usm_ndarray ipiv_array,
-                  dpctl::tensor::usm_ndarray dev_info_array,
-                  const std::vector<sycl::event> &depends = {})
+std::pair<sycl::event, sycl::event>
+    getrf(sycl::queue q,
+          const std::int64_t n,
+          dpctl::tensor::usm_ndarray a_array,
+          dpctl::tensor::usm_ndarray ipiv_array,
+          dpctl::tensor::usm_ndarray dev_info_array,
+          const std::vector<sycl::event> &depends)
 {
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
@@ -165,7 +166,10 @@ sycl::event getrf(sycl::queue q,
     sycl::event getrf_ev = getrf_fn(q, n, a_array_data, lda, d_ipiv, d_dev_info,
                                     host_task_events, depends);
 
-    return getrf_ev;
+    sycl::event args_ev = dpctl::utils::keep_args_alive(
+        q, {a_array, ipiv_array, dev_info_array}, host_task_events);
+
+    return std::make_pair(args_ev, getrf_ev);
 }
 
 template <typename fnT, typename T>

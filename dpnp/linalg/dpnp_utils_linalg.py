@@ -240,7 +240,7 @@ def _lu_factor(a, res_type):
                 sycl_queue=a_sycl_queue,
             )
 
-            ht_lapack_ev[i] = li._getrf(
+            ht_lapack_ev[i], _ = li._getrf(
                 a_sycl_queue,
                 n,
                 a_vecs[i].get_array(),
@@ -274,7 +274,7 @@ def _lu_factor(a, res_type):
             src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
         )
 
-        lapack_ev = li._getrf(
+        ht_lapack_ev, lapack_ev = li._getrf(
             a_sycl_queue,
             n,
             a_h.get_array(),
@@ -298,7 +298,7 @@ def _lu_factor(a, res_type):
         else:
             out_v = (a_h, ipiv_h, dev_info_h)
 
-        lapack_ev.wait()
+        ht_lapack_ev.wait()
         a_ht_copy_ev.wait()
 
         return out_v
