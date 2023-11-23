@@ -366,7 +366,6 @@ class TestArgwhere(unittest.TestCase):
 # return cupy.nonzero(self.array)
 
 
-@testing.gpu
 class TestNanArgMin(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
@@ -457,7 +456,6 @@ class TestNanArgMin(unittest.TestCase):
         return xp.nanargmin(a, axis=1)
 
 
-@testing.gpu
 class TestNanArgMax(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()

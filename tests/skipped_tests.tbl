@@ -768,34 +768,6 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_1_{ar
 tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_2_{array=array([], dtype=float64)}::test_flatnonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_3_{array=array([], shape=(0, 2), dtype=float64)}::test_flatnonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_4_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_all
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis2
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis_large
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan2
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan3
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan4
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan5
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_tie
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_zero_size_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_all
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_axis2
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_axis_large
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_nan2
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_nan3
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_nan4
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_nan5
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_tie
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis1
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_0_{array=array(0)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_axis
@@ -1038,20 +1010,7 @@ tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_6_{
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_7_{axis=None, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanstd
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_8_{axis=0, ddof=0, keepdims=True, shape=(3, 4)}::test_nanstd
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_9_{axis=0, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_all
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_all_nan
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_axis0
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_axis1
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_axis2
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_axis_large
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_nan
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_all
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_all_nan
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_axis0
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_axis1
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_axis2
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_axis_large
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_nan
+
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_bad_q
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_defaults
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_keepdims

@@ -20,7 +20,6 @@ def for_all_interpolations(name="interpolation"):
     return testing.for_orders(_all_interpolations, name=name)
 
 
-@testing.gpu
 class TestOrder(unittest.TestCase):
     @for_all_interpolations()
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)

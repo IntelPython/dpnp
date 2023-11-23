@@ -58,29 +58,33 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     Parameters
     ----------
     a :  {dpnp_array, usm_ndarray}
-        Input array.
+        input array.
     axis : int, optional
-        By default, the index is into the flattened array, otherwise
-        along the specified axis.
+        axis along which to search. If ``None``, the function must return
+        the index of the maximum value of the flattened array.
+        Default: ``None``.
     out :  {dpnp_array, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
+        if provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
-    keepdims : bool, optional
-        If this is set to True, the axes which are reduced are left
-        in the result as dimensions with size one. With this option,
-        the result will broadcast correctly against the array.
+    keepdims : bool
+        if ``True``, the reduced axes (dimensions) must be included in the
+        result as singleton dimensions, and, accordingly, the result must be
+        compatible with the input array. Otherwise, if ``False``, the reduced
+        axes (dimensions) must not be included in the result.
+        Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        Indices of maximum value of `a`. It has the same shape as `a.shape`
-        with the dimension along `axis` removed. If `keepdims` is set to True,
-        then the size of `axis` will be 1 with the resulting array having same
-        shape as `a.shape`.
+        if axis is ``None``, a zero-dimensional array containing the index of
+        the first occurrence of the maximum value; otherwise, a non-zero-dimensional
+        array containing the indices of the minimum values. The returned array
+        must have the default array index data type.
 
     See Also
     --------
     :obj:`dpnp.ndarray.argmax` : Equivalent function.
+    :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along an axis, igonring NaNs.
     :obj:`dpnp.argmin` : Returns the indices of the minimum values along an axis.
     :obj:`dpnp.max` : The maximum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
@@ -138,29 +142,33 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     Parameters
     ----------
     a : {dpnp_array, usm_ndarray}
-        Input array.
+        input array.
     axis : int, optional
-        By default, the index is into the flattened array, otherwise
-        along the specified axis.
+        axis along which to search. If ``None``, the function must return
+        the index of the minimum value of the flattened array.
+        Default: ``None``.
     out : {dpnp_array, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
+        if provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool, optional
-        If this is set to True, the axes which are reduced are left
-        in the result as dimensions with size one. With this option,
-        the result will broadcast correctly against the array.
+        if ``True``, the reduced axes (dimensions) must be included in the
+        result as singleton dimensions, and, accordingly, the result must be
+        compatible with the input array. Otherwise, if ``False``, the reduced
+        axes (dimensions) must not be included in the result.
+        Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        Indices of minimum value of `a`. It has the same shape as `a.shape`
-        with the dimension along `axis` removed. If `keepdims` is set to True,
-        then the size of `axis` will be 1 with the resulting array having same
-        shape as `a.shape`.
+        if axis is ``None``, a zero-dimensional array containing the index of
+        the first occurrence of the minimum value; otherwise, a non-zero-dimensional
+        array containing the indices of the minimum values. The returned array
+        must have the default array index data type.
 
     See Also
     --------
     :obj:`dpnp.ndarray.argmin` : Equivalent function.
+    :obj:`dpnp.nanargmin` : Returns the indices of the minimum values along an axis, igonring NaNs.
     :obj:`dpnp.argmax` : Returns the indices of the maximum values along an axis.
     :obj:`dpnp.min` : The minimum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.

@@ -374,10 +374,32 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     For full documentation refer to :obj:`numpy.max`.
 
+    Parameters
+    ----------
+    a :  {dpnp_array, usm_ndarray}
+        input array.
+    axis : int or tuple of ints, optional
+        axis or axes along which maximum values must be computed. By default,
+        the maximum value must be computed over the entire array. If a tuple of integers,
+        maximum values must be computed over multiple axes.
+        Default: ``None``.
+    out :  {dpnp_array, usm_ndarray}, optional
+        if provided, the result will be inserted into this array. It should
+        be of the appropriate shape and dtype.
+    keepdims : bool
+        if ``True``, the reduced axes (dimensions) must be included in the
+        result as singleton dimensions, and, accordingly, the result must be
+        compatible with the input array. Otherwise, if ``False``, the reduced
+        axes (dimensions) must not be included in the result.
+        Default: ``False``.
+
     Returns
     -------
     out : dpnp.ndarray
-        Maximum of `a`.
+        if the maximum value was computed over the entire array, a zero-dimensional array
+        containing the maximum value ignoring NaNs; otherwise, a non-zero-dimensional array
+        containing the maximum values ignoring NaNs. The returned array must have
+        the same data type as `a`.
 
     Limitations
     -----------
@@ -549,10 +571,32 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     For full documentation refer to :obj:`numpy.min`.
 
+    Parameters
+    ----------
+    a :  {dpnp_array, usm_ndarray}
+        input array.
+    axis : int or tuple of ints, optional
+        axis or axes along which minimum values must be computed. By default,
+        the minimum value must be computed over the entire array. If a tuple of integers,
+        minimum values must be computed over multiple axes.
+        Default: ``None``.
+    out :  {dpnp_array, usm_ndarray}, optional
+        if provided, the result will be inserted into this array. It should
+        be of the appropriate shape and dtype.
+    keepdims : bool, optional
+        if ``True``, the reduced axes (dimensions) must be included in the
+        result as singleton dimensions, and, accordingly, the result must be
+        compatible with the input array. Otherwise, if ``False``, the reduced
+        axes (dimensions) must not be included in the result.
+        Default: ``False``.
+
     Returns
     -------
     out : dpnp.ndarray
-        Minimum of `a`.
+        if the minimum value was computed over the entire array, a zero-dimensional array
+        containing the minimum value ignoring NaNs; otherwise, a non-zero-dimensional array
+        containing the minimum values ignoring NaNs. The returned array must have
+        the same data type as `a`.
 
     Limitations
     -----------

@@ -133,8 +133,8 @@ def _append_to_diff_array(a, axis, combined, values):
 
     Scalar value (including case with 0d array) is expanded to an array
     with length=1 in the direction of axis and the shape of the input array `a`
-    in along all other axes.
-    Note, if `values` is a scalar. then it is converted to 0d array allocating
+    along all other axes.
+    Note, if `values` is a scalar, then it is converted to 0d array allocating
     on the same SYCL queue as the input array `a` and with the same USM type.
 
     """
