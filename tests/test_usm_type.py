@@ -374,6 +374,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param("arctanh", [-0.5, 0.0, 0.5]),
         pytest.param("argmax", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argmin", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("cbrt", [1, 8, 27]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
         pytest.param(
@@ -382,6 +383,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("count_nonzero", [0, 1, 7, 0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param(
@@ -402,6 +404,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
+        pytest.param("rsqrt", [1, 8, 27]),
         pytest.param("sign", [-5.0, 0.0, 4.5]),
         pytest.param("signbit", [-5.0, 0.0, 4.5]),
         pytest.param(
@@ -432,46 +435,21 @@ def test_1in_1out(func, data, usm_type):
             [[1.2, -0.0], [-7, 2.34567]],
             [[1.2, 0.0], [-7, 2.34567]],
         ),
-        pytest.param(
-            "arctan2",
-            [[-1, +1, +1, -1]],
-            [[-1, -1, +1, +1]],
-        ),
+        pytest.param("arctan2", [[-1, +1, +1, -1]], [[-1, -1, +1, +1]]),
+        pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param(
             "dot",
             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
             [[4.0, 4.0], [4.0, 4.0], [4.0, 4.0]],
         ),
+        pytest.param("fmax", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
+        pytest.param("fmin", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
         pytest.param(
-            "fmax",
-            [[0.0, 1.0, 2.0]],
-            [[3.0, 4.0, 5.0]],
+            "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
-        pytest.param(
-            "fmin",
-            [[0.0, 1.0, 2.0]],
-            [[3.0, 4.0, 5.0]],
-        ),
-        pytest.param(
-            "hypot",
-            [[1.0, 2.0, 3.0, 4.0]],
-            [[-1.0, -2.0, -4.0, -5.0]],
-        ),
-        pytest.param(
-            "logaddexp",
-            [[-1, 2, 5, 9]],
-            [[4, -3, 2, -8]],
-        ),
-        pytest.param(
-            "maximum",
-            [[0.0, 1.0, 2.0]],
-            [[3.0, 4.0, 5.0]],
-        ),
-        pytest.param(
-            "minimum",
-            [[0.0, 1.0, 2.0]],
-            [[3.0, 4.0, 5.0]],
-        ),
+        pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
+        pytest.param("maximum", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
+        pytest.param("minimum", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
     ],
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
