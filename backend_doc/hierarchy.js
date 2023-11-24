@@ -26,6 +26,8 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::cartesian_product_impl< std::tuple< std::tuple< T > >, std::tuple< SecondTupleArgs... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_17b2e4d9f422d6a255a67e036ce4e46b3.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product_impl< std::tuple< std::tuple< T >, FirstTupleArgs... >, std::tuple< SecondTupleArgs... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_1eacc8a58f076baec98f1eb11bc1030e3.html", null ],
     [ "dpnp::backend::ext::sycl_ext::CartesianDispatcher< C, FnT, DispatchT, Matcher, Axis >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_cartesian_dispatcher.html", null ],
+    [ "dpnp::backend::ext::vm::CbrtContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_cbrt_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::CbrtOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cbrt_output_type.html", null ],
     [ "dpnp::backend::ext::vm::CeilContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ceil_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::CeilOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ceil_output_type.html", null ],
     [ "dpnp::backend::ext::vm::ConjContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_conj_contig_factory.html", null ],
@@ -57,6 +59,8 @@ var hierarchy =
       [ "mcg59_struct", "structmcg59__struct.html", null ],
       [ "mt19937_struct", "structmt19937__struct.html", null ]
     ] ],
+    [ "dpnp::backend::ext::vm::Exp2ContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp2_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::Exp2OutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_exp2_output_type.html", null ],
     [ "dpnp::backend::ext::vm::ExpContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::Expm1ContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_expm1_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::Expm1OutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_expm1_output_type.html", null ],
