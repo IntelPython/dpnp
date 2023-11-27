@@ -5,7 +5,7 @@ from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp as inp
 
-from .helper import get_all_dtypes, get_complex_dtypes, has_support_aspect64
+from .helper import get_all_dtypes, has_support_aspect64, is_cpu_device
 
 
 def vvsort(val, vec, size, xp):
@@ -100,6 +100,7 @@ def test_cond(arr, p):
     assert_array_equal(expected, result)
 
 
+@pytest.mark.skipif(is_cpu_device(), reason="MKL bug MKLD-16626")
 @pytest.mark.parametrize(
     "array",
     [
@@ -128,7 +129,6 @@ def test_det(array):
     assert_allclose(expected, result)
 
 
-# @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_det_empty():
     a = numpy.empty((0, 0, 2, 2), dtype=numpy.float32)
     ia = inp.array(a)
