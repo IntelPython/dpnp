@@ -695,7 +695,13 @@ def slogdet(a):
     logdet = dpnp.log(dpnp.abs(diag)).sum(axis=-1)
 
     # ipiv is 1-origin
-    non_zero = dpnp.count_nonzero(ipiv != dpnp.arange(1, n + 1), axis=-1)
+    non_zero = dpnp.count_nonzero(
+        ipiv
+        != dpnp.arange(
+            1, n + 1, usm_type=ipiv.usm_type, sycl_queue=ipiv.sycl_queue
+        ),
+        axis=-1,
+    )
     if res_type.kind == "f":
         non_zero += dpnp.count_nonzero(diag < 0, axis=-1)
 

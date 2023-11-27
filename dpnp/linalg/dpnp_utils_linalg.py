@@ -217,18 +217,9 @@ def _lu_factor(a, res_type):
         a_usm_arr = dpnp.get_usm_ndarray(a)
 
         a_vecs = [None] * batch_size
-        ipiv_h = dpnp.empty(
-            (batch_size, n),
-            dtype=dpnp.int64,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
-        )
-        dev_info_h = dpnp.empty(
-            (batch_size,),
-            dtype=dpnp.int64,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
-        )
+        ipiv_vecs = [None] * batch_size
+        dev_info_vecs = [None] * batch_size
+
         a_ht_copy_ev = [None] * batch_size
         ht_lapack_ev = [None] * batch_size
 
@@ -239,13 +230,25 @@ def _lu_factor(a, res_type):
                 dst=a_vecs[i].get_array(),
                 sycl_queue=a_sycl_queue,
             )
+            ipiv_vecs[i] = dpnp.empty(
+                (n,),
+                dtype=dpnp.int64,
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
+            dev_info_vecs[i] = dpnp.empty(
+                (1,),
+                dtype=dpnp.int64,
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
 
             ht_lapack_ev[i], _ = li._getrf(
                 a_sycl_queue,
                 n,
                 a_vecs[i].get_array(),
-                ipiv_h[i].get_array(),
-                dev_info_h[i].get_array(),
+                ipiv_vecs[i].get_array(),
+                dev_info_vecs[i].get_array(),
                 [a_copy_ev],
             )
 
@@ -254,8 +257,8 @@ def _lu_factor(a, res_type):
             a_ht_copy_ev[i].wait()
 
         out_v = dpnp.array(a_vecs, order=a_order).reshape(orig_shape)
-        out_ipiv = ipiv_h.reshape(orig_shape[:-1])
-        out_dev_info = dev_info_h.reshape(orig_shape[:-2])
+        out_ipiv = dpnp.array(ipiv_vecs).reshape(orig_shape[:-1])
+        out_dev_info = dpnp.array(dev_info_vecs).reshape(orig_shape[:-2])
 
         return (out_v, out_ipiv, out_dev_info)
 
