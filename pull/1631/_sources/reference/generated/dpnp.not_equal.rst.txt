@@ -1,0 +1,6 @@
+﻿dpnp.not\_equal
+===============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: not_equal

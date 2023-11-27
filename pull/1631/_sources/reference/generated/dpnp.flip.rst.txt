@@ -1,0 +1,6 @@
+﻿dpnp.flip
+=========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: flip
