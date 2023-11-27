@@ -7,6 +7,8 @@ on:
     types: [opened, synchronize, reopened, closed]
 
 env:
+  GITHUB_BOT_NAME: 'github-actions[bot]'
+  GITHUB_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
   PUBLISH_DIR: doc/_build/html/
 
 defaults:
@@ -125,21 +127,29 @@ jobs:
             working-directory: 'dpnp/backend/doc'
 
       - name: Copy backend docs
-        run: cp -r dpnp/backend/doc/html doc/_build/html/backend_doc
+        run: cp -r dpnp/backend/doc/html ${{ env.PUBLISH_DIR }}/backend_doc
 
       # https://github.com/marketplace/actions/github-pages-action
+      # The step is only used to build docs while pushing PR to "master"
       - name: Deploy docs
         if: |
-          github.event.pull_request && !github.event.pull_request.head.repo.fork  &&
-          (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
+          github.ref == 'refs/heads/master' && github.event_name == 'push' &&
+          github.event.ref == 'refs/heads/master' && github.event.repository && !github.event.repository.fork
         uses: peaceiris/actions-gh-pages@v3.9.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.PUBLISH_DIR }}
+          keep_files: true
+          commit_message: ${{ github.event.head_commit.message }}
+          publish_branch: gh-pages
+          user_name: ${{ env.GITHUB_BOT_NAME }}
+          user_email: ${{ env.GITHUB_BOT_EMAIL }}
 
+      # The step is only used to build docs while pushing to PR branch
       - name: Publish pull-request docs
         if: |
-          github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action != 'closed'
+          github.event_name == 'pull_request' && github.event.action != 'closed' &&
+          github.event.pull_request && !github.event.pull_request.head.repo.fork
         uses: peaceiris/actions-gh-pages@v3.9.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -147,14 +157,16 @@ jobs:
           destination_dir: ./pull/${{ github.event.number }}
           allow_empty_commit : true
           keep_files: true
-          commit_message: ${{ github.event.head_commit.message }}
+          commit_message: ${{ github.event.pull_request.title }}
           publish_branch: gh-pages
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+          user_name: ${{ env.GITHUB_BOT_NAME }}
+          user_email: ${{ env.GITHUB_BOT_EMAIL }}
 
+      # The step is only used to build docs while pushing to PR branch
       - name: Comment with URL to published pull-request docs
         if: |
-          github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action != 'closed'
+          github.event_name == 'pull_request' && github.event.action != 'closed' &&
+          github.event.pull_request && !github.event.pull_request.head.repo.fork
         env:
           PR_NUM: ${{ github.event.number }}
         uses: mshick/add-pr-comment@v2.8.1
@@ -163,9 +175,11 @@ jobs:
             View rendered docs @ https://intelpython.github.io/dpnp/pull/${{ env.PR_NUM }}/index.html
           allow-repeats: false
 
+  # The job is only used to build docs when PR is closed (action from PR branch)
   clean:
     if: |
-      github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action == 'closed'
+      github.event_name == 'pull_request' && github.event.action == 'closed' &&
+      github.event.pull_request && !github.event.pull_request.head.repo.fork
 
     needs: build-and-deploy
 
@@ -185,8 +199,8 @@ jobs:
           git checkout --track tokened_docs/gh-pages
           echo `pwd`
           [ -d pull/${PR_NUM} ] && git rm -rf pull/${PR_NUM}
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --global user.name ${{ env.GITHUB_BOT_NAME }}
+          git config --global user.email ${{ env.GITHUB_BOT_EMAIL }}
           git commit -m "Removing docs for closed pull request ${PR_NUM}"
           git push tokened_docs gh-pages
 
