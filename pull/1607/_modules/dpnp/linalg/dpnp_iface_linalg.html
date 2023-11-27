@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev1+23.g49a9c8b80 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev1+25.g3476fac0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=e7e73779"></script>
+        <script src="../../../_static/documentation_options.js?v=05286831"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+23.g49a9c8b80
+                0.13.1dev1+25.g3476fac0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -824,7 +824,13 @@
     <span class="n">logdet</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">diag</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># ipiv is 1-origin</span>
-    <span class="n">non_zero</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">ipiv</span> <span class="o">!=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">non_zero</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span>
+        <span class="n">ipiv</span>
+        <span class="o">!=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">ipiv</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ipiv</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="p">),</span>
+        <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">res_type</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span>
         <span class="n">non_zero</span> <span class="o">+=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">diag</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
