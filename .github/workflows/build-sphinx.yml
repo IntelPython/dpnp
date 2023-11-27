@@ -7,6 +7,8 @@ on:
     types: [opened, synchronize, reopened, closed]
 
 env:
+  GITHUB_BOT_NAME: 'github-actions[bot]'
+  GITHUB_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
   PUBLISH_DIR: doc/_build/html/
 
 defaults:
@@ -34,6 +36,8 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "$GITHUB_CONTEXT"
+          echo "GITHUB_BOT_NAME=${{ env.GITHUB_BOT_NAME }}"
+          echo "GITHUB_BOT_EMAIL=${{ env.GITHUB_BOT_EMAIL }}"
 
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
@@ -136,6 +140,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.PUBLISH_DIR }}
+          user_name: ${{ env.GITHUB_BOT_NAME }}
+          user_email: ${{ env.GITHUB_BOT_EMAIL }}
 
       - name: Publish pull-request docs
         if: |
@@ -149,8 +155,8 @@ jobs:
           keep_files: true
           commit_message: ${{ github.event.head_commit.message }}
           publish_branch: gh-pages
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+          user_name: ${{ env.GITHUB_BOT_NAME }}
+          user_email: ${{ env.GITHUB_BOT_EMAIL }}
 
       - name: Comment with URL to published pull-request docs
         if: |
@@ -185,8 +191,8 @@ jobs:
           git checkout --track tokened_docs/gh-pages
           echo `pwd`
           [ -d pull/${PR_NUM} ] && git rm -rf pull/${PR_NUM}
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --global user.name ${{ env.GITHUB_BOT_NAME }}
+          git config --global user.email ${{ env.GITHUB_BOT_EMAIL }}
           git commit -m "Removing docs for closed pull request ${PR_NUM}"
           git push tokened_docs gh-pages
 
