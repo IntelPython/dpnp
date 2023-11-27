@@ -143,34 +143,57 @@ def cond(input, p=None):
     return call_origin(numpy.linalg.cond, input, p)
 
 
-def det(input):
+def det(a):
     """
     Compute the determinant of an array.
 
+    For full documentation refer to :obj:`numpy.linalg.det`.
+
     Parameters
     ----------
-    input : (..., M, M) array_like
+    a : (..., M, M) dpnp.ndarray
         Input array to compute determinants for.
 
     Returns
     -------
-    det : (...) array_like
-        Determinant of `input`.
+    det : (...) dpnp.ndarray
+        Determinant of `a`.
+
+    Limitations
+    -----------
+    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.slogdet` : Returns sign and logarithm of the determinant of an array.
+
+    Examples
+    --------
+    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> dp.linalg.det(a)
+    array(-2.)
+
+    Computing determinants for a stack of matrices:
+
+    >>> a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])
+    >>> a.shape
+    (3, 2, 2)
+    >>> dp.linalg.det(a)
+    array([-2., -3., -8.])
+
     """
 
-    # x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    # if x1_desc:
-    #     if x1_desc.ndim < 2:
-    #         pass
-    #     elif x1_desc.shape[-1] == x1_desc.shape[-2]:
-    #         result_obj = dpnp_det(x1_desc).get_pyobj()
-    #         result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    if not dpnp.is_supported_array_type(a):
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(a))
+        )
 
-    #         return result
-
-    # return call_origin(numpy.linalg.det, input)
-
-    return _lu_factor(input)
+    sign, logdet = slogdet(a)
+    return sign * dpnp.exp(logdet)
 
 
 def eig(x1):
@@ -652,8 +675,8 @@ def slogdet(a):
 
     if a.size == 0:
         # empty batch (result is empty, too) or empty matrices det([[]]) == 1
-        sign = dpnp.ones(shape, res_type)
-        logdet = dpnp.zeros(shape, logdet_dtype)
+        sign = dpnp.ones(shape, dtype=res_type)
+        logdet = dpnp.zeros(shape, dtype=logdet_dtype)
         return sign, logdet
 
     lu, ipiv, dev_info = _lu_factor(a, res_type)
