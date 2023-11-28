@@ -30,19 +30,19 @@ class TestDet(unittest.TestCase):
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det_empty_batch(self, xp, dtype):
-        a = xp.empty((2, 0, 3, 3), dtype)
+        a = xp.empty((2, 0, 3, 3), dtype=dtype)
         return xp.linalg.det(a)
 
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det_empty_matrix(self, xp, dtype):
-        a = xp.empty((0, 0), dtype)
+        a = xp.empty((0, 0), dtype=dtype)
         return xp.linalg.det(a)
 
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det_empty_matrices(self, xp, dtype):
-        a = xp.empty((2, 3, 0, 0), dtype)
+        a = xp.empty((2, 3, 0, 0), dtype=dtype)
         return xp.linalg.det(a)
 
     @testing.for_float_dtypes(no_float16=True)
@@ -77,6 +77,8 @@ class TestDet(unittest.TestCase):
             with pytest.raises((numpy.linalg.LinAlgError, ValueError)):
                 xp.linalg.det(a)
 
+    # TODO: remove skipif when MKLD-16626 is resolved
+    @pytest.mark.skipif(is_cpu_device(), reason="MKL bug MKLD-16626")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det_singular(self, xp, dtype):
@@ -106,10 +108,8 @@ class TestSlogdet(unittest.TestCase):
         sign, logdet = xp.linalg.slogdet(a)
         return sign, logdet
 
-    # TODO: remove it
-    @pytest.mark.skipif(
-        is_cpu_device(), reason="Need to add a logic for this case"
-    )
+    # TODO: remove skipif when MKLD-16626 is resolved
+    @pytest.mark.skipif(is_cpu_device(), reason="MKL bug MKLD-16626")
     @testing.for_dtypes("fd")
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_slogdet_singular(self, xp, dtype):
