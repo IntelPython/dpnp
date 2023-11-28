@@ -416,7 +416,7 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         return dpnp.get_result_array(result, out)
 
 
-def mean(a, /, axis=None, dtype=None, keepdims=False, out=None, *, where=True):
+def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
     """
     Compute the arithmetic mean along the specified axis.
 
