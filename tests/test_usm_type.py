@@ -486,3 +486,9 @@ def test_take(usm_type_x, usm_type_ind):
 def test_indices(usm_type):
     x = dp.indices((2,), usm_type=usm_type)
     assert x.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_grid(usm_type):
+    assert dp.mgrid_device(usm_type=usm_type)[0:4].usm_type == usm_type
+    assert dp.ogrid_device(usm_type=usm_type)[0:4].usm_type == usm_type

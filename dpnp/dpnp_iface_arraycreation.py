@@ -54,6 +54,7 @@ from .dpnp_algo.dpnp_arraycreation import (
     dpnp_geomspace,
     dpnp_linspace,
     dpnp_logspace,
+    nd_grid,
 )
 
 __all__ = [
@@ -83,7 +84,9 @@ __all__ = [
     "logspace",
     "meshgrid",
     "mgrid",
+    "mgrid_device",
     "ogrid",
+    "ogrid_device",
     "ones",
     "ones_like",
     "ptp",
@@ -1369,64 +1372,22 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     return call_origin(numpy.meshgrid, xi, copy, sparse, indexing)
 
 
-class MGridClass:
-    """
-    Construct a dense multi-dimensional "meshgrid".
-
-    For full documentation refer to :obj:`numpy.mgrid`.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.mgrid[0:5,0:5]
-    array([[[0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 1],
-            [2, 2, 2, 2, 2],
-            [3, 3, 3, 3, 3],
-            [4, 4, 4, 4, 4]],
-           [[0, 1, 2, 3, 4],
-            [0, 1, 2, 3, 4],
-            [0, 1, 2, 3, 4],
-            [0, 1, 2, 3, 4],
-            [0, 1, 2, 3, 4]]])
-    >>> np.mgrid[-1:1:5j]
-    array([-1. , -0.5,  0. ,  0.5,  1. ])
-
-    """
-
-    def __getitem__(self, key):
-        return dpnp.array(numpy.mgrid[key])
+def mgrid_device(*, device=None, usm_type="device", sycl_queue=None):
+    return nd_grid(
+        sparse=False, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
 
 
-mgrid = MGridClass()
+mgrid = nd_grid(sparse=False)
 
 
-class OGridClass:
-    """
-    Construct an open multi-dimensional "meshgrid".
-
-    For full documentation refer to :obj:`numpy.ogrid`.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> from numpy import ogrid
-    >>> ogrid[-1:1:5j]
-    array([-1. , -0.5,  0. ,  0.5,  1. ])
-    >>> ogrid[0:5,0:5]
-    [array([[0],
-            [1],
-            [2],
-            [3],
-            [4]]), array([[0, 1, 2, 3, 4]])]
-
-    """
-
-    def __getitem__(self, key):
-        return dpnp.array(numpy.ogrid[key])
+def ogrid_device(*, device=None, usm_type="device", sycl_queue=None):
+    return nd_grid(
+        sparse=True, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
 
 
-ogrid = OGridClass()
+ogrid = nd_grid(sparse=True)
 
 
 def ones(

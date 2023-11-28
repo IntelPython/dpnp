@@ -1,5 +1,7 @@
+import math
 import operator
 
+import dpctl.utils as dpu
 import numpy
 
 import dpnp
@@ -10,6 +12,7 @@ __all__ = [
     "dpnp_geomspace",
     "dpnp_linspace",
     "dpnp_logspace",
+    "nd_grid",
 ]
 
 
@@ -256,3 +259,136 @@ def dpnp_logspace(
     if dtype is None:
         return dpnp.power(base, res)
     return dpnp.power(base, res).astype(dtype, copy=False)
+
+
+class nd_grid:
+    """
+    Construct a multi-dimensional "meshgrid".
+
+    ``grid = nd_grid()`` creates an instance which will return a mesh-grid
+    when indexed. The dimension and number of the output arrays are equal
+    to the number of indexing dimensions.  If the step length is not a
+    complex number, then the stop is not inclusive.
+
+    However, if the step length is a complex number (e.g. 5j), then the
+    integer part of its magnitude is interpreted as specifying the
+    number of points to create between the start and stop values, where
+    the stop value is inclusive.
+
+    If instantiated with an argument of ``sparse=True``, the mesh-grid is
+    open (or not fleshed out) so that only one-dimension of each returned
+    argument is greater than 1.
+
+    Parameters
+    ----------
+    sparse : bool, optional
+        Whether the grid is sparse or not. Default is False.
+
+    """
+
+    def __init__(
+        self, sparse=False, device=None, usm_type="device", sycl_queue=None
+    ):
+        dpu.validate_usm_type(usm_type, allow_none=False)
+        self.sparse = sparse
+        self.device = device
+        self.usm_type = usm_type
+        self.sycl_queue = sycl_queue
+
+    def __getitem__(self, key):
+        sycl_queue_normalized = dpnp.get_normalized_queue_device(
+            sycl_queue=self.sycl_queue, device=self.device
+        )
+        if isinstance(key, slice):
+            step = key.step
+            stop = key.stop
+            start = key.start
+            if start is None:
+                start = 0
+            if isinstance(step, complex):
+                step = abs(step)
+                length = int(step)
+                if step != 1:
+                    step = (stop - start) / float(step - 1)
+                stop = stop + step
+                return (
+                    dpnp.arange(
+                        0,
+                        length,
+                        1,
+                        dtype=dpnp.default_float_type(),
+                        usm_type=self.usm_type,
+                        sycl_queue=sycl_queue_normalized,
+                    )
+                    * step
+                    + start
+                )
+            else:
+                return dpnp.arange(
+                    start,
+                    stop,
+                    step,
+                    usm_type=self.usm_type,
+                    sycl_queue=sycl_queue_normalized,
+                )
+
+        size = []
+        dtype = int
+        for k in range(len(key)):
+            step = key[k].step
+            start = key[k].start
+            stop = key[k].stop
+            if start is None:
+                start = 0
+            if step is None:
+                step = 1
+            if isinstance(step, complex):
+                size.append(int(abs(step)))
+                dtype = dpnp.default_float_type()
+            else:
+                size.append(
+                    int(math.ceil((key[k].stop - start) / (step * 1.0)))
+                )
+            if (
+                isinstance(step, float)
+                or isinstance(start, float)
+                or isinstance(stop, float)
+            ):
+                dtype = dpnp.default_float_type()
+        if self.sparse:
+            nn = [
+                dpnp.arange(
+                    _x,
+                    dtype=_t,
+                    usm_type=self.usm_type,
+                    sycl_queue=sycl_queue_normalized,
+                )
+                for _x, _t in zip(size, (dtype,) * len(size))
+            ]
+        else:
+            nn = dpnp.indices(
+                size,
+                dtype,
+                usm_type=self.usm_type,
+                sycl_queue=sycl_queue_normalized,
+            )
+        for k in range(len(size)):
+            step = key[k].step
+            start = key[k].start
+            stop = key[k].stop
+            if start is None:
+                start = 0
+            if step is None:
+                step = 1
+            if isinstance(step, complex):
+                step = int(abs(step))
+                if step != 1:
+                    step = (stop - start) / float(step - 1)
+            nn[k] = nn[k] * step + start
+        if self.sparse:
+            slobj = [dpnp.newaxis] * len(size)
+            for k in range(len(size)):
+                slobj[k] = slice(None, None)
+                nn[k] = nn[k][tuple(slobj)]
+                slobj[k] = dpnp.newaxis
+        return nn

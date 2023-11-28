@@ -1245,3 +1245,13 @@ def test_indices(device):
 
     assert_allclose(numpy_array, dpnp_array)
     assert dpnp_array.sycl_device == device
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_grid(device):
+    assert dpnp.mgrid_device(device=device)[0:4].sycl_device == device
+    assert dpnp.ogrid_device(device=device)[0:4].sycl_device == device
