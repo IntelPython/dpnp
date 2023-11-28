@@ -7,8 +7,12 @@ on:
     types: [opened, synchronize, reopened, closed]
 
 env:
-  GITHUB_BOT_NAME: 'github-actions[bot]'
-  GITHUB_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
+  GH_BOT_NAME: 'github-actions[bot]'
+  GH_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
+  GH_EVENT_OPEN_PR_UPSTREAM: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' &&
+                                 github.event.pull_request && !github.event.pull_request.head.repo.fork }}
+  GH_EVENT_PUSH_UPSTREAM: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' &&
+                              github.event.ref == 'refs/heads/master' && github.event.repository && !github.event.repository.fork }}
   PUBLISH_DIR: doc/_build/html/
 
 defaults:
@@ -130,11 +134,9 @@ jobs:
         run: cp -r dpnp/backend/doc/html ${{ env.PUBLISH_DIR }}/backend_doc
 
       # https://github.com/marketplace/actions/github-pages-action
-      # The step is only used to build docs while pushing PR to "master"
+      # The step is only used to build docs while pushing a PR to "master"
       - name: Deploy docs
-        if: |
-          github.ref == 'refs/heads/master' && github.event_name == 'push' &&
-          github.event.ref == 'refs/heads/master' && github.event.repository && !github.event.repository.fork
+        if: env.GH_EVENT_PUSH_UPSTREAM
         uses: peaceiris/actions-gh-pages@v3.9.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -142,14 +144,12 @@ jobs:
           keep_files: true
           commit_message: ${{ github.event.head_commit.message }}
           publish_branch: gh-pages
-          user_name: ${{ env.GITHUB_BOT_NAME }}
-          user_email: ${{ env.GITHUB_BOT_EMAIL }}
+          user_name: ${{ env.GH_BOT_NAME }}
+          user_email: ${{ env.GH_BOT_EMAIL }}
 
       # The step is only used to build docs while pushing to PR branch
       - name: Publish pull-request docs
-        if: |
-          github.event_name == 'pull_request' && github.event.action != 'closed' &&
-          github.event.pull_request && !github.event.pull_request.head.repo.fork
+        if: env.GH_EVENT_OPEN_PR_UPSTREAM
         uses: peaceiris/actions-gh-pages@v3.9.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -159,14 +159,12 @@ jobs:
           keep_files: true
           commit_message: ${{ github.event.pull_request.title }}
           publish_branch: gh-pages
-          user_name: ${{ env.GITHUB_BOT_NAME }}
-          user_email: ${{ env.GITHUB_BOT_EMAIL }}
+          user_name: ${{ env.GH_BOT_NAME }}
+          user_email: ${{ env.GH_BOT_EMAIL }}
 
       # The step is only used to build docs while pushing to PR branch
       - name: Comment with URL to published pull-request docs
-        if: |
-          github.event_name == 'pull_request' && github.event.action != 'closed' &&
-          github.event.pull_request && !github.event.pull_request.head.repo.fork
+        if: env.GH_EVENT_OPEN_PR_UPSTREAM
         env:
           PR_NUM: ${{ github.event.number }}
         uses: mshick/add-pr-comment@v2.8.1
@@ -199,8 +197,8 @@ jobs:
           git checkout --track tokened_docs/gh-pages
           echo `pwd`
           [ -d pull/${PR_NUM} ] && git rm -rf pull/${PR_NUM}
-          git config --global user.name ${{ env.GITHUB_BOT_NAME }}
-          git config --global user.email ${{ env.GITHUB_BOT_EMAIL }}
+          git config --global user.name ${{ env.GH_BOT_NAME }}
+          git config --global user.email ${{ env.GH_BOT_EMAIL }}
           git commit -m "Removing docs for closed pull request ${PR_NUM}"
           git push tokened_docs gh-pages
 
