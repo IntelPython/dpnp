@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.13.1dev1+12.ga2464e63a documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.13.1dev1+8.gad90f66b3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8ea24de1"></script>
+        <script src="../../_static/documentation_options.js?v=50de39ae"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+12.ga2464e63a
+                0.13.1dev1+8.gad90f66b3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -130,15 +130,11 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
-<span class="kn">import</span> <span class="nn">dpnp.backend.extensions.blas._blas_impl</span> <span class="k">as</span> <span class="nn">bi</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -357,7 +353,7 @@
 
 <div class="viewcode-block" id="matmul">
 <a class="viewcode-back" href="../../reference/generated/dpnp.matmul.html#dpnp.matmul">[docs]</a>
-<span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matrix product of two arrays.</span>
 
@@ -365,11 +361,9 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input arrays are supported are supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameter `out` is supported as as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
+<span class="sd">    Input arrays are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Parameter `out` is supported as :obj:`dpnp.ndarray` and as default value ``None``.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
@@ -387,297 +381,59 @@
 <span class="sd">    &gt;&gt;&gt; c = np.ones([9, 5, 4, 3])</span>
 <span class="sd">    &gt;&gt;&gt; np.matmul(a, c).shape</span>
 <span class="sd">    (9, 5, 7, 3)</span>
-
 <span class="sd">    &gt;&gt;&gt; a = np.array([[1, 0], [0, 1]])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([[4, 1], [2, 2]])</span>
 <span class="sd">    &gt;&gt;&gt; np.matmul(a, b)</span>
 <span class="sd">    array([[4, 1],</span>
 <span class="sd">           [2, 2]])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 0], [0, 1]])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([1, 2])</span>
-<span class="sd">    &gt;&gt;&gt; np.matmul(a, b)</span>
-<span class="sd">    array([1, 2])</span>
-<span class="sd">    &gt;&gt;&gt; np.matmul(b, a)</span>
-<span class="sd">    array([1, 2])</span>
-
-<span class="sd">    &gt;&gt;&gt; a = np.arange(2 * 2 * 4).reshape((2, 2, 4))</span>
-<span class="sd">    &gt;&gt;&gt; b = np.arange(2 * 2 * 4).reshape((2, 4, 2))</span>
-<span class="sd">    &gt;&gt;&gt; np.matmul(a,b).shape</span>
-<span class="sd">    (2, 2, 2)</span>
-<span class="sd">    &gt;&gt;&gt; np.matmul(a, b)[0, 1, 1]</span>
-<span class="sd">    array(98)</span>
-<span class="sd">    &gt;&gt;&gt; np.sum(a[0, 1, :] * b[0 , :, 1])</span>
-<span class="sd">    array(98)</span>
-
-<span class="sd">    The ``@`` operator can be used as a shorthand for ``matmul`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
-
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([2j, 3j])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([2j, 3j])</span>
-<span class="sd">    &gt;&gt;&gt; x1 @ x2</span>
-<span class="sd">    array(-13+0j)</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_ndim</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="n">x2_ndim</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">ndim</span>
-
-    <span class="k">if</span> <span class="n">x1_ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">x2_ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;matmul: Input operand does not have enough dimensions&quot;</span>
-        <span class="p">)</span>
-
-    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">x1</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
-            <span class="s2">&quot;from input arguments.&quot;</span>
-        <span class="p">)</span>
-
-    <span class="n">squeeze_flag</span> <span class="o">=</span> <span class="n">x1_ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">x2_ndim</span> <span class="o">==</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="n">x1_ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span><span class="p">[</span><span class="n">dpnp</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
-        <span class="n">x1_ndim</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span>
-
-    <span class="k">if</span> <span class="n">x2_ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">x2</span> <span class="o">=</span> <span class="n">x2</span><span class="p">[:,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
-        <span class="n">x2_ndim</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">ndim</span>
-
-    <span class="n">x1_shape</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">x2_shape</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span>
-    <span class="k">if</span> <span class="n">x1_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x2_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Input operand 1 has a mismatch in its core dimension 0, &quot;</span>
-            <span class="s2">&quot;with gufunc signature (n?,k),(k,m?)-&gt;(n?,m?) &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;(size </span><span class="si">{</span><span class="n">x1_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> is different from </span><span class="si">{</span><span class="n">x2_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
-        <span class="p">)</span>
-
-    <span class="c1"># Determine the result data type</span>
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">dtype</span>
-        <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">res_dtype</span><span class="p">:</span>
-            <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">res_dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">res_dtype</span><span class="p">:</span>
-            <span class="n">x2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">res_dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
-    <span class="c1"># Determine the data type that works in gemm</span>
-    <span class="n">gemm_dtype</span> <span class="o">=</span> <span class="n">_common_type</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">gemm_dtype</span><span class="p">:</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">gemm_dtype</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">gemm_dtype</span><span class="p">:</span>
-        <span class="n">x2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">gemm_dtype</span><span class="p">)</span>
-
-    <span class="n">x1_is_2D</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">x1_is_2D</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">if</span> <span class="n">x1_ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">x2_ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">res_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">x1_is_2D</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x1_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">x2_is_2D</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x2_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">x1_ndim</span> <span class="o">!=</span> <span class="n">x2_ndim</span><span class="p">:</span>
-            <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x1_ndim</span> <span class="o">-</span> <span class="n">x2_ndim</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">x1_ndim</span> <span class="o">&lt;</span> <span class="n">x2_ndim</span><span class="p">:</span>
-                <span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">diff</span> <span class="o">+</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-                <span class="n">x1_ndim</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span>
-                <span class="n">x1_shape</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">x2</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">diff</span> <span class="o">+</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-                <span class="n">x2_ndim</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">ndim</span>
-                <span class="n">x2_shape</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span>
-
-        <span class="c1"># examining the option to align inputs when their shapes differ but they are 1-D in some dimensions.</span>
-        <span class="n">tmp_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">x1_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x1_ndim</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">x1_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x2_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">x1_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">tmp_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x2_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                    <span class="c1"># If the `x1` array is initially 2D, there&#39;s no need to duplicate the data when adding a new axis; GEMM handles it automatically.</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">x1_is_2D</span><span class="p">:</span>
-                        <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2_shape</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">x2_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">tmp_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x1_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">x2_is_2D</span><span class="p">:</span>
-                        <span class="n">x2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">x1_shape</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;operands could not be broadcast together with remapped shapes.&quot;</span>
-                    <span class="p">)</span>
-        <span class="n">x1_shape</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">x2_shape</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">res_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">tmp_shape</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x1_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">x2_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-
-    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">gemm_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">gemm_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">ht_copy_ev_x1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
-            <span class="n">ht_copy_ev_x2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">x1_ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">x2_ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="n">ht_blas_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">bi</span><span class="o">.</span><span class="n">_gemm</span><span class="p">(</span>
-                    <span class="n">exec_q</span><span class="p">,</span>
-                    <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x1</span><span class="p">),</span>
-                    <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x2</span><span class="p">),</span>
-                    <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">result</span><span class="p">),</span>
-                    <span class="p">[],</span>
-                <span class="p">)</span>
+            <span class="k">if</span> <span class="mi">0</span><span class="p">:</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Cost model checks</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+
+                <span class="n">array1_size</span> <span class="o">=</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span>
+                <span class="n">array2_size</span> <span class="o">=</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">size</span>
+                <span class="n">cost_size</span> <span class="o">=</span> <span class="mi">4096</span>  <span class="c1"># 2D array shape(64, 64)</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                    <span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span>
+                <span class="p">):</span>
+<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                    Floating point types are handled via original math library better than SYCL math library</span>
+<span class="sd">                    &quot;&quot;&quot;</span>
+                    <span class="n">cost_size</span> <span class="o">=</span> <span class="mi">262144</span>  <span class="c1"># 2D array shape(512, 512)</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">array1_size</span> <span class="o">&gt;</span> <span class="n">cost_size</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">array2_size</span> <span class="o">&gt;</span> <span class="n">cost_size</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">dpnp_matmul</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># is_support_gemm(x1_strides, x1_ndim)</span>
-                <span class="c1"># is_support_gemm(x2_strides, x2_ndim)</span>
-
-                <span class="n">copy_ev_x1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">x1</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;C_CONTIGUOUS&quot;</span><span class="p">]:</span>
-                    <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
-                    <span class="p">(</span>
-                        <span class="n">ht_copy_ev_x1</span><span class="p">,</span>
-                        <span class="n">copy_ev_x1</span><span class="p">,</span>
-                    <span class="p">)</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-                        <span class="n">src</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x1</span><span class="p">),</span>
-                        <span class="n">dst</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
-                        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x1</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+                <span class="n">out_desc</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
+                        <span class="n">out</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
                     <span class="p">)</span>
-                    <span class="n">x1</span> <span class="o">=</span> <span class="n">v</span>
-
-                <span class="n">copy_ev_x2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">x2</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;C_CONTIGUOUS&quot;</span><span class="p">]:</span>
-                    <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
-                    <span class="p">(</span>
-                        <span class="n">ht_copy_ev_x2</span><span class="p">,</span>
-                        <span class="n">copy_ev_x2</span><span class="p">,</span>
-                    <span class="p">)</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-                        <span class="n">src</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x2</span><span class="p">),</span>
-                        <span class="n">dst</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
-                        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x2</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="n">x2</span> <span class="o">=</span> <span class="n">v</span>
-
-                <span class="n">x1_strides</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">strides</span>
-                <span class="n">x2_strides</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">strides</span>
-                <span class="n">res_strides</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">strides</span>
-
-                <span class="k">if</span> <span class="n">x1_is_2D</span><span class="p">:</span>
-                    <span class="n">x1_strides</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-                        <span class="n">str_i</span> <span class="k">if</span> <span class="n">sh_i</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span>
-                        <span class="k">for</span> <span class="n">sh_i</span><span class="p">,</span> <span class="n">str_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x1_strides</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="k">if</span> <span class="n">x2_is_2D</span><span class="p">:</span>
-                    <span class="n">x2_strides</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-                        <span class="n">str_i</span> <span class="k">if</span> <span class="n">sh_i</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span>
-                        <span class="k">for</span> <span class="n">sh_i</span><span class="p">,</span> <span class="n">str_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x2_strides</span><span class="p">)</span>
-                    <span class="p">)</span>
-
-                <span class="n">transa</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># is_row(x1_strides, x1_ndim)</span>
-                <span class="n">transb</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># is_row(x2_strides, x2_ndim)</span>
-
-                <span class="n">batch_size</span> <span class="o">=</span> <span class="n">res_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># VAHID</span>
-                <span class="n">m</span> <span class="o">=</span> <span class="n">x1_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-                <span class="n">n</span> <span class="o">=</span> <span class="n">x2_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">k</span> <span class="o">=</span> <span class="n">x1_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-                <span class="n">lda</span> <span class="o">=</span> <span class="n">k</span> <span class="k">if</span> <span class="n">transa</span> <span class="k">else</span> <span class="n">m</span>
-                <span class="n">ldb</span> <span class="o">=</span> <span class="n">n</span> <span class="k">if</span> <span class="n">transb</span> <span class="k">else</span> <span class="n">k</span>
-                <span class="n">ldc</span> <span class="o">=</span> <span class="n">n</span>  <span class="c1"># column major m, row major n # VAHID</span>
-
-                <span class="n">stridea</span> <span class="o">=</span> <span class="n">x1_strides</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">strideb</span> <span class="o">=</span> <span class="n">x2_strides</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">stridec</span> <span class="o">=</span> <span class="n">res_strides</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
-
-                <span class="k">if</span> <span class="n">x1_ndim</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="nb">iter</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_contract_iter2</span><span class="p">(</span>
-                        <span class="n">res_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">x1_strides</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">x2_strides</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-                    <span class="p">)</span>
-
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">iter</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="s2">&quot;Input arrays cannot be used in gemm_batch&quot;</span>
-                        <span class="p">)</span>
-                    <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="n">stridea</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="n">strideb</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-
-                <span class="n">ht_blas_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">bi</span><span class="o">.</span><span class="n">_gemm_batch</span><span class="p">(</span>
-                    <span class="n">exec_q</span><span class="p">,</span>
-                    <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x1</span><span class="p">),</span>
-                    <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x2</span><span class="p">),</span>
-                    <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">result</span><span class="p">),</span>
-                    <span class="n">m</span><span class="p">,</span>
-                    <span class="n">n</span><span class="p">,</span>
-                    <span class="n">k</span><span class="p">,</span>
-                    <span class="n">batch_size</span><span class="p">,</span>
-                    <span class="n">lda</span><span class="p">,</span>
-                    <span class="n">ldb</span><span class="p">,</span>
-                    <span class="n">ldc</span><span class="p">,</span>
-                    <span class="n">stridea</span><span class="p">,</span>
-                    <span class="n">strideb</span><span class="p">,</span>
-                    <span class="n">stridec</span><span class="p">,</span>
-                    <span class="n">transa</span><span class="p">,</span>
-                    <span class="n">transb</span><span class="p">,</span>
-                    <span class="p">[</span><span class="n">copy_ev_x1</span><span class="p">,</span> <span class="n">copy_ev_x2</span><span class="p">],</span>
+                    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="k">else</span> <span class="kc">None</span>
                 <span class="p">)</span>
+                <span class="k">return</span> <span class="n">dpnp_matmul</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">,</span> <span class="n">out_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
-            <span class="n">ht_blas_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-            <span class="n">ht_copy_ev_x1</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-            <span class="n">ht_copy_ev_x2</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">matmul</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="k">if</span> <span class="n">squeeze_flag</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">gemm_dtype</span> <span class="o">!=</span> <span class="n">res_dtype</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">res_dtype</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># VAHID: replace with get_result_array function</span>
-        <span class="k">return</span> <span class="n">result</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Output array of shape </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-                <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="s2">&quot;Output array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
-
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">out</span></div>
-
-
-
-<span class="k">def</span> <span class="nf">is_support_gemm</span><span class="p">(</span><span class="n">strides</span><span class="p">,</span> <span class="n">ndim</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">strides</span><span class="p">[</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">strides</span><span class="p">[</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;The input matrices must be contiguous on inner dimension.&quot;</span>
-        <span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">is_row</span><span class="p">(</span><span class="n">strides</span><span class="p">,</span> <span class="n">ndim</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">strides</span><span class="p">[</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
-
-
-<span class="k">def</span> <span class="nf">_common_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">):</span>
-    <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span>
-
-    <span class="n">default</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
-    <span class="n">dtype_common</span> <span class="o">=</span> <span class="n">_common_type_internal</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="o">*</span><span class="n">dtypes</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dtype_common</span>
-
-
-<span class="k">def</span> <span class="nf">_common_type_internal</span><span class="p">(</span><span class="n">default_dtype</span><span class="p">,</span> <span class="o">*</span><span class="n">dtypes</span><span class="p">):</span>
-    <span class="n">inexact_dtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">&quot;fc&quot;</span> <span class="k">else</span> <span class="n">default_dtype</span> <span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">dtypes</span>
-    <span class="p">]</span>
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">inexact_dtypes</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="outer">
