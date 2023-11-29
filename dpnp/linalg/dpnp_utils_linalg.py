@@ -207,7 +207,8 @@ def _lu_factor(a, res_type):
     a_sycl_queue = a.sycl_queue
     a_usm_type = a.usm_type
 
-    # TODO: use getrf_batch
+    # TODO: Find out at which array sizes the best performance is obtained
+    use_batch = True
 
     if a.ndim > 2:
         orig_shape = a.shape
@@ -216,61 +217,107 @@ def _lu_factor(a, res_type):
         batch_size = a.shape[0]
         a_usm_arr = dpnp.get_usm_ndarray(a)
 
-        # Initialize lists for storing arrays and events for each batch
-        a_vecs = [None] * batch_size
-        ipiv_vecs = [None] * batch_size
-        dev_info_vecs = [None] * batch_size
-        a_ht_copy_ev = [None] * batch_size
-        ht_lapack_ev = [None] * batch_size
-
-        # Process each batch
-        for i in range(batch_size):
-            # Copy each 2D slice to a new array as getrf destroys the input matrix
-            a_vecs[i] = dpnp.empty_like(a[i], order="C", dtype=res_type)
-            a_ht_copy_ev[i], a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=a_usm_arr[i],
-                dst=a_vecs[i].get_array(),
-                sycl_queue=a_sycl_queue,
-            )
-            ipiv_vecs[i] = dpnp.empty(
-                (n,),
+        if use_batch:
+            # `a` must be copied because getrf_batch destroys the input matrix
+            a_h = dpnp.empty_like(a, order="C", dtype=res_type)
+            ipiv_h = dpnp.empty(
+                (batch_size, n),
                 dtype=dpnp.int64,
                 usm_type=a_usm_type,
                 sycl_queue=a_sycl_queue,
             )
-            dev_info_vecs[i] = dpnp.empty(
-                (1,),
+            dev_info_h = dpnp.empty(
+                1,
                 dtype=dpnp.int64,
                 usm_type=a_usm_type,
                 sycl_queue=a_sycl_queue,
             )
 
-            # Call the LAPACK extension function _getrf
-            # to perform LU decomposition on each batch in 'a_vecs[i]'
-            ht_lapack_ev[i], _ = li._getrf(
+            a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+            )
+
+            ipiv_stride = n
+            a_stride = a_h.strides[0]
+
+            # Call the LAPACK extension function _getrf_batch
+            # to perform LU decomposition of a batch of general matrices
+            ht_lapack_ev, _ = li._getrf_batch(
                 a_sycl_queue,
+                a_h.get_array(),
+                ipiv_h.get_array(),
+                dev_info_h.get_array(),
                 n,
-                a_vecs[i].get_array(),
-                ipiv_vecs[i].get_array(),
-                dev_info_vecs[i].get_array(),
+                a_stride,
+                ipiv_stride,
+                batch_size,
                 [a_copy_ev],
             )
 
-        for i in range(batch_size):
-            ht_lapack_ev[i].wait()
-            a_ht_copy_ev[i].wait()
+            ht_lapack_ev.wait()
+            a_ht_copy_ev.wait()
 
-        # Reshape the results back to their original shape
-        out_v = dpnp.array(a_vecs, order="C").reshape(orig_shape)
-        out_ipiv = dpnp.array(ipiv_vecs).reshape(orig_shape[:-1])
-        out_dev_info = dpnp.array(dev_info_vecs).reshape(orig_shape[:-2])
+            return (a_h, ipiv_h, dev_info_h)
 
-        return (out_v, out_ipiv, out_dev_info)
+        else:
+            # Initialize lists for storing arrays and events for each batch
+            a_vecs = [None] * batch_size
+            ipiv_vecs = [None] * batch_size
+            dev_info_vecs = [None] * batch_size
+            a_ht_copy_ev = [None] * batch_size
+            ht_lapack_ev = [None] * batch_size
+
+            # Process each batch
+            for i in range(batch_size):
+                # Copy each 2D slice to a new array as getrf destroys the input matrix
+                a_vecs[i] = dpnp.empty_like(a[i], order="C", dtype=res_type)
+                (
+                    a_ht_copy_ev[i],
+                    a_copy_ev,
+                ) = ti._copy_usm_ndarray_into_usm_ndarray(
+                    src=a_usm_arr[i],
+                    dst=a_vecs[i].get_array(),
+                    sycl_queue=a_sycl_queue,
+                )
+                ipiv_vecs[i] = dpnp.empty(
+                    (n,),
+                    dtype=dpnp.int64,
+                    usm_type=a_usm_type,
+                    sycl_queue=a_sycl_queue,
+                )
+                dev_info_vecs[i] = dpnp.empty(
+                    (1,),
+                    dtype=dpnp.int64,
+                    usm_type=a_usm_type,
+                    sycl_queue=a_sycl_queue,
+                )
+
+                # Call the LAPACK extension function _getrf
+                # to perform LU decomposition on each batch in 'a_vecs[i]'
+                ht_lapack_ev[i], _ = li._getrf(
+                    a_sycl_queue,
+                    n,
+                    a_vecs[i].get_array(),
+                    ipiv_vecs[i].get_array(),
+                    dev_info_vecs[i].get_array(),
+                    [a_copy_ev],
+                )
+
+            for i in range(batch_size):
+                ht_lapack_ev[i].wait()
+                a_ht_copy_ev[i].wait()
+
+            # Reshape the results back to their original shape
+            out_v = dpnp.array(a_vecs, order="C").reshape(orig_shape)
+            out_ipiv = dpnp.array(ipiv_vecs).reshape(orig_shape[:-1])
+            out_dev_info = dpnp.array(dev_info_vecs).reshape(orig_shape[:-2])
+
+            return (out_v, out_ipiv, out_dev_info)
 
     else:
         a_usm_arr = dpnp.get_usm_ndarray(a)
 
-        # `a`` must be copied because getrf destroys the input matrix
+        # `a` must be copied because getrf destroys the input matrix
         a_h = dpnp.empty_like(a, order="C", dtype=res_type)
         ipiv_h = dpnp.empty(
             n, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue

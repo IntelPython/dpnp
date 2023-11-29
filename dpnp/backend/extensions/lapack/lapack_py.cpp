@@ -40,8 +40,9 @@ namespace py = pybind11;
 // populate dispatch vectors
 void init_dispatch_vectors(void)
 {
-    lapack_ext::init_syevd_dispatch_vector();
+    lapack_ext::init_getrf_batch_dispatch_vector();
     lapack_ext::init_getrf_dispatch_vector();
+    lapack_ext::init_syevd_dispatch_vector();
 }
 
 // populate dispatch tables
@@ -74,5 +75,13 @@ PYBIND11_MODULE(_lapack_impl, m)
           "the LU factorization of a general n x n matrix",
           py::arg("sycl_queue"), py::arg("n"), py::arg("a_array"),
           py::arg("ipiv_array"), py::arg("dev_info_array"),
+          py::arg("depends") = py::list());
+
+    m.def("_getrf_batch", &lapack_ext::getrf_batch,
+          "Call `getrf_batch` from OneMKL LAPACK library to return "
+          "the LU factorization of a batch of general n x n matrices",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
+          py::arg("dev_info_array"), py::arg("n"), py::arg("stride_a"),
+          py::arg("stride_ipiv"), py::arg("batch_size"),
           py::arg("depends") = py::list());
 }
