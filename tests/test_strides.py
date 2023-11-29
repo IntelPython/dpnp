@@ -98,6 +98,20 @@ def test_strides_1arg(func_name, dtype, shape):
     assert_allclose(result, expected, rtol=1e-06)
 
 
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_strides_rsqrt(dtype):
+    a = numpy.arange(1, 11, dtype=dtype)
+    b = a[::2]
+
+    dpa = dpnp.arange(1, 11, dtype=dtype)
+    dpb = dpa[::2]
+
+    result = dpnp.rsqrt(dpb)
+    expected = 1 / numpy.sqrt(b)
+
+    assert_allclose(result, expected, rtol=1e-06)
+
+
 @pytest.mark.parametrize(
     "func_name",
     [

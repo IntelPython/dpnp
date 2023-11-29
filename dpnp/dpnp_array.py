@@ -486,58 +486,23 @@ class dpnp_array:
             self, axis=axis, out=out, keepdims=keepdims, where=where
         )
 
-    def argmax(self, axis=None, out=None):
+    def argmax(self, axis=None, out=None, *, keepdims=False):
         """
         Returns array of indices of the maximum values along the given axis.
 
-        Parameters
-        ----------
-        axis : {None, integer}
-            If None, the index is into the flattened array, otherwise along
-            the specified axis
-        out : {None, array}, optional
-            Array into which the result can be placed. Its type is preserved
-            and it must be of the right shape to hold the output.
-
-        Returns
-        -------
-        index_array : {integer_array}
-
-        Examples
-        --------
-        >>> a = np.arange(6).reshape(2,3)
-        >>> a.argmax()
-        5
-        >>> a.argmax(0)
-        array([1, 1, 1])
-        >>> a.argmax(1)
-        array([2, 2])
+        Refer to :obj:`dpnp.argmax` for full documentation.
 
         """
-        return dpnp.argmax(self, axis, out)
+        return dpnp.argmax(self, axis, out, keepdims=keepdims)
 
-    def argmin(self, axis=None, out=None):
+    def argmin(self, axis=None, out=None, *, keepdims=False):
         """
         Return array of indices to the minimum values along the given axis.
 
-        Parameters
-        ----------
-        axis : {None, integer}
-            If None, the index is into the flattened array, otherwise along
-            the specified axis
-        out : {None, array}, optional
-            Array into which the result can be placed. Its type is preserved
-            and it must be of the right shape to hold the output.
-
-        Returns
-        -------
-        ndarray or scalar
-            If multi-dimension input, returns a new ndarray of indices to the
-            minimum values along the given axis.  Otherwise, returns a scalar
-            of index to the minimum values along the given axis.
+        Refer to :obj:`dpnp.argmin` for full documentation.
 
         """
-        return dpnp.argmin(self, axis, out)
+        return dpnp.argmin(self, axis, out, keepdims=keepdims)
 
     # 'argpartition',
 
@@ -950,10 +915,16 @@ class dpnp_array:
 
         return dpnp.max(self, axis, out, keepdims, initial, where)
 
-    def mean(self, axis=None, **kwargs):
-        """Returns the average of the array elements."""
+    def mean(
+        self, axis=None, dtype=None, out=None, keepdims=False, *, where=True
+    ):
+        """
+        Returns the average of the array elements.
 
-        return dpnp.mean(self, axis=axis, **kwargs)
+        Refer to :obj:`dpnp.mean` for full documentation.
+        """
+
+        return dpnp.mean(self, axis, dtype, out, keepdims, where=where)
 
     def min(
         self,
@@ -1038,8 +1009,6 @@ class dpnp_array:
         """
 
         return dpnp.prod(self, axis, dtype, out, keepdims, initial, where)
-
-    # 'ptp'
 
     def put(self, indices, vals, /, *, axis=None, mode="wrap"):
         """
