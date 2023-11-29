@@ -79,14 +79,6 @@ void (*dpnp_argmax_default_c)(void *,
                               size_t) = dpnp_argmax_c<_DataType, _idx_DataType>;
 
 template <typename _DataType, typename _idx_DataType>
-DPCTLSyclEventRef (*dpnp_argmax_ext_c)(DPCTLSyclQueueRef,
-                                       void *,
-                                       void *,
-                                       size_t,
-                                       const DPCTLEventVectorRef) =
-    dpnp_argmax_c<_DataType, _idx_DataType>;
-
-template <typename _DataType, typename _idx_DataType>
 class dpnp_argmin_c_kernel;
 
 template <typename _DataType, typename _idx_DataType>
@@ -133,14 +125,6 @@ void (*dpnp_argmin_default_c)(void *,
                               void *,
                               size_t) = dpnp_argmin_c<_DataType, _idx_DataType>;
 
-template <typename _DataType, typename _idx_DataType>
-DPCTLSyclEventRef (*dpnp_argmin_ext_c)(DPCTLSyclQueueRef,
-                                       void *,
-                                       void *,
-                                       size_t,
-                                       const DPCTLEventVectorRef) =
-    dpnp_argmin_c<_DataType, _idx_DataType>;
-
 void func_map_init_searching(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_INT][eft_INT] = {
@@ -160,23 +144,6 @@ void func_map_init_searching(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_DBL][eft_LNG] = {
         eft_LNG, (void *)dpnp_argmax_default_c<double, int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_argmax_ext_c<int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_INT][eft_LNG] = {
-        eft_LNG, (void *)dpnp_argmax_ext_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_LNG][eft_INT] = {
-        eft_INT, (void *)dpnp_argmax_ext_c<int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_argmax_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_FLT][eft_INT] = {
-        eft_INT, (void *)dpnp_argmax_ext_c<float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_FLT][eft_LNG] = {
-        eft_LNG, (void *)dpnp_argmax_ext_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_DBL][eft_INT] = {
-        eft_INT, (void *)dpnp_argmax_ext_c<double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMAX_EXT][eft_DBL][eft_LNG] = {
-        eft_LNG, (void *)dpnp_argmax_ext_c<double, int64_t>};
-
     fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_argmin_default_c<int32_t, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_INT][eft_LNG] = {
@@ -193,23 +160,6 @@ void func_map_init_searching(func_map_t &fmap)
         eft_INT, (void *)dpnp_argmin_default_c<double, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_DBL][eft_LNG] = {
         eft_LNG, (void *)dpnp_argmin_default_c<double, int64_t>};
-
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_argmin_ext_c<int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_INT][eft_LNG] = {
-        eft_LNG, (void *)dpnp_argmin_ext_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_LNG][eft_INT] = {
-        eft_INT, (void *)dpnp_argmin_ext_c<int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_argmin_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_FLT][eft_INT] = {
-        eft_INT, (void *)dpnp_argmin_ext_c<float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_FLT][eft_LNG] = {
-        eft_LNG, (void *)dpnp_argmin_ext_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_DBL][eft_INT] = {
-        eft_INT, (void *)dpnp_argmin_ext_c<double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGMIN_EXT][eft_DBL][eft_LNG] = {
-        eft_LNG, (void *)dpnp_argmin_ext_c<double, int64_t>};
 
     return;
 }

@@ -287,15 +287,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_CBRT][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_cbrt_c_default<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_CBRT_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_cbrt_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_CBRT_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_cbrt_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_CBRT_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_cbrt_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_CBRT_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_cbrt_c_ext<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_CEIL][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_ceil_c_default<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_CEIL][eft_LNG][eft_LNG] = {
@@ -437,27 +428,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
         eft_FLT, (void *)dpnp_exp2_c_default<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EXP2][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_exp2_c_default<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_EXP2_EXT][eft_INT][eft_INT] = {
-        get_default_floating_type(),
-        (void *)dpnp_exp2_c_ext<
-            int32_t, func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)dpnp_exp2_c_ext<
-            int32_t, func_type_map_t::find_type<
-                         get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_EXP2_EXT][eft_LNG][eft_LNG] = {
-        get_default_floating_type(),
-        (void *)dpnp_exp2_c_ext<
-            int64_t, func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)dpnp_exp2_c_ext<
-            int64_t, func_type_map_t::find_type<
-                         get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_EXP2_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_exp2_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_EXP2_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_exp2_c_ext<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_EXP][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_exp_c_default<int32_t, double>};
@@ -1465,19 +1435,6 @@ static void func_map_elemwise_2arg_3type_core(func_map_t &fmap)
 template <DPNPFuncType FT1, DPNPFuncType... FTs>
 static void func_map_elemwise_2arg_3type_short_core(func_map_t &fmap)
 {
-    ((fmap[DPNPFuncName::DPNP_FN_COPYSIGN_EXT][FT1][FTs] =
-          {get_floating_res_type<FT1, FTs>(),
-           (void *)dpnp_copysign_c_ext<
-               func_type_map_t::find_type<get_floating_res_type<FT1, FTs>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>,
-           get_floating_res_type<FT1, FTs, std::false_type>(),
-           (void *)dpnp_copysign_c_ext<
-               func_type_map_t::find_type<
-                   get_floating_res_type<FT1, FTs, std::false_type>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>}),
-     ...);
     ((fmap[DPNPFuncName::DPNP_FN_FMOD_EXT][FT1][FTs] =
           {get_floating_res_type<FT1, FTs, std::true_type, std::true_type>(),
            (void *)

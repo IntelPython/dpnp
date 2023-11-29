@@ -36,7 +36,6 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_copysign",
     "dpnp_cross",
     "dpnp_cumprod",
     "dpnp_cumsum",
@@ -62,14 +61,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_2out_t)(c_dpctl.DPCTLSyclQueueRef,
 ctypedef c_dpctl.DPCTLSyclEventRef(*ftpr_custom_trapz_2in_1out_with_2size_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                              void *, void * , void * , double, size_t, size_t,
                                                                              const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef utils.dpnp_descriptor dpnp_copysign(utils.dpnp_descriptor x1_obj,
-                                          utils.dpnp_descriptor x2_obj,
-                                          object dtype=None,
-                                          utils.dpnp_descriptor out=None,
-                                          object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_COPYSIGN_EXT, x1_obj, x2_obj, dtype, out, where)
 
 
 cpdef utils.dpnp_descriptor dpnp_cross(utils.dpnp_descriptor x1_obj,

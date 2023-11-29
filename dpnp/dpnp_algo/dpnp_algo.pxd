@@ -36,22 +36,14 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ALLCLOSE
         DPNP_FN_ALLCLOSE_EXT
         DPNP_FN_ARANGE
-        DPNP_FN_ARGMAX
-        DPNP_FN_ARGMAX_EXT
-        DPNP_FN_ARGMIN
-        DPNP_FN_ARGMIN_EXT
         DPNP_FN_ARGSORT
         DPNP_FN_ARGSORT_EXT
-        DPNP_FN_CBRT
-        DPNP_FN_CBRT_EXT
         DPNP_FN_CHOLESKY
         DPNP_FN_CHOLESKY_EXT
         DPNP_FN_CHOOSE
         DPNP_FN_CHOOSE_EXT
         DPNP_FN_COPY
         DPNP_FN_COPY_EXT
-        DPNP_FN_COPYSIGN
-        DPNP_FN_COPYSIGN_EXT
         DPNP_FN_CORRELATE
         DPNP_FN_CORRELATE_EXT
         DPNP_FN_CROSS
@@ -80,8 +72,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ERF_EXT
         DPNP_FN_EYE
         DPNP_FN_EYE_EXT
-        DPNP_FN_EXP2
-        DPNP_FN_EXP2_EXT
         DPNP_FN_FABS
         DPNP_FN_FABS_EXT
         DPNP_FN_FFT_FFT
@@ -356,16 +346,8 @@ cpdef dpnp_descriptor dpnp_argsort(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_sort(dpnp_descriptor array1)
 
 """
-Searching functions
-"""
-cpdef dpnp_descriptor dpnp_argmax(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_argmin(dpnp_descriptor array1)
-
-"""
 Trigonometric functions
 """
-cpdef dpnp_descriptor dpnp_cbrt(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_degrees(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_exp2(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_radians(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_recip(dpnp_descriptor array1)
