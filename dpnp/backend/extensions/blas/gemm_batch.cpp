@@ -184,6 +184,7 @@ std::pair<sycl::event, sycl::event>
                       ld_result, stridea, strideb, stridec, transA, transB,
                       a_typeless_ptr, b_typeless_ptr, r_typeless_ptr, depends);
 
+    host_task_events.push_back(gemm_batch_ev);
     sycl::event args_batch_ev = dpctl::utils::keep_args_alive(
         exec_q, {matrixA, matrixB, resultC}, host_task_events);
     return std::make_pair(args_batch_ev, gemm_batch_ev);

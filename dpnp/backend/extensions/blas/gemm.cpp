@@ -210,8 +210,10 @@ std::pair<sycl::event, sycl::event>
         gemm_fn(exec_q, transA, transB, m, n, k, a_typeless_ptr, lda,
                 b_typeless_ptr, ldb, r_typeless_ptr, ldc, depends);
 
+    host_task_events.push_back(gemm_ev);
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {matrixA, matrixB, resultC}, host_task_events);
+
     return std::make_pair(args_ev, gemm_ev);
 }
 
