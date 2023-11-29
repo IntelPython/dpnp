@@ -84,13 +84,13 @@ static sycl::event getrf_impl(sycl::queue exec_q,
 
         getrf_event = oneapi::mkl::lapack::getrf(
             exec_q,
-            n,   // The order of the matrix A; (0 ≤ n).
-            n,   // The order of the matrix A; (0 ≤ n).
-            a,   // Pointer to the n-by-n coefficient matrix A.
-            lda, // The leading dimension of a.
-            ipiv,
+            n,          // Order of the square matrix; (0 ≤ n).
+            n,          // Order of the square matrix; (0 ≤ n).
+            a,          // Pointer to the n-by-n matrix.
+            lda,        // The leading dimension of `a`.
+            ipiv,       // Pointer to the array of pivot indices.
             scratchpad, // Pointer to scratchpad memory to be used by MKL
-                        // routine for storing intermediate results
+                        // routine for storing intermediate results.
             scratchpad_size, depends);
     } catch (mkl_lapack::exception const &e) {
         error_msg
