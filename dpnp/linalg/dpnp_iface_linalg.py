@@ -516,7 +516,8 @@ def solve(a, b):
 
     Limitations
     -----------
-    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `a` and `b` are supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -531,6 +532,11 @@ def solve(a, b):
     >>> x = dp.linalg.solve(a, b)
     >>> x
     array([-1.,  1.])
+
+    Check that the solution is correct:
+
+    >>> dp.allclose(dp.dot(a, x), b)
+    array([ True])
 
     """
 
