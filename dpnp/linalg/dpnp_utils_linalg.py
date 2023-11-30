@@ -30,7 +30,7 @@
 import dpctl
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as du
-from numpy import prod
+from numpy import issubdtype, prod
 
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
@@ -45,7 +45,7 @@ def _common_type(*arrays):
     """
     _common_type(*arrays)
 
-    Common type for linalg
+    Common type for linear algebra operations.
 
     This function determines the common data type for linalg operations.
     It's designed to be similar in logic to `numpy.linalg.linalg._commonType`.
@@ -68,15 +68,34 @@ def _common_type(*arrays):
 
     dtypes = [arr.dtype for arr in arrays]
 
-    default = dpnp.default_float_type().name
-    dtype_common = _common_type_internal(default, *dtypes)
+    default = dpnp.default_float_type()
+    dtype_common = _common_inexact_type(default, *dtypes)
 
     return dtype_common
 
 
-def _common_type_internal(default_dtype, *dtypes):
+def _common_inexact_type(default_dtype, *dtypes):
+    """
+    _common_inexact_type(default_dtype, *dtypes)
+
+    Determines the common 'inexact' data type for linear algebra operations.
+
+    This function selects an 'inexact' data type appropriate for the device's capabilities.
+    It defaults to `default_dtype` when provided types are not 'inexact'.
+
+    Args:
+        default_dtype: The default data type. This is determined by the capabilities of
+        the device and is used when none of the provided types are 'inexact'.
+        *dtypes: A variable number of data types to be evaluated to find
+        the common 'inexact' type.
+
+    Returns:
+        dpnp.result_type (dtype) : The resultant 'inexact' data type for linalg operations,
+        ensuring computational compatibility.
+
+    """
     inexact_dtypes = [
-        dtype if dtype.kind in "fc" else default_dtype for dtype in dtypes
+        dt if issubdtype(dt, dpnp.inexact) else default_dtype for dt in dtypes
     ]
     return dpnp.result_type(*inexact_dtypes)
 
