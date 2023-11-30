@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev1+34.ga64e55728 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev1+37.gf0bfa1333 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=33185a3e"></script>
+        <script src="../../../_static/documentation_options.js?v=fe8279da"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+34.ga64e55728
+                0.13.1dev1+37.gf0bfa1333
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -852,6 +852,8 @@
 
     <span class="n">lu</span><span class="p">,</span> <span class="n">ipiv</span><span class="p">,</span> <span class="n">dev_info</span> <span class="o">=</span> <span class="n">_lu_factor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">res_type</span><span class="p">)</span>
 
+    <span class="c1"># return lu, ipiv, dev_info</span>
+
     <span class="c1"># Transposing &#39;lu&#39; to swap the last two axes for compatibility</span>
     <span class="c1"># with &#39;dpnp.diagonal&#39; as it does not support &#39;axis1&#39; and &#39;axis2&#39; arguments.</span>
     <span class="c1"># TODO: Replace with &#39;dpnp.diagonal(lu, axis1=-2, axis2=-1)&#39; when supported.</span>
@@ -871,13 +873,13 @@
     <span class="k">if</span> <span class="n">res_type</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span>
         <span class="n">non_zero</span> <span class="o">+=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">diag</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mi">1</span> <span class="o">**</span> <span class="p">(</span><span class="n">non_zero</span> <span class="o">%</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">sign</span> <span class="o">=</span> <span class="p">(</span><span class="n">non_zero</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">res_type</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
         <span class="n">sign</span> <span class="o">=</span> <span class="n">sign</span> <span class="o">*</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">diag</span> <span class="o">/</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">diag</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="n">sign</span> <span class="o">=</span> <span class="n">sign</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">res_type</span><span class="p">)</span>
     <span class="n">logdet</span> <span class="o">=</span> <span class="n">logdet</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">logdet_dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">singular</span> <span class="o">=</span> <span class="n">dev_info</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">singular</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dev_info</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">singular</span><span class="p">,</span> <span class="n">res_type</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">sign</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">singular</span><span class="p">,</span> <span class="n">logdet_dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">),</span> <span class="n">logdet</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span>
