@@ -2022,7 +2022,6 @@ def test_inplace_floor_divide(dtype):
     assert_allclose(dp_a, np_a)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 @pytest.mark.parametrize(
     "order_pair", [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")]
 )
@@ -2058,11 +2057,11 @@ def test_inplace_floor_divide(dtype):
         ((1, 3, 3), (10, 1, 3, 1)),
     ],
 )
-def test_matmul(dtype, order_pair, shape_pair):
+def test_matmul(order_pair, shape_pair):
     order1, order2 = order_pair
     shape1, shape2 = shape_pair
-    a1 = numpy.arange(numpy.prod(shape1), dtype=dtype).reshape(shape1)
-    a2 = numpy.arange(numpy.prod(shape2), dtype=dtype).reshape(shape2)
+    a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+    a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
     a1 = numpy.array(a1, order=order1)
     a2 = numpy.array(a2, order=order2)
 
@@ -2071,6 +2070,63 @@ def test_matmul(dtype, order_pair, shape_pair):
 
     result = dpnp.matmul(b1, b2)
     expected = numpy.matmul(a1, a2)
+    assert_allclose(expected, result)
+
+
+@pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize("dtype2", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize(
+    "shape_pair",
+    [
+        ((2, 4), (4, 3)),
+        ((4, 2, 3), (4, 3, 5)),
+        ((6, 7, 4, 3), (6, 7, 3, 5)),
+    ],
+    ids=[
+        "((2, 4), (4, 3))",
+        "((4, 2, 3), (4, 3, 5))",
+        "((6, 7, 4, 3), (6, 7, 3, 5))",
+    ],
+)
+def test_matmul_dtype(dtype1, dtype2, shape_pair):
+    shape1, shape2 = shape_pair
+    a1 = numpy.arange(numpy.prod(shape1), dtype=dtype1).reshape(shape1)
+    a2 = numpy.arange(numpy.prod(shape2), dtype=dtype2).reshape(shape2)
+
+    b1 = dpnp.asarray(a1)
+    b2 = dpnp.asarray(a2)
+
+    result = dpnp.matmul(b1, b2)
+    expected = numpy.matmul(a1, a2)
+    assert_dtype_allclose(result, expected)
+
+
+@pytest.mark.parametrize("order", ["C", "F", "K"])
+@pytest.mark.parametrize(
+    "shape_pair",
+    [
+        ((2, 4), (4, 3)),
+        ((4, 2, 3), (4, 3, 5)),
+        ((6, 7, 4, 3), (6, 7, 3, 5)),
+    ],
+    ids=[
+        "((2, 4), (4, 3))",
+        "((4, 2, 3), (4, 3, 5))",
+        "((6, 7, 4, 3), (6, 7, 3, 5))",
+    ],
+)
+def test_matmul_order(order, shape_pair):
+    shape1, shape2 = shape_pair
+    a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+    a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+
+    b1 = dpnp.asarray(a1)
+    b2 = dpnp.asarray(a2)
+
+    result = dpnp.matmul(b1, b2, order=order)
+    expected = numpy.matmul(a1, a2, order=order)
+    assert result.flags.c_contiguous == expected.flags.c_contiguous
+    assert result.flags.f_contiguous == expected.flags.f_contiguous
     assert_allclose(expected, result)
 
 
@@ -2124,7 +2180,7 @@ class TestMatmulInvalidCases:
             with pytest.raises(ValueError):
                 xp.matmul(x1, x2)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True)[:-1])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True)[:-2])
     def test_invalid_dtype(self, dtype):
         dpnp_dtype = get_all_dtypes(no_none=True)[-1]
         a1 = dpnp.arange(5 * 4, dtype=dpnp_dtype).reshape(5, 4)
@@ -2145,3 +2201,18 @@ class TestMatmulInvalidCases:
             pytest.skip("No SYCL devices available")
         with pytest.raises(ValueError):
             dpnp.matmul(x1, x2)
+
+    def test_matmul_casting(self):
+        a1 = dpnp.arange(2 * 4, dtype=dpnp.float32).reshape(2, 4)
+        a2 = dpnp.arange(4 * 3).reshape(4, 3)
+
+        res = dpnp.empty((2, 3), dtype=dpnp.int64)
+        with pytest.raises(TypeError):
+            dpnp.matmul(a1, a2, out=res, casting="safe")
+
+    def test_matmul_subok(self):
+        a1 = dpnp.arange(2 * 4).reshape(2, 4)
+        a2 = dpnp.arange(4 * 3).reshape(4, 3)
+
+        with pytest.raises(NotImplementedError):
+            dpnp.matmul(a1, a2, subok=False)

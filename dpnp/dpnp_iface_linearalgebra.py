@@ -43,12 +43,12 @@ it contains:
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
+import dpctl.utils as du
 import numpy
 
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_algo import *
-from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
 
 __all__ = [
@@ -250,7 +250,17 @@ def kron(x1, x2):
     return call_origin(numpy.kron, x1, x2)
 
 
-def matmul(x1, x2, out=None, dtype=None, **kwargs):
+def matmul(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    casting="same_kind",
+    order="K",
+    dtype=None,
+    subok=True,
+):
     """
     Matrix product of two arrays.
 
@@ -313,263 +323,271 @@ def matmul(x1, x2, out=None, dtype=None, **kwargs):
 
     """
 
-    x1_ndim = x1.ndim
-    x2_ndim = x2.ndim
-
-    if x1_ndim == 0 or x2_ndim == 0:
-        raise ValueError(
-            "matmul: Input operand does not have enough dimensions"
+    if subok is False:
+        raise NotImplementedError(
+            "subok keyword argument is only supported by its default value."
         )
-
-    exec_q = dpctl.utils.get_execution_queue((x1.sycl_queue, x2.sycl_queue))
-    if exec_q is None:
-        raise ValueError(
-            "Execution placement can not be unambiguously inferred "
-            "from input arguments."
-        )
-
-    squeeze_flag = x1_ndim == 1 or x2_ndim == 1
-    if x1_ndim == 1:
-        x1 = x1[dpnp.newaxis, :]
+    else:
         x1_ndim = x1.ndim
-
-    if x2_ndim == 1:
-        x2 = x2[:, dpnp.newaxis]
         x2_ndim = x2.ndim
 
-    x1_shape = x1.shape
-    x2_shape = x2.shape
-    if x1_shape[-1] != x2_shape[-2]:
-        raise ValueError(
-            "Input operand 1 has a mismatch in its core dimension 0, "
-            "with gufunc signature (n?,k),(k,m?)->(n?,m?) "
-            f"(size {x1_shape[1]} is different from {x2_shape[0]})"
-        )
+        if x1_ndim == 0 or x2_ndim == 0:
+            raise ValueError(
+                "matmul: Input operand does not have enough dimensions"
+            )
 
-    # Determine the result data type
-    if dtype is not None:
-        res_dtype = dtype
-        if x1.dtype != res_dtype:
-            x1 = dpnp.astype(x1, res_dtype, casting="same_kind")
-        if x2.dtype != res_dtype:
-            x2 = dpnp.astype(x2, res_dtype, casting="same_kind")
-    else:
-        res_dtype = dpnp.result_type(x1, x2)
-    # Determine the data type that works in gemm
-    gemm_dtype = _common_type(x1, x2)
-    if x1.dtype != gemm_dtype:
-        x1 = dpnp.astype(x1, gemm_dtype)
-    if x2.dtype != gemm_dtype:
-        x2 = dpnp.astype(x2, gemm_dtype)
+        exec_q = dpctl.utils.get_execution_queue((x1.sycl_queue, x2.sycl_queue))
+        if exec_q is None:
+            raise ValueError(
+                "Execution placement can not be unambiguously inferred "
+                "from input arguments."
+            )
 
-    x1_is_2D = False
-    x1_is_2D = False
-    if x1_ndim == 2 and x2_ndim == 2:
-        res_shape = (x1.shape[0], x2.shape[1])
-    else:
-        x1_is_2D = dpnp.all(dpnp.array(x1_shape[:-2]) == 1)
-        x2_is_2D = dpnp.all(dpnp.array(x2_shape[:-2]) == 1)
+        squeeze_flag = x1_ndim == 1 or x2_ndim == 1
+        if x1_ndim == 1:
+            x1 = x1[dpnp.newaxis, :]
+            x1_ndim = x1.ndim
 
-        if x1_ndim != x2_ndim:
-            diff = abs(x1_ndim - x2_ndim)
-            if x1_ndim < x2_ndim:
-                x1 = x1.reshape((1,) * diff + x1.shape)
-                x1_ndim = x1.ndim
-                x1_shape = x1.shape
-            else:
-                x2 = x2.reshape((1,) * diff + x2.shape)
-                x2_ndim = x2.ndim
-                x2_shape = x2.shape
+        if x2_ndim == 1:
+            x2 = x2[:, dpnp.newaxis]
+            x2_ndim = x2.ndim
 
-        # examining the option to align inputs when their shapes differ but they are 1-D in some dimensions.
-        tmp_shape = list(x1_shape[:-2])
-        for i in range(x1_ndim - 2):
-            if x1_shape[i] != x2_shape[i]:
-                if x1_shape[i] == 1:
-                    tmp_shape[i] = x2_shape[i]
-                    # If the `x1` array is initially 2D, there's no need to duplicate the data when adding a new axis; GEMM handles it automatically.
-                    if not x1_is_2D:
-                        x1 = dpnp.repeat(x1, x2_shape[i], axis=i)
-                elif x2_shape[i] == 1:
-                    tmp_shape[i] = x1_shape[i]
-                    if not x2_is_2D:
-                        x2 = dpnp.repeat(x2, x1_shape[i], axis=i)
-                else:
-                    raise ValueError(
-                        "operands could not be broadcast together with remapped shapes."
-                    )
         x1_shape = x1.shape
         x2_shape = x2.shape
-        res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
-
-    result = dpnp.empty(res_shape, dtype=gemm_dtype, sycl_queue=exec_q)
-    if result.size == 0:
-        pass
-    else:
-        if x1.size == 0 or x2.size == 0:
-            result = dpnp.zeros(res_shape, dtype=gemm_dtype, sycl_queue=exec_q)
-        else:
-            ht_copy_ev_x1 = dpctl.SyclEvent()
-            ht_copy_ev_x2 = dpctl.SyclEvent()
-            if x1_ndim == 2 and x2_ndim == 2:
-                ht_blas_ev, _ = bi._gemm(
-                    exec_q,
-                    dpnp.get_usm_ndarray(x1),
-                    dpnp.get_usm_ndarray(x2),
-                    dpnp.get_usm_ndarray(result),
-                    [],
-                )
-            else:
-                # is_support_gemm(x1_strides, x1_ndim)
-                # is_support_gemm(x2_strides, x2_ndim)
-
-                copy_ev_x1 = dpctl.SyclEvent()
-                if not x1.flags["C_CONTIGUOUS"]:
-                    v = dpnp.empty_like(x1, order="C")
-                    (
-                        ht_copy_ev_x1,
-                        copy_ev_x1,
-                    ) = ti._copy_usm_ndarray_into_usm_ndarray(
-                        src=dpnp.get_usm_ndarray(x1),
-                        dst=v.get_array(),
-                        sycl_queue=x1.sycl_queue,
-                    )
-                    x1 = v
-
-                copy_ev_x2 = dpctl.SyclEvent()
-                if not x2.flags["C_CONTIGUOUS"]:
-                    v = dpnp.empty_like(x2, order="C")
-                    (
-                        ht_copy_ev_x2,
-                        copy_ev_x2,
-                    ) = ti._copy_usm_ndarray_into_usm_ndarray(
-                        src=dpnp.get_usm_ndarray(x2),
-                        dst=v.get_array(),
-                        sycl_queue=x2.sycl_queue,
-                    )
-                    x2 = v
-
-                x1_strides = x1.strides
-                x2_strides = x2.strides
-                res_strides = result.strides
-
-                if x1_is_2D:
-                    x1_strides = tuple(
-                        str_i if sh_i > 1 else 0
-                        for sh_i, str_i in zip(x1.shape, x1_strides)
-                    )
-                if x2_is_2D:
-                    x2_strides = tuple(
-                        str_i if sh_i > 1 else 0
-                        for sh_i, str_i in zip(x2.shape, x2_strides)
-                    )
-
-                transa = True  # is_row(x1_strides, x1_ndim)
-                transb = True  # is_row(x2_strides, x2_ndim)
-
-                batch_size = res_shape[:-2][0]  # VAHID
-                m = x1_shape[-2]
-                n = x2_shape[-1]
-                k = x1_shape[-1]
-
-                lda = k if transa else m
-                ldb = n if transb else k
-                ldc = n  # column major m, row major n # VAHID
-
-                stridea = x1_strides[0]
-                strideb = x2_strides[0]
-                stridec = res_strides[-3]
-
-                if x1_ndim > 3:
-                    iter = ti._contract_iter2(
-                        res_shape[:-2], x1_strides[:-2], x2_strides[:-2]
-                    )
-
-                    if len(iter[0]) != 1:
-                        raise ValueError(
-                            "Input arrays cannot be used in gemm_batch"
-                        )
-                    batch_size = iter[0][0]
-                    stridea = iter[1][0]
-                    strideb = iter[3][0]
-
-                ht_blas_ev, _ = bi._gemm_batch(
-                    exec_q,
-                    dpnp.get_usm_ndarray(x1),
-                    dpnp.get_usm_ndarray(x2),
-                    dpnp.get_usm_ndarray(result),
-                    m,
-                    n,
-                    k,
-                    batch_size,
-                    lda,
-                    ldb,
-                    ldc,
-                    stridea,
-                    strideb,
-                    stridec,
-                    transa,
-                    transb,
-                    [copy_ev_x1, copy_ev_x2],
-                )
-
-            ht_blas_ev.wait()
-            ht_copy_ev_x1.wait()
-            ht_copy_ev_x2.wait()
-
-    if squeeze_flag:
-        result = dpnp.squeeze(result)
-
-    if gemm_dtype != res_dtype:
-        result = dpnp.astype(result, res_dtype)
-
-    if out is None:  # VAHID: replace with get_result_array function
-        return result
-    else:
-        if out.shape != result.shape:
+        if x1_shape[-1] != x2_shape[-2]:
             raise ValueError(
-                f"Output array of shape {result.shape} is needed, got {out.shape}."
+                "Input operand 1 has a mismatch in its core dimension 0, "
+                "with gufunc signature (n?,k),(k,m?)->(n?,m?) "
+                f"(size {x1_shape[1]} is different from {x2_shape[0]})"
             )
-        elif not isinstance(out, dpnp_array):
-            if isinstance(out, dpt.usm_ndarray):
-                out = dpnp_array._create_from_usm_ndarray(out)
-            else:
-                raise TypeError(
-                    "Output array must be any of supported type, but got {}".format(
-                        type(out)
-                    )
+
+        # Determine the appropriate data types
+        if dtype is not None:
+            res_dtype = dtype
+            gemm_dtype, _ = _gemm_res_dtype(x1, x2, casting=casting)
+        else:
+            gemm_dtype, res_dtype = _gemm_res_dtype(x1, x2, casting=casting)
+        if x1.dtype != gemm_dtype:
+            x1 = dpnp.astype(x1, gemm_dtype, casting=casting)
+        if x2.dtype != gemm_dtype:
+            x2 = dpnp.astype(x2, gemm_dtype, casting=casting)
+
+        # find the result shape
+        x1_is_2D = False
+        x1_is_2D = False
+        if x1_ndim == 2 and x2_ndim == 2:
+            res_shape = (x1.shape[0], x2.shape[1])
+        else:
+            x1_is_2D = dpnp.all(dpnp.array(x1_shape[:-2]) == 1)  # inherently 2D
+            x2_is_2D = dpnp.all(dpnp.array(x2_shape[:-2]) == 1)
+
+            # makes the dimension of input the same by adding new axis
+            if x1_ndim != x2_ndim:
+                diff = abs(x1_ndim - x2_ndim)
+                if x1_ndim < x2_ndim:
+                    x1 = x1.reshape((1,) * diff + x1.shape)
+                    x1_ndim = x1.ndim
+                    x1_shape = x1.shape
+                else:
+                    x2 = x2.reshape((1,) * diff + x2.shape)
+                    x2_ndim = x2.ndim
+                    x2_shape = x2.shape
+
+            # examining the option to align inputs when their shapes differ but they are 1-D in some dimensions.
+            tmp_shape = list(x1_shape[:-2])
+            for i in range(x1_ndim - 2):
+                if x1_shape[i] != x2_shape[i]:
+                    if x1_shape[i] == 1:
+                        tmp_shape[i] = x2_shape[i]
+                        # If the `x1` array is inherently 2D, there's no need to duplicate the data for the 1-D dimension; GEMM handles it automatically.
+                        if not x1_is_2D:
+                            x1 = dpnp.repeat(x1, x2_shape[i], axis=i)
+                    elif x2_shape[i] == 1:
+                        tmp_shape[i] = x1_shape[i]
+                        if not x2_is_2D:
+                            x2 = dpnp.repeat(x2, x1_shape[i], axis=i)
+                    else:
+                        raise ValueError(
+                            "operands could not be broadcast together with remapped shapes."
+                        )
+            x1_shape = x1.shape
+            x2_shape = x2.shape
+            res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
+
+        # calculate results
+        res_usm_type = du.get_coerced_usm_type([x1.usm_type, x2.usm_type])
+        result = dpnp.empty(
+            res_shape,
+            dtype=gemm_dtype,
+            usm_type=res_usm_type,
+            sycl_queue=exec_q,
+        )
+        if result.size == 0:
+            pass
+        else:
+            if x1.size == 0 or x2.size == 0:
+                result = dpnp.zeros(
+                    res_shape, dtype=gemm_dtype, sycl_queue=exec_q
                 )
+            else:
+                ht_copy_ev_x1 = dpctl.SyclEvent()
+                ht_copy_ev_x2 = dpctl.SyclEvent()
+                if x1_ndim == 2 and x2_ndim == 2:
+                    ht_blas_ev, _ = bi._gemm(
+                        exec_q,
+                        dpnp.get_usm_ndarray(x1),
+                        dpnp.get_usm_ndarray(x2),
+                        dpnp.get_usm_ndarray(result),
+                        [],
+                    )
+                else:
+                    (
+                        ht_blas_ev,
+                        ht_copy_ev_x1,
+                        ht_copy_ev_x2,
+                        result,
+                    ) = dpnp_matmul_batch(
+                        exec_q,
+                        x1,
+                        x2,
+                        result,
+                        x1_is_2D,
+                        x2_is_2D,
+                        ht_copy_ev_x1,
+                        ht_copy_ev_x2,
+                    )
 
-        dpnp.copyto(out, result, casting="safe")
+                ht_blas_ev.wait()
+                ht_copy_ev_x1.wait()
+                ht_copy_ev_x2.wait()
 
-        return out
+        if squeeze_flag:
+            result = dpnp.squeeze(result)
+
+        if gemm_dtype != res_dtype:
+            result = dpnp.astype(result, res_dtype)
+        if out is None and order not in ["k", "K"]:
+            v = dpnp.empty_like(result, order=order)
+            ht_copy_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=dpnp.get_usm_ndarray(result),
+                dst=v.get_array(),
+                sycl_queue=result.sycl_queue,
+            )
+            ht_copy_ev.wait()
+            result = v
+        return dpnp.get_result_array(result, out, casting=casting)
 
 
-def is_support_gemm(strides, ndim):
-    if strides[ndim - 1] != 1 and strides[ndim - 2] != 1:
-        raise ValueError(
-            "The input matrices must be contiguous on inner dimension."
+def dpnp_matmul_batch(
+    exec_q, x1, x2, res, x1_is_2D, x2_is_2D, ht_copy_ev_x1, ht_copy_ev_x2
+):
+    copy_ev_x1 = dpctl.SyclEvent()
+    if not x1.flags["C_CONTIGUOUS"]:
+        v = dpnp.empty_like(x1, order="C")
+        (
+            ht_copy_ev_x1,
+            copy_ev_x1,
+        ) = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=dpnp.get_usm_ndarray(x1),
+            dst=v.get_array(),
+            sycl_queue=x1.sycl_queue,
+        )
+        x1 = v
+
+    copy_ev_x2 = dpctl.SyclEvent()
+    if not x2.flags["C_CONTIGUOUS"]:
+        v = dpnp.empty_like(x2, order="C")
+        (
+            ht_copy_ev_x2,
+            copy_ev_x2,
+        ) = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=dpnp.get_usm_ndarray(x2),
+            dst=v.get_array(),
+            sycl_queue=x2.sycl_queue,
+        )
+        x2 = v
+
+    x1_strides = x1.strides
+    x2_strides = x2.strides
+    res_strides = res.strides
+
+    if x1_is_2D:
+        x1_strides = tuple(
+            str_i if sh_i > 1 else 0
+            for sh_i, str_i in zip(x1.shape, x1_strides)
+        )
+    if x2_is_2D:
+        x2_strides = tuple(
+            str_i if sh_i > 1 else 0
+            for sh_i, str_i in zip(x2.shape, x2_strides)
         )
 
+    batch_size = res.shape[:-2][0]
+    m = x1.shape[-2]
+    n = x2.shape[-1]
+    k = x1.shape[-1]
 
-def is_row(strides, ndim):
-    return strides[ndim - 1] == 1
+    stridea = x1_strides[0]
+    strideb = x2_strides[0]
+    stridec = res_strides[-3]
+
+    if x1.ndim > 3:
+        iter = ti._contract_iter2(
+            res.shape[:-2], x1_strides[:-2], x2_strides[:-2]
+        )
+
+        if len(iter[0]) != 1:
+            raise ValueError("Input arrays cannot be used in gemm_batch")
+        batch_size = iter[0][0]
+        stridea = iter[1][0]
+        strideb = iter[3][0]
+
+    ht_blas_ev, _ = bi._gemm_batch(
+        exec_q,
+        dpnp.get_usm_ndarray(x1),
+        dpnp.get_usm_ndarray(x2),
+        dpnp.get_usm_ndarray(res),
+        m,
+        n,
+        k,
+        batch_size,
+        k,  # lda
+        n,  # ldb
+        n,  # ldc
+        stridea,
+        strideb,
+        stridec,
+        True,  # transa
+        True,  # transb
+        [copy_ev_x1, copy_ev_x2],
+    )
+
+    return ht_blas_ev, ht_copy_ev_x1, ht_copy_ev_x2, res
 
 
-def _common_type(*arrays):
-    dtypes = [arr.dtype for arr in arrays]
+def _gemm_res_dtype(*arrays, casting):
+    dtype = dpnp.result_type(*arrays)
+    default = dpnp.default_float_type(device=arrays[0].device)
+    if dpnp.issubdtype(dtype, dpnp.complexfloating):
+        default = dpnp.complex64 if default == dpnp.float32 else dpnp.complex128
 
-    default = dpnp.default_float_type().name
-    dtype_common = _common_type_internal(default, *dtypes)
-
-    return dtype_common
-
-
-def _common_type_internal(default_dtype, *dtypes):
-    inexact_dtypes = [
-        dtype if dtype.kind in "fc" else default_dtype for dtype in dtypes
-    ]
-    return dpnp.result_type(*inexact_dtypes)
+    if dpnp.can_cast(dtype, default, casting):
+        if dtype in [
+            dpnp.float64,
+            dpnp.complex128,
+        ]:  # in case device does not support fp64 (default)
+            return default, default
+        elif dtype in [
+            dpnp.float32,
+            dpnp.complex64,
+        ]:  # needed dtype is fp32 but device supports fp64 (default)
+            return dtype, dtype
+        else:
+            return default, dtype
+    else:
+        raise TypeError(
+            f"Cannot cast ufunc 'matmul' output from dtype({dtype}) to dtype({default}) with casting rule {casting}"
+        )
 
 
 def outer(x1, x2, out=None):
