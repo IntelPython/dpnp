@@ -1040,18 +1040,6 @@ void (*dpnp_std_default_c)(void *,
                            size_t) = dpnp_std_c<_DataType, _ResultType>;
 
 template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef (*dpnp_std_ext_c)(DPCTLSyclQueueRef,
-                                    void *,
-                                    void *,
-                                    const shape_elem_type *,
-                                    size_t,
-                                    const shape_elem_type *,
-                                    size_t,
-                                    size_t,
-                                    const DPCTLEventVectorRef) =
-    dpnp_std_c<_DataType, _ResultType>;
-
-template <typename _DataType, typename _ResultType>
 class dpnp_var_c_kernel;
 
 template <typename _DataType, typename _ResultType>
@@ -1149,18 +1137,6 @@ void (*dpnp_var_default_c)(void *,
                            const shape_elem_type *,
                            size_t,
                            size_t) = dpnp_var_c<_DataType, _ResultType>;
-
-template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef (*dpnp_var_ext_c)(DPCTLSyclQueueRef,
-                                    void *,
-                                    void *,
-                                    const shape_elem_type *,
-                                    size_t,
-                                    const shape_elem_type *,
-                                    size_t,
-                                    size_t,
-                                    const DPCTLEventVectorRef) =
-    dpnp_var_c<_DataType, _ResultType>;
 
 void func_map_init_statistics(func_map_t &fmap)
 {
@@ -1334,15 +1310,6 @@ void func_map_init_statistics(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_STD][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_std_default_c<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_STD_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_std_ext_c<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_STD_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_std_ext_c<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_STD_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_std_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_STD_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_std_ext_c<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_VAR][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_var_default_c<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_VAR][eft_LNG][eft_LNG] = {
@@ -1351,15 +1318,6 @@ void func_map_init_statistics(func_map_t &fmap)
         eft_FLT, (void *)dpnp_var_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_VAR][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_var_default_c<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_VAR_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_var_ext_c<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_VAR_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_var_ext_c<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_VAR_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_var_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_VAR_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_var_ext_c<double, double>};
 
     return;
 }

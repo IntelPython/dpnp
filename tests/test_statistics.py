@@ -155,6 +155,110 @@ class TestMean:
             dpnp.mean(ia, where=False)
 
 
+class TestVar:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
+    def test_var_out(self, dtype, axis):
+        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
+        np_array = dpnp.asnumpy(dp_array)
+
+        expected = numpy.var(np_array, axis=axis)
+        result = dpnp.empty_like(dpnp.asarray(expected))
+        dpnp.var(dp_array, axis=axis, out=result)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
+    @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
+    def test_var_empty(self, axis, shape):
+        dp_array = dpnp.empty(shape, dtype=dpnp.int64)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dpnp.var(dp_array, axis=axis)
+        expected = numpy.var(np_array, axis=axis)
+        assert_allclose(expected, result)
+
+    def test_var_strided(self):
+        dp_array = dpnp.array([-2, -1, 0, 1, 0, 2], dtype=dpnp.float32)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dpnp.var(dp_array[::-1])
+        expected = numpy.var(np_array[::-1])
+        assert_allclose(expected, result)
+
+        result = dpnp.var(dp_array[::2])
+        expected = numpy.var(np_array[::2])
+        assert_allclose(expected, result)
+
+    def test_var_scalar(self):
+        dp_array = dpnp.array(5)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dp_array.var()
+        expected = np_array.var()
+        assert_allclose(expected, result)
+
+    def test_var_NotImplemented(func):
+        ia = dpnp.arange(5)
+        with pytest.raises(NotImplementedError):
+            dpnp.var(ia, where=False)
+
+        with pytest.raises(NotImplementedError):
+            dpnp.var(ia, dtype=dpnp.int64)
+
+
+class TestStd:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
+    def test_std_out(self, dtype, axis):
+        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
+        np_array = dpnp.asnumpy(dp_array)
+
+        expected = numpy.std(np_array, axis=axis)
+        result = dpnp.empty_like(dpnp.asarray(expected))
+        dpnp.std(dp_array, axis=axis, out=result)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
+    @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
+    def test_std_empty(self, axis, shape):
+        dp_array = dpnp.empty(shape, dtype=dpnp.int64)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dpnp.std(dp_array, axis=axis)
+        expected = numpy.std(np_array, axis=axis)
+        assert_allclose(expected, result)
+
+    def test_std_strided(self):
+        dp_array = dpnp.array([-2, -1, 0, 1, 0, 2], dtype=dpnp.float32)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dpnp.std(dp_array[::-1])
+        expected = numpy.std(np_array[::-1])
+        assert_allclose(expected, result)
+
+        result = dpnp.std(dp_array[::2])
+        expected = numpy.std(np_array[::2])
+        assert_allclose(expected, result)
+
+    def test_std_scalar(self):
+        dp_array = dpnp.array(5)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dp_array.std()
+        expected = np_array.std()
+        assert_allclose(expected, result)
+
+    def test_std_NotImplemented(func):
+        ia = dpnp.arange(5)
+        with pytest.raises(NotImplementedError):
+            dpnp.std(ia, where=False)
+
+        with pytest.raises(NotImplementedError):
+            dpnp.std(ia, dtype=dpnp.int64)
+
+
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "array",

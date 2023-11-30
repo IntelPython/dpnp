@@ -2132,11 +2132,11 @@ def prod(
         )
     elif initial is not None:
         raise NotImplementedError(
-            "initial keyword argument is only supported by its default value."
+            "initial keyword argument is only supported with its default value."
         )
     elif where is not True:
         raise NotImplementedError(
-            "where keyword argument is only supported by its default value."
+            "where keyword argument is only supported with its default value."
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)

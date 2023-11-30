@@ -365,7 +365,7 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     -----------
     Input and output arrays are only supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, and `initial` are supported only with their default values.
+    Parameters `where`, and `initial` are only supported with their default values.
     Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -401,11 +401,11 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     if initial is not None:
         raise NotImplementedError(
-            "initial keyword argument is only supported by its default value."
+            "initial keyword argument is only supported with its default value."
         )
     elif where is not True:
         raise NotImplementedError(
-            "where keyword argument is only supported by its default value."
+            "where keyword argument is only supported with its default value."
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
@@ -432,7 +432,7 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
     -----------
     Parameters `a` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `where` is supported only with their default values.
+    Parameter `where` is only supported with its default value.
     Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -463,7 +463,7 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
 
     if where is not True:
         raise NotImplementedError(
-            "where keyword argument is only supported by its default value."
+            "where keyword argument is only supported with its default value."
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
@@ -540,7 +540,7 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     -----------
     Input and output arrays are only supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, and `initial` are supported only with their default values.
+    Parameters `where`, and `initial` are only supported with their default values.
     Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -576,11 +576,11 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     if initial is not None:
         raise NotImplementedError(
-            "initial keyword argument is only supported by its default value."
+            "initial keyword argument is only supported with its default value."
         )
     elif where is not True:
         raise NotImplementedError(
-            "where keyword argument is only supported by its default value."
+            "where keyword argument is only supported with its default value."
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
@@ -679,25 +679,67 @@ def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     )
 
 
-def std(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
+def std(
+    a, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True
+):
     """
     Compute the standard deviation along the specified axis.
 
     For full documentation refer to :obj:`numpy.std`.
 
+    Parameters
+    ----------
+    a : {dpnp_array, usm_ndarray}:
+        nput array.
+    axis : int or tuple of ints, optional
+        Axis or axes along which the variances must be computed. If a tuple
+        of unique integers is given, the variances are computed over multiple axes.
+        If ``None``, the variance is computed over the entire array.
+        Default: `None`.
+    dtype : dtype, optional
+        Type to use in computing the standard deviation. For arrays of
+        integer type the default is ``float64``, for arrays of float types it is
+        the same as the array type.
+    out : {dpnp_array, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have
+        the same shape as the expected output but the type (of the calculated
+        values) will be cast if necessary.
+    ddof : int, optional
+        Means Delta Degrees of Freedom.  The divisor used in calculations
+        is ``N - ddof``, where ``N`` corresponds to the total
+        number of elements over which the variance is calculated.
+        Default: `0.0`.
+    keepdims : bool, optional
+        If ``True``, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input array according to Array Broadcasting
+        rules. Otherwise, if ``False``, the reduced axes are not included in
+        the returned array. Default: ``False``.
+    where : array_like of bool, optional
+        Elements to include in the standard deviation.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        an array containing the standard deviations. If the standard
+        deviation was computed over the entire array, a zero-dimensional
+        array is returned.
+
+        If `a` has a real-valued floating-point data type, the returned
+        array will have the same data type as `a`.
+        If `a` has a boolean or integral data type, the returned array
+        will have the default floating point data type for the device
+        where input array `a` is allocated.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Size of input array is limited by ``a.size > 0``.
-    Parameter `axis` is supported only with default value ``None``.
-    Parameter `dtype` is supported only with default value ``None``.
-    Parameter `out` is supported only with default value ``None``.
-    Parameter `keepdims` is supported only with default value ``False``.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters `where` and `dtype` are only supported with their default values.
+    Otherwise ``NotImplementedError`` exception will be raised.
+    Input array data types are limited by real valued data types.
 
     See Also
     --------
+    :obj:`dpnp.ndarray.std` : corresponding function for ndarrays.
     :obj:`dpnp.var` : Compute the variance along the specified axis.
     :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.
     :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis,
@@ -712,50 +754,91 @@ def std(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     >>> import dpnp as np
     >>> a = np.array([[1, 2], [3, 4]])
     >>> np.std(a)
-    1.118033988749895
+    array(1.118033988749895)
+    >>> np.std(a, axis=0)
+    array([1.,  1.])
+    >>> np.std(a, axis=1)
+    array([0.5,  0.5])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.size == 0:
-            pass
-        elif axis is not None:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif keepdims:
-            pass
-        else:
-            result_obj = dpnp_std(x1_desc, ddof).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    if where is not True:
+        raise NotImplementedError(
+            "where keyword argument is only supported with its default value."
+        )
+    elif dtype is not None:
+        raise NotImplementedError(
+            "dtype keyword argument is only supported with its default value."
+        )
+    else:
+        dpt_array = dpnp.get_usm_ndarray(a)
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.std(dpt_array, axis=axis, correction=ddof, keepdims=keepdims)
+        )
 
-            return result
-
-    return call_origin(numpy.std, x1, axis, dtype, out, ddof, keepdims)
+        return dpnp.get_result_array(result, out)
 
 
-def var(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
+def var(
+    a, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True
+):
     """
     Compute the variance along the specified axis.
 
     For full documentation refer to :obj:`numpy.var`.
 
+    Parameters
+    ----------
+    a : {dpnp_array, usm_ndarray}:
+        Input array.
+    axis : int or tuple of ints, optional
+        axis or axes along which the variances must be computed. If a tuple
+        of unique integers is given, the variances are computed over multiple axes.
+        If ``None``, the variance is computed over the entire array.
+        Default: `None`.
+    dtype : dtype, optional
+        Type to use in computing the standard deviation. For arrays of
+        integer type the default is ``float64``, for arrays of float types it is
+        the same as the array type.
+    out : {dpnp_array, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have
+        the same shape as the expected output but the type (of the calculated
+        values) will be cast if necessary.
+    ddof : int, optional
+        Means Delta Degrees of Freedom.  The divisor used in calculations
+        is ``N - ddof``, where ``N`` corresponds to the total
+        number of elements over which the variance is calculated.
+        Default: `0.0`.
+    keepdims : bool, optional
+        If ``True``, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input array according to Array Broadcasting
+        rules. Otherwise, if ``False``, the reduced axes are not included in
+        the returned array. Default: ``False``.
+    where : array_like of bool, optional
+        Elements to include in the standard deviation.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        an array containing the variances. If the variance was computed
+        over the entire array, a zero-dimensional array is returned.
+
+        If `a` has a real-valued floating-point data type, the returned
+        array will have the same data type as `a`.
+        If `a` has a boolean or integral data type, the returned array
+        will have the default floating point data type for the device
+        where input array `a` is allocated.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Size of input array is limited by ``a.size > 0``.
-    Parameter `axis` is supported only with default value ``None``.
-    Parameter `dtype` is supported only with default value ``None``.
-    Parameter `out` is supported only with default value ``None``.
-    Parameter `keepdims` is supported only with default value ``False``.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters `where` and `dtype` are only supported with their default values.
+    Otherwise ``NotImplementedError`` exception will be raised.
+    Input array data types are limited by real valued data types.
 
     See Also
     --------
+    :obj:`dpnp.ndarray.var` : corresponding function for ndarrays.
     :obj:`dpnp.std` : Compute the standard deviation along the specified axis.
     :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.
     :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis,
@@ -770,26 +853,26 @@ def var(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     >>> import dpnp as np
     >>> a = np.array([[1, 2], [3, 4]])
     >>> np.var(a)
-    1.25
+    array(1.25)
+    >>> np.var(a, axis=0)
+    array([1.,  1.])
+    >>> np.var(a, axis=1)
+    array([0.25,  0.25])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.size == 0:
-            pass
-        elif axis is not None:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif keepdims:
-            pass
-        else:
-            result_obj = dpnp_var(x1_desc, ddof).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    if where is not True:
+        raise NotImplementedError(
+            "where keyword argument is only supported with its default value."
+        )
+    elif dtype is not None:
+        raise NotImplementedError(
+            "dtype keyword argument is only supported with its default value."
+        )
+    else:
+        dpt_array = dpnp.get_usm_ndarray(a)
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.var(dpt_array, axis=axis, correction=ddof, keepdims=keepdims)
+        )
 
-            return result
-
-    return call_origin(numpy.var, x1, axis, dtype, out, ddof, keepdims)
+        return dpnp.get_result_array(result, out)

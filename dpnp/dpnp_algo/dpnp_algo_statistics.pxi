@@ -40,8 +40,6 @@ __all__ += [
     "dpnp_correlate",
     "dpnp_median",
     "dpnp_nanvar",
-    "dpnp_std",
-    "dpnp_var",
 ]
 
 
@@ -249,11 +247,3 @@ cpdef utils.dpnp_descriptor dpnp_nanvar(utils.dpnp_descriptor arr, ddof):
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return call_fptr_custom_std_var_1in_1out(DPNP_FN_VAR_EXT, result, ddof)
-
-
-cpdef utils.dpnp_descriptor dpnp_std(utils.dpnp_descriptor a, size_t ddof):
-    return call_fptr_custom_std_var_1in_1out(DPNP_FN_STD_EXT, a, ddof)
-
-
-cpdef utils.dpnp_descriptor dpnp_var(utils.dpnp_descriptor a, size_t ddof):
-    return call_fptr_custom_std_var_1in_1out(DPNP_FN_VAR_EXT, a, ddof)

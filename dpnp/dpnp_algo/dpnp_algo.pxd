@@ -189,8 +189,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SEARCHSORTED_EXT
         DPNP_FN_SORT
         DPNP_FN_SORT_EXT
-        DPNP_FN_STD
-        DPNP_FN_STD_EXT
         DPNP_FN_SUM
         DPNP_FN_SUM_EXT
         DPNP_FN_SVD
@@ -204,8 +202,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TRIL_EXT
         DPNP_FN_TRIU
         DPNP_FN_TRIU_EXT
-        DPNP_FN_VAR
-        DPNP_FN_VAR_EXT
         DPNP_FN_ZEROS
         DPNP_FN_ZEROS_LIKE
 
