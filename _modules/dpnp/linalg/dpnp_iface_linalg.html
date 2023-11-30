@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev1+8.gad90f66b3 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev1+34.ga64e55728 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=50de39ae"></script>
+        <script src="../../../_static/documentation_options.js?v=33185a3e"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+8.gad90f66b3
+                0.13.1dev1+34.ga64e55728
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -137,7 +137,7 @@
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.linalg.dpnp_algo_linalg</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">.dpnp_utils_linalg</span> <span class="kn">import</span> <span class="n">dpnp_eigh</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils_linalg</span> <span class="kn">import</span> <span class="n">_lu_factor</span><span class="p">,</span> <span class="n">dpnp_eigh</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;cholesky&quot;</span><span class="p">,</span>
@@ -153,6 +153,7 @@
     <span class="s2">&quot;norm&quot;</span><span class="p">,</span>
     <span class="s2">&quot;qr&quot;</span><span class="p">,</span>
     <span class="s2">&quot;svd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;slogdet&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -240,32 +241,57 @@
 
 <div class="viewcode-block" id="det">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.det.html#dpnp.linalg.det">[docs]</a>
-<span class="k">def</span> <span class="nf">det</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">det</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the determinant of an array.</span>
 
+<span class="sd">    For full documentation refer to :obj:`numpy.linalg.det`.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    input : (..., M, M) array_like</span>
+<span class="sd">    a : (..., M, M) dpnp.ndarray</span>
 <span class="sd">        Input array to compute determinants for.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    det : (...) array_like</span>
-<span class="sd">        Determinant of `input`.</span>
+<span class="sd">    det : (...) dpnp.ndarray</span>
+<span class="sd">        Determinant of `a`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.linalg.slogdet` : Returns sign and logarithm of the determinant of an array.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
+<span class="sd">    &gt;&gt;&gt; a = dp.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; dp.linalg.det(a)</span>
+<span class="sd">    array(-2.)</span>
+
+<span class="sd">    Computing determinants for a stack of matrices:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])</span>
+<span class="sd">    &gt;&gt;&gt; a.shape</span>
+<span class="sd">    (3, 2, 2)</span>
+<span class="sd">    &gt;&gt;&gt; dp.linalg.det(a)</span>
+<span class="sd">    array([-2., -3., -8.])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
-            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_det</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+        <span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">result</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span></div>
+    <span class="n">sign</span><span class="p">,</span> <span class="n">logdet</span> <span class="o">=</span> <span class="n">slogdet</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sign</span> <span class="o">*</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logdet</span><span class="p">)</span></div>
 
 
 
@@ -704,6 +730,157 @@
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
         <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">full_matrices</span><span class="p">,</span> <span class="n">compute_uv</span><span class="p">,</span> <span class="n">hermitian</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="slogdet">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.slogdet.html#dpnp.linalg.slogdet">[docs]</a>
+<span class="k">def</span> <span class="nf">slogdet</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns sign and logarithm of the determinant of an array.</span>
+
+<span class="sd">    It calculates the natural logarithm of the determinant of a given value.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.linalg.slogdet`.</span>
+
+<span class="sd">    Args</span>
+<span class="sd">    ----</span>
+<span class="sd">        a (dpnp.ndarray): The input matrix with dimension ``(..., N, N)``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        out : tuple of :class:`~dpnp.ndarray`:</span>
+<span class="sd">            It returns a tuple ``(sign, logdet)``.</span>
+<span class="sd">            ``sign`` represents each sign of the determinant as a real number</span>
+<span class="sd">            ``0``, ``1`` or ``-1``.</span>
+<span class="sd">            ``logdet`` represents the natural logarithm of the absolute of the</span>
+<span class="sd">            determinant.</span>
+<span class="sd">            If the determinant is zero, ``sign`` will be ``0`` and ``logdet``</span>
+<span class="sd">            will be ``-inf``.</span>
+<span class="sd">            The shapes of both ``sign`` and ``logdet`` are equal to</span>
+<span class="sd">            ``a.shape[:-2]``.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.det` : Returns the determinant of an array.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
+<span class="sd">    &gt;&gt;&gt; a = dp.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; (sign, logabsdet) = dp.linalg.slogdet(a)</span>
+<span class="sd">    &gt;&gt;&gt; (sign, logabsdet)</span>
+<span class="sd">    (array(-1.), array(0.69314718))</span>
+<span class="sd">    &gt;&gt;&gt; sign * dp.exp(logabsdet)</span>
+<span class="sd">    array(-2.)</span>
+
+<span class="sd">    Computing log-determinants for a stack of matrices:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])</span>
+<span class="sd">    &gt;&gt;&gt; a.shape</span>
+<span class="sd">    (3, 2, 2)</span>
+<span class="sd">    &gt;&gt;&gt; sign, logabsdet = dp.linalg.slogdet(a)</span>
+<span class="sd">    &gt;&gt;&gt; (sign, logabsdet)</span>
+<span class="sd">    (array([-1., -1., -1.]), array([0.69314718, 1.09861229, 2.07944154]))</span>
+<span class="sd">    &gt;&gt;&gt; sign * dp.exp(logabsdet)</span>
+<span class="sd">    array([-2., -3., -8.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+        <span class="p">)</span>
+
+    <span class="c1"># TODO: use dpnp.linalg.LinAlgError</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">-dimensional array given. The input &quot;</span>
+            <span class="s2">&quot;array must be at least two-dimensional&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="c1"># TODO: use dpnp.linalg.LinAlgError</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Last 2 dimensions of the input array must be square&quot;</span><span class="p">)</span>
+
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">a_usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
+    <span class="n">a_sycl_queue</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="c1"># dtype, sign_dtype = _util.linalg_common_type(a)</span>
+    <span class="c1"># TODO: Use linalg_common_type from #1598</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
+        <span class="n">res_type</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">has_aspect_fp64</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="n">res_type</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">has_aspect_fp64</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complex64</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">res_type</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span> <span class="k">if</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">has_aspect_fp64</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span>
+        <span class="p">)</span>
+
+    <span class="n">res_type</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">res_type</span><span class="p">)</span>
+    <span class="n">logdet_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">res_type</span><span class="o">.</span><span class="n">char</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+    <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># empty batch (result is empty, too) or empty matrices det([[]]) == 1</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+            <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_type</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a_sycl_queue</span>
+        <span class="p">)</span>
+        <span class="n">logdet</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="n">shape</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">logdet_dtype</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">a_usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a_sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">sign</span><span class="p">,</span> <span class="n">logdet</span>
+
+    <span class="n">lu</span><span class="p">,</span> <span class="n">ipiv</span><span class="p">,</span> <span class="n">dev_info</span> <span class="o">=</span> <span class="n">_lu_factor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">res_type</span><span class="p">)</span>
+
+    <span class="c1"># Transposing &#39;lu&#39; to swap the last two axes for compatibility</span>
+    <span class="c1"># with &#39;dpnp.diagonal&#39; as it does not support &#39;axis1&#39; and &#39;axis2&#39; arguments.</span>
+    <span class="c1"># TODO: Replace with &#39;dpnp.diagonal(lu, axis1=-2, axis2=-1)&#39; when supported.</span>
+    <span class="n">lu_transposed</span> <span class="o">=</span> <span class="n">lu</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="nb">range</span><span class="p">(</span><span class="n">lu</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">diag</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">lu_transposed</span><span class="p">)</span>
+
+    <span class="n">logdet</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">diag</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># ipiv is 1-origin</span>
+    <span class="n">non_zero</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span>
+        <span class="n">ipiv</span>
+        <span class="o">!=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">ipiv</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ipiv</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="p">),</span>
+        <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">res_type</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span>
+        <span class="n">non_zero</span> <span class="o">+=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">diag</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mi">1</span> <span class="o">**</span> <span class="p">(</span><span class="n">non_zero</span> <span class="o">%</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">res_type</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">sign</span> <span class="o">*</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">diag</span> <span class="o">/</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">diag</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">sign</span> <span class="o">=</span> <span class="n">sign</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">res_type</span><span class="p">)</span>
+    <span class="n">logdet</span> <span class="o">=</span> <span class="n">logdet</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">logdet_dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">singular</span> <span class="o">=</span> <span class="n">dev_info</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">singular</span><span class="p">,</span> <span class="n">res_type</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">sign</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">singular</span><span class="p">,</span> <span class="n">logdet_dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">),</span> <span class="n">logdet</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span>
     <span class="p">)</span></div>
 
 </pre></div>

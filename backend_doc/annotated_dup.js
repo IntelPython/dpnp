@@ -5,6 +5,8 @@ var annotated_dup =
         [ "ext", null, [
           [ "lapack", null, [
             [ "types", null, [
+              [ "GetrfBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html", null ],
+              [ "GetrfTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html", null ],
               [ "HeevdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
               [ "SyevdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ]
             ] ]
