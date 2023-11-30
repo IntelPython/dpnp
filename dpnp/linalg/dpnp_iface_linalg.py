@@ -721,6 +721,8 @@ def slogdet(a):
 
     lu, ipiv, dev_info = _lu_factor(a, res_type)
 
+    # return lu, ipiv, dev_info
+
     # Transposing 'lu' to swap the last two axes for compatibility
     # with 'dpnp.diagonal' as it does not support 'axis1' and 'axis2' arguments.
     # TODO: Replace with 'dpnp.diagonal(lu, axis1=-2, axis2=-1)' when supported.
@@ -740,13 +742,13 @@ def slogdet(a):
     if res_type.kind == "f":
         non_zero += dpnp.count_nonzero(diag < 0, axis=-1)
 
-    sign = -(1 ** (non_zero % 2))
+    sign = (non_zero % 2) * -2 + 1
     if res_type.kind == "c":
         sign = sign * dpnp.prod(diag / dpnp.abs(diag), axis=-1)
 
     sign = sign.astype(res_type)
     logdet = logdet.astype(logdet_dtype, copy=False)
-    singular = dev_info > 0
+    singular = dpnp.array([dev_info > 0])
     return (
         dpnp.where(singular, res_type.type(0), sign).reshape(shape),
         dpnp.where(singular, logdet_dtype.type("-inf"), logdet).reshape(shape),
