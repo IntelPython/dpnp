@@ -606,37 +606,68 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
 
 
 def slogdet(a):
-    """Returns sign and logarithm of the determinant of an array.
+    """
+    Returns sign and logarithm of the determinant of an array.
 
     It calculates the natural logarithm of the determinant of a given value.
 
-    Args:
+    For full documentation refer to :obj:`numpy.linalg.slogdet`.
+
+    Args
+    ----
         a (dpnp.ndarray): The input matrix with dimension ``(..., N, N)``.
 
-    Returns:
-        tuple of :class:`~dpnp.ndarray`:
-            It returns a tuple ``(sign, logdet)``. ``sign`` represents each
-            sign of the determinant as a real number ``0``, ``1`` or ``-1``.
-            'logdet' represents the natural logarithm of the absolute of the
+    Returns
+    -------
+        out : tuple of :class:`~dpnp.ndarray`:
+            It returns a tuple ``(sign, logdet)``.
+            ``sign`` represents each sign of the determinant as a real number
+            ``0``, ``1`` or ``-1``.
+            ``logdet`` represents the natural logarithm of the absolute of the
             determinant.
             If the determinant is zero, ``sign`` will be ``0`` and ``logdet``
             will be ``-inf``.
             The shapes of both ``sign`` and ``logdet`` are equal to
             ``a.shape[:-2]``.
 
-    .. warning::
-        This function calls one or more cuSOLVER routine(s) which may yield
-        invalid results if input conditions are not met.
-        To detect these invalid results, you can set the `linalg`
-        configuration to a value that is not `ignore` in
-        :func:`cupyx.errstate` or :func:`cupyx.seterr`.
+    Limitations
+    -----------
+    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    .. warning::
-        To produce the same results as :func:`numpy.linalg.slogdet` for
-        singular inputs, set the `linalg` configuration to `raise`.
+    See Also
+    --------
+    :obj:`dpnp.det` : Returns the determinant of an array.
 
-    .. seealso:: :func:`numpy.linalg.slogdet`
+    Examples
+    --------
+    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> (sign, logabsdet) = dp.linalg.slogdet(a)
+    >>> (sign, logabsdet)
+    (array(-1.), array(0.69314718))
+    >>> sign * dp.exp(logabsdet)
+    array(-2.)
+
+    Computing log-determinants for a stack of matrices:
+
+    >>> a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])
+    >>> a.shape
+    (3, 2, 2)
+    >>> sign, logabsdet = dp.linalg.slogdet(a)
+    >>> (sign, logabsdet)
+    (array([-1., -1., -1.]), array([0.69314718, 1.09861229, 2.07944154]))
+    >>> sign * dp.exp(logabsdet)
+    array([-2., -3., -8.])
+
     """
+
+    if not dpnp.is_supported_array_type(a):
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(a))
+        )
 
     # TODO: use dpnp.linalg.LinAlgError
     if a.ndim < 2:
@@ -651,6 +682,8 @@ def slogdet(a):
         raise ValueError("Last 2 dimensions of the input array must be square")
 
     exec_q = a.sycl_queue
+    a_usm_type = a.usm_type
+    a_sycl_queue = a.sycl_queue
     # dtype, sign_dtype = _util.linalg_common_type(a)
     # TODO: Use linalg_common_type from #1598
     if dpnp.issubdtype(a.dtype, dpnp.floating):
@@ -675,16 +708,18 @@ def slogdet(a):
 
     if a.size == 0:
         # empty batch (result is empty, too) or empty matrices det([[]]) == 1
-        sign = dpnp.ones(shape, dtype=res_type)
-        logdet = dpnp.zeros(shape, dtype=logdet_dtype)
+        sign = dpnp.ones(
+            shape, dtype=res_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+        )
+        logdet = dpnp.zeros(
+            shape,
+            dtype=logdet_dtype,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
         return sign, logdet
 
     lu, ipiv, dev_info = _lu_factor(a, res_type)
-
-    # dev_info < 0 means illegal value (in dimensions, strides, and etc.) that
-    # should never happen even if the matrix contains nan or inf.
-    # TODO(kataoka): assert dev_info >= 0 if synchronization is allowed for
-    # debugging purposes.
 
     # Transposing 'lu' to swap the last two axes for compatibility
     # with 'dpnp.diagonal' as it does not support 'axis1' and 'axis2' arguments.
