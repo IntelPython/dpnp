@@ -1,7 +1,7 @@
 import dpctl
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_array_equal
+from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp as inp
 
@@ -508,3 +508,97 @@ def test_svd(type, shape):
         assert_allclose(
             inp.asnumpy(dpnp_vt)[i, :], np_vt[i, :], rtol=tol, atol=tol
         )
+
+
+class TestSlogdet:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_slogdet_2d(self, dtype):
+        a_np = numpy.array([[1, 2], [3, 4]], dtype=dtype)
+        a_dp = inp.array(a_np)
+
+        sign_expected, logdet_expected = numpy.linalg.slogdet(a_np)
+        sign_result, logdet_result = inp.linalg.slogdet(a_dp)
+
+        assert_allclose(sign_expected, sign_result)
+        assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_slogdet_3d(self, dtype):
+        a_np = numpy.array(
+            [
+                [[1, 2], [3, 4]],
+                [[1, 2], [2, 1]],
+                [[1, 3], [3, 1]],
+            ],
+            dtype=dtype,
+        )
+        a_dp = inp.array(a_np)
+
+        sign_expected, logdet_expected = numpy.linalg.slogdet(a_np)
+        sign_result, logdet_result = inp.linalg.slogdet(a_dp)
+
+        assert_allclose(sign_expected, sign_result)
+        assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+
+    def test_slogdet_strides(self):
+        a_np = numpy.array(
+            [
+                [2, 3, 1, 4, 5],
+                [5, 6, 7, 8, 9],
+                [9, 7, 7, 2, 3],
+                [1, 4, 5, 1, 8],
+                [8, 9, 8, 5, 3],
+            ]
+        )
+
+        a_dp = inp.array(a_np)
+
+        # positive strides
+        sign_expected, logdet_expected = numpy.linalg.slogdet(a_np[::2, ::2])
+        sign_result, logdet_result = inp.linalg.slogdet(a_dp[::2, ::2])
+        assert_allclose(sign_expected, sign_result)
+        assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+
+        # negative strides
+        sign_expected, logdet_expected = numpy.linalg.slogdet(a_np[::-2, ::-2])
+        sign_result, logdet_result = inp.linalg.slogdet(a_dp[::-2, ::-2])
+        assert_allclose(sign_expected, sign_result)
+        assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+
+    # TODO: remove skipif when MKLD-16626 is resolved
+    @pytest.mark.skipif(is_cpu_device(), reason="MKL bug MKLD-16626")
+    @pytest.mark.parametrize(
+        "matrix",
+        [
+            [[1, 2], [2, 4]],
+            [[0, 0], [0, 0]],
+            [[1, 1], [1, 1]],
+            [[2, 4], [1, 2]],
+            [[1, 2], [0, 0]],
+            [[1, 0], [2, 0]],
+        ],
+        ids=[
+            "Linearly dependent rows",
+            "Zero matrix",
+            "Identical rows",
+            "Linearly dependent columns",
+            "Zero row",
+            "Zero column",
+        ],
+    )
+    def test_slogdet_singular_matrix(self, matrix):
+        a_np = numpy.array(matrix, dtype="float32")
+        a_dp = inp.array(a_np)
+
+        sign_expected, logdet_expected = numpy.linalg.slogdet(a_np)
+        sign_result, logdet_result = inp.linalg.slogdet(a_dp)
+
+        assert_allclose(sign_expected, sign_result)
+        assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+
+    def test_solve_errors(self):
+        a_dp = inp.array([[1, 2], [3, 5]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.slogdet, a_np)
