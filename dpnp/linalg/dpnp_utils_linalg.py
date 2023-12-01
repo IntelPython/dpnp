@@ -52,8 +52,8 @@ def _common_type(*arrays):
 
     Key differences from `numpy.common_type`:
     - It accepts ``bool_`` arrays.
-    - The default floating-point data type is determined by the capabilities of the device,
-      as indicated by `dpnp.default_float_type()`.
+    - The default floating-point data type is determined by the capabilities of the device
+      on which `arrays` are created, as indicated by `dpnp.default_float_type()`.
 
     Args:
         *arrays (dpnp.ndarray): Input arrays.
@@ -68,7 +68,7 @@ def _common_type(*arrays):
 
     dtypes = [arr.dtype for arr in arrays]
 
-    default = dpnp.default_float_type()
+    default = dpnp.default_float_type(device=arrays[0].device)
     dtype_common = _common_inexact_type(default, *dtypes)
 
     return dtype_common
