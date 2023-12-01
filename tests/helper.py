@@ -23,6 +23,7 @@ def assert_dtype_allclose(dpnp_arr, numpy_arr, check_type=True):
         supports 64-bit precision floating point operations or if the numpy array's inexact
         dtype is not a double precision type.
         Otherwise, asserts equal type kinds.
+
     """
 
     list_64bit_types = [numpy.float64, numpy.complex128]
