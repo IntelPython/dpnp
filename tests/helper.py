@@ -12,6 +12,9 @@ def assert_dtype_allclose(dpnp_arr, numpy_arr, check_type=True):
     Assert DPNP and NumPy array based on maximum dtype resolution of input arrays
     for floating and complex types.
     For other dtypes the assertion is based on exact matching of the arrays.
+    When 'check_type' True (default), it asserts equal dtypes for exact types
+    and either equal dtypes or kinds for inexact types, depending on the 64-bit precision
+    support of the device on which `dpnp_arr` is created.
 
     """
 
@@ -22,6 +25,11 @@ def assert_dtype_allclose(dpnp_arr, numpy_arr, check_type=True):
             numpy.finfo(numpy_arr.dtype).resolution,
         )
         assert_allclose(dpnp_arr.asnumpy(), numpy_arr, atol=tol, rtol=tol)
+        if check_type:
+            if has_support_aspect64(dpnp_arr.sycl_device):
+                assert dpnp_arr.dtype == numpy_arr.dtype
+            else:
+                assert dpnp_arr.dtype.kind == numpy_arr.dtype.kind
     else:
         assert_array_equal(dpnp_arr.asnumpy(), numpy_arr)
         if check_type:
