@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -70,6 +68,7 @@ __all__ = [
     "get_usm_ndarray_or_scalar",
     "is_supported_array_or_scalar",
     "is_supported_array_type",
+    "_replace_nan",
 ]
 
 from dpnp import float64, isscalar
@@ -562,3 +561,43 @@ def is_supported_array_type(a):
     """
 
     return isinstance(a, (dpnp_array, dpt.usm_ndarray))
+
+
+def _replace_nan(a, val):
+    """
+    If `a` is of inexact type, make a copy of `a`, replace NaNs with
+    the `val` value, and return the copy together with a boolean mask
+    marking the locations where NaNs were present. If `a` is not of
+    inexact type, do nothing and return `a` together with a mask of None.
+    Note that scalars will end up as array scalars, which is important
+    for using the result as the value of the out argument in some
+    operations.
+    Parameters
+    ----------
+    a : {dpnp_array, usm_ndarray}
+        Input array.
+    val : float
+        NaN values are set to val before doing the operation.
+    Returns
+    -------
+    out : {dpnp_array}
+        If `a` is of inexact type, return a copy of `a` with the NaNs
+        replaced by the fill value, otherwise return `a`.
+    mask: {bool, None}
+        If `a` is of inexact type, return a boolean mask marking locations of
+        NaNs, otherwise return None.
+    """
+
+    if dpnp.is_supported_array_or_scalar(a):
+        if issubclass(a.dtype.type, dpnp.inexact):
+            mask = dpnp.isnan(a)
+            a = dpnp.array(a, copy=True)
+            dpnp.copyto(a, val, where=mask)
+        else:
+            mask = None
+    else:
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(a))
+        )
+
+    return a, mask

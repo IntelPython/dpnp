@@ -939,16 +939,6 @@ template <typename _DataType>
 void (*dpnp_nanvar_default_c)(void *, void *, void *, const size_t, size_t) =
     dpnp_nanvar_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_nanvar_ext_c)(DPCTLSyclQueueRef,
-                                       void *,
-                                       void *,
-                                       void *,
-                                       const size_t,
-                                       size_t,
-                                       const DPCTLEventVectorRef) =
-    dpnp_nanvar_c<_DataType>;
-
 template <typename _DataType, typename _ResultType>
 DPCTLSyclEventRef dpnp_std_c(DPCTLSyclQueueRef q_ref,
                              void *array1_in,
@@ -1291,15 +1281,6 @@ void func_map_init_statistics(func_map_t &fmap)
         eft_FLT, (void *)dpnp_nanvar_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_nanvar_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_NANVAR_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_nanvar_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_NANVAR_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_nanvar_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_NANVAR_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_nanvar_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_NANVAR_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_nanvar_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_STD][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_std_default_c<int32_t, double>};

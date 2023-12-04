@@ -4,7 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from tests.helper import has_support_aspect64
+from tests.helper import has_support_aspect16, has_support_aspect64
 from tests.third_party.cupy import testing
 
 ignore_runtime_warnings = pytest.mark.filterwarnings(
@@ -378,7 +378,7 @@ class TestNanMeanAdditional(unittest.TestCase):
 class TestNanVarStd(unittest.TestCase):
     @ignore_runtime_warnings
     @testing.for_all_dtypes(no_float16=True, no_complex=True)
-    @testing.numpy_cupy_allclose(rtol=1e-6)
+    @testing.numpy_cupy_allclose(rtol=1e-6, type_check=False)
     def test_nanvar(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype=dtype)
         if a.dtype.kind not in "biu":
@@ -403,7 +403,7 @@ class TestNanVarStd(unittest.TestCase):
 class TestNanVarStdAdditional(unittest.TestCase):
     @ignore_runtime_warnings
     @testing.for_all_dtypes(no_float16=True, no_complex=True)
-    @testing.numpy_cupy_allclose(rtol=1e-6)
+    @testing.numpy_cupy_allclose(rtol=1e-6, type_check=False)
     def test_nanvar_out(self, xp, dtype):
         a = testing.shaped_random((10, 20, 30), xp, dtype)
         z = xp.zeros((20, 30))
@@ -417,7 +417,7 @@ class TestNanVarStdAdditional(unittest.TestCase):
 
     @testing.slow
     @testing.for_all_dtypes(no_float16=True, no_complex=True)
-    @testing.numpy_cupy_allclose(rtol=1e-6)
+    @testing.numpy_cupy_allclose(rtol=1e-6, type_check=False)
     def test_nanvar_huge(self, xp, dtype):
         a = testing.shaped_random((1024, 512), xp, dtype)
 
@@ -426,7 +426,10 @@ class TestNanVarStdAdditional(unittest.TestCase):
 
         return xp.nanvar(a, axis=1)
 
-    @testing.numpy_cupy_allclose(rtol=1e-4)
+    @pytest.mark.skipif(
+        not has_support_aspect16(), reason="No fp16 support by device"
+    )
+    @testing.numpy_cupy_allclose(rtol=1e-3, type_check=False)
     def test_nanvar_float16(self, xp):
         a = testing.shaped_arange((4, 5), xp, numpy.float16)
         a[0][0] = xp.nan

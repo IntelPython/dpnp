@@ -634,7 +634,9 @@ def ptp(
     )
 
 
-def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
+def nanvar(
+    a, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True
+):
     """
     Compute the variance along the specified axis, while ignoring NaNs.
 
@@ -650,33 +652,59 @@ def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     Otherwise the function will be executed sequentially on CPU.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1.size == 0:
-            pass
-        elif axis is not None:
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif keepdims:
-            pass
-        else:
-            result_obj = dpnp_nanvar(x1_desc, ddof).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    arr, mask = dpnp._replace_nan(a, 0)
+    if mask is None:
+        return dpnp.var(
+            arr,
+            axis=axis,
+            dtype=dtype,
+            out=out,
+            ddof=ddof,
+            keepdims=keepdims,
+            where=where,
+        )
 
-            return result
+    if dtype is not None:
+        dtype = dpnp.dtype(dtype)
+    if dtype is not None and not issubclass(dtype.type, dpnp.inexact):
+        raise TypeError("If input is inexact, then dtype must be inexact")
+    if out is not None and not issubclass(out.dtype.type, dpnp.inexact):
+        raise TypeError("If input is inexact, then out must be inexact")
 
-    return call_origin(
-        numpy.nanvar,
-        x1,
-        axis=axis,
-        dtype=dtype,
-        out=out,
-        ddof=ddof,
-        keepdims=keepdims,
+    # Compute mean
+    cnt = dpnp.sum(
+        ~mask, axis=axis, dtype=dpnp.intp, keepdims=True, where=where
     )
+    avg = dpnp.sum(arr, axis=axis, dtype=dtype, keepdims=True, where=where)
+    avg = dpnp.divide(avg, cnt)
+
+    # Compute squared deviation from mean.
+    res_dtype = dpnp.result_type(arr, avg)
+    arr = arr.astype(res_dtype, casting="safe")
+    dpnp.subtract(arr, avg, out=arr, where=where)
+    dpnp.copyto(arr, 0, where=mask, casting="unsafe")
+    if issubclass(arr.dtype.type, dpnp.complexfloating):
+        raise ValueError("`nanvar` does not support complex types")
+    else:
+        sqr = dpnp.multiply(arr, arr, out=arr, where=where)
+
+    # Compute variance
+    var = dpnp.sum(
+        sqr, axis=axis, dtype=dtype, out=out, keepdims=keepdims, where=where
+    )
+
+    if var.ndim < cnt.ndim:
+        cnt = cnt.squeeze(axis)
+    dof = cnt - ddof
+    var = dpnp.divide(var, dof, out=var)
+
+    isbad = dof <= 0
+    if dpnp.any(isbad):
+        # NaN, inf, or negative numbers are all possible bad
+        # values, so explicitly replace them with NaN.
+        dpnp.copyto(var, dpnp.nan, where=isbad, casting="unsafe")
+
+    return var
 
 
 def std(

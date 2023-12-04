@@ -394,6 +394,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("log2", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("nanprod", [1.0, 2.0, dp.nan]),
+        pytest.param("nanvar", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("max", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("mean", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("min", [1.0, 2.0, 4.0, 7.0]),

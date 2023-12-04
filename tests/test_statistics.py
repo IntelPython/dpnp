@@ -259,7 +259,6 @@ class TestStd:
             dpnp.std(ia, dtype=dpnp.int64)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "array",
     [
