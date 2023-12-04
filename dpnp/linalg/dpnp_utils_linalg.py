@@ -27,13 +27,12 @@
 # *****************************************************************************
 
 
-import dpctl
 import dpctl.tensor._tensor_impl as ti
-import dpctl.utils as du
 from numpy import issubdtype
 
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
+from dpnp.dpnp_utils import get_usm_allocations
 
 __all__ = ["dpnp_eigh", "dpnp_solve"]
 
@@ -245,7 +244,7 @@ def dpnp_solve(a, b):
     a_shape = a.shape
     b_shape = b.shape
 
-    exec_q = dpctl.utils.get_execution_queue((a.sycl_queue, b.sycl_queue))
+    res_usm_type, exec_q = get_usm_allocations([a, b])
     if exec_q is None:
         raise ValueError(
             "Execution placement can not be unambiguously inferred "
@@ -253,7 +252,6 @@ def dpnp_solve(a, b):
         )
 
     res_type = _common_type(a, b)
-    res_usm_type = du.get_coerced_usm_type([a.usm_type, b.usm_type])
     if b.size == 0:
         return dpnp.empty_like(b, dtype=res_type, usm_type=res_usm_type)
 
