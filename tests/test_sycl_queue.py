@@ -1299,20 +1299,21 @@ def test_asarray(device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
+@pytest.mark.parametrize("func", ["take", "take_along_axis"])
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_take(device):
+def test_take(func, device):
     numpy_data = numpy.arange(5)
     dpnp_data = dpnp.array(numpy_data, device=device)
 
-    ind = [0, 2, 4]
-    dpnp_ind = dpnp.array(ind, device=device)
+    dpnp_ind = dpnp.array([0, 2, 4], device=device)
+    np_ind = dpnp_ind.asnumpy()
 
-    result = dpnp.take(dpnp_data, dpnp_ind)
-    expected = numpy.take(numpy_data, ind)
+    result = getattr(dpnp, func)(dpnp_data, dpnp_ind, axis=None)
+    expected = getattr(numpy, func)(numpy_data, np_ind, axis=None)
     assert_allclose(expected, result)
 
     expected_queue = dpnp_data.get_array().sycl_queue
