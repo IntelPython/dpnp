@@ -186,6 +186,13 @@ std::pair<sycl::event, sycl::event>
                               ", but a 2-dimensional array is expected.");
     }
 
+    if (dependent_vals_nd != 1 && dependent_vals_nd != 2) {
+        throw py::value_error(
+            "The dependent values array has ndim=" +
+            std::to_string(dependent_vals_nd) +
+            ", but a 1-dimensional or a 2-dimensional array is expected.");
+    }
+
     const py::ssize_t *coeff_matrix_shape = coeff_matrix.get_shape_raw();
     const py::ssize_t *dependent_vals_shape = dependent_vals.get_shape_raw();
 
@@ -214,6 +221,12 @@ std::pair<sycl::event, sycl::event>
     bool is_coeff_matrix_f_contig = coeff_matrix.is_f_contiguous();
     if (!is_coeff_matrix_f_contig) {
         throw py::value_error("The coefficient matrix "
+                              "must be F-contiguous");
+    }
+
+    bool is_dependent_vals_f_contig = dependent_vals.is_f_contiguous();
+    if (!is_dependent_vals_f_contig) {
+        throw py::value_error("The array of dependent variables "
                               "must be F-contiguous");
     }
 
