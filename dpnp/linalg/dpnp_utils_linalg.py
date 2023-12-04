@@ -327,22 +327,24 @@ def dpnp_solve(a, b):
             out_v = out_v.reshape(orig_shape_b)
         return out_v
     else:
-        # oneMKL LAPACK assumes fortran-like array as input, so
-        # allocate a memory with 'F' order for dpnp array of coefficient matrix
-        # and multiple dependent variables
+        # oneMKL LAPACK gesv overwrites `a` and `b` and assumes fortran-like array as input.
+        # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
         a_f = dpnp.empty_like(
             a, order="F", dtype=res_type, usm_type=res_usm_type
         )
+
+        # use DPCTL tensor function to fill the coefficient matrix array
+        # with content from the input array a
+        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a.sycl_queue
+        )
+
         b_f = dpnp.empty_like(
             b, order="F", dtype=res_type, usm_type=res_usm_type
         )
 
-        # use DPCTL tensor function to fill the coefficient matrix array
-        # and the array of multiple dependent variables with content
-        # from the input arrays
-        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a.sycl_queue
-        )
+        # use DPCTL tensor function to fill the array of multiple dependent variables
+        # with content from the input array b
         b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=b_usm_arr, dst=b_f.get_array(), sycl_queue=b.sycl_queue
         )
