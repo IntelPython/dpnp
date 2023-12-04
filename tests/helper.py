@@ -42,7 +42,7 @@ def assert_dtype_allclose(dpnp_arr, numpy_arr, check_type=True):
 
             if is_np_arr_f2 and has_support_aspect16(dpnp_arr_dev):
                 assert dpnp_arr_dtype == numpy_arr_dtype
-            elif is_np_arr_f2 and (
+            elif not is_np_arr_f2 and (
                 has_support_aspect64(dpnp_arr_dev)
                 or numpy_arr_dtype not in list_64bit_types
             ):
