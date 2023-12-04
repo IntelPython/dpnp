@@ -351,26 +351,12 @@ def dpnp_solve(a, b):
 
         # Call the LAPACK extension function _gesv to solve the system of linear
         # equations with the coefficient square matrix and the dependent variables array.
-        ht_lapack_ev, lapack_ev = li._gesv(
+        ht_lapack_ev, _ = li._gesv(
             exec_q, a_f.get_array(), b_f.get_array(), [a_copy_ev, b_copy_ev]
         )
-
-        if b_order != "F":
-            # need to align order of the result of solutions with the
-            # input array of multiple dependent variables
-            out_v = dpnp.empty_like(b_f, order=b_order)
-            ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=b_f.get_array(),
-                dst=out_v.get_array(),
-                sycl_queue=exec_q,
-                depends=[lapack_ev],
-            )
-            ht_copy_out_ev.wait()
-        else:
-            out_v = b_f
 
         ht_lapack_ev.wait()
         b_ht_copy_ev.wait()
         a_ht_copy_ev.wait()
 
-        return out_v
+        return b_f
