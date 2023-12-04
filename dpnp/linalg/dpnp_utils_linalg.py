@@ -30,7 +30,7 @@
 import dpctl
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as du
-from numpy import issubdtype, prod
+from numpy import issubdtype
 
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
@@ -263,11 +263,11 @@ def dpnp_solve(a, b):
         if a.ndim > 3:
             # get 3d input arrays by reshape
             if a.ndim == b.ndim:
-                b = b.reshape(prod(b_shape[:-2]), b_shape[-2], b_shape[-1])
+                b = b.reshape(-1, b_shape[-2], b_shape[-1])
             else:
-                b = b.reshape(prod(b_shape[:-1]), b_shape[-1])
+                b = b.reshape(-1, b_shape[-1])
 
-            a = a.reshape(prod(a_shape[:-2]), a_shape[-2], a_shape[-1])
+            a = a.reshape(-1, a_shape[-2], a_shape[-1])
 
             a_usm_arr = dpnp.get_usm_ndarray(a)
             b_usm_arr = dpnp.get_usm_ndarray(b)
