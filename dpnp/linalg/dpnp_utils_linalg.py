@@ -40,6 +40,59 @@ _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
 
 
+def _assert_supported_array_type(*arrays):
+    """
+    Asserts that each array in `arrays` is of a type supported by dpnp.
+
+    Raises `TypeError` if it`s not.
+
+    """
+    for a in arrays:
+        if not dpnp.is_supported_array_type(a):
+            raise TypeError(
+                f"The input array must be any of supported type, but got {type(a)}"
+            )
+
+
+def _assert_stacked_2d(*arrays):
+    """
+    Asserts that each array in `arrays` is at least two-dimensional.
+
+    Raises `dpnp.linalg.LinAlgError` if it's not.
+
+    """
+    for a in arrays:
+        if a.ndim < 2:
+            raise dpnp.linalg.LinAlgError(
+                f"{a.ndim}-dimensional array given. The input "
+                "array must be at least two-dimensional"
+            )
+
+
+def _assert_stacked_square(*arrays):
+    """
+    Asserts that each array in `arrays` is a square matrix.
+
+    Raises `dpnp.linalg.LinAlgError` if any array is not square.
+
+    Precondition: `arrays` are at least 2d. The caller should assert it
+    beforehand. For example,
+
+    >>> def solve(a):
+    ...     _assert_stacked_2d(a)
+    ...     _assert_stacked_square(a)
+    ...     ...
+
+    """
+
+    for a in arrays:
+        m, n = a.shape[-2:]
+        if m != n:
+            raise dpnp.linalg.LinAlgError(
+                "Last 2 dimensions of the input array must be square"
+            )
+
+
 def _common_type(*arrays):
     """
     _common_type(*arrays)

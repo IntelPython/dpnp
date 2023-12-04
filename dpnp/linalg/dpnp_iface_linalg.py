@@ -47,7 +47,13 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.linalg.dpnp_algo_linalg import *
 
-from .dpnp_utils_linalg import dpnp_eigh, dpnp_solve
+from .dpnp_utils_linalg import (
+    _assert_stacked_2d,
+    _assert_stacked_square,
+    _assert_supported_array_type,
+    dpnp_eigh,
+    dpnp_solve,
+)
 
 __all__ = [
     "cholesky",
@@ -540,27 +546,9 @@ def solve(a, b):
 
     """
 
-    if not dpnp.is_supported_array_type(a):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
-        )
-
-    if not dpnp.is_supported_array_type(b):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(b))
-        )
-
-    if a.ndim < 2:
-        raise dpnp.linalg.LinAlgError(
-            f"{a.ndim}-dimensional array given. The input coefficient "
-            "array must be at least two-dimensional"
-        )
-
-    m, n = a.shape[-2:]
-    if m != n:
-        raise dpnp.linalg.LinAlgError(
-            "Last 2 dimensions of the input coefficient array must be square"
-        )
+    _assert_supported_array_type(a, b)
+    _assert_stacked_2d(a)
+    _assert_stacked_square(a)
 
     if not (
         (a.ndim == b.ndim or a.ndim == b.ndim + 1)
