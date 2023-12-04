@@ -538,7 +538,6 @@ class TestSolve:
         expected = numpy.linalg.solve(a_np, b_np)
         result = inp.linalg.solve(a_dp, b_dp)
 
-        assert_allclose(expected, result, rtol=1e-06)
         assert_dtype_allclose(result, expected)
 
     def test_solve_strides(self):
