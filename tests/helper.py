@@ -40,11 +40,12 @@ def assert_dtype_allclose(dpnp_arr, numpy_arr, check_type=True):
             dpnp_arr_dev = dpnp_arr.sycl_device
             is_np_arr_f2 = numpy_arr_dtype == numpy.float16
 
-            if is_np_arr_f2 and has_support_aspect16(dpnp_arr_dev):
-                assert dpnp_arr_dtype == numpy_arr_dtype
-            elif not is_np_arr_f2 and (
-                has_support_aspect64(dpnp_arr_dev)
-                or numpy_arr_dtype not in list_64bit_types
+            if is_np_arr_f2:
+                if has_support_aspect16(dpnp_arr_dev):
+                    assert dpnp_arr_dtype == numpy_arr_dtype
+            elif (
+                numpy_arr_dtype not in list_64bit_types
+                or has_support_aspect64(dpnp_arr_dev)
             ):
                 assert dpnp_arr_dtype == numpy_arr_dtype
             else:
