@@ -558,9 +558,7 @@ tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out_wrong_shape
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_ndarray_cumprod_2dim_with_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim
-tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim_with_n
-tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_without_axis
+
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_arraylike
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_huge_array
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_numpy_array
@@ -571,10 +569,7 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum_numpy_array
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_arraylike
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_numpy_array
-tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_with_append
-tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_with_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_with_n_and_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_with_prepend
+
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_0_{axis=(1, 3), shape=(2, 3, 4, 5)}::test_nansum_axes
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_1_{axis=(1, 3), shape=(20, 30, 40, 50)}::test_nansum_axes
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_2_{axis=(0, 2, 3), shape=(2, 3, 4, 5)}::test_nansum_axes

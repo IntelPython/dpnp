@@ -54,7 +54,6 @@ class TestConvolve:
             dpnp.convolve(d, k, mode=None)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "array",
     [
@@ -67,19 +66,16 @@ class TestConvolve:
             [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
         ],
     ],
-    ids=[
-        "[[0, 0], [0, 0]]",
-        "[[1, 2], [1, 2]]",
-        "[[1, 2], [3, 4]]",
-        "[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]",
-        "[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]",
-    ],
 )
-def test_diff(array):
-    np_a = numpy.array(array)
-    dpnp_a = dpnp.array(array)
-    expected = numpy.diff(np_a)
-    result = dpnp.diff(dpnp_a)
+@pytest.mark.parametrize("n", list(range(0, 3)))
+@pytest.mark.parametrize("axis", list(range(-1, 2)))
+@pytest.mark.parametrize("dt", get_all_dtypes())
+def test_diff(array, n, axis, dt):
+    np_a = numpy.array(array, dtype=dt)
+    dpnp_a = dpnp.array(array, dtype=dt)
+
+    expected = numpy.diff(np_a, n=n, axis=axis)
+    result = dpnp.diff(dpnp_a, n=n, axis=axis)
     assert_allclose(expected, result)
 
 
