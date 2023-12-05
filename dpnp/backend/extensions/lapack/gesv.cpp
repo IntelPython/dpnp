@@ -186,7 +186,7 @@ std::pair<sycl::event, sycl::event>
                               ", but a 2-dimensional array is expected.");
     }
 
-    if (dependent_vals_nd != 1 && dependent_vals_nd != 2) {
+    if (dependent_vals_nd > 2) {
         throw py::value_error(
             "The dependent values array has ndim=" +
             std::to_string(dependent_vals_nd) +
