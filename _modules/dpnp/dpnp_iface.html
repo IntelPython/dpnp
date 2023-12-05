@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.13.1dev1+10.g4cba73bd14 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.13.1dev1+18.gc0eb02e930 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=cf8056aa"></script>
+        <script src="../../_static/documentation_options.js?v=13d2f585"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+10.g4cba73bd14
+                0.13.1dev1+18.gc0eb02e930
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -148,7 +148,6 @@
     <span class="s2">&quot;array_equal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;asnumpy&quot;</span><span class="p">,</span>
     <span class="s2">&quot;astype&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;check_supported_arrays_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;convert_single_elem_array_to_scalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;default_float_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dpnp_queue_initialize&quot;</span><span class="p">,</span>
@@ -298,45 +297,6 @@
         <span class="k">return</span> <span class="n">x1</span>
 
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">array_obj</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return ``True`` if each array has either type of scalar,</span>
-<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    But if any array has unsupported type, ``TypeError`` will be raised.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    arrays : {dpnp_array, usm_ndarray}</span>
-<span class="sd">        Input arrays to check for supported types.</span>
-<span class="sd">    scalar_type : {bool}, optional</span>
-<span class="sd">        A scalar type is also considered as supported if flag is True.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : bool</span>
-<span class="sd">        ``True`` if each type of input `arrays` is supported type,</span>
-<span class="sd">        ``False`` otherwise.</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        If any input array from `arrays` is of unsupported array type.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">scalar_type</span> <span class="ow">or</span> <span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
-            <span class="ow">and</span> <span class="n">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-    <span class="k">return</span> <span class="kc">True</span>
 
 
 <span class="k">def</span> <span class="nf">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
