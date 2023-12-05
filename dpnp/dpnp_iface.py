@@ -231,15 +231,12 @@ def check_supported_arrays_type(*arrays, scalar_type=False):
     """
 
     for a in arrays:
-        if not (
-            (scalar_type or is_supported_array_type(a))
-            and is_supported_array_or_scalar(a)
-        ):
-            raise TypeError(
-                "An array must be any of supported type, but got {}".format(
-                    type(a)
-                )
-            )
+        if scalar_type and dpnp.isscalar(a) or is_supported_array_type(a):
+            continue
+
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(a))
+        )
     return True
 
 
