@@ -387,7 +387,7 @@ def dpnp_solve(a, b):
         )
 
         # use DPCTL tensor function to fill the coefficient matrix array
-        # with content from the input array `a``
+        # with content from the input array `a`
         a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a.sycl_queue
         )
