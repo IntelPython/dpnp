@@ -1215,10 +1215,7 @@ class dpnp_array:
         """
         Returns the sum along a given axis.
 
-        .. seealso::
-           :obj:`dpnp.sum` for full documentation,
-           :meth:`dpnp.dparray.sum`
-
+        For full documentation refer to :obj:`dpnp.sum`.
         """
 
         return dpnp.sum(

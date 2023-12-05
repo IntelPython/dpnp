@@ -418,7 +418,7 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
     )
 
 
-def get_result_array(a, out=None):
+def get_result_array(a, out=None, casting="safe"):
     """
     If `out` is provided, value of `a` array will be copied into the
     `out` array according to ``safe`` casting rule.
@@ -458,7 +458,7 @@ def get_result_array(a, out=None):
                     )
                 )
 
-        dpnp.copyto(out, a, casting="safe")
+        dpnp.copyto(out, a, casting=casting)
 
         return out
 

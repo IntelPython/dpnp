@@ -7,6 +7,7 @@ from numpy.testing import (
 import dpnp
 from tests.helper import (
     assert_dtype_allclose,
+    get_all_dtypes,
     get_float_dtypes,
     has_support_aspect64,
 )
@@ -59,3 +60,24 @@ def test_sum_axis():
     else:
         expected = numpy.sum(a, axis=1)
     assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize("axis", [0, 1, (0, 1)])
+def test_sum_out(dtype, axis):
+    a = dpnp.arange(2 * 4, dtype=dtype).reshape(2, 4)
+    a_np = dpnp.asnumpy(a)
+
+    expected = numpy.sum(a_np, axis=axis)
+    res = dpnp.empty(expected.shape, dtype=dtype)
+    a.sum(axis=axis, out=res)
+    assert_array_equal(expected, res.asnumpy())
+
+
+def test_sum_NotImplemented():
+    ia = dpnp.arange(5)
+    with pytest.raises(NotImplementedError):
+        dpnp.sum(ia, where=False)
+
+    with pytest.raises(NotImplementedError):
+        dpnp.sum(ia, initial=1)

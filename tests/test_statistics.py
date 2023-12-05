@@ -259,56 +259,57 @@ class TestStd:
             dpnp.std(ia, dtype=dpnp.int64)
 
 
-@pytest.mark.parametrize(
-    "array",
-    [
-        [2, 0, 6, 2],
-        [2, 0, 6, 2, 5, 6, 7, 8],
-        [],
-        [2, 1, numpy.nan, 5, 3],
-        [-1, numpy.nan, 1, numpy.inf],
-        [3, 6, 0, 1],
-        [3, 6, 0, 1, 8],
-        [3, 2, 9, 6, numpy.nan],
-        [numpy.nan, numpy.nan, numpy.inf, numpy.nan],
-        [[2, 0], [6, 2]],
-        [[2, 0, 6, 2], [5, 6, 7, 8]],
-        [[[2, 0], [6, 2]], [[5, 6], [7, 8]]],
-        [[-1, numpy.nan], [1, numpy.inf]],
-        [[numpy.nan, numpy.nan], [numpy.inf, numpy.nan]],
-    ],
-    ids=[
-        "[2, 0, 6, 2]",
-        "[2, 0, 6, 2, 5, 6, 7, 8]",
-        "[]",
-        "[2, 1, np.nan, 5, 3]",
-        "[-1, np.nan, 1, np.inf]",
-        "[3, 6, 0, 1]",
-        "[3, 6, 0, 1, 8]",
-        "[3, 2, 9, 6, np.nan]",
-        "[np.nan, np.nan, np.inf, np.nan]",
-        "[[2, 0], [6, 2]]",
-        "[[2, 0, 6, 2], [5, 6, 7, 8]]",
-        "[[[2, 0], [6, 2]], [[5, 6], [7, 8]]]",
-        "[[-1, np.nan], [1, np.inf]]",
-        "[[np.nan, np.nan], [np.inf, np.nan]]",
-    ],
-)
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
-def test_nanvar(array, dtype):
-    dtype = dpnp.default_float_type()
-    a = numpy.array(array, dtype=dtype)
-    ia = dpnp.array(a)
-    for ddof in range(a.ndim):
-        expected = numpy.nanvar(a, ddof=ddof)
-        result = dpnp.nanvar(ia, ddof=ddof)
-        assert_allclose(expected, result, rtol=1e-06)
+class TestNanVar:
+    @pytest.mark.parametrize(
+        "array",
+        [
+            [2, 0, 6, 2],
+            [2, 0, 6, 2, 5, 6, 7, 8],
+            [],
+            [2, 1, numpy.nan, 5, 3],
+            [-1, numpy.nan, 1, numpy.inf],
+            [3, 6, 0, 1],
+            [3, 6, 0, 1, 8],
+            [3, 2, 9, 6, numpy.nan],
+            [numpy.nan, numpy.nan, numpy.inf, numpy.nan],
+            [[2, 0], [6, 2]],
+            [[2, 0, 6, 2], [5, 6, 7, 8]],
+            [[[2, 0], [6, 2]], [[5, 6], [7, 8]]],
+            [[-1, numpy.nan], [1, numpy.inf]],
+            [[numpy.nan, numpy.nan], [numpy.inf, numpy.nan]],
+        ],
+        ids=[
+            "[2, 0, 6, 2]",
+            "[2, 0, 6, 2, 5, 6, 7, 8]",
+            "[]",
+            "[2, 1, np.nan, 5, 3]",
+            "[-1, np.nan, 1, np.inf]",
+            "[3, 6, 0, 1]",
+            "[3, 6, 0, 1, 8]",
+            "[3, 2, 9, 6, np.nan]",
+            "[np.nan, np.nan, np.inf, np.nan]",
+            "[[2, 0], [6, 2]]",
+            "[[2, 0, 6, 2], [5, 6, 7, 8]]",
+            "[[[2, 0], [6, 2]], [[5, 6], [7, 8]]]",
+            "[[-1, np.nan], [1, np.inf]]",
+            "[[np.nan, np.nan], [np.inf, np.nan]]",
+        ],
+    )
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+    )
+    def test_nanvar(array, dtype):
+        dtype = dpnp.default_float_type()
+        a = numpy.array(array, dtype=dtype)
+        ia = dpnp.array(a)
+        for ddof in range(a.ndim):
+            expected = numpy.nanvar(a, ddof=ddof)
+            result = dpnp.nanvar(ia, ddof=ddof)
+            assert_allclose(expected, result, rtol=1e-06)
 
-    expected = numpy.nanvar(a, axis=None, ddof=0)
-    result = dpnp.nanvar(ia, axis=None, ddof=0)
-    assert_allclose(expected, result, rtol=1e-06)
+        expected = numpy.nanvar(a, axis=None, ddof=0)
+        result = dpnp.nanvar(ia, axis=None, ddof=0)
+        assert_allclose(expected, result, rtol=1e-06)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")

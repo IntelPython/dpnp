@@ -2661,8 +2661,8 @@ def sum(
     -----------
     Parameters `x` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out`, `initial` and `where` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `initial` and `where` are supported with their default values.
+    Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -2683,12 +2683,14 @@ def sum(
 
         axis = normalize_axis_tuple(axis, x.ndim, "axis")
 
-    if out is not None:
-        pass
-    elif initial != 0:
-        pass
+    if initial != 0:
+        raise NotImplementedError(
+            "initial keyword argument is only supported with its default value."
+        )
     elif where is not True:
-        pass
+        raise NotImplementedError(
+            "where keyword argument is only supported with its default value."
+        )
     else:
         if (
             len(x.shape) == 2
@@ -2746,18 +2748,8 @@ def sum(
         y = dpt.sum(
             dpnp.get_usm_ndarray(x), axis=axis, dtype=dtype, keepdims=keepdims
         )
-        return dpnp_array._create_from_usm_ndarray(y)
-
-    return call_origin(
-        numpy.sum,
-        x,
-        axis=axis,
-        dtype=dtype,
-        out=out,
-        keepdims=keepdims,
-        initial=initial,
-        where=where,
-    )
+        result = dpnp_array._create_from_usm_ndarray(y)
+        return dpnp.get_result_array(result, out, casting="same_kind")
 
 
 def trapz(y1, x1=None, dx=1.0, axis=-1):
