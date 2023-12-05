@@ -399,7 +399,6 @@ class TestNanVarStd(unittest.TestCase):
         )
 
 
-@testing.gpu
 class TestNanVarStdAdditional(unittest.TestCase):
     @ignore_runtime_warnings
     @testing.for_all_dtypes(no_float16=True, no_complex=True)

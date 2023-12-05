@@ -642,15 +642,80 @@ def nanvar(
 
     For full documentation refer to :obj:`numpy.nanvar`.
 
+    Parameters
+    ----------
+    a : {dpnp_array, usm_ndarray}:
+        Input array.
+    axis : int or tuple of ints, optional
+        axis or axes along which the variances must be computed. If a tuple
+        of unique integers is given, the variances are computed over multiple axes.
+        If ``None``, the variance is computed over the entire array.
+        Default: `None`.
+    dtype : dtype, optional
+        Type to use in computing the standard deviation. For arrays of
+        integer type the default is ``float64``, for arrays of float types it is
+        the same as the array type.
+    out : {dpnp_array, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have
+        the same shape as the expected output but the type (of the calculated
+        values) will be cast if necessary.
+    ddof : int, optional
+        Means Delta Degrees of Freedom.  The divisor used in calculations
+        is ``N - ddof``, where ``N`` corresponds to the total
+        number of elements over which the variance is calculated.
+        Default: `0.0`.
+    keepdims : bool, optional
+        If ``True``, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input array according to Array Broadcasting
+        rules. Otherwise, if ``False``, the reduced axes are not included in
+        the returned array. Default: ``False``.
+    where : array_like of bool, optional
+        Elements to include in the standard deviation.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        an array containing the variances. If the variance was computed
+        over the entire array, a zero-dimensional array is returned.
+
+        If `a` has a real-valued floating-point data type, the returned
+        array will have the same data type as `a`.
+        If `a` has a boolean or integral data type, the returned array
+        will have the default floating point data type for the device
+        where input array `a` is allocated.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter `axis` is supported only with default value ``None``.
-    Parameter `dtype` is supported only with default value ``None``.
-    Parameter `out` is supported only with default value ``None``.
-    Parameter `keepdims` is supported only with default value ``False``.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `where` is only supported with its default value.
+    Otherwise ``NotImplementedError`` exception will be raised.
+    Input array data types are limited by real valued data types.
+
+    See Also
+    --------
+    :obj:`dpnp.var` : Compute the variance along the specified axis.
+    :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis,
+                          ignoring NaNs.
+    :obj:`dpnp.nanstd` : Compute the standard deviation along
+                         the specified axis, while ignoring NaNs.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, np.nan], [3, 4]])
+    >>> np.nanvar(a)
+    array(1.5555555555555554)
+    >>> np.nanvar(a, axis=0)
+    array([1.,  0.])
+    >>> np.nanvar(a, axis=1)
+    array([0.,  0.25])  # may vary
+
     """
+
+    if where is not True:
+        raise NotImplementedError(
+            "where keyword argument is only supported with its default value."
+        )
 
     arr, mask = dpnp._replace_nan(a, 0)
     if mask is None:
@@ -664,10 +729,12 @@ def nanvar(
             where=where,
         )
 
+    if issubclass(arr.dtype.type, dpnp.complexfloating):
+        raise ValueError("`nanvar` does not support complex types")
     if dtype is not None:
         dtype = dpnp.dtype(dtype)
-    if dtype is not None and not issubclass(dtype.type, dpnp.inexact):
-        raise TypeError("If input is inexact, then dtype must be inexact")
+        if not issubclass(dtype.type, dpnp.floating):
+            raise TypeError("If input is floating, then dtype must be floating")
     if out is not None and not issubclass(out.dtype.type, dpnp.inexact):
         raise TypeError("If input is inexact, then out must be inexact")
 
@@ -682,11 +749,8 @@ def nanvar(
     res_dtype = dpnp.result_type(arr, avg)
     arr = arr.astype(res_dtype, casting="safe")
     dpnp.subtract(arr, avg, out=arr, where=where)
-    dpnp.copyto(arr, 0, where=mask, casting="unsafe")
-    if issubclass(arr.dtype.type, dpnp.complexfloating):
-        raise ValueError("`nanvar` does not support complex types")
-    else:
-        sqr = dpnp.multiply(arr, arr, out=arr, where=where)
+    dpnp.copyto(arr, 0.0, where=mask, casting="safe")
+    sqr = dpnp.multiply(arr, arr, out=arr, where=where)
 
     # Compute variance
     var = dpnp.sum(
@@ -702,7 +766,7 @@ def nanvar(
     if dpnp.any(isbad):
         # NaN, inf, or negative numbers are all possible bad
         # values, so explicitly replace them with NaN.
-        dpnp.copyto(var, dpnp.nan, where=isbad, casting="unsafe")
+        dpnp.copyto(var, dpnp.nan, where=isbad, casting="safe")
 
     return var
 

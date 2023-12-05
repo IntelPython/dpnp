@@ -149,7 +149,7 @@ class TestMean:
         expected = np_array.mean()
         assert_allclose(expected, result)
 
-    def test_mean_NotImplemented(func):
+    def test_mean_NotImplemented(self):
         ia = dpnp.arange(5)
         with pytest.raises(NotImplementedError):
             dpnp.mean(ia, where=False)
@@ -198,7 +198,7 @@ class TestVar:
         expected = np_array.var()
         assert_allclose(expected, result)
 
-    def test_var_NotImplemented(func):
+    def test_var_NotImplemented(self):
         ia = dpnp.arange(5)
         with pytest.raises(NotImplementedError):
             dpnp.var(ia, where=False)
@@ -250,7 +250,7 @@ class TestStd:
         expected = np_array.std()
         assert_allclose(expected, result)
 
-    def test_std_NotImplemented(func):
+    def test_std_NotImplemented(self):
         ia = dpnp.arange(5)
         with pytest.raises(NotImplementedError):
             dpnp.std(ia, where=False)
@@ -298,7 +298,7 @@ class TestNanVar:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
     )
-    def test_nanvar(array, dtype):
+    def test_nanvar(self, array, dtype):
         dtype = dpnp.default_float_type()
         a = numpy.array(array, dtype=dtype)
         ia = dpnp.array(a)
@@ -310,6 +310,38 @@ class TestNanVar:
         expected = numpy.nanvar(a, axis=None, ddof=0)
         result = dpnp.nanvar(ia, axis=None, ddof=0)
         assert_allclose(expected, result, rtol=1e-06)
+
+    def test_nanvar_dof(self):
+        dtype = dpnp.default_float_type()
+        a = numpy.arange(4 * 3 * 5, dtype=dtype).reshape(4, 3, 5)
+        a[0, :] = numpy.nan
+        ia = dpnp.array(a)
+        for itr in range(a.ndim):
+            expected = numpy.nanvar(a, axis=itr, ddof=itr)
+            result = dpnp.nanvar(ia, axis=itr, ddof=itr)
+            assert_dtype_allclose(result, expected)
+
+    def test_nanvar_error(self):
+        ia = dpnp.arange(5, dtype=dpnp.float32)
+        ia[0] = dpnp.nan
+        # where keyword is not implemented
+        with pytest.raises(NotImplementedError):
+            dpnp.nanvar(ia, where=False)
+
+        # dtype should be floating
+        with pytest.raises(TypeError):
+            dpnp.nanvar(ia, dtype=dpnp.int32)
+
+        # out dtype should be inexact
+        res = dpnp.empty((1,), dtype=dpnp.int32)
+        with pytest.raises(TypeError):
+            dpnp.nanvar(ia, out=res)
+
+        # complex type is not supported
+        ia = dpnp.arange(5, dtype=dpnp.complex64)
+        ia[0] = dpnp.nan
+        with pytest.raises(ValueError):
+            dpnp.nanvar(ia)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
