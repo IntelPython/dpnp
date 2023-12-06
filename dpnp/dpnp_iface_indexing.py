@@ -756,6 +756,11 @@ def take_along_axis(a, indices, axis):
         array is treated as if it had first been flattened to 1d,
         for consistency with `sort` and `argsort`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        The indexed result.
+
     See Also
     --------
     :obj:`dpnp.take` : Take along an axis, using the same indices for every 1d slice.
