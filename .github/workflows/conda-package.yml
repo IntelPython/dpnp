@@ -25,6 +25,7 @@ env:
       test_random_state.py
       test_sort.py
       test_special.py
+      test_statistics.py
       test_sycl_queue.py
       test_umath.py
       test_usm_type.py
@@ -48,6 +49,7 @@ env:
       third_party/cupy/math_tests/test_trigonometric.py
       third_party/cupy/sorting_tests/test_sort.py
       third_party/cupy/sorting_tests/test_count.py
+      third_party/cupy/statistics_tests/test_meanvar.py
   VER_JSON_NAME: 'version.json'
   VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"

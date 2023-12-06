@@ -7,11 +7,27 @@ from numpy.testing import assert_allclose, assert_array_equal
 import dpnp
 
 
-def assert_dtype_allclose(dpnp_arr, numpy_arr, check_type=True):
+def assert_dtype_allclose(
+    dpnp_arr, numpy_arr, check_type=True, check_only_type_kind=False
+):
     """
     Assert DPNP and NumPy array based on maximum dtype resolution of input arrays
     for floating and complex types.
     For other dtypes the assertion is based on exact matching of the arrays.
+    When 'check_type' is True (default), the function asserts:
+    - Equal dtypes for exact types.
+    For inexact types:
+      - If the numpy array's dtype is `numpy.float16`, checks if the device
+        of the `dpnp_arr` supports 64-bit precision floating point operations.
+        If supported, asserts equal dtypes.
+        Otherwise, asserts equal type kinds.
+      - For other inexact types, asserts equal dtypes if the device of the `dpnp_arr`
+        supports 64-bit precision floating point operations or if the numpy array's inexact
+        dtype is not a double precision type.
+        Otherwise, asserts equal type kinds.
+    The 'check_only_type_kind' parameter (False by default) asserts only equal type kinds
+    for all data types supported by DPNP when set to True.
+    It is effective only when 'check_type' is also set to True.
 
     """
 
@@ -27,22 +43,29 @@ def assert_dtype_allclose(dpnp_arr, numpy_arr, check_type=True):
             numpy_arr_dtype = numpy_arr.dtype
             dpnp_arr_dtype = dpnp_arr.dtype
             dpnp_arr_dev = dpnp_arr.sycl_device
-            is_np_arr_f2 = numpy_arr_dtype == numpy.float16
 
-            if is_np_arr_f2:
-                if has_support_aspect16(dpnp_arr_dev):
-                    assert dpnp_arr_dtype == numpy_arr_dtype
-            elif (
-                numpy_arr_dtype not in list_64bit_types
-                or has_support_aspect64(dpnp_arr_dev)
-            ):
-                assert dpnp_arr_dtype == numpy_arr_dtype
-            else:
+            if check_only_type_kind:
                 assert dpnp_arr_dtype.kind == numpy_arr_dtype.kind
+            else:
+                is_np_arr_f2 = numpy_arr_dtype == numpy.float16
+
+                if is_np_arr_f2:
+                    if has_support_aspect16(dpnp_arr_dev):
+                        assert dpnp_arr_dtype == numpy_arr_dtype
+                elif (
+                    numpy_arr_dtype not in list_64bit_types
+                    or has_support_aspect64(dpnp_arr_dev)
+                ):
+                    assert dpnp_arr_dtype == numpy_arr_dtype
+                else:
+                    assert dpnp_arr_dtype.kind == numpy_arr_dtype.kind
     else:
         assert_array_equal(dpnp_arr.asnumpy(), numpy_arr)
         if check_type:
-            assert dpnp_arr.dtype == numpy_arr.dtype
+            if check_only_type_kind:
+                assert dpnp_arr.dtype.kind == numpy_arr.dtype.kind
+            else:
+                assert dpnp_arr.dtype == numpy_arr.dtype
 
 
 def get_complex_dtypes(device=None):

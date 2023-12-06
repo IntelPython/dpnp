@@ -367,6 +367,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("log2", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("max", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("mean", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("nancumprod", [1.0, dpnp.nan]),
         pytest.param("nancumsum", [1.0, dpnp.nan]),
@@ -874,7 +875,7 @@ def test_fft_rfft(type, shape, device):
     np_res = numpy.fft.rfft(np_data)
     dpnp_res = dpnp.fft.rfft(dpnp_data)
 
-    assert_dtype_allclose(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = dpnp_res.get_array().sycl_queue

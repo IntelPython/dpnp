@@ -28,16 +28,15 @@ def test_sum_float(dtype):
     ia = dpnp.array(a)
 
     # Flag for type check in special cases
-    # Skip dtype checks when dpnp handles float32 arrays
+    # Use only type kinds checks when dpnp handles float32 arrays
     # as `dpnp.sum()` and `numpy.sum()` return different dtypes
-    check_dtype = dtype != dpnp.float32
+    check_type_kind = dtype == dpnp.float32
     for axis in range(len(a)):
         result = dpnp.sum(ia, axis=axis)
         expected = numpy.sum(a, axis=axis)
-        assert_dtype_allclose(result, expected, check_type=check_dtype)
-        if not check_dtype:
-            # Ensure dtype kind matches when check_dtype is False
-            assert result.dtype.kind == expected.dtype.kind
+        assert_dtype_allclose(
+            result, expected, check_only_type_kind=check_type_kind
+        )
 
 
 def test_sum_int():

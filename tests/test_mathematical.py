@@ -1105,6 +1105,7 @@ class TestDivide:
         dp_array2 = dpnp.arange(size, dtype=dtype)
 
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
+        check_dtype = True
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
             with pytest.raises(TypeError):
@@ -1112,9 +1113,11 @@ class TestDivide:
 
             # allocate new out with expected type
             dp_out = dpnp.empty(size, dtype=dtype)
+            # Set check_dtype to False as dtype does not match
+            check_dtype = False
 
         result = dpnp.divide(dp_array1, dp_array2, out=dp_out)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_type=check_dtype)
 
     @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
@@ -1991,45 +1994,6 @@ def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
         numpy_res = a_np.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         assert_array_equal(numpy_res, dpnp_res.asnumpy())
-
-
-class TestMean:
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
-    def test_mean_axis_tuple(self, dtype):
-        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
-        np_array = dpnp.asnumpy(dp_array)
-
-        result = dpnp.mean(dp_array, axis=(0, 1))
-        expected = numpy.mean(np_array, axis=(0, 1))
-        assert_allclose(expected, result)
-
-    def test_mean_axis_zero_size(self):
-        dp_array = dpnp.array([], dtype="int64")
-        np_array = dpnp.asnumpy(dp_array)
-
-        result = dpnp.mean(dp_array)
-        expected = numpy.mean(np_array)
-        assert_allclose(expected, result)
-
-    def test_mean_strided(self):
-        dp_array = dpnp.array([-2, -1, 0, 1, 0, 2], dtype="f4")
-        np_array = dpnp.asnumpy(dp_array)
-
-        result = dpnp.mean(dp_array[::-1])
-        expected = numpy.mean(np_array[::-1])
-        assert_allclose(expected, result)
-
-        result = dpnp.mean(dp_array[::2])
-        expected = numpy.mean(np_array[::2])
-        assert_allclose(expected, result)
-
-    def test_mean_scalar(self):
-        dp_array = dpnp.array(5)
-        np_array = dpnp.asnumpy(dp_array)
-
-        result = dp_array.mean()
-        expected = np_array.mean()
-        assert_allclose(expected, result)
 
 
 @pytest.mark.parametrize(
