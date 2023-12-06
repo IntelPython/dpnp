@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.13.1dev1+15.g85f5a06ef9 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.13.1dev1+14.g529f4e8c95 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=919706d4"></script>
+        <script src="../../_static/documentation_options.js?v=715a417f"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+15.g85f5a06ef9
+                0.13.1dev1+14.g529f4e8c95
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -88,7 +88,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dpnp.dpnp_iface</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="c1"># cython: language_level=3</span>
+<span class="c1"># distutils: language = c++</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
 <span class="c1"># Copyright (c) 2016-2023, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
@@ -146,6 +148,7 @@
     <span class="s2">&quot;array_equal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;asnumpy&quot;</span><span class="p">,</span>
     <span class="s2">&quot;astype&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;check_supported_arrays_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;convert_single_elem_array_to_scalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;default_float_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dpnp_queue_initialize&quot;</span><span class="p">,</span>
@@ -158,7 +161,6 @@
     <span class="s2">&quot;get_usm_ndarray_or_scalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_supported_array_or_scalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_supported_array_type&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;_replace_nan&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="kn">from</span> <span class="nn">dpnp</span> <span class="kn">import</span> <span class="n">float64</span><span class="p">,</span> <span class="n">isscalar</span>
@@ -296,6 +298,42 @@
         <span class="k">return</span> <span class="n">x1</span>
 
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">array_obj</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return ``True`` if each array has either type of scalar,</span>
+<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    But if any array has unsupported type, ``TypeError`` will be raised.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arrays : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        Input arrays to check for supported types.</span>
+<span class="sd">    scalar_type : {bool}, optional</span>
+<span class="sd">        A scalar type is also considered as supported if flag is True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : bool</span>
+<span class="sd">        ``True`` if each type of input `arrays` is supported type,</span>
+<span class="sd">        ``False`` otherwise.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If any input array from `arrays` is of unsupported array type.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scalar_type</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span>
 
 
 <span class="k">def</span> <span class="nf">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -520,7 +558,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">get_result_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_result_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    If `out` is provided, value of `a` array will be copied into the</span>
 <span class="sd">    `out` array according to ``safe`` casting rule.</span>
@@ -560,7 +598,7 @@
                     <span class="p">)</span>
                 <span class="p">)</span>
 
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">)</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">out</span>
 
@@ -663,46 +701,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span>
-
-
-<span class="k">def</span> <span class="nf">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    If `a` is of inexact type, make a copy of `a`, replace NaNs with</span>
-<span class="sd">    the `val` value, and return the copy together with a boolean mask</span>
-<span class="sd">    marking the locations where NaNs were present. If `a` is not of</span>
-<span class="sd">    inexact type, do nothing and return `a` together with a mask of None.</span>
-<span class="sd">    Note that scalars will end up as array scalars, which is important</span>
-<span class="sd">    for using the result as the value of the out argument in some</span>
-<span class="sd">    operations.</span>
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
-<span class="sd">        Input array.</span>
-<span class="sd">    val : float</span>
-<span class="sd">        NaN values are set to val before doing the operation.</span>
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : {dpnp_array}</span>
-<span class="sd">        If `a` is of inexact type, return a copy of `a` with the NaNs</span>
-<span class="sd">        replaced by the fill value, otherwise return `a`.</span>
-<span class="sd">    mask: {bool, None}</span>
-<span class="sd">        If `a` is of inexact type, return a boolean mask marking locations of</span>
-<span class="sd">        NaNs, otherwise return None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
-            <span class="n">mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-            <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">mask</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
-        <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">mask</span>
 </pre></div>
 
            </div>
