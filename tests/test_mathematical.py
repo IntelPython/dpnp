@@ -1101,6 +1101,7 @@ class TestDivide:
         dp_array2 = dpnp.arange(size, dtype=dtype)
 
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
+        check_dtype = True
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
             with pytest.raises(TypeError):
@@ -1108,9 +1109,11 @@ class TestDivide:
 
             # allocate new out with expected type
             dp_out = dpnp.empty(size, dtype=dtype)
+            # Set check_dtype to False as dtype does not match
+            check_dtype = False
 
         result = dpnp.divide(dp_array1, dp_array2, out=dp_out)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_type=check_dtype)
 
     @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
