@@ -1783,15 +1783,12 @@ def nanprod(
 
     """
 
-    if dpnp.is_supported_array_or_scalar(a):
-        if issubclass(a.dtype.type, dpnp.inexact):
-            mask = dpnp.isnan(a)
-            a = dpnp.array(a, copy=True)
-            dpnp.copyto(a, 1, where=mask)
-    else:
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
-        )
+    dpnp.check_supported_arrays_type(a)
+
+    if issubclass(a.dtype.type, dpnp.inexact):
+        mask = dpnp.isnan(a)
+        a = dpnp.array(a, copy=True)
+        dpnp.copyto(a, 1, where=mask)
 
     return dpnp.prod(
         a,
@@ -2106,10 +2103,7 @@ def prod(
 
     # Product reduction for complex output are known to fail for Gen9 with 2024.0 compiler
     # TODO: get rid of this temporary work around when OneAPI 2024.1 is released
-    if not isinstance(a, (dpnp_array, dpt.usm_ndarray)):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
-        )
+    dpnp.check_supported_arrays_type(a)
     _dtypes = (a.dtype, dtype)
     _any_complex = any(
         dpnp.issubdtype(dt, dpnp.complexfloating) for dt in _dtypes

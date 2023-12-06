@@ -797,10 +797,7 @@ def fliplr(m):
 
     """
 
-    if not dpnp.is_supported_array_type(m):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(m))
-        )
+    dpnp.check_supported_arrays_type(m)
 
     if m.ndim < 2:
         raise ValueError(f"Input must be >= 2-d, but got {m.ndim}")
@@ -855,10 +852,7 @@ def flipud(m):
 
     """
 
-    if not dpnp.is_supported_array_type(m):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(m))
-        )
+    dpnp.check_supported_arrays_type(m)
 
     if m.ndim < 1:
         raise ValueError(f"Input must be >= 1-d, but got {m.ndim}")

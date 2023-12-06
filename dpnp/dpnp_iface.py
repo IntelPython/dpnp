@@ -56,6 +56,7 @@ __all__ = [
     "array_equal",
     "asnumpy",
     "astype",
+    "check_supported_arrays_type",
     "convert_single_elem_array_to_scalar",
     "default_float_type",
     "dpnp_queue_initialize",
@@ -200,6 +201,42 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True):
         return x1
 
     return dpnp_array._create_from_usm_ndarray(array_obj)
+
+
+def check_supported_arrays_type(*arrays, scalar_type=False):
+    """
+    Return ``True`` if each array has either type of scalar,
+    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    But if any array has unsupported type, ``TypeError`` will be raised.
+
+    Parameters
+    ----------
+    arrays : {dpnp_array, usm_ndarray}
+        Input arrays to check for supported types.
+    scalar_type : {bool}, optional
+        A scalar type is also considered as supported if flag is True.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if each type of input `arrays` is supported type,
+        ``False`` otherwise.
+
+    Raises
+    ------
+    TypeError
+        If any input array from `arrays` is of unsupported array type.
+
+    """
+
+    for a in arrays:
+        if scalar_type and dpnp.isscalar(a) or is_supported_array_type(a):
+            continue
+
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(a))
+        )
+    return True
 
 
 def convert_single_elem_array_to_scalar(obj, keepdims=False):
