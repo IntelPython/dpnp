@@ -216,8 +216,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MULTIPLY_EXT,   /**< Used in numpy.multiply() impl, requires extra
                                parameters */
     DPNP_FN_NANVAR,         /**< Used in numpy.nanvar() impl  */
-    DPNP_FN_NANVAR_EXT,     /**< Used in numpy.nanvar() impl, requires extra
-                               parameters */
     DPNP_FN_NEGATIVE,       /**< Used in numpy.negative() impl  */
     DPNP_FN_NONZERO,        /**< Used in numpy.nonzero() impl  */
     DPNP_FN_ONES,           /**< Used in numpy.ones() impl */

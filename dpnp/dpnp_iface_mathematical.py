@@ -1783,12 +1783,7 @@ def nanprod(
 
     """
 
-    dpnp.check_supported_arrays_type(a)
-
-    if issubclass(a.dtype.type, dpnp.inexact):
-        mask = dpnp.isnan(a)
-        a = dpnp.array(a, copy=True)
-        dpnp.copyto(a, 1, where=mask)
+    a, mask = dpnp._replace_nan(a, 1)
 
     return dpnp.prod(
         a,

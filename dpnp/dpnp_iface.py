@@ -465,11 +465,12 @@ def get_result_array(a, out=None, casting="safe"):
     ----------
     a : {dpnp_array}
         Input array.
-
     out : {dpnp_array, usm_ndarray}
         If provided, value of `a` array will be copied into it
         according to ``safe`` casting rule.
         It should be of the appropriate shape.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur.
 
     Returns
     -------
@@ -625,16 +626,12 @@ def _replace_nan(a, val):
         NaNs, otherwise return None.
     """
 
-    if dpnp.is_supported_array_or_scalar(a):
-        if issubclass(a.dtype.type, dpnp.inexact):
-            mask = dpnp.isnan(a)
-            a = dpnp.array(a, copy=True)
-            dpnp.copyto(a, val, where=mask)
-        else:
-            mask = None
+    dpnp.check_supported_arrays_type(a)
+    if issubclass(a.dtype.type, dpnp.inexact):
+        mask = dpnp.isnan(a)
+        a = dpnp.array(a, copy=True)
+        dpnp.copyto(a, val, where=mask)
     else:
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
-        )
+        mask = None
 
     return a, mask
