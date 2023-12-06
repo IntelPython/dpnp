@@ -2103,10 +2103,9 @@ def prod(
 
     """
 
-    dpnp.check_supported_arrays_type(a)
-
     # Product reduction for complex output are known to fail for Gen9 with 2024.0 compiler
     # TODO: get rid of this temporary work around when OneAPI 2024.1 is released
+    dpnp.check_supported_arrays_type(a)
     _dtypes = (a.dtype, dtype)
     _any_complex = any(
         dpnp.issubdtype(dt, dpnp.complexfloating) for dt in _dtypes
