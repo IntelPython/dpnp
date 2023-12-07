@@ -47,7 +47,7 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.linalg.dpnp_algo_linalg import *
 
-from .dpnp_utils_linalg import dpnp_eigh
+from .dpnp_utils_linalg import dpnp_cholesky, dpnp_eigh
 
 __all__ = [
     "cholesky",
@@ -66,52 +66,77 @@ __all__ = [
 ]
 
 
-def cholesky(input):
+def cholesky(a):
     """
     Cholesky decomposition.
 
-    Return the Cholesky decomposition, `L * L.H`, of the square matrix `input`,
+    Return the Cholesky decomposition, `L * L.H`, of the square matrix `a`,
     where `L` is lower-triangular and .H is the conjugate transpose operator
-    (which is the ordinary transpose if `input` is real-valued).  `input` must be
+    (which is the ordinary transpose if `a` is real-valued).  `a` must be
     Hermitian (symmetric if real-valued) and positive-definite. No
     checking is performed to verify whether `a` is Hermitian or not.
-    In addition, only the lower-triangular and diagonal elements of `input`
+    In addition, only the lower-triangular and diagonal elements of `a`
     are used. Only `L` is actually returned.
+
+    For full documentation refer to :obj:`numpy.linalg.cholesky`.
 
     Parameters
     ----------
-    input : (..., M, M) array_like
+    a : (..., M, M) dpnp.ndarray
         Hermitian (symmetric if all elements are real), positive-definite
         input matrix.
 
     Returns
     -------
-    L : (..., M, M) array_like
-        Upper or lower-triangular Cholesky factor of `input`.  Returns a
-        matrix object if `input` is a matrix object.
+    L : (..., M, M) dpnp.ndarray
+        Lower-triangular Cholesky factor of `a`.  Returns `a`
+        matrix object if `a` is a matrix object.
+
+    Limitations
+    -----------
+    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`scipy.linalg.cholesky` : Similar function in SciPy.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> A = np.array([[1.0, 2.0],[2.0, 5.0]])
+    >>> A
+    array([[1., 2.],
+           [2., 5.]])
+    >>> L = np.linalg.cholesky(A)
+    >>> L
+    array([[1., 0.],
+           [2., 1.]])
+    >>> np.dot(L, L.T.conj()) # verify that L * L.H = A
+    array([[1., 2.],
+           [2., 5.]])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.shape[-1] != x1_desc.shape[-2]:
-            pass
-        else:
-            if input.dtype == dpnp.int32 or input.dtype == dpnp.int64:
-                dev = x1_desc.get_array().sycl_device
-                if dev.has_aspect_fp64:
-                    dtype = dpnp.float64
-                else:
-                    dtype = dpnp.float32
-                # TODO memory copy. needs to move into DPNPC
-                input_ = dpnp.get_dpnp_descriptor(
-                    dpnp.astype(input, dtype=dtype),
-                    copy_when_nondefault_queue=False,
-                )
-            else:
-                input_ = x1_desc
-            return dpnp_cholesky(input_).get_pyobj()
+    # TODO: use _assert_dpnp_array
+    if not dpnp.is_supported_array_type(a):
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(a))
+        )
 
-    return call_origin(numpy.linalg.cholesky, input)
+    # TODO: use _assert_stacked_2d
+    if a.ndim < 2:
+        raise ValueError(
+            f"{a.ndim}-dimensional array given. The input "
+            "array must be at least two-dimensional"
+        )
+
+    # TODO: use _assert_stacked_square
+    n, m = a.shape[-2:]
+    if m != n:
+        raise ValueError("Last 2 dimensions of the input array must be square")
+
+    return dpnp_cholesky(a)
 
 
 def cond(input, p=None):

@@ -32,10 +32,79 @@ import dpctl.tensor._tensor_impl as ti
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
 
-__all__ = ["dpnp_eigh"]
+__all__ = ["dpnp_eigh", "dpnp_cholesky"]
 
 _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
+
+
+def dpnp_cholesky(a):
+    """
+    dpnp_cholesky(a)
+
+    Return the Cholesky factorization.
+
+    """
+
+    a_usm_type = a.usm_type
+    a_sycl_queue = a.sycl_queue
+    a_shape = a.shape
+
+    n = a.shape[-2]
+
+    # TODO: Use linalg_common_type from #1598
+    if dpnp.issubdtype(a.dtype, dpnp.floating):
+        res_type = (
+            a.dtype
+            if a_sycl_queue.sycl_device.has_aspect_fp64
+            else dpnp.float32
+        )
+    elif dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        res_type = (
+            a.dtype
+            if a_sycl_queue.sycl_device.has_aspect_fp64
+            else dpnp.complex64
+        )
+    else:
+        res_type = (
+            dpnp.float64
+            if a_sycl_queue.sycl_device.has_aspect_fp64
+            else dpnp.float32
+        )
+
+    if a.size == 0:
+        return dpnp.empty(a_shape, dtype=res_type, usm_type=a_usm_type)
+
+    if a.ndim > 2:
+        pass
+
+    else:
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+
+        # oneMKL LAPACK potrf overwrites `a`
+        a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
+
+        # use DPCTL tensor function to fill the сopy of the input array
+        # from the input array
+        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+        )
+
+        # Call the LAPACK extension function _potrf
+        # to computes the Cholesky factorization
+        ht_lapack_ev, _ = li._potrf(
+            a_sycl_queue,
+            n,
+            a_h.get_array(),
+            [a_copy_ev],
+        )
+
+        ht_lapack_ev.wait()
+        a_ht_copy_ev.wait()
+
+        a_h = dpnp.tril(a_h)
+
+        return a_h
 
 
 def dpnp_eigh(a, UPLO):
