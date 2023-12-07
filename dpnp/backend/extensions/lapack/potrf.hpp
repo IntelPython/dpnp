@@ -44,19 +44,16 @@ extern std::pair<sycl::event, sycl::event>
           dpctl::tensor::usm_ndarray a_array,
           const std::vector<sycl::event> &depends = {});
 
-// extern std::pair<sycl::event, sycl::event>
-//     potrf_batch(sycl::queue exec_q,
-//                 dpctl::tensor::usm_ndarray a_array,
-//                 dpctl::tensor::usm_ndarray ipiv_array,
-//                 dpctl::tensor::usm_ndarray dev_info_array,
-//                 std::int64_t n,
-//                 std::int64_t stride_a,
-//                 std::int64_t stride_ipiv,
-//                 std::int64_t batch_size,
-//                 const std::vector<sycl::event> &depends = {});
+extern std::pair<sycl::event, sycl::event>
+    potrf_batch(sycl::queue exec_q,
+                dpctl::tensor::usm_ndarray a_array,
+                std::int64_t n,
+                std::int64_t stride_a,
+                std::int64_t batch_size,
+                const std::vector<sycl::event> &depends = {});
 
 extern void init_potrf_dispatch_vector(void);
-// extern void init_potrf_batch_dispatch_vector(void);
+extern void init_potrf_batch_dispatch_vector(void);
 } // namespace lapack
 } // namespace ext
 } // namespace backend

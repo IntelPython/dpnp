@@ -29,6 +29,7 @@ set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/lapack_py.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/heevd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/potrf.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/potrf_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/syevd.cpp
 )
 
