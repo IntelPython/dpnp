@@ -343,6 +343,27 @@ def matmul(
                 "from input arguments."
             )
 
+        # input arrays should be C_CONTIGUOUS or F_CONTIGUOUS
+        if not x1.flags["C_CONTIGUOUS"] and not x1.flags["F_CONTIGUOUS"]:
+            v = dpnp.empty_like(x1, order="C")
+            ht_copy_ev_x1, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=dpnp.get_usm_ndarray(x1),
+                dst=v.get_array(),
+                sycl_queue=x1.sycl_queue,
+            )
+            x1 = v
+            ht_copy_ev_x1.wait()
+
+        if not x2.flags["C_CONTIGUOUS"] and not x2.flags["F_CONTIGUOUS"]:
+            v = dpnp.empty_like(x2, order="C")
+            ht_copy_ev_x2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=dpnp.get_usm_ndarray(x2),
+                dst=v.get_array(),
+                sycl_queue=x2.sycl_queue,
+            )
+            x2 = v
+            ht_copy_ev_x2.wait()
+
         squeeze_flag = x1_ndim == 1 or x2_ndim == 1
         if x1_ndim == 1:
             x1 = x1[dpnp.newaxis, :]

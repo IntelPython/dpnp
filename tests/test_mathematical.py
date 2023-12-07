@@ -2101,7 +2101,8 @@ def test_matmul_dtype(dtype1, dtype2, shape_pair):
     assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize("order", ["C", "F", "K"])
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.parametrize("order", ["C", "F", "K", "A"])
 @pytest.mark.parametrize(
     "shape_pair",
     [
@@ -2128,6 +2129,29 @@ def test_matmul_order(order, shape_pair):
     assert result.flags.c_contiguous == expected.flags.c_contiguous
     assert result.flags.f_contiguous == expected.flags.f_contiguous
     assert_allclose(expected, result)
+
+
+def test_matmul_strided():
+    for dim in [1, 2, 3, 4]:
+        A = numpy.random.rand(*([20] * dim))
+        B = dpnp.asarray(A)
+        # positive strides
+        slices = tuple(slice(None, None, 2) for _ in range(dim))
+        a = A[slices]
+        b = B[slices]
+
+        result = dpnp.matmul(b, b)
+        expected = numpy.matmul(a, a)
+        assert_allclose(expected, result, rtol=1e-06)
+
+        # negative strides
+        slices = tuple(slice(None, None, -2) for _ in range(dim))
+        a = A[slices]
+        b = B[slices]
+
+        result = dpnp.matmul(b, b)
+        expected = numpy.matmul(a, a)
+        assert_allclose(expected, result, rtol=1e-06)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
