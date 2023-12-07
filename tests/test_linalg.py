@@ -566,7 +566,7 @@ class TestSolve:
         assert_allclose(expected, result, rtol=1e-05)
 
     # TODO: remove skipif when MKLD-16626 is resolved
-    @pytest.mark.skipif(is_cpu_device(), reason="MKL bug MKLD-16626")
+    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
     @pytest.mark.parametrize(
         "matrix, vector",
         [
