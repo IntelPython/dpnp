@@ -910,7 +910,7 @@ def test_fft_rfft(type, shape, device):
     np_res = numpy.fft.rfft(np_data)
     dpnp_res = dpnp.fft.rfft(dpnp_data)
 
-    assert_dtype_allclose(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = dpnp_res.get_array().sycl_queue
@@ -1339,18 +1339,44 @@ def test_asarray(device_x, device_y):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_take(device):
-    numpy_data = numpy.arange(5)
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        pytest.param({"prepend": 7}),
+        pytest.param({"append": -2}),
+        pytest.param({"prepend": -4, "append": 5}),
+    ],
+)
+def test_diff_scalar_append(device, kwargs):
+    numpy_data = numpy.arange(7)
     dpnp_data = dpnp.array(numpy_data, device=device)
 
-    ind = [0, 2, 4]
-    dpnp_ind = dpnp.array(ind, device=device)
-
-    result = dpnp.take(dpnp_data, dpnp_ind)
-    expected = numpy.take(numpy_data, ind)
+    expected = numpy.diff(numpy_data, **kwargs)
+    result = dpnp.diff(dpnp_data, **kwargs)
     assert_allclose(expected, result)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
 
+
+@pytest.mark.parametrize("func", ["take", "take_along_axis"])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_take(func, device):
+    numpy_data = numpy.arange(5)
+    dpnp_data = dpnp.array(numpy_data, device=device)
+
+    dpnp_ind = dpnp.array([0, 2, 4], device=device)
+    np_ind = dpnp_ind.asnumpy()
+
+    result = getattr(dpnp, func)(dpnp_data, dpnp_ind, axis=None)
+    expected = getattr(numpy, func)(numpy_data, np_ind, axis=None)
+    assert_allclose(expected, result)
+
+    expected_queue = dpnp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)

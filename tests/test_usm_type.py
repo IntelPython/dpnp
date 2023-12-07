@@ -411,6 +411,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("count_nonzero", [0, 1, 7, 0]),
+        pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
@@ -501,14 +502,15 @@ def test_broadcast_to(usm_type):
     assert x.usm_type == y.usm_type
 
 
+@pytest.mark.parametrize("func", ["take", "take_along_axis"])
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
     "usm_type_ind", list_of_usm_types, ids=list_of_usm_types
 )
-def test_take(usm_type_x, usm_type_ind):
+def test_take(func, usm_type_x, usm_type_ind):
     x = dp.arange(5, usm_type=usm_type_x)
     ind = dp.array([0, 2, 4], usm_type=usm_type_ind)
-    z = dp.take(x, ind)
+    z = getattr(dp, func)(x, ind, axis=None)
 
     assert x.usm_type == usm_type_x
     assert ind.usm_type == usm_type_ind

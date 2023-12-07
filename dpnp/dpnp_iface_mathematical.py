@@ -43,7 +43,10 @@ it contains:
 import dpctl.tensor as dpt
 import dpctl.utils as du
 import numpy
-from numpy.core.numeric import normalize_axis_tuple
+from numpy.core.numeric import (
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
@@ -127,6 +130,31 @@ __all__ = [
     "true_divide",
     "trunc",
 ]
+
+
+def _append_to_diff_array(a, axis, combined, values):
+    """
+    Append `values` to `combined` list based on data of array `a`.
+
+    Scalar value (including case with 0d array) is expanded to an array
+    with length=1 in the direction of axis and the shape of the input array `a`
+    in along all other axes.
+    Note, if `values` is a scalar. then it is converted to 0d array allocating
+    on the same SYCL queue as the input array `a` and with the same USM type.
+
+    """
+
+    dpnp.check_supported_arrays_type(values, scalar_type=True)
+    if dpnp.isscalar(values):
+        values = dpnp.asarray(
+            values, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+        )
+
+    if values.ndim == 0:
+        shape = list(a.shape)
+        shape[axis] = 1
+        values = dpnp.broadcast_to(values, tuple(shape))
+    combined.append(values)
 
 
 def absolute(
@@ -609,6 +637,10 @@ def cumsum(x1, **kwargs):
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
+    See Also
+    --------
+    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.
+
     Examples
     --------
     >>> import dpnp as np
@@ -630,39 +662,95 @@ def cumsum(x1, **kwargs):
     return call_origin(numpy.cumsum, x1, **kwargs)
 
 
-def diff(x1, n=1, axis=-1, prepend=numpy._NoValue, append=numpy._NoValue):
+def diff(a, n=1, axis=-1, prepend=None, append=None):
     """
     Calculate the n-th discrete difference along the given axis.
 
     For full documentation refer to :obj:`numpy.diff`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameters `axis`, `prepend` and `append` are supported only with default values.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array
+    n : int, optional
+        The number of times values are differenced. If zero, the input
+        is returned as-is.
+    axis : int, optional
+        The axis along which the difference is taken, default is the
+        last axis.
+    prepend, append : {scalar, dpnp.ndarray, usm_ndarray}, optional
+        Values to prepend or append to `a` along axis prior to
+        performing the difference. Scalar values are expanded to
+        arrays with length 1 in the direction of axis and the shape
+        of the input array in along all other axes. Otherwise the
+        dimension and shape must match `a` except along axis.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The n-th differences. The shape of the output is the same as `a`
+        except along `axis` where the dimension is smaller by `n`. The
+        type of the output is the same as the type of the difference
+        between any two elements of `a`. This is the same as the type of
+        `a` in most cases.
+
+    See Also
+    --------
+    :obj:`dpnp.gradient` : Return the gradient of an N-dimensional array.
+    :obj:`dpnp.ediff1d` : Compute the differences between consecutive elements of an array.
+    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along a given axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 4, 7, 0])
+    >>> np.diff(x)
+    array([ 1,  2,  3, -7])
+    >>> np.diff(x, n=2)
+    array([  1,   1, -10])
+
+    >>> x = np.array([[1, 3, 6, 10], [0, 5, 6, 8]])
+    >>> np.diff(x)
+    array([[2, 3, 4],
+           [5, 1, 2]])
+    >>> np.diff(x, axis=0)
+    array([[-1,  2,  0, -2]])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not isinstance(n, int):
-            pass
-        elif n < 1:
-            pass
-        elif x1_desc.ndim != 1:
-            pass
-        elif axis != -1:
-            pass
-        elif prepend is not numpy._NoValue:
-            pass
-        elif append is not numpy._NoValue:
-            pass
-        else:
-            return dpnp_diff(x1_desc, n).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    if n == 0:
+        return a
+    if n < 0:
+        raise ValueError(f"order must be non-negative but got {n}")
 
-    return call_origin(
-        numpy.diff, x1, n=n, axis=axis, prepend=prepend, append=append
-    )
+    nd = a.ndim
+    if nd == 0:
+        raise ValueError("diff requires input that is at least one dimensional")
+    axis = normalize_axis_index(axis, nd)
+
+    combined = []
+    if prepend is not None:
+        _append_to_diff_array(a, axis, combined, prepend)
+
+    combined.append(a)
+    if append is not None:
+        _append_to_diff_array(a, axis, combined, append)
+
+    if len(combined) > 1:
+        a = dpnp.concatenate(combined, axis=axis)
+
+    slice1 = [slice(None)] * nd
+    slice2 = [slice(None)] * nd
+    slice1[axis] = slice(1, None)
+    slice2[axis] = slice(None, -1)
+    slice1 = tuple(slice1)
+    slice2 = tuple(slice2)
+
+    op = dpnp.not_equal if a.dtype == numpy.bool_ else dpnp.subtract
+    for _ in range(n):
+        a = op(a[slice1], a[slice2])
+    return a
 
 
 def divide(
@@ -1276,6 +1364,10 @@ def gradient(x1, *varargs, **kwargs):
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
+    See Also
+    --------
+    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.
+
     Examples
     --------
     >>> import dpnp as np
@@ -1785,15 +1877,12 @@ def nanprod(
 
     """
 
-    if dpnp.is_supported_array_or_scalar(a):
-        if issubclass(a.dtype.type, dpnp.inexact):
-            mask = dpnp.isnan(a)
-            a = dpnp.array(a, copy=True)
-            dpnp.copyto(a, 1, where=mask)
-    else:
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
-        )
+    dpnp.check_supported_arrays_type(a)
+
+    if issubclass(a.dtype.type, dpnp.inexact):
+        mask = dpnp.isnan(a)
+        a = dpnp.array(a, copy=True)
+        dpnp.copyto(a, 1, where=mask)
 
     return dpnp.prod(
         a,
@@ -2108,10 +2197,7 @@ def prod(
 
     # Product reduction for complex output are known to fail for Gen9 with 2024.0 compiler
     # TODO: get rid of this temporary work around when OneAPI 2024.1 is released
-    if not isinstance(a, (dpnp_array, dpt.usm_ndarray)):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
-        )
+    dpnp.check_supported_arrays_type(a)
     _dtypes = (a.dtype, dtype)
     _any_complex = any(
         dpnp.issubdtype(dt, dpnp.complexfloating) for dt in _dtypes
