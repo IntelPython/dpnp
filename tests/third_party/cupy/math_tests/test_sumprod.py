@@ -360,10 +360,10 @@ axes = [0, 1, 2]
 
 @testing.parameterize(*testing.product({"axis": axes}))
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
+# TODO: remove "type_check=False" once leveraged on dpctl call
 class TestCumsum(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_cumsum(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)
         return xp.cumsum(a)
@@ -385,7 +385,7 @@ class TestCumsum(unittest.TestCase):
         return out
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_cumsum_2dim(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return xp.cumsum(a)
@@ -470,10 +470,10 @@ class TestCumsum(unittest.TestCase):
             return cupy.cumsum(a_numpy)
 
 
-@testing.gpu
+# TODO: remove "type_check=False" once leveraged on dpctl call
 class TestCumprod(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_cumprod_1dim(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)
         return xp.cumprod(a)
@@ -496,7 +496,7 @@ class TestCumprod(unittest.TestCase):
         return out
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-6)
+    @testing.numpy_cupy_allclose(rtol=1e-6, type_check=False)
     def test_cumprod_2dim_without_axis(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return xp.cumprod(a)
