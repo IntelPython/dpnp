@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.take_along_axis &mdash; Data Parallel Extension for NumPy 0.13.1dev1+18.g17d1392d3 documentation</title>
+  <title>dpnp.take_along_axis &mdash; Data Parallel Extension for NumPy 0.13.1dev1+69.g595c92353a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=214f52c9"></script>
+        <script src="../../_static/documentation_options.js?v=54739738"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+18.g17d1392d3
+                0.13.1dev1+69.g595c92353a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -130,24 +130,17 @@
 <dd><p>Take values from the input array by matching 1d index and data slices.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.take_along_axis.html#numpy.take_along_axis" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.take_along_axis</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>M</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) – Source array</p></li>
-<li><p><strong>indices</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>J</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) – Indices to take along each 1d slice of <cite>a</cite>. This must match the
-dimension of the input array, but dimensions <code class="docutils literal notranslate"><span class="pre">Ni</span></code> and <code class="docutils literal notranslate"><span class="pre">Nj</span></code>
-only need to broadcast against <cite>a</cite>.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The axis to take 1d slices along. If axis is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the input
-array is treated as if it had first been flattened to 1d,
-for consistency with <cite>sort</cite> and <cite>argsort</cite>.</p></li>
-</ul>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>out</strong> – The indexed result.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – The indexed result.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dpnp.ndarray</p>
 </dd>
 </dl>
+<p class="rubric">Limitations</p>
+<p>Parameters <cite>a</cite> and <cite>indices</cite> are supported either as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
+or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
+Otherwise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> exception will be raised.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
