@@ -1338,7 +1338,7 @@ def test_solve(device):
 
     result = dpnp.linalg.solve(dpnp_x, dpnp_y)
     expected = numpy.linalg.solve(numpy_x, numpy_y)
-    assert_allclose(expected, result, rtol=1e-06)
+    assert_dtype_allclose(result, expected)
 
     result_queue = result.sycl_queue
 
