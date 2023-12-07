@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.choose
-===================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.choose
