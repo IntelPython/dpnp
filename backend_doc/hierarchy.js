@@ -59,6 +59,9 @@ var hierarchy =
       [ "mcg59_struct", "structmcg59__struct.html", null ],
       [ "mt19937_struct", "structmt19937__struct.html", null ]
     ] ],
+    [ "std::exception", null, [
+      [ "dpnp::backend::ext::lapack::LinAlgError", "classdpnp_1_1backend_1_1ext_1_1lapack_1_1_lin_alg_error.html", null ]
+    ] ],
     [ "dpnp::backend::ext::vm::Exp2ContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp2_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::Exp2OutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_exp2_output_type.html", null ],
     [ "dpnp::backend::ext::vm::ExpContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp_contig_factory.html", null ],
@@ -70,6 +73,7 @@ var hierarchy =
     [ "dpnp::backend::ext::vm::FloorContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_floor_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::FloorOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_floor_output_type.html", null ],
     [ "func_type_pair_t< FuncType, T >", "structfunc__type__pair__t.html", null ],
+    [ "dpnp::backend::ext::lapack::types::GesvTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_gesv_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< std::tuple< T, Axis... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id_3_01std_1_1tuple_3_01_t_00_01_axis_8_8_8_01_4_01_4.html", null ],
@@ -99,8 +103,6 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::populate_table< C, FnT, Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1populate__table.html", null ],
     [ "dpnp::backend::ext::sycl_ext::populate_table< C, FnT, std::tuple< Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1populate__table_3_01_c_00_01_fn_t_00_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::populate_table< C, FnT, std::tuple< std::tuple< Args... > > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1populate__table_3_01_c_00_01_fn_t_00_01std_1_1tuple0f7ffe7646d3c8f7f12eca20777caefd.html", null ],
-    [ "dpnp::backend::ext::lapack::types::PotrfBatchTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html", null ],
-    [ "dpnp::backend::ext::lapack::types::PotrfTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_potrf_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::vm::PowContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_pow_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::PowOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_pow_output_type.html", null ],
     [ "python_constants", "structpython__constants.html", null ],
@@ -133,6 +135,8 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::tuple_of_tuples< std::tuple< Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::tuple_of_tuples< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::UsmArrayMatcher", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_usm_array_matcher.html", null ],
+    [ "dpnp::backend::ext::lapack::helper::value_type_of< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html", null ],
+    [ "dpnp::backend::ext::lapack::helper::value_type_of< std::complex< T > >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
     [ "Ps", null, [
       [ "func_type_map_factory_t< Ps >", "structfunc__type__map__factory__t.html", null ]
     ] ]
