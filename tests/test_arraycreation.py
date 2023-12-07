@@ -14,6 +14,7 @@ from numpy.testing import (
 import dpnp
 
 from .helper import (
+    assert_dtype_allclose,
     get_all_dtypes,
     has_support_aspect64,
 )
@@ -876,4 +877,4 @@ def test_logspace_axis(axis):
     func = lambda xp: xp.logspace(
         [2, 3], [20, 15], num=2, base=[[1, 3], [5, 7]], axis=axis
     )
-    assert_allclose(func(dpnp), func(numpy))
+    assert_dtype_allclose(func(dpnp), func(numpy))
