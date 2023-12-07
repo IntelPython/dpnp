@@ -2212,7 +2212,7 @@ def test_matmul(order_pair, shape_pair):
 
     result = dpnp.matmul(b1, b2)
     expected = numpy.matmul(a1, a2)
-    assert_allclose(expected, result)
+    assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
@@ -2270,7 +2270,7 @@ def test_matmul_order(order, shape_pair):
     expected = numpy.matmul(a1, a2, order=order)
     assert result.flags.c_contiguous == expected.flags.c_contiguous
     assert result.flags.f_contiguous == expected.flags.f_contiguous
-    assert_allclose(expected, result)
+    assert_dtype_allclose(result, expected)
 
 
 def test_matmul_strided():
@@ -2284,7 +2284,7 @@ def test_matmul_strided():
 
         result = dpnp.matmul(b, b)
         expected = numpy.matmul(a, a)
-        assert_allclose(expected, result, rtol=1e-06)
+        assert_dtype_allclose(result, expected)
 
         # negative strides
         slices = tuple(slice(None, None, -2) for _ in range(dim))
@@ -2293,7 +2293,7 @@ def test_matmul_strided():
 
         result = dpnp.matmul(b, b)
         expected = numpy.matmul(a, a)
-        assert_allclose(expected, result, rtol=1e-06)
+        assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
@@ -2307,7 +2307,7 @@ def test_matmul_out(dtype):
     result = dpnp.empty((5, 7), dtype=dtype)
     dpnp.matmul(b1, b2, out=result)
     expected = numpy.matmul(a1, a2)
-    assert_allclose(expected, result)
+    assert_dtype_allclose(result, expected)
 
 
 class TestMatmulInvalidCases:
