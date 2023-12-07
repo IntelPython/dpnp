@@ -469,6 +469,7 @@ class TestCumsum(unittest.TestCase):
         with self.assertRaises(TypeError):
             return cupy.cumsum(a_numpy)
 
+
 @testing.gpu
 class TestCumprod(unittest.TestCase):
     @testing.for_all_dtypes()
