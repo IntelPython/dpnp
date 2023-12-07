@@ -469,11 +469,10 @@ class TestCumsum(unittest.TestCase):
         with self.assertRaises(TypeError):
             return cupy.cumsum(a_numpy)
 
-
-# TODO: remove "type_check=False" once leveraged on dpctl call
+@testing.gpu
 class TestCumprod(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose()
     def test_cumprod_1dim(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)
         return xp.cumprod(a)
@@ -496,7 +495,7 @@ class TestCumprod(unittest.TestCase):
         return out
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-6, type_check=False)
+    @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_cumprod_2dim_without_axis(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return xp.cumprod(a)

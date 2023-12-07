@@ -557,12 +557,15 @@ tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_diff
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out_wrong_shape
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_ndarray_cumprod_2dim_with_axis
 
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_ndarray_cumprod_2dim_with_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_arraylike
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_huge_array
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_numpy_array
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_out_noncontiguous
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_1dim
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_2dim_without_axis
+
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_arraylike
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_numpy_array
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum_arraylike
