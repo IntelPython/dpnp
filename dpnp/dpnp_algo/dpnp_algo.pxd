@@ -156,8 +156,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_POISSON_EXT
         DPNP_FN_RNG_POWER
         DPNP_FN_RNG_POWER_EXT
-        DPNP_FN_PUT_ALONG_AXIS
-        DPNP_FN_PUT_ALONG_AXIS_EXT
         DPNP_FN_RNG_RAYLEIGH
         DPNP_FN_RNG_RAYLEIGH_EXT
         DPNP_FN_RNG_SHUFFLE

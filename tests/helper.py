@@ -68,6 +68,14 @@ def assert_dtype_allclose(
                 assert dpnp_arr.dtype == numpy_arr.dtype
 
 
+def get_integer_dtypes():
+    """
+    Build a list of integer types supported by DPNP.
+    """
+
+    return [dpnp.int32, dpnp.int64]
+
+
 def get_complex_dtypes(device=None):
     """
     Build a list of complex types supported by DPNP based on device capabilities.
@@ -123,7 +131,7 @@ def get_all_dtypes(
     dtypes = [dpnp.bool] if not no_bool else []
 
     # add integer types
-    dtypes.extend([dpnp.int32, dpnp.int64])
+    dtypes.extend(get_integer_dtypes())
 
     # add floating types
     dtypes.extend(get_float_dtypes(no_float16=no_float16, device=dev))

@@ -240,13 +240,10 @@ def eigh(a, UPLO="L"):
 
     """
 
+    dpnp.check_supported_arrays_type(a)
+
     if UPLO not in ("L", "U"):
         raise ValueError("UPLO argument must be 'L' or 'U'")
-
-    if not dpnp.is_supported_array_type(a):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
-        )
 
     if a.ndim < 2:
         raise ValueError(
