@@ -48,9 +48,8 @@ from dpnp.dpnp_utils import *
 from dpnp.linalg.dpnp_algo_linalg import *
 
 from .dpnp_utils_linalg import (
-    _assert_stacked_2d,
-    _assert_stacked_square,
-    _assert_supported_array_type,
+    check_stacked_2d,
+    check_stacked_square,
     dpnp_eigh,
     dpnp_solve,
 )
@@ -543,9 +542,9 @@ def solve(a, b):
 
     """
 
-    _assert_supported_array_type(a, b)
-    _assert_stacked_2d(a)
-    _assert_stacked_square(a)
+    dpnp.check_supported_arrays_type(a, b)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
     if not (
         (a.ndim == b.ndim or a.ndim == b.ndim + 1)

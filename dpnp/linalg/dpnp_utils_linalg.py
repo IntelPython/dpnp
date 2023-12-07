@@ -34,33 +34,40 @@ import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
 
-__all__ = ["dpnp_eigh", "dpnp_solve"]
+__all__ = [
+    "check_stacked_2d",
+    "check_stacked_square",
+    "dpnp_eigh",
+    "dpnp_solve",
+]
 
 _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
 
 
-def _assert_supported_array_type(*arrays):
+def check_stacked_2d(*arrays):
     """
-    Asserts that each array in `arrays` is of a type supported by dpnp.
+    Return ``True`` if each array in `arrays` has at least two dimensions.
 
-    Raises `TypeError` if it`s not.
+    If any array is less than two-dimensional, `dpnp.linalg.LinAlgError` will be raised.
+
+    Parameters
+    ----------
+    arrays : {dpnp_array, usm_ndarray}
+        A sequence of input arrays to check for dimensionality.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if each array in `arrays` is at least two-dimensional.
+
+    Raises
+    ------
+    dpnp.linalg.LinAlgError
+        If any array in `arrays` is less than two-dimensional.
 
     """
-    for a in arrays:
-        if not dpnp.is_supported_array_type(a):
-            raise TypeError(
-                f"The input array must be any of supported type, but got {type(a)}"
-            )
 
-
-def _assert_stacked_2d(*arrays):
-    """
-    Asserts that each array in `arrays` is at least two-dimensional.
-
-    Raises `dpnp.linalg.LinAlgError` if it's not.
-
-    """
     for a in arrays:
         if a.ndim < 2:
             raise dpnp.linalg.LinAlgError(
@@ -69,19 +76,34 @@ def _assert_stacked_2d(*arrays):
             )
 
 
-def _assert_stacked_square(*arrays):
+def check_stacked_square(*arrays):
     """
-    Asserts that each array in `arrays` is a square matrix.
+    Return ``True`` if each array in `arrays` is a square matrix.
 
-    Raises `dpnp.linalg.LinAlgError` if any array is not square.
+    If any array does not form a square matrix, `dpnp.linalg.LinAlgError` will be raised.
 
     Precondition: `arrays` are at least 2d. The caller should assert it
     beforehand. For example,
 
     >>> def solve(a):
-    ...     _assert_stacked_2d(a)
-    ...     _assert_stacked_square(a)
+    ...     check_stacked_2d(a)
+    ...     check_stacked_square(a)
     ...     ...
+
+    Parameters
+    ----------
+    arrays : {dpnp_array, usm_ndarray}
+        A sequence of input arrays to check for square matrix shape.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if each array in `arrays` forms a square matrix.
+
+    Raises
+    ------
+    dpnp.linalg.LinAlgError
+        If any array in `arrays` does not form a square matrix.
 
     """
 
