@@ -486,3 +486,25 @@ def test_take(func, usm_type_x, usm_type_ind):
     assert x.usm_type == usm_type_x
     assert ind.usm_type == usm_type_ind
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
+
+
+@pytest.mark.parametrize(
+    "data, is_empty",
+    [
+        ([[1, -2], [2, 5]], False),
+        ([[[1, -2], [2, 5]], [[1, -2], [2, 5]]], False),
+        ((0, 0), True),
+        ((3, 0, 0), True),
+    ],
+    ids=["2D", "3D", "Empty_2D", "Empty_3D"],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_cholesky(data, is_empty, usm_type):
+    if is_empty:
+        x = dp.empty(data, dtype=dp.default_float_type(), usm_type=usm_type)
+    else:
+        x = dp.array(data, dtype=dp.default_float_type(), usm_type=usm_type)
+
+    result = dp.linalg.cholesky(x)
+
+    assert x.usm_type == result.usm_type
