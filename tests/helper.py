@@ -76,6 +76,14 @@ def get_integer_dtypes():
     return [dpnp.int32, dpnp.int64]
 
 
+def get_integer_dtypes():
+    """
+    Build a list of integer types supported by DPNP.
+    """
+
+    return [dpnp.int32, dpnp.int64]
+
+
 def get_complex_dtypes(device=None):
     """
     Build a list of complex types supported by DPNP based on device capabilities.
