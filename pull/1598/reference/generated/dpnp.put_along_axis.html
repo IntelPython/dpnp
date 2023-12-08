@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.put_along_axis &mdash; Data Parallel Extension for NumPy 0.13.1dev1+70.g7531de3911 documentation</title>
+  <title>dpnp.put_along_axis &mdash; Data Parallel Extension for NumPy 0.13.1dev1+73.g5aab1c6e2c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=124a9b62"></script>
+        <script src="../../_static/documentation_options.js?v=900dfae6"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+70.g7531de3911
+                0.13.1dev1+73.g5aab1c6e2c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -129,12 +129,20 @@
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">put_along_axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_indexing.html#put_along_axis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.put_along_axis" title="Link to this definition"></a></dt>
 <dd><p>Put values into the destination array by matching 1d index and data slices.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.put_along_axis.html#numpy.put_along_axis" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.put_along_axis</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Parameters <cite>a</cite> and <cite>indices</cite> are supported either as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
-or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
-Parameter <cite>values</cite> is supported either as scalar, <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
-or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
-Otherwise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> exception will be raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>M</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) – Destination array.</p></li>
+<li><p><strong>indices</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>J</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) – Indices to change along each 1d slice of <cite>a</cite>. This must match the
+dimension of input array, but dimensions in <code class="docutils literal notranslate"><span class="pre">Ni</span></code> and <code class="docutils literal notranslate"><span class="pre">Nj</span></code>
+may be 1 to broadcast against <cite>a</cite>.</p></li>
+<li><p><strong>values</strong> (<em>{scalar</em><em>, </em><em>array_like}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>J</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) – Values to insert at those indices. Its shape and dimension are
+broadcast to match that of <cite>indices</cite>.</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The axis to take 1d slices along. If axis is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the destination
+array is treated as if a flattened 1d view had been created of it.</p></li>
+</ul>
+</dd>
+</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
